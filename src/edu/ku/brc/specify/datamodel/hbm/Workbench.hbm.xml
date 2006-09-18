@@ -3,17 +3,22 @@
 
 <class name="edu.ku.brc.specify.datamodel.Workbench" table="workbench" lazy="false">
 
-	<!-- Common id property. -->
-	<id name="workbenchID" type="java.lang.Integer" column="WorkbenchID" unsaved-value="null">
-		<generator class="native"/>
+    <!-- Common id property. -->
+    <id name="workbenchId" type="java.lang.Long" column="WorkbenchID" unsaved-value="null">
+        <generator class="native"/>
 	</id>
 
-	<property name="name" column="Name" update="true" type="java.lang.String" length="64">
-		<meta attribute="field-description">Name of workbench</meta>
-	</property>
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
-	<property name="tableId" column="TableID" update="true" type="int">
-	</property>
+    <property name="name" column="Name" update="true" type="java.lang.String" length="64">
+        <meta attribute="field-description">Name of workbench</meta>
+    </property>
+
+    <property name="tableId" column="TableID" update="true" type="int">
+    </property>
 
     <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
@@ -29,10 +34,6 @@
         <meta attribute="field-description">Name of Institution being exported from</meta>
     </property>  
       
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="field-description"></meta>    
-    </property>
-    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="field-description"></meta>    
     </property>
@@ -48,7 +49,7 @@
     
     <!-- bi-directional one-to-many association to WorkbenchDataItem -->
     <set name="workbenchItems" lazy="true" inverse="true" cascade="all">
-	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="WorkbenchID"/>

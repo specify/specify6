@@ -15,7 +15,7 @@ public class Permit  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer permitId;
+     protected Long permitId;
      protected String permitNumber;
      protected String type;
      protected Calendar issuedDate;
@@ -45,7 +45,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Permit(Integer permitId) {
+    public Permit(Long permitId) {
         this.permitId = permitId;
     }
 
@@ -68,7 +68,7 @@ public class Permit  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -84,11 +84,11 @@ public class Permit  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getPermitId() {
+    public Long getPermitId() {
         return this.permitId;
     }
 
-    public void setPermitId(Integer permitId) {
+    public void setPermitId(Long permitId) {
         this.permitId = permitId;
     }
 

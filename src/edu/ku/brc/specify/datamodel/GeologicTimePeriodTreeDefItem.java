@@ -10,7 +10,7 @@ public class GeologicTimePeriodTreeDefItem implements Serializable, TreeDefItemI
 
 	// Fields    
 
-	protected Integer				taxonTreeDefItemId;
+	protected Long				    taxonTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -30,7 +30,7 @@ public class GeologicTimePeriodTreeDefItem implements Serializable, TreeDefItemI
 	}
 
 	/** constructor with id */
-	public GeologicTimePeriodTreeDefItem(Integer taxonTreeDefItemId)
+	public GeologicTimePeriodTreeDefItem(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -57,12 +57,12 @@ public class GeologicTimePeriodTreeDefItem implements Serializable, TreeDefItemI
 	/**
 	 * 
 	 */
-	public Integer getGeologicTimePeriodTreeDefItemId()
+	public Long getGeologicTimePeriodTreeDefItemId()
 	{
 		return this.taxonTreeDefItemId;
 	}
 
-	public void setGeologicTimePeriodTreeDefItemId(Integer taxonTreeDefItemId)
+	public void setGeologicTimePeriodTreeDefItemId(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -183,12 +183,12 @@ public class GeologicTimePeriodTreeDefItem implements Serializable, TreeDefItemI
 
 	// Code added to implement TreeDefinitionItemIface
 
-	public Integer getTreeDefItemId()
+	public Long getTreeDefItemId()
 	{
 		return getGeologicTimePeriodTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Integer id)
+	public void setTreeDefItemId(Long id)
 	{
 		setGeologicTimePeriodTreeDefItemId(id);
 	}

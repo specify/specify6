@@ -50,7 +50,7 @@ public class RecordSet  implements java.io.Serializable {
         recordSetID = null;
         //name = null;
         //tableId = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         items = new HashSet<RecordSetItem>();
         owner = null;

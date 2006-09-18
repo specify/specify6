@@ -27,6 +27,6 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
 	public Set<T> getTreeNodes(I defItem);
 	public T getRootNode(D treeDef);
 	public List<D> getAllTreeDefs(Class<D> treeDefClass);
-	public D getTreeDef(Class<D> defClass, int defId);
+	public D getTreeDef(Class<D> defClass, long defId);
 	public void loadAllDescendants(T node);
 }

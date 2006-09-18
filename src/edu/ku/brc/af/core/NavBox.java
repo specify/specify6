@@ -52,7 +52,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     private Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
     
     /**
-     * Constructor (with name)
+     * Constructor (with name).
      * @param name the name of the NavBox.
      */
     public NavBox(String name)
@@ -178,6 +178,25 @@ public class NavBox extends JPanel implements NavBoxIFace
         remove(item.getUIComponent());
         items.remove(item);
         doLayout();
+    }
+
+    /**
+     * Removes all the items from the navbox.
+     */
+    public void clear()
+    {
+        removeAll();
+        items.clear();
+        doLayout();
+    }
+    
+    /**
+     * Returns the number of NavBoxes.
+     * @return the number of NavBoxes.
+     */
+    public int getCount()
+    {
+        return items.size();
     }
 
     

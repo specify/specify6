@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Deaccession" table="deaccession" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="deaccessionId" type="java.lang.Integer" column="DeaccessionID">
+    <id name="deaccessionId" type="java.lang.Long" column="DeaccessionID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="type" type="java.lang.String" column="Type" length="64">
         <meta attribute="scope-field">protected</meta>
@@ -48,11 +53,6 @@
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
-    </property>
-    
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">

@@ -13,7 +13,7 @@ public class WorkbenchTemplate  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer workbenchTemplateID;
+     protected Long workbenchTemplateId;
      protected String name;
      protected String remarks;
      private Date timestampModified;
@@ -29,8 +29,8 @@ public class WorkbenchTemplate  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public WorkbenchTemplate(Integer workbenchTemplateID) {
-        this.workbenchTemplateID = workbenchTemplateID;
+    public WorkbenchTemplate(Long workbenchTemplateId) {
+        this.workbenchTemplateId = workbenchTemplateId;
     }
    
     
@@ -41,12 +41,12 @@ public class WorkbenchTemplate  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getWorkbenchTemplateID() {
-        return this.workbenchTemplateID;
+    public Long getWorkbenchTemplateId() {
+        return this.workbenchTemplateId;
     }
     
-    public void setWorkbenchTemplateID(Integer workbenchTemplateID) {
-        this.workbenchTemplateID = workbenchTemplateID;
+    public void setWorkbenchTemplateId(Long workbenchTemplateId) {
+        this.workbenchTemplateId = workbenchTemplateId;
     }
 
     /**

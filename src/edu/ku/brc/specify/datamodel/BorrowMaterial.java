@@ -14,7 +14,7 @@ public class BorrowMaterial  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer borrowMaterialId;
+     protected Long borrowMaterialId;
      protected String materialNumber;
      protected String description;
      protected Short quantity;
@@ -36,7 +36,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public BorrowMaterial(Integer borrowMaterialId) {
+    public BorrowMaterial(Long borrowMaterialId) {
         this.borrowMaterialId = borrowMaterialId;
     }
    
@@ -54,7 +54,7 @@ public class BorrowMaterial  implements java.io.Serializable {
         inComments = null;
         quantityResolved = null;
         quantityReturned = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
@@ -67,11 +67,11 @@ public class BorrowMaterial  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getBorrowMaterialId() {
+    public Long getBorrowMaterialId() {
         return this.borrowMaterialId;
     }
     
-    public void setBorrowMaterialId(Integer borrowMaterialId) {
+    public void setBorrowMaterialId(Long borrowMaterialId) {
         this.borrowMaterialId = borrowMaterialId;
     }
 

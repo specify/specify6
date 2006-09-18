@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="collectingEventId" type="java.lang.Integer" column="CollectingEventID">
+    <id name="collectingEventId" type="java.lang.Long" column="CollectingEventID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="stationFieldNumber" type="java.lang.String" column="StationFieldNumber" length="50" index="IX_CollectingEventStatFldNo">
         <meta attribute="scope-field">protected</meta>
@@ -80,11 +85,6 @@
         <meta attribute="field-description">Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).</meta>
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_CollectingEvent _1">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
@@ -99,14 +99,14 @@
 
     <!-- bi-directional one-to-many association to CollectionObject -->
     <set name="collectionObjects" lazy="true" inverse="true" cascade="none">    
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta> 
         <key>
             <column name="CollectingEventID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     </set>
-	
+    
     <!-- bi-directional one-to-many association to Collectors -->
     <set name="collectors" lazy="true" inverse="true" cascade="delete">
         <meta attribute="field-description"></meta>
@@ -118,26 +118,26 @@
     
    <!-- bi-directional many-to-one association to Locality -->
    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" not-null="true" outer-join="true" index="IX_CollectingEventLocalityID">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Locality where collection took place</meta>
         <column name="LocalityID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-one association to Stratigraphy -->
     <one-to-one name="stratigraphy" class="edu.ku.brc.specify.datamodel.Stratigraphy" cascade="save-update">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </one-to-one>
     
     <!-- bi-directional one-to-many association to CollectingEventAttr -->
     <set name="attrs" lazy="true" inverse="true" cascade="delete">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectingEventAttrID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectingEventAttr"/>
-    </set>	
+    </set>    
         
     <!-- bi-directional many-to-many association to ExternalResource -->
     <set name="externalResources" table="coleve_extres" lazy="true" inverse="true" cascade="save-update">

@@ -206,6 +206,17 @@ public class HibernateUtil {
     }
 
     /**
+     * Returns a new session.
+     * @return a new session
+     */
+    public static Session getNewSession()
+    {
+        Session session = getSessionFactory().openSession();
+        log.debug("Session Created["+session.hashCode()+"]");
+        return session;
+    }
+
+    /**
      * Returns the global SessionFactory.
      *
      * @return SessionFactory

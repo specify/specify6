@@ -12,7 +12,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer collectionObjectCitationId;
+     protected Long collectionObjectCitationId;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
@@ -28,7 +28,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public CollectionObjectCitation(Integer collectionObjectCitationId) {
+    public CollectionObjectCitation(Long collectionObjectCitationId) {
         this.collectionObjectCitationId = collectionObjectCitationId;
     }
    
@@ -40,7 +40,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     {
         collectionObjectCitationId = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         referenceWork = null;
@@ -53,11 +53,11 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getCollectionObjectCitationId() {
+    public Long getCollectionObjectCitationId() {
         return this.collectionObjectCitationId;
     }
     
-    public void setCollectionObjectCitationId(Integer collectionObjectCitationId) {
+    public void setCollectionObjectCitationId(Long collectionObjectCitationId) {
         this.collectionObjectCitationId = collectionObjectCitationId;
     }
 

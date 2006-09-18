@@ -13,7 +13,7 @@ public class PrepType  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer prepTypeId;
+     protected Long prepTypeId;
      protected String name;
      protected Set<Preparation> preparations;
      protected Set<AttributeDef> attributeDefs;
@@ -26,7 +26,7 @@ public class PrepType  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public PrepType(Integer prepTypeId) {
+    public PrepType(Long prepTypeId) {
         this.prepTypeId = prepTypeId;
     }
    
@@ -48,11 +48,11 @@ public class PrepType  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getPrepTypeId() {
+    public Long getPrepTypeId() {
         return this.prepTypeId;
     }
     
-    public void setPrepTypeId(Integer prepTypeId) {
+    public void setPrepTypeId(Long prepTypeId) {
         this.prepTypeId = prepTypeId;
     }
 

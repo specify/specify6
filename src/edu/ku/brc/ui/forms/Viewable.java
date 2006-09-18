@@ -20,6 +20,8 @@ import java.util.Map;
 
 import javax.swing.JLabel;
 
+import org.hibernate.Session;
+
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.validation.FormValidator;
@@ -171,6 +173,12 @@ public interface Viewable
      * @param wasOK whether validation was OK
      */
     public void validationWasOK(boolean wasOK);
+    
+    /**
+     * Sets the current serssion into the Viewable.
+     * @param session the current session
+     */
+    public void setSession(Session session);
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.

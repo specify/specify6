@@ -10,7 +10,7 @@ public class LocationTreeDefItem implements Serializable, TreeDefItemIface<Locat
 
 	// Fields    
 
-	protected Integer				taxonTreeDefItemId;
+	protected Long   				taxonTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -30,7 +30,7 @@ public class LocationTreeDefItem implements Serializable, TreeDefItemIface<Locat
 	}
 
 	/** constructor with id */
-	public LocationTreeDefItem(Integer taxonTreeDefItemId)
+	public LocationTreeDefItem(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -57,12 +57,12 @@ public class LocationTreeDefItem implements Serializable, TreeDefItemIface<Locat
 	/**
 	 * 
 	 */
-	public Integer getLocationTreeDefItemId()
+	public Long getLocationTreeDefItemId()
 	{
 		return this.taxonTreeDefItemId;
 	}
 
-	public void setLocationTreeDefItemId(Integer taxonTreeDefItemId)
+	public void setLocationTreeDefItemId(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -183,12 +183,12 @@ public class LocationTreeDefItem implements Serializable, TreeDefItemIface<Locat
 
 	// Code added to implement TreeDefinitionItemIface
 
-	public Integer getTreeDefItemId()
+	public Long getTreeDefItemId()
 	{
 		return getLocationTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Integer id)
+	public void setTreeDefItemId(Long id)
 	{
 		setLocationTreeDefItemId(id);
 	}

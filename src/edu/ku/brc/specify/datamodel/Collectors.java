@@ -12,7 +12,7 @@ public class Collectors  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer collectorsId;
+     protected Long collectorsId;
      protected Integer orderNumber;
      protected String remarks;
      protected Date timestampModified;
@@ -29,7 +29,7 @@ public class Collectors  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Collectors(Integer collectorsId) {
+    public Collectors(Long collectorsId) {
         this.collectorsId = collectorsId;
     }
    
@@ -42,7 +42,7 @@ public class Collectors  implements java.io.Serializable {
         collectorsId = null;
         orderNumber = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         collectingEvent = null;
@@ -55,11 +55,11 @@ public class Collectors  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getCollectorsId() {
+    public Long getCollectorsId() {
         return this.collectorsId;
     }
     
-    public void setCollectorsId(Integer collectorsId) {
+    public void setCollectorsId(Long collectorsId) {
         this.collectorsId = collectorsId;
     }
 

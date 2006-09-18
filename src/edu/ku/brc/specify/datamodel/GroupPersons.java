@@ -12,7 +12,7 @@ public class GroupPersons  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer groupPersonsId;
+     protected Long groupPersonsId;
      protected Short orderNumber;
      protected String remarks;
      protected Date timestampModified;
@@ -29,7 +29,7 @@ public class GroupPersons  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public GroupPersons(Integer groupPersonsId) {
+    public GroupPersons(Long groupPersonsId) {
         this.groupPersonsId = groupPersonsId;
     }
    
@@ -42,7 +42,7 @@ public class GroupPersons  implements java.io.Serializable {
         groupPersonsId = null;
         orderNumber = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         agentByGroup = null;
@@ -55,11 +55,11 @@ public class GroupPersons  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getGroupPersonsId() {
+    public Long getGroupPersonsId() {
         return this.groupPersonsId;
     }
     
-    public void setGroupPersonsId(Integer groupPersonsId) {
+    public void setGroupPersonsId(Long groupPersonsId) {
         this.groupPersonsId = groupPersonsId;
     }
 

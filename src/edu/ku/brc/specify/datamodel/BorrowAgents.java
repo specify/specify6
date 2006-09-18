@@ -12,7 +12,7 @@ public class BorrowAgents  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer borrowAgentsId;
+     protected Long borrowAgentsId;
      protected String role;
      protected String remarks;
      protected Date timestampModified;
@@ -29,7 +29,7 @@ public class BorrowAgents  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public BorrowAgents(Integer borrowAgentsId) {
+    public BorrowAgents(Long borrowAgentsId) {
         this.borrowAgentsId = borrowAgentsId;
     }
    
@@ -42,7 +42,7 @@ public class BorrowAgents  implements java.io.Serializable {
         borrowAgentsId = null;
         role = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         agent = null;
@@ -55,11 +55,11 @@ public class BorrowAgents  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getBorrowAgentsId() {
+    public Long getBorrowAgentsId() {
         return this.borrowAgentsId;
     }
     
-    public void setBorrowAgentsId(Integer borrowAgentsId) {
+    public void setBorrowAgentsId(Long borrowAgentsId) {
         this.borrowAgentsId = borrowAgentsId;
     }
 

@@ -25,6 +25,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.hibernate.Session;
+
 import edu.ku.brc.ui.forms.persist.TableViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
@@ -39,7 +41,7 @@ import edu.ku.brc.ui.validation.FormValidator;
 public class TableViewObj implements Viewable
 {
     //private static final Logger log = Logger.getLogger(TableViewObj.class);
-
+    protected Session                       session        = null;
     protected boolean                       isEditting     = false;
     protected MultiView                     multiView      = null;
     protected FormViewObj                   parent;
@@ -281,6 +283,14 @@ public class TableViewObj implements Viewable
     public void validationWasOK(boolean wasOK)
     {
 
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
+     */
+    public void setSession(final Session session)
+    {
+        this.session = session;
     }
 
     /* (non-Javadoc)

@@ -14,7 +14,7 @@ public class ReferenceWork  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer referenceWorkId;
+     protected Long referenceWorkId;
      protected Integer containingReferenceWorkId;
      protected Byte referenceWorkType;
      protected String title;
@@ -51,7 +51,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public ReferenceWork(Integer referenceWorkId) {
+    public ReferenceWork(Long referenceWorkId) {
         this.referenceWorkId = referenceWorkId;
     }
    
@@ -78,7 +78,7 @@ public class ReferenceWork  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         published = null;
         yesNo1 = null;
@@ -97,11 +97,11 @@ public class ReferenceWork  implements java.io.Serializable {
     /**
      *      * PrimaryKey
      */
-    public Integer getReferenceWorkId() {
+    public Long getReferenceWorkId() {
         return this.referenceWorkId;
     }
     
-    public void setReferenceWorkId(Integer referenceWorkId) {
+    public void setReferenceWorkId(Long referenceWorkId) {
         this.referenceWorkId = referenceWorkId;
     }
 

@@ -1,149 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
 
-	<class name="edu.ku.brc.specify.datamodel.Location" table="location"
-		lazy="true">
-		<meta attribute="class-description" inherit="false" />
+    <class name="edu.ku.brc.specify.datamodel.Location" table="location"
+        lazy="true">
+        <meta attribute="class-description" inherit="false" />
 
-		<id name="locationId" type="java.lang.Integer" column="LocationID">
-			<meta attribute="scope-field">protected</meta>
-			<generator class="native" />
+        <id name="locationId" type="java.lang.Long" column="LocationID">
+            <meta attribute="scope-field">protected</meta>
+            <generator class="native" />
 		</id>
 
-		<property name="name" type="java.lang.String" column="Name"
-			length="128">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <timestamp name="timestampModified" column="TimestampModified">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description">Versioning TimeStamp</meta>
+        </timestamp>
 
-		<property name="fullName" type="java.lang.String" column="FullName"
-			length="255">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="name" type="java.lang.String" column="Name"
+            length="128">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="remarks" type="java.lang.String"
-			column="Remarks" length="255">
-			<meta attribute="scope-field">protected</meta>
-		</property>
-		
-		<property name="rankId" type="java.lang.Integer" column="RankID"
-			length="10">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="fullName" type="java.lang.String" column="FullName"
+            length="255">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="nodeNumber" type="java.lang.Integer"
-			column="NodeNumber" length="10" index="IX_LOC_NodeNumber">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="remarks" type="java.lang.String"
+            column="Remarks" length="255">
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        
+        <property name="rankId" type="java.lang.Integer" column="RankID"
+            length="10">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="highestChildNodeNumber" type="java.lang.Integer"
-			column="HighestChildNodeNumber" length="10"
-			index="IX_LOC_HighestChildNodeNumber">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="nodeNumber" type="java.lang.Integer"
+            column="NodeNumber" length="10" index="IX_LOC_NodeNumber">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="abbrev" type="java.lang.String" column="Abbrev"
-			length="16">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="highestChildNodeNumber" type="java.lang.Integer"
+            column="HighestChildNodeNumber" length="10"
+            index="IX_LOC_HighestChildNodeNumber">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="text1" type="java.lang.String" column="Text1"
-			length="32">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="abbrev" type="java.lang.String" column="Abbrev"
+            length="16">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="text2" type="java.lang.String" column="Text2"
-			length="32">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="text1" type="java.lang.String" column="Text1"
+            length="32">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="number1" type="java.lang.Integer"
-			column="Number1" length="10">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="text2" type="java.lang.String" column="Text2"
+            length="32">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="number2" type="java.lang.Integer"
-			column="Number2" length="10">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="number1" type="java.lang.Integer"
+            column="Number1" length="10">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="timestampCreated" type="java.sql.Timestamp"
-			column="TimestampCreated" length="23">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="number2" type="java.lang.Integer"
+            column="Number2" length="10">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="timestampModified" type="java.sql.Timestamp"
-			column="TimestampModified" length="23">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="timestampCreated" type="java.sql.Timestamp"
+            column="TimestampCreated" length="23">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="timestampVersion" type="java.sql.Timestamp"
-			column="TimestampVersion" length="16">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="timestampVersion" type="java.sql.Timestamp"
+            column="TimestampVersion" length="16">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="lastEditedBy" type="java.lang.String"
-			column="LastEditedBy" length="50">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="lastEditedBy" type="java.lang.String"
+            column="LastEditedBy" length="50">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<!-- Associations -->
+        <!-- Associations -->
 
-		<!-- bi-directional many-to-one association to LocationTreeDef -->
-		<many-to-one name="definition"
-			class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false"
-			not-null="true" outer-join="true">
-			<column name="LocationTreeDefID" />
-		</many-to-one>
+        <!-- bi-directional many-to-one association to LocationTreeDef -->
+        <many-to-one name="definition"
+            class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false"
+            not-null="true" outer-join="true">
+            <column name="LocationTreeDefID" />
+        </many-to-one>
 
-		<!-- bi-directional many-to-one association to LocationTreeDefItem -->
-		<many-to-one name="definitionItem"
-			class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" lazy="false"
-			not-null="true" outer-join="true">
-			<column name="LocationTreeDefItemID" />
-		</many-to-one>
+        <!-- bi-directional many-to-one association to LocationTreeDefItem -->
+        <many-to-one name="definitionItem"
+            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" lazy="false"
+            not-null="true" outer-join="true">
+            <column name="LocationTreeDefItemID" />
+        </many-to-one>
 
-		<!-- bi-directional many-to-one association to Location -->
-		<many-to-one name="parent"
-			class="edu.ku.brc.specify.datamodel.Location" not-null="true"
-			outer-join="true" lazy="false">
-			<meta attribute="field-description"></meta>
-			<column name="ParentID" />
-		</many-to-one>
+        <!-- bi-directional many-to-one association to Location -->
+        <many-to-one name="parent"
+            class="edu.ku.brc.specify.datamodel.Location" not-null="true"
+            outer-join="true" lazy="false">
+            <meta attribute="field-description"></meta>
+            <column name="ParentID" />
+        </many-to-one>
 
-		<!-- bi-directional one-to-many association to Preparation -->
-		<set name="preparations" lazy="true" inverse="true"
-			cascade="all">
-			<meta attribute="scope-field">protected</meta>
-			<key>
-				<column name="LocationID" />
-			</key>
-			<one-to-many
-				class="edu.ku.brc.specify.datamodel.Preparation" />
-		</set>
+        <!-- bi-directional one-to-many association to Preparation -->
+        <set name="preparations" lazy="true" inverse="true"
+            cascade="all">
+            <meta attribute="scope-field">protected</meta>
+            <key>
+                <column name="LocationID" />
+            </key>
+            <one-to-many
+                class="edu.ku.brc.specify.datamodel.Preparation" />
+        </set>
 
-		<!-- bi-directional one-to-many association to Container -->
-		<set name="containers" lazy="true" inverse="true"
-			cascade="all">
-			<meta attribute="scope-field">protected</meta>
-			<key>
-				<column name="LocationID" />
-			</key>
-			<one-to-many class="edu.ku.brc.specify.datamodel.Container" />
-		</set>
+        <!-- bi-directional one-to-many association to Container -->
+        <set name="containers" lazy="true" inverse="true"
+            cascade="all">
+            <meta attribute="scope-field">protected</meta>
+            <key>
+                <column name="LocationID" />
+            </key>
+            <one-to-many class="edu.ku.brc.specify.datamodel.Container" />
+        </set>
 
-		<set name="children"
-			inverse="true"
-			cascade="none">
-			<key>
-				<column name="ParentId" />
-			</key>
-			<one-to-many class="edu.ku.brc.specify.datamodel.Location" />
-		</set>
+        <set name="children"
+            inverse="true"
+            cascade="none">
+            <key>
+                <column name="ParentId" />
+            </key>
+            <one-to-many class="edu.ku.brc.specify.datamodel.Location" />
+        </set>
 
-	</class>
+    </class>
 
 </hibernate-mapping>

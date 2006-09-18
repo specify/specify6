@@ -52,14 +52,14 @@ public interface Treeable<N,D,I> extends Rankable, Nameable
 	/**
 	 * @return the ID (primary key) of this node
 	 */
-	public Integer getTreeId();
+	public Long getTreeId();
 	
 	/**
 	 * Sets the ID of this node
 	 * 
 	 * @param id the new ID value
 	 */
-	public void setTreeId(Integer id);
+	public void setTreeId(Long id);
 	
 	/**
 	 * Returns the parent node object.  If called on the root node of

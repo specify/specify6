@@ -4,12 +4,17 @@
 <class name="edu.ku.brc.specify.datamodel.Borrow" table="borrow" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="borrowId" type="java.lang.Integer" column="BorrowID">
+    <id name="borrowId" type="java.lang.Long" column="BorrowID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 	
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
+    
     <property name="invoiceNumber" type="java.lang.String" column="InvoiceNumber" not-null="true" length="50" index="IX_BorrowInvoice">
         <meta attribute="field-description">Lender's loan number</meta>
     </property>
@@ -42,10 +47,6 @@
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="field-description">User definable</meta>
-    </property>
-    
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="field-description"></meta>    
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">

@@ -190,14 +190,6 @@ public class LabelsTask extends BaseTask
                 }
             }
 
-            //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")), null);
-            //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")), "lichens_label.jrxml");
-
-            /*
-            addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Accessions", name, IconManager.IconSize.Std16, new DisplayAction("accession_report.jrxml", "Accession")), "accession_report.jrxml");
-            addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Accessions In Process", name, IconManager.IconSize.Std16, new DisplayAction("accessions_inprocess.jrxml", "Accession")), "accessions_inprocess.jrxml");
-            addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Repository Agreements", name, IconManager.IconSize.Std16, new DisplayAction("accessions_reposagree.jrxml", "Accession")), "accessions_reposagree.jrxml");
-            */
             navBoxes.addElement(navBox);
         }
 

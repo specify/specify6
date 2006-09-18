@@ -14,7 +14,7 @@ public class Container  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer containerId;
+     protected Long containerId;
      protected Integer collectionObjectId;
      protected Short type;
      protected String name;
@@ -35,7 +35,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Container(Integer containerId) {
+    public Container(Long containerId) {
         this.containerId = containerId;
     }
 
@@ -51,7 +51,7 @@ public class Container  implements java.io.Serializable {
         name = null;
         description = null;
         number = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         items = new HashSet<ContainerItem>();
@@ -65,11 +65,11 @@ public class Container  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getContainerId() {
+    public Long getContainerId() {
         return this.containerId;
     }
 
-    public void setContainerId(Integer containerId) {
+    public void setContainerId(Long containerId) {
         this.containerId = containerId;
     }
 

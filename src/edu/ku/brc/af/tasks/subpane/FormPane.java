@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Session;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -41,19 +43,22 @@ public class FormPane extends DroppableTaskPane
 
     /**
      * Creates a form pane for a task.
+     * @param session the DB session to use
      * @param name the name of the pane
      * @param task the owning task
      * @param desc a description to display until a component is added to the pane
      */
-    public FormPane(final String   name,
+    public FormPane(final Session  session,
+                    final String   name,
                     final Taskable task,
                     final String   desc)
     {
-        super(name, task, desc);
+        super(session, name, task, desc);
     }
 
     /**
      * Creates a form pane for a task.
+     * @param session the DB session to use
      * @param name the name of the pane
      * @param task the owning task
      * @param viewSetName the name of the view set to use
@@ -61,7 +66,8 @@ public class FormPane extends DroppableTaskPane
      * @param data the data to fill the form
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
-    public FormPane(final String   name,
+    public FormPane(final Session session,
+                    final String   name,
                     final Taskable task,
                     final String   viewSetName,
                     final String   viewName,
@@ -69,7 +75,7 @@ public class FormPane extends DroppableTaskPane
                     final Object   data,
                     final boolean  isNewForm)
     {
-        this(name, task, null);
+        this(session, name, task, null);
 
         this.viewSetName = viewSetName;
         this.viewName    = viewName;
@@ -80,20 +86,22 @@ public class FormPane extends DroppableTaskPane
 
     /**
      * Creates a form pane for a task.
+     * @param session the DB session to use
      * @param name the name of the pane
      * @param task the owning task
      * @param view the view to use
      * @param data the data to fill the form
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
-    public FormPane(final String   name,
+    public FormPane(final Session session,
+                    final String   name,
                     final Taskable task,
                     final View     view,
                     final String   mode,
                     final Object   data,
                     final boolean  isNewForm)
     {
-        this(name, task, null);
+        this(session, name, task, null);
 
         this.viewSetName = view.getViewSetName();
         this.viewName    = view.getName();
@@ -127,6 +135,8 @@ public class FormPane extends DroppableTaskPane
     public void shutdown()
     {
         multiView.shutdown();
+        
+        super.shutdown(); // closes session
     }
 
     //-----------------------------------------------
@@ -192,8 +202,9 @@ public class FormPane extends DroppableTaskPane
             if (multiView != null)
             {
                 this.data = data;
-
                 this.removeAll();
+                
+                multiView.setSession(session);
 
                 multiView.invalidate();
                 add(multiView, BorderLayout.NORTH);

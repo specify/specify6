@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.hibernate.Query;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.plugins.MenuItemDesc;
@@ -27,6 +28,7 @@ import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.ui.CommandAction;
@@ -73,11 +75,14 @@ public class LocalityMapperTask extends BaseTask
     @SuppressWarnings("unchecked")
     public void createMappingInfoFromRecordSet(final RecordSet recordSet)
     {
-        Query query = DBTableIdMgr.getQueryForTable(recordSet);
+        
+        Session session = HibernateUtil.getNewSession();
+        
+        Query query = DBTableIdMgr.getQueryForTable(session, recordSet);
 
         List list = query.list();
 
-        LocalityMapperSubPane panel = new LocalityMapperSubPane(name, this, list);
+        LocalityMapperSubPane panel = new LocalityMapperSubPane(session, name, this, list);
         addSubPaneToMgr(panel);
 
     }

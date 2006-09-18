@@ -14,7 +14,7 @@ public class Agent  implements java.io.Serializable {
 
     // Fields
 
-    protected Integer                       agentId;
+    protected Long                       agentId;
     protected Byte                          agentType;
     protected String                        firstName;
     protected String                        lastName;
@@ -70,7 +70,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Agent(Integer agentId) {
+    public Agent(Long agentId) {
         this.agentId = agentId;
     }
 
@@ -87,7 +87,7 @@ public class Agent  implements java.io.Serializable {
         abbreviation = null;
         name = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         authors = new HashSet<Authors>();
@@ -114,7 +114,7 @@ public class Agent  implements java.io.Serializable {
         email = null;
         url = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         addresses = new HashSet<Address>();
@@ -137,11 +137,11 @@ public class Agent  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getAgentId() {
+    public Long getAgentId() {
         return this.agentId;
     }
 
-    public void setAgentId(Integer agentId) {
+    public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
 

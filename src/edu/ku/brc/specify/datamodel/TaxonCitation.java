@@ -12,7 +12,7 @@ public class TaxonCitation  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer taxonCitationId;
+     protected Long taxonCitationId;
      protected String remarks;
      protected String text1;
      protected String text2;
@@ -34,7 +34,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public TaxonCitation(Integer taxonCitationId) {
+    public TaxonCitation(Long taxonCitationId) {
         this.taxonCitationId = taxonCitationId;
     }
    
@@ -51,7 +51,7 @@ public class TaxonCitation  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -65,11 +65,11 @@ public class TaxonCitation  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getTaxonCitationId() {
+    public Long getTaxonCitationId() {
         return this.taxonCitationId;
     }
     
-    public void setTaxonCitationId(Integer taxonCitationId) {
+    public void setTaxonCitationId(Long taxonCitationId) {
         this.taxonCitationId = taxonCitationId;
     }
 

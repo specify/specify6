@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Determination" table="determination" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="determinationId" type="java.lang.Integer" column="DeterminationID">
+    <id name="determinationId" type="java.lang.Long" column="DeterminationID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="typeStatusName" type="java.lang.String" column="TypeStatusName" length="50">
         <meta attribute="scope-field">protected</meta>
@@ -65,11 +70,6 @@
         <meta attribute="field-description">Date/Time the record was created</meta>
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Date/Time the record was modified</meta>
-    </property>
-    
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
@@ -97,17 +97,17 @@
 
     <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" not-null="true" outer-join="true">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="TaxonID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" cascade="none">
-	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="CollectionObjectID"/>
-    </many-to-one>	
+    </many-to-one>    
 
     <!-- bi-directional one-to-many association to DeterminationCitation -->
     <set name="determinationCitations" lazy="true" inverse="true" cascade="delete">
@@ -117,7 +117,7 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
     </set>
-	
+    
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="determiner" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
         <meta attribute="field-description">id of the Person making the determination</meta>

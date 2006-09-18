@@ -17,7 +17,7 @@ public class ExternalResource  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer externalResourceId;
+     protected Long externalResourceId;
      protected String mimeType;
      protected String fileName;
      protected Calendar fileCreatedDate;
@@ -45,7 +45,7 @@ public class ExternalResource  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public ExternalResource(Integer externalResourceId) {
+    public ExternalResource(Long externalResourceId) {
         this.externalResourceId = externalResourceId;
     }
 
@@ -62,7 +62,7 @@ public class ExternalResource  implements java.io.Serializable {
         remarks = null;
         externalLocation = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         attrs = new HashSet<AttributeIFace>();
         createdByAgent = null;
@@ -82,11 +82,11 @@ public class ExternalResource  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getExternalResourceId() {
+    public Long getExternalResourceId() {
         return this.externalResourceId;
     }
 
-    public void setExternalResourceId(Integer externalResourceId) {
+    public void setExternalResourceId(Long externalResourceId) {
         this.externalResourceId = externalResourceId;
     }
 

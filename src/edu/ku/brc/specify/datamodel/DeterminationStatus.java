@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class DeterminationStatus implements Serializable
 {
-	protected Integer determinationStatusId;
+	protected Long determinationStatusId;
 	protected String name;
 	protected String remarks;
     protected Date timestampCreated;
@@ -29,7 +29,7 @@ public class DeterminationStatus implements Serializable
 		super();
 	}
 	
-	public DeterminationStatus(Integer determinationStatusId)
+	public DeterminationStatus(Long determinationStatusId)
 	{
 		super();
 		this.determinationStatusId = determinationStatusId;
@@ -41,7 +41,7 @@ public class DeterminationStatus implements Serializable
 		name = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
 		determinations = new HashSet<Determination>();
 	}
@@ -56,12 +56,12 @@ public class DeterminationStatus implements Serializable
 		this.determinations = determinations;
 	}
 
-	public Integer getDeterminationStatusId()
+	public Long getDeterminationStatusId()
 	{
 		return determinationStatusId;
 	}
 
-	public void setDeterminationStatusId(Integer determinationStatusId)
+	public void setDeterminationStatusId(Long determinationStatusId)
 	{
 		this.determinationStatusId = determinationStatusId;
 	}

@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
 
-	<class name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
-		table="taxontreedefitem" lazy="true">
-		<meta attribute="class-description" inherit="false" />
+    <class name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+        table="taxontreedefitem" lazy="true">
+        <meta attribute="class-description" inherit="false" />
 
-		<id name="taxonTreeDefItemId" type="java.lang.Integer"
-			column="TaxonTreeDefItemID" length="10">
-			<meta attribute="scope-field">protected</meta>
-			<generator class="native" />
+        <id name="taxonTreeDefItemId" type="java.lang.Long"
+            column="TaxonTreeDefItemID" length="10">
+            <meta attribute="scope-field">protected</meta>
+            <generator class="native" />
 		</id>
 
-		<property name="name" type="java.lang.String" column="Name"
-			length="64">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="name" type="java.lang.String" column="Name"
+            length="64">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="remarks" type="java.lang.String"
-			column="Remarks" length="255">
-			<meta attribute="scope-field">protected</meta>
-		</property>
-		
-		<property name="rankId" type="java.lang.Integer"
-			column="RankID">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="remarks" type="java.lang.String"
+            column="Remarks" length="255">
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        
+        <property name="rankId" type="java.lang.Integer"
+            column="RankID">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="isEnforced" type="java.lang.Boolean"
-			column="IsEnforced">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="isEnforced" type="java.lang.Boolean"
+            column="IsEnforced">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="isInFullName" type="java.lang.Boolean"
-			column="IsInFullName">
-			<meta attribute="scope-field">protected</meta>
-		</property>
-		
-		<!-- Associations -->
+        <property name="isInFullName" type="java.lang.Boolean"
+            column="IsInFullName">
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        
+        <!-- Associations -->
 
-		<many-to-one name="treeDef" column="TaxonTreeDefID"
-			class="edu.ku.brc.specify.datamodel.TaxonTreeDef">
-		</many-to-one>
+        <many-to-one name="treeDef" column="TaxonTreeDefID"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDef">
+        </many-to-one>
 
-		<set name="treeEntries" table="Taxon" inverse="true">
-			<key column="TaxonTreeDefItemID" />
-			<one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
-		</set>
+        <set name="treeEntries" table="Taxon" inverse="true">
+            <key column="TaxonTreeDefItemID" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
+        </set>
 
-		<many-to-one name="parent" column="ParentItemID"
-			class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
-			cascade="save-update">
-		</many-to-one>
+        <many-to-one name="parent" column="ParentItemID"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+            cascade="save-update">
+        </many-to-one>
 
-		<set name="children" table="TaxonTreeDefItem" inverse="true" lazy="false">
-			<key column="ParentItemID" />
-			<one-to-many class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
-		</set>
+        <set name="children" table="TaxonTreeDefItem" inverse="true" lazy="false">
+            <key column="ParentItemID" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
+        </set>
 
-	</class>
+    </class>
 
 </hibernate-mapping>

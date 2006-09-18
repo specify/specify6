@@ -9,7 +9,12 @@
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
-
+    
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
+    
     <property name="containingReferenceWorkId" type="java.lang.Integer" column="ContainingReferenceWorkID" length="10" index="IX_ReferenceWorkContainingReferenceWorkID">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Link to Reference containing (if Section)</meta>
@@ -89,15 +94,12 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
-
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" not-null="false" length="23" index="IX_ReferenceWork_1">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-    </property>
+    
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" not-null="true" length="50" index="IX_ReferenceWork_2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
+    
     <property name="published" type="short" column="Published">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>

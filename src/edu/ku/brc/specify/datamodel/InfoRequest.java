@@ -53,7 +53,7 @@ public class InfoRequest  implements java.io.Serializable {
         replyDate = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         recordSet = null;
         agent = null;
     }

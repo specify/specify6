@@ -55,6 +55,9 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.StaleObjectStateException;
+import org.hibernate.Transaction;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -65,7 +68,6 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ColorChooser;
@@ -111,6 +113,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected static CellConstraints        cc              = new CellConstraints();
 
     // Data Members
+    protected Session                       session        = null;
     protected boolean                       isEditting     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
@@ -759,7 +762,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 // Check to see if we are cancelling a new object or a previously saved object
                 // if the object is part of this Session then anychanges were already saved.
                 // If it is NOT part of this session then some of the object may not have been save.
-                if (!HibernateUtil.getCurrentSession().contains(dataObj))
+                if (!session.contains(dataObj))
                 {
                     if (businessRules != null)
                     {
@@ -909,17 +912,56 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     protected void saveObject()
     {
+        log.debug(hashCode() + "Session ["+(session != null ? session.hashCode() : "null")+"]");
+        Transaction transaction = null;
         try
         {
-            HibernateUtil.beginTransaction();
+            /*
+            if (dataObj instanceof Accession)
+            {
+                //session.clear();
+                
+                Accession accession = (Accession)dataObj;
+                String queryStr = "select timestampModified From Accession where accessionId = "+accession.getAccessionId();
+                Query  query = session.createQuery(queryStr);
+                List list = query.list();
+                Date timestampModified = (Date)list.iterator().next();
+                
+                session.evict(accession);
+                session.load(accession, LockMode.NONE);//, accession.getAccessionId()); 
+                
+                //session.merge(accession);
+                //dataObj = accession;
+//                Connection con = DBConnection.getConnection();
+//                Statement stmt = con.createStatement();
+//                ResultSet rs = stmt.executeQuery("select TimestampModified From accession where accessionId = "+accession.getAccessionId());
+//                rs.first();
+//                Date timestampModifiedJDBC = rs.getDate(1);
+//                log.info("["+rs.getString(1)+"]");
+//                stmt.close();
+//                con.close();
+                
+                log.info("["+timestampModified+"]["+accession.getTimestampModified()+"]["+accession.getTimestampModified().compareTo(timestampModified)+"]");
+                log.info("["+timestampModified.getTime()+"]["+accession.getTimestampModified().getTime()+"]["+accession.getTimestampModified().compareTo(timestampModified)+"]");
+            }*/
+
+            transaction = session.beginTransaction();
 
             this.getDataFromUI();
 
             traverseToGetDataFromForms(mvParent);
+            
+            
+             if (UIHelper.updateLastEdittedInfo(dataObj, "ZZZ"))
+            {
+                setDataIntoUI();
+            }
 
-            HibernateUtil.getCurrentSession().saveOrUpdate(dataObj);
-            HibernateUtil.commitTransaction();
-
+            session.saveOrUpdate(dataObj);
+            transaction.commit();
+            session.flush();
+            log.debug("Session Saved["+session.hashCode()+"]");
+            
             formIsInNewDataMode = false;
             traverseToToSetAsNew(mvParent, false);
 
@@ -929,11 +971,30 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             }
 
 
+        } catch (StaleObjectStateException e)
+        {
+            /*
+            session.close();
+            
+            session = HibernateUtil.getSessionFactory().openSession();
+            dataObj = session.load(dataObj.getClass(), ((Accession)dataObj).getAccessionId());
+            
+            if (mvParent != null)
+            {
+                mvParent.setSession(session);
+                mvParent.setData(dataObj);
+            } else
+            {
+                setSession(session);
+                this.setDataObj(dataObj);
+            }
+            this.setDataIntoUI();
+            */
         } catch (Exception e)
         {
             log.error("******* " + e);
             e.printStackTrace();
-            HibernateUtil.rollbackTransaction();
+            transaction.rollback();
         }
         saveBtn.setEnabled(false);
     }
@@ -943,13 +1004,16 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     protected void removeObject()
     {
+        Transaction transaction = null;
         try
         {
             removeFromParent(dataObj);
 
-            HibernateUtil.beginTransaction();
-            HibernateUtil.getCurrentSession().delete(dataObj);
-            HibernateUtil.commitTransaction();
+            transaction = session.beginTransaction();
+            session.delete(dataObj);
+            transaction.commit();
+            session.flush();
+            log.debug("Session Flushed["+session.hashCode()+"]");
 
             if (rsController != null)
             {
@@ -970,7 +1034,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             log.error("******* " + e);
             e.printStackTrace();
-            HibernateUtil.rollbackTransaction();
+            transaction.rollback();
         }
     }
 
@@ -1754,6 +1818,15 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
        {
            saveBtn.setEnabled(wasOK);
        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
+     */
+    public void setSession(final Session session)
+    {
+        log.info(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
+        this.session = session;
     }
 
     /* (non-Javadoc)

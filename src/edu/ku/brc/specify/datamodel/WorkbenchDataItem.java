@@ -12,7 +12,7 @@ public class WorkbenchDataItem  implements java.io.Serializable {
 
     // Fields    
 
-     private Integer workbenchDataItemID;
+     private Long workbenchDataItemId;
      private String cellData;
      private String rowNumber;
      private String columnNumber;
@@ -28,8 +28,8 @@ public class WorkbenchDataItem  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public WorkbenchDataItem(Integer workbenchDataItemID) {
-        this.workbenchDataItemID = workbenchDataItemID;
+    public WorkbenchDataItem(Long workbenchDataItemId) {
+        this.workbenchDataItemId = workbenchDataItemId;
     }
    
     
@@ -40,12 +40,12 @@ public class WorkbenchDataItem  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getWorkbenchDataItemID() {
-        return this.workbenchDataItemID;
+    public Long getWorkbenchDataItemId() {
+        return this.workbenchDataItemId;
     }
     
-    public void setWorkbenchDataItemID(Integer workbenchDataItemID) {
-        this.workbenchDataItemID = workbenchDataItemID;
+    public void setWorkbenchDataItemId(Long workbenchDataItemId) {
+        this.workbenchDataItemId = workbenchDataItemId;
     }
 
     /**

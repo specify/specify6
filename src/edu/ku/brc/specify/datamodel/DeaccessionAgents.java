@@ -12,7 +12,7 @@ public class DeaccessionAgents  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer deaccessionAgentsId;
+     protected Long deaccessionAgentsId;
      protected String role;
      protected String remarks;
      protected Date timestampModified;
@@ -29,7 +29,7 @@ public class DeaccessionAgents  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public DeaccessionAgents(Integer deaccessionAgentsId) {
+    public DeaccessionAgents(Long deaccessionAgentsId) {
         this.deaccessionAgentsId = deaccessionAgentsId;
     }
    
@@ -42,7 +42,7 @@ public class DeaccessionAgents  implements java.io.Serializable {
         deaccessionAgentsId = null;
         role = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         agent = null;
@@ -55,11 +55,11 @@ public class DeaccessionAgents  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getDeaccessionAgentsId() {
+    public Long getDeaccessionAgentsId() {
         return this.deaccessionAgentsId;
     }
     
-    public void setDeaccessionAgentsId(Integer deaccessionAgentsId) {
+    public void setDeaccessionAgentsId(Long deaccessionAgentsId) {
         this.deaccessionAgentsId = deaccessionAgentsId;
     }
 

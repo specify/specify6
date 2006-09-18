@@ -15,7 +15,7 @@ public class SpecifyUser  implements java.io.Serializable {
     
     // Fields
 
-     protected Integer specifyUserId;
+     protected Long specifyUserId;
      protected String name;
      protected String email;
      protected String userType;
@@ -32,7 +32,7 @@ public class SpecifyUser  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public SpecifyUser(Integer specifyUserId) {
+    public SpecifyUser(Long specifyUserId) {
         this.specifyUserId = specifyUserId;
     }
 
@@ -74,11 +74,11 @@ public class SpecifyUser  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getSpecifyUserId() {
+    public Long getSpecifyUserId() {
         return this.specifyUserId;
     }
 
-    public void setSpecifyUserId(Integer specifyUserId) {
+    public void setSpecifyUserId(Long specifyUserId) {
         this.specifyUserId = specifyUserId;
     }
 

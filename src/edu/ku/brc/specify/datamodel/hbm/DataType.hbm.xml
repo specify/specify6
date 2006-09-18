@@ -4,7 +4,7 @@
 <class name="edu.ku.brc.specify.datamodel.DataType" table="datatype" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="dataTypeId" type="java.lang.Integer" column="DataTypeID">
+    <id name="dataTypeId" type="java.lang.Long" column="DataTypeID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>

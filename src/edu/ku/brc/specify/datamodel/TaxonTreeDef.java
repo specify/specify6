@@ -6,7 +6,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class TaxonTreeDef implements java.io.Serializable, TreeDefIface<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-	protected Integer				taxonTreeDefId;
+	protected Long				    taxonTreeDefId;
 	protected String				name;
 	protected String				remarks;
 	protected CollectionObjDef		collObjDef;
@@ -22,7 +22,7 @@ public class TaxonTreeDef implements java.io.Serializable, TreeDefIface<Taxon, T
 	}
 
 	/** constructor with id */
-	public TaxonTreeDef(Integer taxonTreeDefId)
+	public TaxonTreeDef(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -45,12 +45,12 @@ public class TaxonTreeDef implements java.io.Serializable, TreeDefIface<Taxon, T
 	/**
 	 * 
 	 */
-	public Integer getTaxonTreeDefId()
+	public Long getTaxonTreeDefId()
 	{
 		return this.taxonTreeDefId;
 	}
 
-	public void setTaxonTreeDefId(Integer taxonTreeDefId)
+	public void setTaxonTreeDefId(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -124,12 +124,12 @@ public class TaxonTreeDef implements java.io.Serializable, TreeDefIface<Taxon, T
 	// Methods added to implement TreeDefinitionIface
 	//
 
-	public Integer getTreeDefId()
+	public Long getTreeDefId()
 	{
 		return getTaxonTreeDefId();
 	}
 
-	public void setTreeDefId(Integer id)
+	public void setTreeDefId(Long id)
 	{
 		setTaxonTreeDefId(id);
 	}

@@ -14,7 +14,7 @@ public class Locality  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer localityId;
+     protected Long localityId;
      protected String namedPlace;
      protected String relationToNamedPlace;
      protected String localityName;
@@ -74,7 +74,7 @@ public class Locality  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Locality(Integer localityId) {
+    public Locality(Long localityId) {
         this.localityId = localityId;
     }
    
@@ -117,7 +117,7 @@ public class Locality  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -143,11 +143,11 @@ public class Locality  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getLocalityId() {
+    public Long getLocalityId() {
         return this.localityId;
     }
     
-    public void setLocalityId(Integer localityId) {
+    public void setLocalityId(Long localityId) {
         this.localityId = localityId;
     }
 

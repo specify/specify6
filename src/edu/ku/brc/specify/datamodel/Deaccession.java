@@ -15,7 +15,7 @@ public class Deaccession  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer deaccessionId;
+     protected Long deaccessionId;
      protected String type;
      protected String deaccessionNumber;
      protected Calendar deaccessionDate;
@@ -40,7 +40,7 @@ public class Deaccession  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Deaccession(Integer deaccessionId) {
+    public Deaccession(Long deaccessionId) {
         this.deaccessionId = deaccessionId;
     }
    
@@ -59,7 +59,7 @@ public class Deaccession  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         yesNo1 = null;
@@ -74,11 +74,11 @@ public class Deaccession  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getDeaccessionId() {
+    public Long getDeaccessionId() {
         return this.deaccessionId;
     }
     
-    public void setDeaccessionId(Integer deaccessionId) {
+    public void setDeaccessionId(Long deaccessionId) {
         this.deaccessionId = deaccessionId;
     }
 

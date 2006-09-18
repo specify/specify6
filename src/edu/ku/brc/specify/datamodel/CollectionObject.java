@@ -17,7 +17,7 @@ public class CollectionObject  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer collectionObjectId;
+     protected Long collectionObjectId;
      protected String fieldNumber;
      protected String description;
      protected String text1;
@@ -64,7 +64,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public CollectionObject(Integer collectionObjectId) {
+    public CollectionObject(Long collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
 
@@ -93,7 +93,7 @@ public class CollectionObject  implements java.io.Serializable {
         altCatalogNumber = null;
         groupPermittedToView = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         deaccessioned = null;
         catalogNumber = null;
@@ -132,11 +132,11 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getCollectionObjectId() {
+    public Long getCollectionObjectId() {
         return this.collectionObjectId;
     }
 
-    public void setCollectionObjectId(Integer collectionObjectId) {
+    public void setCollectionObjectId(Long collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
 

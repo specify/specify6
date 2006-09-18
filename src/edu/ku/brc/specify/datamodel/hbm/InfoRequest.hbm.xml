@@ -4,9 +4,14 @@
 <class name="edu.ku.brc.specify.datamodel.InfoRequest" table="inforequest" lazy="false">
     <meta attribute="class-description" inherit="false"/>
 
-	<id name="infoRequestID" type="long" column="InfoRequestID" unsaved-value="null">
-		<generator class="native"/>
+    <id name="infoRequestID" type="long" column="InfoRequestID" unsaved-value="null">
+        <generator class="native"/>
 	</id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="firstName" type="java.lang.String" column="Firstname" length="50">
         <meta attribute="scope-field">protected</meta>
@@ -48,16 +53,11 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to RecordSet -->
     <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" not-null="true" outer-join="auto" lazy="false">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="RecordSetID"/>
     </many-to-one>

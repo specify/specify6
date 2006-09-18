@@ -13,7 +13,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer loanReturnPhysicalObjectId;
+     protected Long loanReturnPhysicalObjectId;
      protected Calendar returnedDate;
      protected Short quantity;
      protected String remarks;
@@ -32,7 +32,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public LoanReturnPhysicalObject(Integer loanReturnPhysicalObjectId) {
+    public LoanReturnPhysicalObject(Long loanReturnPhysicalObjectId) {
         this.loanReturnPhysicalObjectId = loanReturnPhysicalObjectId;
     }
    
@@ -47,7 +47,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
         quantity = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         loanPhysicalObject = null;
         deaccessionCollectionObject = null;
@@ -60,11 +60,11 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     /**
      *      * PrimaryKey
      */
-    public Integer getLoanReturnPhysicalObjectId() {
+    public Long getLoanReturnPhysicalObjectId() {
         return this.loanReturnPhysicalObjectId;
     }
     
-    public void setLoanReturnPhysicalObjectId(Integer loanReturnPhysicalObjectId) {
+    public void setLoanReturnPhysicalObjectId(Long loanReturnPhysicalObjectId) {
         this.loanReturnPhysicalObjectId = loanReturnPhysicalObjectId;
     }
 

@@ -22,7 +22,7 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
      */
     protected static final Logger log = Logger.getLogger(Taxon.class);
 
-	protected Integer				taxonId;
+	protected Long				taxonId;
 	protected String				taxonomicSerialNumber;
 	protected String				guid;
 	protected String				name;
@@ -68,7 +68,7 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 	}
 
 	/** constructor with id */
-	public Taxon(Integer taxonId)
+	public Taxon(Long taxonId)
 	{
 		this.taxonId = taxonId;
 	}
@@ -111,7 +111,7 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 		nodeNumber = null;
 		highestChildNodeNumber = null;
 		timestampCreated = new Date();
-		timestampModified = new Date();
+        timestampModified = null;
 		lastEditedBy = null;
 		accepted = null;
 		rankId = null;
@@ -134,12 +134,12 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 	/**
 	 * 
 	 */
-	public Integer getTaxonId()
+	public Long getTaxonId()
 	{
 		return this.taxonId;
 	}
 
-	public void setTaxonId(Integer taxonId)
+	public void setTaxonId(Long taxonId)
 	{
 		this.taxonId = taxonId;
 	}
@@ -602,13 +602,13 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 
 	/* Code added in order to implement Treeable */
 
-	public Integer getTreeId()
+	public Long getTreeId()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void setTreeId(Integer id)
+	public void setTreeId(Long id)
 	{
 		// TODO Auto-generated method stub
 

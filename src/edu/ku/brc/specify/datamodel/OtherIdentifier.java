@@ -12,7 +12,7 @@ public class OtherIdentifier  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer otherIdentifierId;
+     protected Long otherIdentifierId;
      protected String identifier;
      protected String remarks;
      protected Date timestampModified;
@@ -28,7 +28,7 @@ public class OtherIdentifier  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public OtherIdentifier(Integer otherIdentifierId) {
+    public OtherIdentifier(Long otherIdentifierId) {
         this.otherIdentifierId = otherIdentifierId;
     }
    
@@ -41,7 +41,7 @@ public class OtherIdentifier  implements java.io.Serializable {
         otherIdentifierId = null;
         identifier = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         collectionObject = null;
@@ -53,11 +53,11 @@ public class OtherIdentifier  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getOtherIdentifierId() {
+    public Long getOtherIdentifierId() {
         return this.otherIdentifierId;
     }
     
-    public void setOtherIdentifierId(Integer otherIdentifierId) {
+    public void setOtherIdentifierId(Long otherIdentifierId) {
         this.otherIdentifierId = otherIdentifierId;
     }
 

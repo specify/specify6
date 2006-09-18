@@ -5,7 +5,7 @@
     <class name="edu.ku.brc.specify.datamodel.AppResourceData" table="appresourcedata" lazy="true">
         <meta attribute="class-description" inherit="false"/>
         
-        <id name="appResourceDataId" type="java.lang.Integer" column="AppResourceDataID">            
+        <id name="appResourceDataId" type="java.lang.Long" column="AppResourceDataID">            
             <meta attribute="scope-field">protected</meta>
             <generator class="native"/>
             <!-- WORKS
@@ -14,7 +14,7 @@
             </generator>
             -->
         </id>
-        
+
         <!-- This is blob because not all databases support CLOB -->
         <property name="data" type="blob" column="data" length="1073741823" not-null="true">
             <meta attribute="scope-field">protected</meta>

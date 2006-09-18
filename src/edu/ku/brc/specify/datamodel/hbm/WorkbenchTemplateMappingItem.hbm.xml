@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" table="workbenchtemplatemappingitem" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="workbenchTemplateMappingItemID" type="java.lang.Integer" column="WorkbenchTemplateMappingItemID">
+    <id name="workbenchTemplateMappingItemId" type="java.lang.Long" column="WorkbenchTemplateMappingItemID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="tablename" type="java.lang.String" column="TableName" length="64">
         <meta attribute="scope-field">protected</meta>
@@ -37,10 +42,6 @@
         <meta attribute="field-description"></meta>    
     </property>        
               
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="field-description"></meta>    
-    </property>
-    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="field-description"></meta>    
     </property>     

@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Shipment" table="shipment" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="shipmentId" type="java.lang.Integer" column="ShipmentID">
+    <id name="shipmentId" type="java.lang.Long" column="ShipmentID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="shipmentDate" type="calendar_date" column="ShipmentDate">
         <meta attribute="scope-field">protected</meta>
@@ -70,11 +75,6 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-    
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
@@ -111,8 +111,8 @@
         <meta attribute="field-description">AgentID of person approving/initiating the shipment</meta>
         <column name="ShippedByID"/>
     </many-to-one>
-	
-	<!-- this was missing but existing in original mapping file - now replaced -->
+    
+    <!-- this was missing but existing in original mapping file - now replaced -->
     <!-- bi-directional one-to-many association to BorrowShipments -->
     <set name="borrowShipments" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
@@ -121,7 +121,7 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipments"/>
     </set>
-	
+    
     <!-- bi-directional one-to-many association to Loan -->
     <set name="loans" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>

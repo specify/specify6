@@ -14,7 +14,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer deaccessionCollectionObjectId;
+     protected Long deaccessionCollectionObjectId;
      protected Short quantity;
      protected String remarks;
      protected Date timestampModified;
@@ -32,7 +32,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public DeaccessionCollectionObject(Integer deaccessionCollectionObjectId) {
+    public DeaccessionCollectionObject(Long deaccessionCollectionObjectId) {
         this.deaccessionCollectionObjectId = deaccessionCollectionObjectId;
     }
    
@@ -45,7 +45,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
         deaccessionCollectionObjectId = null;
         quantity = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjectCatalog = null;
@@ -59,11 +59,11 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getDeaccessionCollectionObjectId() {
+    public Long getDeaccessionCollectionObjectId() {
         return this.deaccessionCollectionObjectId;
     }
     
-    public void setDeaccessionCollectionObjectId(Integer deaccessionCollectionObjectId) {
+    public void setDeaccessionCollectionObjectId(Long deaccessionCollectionObjectId) {
         this.deaccessionCollectionObjectId = deaccessionCollectionObjectId;
     }
 

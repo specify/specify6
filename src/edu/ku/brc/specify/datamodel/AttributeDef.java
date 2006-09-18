@@ -12,7 +12,7 @@ public class AttributeDef  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer attributeDefId;
+     protected Long attributeDefId;
      protected Short tableType;
      protected String fieldName;
      protected Short dataType;
@@ -31,7 +31,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public AttributeDef(Integer attributeDefId) {
+    public AttributeDef(Long attributeDefId) {
         this.attributeDefId = attributeDefId;
     }
 
@@ -59,11 +59,11 @@ public class AttributeDef  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getAttributeDefId() {
+    public Long getAttributeDefId() {
         return this.attributeDefId;
     }
 
-    public void setAttributeDefId(Integer attributeDefId) {
+    public void setAttributeDefId(Long attributeDefId) {
         this.attributeDefId = attributeDefId;
     }
 

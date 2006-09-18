@@ -15,7 +15,7 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
     
     // Fields
 
-     protected Integer catalogSeriesId;
+     protected Long catalogSeriesId;
      protected Boolean isTissueSeries;
      protected String seriesName;
      protected String catalogSeriesPrefix;
@@ -35,7 +35,7 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
     }
 
     /** constructor with id */
-    public CatalogSeries(Integer catalogSeriesId) {
+    public CatalogSeries(Long catalogSeriesId) {
         this.catalogSeriesId = catalogSeriesId;
     }
 
@@ -65,7 +65,7 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
         seriesName = null;
         catalogSeriesPrefix = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjDefItems = new HashSet<CollectionObjDef>();
@@ -79,11 +79,11 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
     /**
      *      * Primary key
      */
-    public Integer getCatalogSeriesId() {
+    public Long getCatalogSeriesId() {
         return this.catalogSeriesId;
     }
 
-    public void setCatalogSeriesId(Integer catalogSeriesId) {
+    public void setCatalogSeriesId(Long catalogSeriesId) {
         this.catalogSeriesId = catalogSeriesId;
     }
 

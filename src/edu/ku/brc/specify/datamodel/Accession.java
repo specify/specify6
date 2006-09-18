@@ -15,7 +15,7 @@ public class Accession  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer accessionId;
+     protected Long accessionId;
      protected String type;
      protected String status;
      protected String number;
@@ -45,7 +45,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Accession(Integer accessionId) {
+    public Accession(Long accessionId) {
         this.accessionId = accessionId;
     }
 
@@ -69,7 +69,7 @@ public class Accession  implements java.io.Serializable {
         number2 = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -84,11 +84,11 @@ public class Accession  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getAccessionId() {
+    public Long getAccessionId() {
         return this.accessionId;
     }
 
-    public void setAccessionId(Integer accessionId) {
+    public void setAccessionId(Long accessionId) {
         this.accessionId = accessionId;
     }
 

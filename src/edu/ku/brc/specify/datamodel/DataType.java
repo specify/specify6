@@ -13,7 +13,7 @@ public class DataType  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer dataTypeId;
+     protected Long dataTypeId;
      protected String name;
      protected Set<CollectionObjDef> collectionObjDef;
 
@@ -25,7 +25,7 @@ public class DataType  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public DataType(Integer dataTypeId) {
+    public DataType(Long dataTypeId) {
         this.dataTypeId = dataTypeId;
     }
 
@@ -46,11 +46,11 @@ public class DataType  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getDataTypeId() {
+    public Long getDataTypeId() {
         return this.dataTypeId;
     }
 
-    public void setDataTypeId(Integer dataTypeId) {
+    public void setDataTypeId(Long dataTypeId) {
         this.dataTypeId = dataTypeId;
     }
 

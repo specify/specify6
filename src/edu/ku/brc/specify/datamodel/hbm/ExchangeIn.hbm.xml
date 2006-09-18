@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.ExchangeIn" table="exchangein" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="exchangeInId" type="java.lang.Integer" column="ExchangeInID">
+    <id name="exchangeInId" type="java.lang.Long" column="ExchangeInID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="exchangeDate" type="calendar_date" column="ExchangeDate">
         <meta attribute="scope-field">protected</meta>
@@ -51,11 +56,6 @@
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-    
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>

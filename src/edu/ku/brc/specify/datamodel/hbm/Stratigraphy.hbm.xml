@@ -9,23 +9,32 @@
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
-
+    
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
+    
     <property name="superGroup" type="java.lang.String" column="SuperGroup" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Lithostratigraphic supergroup</meta>
     </property>
+    
     <property name="lithoGroup" type="java.lang.String" column="LithoGroup" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
+    
     <property name="formation" type="java.lang.String" column="Formation" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Lithostratigraphic formation</meta>
     </property>
+    
     <property name="member" type="java.lang.String" column="Member" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Lithostratigraphic member</meta>
     </property>
+    
     <property name="bed" type="java.lang.String" column="Bed" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Lithostratigraphic bed</meta>
@@ -50,18 +59,17 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
     </property>
+    
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
     </property>
+    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
+    
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    

@@ -12,7 +12,7 @@ public class Address  implements java.io.Serializable {
 
     // Fields
 
-    protected Integer           addressId;
+    protected Long           addressId;
     protected String            address;
     protected String            address2;
     protected String            city;
@@ -40,7 +40,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Address(Integer addressId) {
+    public Address(Long addressId) {
         this.addressId = addressId;
     }
 
@@ -55,7 +55,7 @@ public class Address  implements java.io.Serializable {
         country = null;
         postalCode = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         agent = null;
@@ -75,11 +75,11 @@ public class Address  implements java.io.Serializable {
     /**
      *      * PrimaryKey
      */
-    public Integer getAddressId() {
+    public Long getAddressId() {
         return this.addressId;
     }
 
-    public void setAddressId(Integer addressId) {
+    public void setAddressId(Long addressId) {
         this.addressId = addressId;
     }
 

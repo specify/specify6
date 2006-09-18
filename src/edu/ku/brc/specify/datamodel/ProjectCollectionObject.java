@@ -12,7 +12,7 @@ public class ProjectCollectionObject  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer projectCollectionObjectsId;
+     protected Long projectCollectionObjectId;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
@@ -28,8 +28,8 @@ public class ProjectCollectionObject  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public ProjectCollectionObject(Integer projectCollectionObjectsId) {
-        this.projectCollectionObjectsId = projectCollectionObjectsId;
+    public ProjectCollectionObject(Long projectCollectionObjectId) {
+        this.projectCollectionObjectId = projectCollectionObjectId;
     }
    
     
@@ -38,9 +38,9 @@ public class ProjectCollectionObject  implements java.io.Serializable {
     // Initializer
     public void initialize()
     {
-        projectCollectionObjectsId = null;
+        projectCollectionObjectId = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         collectionObject = null;
@@ -53,12 +53,12 @@ public class ProjectCollectionObject  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getProjectCollectionObjectsId() {
-        return this.projectCollectionObjectsId;
+    public Long getProjectCollectionObjectId() {
+        return this.projectCollectionObjectId;
     }
     
-    public void setProjectCollectionObjectsId(Integer projectCollectionObjectsId) {
-        this.projectCollectionObjectsId = projectCollectionObjectsId;
+    public void setProjectCollectionObjectId(Long projectCollectionObjectId) {
+        this.projectCollectionObjectId = projectCollectionObjectId;
     }
 
     /**

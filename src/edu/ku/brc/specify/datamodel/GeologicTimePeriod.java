@@ -20,7 +20,7 @@ public class GeologicTimePeriod implements java.io.Serializable, Treeable<Geolog
      */
     protected static final Logger log = Logger.getLogger(Geography.class);
 
-	protected Integer						geologicTimePeriodId;
+	protected Long						    geologicTimePeriodId;
 	protected Integer						rankId;
 	protected String						name;
 	protected String						fullName;
@@ -51,7 +51,7 @@ public class GeologicTimePeriod implements java.io.Serializable, Treeable<Geolog
 	}
 
 	/** constructor with id */
-	public GeologicTimePeriod(Integer geologicTimePeriodId)
+	public GeologicTimePeriod(Long geologicTimePeriodId)
 	{
 		this.geologicTimePeriodId = geologicTimePeriodId;
 	}
@@ -70,9 +70,9 @@ public class GeologicTimePeriod implements java.io.Serializable, Treeable<Geolog
 		startUncertainty = null;
 		end = null;
 		endUncertainty = null;
-		timestampModified = new Date();
+        //timestampModified = null;
 		timestampCreated = new Date();
-		timestampVersion = null;
+		timestampVersion = new Date();
 		lastEditedBy = null;
 		definition = null;
 		definitionItem = null;
@@ -88,12 +88,12 @@ public class GeologicTimePeriod implements java.io.Serializable, Treeable<Geolog
 	/**
 	 * 
 	 */
-	public Integer getGeologicTimePeriodId()
+	public Long getGeologicTimePeriodId()
 	{
 		return this.geologicTimePeriodId;
 	}
 
-	public void setGeologicTimePeriodId(Integer geologicTimePeriodId)
+	public void setGeologicTimePeriodId(Long geologicTimePeriodId)
 	{
 		this.geologicTimePeriodId = geologicTimePeriodId;
 	}
@@ -352,12 +352,12 @@ public class GeologicTimePeriod implements java.io.Serializable, Treeable<Geolog
 
 	/* Code added in order to implement Treeable */
 
-	public Integer getTreeId()
+	public Long getTreeId()
 	{
 		return getGeologicTimePeriodId();
 	}
 
-	public void setTreeId(Integer id)
+	public void setTreeId(Long id)
 	{
 		setGeologicTimePeriodId(id);
 	}

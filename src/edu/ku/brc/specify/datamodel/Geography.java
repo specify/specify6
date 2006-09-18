@@ -20,7 +20,7 @@ public class Geography implements java.io.Serializable, Treeable<Geography,Geogr
      */
     protected static final Logger log = Logger.getLogger(Geography.class);
 
-	protected Integer				geographyId;
+	protected Long			    	geographyId;
 	protected String				name;
 	protected String				remarks;
 	protected String				commonName;
@@ -54,7 +54,7 @@ public class Geography implements java.io.Serializable, Treeable<Geography,Geogr
 	}
 
 	/** constructor with id */
-	public Geography(Integer geographyId)
+	public Geography(Long geographyId)
 	{
 		this.geographyId = geographyId;
 	}
@@ -76,7 +76,7 @@ public class Geography implements java.io.Serializable, Treeable<Geography,Geogr
 		number1 = null;
 		number2 = null;
 		timestampCreated = new Date();
-		timestampModified = new Date();
+        timestampModified = null;
 		timestampVersion = null;
 		lastEditedBy = null;
 		isCurrent = null;
@@ -94,12 +94,12 @@ public class Geography implements java.io.Serializable, Treeable<Geography,Geogr
 	/**
 	 *
 	 */
-	public Integer getGeographyId()
+	public Long getGeographyId()
 	{
 		return this.geographyId;
 	}
 
-	public void setGeographyId(Integer geographyId)
+	public void setGeographyId(Long geographyId)
 	{
 		this.geographyId = geographyId;
 	}
@@ -409,12 +409,12 @@ public class Geography implements java.io.Serializable, Treeable<Geography,Geogr
 
 	/* Code added in order to implement Treeable */
 
-	public Integer getTreeId()
+	public Long getTreeId()
 	{
 		return getGeographyId();
 	}
 
-	public void setTreeId(Integer id)
+	public void setTreeId(Long id)
 	{
 		setGeographyId(id);
 	}

@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.DeterminationCitation" table="determinationcitation" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="determinationCitationId" type="java.lang.Integer" column="DeterminationCitationID">
+    <id name="determinationCitationId" type="java.lang.Long" column="DeterminationCitationID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+    
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
     
     <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
@@ -16,11 +21,6 @@
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-    
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>

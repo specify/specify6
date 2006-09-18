@@ -15,7 +15,7 @@ public class Shipment  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer shipmentId;
+     protected Long shipmentId;
      protected Calendar shipmentDate;
      protected String shipmentNumber;
      protected String shipmentMethod;
@@ -47,7 +47,7 @@ public class Shipment  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Shipment(Integer shipmentId) {
+    public Shipment(Long shipmentId) {
         this.shipmentId = shipmentId;
     }
    
@@ -70,7 +70,7 @@ public class Shipment  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -88,11 +88,11 @@ public class Shipment  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getShipmentId() {
+    public Long getShipmentId() {
         return this.shipmentId;
     }
     
-    public void setShipmentId(Integer shipmentId) {
+    public void setShipmentId(Long shipmentId) {
         this.shipmentId = shipmentId;
     }
 

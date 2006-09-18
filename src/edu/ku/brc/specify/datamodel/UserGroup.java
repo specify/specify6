@@ -13,7 +13,7 @@ public class UserGroup  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer userGroupId;
+     protected Long userGroupId;
      protected String name;
      protected String remarks;
      protected Set<SpecifyUser> specifyUsers;
@@ -26,7 +26,7 @@ public class UserGroup  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public UserGroup(Integer userGroupId) {
+    public UserGroup(Long userGroupId) {
         this.userGroupId = userGroupId;
     }
 
@@ -48,11 +48,11 @@ public class UserGroup  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getUserGroupId() {
+    public Long getUserGroupId() {
         return this.userGroupId;
     }
 
-    public void setUserGroupId(Integer userGroupId) {
+    public void setUserGroupId(Long userGroupId) {
         this.userGroupId = userGroupId;
     }
 

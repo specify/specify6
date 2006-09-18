@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Container" table="container" lazy="true">
     <meta attribute="class-description" inherit="false"/>
     
-    <id name="containerId" type="java.lang.Integer" column="ContainerID">
+    <id name="containerId" type="java.lang.Long" column="ContainerID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="collectionObjectId" type="int" column="CollectionObjectID" not-null="false">
         <meta attribute="scope-field">protected</meta>
@@ -35,10 +40,6 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="field-description"></meta>    
-    </property>
-    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="field-description"></meta>    
     </property>
@@ -51,18 +52,18 @@
 
     <!-- bi-directional one-to-many association to ContainerItems -->
     <set name="items" lazy="true" inverse="true" cascade="none">    
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta> 
         <key>
             <column name="ContainerID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.ContainerItem"/>
     </set>
-	
+    
     <!-- bi-directional many-to-one association to CollectionObject -->
     <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
     <many-to-one name="container" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="false" unique="true" insert="false" update="false" cascade="all">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="CollectionObjectID"/>
     </many-to-one>

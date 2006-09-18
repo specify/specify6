@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" table="deaccessioncollectionobject" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="deaccessionCollectionObjectId" type="java.lang.Integer" column="DeaccessionCollectionObjectID">
+    <id name="deaccessionCollectionObjectId" type="java.lang.Long" column="DeaccessionCollectionObjectID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="quantity" type="short" column="Quantity">
         <meta attribute="scope-field">protected</meta>
@@ -16,11 +21,6 @@
     </property>
     
     <property name="remarks" type="text" column="Remarks">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-    
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>

@@ -4,7 +4,7 @@
 <class name="edu.ku.brc.specify.datamodel.SpecifyUser" table="specifyuser" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="specifyUserId" type="java.lang.Integer" column="SpecifyUserID">
+    <id name="specifyUserId" type="java.lang.Long" column="SpecifyUserID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>

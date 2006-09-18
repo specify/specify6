@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.WorkbenchTemplate" table="workbenchtemplate" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="workbenchTemplateID" type="java.lang.Integer" column="WorkbenchTemplateID">
+    <id name="workbenchTemplateId" type="java.lang.Long" column="WorkbenchTemplateID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
+    
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
     
     <property name="name" type="java.lang.String" column="Name" length="64">
         <meta attribute="scope-field">protected</meta>
@@ -21,17 +26,13 @@
     </property>
 
             
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="field-description"></meta>    
-    </property>
-    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="field-description"></meta>    
     </property>
         
     <!-- bi-directional one-to-many association to Workbench -->
     <set name="workbenches" lazy="true" inverse="true" cascade="none">
-	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="WorkbenchTemplateID"/>
@@ -41,7 +42,7 @@
     
     <!-- bi-directional one-to-many association to WorkbenchTemplateMappingItem -->
     <set name="workbenchtemplatemappingitems" lazy="true" inverse="true" cascade="all-delete-orphan">
-	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="WorkbenchTemplateID"/>

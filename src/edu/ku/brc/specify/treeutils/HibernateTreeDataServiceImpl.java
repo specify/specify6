@@ -258,7 +258,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	}
 	
 	@SuppressWarnings("unchecked")
-	public D getTreeDef(Class<D> defClass, int defId)
+	public D getTreeDef(Class<D> defClass, long defId)
 	{
 		String className = defClass.getSimpleName();
 		String idFieldName = className.toLowerCase().substring(0,1) + className.substring(1) + "Id";

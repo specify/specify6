@@ -23,6 +23,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Session;
+
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -49,7 +51,6 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
 
     /**
      * Constructor.
-     * 
      * @param name the name of the subpane
      * @param task the owning task
      * @param desc a description to be displayed in the middle of the pane
@@ -58,12 +59,22 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
                              final Taskable task,
                              final String desc)
     {
-        super(name, task);
-        this.desc = desc;
-        dropFlavors.add(DROPPABLE_PANE_FLAVOR);
-        
-        removeAll();
-        
+        this(null, name, task, desc);
+    }
+    
+    /**
+     * Constructor.
+     * @param session the DB session to use
+     * @param name the name of the subpane
+     * @param task the owning task
+     * @param desc a description to be displayed in the middle of the pane
+     */
+    public DroppableTaskPane(final Session session,
+                             final String name, 
+                             final Taskable task,
+                             final String desc)
+    {
+        super(session, name, task);
     }
     
     /* (non-Javadoc)

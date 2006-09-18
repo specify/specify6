@@ -37,14 +37,14 @@ public interface IdMapperIFace
      * @param fromID the integer key
      * @param toID the value (most likely a database ID)
      */
-    public void put(int fromID, int toID);
+    public void put(long fromID, long toID);
 
     /**
      * Returns an integer (mostly a table ID).
      * @param key the key (or ID) to use to get the value
      * @return the value of the mapping
      */
-    public Integer get(Integer key);
+    public Long get(Long key);
 
     /**
      * Returns the name of the table.

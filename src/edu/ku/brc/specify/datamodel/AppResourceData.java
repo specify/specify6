@@ -11,7 +11,7 @@ public class AppResourceData  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer appResourceDataId;
+     protected Long appResourceDataId;
      protected java.sql.Blob data;
      private AppResource AppResource;
      private ViewSetObj ViewSetObj;
@@ -24,7 +24,7 @@ public class AppResourceData  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public AppResourceData(Integer appResourceDataId) {
+    public AppResourceData(Long appResourceDataId) {
         this.appResourceDataId = appResourceDataId;
     }
    
@@ -41,11 +41,11 @@ public class AppResourceData  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getAppResourceDataId() {
+    public Long getAppResourceDataId() {
         return this.appResourceDataId;
     }
     
-    public void setAppResourceDataId(Integer appResourceDataId) {
+    public void setAppResourceDataId(Long appResourceDataId) {
         this.appResourceDataId = appResourceDataId;
     }
 

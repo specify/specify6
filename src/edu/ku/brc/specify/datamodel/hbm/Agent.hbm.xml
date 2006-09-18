@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Agent" table="agent" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="agentId" type="java.lang.Integer" column="AgentID">
+    <id name="agentId" type="java.lang.Long" column="AgentID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="agentType" type="byte" column="AgentType" not-null="true" length="3">
         <meta attribute="scope-field">protected</meta>
@@ -66,11 +71,6 @@
     </property>
 
     <property name="remarks" type="text" column="Remarks">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-    </property>
-
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" not-null="false" length="23" index="IX_Agent_1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>

@@ -424,7 +424,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                 Session session = sessionFactory.openSession();
                
                 Criteria criteria = session.createCriteria(classObj);
-                criteria.add(Expression.eq(idFieldName, id.intValue())); // FIX ME BUG XXXXX
+                criteria.add(Expression.eq(idFieldName, id));
                 java.util.List list = criteria.list();
                 session.close();
                 

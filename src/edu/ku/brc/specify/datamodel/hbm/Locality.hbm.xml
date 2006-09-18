@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Locality" table="locality" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="localityId" type="java.lang.Integer" column="LocalityID">
+    <id name="localityId" type="java.lang.Long" column="LocalityID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="namedPlace" type="java.lang.String" column="NamedPlace" length="255" index="IX_LocalityNamedPlace">
         <meta attribute="scope-field">protected</meta>
@@ -170,11 +175,6 @@
         <meta attribute="field-description">Date the record was created</meta>
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_Locality_1">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Date the record was modified</meta>
-    </property>
-    
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_Locality_2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Name of the person last editing the record</meta>
@@ -249,14 +249,14 @@
   
     <!-- bi-directional many-to-one association to Geography -->
     <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" not-null="true" outer-join="true" index="IX_LocalityGeographyID">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Link to Country, State, County, WaterBody, Island, IslandGroup ... info</meta>
         <column name="GeographyID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LocalityCitation -->
     <set name="localityCitations" lazy="true" inverse="true" cascade="delete">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="LocalityID"/>
@@ -266,7 +266,7 @@
 
     <!-- bi-directional one-to-many association to CollectingEvent -->
     <set name="collectingEvents" lazy="true" inverse="true" cascade="none">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="LocalityID"/>

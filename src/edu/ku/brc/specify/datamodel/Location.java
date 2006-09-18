@@ -22,7 +22,7 @@ public class Location implements java.io.Serializable, Treeable<Location,Locatio
 
 	// Fields    
 
-	protected Integer			locationId;
+	protected Long			    locationId;
 	protected String			name;
 	protected String			fullName;
 	protected String			remarks;
@@ -54,7 +54,7 @@ public class Location implements java.io.Serializable, Treeable<Location,Locatio
 	}
 
 	/** constructor with id */
-	public Location(Integer locationId)
+	public Location(Long locationId)
 	{
 		this.locationId = locationId;
 	}
@@ -74,7 +74,7 @@ public class Location implements java.io.Serializable, Treeable<Location,Locatio
 		number1 = null;
 		number2 = null;
 		timestampCreated = new Date();
-		timestampModified = new Date();
+        timestampModified = null;
 		timestampVersion = null;
 		lastEditedBy = null;
 		definition = null;
@@ -92,12 +92,12 @@ public class Location implements java.io.Serializable, Treeable<Location,Locatio
 	/**
 	 * 
 	 */
-	public Integer getLocationId()
+	public Long getLocationId()
 	{
 		return this.locationId;
 	}
 
-	public void setLocationId(Integer locationId)
+	public void setLocationId(Long locationId)
 	{
 		this.locationId = locationId;
 	}
@@ -381,12 +381,12 @@ public class Location implements java.io.Serializable, Treeable<Location,Locatio
 
 	/* Code added in order to implement Treeable */
 
-	public Integer getTreeId()
+	public Long getTreeId()
 	{
 		return getLocationId();
 	}
 
-	public void setTreeId(Integer id)
+	public void setTreeId(Long id)
 	{
 		setLocationId(id);
 	}

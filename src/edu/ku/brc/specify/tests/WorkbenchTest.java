@@ -65,7 +65,7 @@ public class WorkbenchTest extends TestCase {
 			WorkbenchTestHelper.startHibernateTransaction();
 			log.info("creating the WorkbenchTemplate"); 
 			WorkbenchTemplate testtemplate = ObjCreatorHelper.createWorkbenchTemplate("Simple Template for Junit", "This is a template for testing the application thru JUNIT");
-			templateId = testtemplate.getWorkbenchTemplateID().intValue();
+			templateId = testtemplate.getWorkbenchTemplateId().intValue();
 			assertNotNull(testtemplate);
 			log.info("created WorkbenchTemplate with ID:" + templateId); 
 			WorkbenchTestHelper.shutdownHibernateTransaction();
@@ -90,7 +90,7 @@ public class WorkbenchTest extends TestCase {
 			WorkbenchTestHelper.startHibernateTransaction();
 			log.info("creating the WorkbenchTemplate"); 
 			WorkbenchTemplate template = ObjCreatorHelper.createWorkbenchTemplate("Deleted Template for Junit", "This template should be deleted during JUNIT test");
-			templateId = template.getWorkbenchTemplateID().intValue();
+			templateId = template.getWorkbenchTemplateId().intValue();
 			assertNotNull(template);
 			log.info("created WorkbenchTemplate with ID:" + templateId); 
 			WorkbenchTestHelper.shutdownHibernateTransaction();
@@ -125,7 +125,7 @@ public class WorkbenchTest extends TestCase {
 			assertNotNull(template);
 			WorkbenchTemplateMappingItem item = ObjCreatorHelper.createMappingItem(	"SimpleJunitTable", 1,	"SimpleJunitField", 
 					"SimpleJunitCaption","SimpleJunitDataType",	0,template);
-			mappingItemId = item.getWorkbenchTemplateMappingItemID().intValue();
+			mappingItemId = item.getWorkbenchTemplateMappingItemId().intValue();
 			assertNotNull(item);
 			log.info("created WorkbenchTemplateMappingItem with ID:" + mappingItemId); 
 			WorkbenchTestHelper.shutdownHibernateTransaction();
@@ -148,12 +148,12 @@ public class WorkbenchTest extends TestCase {
 		try {
 			WorkbenchTestHelper.startHibernateTransaction(); 
 			WorkbenchTemplate template = (WorkbenchTemplate)CreateTestDatabases.getDBObject(WorkbenchTemplate.class);
-			templateId = template.getWorkbenchTemplateID().intValue();
+			templateId = template.getWorkbenchTemplateId().intValue();
 			//template should already exist from first JUNit test
 			assertNotNull(template);
 			WorkbenchTemplateMappingItem item = ObjCreatorHelper.createMappingItem("DELETEME",1,"DELETEME",
 					"DELETEME","DELETEME",	0,	template);
-			mappingItemId = item.getWorkbenchTemplateMappingItemID().intValue();
+			mappingItemId = item.getWorkbenchTemplateMappingItemId().intValue();
 			assertNotNull(item);
 			log.info("created WorkbenchTemplateMappingItem with ID:" + mappingItemId); 
 			WorkbenchTestHelper.shutdownHibernateTransaction();
@@ -190,12 +190,12 @@ public class WorkbenchTest extends TestCase {
 			
 			WorkbenchTemplate template = ObjCreatorHelper.createWorkbenchTemplate("Deleted Template for Junit",
 					"This template should be deleted during JUNIT test");
-			templateId = template.getWorkbenchTemplateID().intValue();
+			templateId = template.getWorkbenchTemplateId().intValue();
 			assertNotNull(template);
 			
 			WorkbenchTemplateMappingItem item = ObjCreatorHelper.createMappingItem("DELETEME", 1,"DELETEME",
 					"DELETEME", "DELETEME", 0, template);
-			mappingItemId = item.getWorkbenchTemplateMappingItemID().intValue();
+			mappingItemId = item.getWorkbenchTemplateMappingItemId().intValue();
 			assertNotNull(item);
 			log.info("created WorkbenchTemplateMappingItem with ID:"+ mappingItemId);
 			
@@ -257,13 +257,13 @@ public class WorkbenchTest extends TestCase {
 			log.info("creating the WorkbenchTemplate");
 			WorkbenchTemplate template = ObjCreatorHelper.createWorkbenchTemplate("Template for Junit",
 					"This template used JUNIT test");
-			templateId = template.getWorkbenchTemplateID().intValue();
+			templateId = template.getWorkbenchTemplateId().intValue();
 			assertNotNull(template);
 			
 			log.info("creating the Workbench");
 			Workbench workbench = ObjCreatorHelper.createWorkbench("DELETEME",
 					"DELETEME", "DELETEME", 0, template);
-			workbenchId = workbench.getWorkbenchID().intValue();
+			workbenchId = workbench.getWorkbenchId().intValue();
 			log.info("created Workbench with ID:" + workbenchId);
 			
 			WorkbenchTestHelper.shutdownHibernateTransaction();			
@@ -339,7 +339,7 @@ public class WorkbenchTest extends TestCase {
 					"DELETEME for Junit",
 			"DELETEMEThis is a templateABC for testing the application thru JUNIT");
 			assertNotNull(template);
-			templateId = template.getWorkbenchTemplateID().intValue();
+			templateId = template.getWorkbenchTemplateId().intValue();
 			
 			String[][] mappingvalues = { 
 					{"DELETEMEJunittableA", "0", "DELETEMEJunitfieldA", "DELETEMEJunitcaptionsA", "0", "DELETEMEString"}, 
@@ -351,7 +351,7 @@ public class WorkbenchTest extends TestCase {
 					"DELETEMEWorkbenchABC for Junit", "DELETEMETest workbenchABC for Junit",
 					"DELETEMEInstituionABC", 0, template);
 			assertNotNull(workbench);
-			workbenchId = workbench.getWorkbenchID().intValue();			
+			workbenchId = workbench.getWorkbenchId().intValue();			
 			
 			String[][] workbenchdata = {
 					{"DELETEME", "DELETEME", "DELETEME", "DELETEME",  "DELETEME", "DELETEME", "DELETEME", "DELETEME"},

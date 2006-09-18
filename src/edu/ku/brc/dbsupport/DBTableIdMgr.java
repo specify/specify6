@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.hibernate.Query;
+import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
@@ -163,35 +164,43 @@ public class DBTableIdMgr
 		throw new RuntimeException("Couldn't find table id for table name[" + name + "]");
 	}
 
-	/**
-	 * This looks it up by fully specified class name the look up is case
-	 * sensitive
-	 * 
-	 * @param className
-	 *            the full class name
-	 * @return the id of the table
-	 */
-	public static int lookupIdByClassName(final String className)
-	{
-		for (TableInfo tableInfo : instance.hash.values())
-		{
-			if (tableInfo.getClassName().equalsIgnoreCase(className))
-			{
-				return tableInfo.getTableId();
-			}
-		}
-		throw new RuntimeException("Couldn't find table id for table name[" + className + "]");
-	}
+    /**
+     * This looks it up by fully specified class name the look up is case
+     * sensitive
+     * 
+     * @param className
+     *            the full class name
+     * @return the id of the table
+     */
+    public static int lookupIdByClassName(final String className)
+    {
+        for (TableInfo tableInfo : instance.hash.values())
+        {
+            if (tableInfo.getClassName().equalsIgnoreCase(className))
+            {
+                return tableInfo.getTableId();
+            }
+        }
+        throw new RuntimeException("Couldn't find table id for table name[" + className + "]");
+    }
+
+    /**
+     * Returns the Info Object By Id.
+     * @param tableId the id to look up
+     * @return the table info object
+     */
+    public static TableInfo lookupInfoById(final int tableId)
+    {
+        return instance.hash.get(tableId);
+    }
 
 	/**
-	 * Creates a Query object for a table from a recordset, it uses an "in"
-	 * clause
-	 * 
-	 * @param recordSet
-	 *            the recordset containing the record ids
+	 * Creates a Query object for a table from a recordset, it uses an "in" clause.
+     * @param session the DB session to use
+     * @param recordSet the recordset containing the record ids
 	 * @return a query object
 	 */
-	public static Query getQueryForTable(final RecordSet recordSet)
+	public static Query getQueryForTable(final Session session, final RecordSet recordSet)
 	{
 		Query query = null;
 		TableInfo tableInfo = instance.hash.get(recordSet.getTableId());
@@ -207,23 +216,22 @@ public class DBTableIdMgr
 			strBuf.append(tableInfo.getPrimaryKeyName());
 			strBuf.append(getInClause(recordSet));
 			log.debug(strBuf.toString());
-			// query = HibernateUtil.getCurrentSession().createQuery("from
+			// query = session.createQuery("from
 			// catalogobj in class CollectionObj where
 			// catalogobj.collectionObjectId in
 			// ('30972.0','30080.0','27794.0','30582.0')");
-			query = HibernateUtil.getCurrentSession().createQuery(strBuf.toString());
+			query = session.createQuery(strBuf.toString());
 		}
 		return query;
 	}
 
 	/**
-	 * Creates a Query object for a table from a single Record ID
-	 * 
-	 * @param recordId
-	 *            a single Record Id
+	 * Creates a Query object for a table from a single Record ID.
+     * @param session the DB session to use
+	 * @param recordId a single Record Id
 	 * @return a query object
 	 */
-	public static Query getQueryForTable(final int tableId, final int recordId)
+	public static Query getQueryForTable(final Session session, final int tableId, final int recordId)
 	{
 		Query query = null;
 		TableInfo tableInfo = instance.hash.get(tableId);
@@ -239,11 +247,11 @@ public class DBTableIdMgr
 			strBuf.append(tableInfo.getPrimaryKeyName());
 			strBuf.append(" = " + recordId);
 			log.debug(strBuf.toString());
-			// query = HibernateUtil.getCurrentSession().createQuery("from
+			// query = session.createQuery("from
 			// catalogobj in class CollectionObj where
 			// catalogobj.collectionObjectId in
 			// ('30972.0','30080.0','27794.0','30582.0')");
-			query = HibernateUtil.getSessionFactory().openSession().createQuery(strBuf.toString());
+			query = session.createQuery(strBuf.toString());
 		}
 		return query;
 	}
@@ -287,7 +295,7 @@ public class DBTableIdMgr
 	// ------------------------------------------------------
 	// Inner Classes
 	// ------------------------------------------------------
-	class TableInfo
+	public class TableInfo
 	{
 		protected int tableId;
 

@@ -9,8 +9,8 @@ public interface TreeDefIface<N,D,I>
 {
 	public void initialize();
 	
-	public Integer getTreeDefId();
-	public void setTreeDefId(Integer id);
+	public Long getTreeDefId();
+	public void setTreeDefId(Long id);
 	
 	public String getRemarks();
 	public void setRemarks(String remarks);

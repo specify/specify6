@@ -15,7 +15,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer repositoryAgreementId;
+     protected Long repositoryAgreementId;
      protected String number;
      protected String status;
      protected Calendar startDate;
@@ -45,7 +45,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public RepositoryAgreement(Integer repositoryAgreementId) {
+    public RepositoryAgreement(Long repositoryAgreementId) {
         this.repositoryAgreementId = repositoryAgreementId;
     }
 
@@ -68,7 +68,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
         number2 = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -84,11 +84,11 @@ public class RepositoryAgreement  implements java.io.Serializable {
     /**
      *
      */
-    public Integer getRepositoryAgreementId() {
+    public Long getRepositoryAgreementId() {
         return this.repositoryAgreementId;
     }
 
-    public void setRepositoryAgreementId(Integer repositoryAgreementId) {
+    public void setRepositoryAgreementId(Long repositoryAgreementId) {
         this.repositoryAgreementId = repositoryAgreementId;
     }
 

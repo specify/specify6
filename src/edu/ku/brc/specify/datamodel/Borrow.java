@@ -15,7 +15,7 @@ public class Borrow  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer borrowId;
+     protected Long borrowId;
      protected String invoiceNumber;
      protected Calendar receivedDate;
      protected Calendar originalDueDate;
@@ -44,7 +44,7 @@ public class Borrow  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Borrow(Integer borrowId) {
+    public Borrow(Long borrowId) {
         this.borrowId = borrowId;
     }
    
@@ -64,7 +64,7 @@ public class Borrow  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         closed = null;
@@ -82,11 +82,11 @@ public class Borrow  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getBorrowId() {
+    public Long getBorrowId() {
         return this.borrowId;
     }
     
-    public void setBorrowId(Integer borrowId) {
+    public void setBorrowId(Long borrowId) {
         this.borrowId = borrowId;
     }
 

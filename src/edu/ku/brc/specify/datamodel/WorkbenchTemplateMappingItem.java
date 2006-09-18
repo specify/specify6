@@ -12,7 +12,7 @@ public class WorkbenchTemplateMappingItem  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer workbenchTemplateMappingItemID;
+     protected Long workbenchTemplateMappingItemId;
      protected String tablename;
      protected Integer tableid;
      protected String fieldname;
@@ -31,8 +31,8 @@ public class WorkbenchTemplateMappingItem  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public WorkbenchTemplateMappingItem(Integer workbenchTemplateMappingItemID) {
-        this.workbenchTemplateMappingItemID = workbenchTemplateMappingItemID;
+    public WorkbenchTemplateMappingItem(Long workbenchTemplateMappingItemId) {
+        this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
    
     
@@ -43,12 +43,12 @@ public class WorkbenchTemplateMappingItem  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getWorkbenchTemplateMappingItemID() {
-        return this.workbenchTemplateMappingItemID;
+    public Long getWorkbenchTemplateMappingItemId() {
+        return this.workbenchTemplateMappingItemId;
     }
     
-    public void setWorkbenchTemplateMappingItemID(Integer workbenchTemplateMappingItemID) {
-        this.workbenchTemplateMappingItemID = workbenchTemplateMappingItemID;
+    public void setWorkbenchTemplateMappingItemId(Long workbenchTemplateMappingItemId) {
+        this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
 
     /**

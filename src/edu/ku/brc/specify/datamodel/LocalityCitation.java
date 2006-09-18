@@ -12,7 +12,7 @@ public class LocalityCitation  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer localityCitationId;
+     protected Long localityCitationId;
      protected String remarks;
      protected Date timestampCreated;
      protected Date timestampModified;
@@ -28,7 +28,7 @@ public class LocalityCitation  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public LocalityCitation(Integer localityCitationId) {
+    public LocalityCitation(Long localityCitationId) {
         this.localityCitationId = localityCitationId;
     }
    
@@ -41,7 +41,7 @@ public class LocalityCitation  implements java.io.Serializable {
         localityCitationId = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         referenceWork = null;
         locality = null;
@@ -53,11 +53,11 @@ public class LocalityCitation  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getLocalityCitationId() {
+    public Long getLocalityCitationId() {
         return this.localityCitationId;
     }
     
-    public void setLocalityCitationId(Integer localityCitationId) {
+    public void setLocalityCitationId(Long localityCitationId) {
         this.localityCitationId = localityCitationId;
     }
 

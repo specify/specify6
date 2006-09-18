@@ -6,9 +6,9 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class GeographyTreeDef implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
-	protected Integer				taxonTreeDefId;
-	protected String				name;
-	protected String				remarks;
+	protected Long				       taxonTreeDefId;
+	protected String				    name;
+	protected String				    remarks;
 	protected Set<CollectionObjDef>		collObjDefs;
 	protected Set<Geography>			treeEntries;
 	protected Set<GeographyTreeDefItem>	treeDefItems;
@@ -22,7 +22,7 @@ public class GeographyTreeDef implements java.io.Serializable, TreeDefIface<Geog
 	}
 
 	/** constructor with id */
-	public GeographyTreeDef(Integer taxonTreeDefId)
+	public GeographyTreeDef(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -45,12 +45,12 @@ public class GeographyTreeDef implements java.io.Serializable, TreeDefIface<Geog
 	/**
 	 * 
 	 */
-	public Integer getGeographyTreeDefId()
+	public Long getGeographyTreeDefId()
 	{
 		return this.taxonTreeDefId;
 	}
 
-	public void setGeographyTreeDefId(Integer taxonTreeDefId)
+	public void setGeographyTreeDefId(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -124,12 +124,12 @@ public class GeographyTreeDef implements java.io.Serializable, TreeDefIface<Geog
 	// Methods added to implement TreeDefinitionIface
 	//
 
-	public Integer getTreeDefId()
+	public Long getTreeDefId()
 	{
 		return getGeographyTreeDefId();
 	}
 
-	public void setTreeDefId(Integer id)
+	public void setTreeDefId(Long id)
 	{
 		setGeographyTreeDefId(id);
 	}

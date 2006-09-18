@@ -10,7 +10,7 @@ public class TaxonTreeDefItem implements Serializable, TreeDefItemIface<Taxon,Ta
 
 	// Fields    
 
-	protected Integer				taxonTreeDefItemId;
+	protected Long				    taxonTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -30,7 +30,7 @@ public class TaxonTreeDefItem implements Serializable, TreeDefItemIface<Taxon,Ta
 	}
 
 	/** constructor with id */
-	public TaxonTreeDefItem(Integer taxonTreeDefItemId)
+	public TaxonTreeDefItem(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -57,12 +57,12 @@ public class TaxonTreeDefItem implements Serializable, TreeDefItemIface<Taxon,Ta
 	/**
 	 * 
 	 */
-	public Integer getTaxonTreeDefItemId()
+	public Long getTaxonTreeDefItemId()
 	{
 		return this.taxonTreeDefItemId;
 	}
 
-	public void setTaxonTreeDefItemId(Integer taxonTreeDefItemId)
+	public void setTaxonTreeDefItemId(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -183,12 +183,12 @@ public class TaxonTreeDefItem implements Serializable, TreeDefItemIface<Taxon,Ta
 
 	// Code added to implement TreeDefinitionItemIface
 
-	public Integer getTreeDefItemId()
+	public Long getTreeDefItemId()
 	{
 		return getTaxonTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Integer id)
+	public void setTreeDefItemId(Long id)
 	{
 		setTaxonTreeDefItemId(id);
 	}

@@ -28,7 +28,7 @@ public class ViewSetObj  implements java.io.Serializable, AppResourceIFace
             
     // Fields    
 
-     protected Integer viewSetObjId;
+     protected Long viewSetObjId;
      protected Short level;
      protected String name;
      protected String description;
@@ -50,7 +50,7 @@ public class ViewSetObj  implements java.io.Serializable, AppResourceIFace
     }
     
     /** constructor with id */
-    public ViewSetObj(Integer viewSetObjId) {
+    public ViewSetObj(Long viewSetObjId) {
         this.viewSetObjId = viewSetObjId;
     }
    
@@ -64,7 +64,7 @@ public class ViewSetObj  implements java.io.Serializable, AppResourceIFace
         description = null;
         metaData = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         appResourceDefaults = new HashSet<AppResourceDefault>();
         appResourceDatas = new HashSet<AppResourceData>();
@@ -80,11 +80,11 @@ public class ViewSetObj  implements java.io.Serializable, AppResourceIFace
     /**
      * 
      */
-    public Integer getViewSetObjId() {
+    public Long getViewSetObjId() {
         return this.viewSetObjId;
     }
     
-    public void setViewSetObjId(Integer viewSetObjId) {
+    public void setViewSetObjId(Long viewSetObjId) {
         this.viewSetObjId = viewSetObjId;
     }
 

@@ -109,7 +109,7 @@ public class DBSchemaTest extends TestCase
             IdTableMapper  idMapper = new IdTableMapper("collectionobject", "CollectionObjectID");
             Statement stmt     = oldDB.createConnection().createStatement();
             ResultSet rs       = stmt.executeQuery("select CollectionObjectID from collectionobject limit 0,100");
-            int       newInx   = 1;
+            long      newInx   = 1L;
             while (rs.next())
             {
                 idMapper.put(rs.getInt(1), newInx++);
@@ -117,7 +117,7 @@ public class DBSchemaTest extends TestCase
             rs.close();
             stmt.close();
 
-            int oldInx = -2135666521;
+            long oldInx = -2135666521L;
             newInx = idMapper.get(oldInx);
             log.info("New Index ["+newInx+"] for old ["+oldInx+"]");
             assertTrue(newInx == 100);

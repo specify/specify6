@@ -15,7 +15,7 @@ public class AppResourceDefault  implements java.io.Serializable
 
     // Fields
 
-     protected Integer appResourceDefaultId;
+     protected Long appResourceDefaultId;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
@@ -34,7 +34,7 @@ public class AppResourceDefault  implements java.io.Serializable
     }
 
     /** constructor with id */
-    public AppResourceDefault(Integer appResourceDefaultId) {
+    public AppResourceDefault(Long appResourceDefaultId) {
         this.appResourceDefaultId = appResourceDefaultId;
     }
 
@@ -43,7 +43,7 @@ public class AppResourceDefault  implements java.io.Serializable
     {
         appResourceDefaultId = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         catalogSeries = null;
         collectionObjDef = null;
@@ -63,11 +63,11 @@ public class AppResourceDefault  implements java.io.Serializable
     /**
      *
      */
-    public Integer getAppResourceDefaultId() {
+    public Long getAppResourceDefaultId() {
         return this.appResourceDefaultId;
     }
 
-    public void setAppResourceDefaultId(Integer appResourceDefaultId) {
+    public void setAppResourceDefaultId(Long appResourceDefaultId) {
         this.appResourceDefaultId = appResourceDefaultId;
     }
 

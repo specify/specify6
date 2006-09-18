@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
 
-	<class name="edu.ku.brc.specify.datamodel.LocationTreeDef"
-		table="locationtreedef" lazy="true">
-		<meta attribute="class-description" inherit="false" />
+    <class name="edu.ku.brc.specify.datamodel.LocationTreeDef"
+        table="locationtreedef" lazy="true">
+        <meta attribute="class-description" inherit="false" />
 
-		<id name="locationTreeDefId" type="java.lang.Integer"
-			column="LocationTreeDefID">
-			<meta attribute="scope-field">protected</meta>
-			<generator class="native" />
+        <id name="locationTreeDefId" type="java.lang.Long"
+            column="LocationTreeDefID">
+            <meta attribute="scope-field">protected</meta>
+            <generator class="native" />
 		</id>
 
-		<property name="name" type="java.lang.String" column="Name"
-			length="64">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="name" type="java.lang.String" column="Name"
+            length="64">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="remarks" type="java.lang.String"
-			column="Remarks" length="255">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="remarks" type="java.lang.String"
+            column="Remarks" length="255">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<!-- Associations -->
+        <!-- Associations -->
 
-		<set name="treeEntries" table="Location" inverse="true"
-			lazy="true">
-			<key column="LocationTreeDefID" />
-			<one-to-many class="edu.ku.brc.specify.datamodel.Location" />
-		</set>
+        <set name="treeEntries" table="Location" inverse="true"
+            lazy="true">
+            <key column="LocationTreeDefID" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.Location" />
+        </set>
 
-		<set name="treeDefItems" table="LocationTreeDefItem"
-			inverse="true" lazy="false" cascade="all-delete-orphan">
-			<key column="LocationTreeDefID" />
-			<one-to-many
-				class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
-		</set>
+        <set name="treeDefItems" table="LocationTreeDefItem"
+            inverse="true" lazy="false" cascade="all-delete-orphan">
+            <key column="LocationTreeDefID" />
+            <one-to-many
+                class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
+        </set>
 
-		<set name="collObjDefs" table="CollectionObjDef"
-			inverse="true">
-			<key column="LocationTreeDefID" />
-			<one-to-many
-				class="edu.ku.brc.specify.datamodel.CollectionObjDef" />
-		</set>
+        <set name="collObjDefs" table="CollectionObjDef"
+            inverse="true">
+            <key column="LocationTreeDefID" />
+            <one-to-many
+                class="edu.ku.brc.specify.datamodel.CollectionObjDef" />
+        </set>
 
-	</class>
+    </class>
 
 </hibernate-mapping>

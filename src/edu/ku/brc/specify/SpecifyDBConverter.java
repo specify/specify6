@@ -154,7 +154,7 @@ public class SpecifyDBConverter
 
         // NOTE: You must have already created the database to use this
         // but the database can be empty
-        boolean restartFromScratch = doAll;
+        boolean restartFromScratch = true;
         if (restartFromScratch)
         {
             Connection connection = DBConnection.getConnection();
@@ -266,7 +266,7 @@ public class SpecifyDBConverter
                 if (convertCatalogSeriesDef || doAll)
                 {
                     String userType =  databaseName.toLowerCase().indexOf("accessions") > -1 ? "Accessions" : "Collection Manager";
-                    int specifyUserId = conversion.createDefaultUser("rods", userType);
+                    long specifyUserId = conversion.createDefaultUser("rods", userType);
                     conversion.convertCollectionObjectDefs(specifyUserId);
 
                 } else
@@ -360,7 +360,7 @@ public class SpecifyDBConverter
                                 voucherSeries.setIsTissueSeries(false);
                                 voucherSeries.setTimestampCreated(new Date());
                                 voucherSeries.setTimestampModified(new Date());
-                                voucherSeries.setCatalogSeriesId(100);
+                                voucherSeries.setCatalogSeriesId(100L);
                                 voucherSeries.setCatalogSeriesPrefix("KUFISH");
                                 voucherSeries.setSeriesName("Fish Collection");
                                 session.saveOrUpdate(voucherSeries);
@@ -376,7 +376,7 @@ public class SpecifyDBConverter
                                 tissueSeries.setIsTissueSeries(true);
                                 tissueSeries.setTimestampCreated(new Date());
                                 tissueSeries.setTimestampModified(new Date());
-                                tissueSeries.setCatalogSeriesId(101);
+                                tissueSeries.setCatalogSeriesId(101L);
                                 tissueSeries.setCatalogSeriesPrefix("KUTIS");
                                 tissueSeries.setSeriesName("Fish Tissue");
                                 session.saveOrUpdate(tissueSeries);

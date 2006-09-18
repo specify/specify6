@@ -578,25 +578,9 @@ public class BasicSQLUtils
 
             // Get the columns that have dates in case we get a TimestampCreated date that is null
             // and then we can go looking for an older date to try to figure it out
-            Integer timestampModified = fromHash.get("TimestampCreated");
-            /*List<Integer> dateIds = new ArrayList<Integer>();
-            List<Class>   dateIdsClass = new ArrayList<Class>();
-            for (int i=1;i<rsmd.getColumnCount();i++)
-            {
-                try
-                {
-                    Class colClass = Class.forName(rsmd.getColumnClassName(i));
-                    if (colClass == Date.class || colClass == Calendar.class)
-                    {
-                        dateIds.add(i);
-                        dateIdsClass.add(colClass);
-                    }
-                } catch (Exception ex)
-                {
-
-                }
-            }*/
-
+            Integer timestampModifiedInx = fromHash.get("TimestampCreated");
+            Integer timestampCreatedInx  = fromHash.get("TimestampModified");
+            boolean isAccessionTable     = fromTableName.equals("accession");
 
             StringBuilder verbatimDateStr = new StringBuilder(1024);
             StringBuffer  str             = new StringBuffer(1024);
@@ -639,17 +623,63 @@ public class BasicSQLUtils
 
                 str.setLength(0);
                 str.append("INSERT INTO " + toTableName + " VALUES (");
+                
+                // OK here we make sure that both the created dated ad modified date are not null
+                // and we copy the date if one has a value and the other does not.
+                Date timestampCreatedCached  = null;
+                Date timestampModifiedCached = null;
+                
+                if (timestampModifiedInx != null && timestampCreatedInx != null)
+                {
+                    timestampModifiedCached = rs.getDate(timestampModifiedInx);
+                    timestampCreatedCached  = rs.getDate(timestampCreatedInx);
+                    if (timestampModifiedCached == null && timestampCreatedCached == null)
+                    {
+                        timestampCreatedCached  = Calendar.getInstance().getTime();
+                        timestampModifiedCached = Calendar.getInstance().getTime();
+                        
+                    } else if (timestampModifiedCached == null && timestampCreatedCached != null)
+                    {
+                        timestampModifiedCached = new Date(timestampCreatedCached.getTime());
+                    } else
+                    {
+                        timestampCreatedCached = new Date(timestampModifiedCached.getTime());
+                    }
+                } else 
+                {
+                    
+                    if (timestampModifiedInx != null)
+                    {
+                        timestampModifiedCached = rs.getDate(timestampModifiedInx);
+                        if (timestampModifiedCached == null)
+                        {
+                            timestampModifiedCached = Calendar.getInstance().getTime();
+                        }
+                    }
+                        
+                    if (timestampCreatedInx != null)
+                    {
+                        timestampCreatedCached = rs.getDate(timestampCreatedInx);
+                        if (timestampCreatedCached == null)
+                        {
+                            timestampCreatedCached = Calendar.getInstance().getTime();
+                        }
+                    }
+                }
+                    
 
                 id = rs.getString(1);
 
-                // for each column in the new DB table...
+                // For each column in the new DB table...
                 for (int i = 0; i < colMetaData.size(); i++)
                 {
                     FieldMetaData fieldMetaData = colMetaData.get(i);
                     String colName          = fieldMetaData.getName();
                     String oldMappedColName = null;
 
+                    // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);
+                    
                     if (columnIndex == null && colNewToOldMap != null)
                     {
                         oldMappedColName = colNewToOldMap.get(colName);
@@ -677,7 +707,7 @@ public class BasicSQLUtils
                             IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
                             {
-                            	int oldPrimaryKeyId = rs.getInt(columnIndex);
+                            	long oldPrimaryKeyId = rs.getLong(columnIndex);
                                 
                                 /*if (oldPrimaryKeyId == -159020476 && fromTableName.equals("locality"))
                                 {
@@ -712,7 +742,51 @@ public class BasicSQLUtils
                             }
                         }
 
-                        if (dataObj instanceof Integer && colName.toLowerCase().indexOf("date") ==  0 && verbatimDateMapper != null)
+                        // First check to see if it is null
+                        if (dataObj == null)
+                        {
+                            if (fieldMetaData.getName().equals("TimestampCreated"))
+                            {
+                                if (timestampCreatedInx != null)
+                                {
+                                    if (isAccessionTable)
+                                    {
+                                        str.append(getStrValue(UIHelper.convertIntToDate((Integer)rs.getInt(fromHash.get("DateAccessioned")))));
+    
+                                    } else
+                                    {
+                                        str.append(getStrValue(timestampCreatedCached, fieldMetaData.getType()));
+                                    }
+    
+                                } else
+                                {
+                                    str.append(getStrValue(timestampCreatedCached, fieldMetaData.getType()));
+                                }
+    
+                            } else if (fieldMetaData.getName().equals("TimestampModified"))
+                            {
+                                if (timestampModifiedInx != null)
+                                {
+                                    if (isAccessionTable)
+                                    {
+                                        str.append(getStrValue(UIHelper.convertIntToDate((Integer)rs.getInt(fromHash.get("DateAccessioned")))));
+    
+                                    } else
+                                    {
+                                        str.append(getStrValue(timestampModifiedCached, fieldMetaData.getType()));
+                                    }
+    
+                                } else
+                                {
+                                    str.append(getStrValue(timestampModifiedCached, fieldMetaData.getType()));
+                                }
+                            } else
+                            {
+                                str.append("NULL");
+                            }
+                                
+
+                        } else if (dataObj instanceof Integer && colName.toLowerCase().indexOf("date") ==  0 && verbatimDateMapper != null)
                         {
                             // First check to see if the current column name is that of the verbatim field
                             // it will return the new schema's date field name that this verbatim field is associated with
@@ -726,31 +800,7 @@ public class BasicSQLUtils
                                 str.append(getStrValue(dateMap.get(colName)));
                             }
 
-                        } else if (dataObj == null && fieldMetaData.getName().equals("TimestampCreated"))
-                        {
-                            if (timestampModified != null)
-                            {
-                                Date modifiedDate = rs.getDate(timestampModified);
-                                if (modifiedDate != null)
-                                {
-                                    str.append(getStrValue(modifiedDate));
-                                } else
-                                {
-                                    if (fromTableName.equals("accession"))
-                                    {
-                                        str.append(getStrValue(UIHelper.convertIntToDate((Integer)rs.getInt(fromHash.get("DateAccessioned")))));
-
-                                    } else
-                                    {
-                                        str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
-                                    }
-                                }
-                            } else
-                            {
-                                str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
-                            }
-
-                        } else
+                        } else 
                         {
                             str.append(getStrValue(dataObj, fieldMetaData.getType()));
                         }
@@ -900,16 +950,16 @@ public class BasicSQLUtils
      * @param idColName primary key column name
      * @return the last ID that was inserted into the database
      */
-    public static int getHighestId(final Connection connection, final String idColName, final String tableName)
+    public static long getHighestId(final Connection connection, final String idColName, final String tableName)
     {
         try
         {
             Statement cntStmt = connection.createStatement();
             ResultSet rs      = cntStmt.executeQuery("select "+idColName+" from "+tableName+" order by "+idColName+" asc");
-            int id = 0;
+            long id = 0;
             if (rs.last())
             {
-                id = rs.getInt(1);
+                id = rs.getLong(1);
             } else
             {
                 id = 1;

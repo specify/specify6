@@ -6,12 +6,17 @@
     <meta attribute="class-description" inherit="false"/>
     <meta attribute="implements">AttributeIFace</meta>
  
-    <id name="attrId" type="java.lang.Integer" column="AttrID">
+    <id name="attrId" type="java.lang.Long" column="AttrID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
 	
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
+    
     <property name="strValue" type="java.lang.String" column="StrValue" length="64">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
@@ -27,26 +32,21 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
+    <!-- Associations -->
     
-	<!-- Associations -->
-	
     <!-- bi-directional many-to-one association to ExternalResource -->
     <many-to-one name="externalResource" class="edu.ku.brc.specify.datamodel.ExternalResource" not-null="true" outer-join="true">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="ExternalResourceID"/>
     </many-to-one>
    
     <!-- bi-directional many-to-one association to AttributeDef -->
     <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" not-null="true" outer-join="true">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="AttributeDefID"/>
-    </many-to-one>	
-	
+    </many-to-one>    
+    
 </class>
 </hibernate-mapping>

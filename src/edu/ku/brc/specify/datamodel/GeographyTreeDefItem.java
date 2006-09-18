@@ -10,7 +10,7 @@ public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geog
 
 	// Fields    
 
-	protected Integer				taxonTreeDefItemId;
+	protected Long			    	taxonTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -30,7 +30,7 @@ public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geog
 	}
 
 	/** constructor with id */
-	public GeographyTreeDefItem(Integer taxonTreeDefItemId)
+	public GeographyTreeDefItem(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -57,12 +57,12 @@ public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geog
 	/**
 	 * 
 	 */
-	public Integer getGeographyTreeDefItemId()
+	public Long getGeographyTreeDefItemId()
 	{
 		return this.taxonTreeDefItemId;
 	}
 
-	public void setGeographyTreeDefItemId(Integer taxonTreeDefItemId)
+	public void setGeographyTreeDefItemId(Long taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -183,12 +183,12 @@ public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geog
 
 	// Code added to implement TreeDefinitionItemIface
 
-	public Integer getTreeDefItemId()
+	public Long getTreeDefItemId()
 	{
 		return getGeographyTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Integer id)
+	public void setTreeDefItemId(Long id)
 	{
 		setGeographyTreeDefItemId(id);
 	}

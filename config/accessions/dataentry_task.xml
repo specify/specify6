@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views>
+    <view name="Accession" title="Accession" viewset="Accession Views" view="Accession" iconname="Accession"/>    
+    <view name="Agent" title="Agent" viewset="Accession Views" view="Agent" iconname="Agent"/>    
+    <view name="Permit" title="Permit" viewset="Accession Views" view="Permit" iconname="Permit"/>    
+</views>

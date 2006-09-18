@@ -4,7 +4,7 @@
 <class name="edu.ku.brc.specify.datamodel.UserGroup" table="usergroup" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="userGroupId" type="java.lang.Integer" column="UserGroupID">
+    <id name="userGroupId" type="java.lang.Long" column="UserGroupID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>

@@ -59,6 +59,7 @@ import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectSettable;
+import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.persist.FormCell;
 
 /**
@@ -765,6 +766,53 @@ public final class UIHelper
         }
 
         return null;
+    }
+    
+    /**
+     * Sets the "timestampModified" and the "lastEditedBy" by fields if the exist, if they don't then 
+     * then it just ignores the request (no error is thrown)
+     * @param dataObj the data object to have the fields set
+     * @param userName the current user name as to who changed the values.
+     */
+    public static boolean updateLastEdittedInfo(final Object dataObj, final String userName)
+    {
+        if (dataObj != null)
+        {
+            try
+            {
+                DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                if (setter != null)
+                {
+                    boolean foundOne = false;
+                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampModified");
+                    if (descr != null)
+                    {
+                        setter.setFieldValue(dataObj, "timestampModified", new Date());
+                        foundOne = true;
+                    }
+                    descr = PropertyUtils.getPropertyDescriptor(dataObj, "lastEditedBy");
+                    if (descr != null)
+                    {
+                        setter.setFieldValue(dataObj, "lastEditedBy", userName);
+                        foundOne = true;
+                    }
+                    return foundOne;
+                }
+    
+            } catch (NoSuchMethodException ex)
+            {
+                ex.printStackTrace();
+    
+            } catch (IllegalAccessException ex)
+            {
+                ex.printStackTrace();
+    
+            } catch (InvocationTargetException ex)
+            {
+                ex.printStackTrace();
+            } 
+        }
+        return false;
     }
 
     /**

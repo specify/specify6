@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,10 +17,12 @@ public class CollectionObjDef  implements java.io.Serializable
     
     // Fields
 
-     protected Integer collectionObjDefId;
+     protected Long collectionObjDefId;
      protected String name;
      protected String discipline;
      protected DataType dataType;
+     protected Date timestampModified;
+     protected Date timestampCreated;
      protected Set<CatalogSeries> catalogSeries;
      protected SpecifyUser specifyUser;
      protected Set<AttributeDef> attributeDefs;
@@ -37,7 +40,7 @@ public class CollectionObjDef  implements java.io.Serializable
     }
 
     /** constructor with id */
-    public CollectionObjDef(Integer collectionObjDefId) {
+    public CollectionObjDef(Long collectionObjDefId) {
         this.collectionObjDefId = collectionObjDefId;
     }
 
@@ -58,6 +61,8 @@ public class CollectionObjDef  implements java.io.Serializable
         name = null;
         discipline = null;
         dataType = null;
+        timestampModified = null;
+        timestampCreated = new Date();
         catalogSeries = new HashSet<CatalogSeries>();
         specifyUser = null;
         attributeDefs = new HashSet<AttributeDef>();
@@ -75,11 +80,11 @@ public class CollectionObjDef  implements java.io.Serializable
     /**
      *
      */
-    public Integer getCollectionObjDefId() {
+    public Long getCollectionObjDefId() {
         return this.collectionObjDefId;
     }
 
-    public void setCollectionObjDefId(Integer collectionObjDefId) {
+    public void setCollectionObjDefId(Long collectionObjDefId) {
         this.collectionObjDefId = collectionObjDefId;
     }
 
@@ -118,6 +123,28 @@ public class CollectionObjDef  implements java.io.Serializable
         this.dataType = dataType;
     }
 
+    /**
+     * 
+     */
+    public Date getTimestampModified() {
+        return this.timestampModified;
+    }
+    
+    public void setTimestampModified(Date timestampModified) {
+        this.timestampModified = timestampModified;
+    }
+
+    /**
+     * 
+     */
+    public Date getTimestampCreated() {
+        return this.timestampCreated;
+    }
+    
+    public void setTimestampCreated(Date timestampCreated) {
+        this.timestampCreated = timestampCreated;
+    }
+    
     /**
      *
      */

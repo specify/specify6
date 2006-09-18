@@ -12,7 +12,7 @@ public class Authors  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer authorsId;
+     protected Long authorsId;
      protected Short orderNumber;
      protected String remarks;
      protected Date timestampModified;
@@ -29,7 +29,7 @@ public class Authors  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Authors(Integer authorsId) {
+    public Authors(Long authorsId) {
         this.authorsId = authorsId;
     }
    
@@ -42,7 +42,7 @@ public class Authors  implements java.io.Serializable {
         authorsId = null;
         orderNumber = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         referenceWork = null;
@@ -55,11 +55,11 @@ public class Authors  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getAuthorsId() {
+    public Long getAuthorsId() {
         return this.authorsId;
     }
     
-    public void setAuthorsId(Integer authorsId) {
+    public void setAuthorsId(Long authorsId) {
         this.authorsId = authorsId;
     }
 

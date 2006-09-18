@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Address" table="address" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="addressId" type="java.lang.Integer" column="AddressID">
+    <id name="addressId" type="java.lang.Long" column="AddressID">
         <meta attribute="field-description">PrimaryKey</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="address" type="java.lang.String" column="Address" not-null="true" length="255">
         <meta attribute="scope-field">protected</meta>
@@ -41,11 +46,6 @@
     </property>
 
     <property name="remarks" type="text" column="Remarks">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-    </property>
-
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>

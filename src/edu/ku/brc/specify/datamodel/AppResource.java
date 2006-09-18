@@ -27,7 +27,7 @@ public class AppResource  implements java.io.Serializable, AppResourceIFace
     
     // Fields    
 
-     protected Integer appResourceId;
+     protected Long appResourceId;
      protected Short level;
      protected String name;
      protected String description;
@@ -49,7 +49,7 @@ public class AppResource  implements java.io.Serializable, AppResourceIFace
     }
     
     /** constructor with id */
-    public AppResource(Integer appResourceId) {
+    public AppResource(Long appResourceId) {
         this.appResourceId = appResourceId;
     }
    
@@ -64,7 +64,7 @@ public class AppResource  implements java.io.Serializable, AppResourceIFace
         mimeType = null;
         metaData = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         appResourceDefaults = new HashSet<AppResourceDefault>();
         appResourceDatas = new HashSet<AppResourceData>();
@@ -80,11 +80,11 @@ public class AppResource  implements java.io.Serializable, AppResourceIFace
     /**
      * 
      */
-    public Integer getAppResourceId() {
+    public Long getAppResourceId() {
         return this.appResourceId;
     }
     
-    public void setAppResourceId(Integer appResourceId) {
+    public void setAppResourceId(Long appResourceId) {
         this.appResourceId = appResourceId;
     }
 

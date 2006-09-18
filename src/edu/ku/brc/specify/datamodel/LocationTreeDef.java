@@ -6,7 +6,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class LocationTreeDef implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
 {
-	protected Integer				taxonTreeDefId;
+	protected Long				   taxonTreeDefId;
 	protected String				name;
 	protected String				remarks;
 	protected Set<CollectionObjDef>		collObjDefs;
@@ -22,7 +22,7 @@ public class LocationTreeDef implements java.io.Serializable, TreeDefIface<Locat
 	}
 
 	/** constructor with id */
-	public LocationTreeDef(Integer taxonTreeDefId)
+	public LocationTreeDef(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -45,12 +45,12 @@ public class LocationTreeDef implements java.io.Serializable, TreeDefIface<Locat
 	/**
 	 * 
 	 */
-	public Integer getLocationTreeDefId()
+	public Long getLocationTreeDefId()
 	{
 		return this.taxonTreeDefId;
 	}
 
-	public void setLocationTreeDefId(Integer taxonTreeDefId)
+	public void setLocationTreeDefId(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -124,12 +124,12 @@ public class LocationTreeDef implements java.io.Serializable, TreeDefIface<Locat
 	// Methods added to implement TreeDefinitionIface
 	//
 
-	public Integer getTreeDefId()
+	public Long getTreeDefId()
 	{
 		return getLocationTreeDefId();
 	}
 
-	public void setTreeDefId(Integer id)
+	public void setTreeDefId(Long id)
 	{
 		setLocationTreeDefId(id);
 	}

@@ -4,18 +4,18 @@
 <class name="edu.ku.brc.specify.datamodel.BorrowShipments" table="borrowshipments" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="borrowShipmentsId" type="java.lang.Integer" column="BorrowShipmentsID">
+    <id name="borrowShipmentsId" type="java.lang.Long" column="BorrowShipmentsID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
     
-    <property name="remarks" type="text" column="Remarks">
+    <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
@@ -31,13 +31,13 @@
     </property>
 
     <!-- Associations -->
-		<!-- this was missing but existing in original mapping file - now replaced -->
+        <!-- this was missing but existing in original mapping file - now replaced -->
     <!-- bi-directional many-to-one association to Shipment -->
     <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" index="IX_BorrowShipmentsShipmentID" unique-key="IX_BorrowShipments">
         <meta attribute="field-description">The shipment</meta>
         <column name="ShipmentID"/>
     </many-to-one>
-	
+    
     <!-- bi-directional many-to-one association to Borrow -->
     <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowShipmentsBorrowID" unique-key="IX_BorrowShipments">
         <meta attribute="field-description">The borrow being shipped (returned)</meta>

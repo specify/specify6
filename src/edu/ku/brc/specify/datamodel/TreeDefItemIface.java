@@ -9,8 +9,8 @@ public interface TreeDefItemIface<N,D,I> extends Rankable, Nameable
 {
 	public void initialize();
 	
-	public Integer getTreeDefItemId();
-	public void setTreeDefItemId(Integer id);
+	public Long getTreeDefItemId();
+	public void setTreeDefItemId(Long id);
 	
 	public String getRemarks();
 	public void setRemarks(String remarks);

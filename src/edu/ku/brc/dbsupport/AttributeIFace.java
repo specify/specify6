@@ -60,13 +60,13 @@ public interface AttributeIFace
      * Returns the record id.
      * @return the record id
      */
-    public Integer getAttrId();
+    public Long getAttrId();
     
     /**
      * Sets the record id.
      * @param attrId
      */
-    public void setAttrId(Integer attrId);  
+    public void setAttrId(Long attrId);  
 
     /**
      * Returns that if it is a string, otherwise null

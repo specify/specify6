@@ -490,7 +490,7 @@ public class InfoRequestTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        recentFormPane = new FormPane(name, this, "Drop Me");
+        recentFormPane = new FormPane(null, name, this, "Drop Me");
         return recentFormPane;
     }
     

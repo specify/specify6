@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" table="loanreturnphysicalobject" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="loanReturnPhysicalObjectId" type="java.lang.Integer" column="LoanReturnPhysicalObjectID">
+    <id name="loanReturnPhysicalObjectId" type="java.lang.Long" column="LoanReturnPhysicalObjectID">
         <meta attribute="field-description">PrimaryKey</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="returnedDate" type="calendar_date" column="ReturnedDate">
         <meta attribute="scope-field">protected</meta>
@@ -30,11 +35,6 @@
         <meta attribute="field-description">Date the record was created</meta>
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Date the record was modified</meta>
-    </property>
-    
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">user ID  of the person last editing the record</meta>
@@ -47,7 +47,7 @@
         <meta attribute="field-description">Link to LoanPhysicalObject table</meta>
         <column name="LoanPhysicalObjectID"/>
     </many-to-one>
-	
+    
     <!-- bi-directional many-to-one association to DeaccessionCollectionObject -->
     <many-to-one name="deaccessionCollectionObject" class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" not-null="true" outer-join="true">
         <meta attribute="field-description">ID of associated (if present) DeaccessionPhysicalObject record</meta>

@@ -13,7 +13,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer borrowReturnMaterialId;
+     protected Long borrowReturnMaterialId;
      protected Calendar returnedDate;
      protected Short quantity;
      protected String remarks;
@@ -31,7 +31,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public BorrowReturnMaterial(Integer borrowReturnMaterialId) {
+    public BorrowReturnMaterial(Long borrowReturnMaterialId) {
         this.borrowReturnMaterialId = borrowReturnMaterialId;
     }
    
@@ -45,7 +45,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
         returnedDate = null;
         quantity = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         agent = null;
@@ -58,11 +58,11 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getBorrowReturnMaterialId() {
+    public Long getBorrowReturnMaterialId() {
         return this.borrowReturnMaterialId;
     }
     
-    public void setBorrowReturnMaterialId(Integer borrowReturnMaterialId) {
+    public void setBorrowReturnMaterialId(Long borrowReturnMaterialId) {
         this.borrowReturnMaterialId = borrowReturnMaterialId;
     }
 

@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" lazy="true" batch-size="50">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="collectionObjectId" type="java.lang.Integer" column="CollectionObjectID">
+    <id name="collectionObjectId" type="java.lang.Long" column="CollectionObjectID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="fieldNumber" type="java.lang.String" column="FieldNumber" length="50" index="IX_CollectionObjectFldNum">
         <meta attribute="scope-field">protected</meta>
@@ -100,11 +105,6 @@
         <meta attribute="field-description"></meta>
     </property>
 
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_CollectionObject_1">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-    </property>
-
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_CollectionObject_2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
@@ -125,7 +125,7 @@
 
     <!-- bi-directional many-to-one association to CollectingEvent -->
     <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" outer-join="true" cascade="none" index="IX_CollectionObjectCollectingEventID">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">BiologicalObject (Bird, Fish, etc)</meta>
         <column name="CollectingEventID"/>
     </many-to-one>
@@ -139,7 +139,7 @@
 
     <!-- bi-directional one-to-many association to CollectionObjectCitation -->
     <set name="collectionObjectCitations" lazy="true" inverse="true" cascade="delete">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectionObjectID"/>
@@ -149,7 +149,7 @@
 
     <!-- bi-directional one-to-many association to CollectionObjectAttr -->
     <set name="attrs" lazy="true" inverse="true" cascade="delete">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectionObjectID"/>
@@ -169,7 +169,7 @@
 
     <!-- bi-directional one-to-many association to Determination -->
     <set name="determinations" lazy="true" inverse="true" cascade="all" order-by="determinedDate desc">
-		<meta attribute="scope-field">protected</meta>
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectionObjectID"/>
@@ -186,7 +186,7 @@
 
 
 
-	<!-- Old CollectionObjectCatalog Associations -->
+    <!-- Old CollectionObjectCatalog Associations -->
 
     <!-- bi-directional one-to-many association to ProjectCollectionObject -->
     <set name="projectCollectionObjects" lazy="true" inverse="true" cascade="none">
@@ -251,7 +251,7 @@
     <!-- bi-directional many-to-one association to Container -->
     <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
     <many-to-one name="container" class="edu.ku.brc.specify.datamodel.Container" not-null="false" unique="true" insert="false" update="false" cascade="all" index="IX_CollectionObjectContainerID">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Preparation, Container</meta>
         <column name="ContainerID"/>
     </many-to-one>

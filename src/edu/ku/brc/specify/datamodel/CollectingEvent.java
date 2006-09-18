@@ -17,7 +17,7 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
 
     // Fields    
 
-     protected Integer collectingEventId;
+     protected Long collectingEventId;
      protected String stationFieldNumber;
      protected String method;
      protected String verbatimDate;
@@ -50,7 +50,7 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
     }
     
     /** constructor with id */
-    public CollectingEvent(Integer collectingEventId) {
+    public CollectingEvent(Long collectingEventId) {
         this.collectingEventId = collectingEventId;
     }
    
@@ -75,7 +75,7 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
         verbatimLocality = null;
         groupPermittedToView = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjects = new HashSet<CollectionObject>();
@@ -92,11 +92,11 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
     /**
      *      * Primary key
      */
-    public Integer getCollectingEventId() {
+    public Long getCollectingEventId() {
         return this.collectingEventId;
     }
     
-    public void setCollectingEventId(Integer collectingEventId) {
+    public void setCollectingEventId(Long collectingEventId) {
         this.collectingEventId = collectingEventId;
     }
 

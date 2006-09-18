@@ -12,7 +12,7 @@ public class ExternalResourceAttr implements AttributeIFace, java.io.Serializabl
 
     // Fields
 
-    protected Integer          attrId;
+    protected Long             attrId;
     protected String           strValue;
     protected Double           dblValue;
     protected Date             timestampCreated;
@@ -28,7 +28,7 @@ public class ExternalResourceAttr implements AttributeIFace, java.io.Serializabl
     }
 
     /** constructor with id */
-    public ExternalResourceAttr(Integer attrId)
+    public ExternalResourceAttr(Long attrId)
     {
         this.attrId = attrId;
     }
@@ -40,7 +40,7 @@ public class ExternalResourceAttr implements AttributeIFace, java.io.Serializabl
         strValue = null;
         dblValue = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         externalResource = null;
         definition = null;
     }
@@ -52,7 +52,7 @@ public class ExternalResourceAttr implements AttributeIFace, java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getAttrId()
      */
-    public Integer getAttrId()
+    public Long getAttrId()
     {
         return this.attrId;
     }
@@ -60,7 +60,7 @@ public class ExternalResourceAttr implements AttributeIFace, java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#setAttrId(java.lang.Integer)
      */
-    public void setAttrId(Integer attrId)
+    public void setAttrId(Long attrId)
     {
         this.attrId = attrId;
     }

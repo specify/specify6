@@ -4,24 +4,24 @@
 <class name="edu.ku.brc.specify.datamodel.PrepType" table="preptype" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="prepTypeId" type="java.lang.Integer" column="PrepTypeID">
+    <id name="prepTypeId" type="java.lang.Long" column="PrepTypeID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
-	
+    
     <property name="name" type="java.lang.String" column="Name" length="32">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
 
-	
-	
-	<!-- Associations -->
-	
+    
+    
+    <!-- Associations -->
+    
     <!-- bi-directional one-to-many association to Preparation -->
     <set name="preparations" lazy="true" inverse="true" cascade="none">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="PrepTypeID"/>
@@ -31,7 +31,7 @@
 
     <!-- bi-directional one-to-many association to AttributeDef -->
     <set name="attributeDefs" lazy="true" inverse="true" cascade="delete">
-	<meta attribute="scope-field">protected</meta>
+    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="PrepTypeID"/>
@@ -39,6 +39,6 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.AttributeDef"/>
     </set>
 
-	
+    
 </class>
 </hibernate-mapping>

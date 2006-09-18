@@ -14,7 +14,7 @@ public class Journal  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer journalId;
+     protected Long journalId;
      protected String journalName;
      protected String journalAbbreviation;
      protected String remarks;
@@ -31,7 +31,7 @@ public class Journal  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Journal(Integer journalId) {
+    public Journal(Long journalId) {
         this.journalId = journalId;
     }
    
@@ -46,7 +46,7 @@ public class Journal  implements java.io.Serializable {
         journalAbbreviation = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         referenceWorks = new HashSet<ReferenceWork>();
     }
@@ -57,11 +57,11 @@ public class Journal  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getJournalId() {
+    public Long getJournalId() {
         return this.journalId;
     }
     
-    public void setJournalId(Integer journalId) {
+    public void setJournalId(Long journalId) {
         this.journalId = journalId;
     }
 

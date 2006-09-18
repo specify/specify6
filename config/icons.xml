@@ -28,6 +28,8 @@
     <icon name="Location"   file="location.jpg" sizes="all"/>
     <icon name="Geologic Time Period" file="clock.png" sizes="all"/>
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
+    <icon name="Accession"  file="accession.gif" sizes="all"/>
+    <icon name="Permit"     file="permit.png" sizes="all"/>
     <icon name="InfoRequest" file="information.gif" sizes="all"/>
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
     <icon name="Search"      file="search.gif" sizes="all"/>

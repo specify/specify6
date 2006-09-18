@@ -17,7 +17,7 @@ public class Preparation  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer preparationId;
+     protected Long preparationId;
      protected String text1;
      protected String text2;
      protected Integer count;
@@ -43,7 +43,7 @@ public class Preparation  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Preparation(Integer preparationId) {
+    public Preparation(Long preparationId) {
         this.preparationId = preparationId;
     }
    
@@ -61,7 +61,7 @@ public class Preparation  implements java.io.Serializable {
         remarks = null;
         preparedDate = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         attrs = new HashSet<AttributeIFace>();
@@ -78,11 +78,11 @@ public class Preparation  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getPreparationId() {
+    public Long getPreparationId() {
         return this.preparationId;
     }
     
-    public void setPreparationId(Integer preparationId) {
+    public void setPreparationId(Long preparationId) {
         this.preparationId = preparationId;
     }
 

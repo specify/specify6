@@ -13,7 +13,7 @@ public class ExchangeIn  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer exchangeInId;
+     protected Long exchangeInId;
      protected Calendar exchangeDate;
      protected Short quantityExchanged;
      protected String descriptionOfMaterial;
@@ -38,7 +38,7 @@ public class ExchangeIn  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public ExchangeIn(Integer exchangeInId) {
+    public ExchangeIn(Long exchangeInId) {
         this.exchangeInId = exchangeInId;
     }
    
@@ -58,7 +58,7 @@ public class ExchangeIn  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -72,11 +72,11 @@ public class ExchangeIn  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getExchangeInId() {
+    public Long getExchangeInId() {
         return this.exchangeInId;
     }
     
-    public void setExchangeInId(Integer exchangeInId) {
+    public void setExchangeInId(Long exchangeInId) {
         this.exchangeInId = exchangeInId;
     }
 

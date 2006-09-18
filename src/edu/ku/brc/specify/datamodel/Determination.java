@@ -15,7 +15,7 @@ public class Determination  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer determinationId;
+     protected Long determinationId;
      protected DeterminationStatus status;
      protected String typeStatusName;
      protected Calendar determinedDate;
@@ -45,7 +45,7 @@ public class Determination  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Determination(Integer determinationId) {
+    public Determination(Long determinationId) {
         this.determinationId = determinationId;
     }
    
@@ -68,7 +68,7 @@ public class Determination  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -84,12 +84,12 @@ public class Determination  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getDeterminationId() 
+    public Long getDeterminationId() 
     {
         return this.determinationId;
     }
     
-    public void setDeterminationId(Integer determinationId) 
+    public void setDeterminationId(Long determinationId) 
     {
         this.determinationId = determinationId;
     }

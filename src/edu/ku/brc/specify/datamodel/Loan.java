@@ -15,7 +15,7 @@ public class Loan  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer loanId;
+     protected Long loanId;
      protected String loanNumber;
      protected Calendar loanDate;
      protected Calendar currentDueDate;
@@ -46,7 +46,7 @@ public class Loan  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Loan(Integer loanId) {
+    public Loan(Long loanId) {
         this.loanId = loanId;
     }
    
@@ -69,7 +69,7 @@ public class Loan  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         closed = null;
         yesNo1 = null;
@@ -86,11 +86,11 @@ public class Loan  implements java.io.Serializable {
     /**
      *      * PrimaryKey
      */
-    public Integer getLoanId() {
+    public Long getLoanId() {
         return this.loanId;
     }
     
-    public void setLoanId(Integer loanId) {
+    public void setLoanId(Long loanId) {
         this.loanId = loanId;
     }
 

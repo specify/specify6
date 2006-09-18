@@ -12,7 +12,7 @@ public class AccessionAgents  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer accessionAgentsId;
+     protected Long accessionAgentsId;
      protected String role;
      protected String remarks;
      protected Date timestampModified;
@@ -30,7 +30,7 @@ public class AccessionAgents  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public AccessionAgents(Integer accessionAgentsId) {
+    public AccessionAgents(Long accessionAgentsId) {
         this.accessionAgentsId = accessionAgentsId;
     }
    
@@ -43,7 +43,7 @@ public class AccessionAgents  implements java.io.Serializable {
         accessionAgentsId = null;
         role = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         agent = null;
@@ -57,11 +57,11 @@ public class AccessionAgents  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getAccessionAgentsId() {
+    public Long getAccessionAgentsId() {
         return this.accessionAgentsId;
     }
     
-    public void setAccessionAgentsId(Integer accessionAgentsId) {
+    public void setAccessionAgentsId(Long accessionAgentsId) {
         this.accessionAgentsId = accessionAgentsId;
     }
 

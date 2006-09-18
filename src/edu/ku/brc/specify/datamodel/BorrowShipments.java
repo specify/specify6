@@ -12,7 +12,7 @@ public class BorrowShipments  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer borrowShipmentsId;
+     protected Long borrowShipmentsId;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
@@ -28,7 +28,7 @@ public class BorrowShipments  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public BorrowShipments(Integer borrowShipmentsId) {
+    public BorrowShipments(Long borrowShipmentsId) {
         this.borrowShipmentsId = borrowShipmentsId;
     }
    
@@ -40,7 +40,7 @@ public class BorrowShipments  implements java.io.Serializable {
     {
         borrowShipmentsId = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         shipment = null;
@@ -53,11 +53,11 @@ public class BorrowShipments  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getBorrowShipmentsId() {
+    public Long getBorrowShipmentsId() {
         return this.borrowShipmentsId;
     }
     
-    public void setBorrowShipmentsId(Integer borrowShipmentsId) {
+    public void setBorrowShipmentsId(Long borrowShipmentsId) {
         this.borrowShipmentsId = borrowShipmentsId;
     }
 

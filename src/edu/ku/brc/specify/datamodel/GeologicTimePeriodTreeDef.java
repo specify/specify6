@@ -6,7 +6,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefIface<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
-	protected Integer				taxonTreeDefId;
+	protected Long   				taxonTreeDefId;
 	protected String				name;
 	protected String				remarks;
 	protected Set<CollectionObjDef>		collObjDefs;
@@ -22,7 +22,7 @@ public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefI
 	}
 
 	/** constructor with id */
-	public GeologicTimePeriodTreeDef(Integer taxonTreeDefId)
+	public GeologicTimePeriodTreeDef(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -45,12 +45,12 @@ public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefI
 	/**
 	 * 
 	 */
-	public Integer getGeologicTimePeriodTreeDefId()
+	public Long getGeologicTimePeriodTreeDefId()
 	{
 		return this.taxonTreeDefId;
 	}
 
-	public void setGeologicTimePeriodTreeDefId(Integer taxonTreeDefId)
+	public void setGeologicTimePeriodTreeDefId(Long taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -124,12 +124,12 @@ public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefI
 	// Methods added to implement TreeDefinitionIface
 	//
 
-	public Integer getTreeDefId()
+	public Long getTreeDefId()
 	{
 		return getGeologicTimePeriodTreeDefId();
 	}
 
-	public void setTreeDefId(Integer id)
+	public void setTreeDefId(Long id)
 	{
 		setGeologicTimePeriodTreeDefId(id);
 	}

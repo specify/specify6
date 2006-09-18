@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.BorrowMaterial" table="borrowmaterial" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="borrowMaterialId" type="java.lang.Integer" column="BorrowMaterialID">
+    <id name="borrowMaterialId" type="java.lang.Long" column="BorrowMaterialID">
         <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="materialNumber" type="java.lang.String" column="MaterialNumber" not-null="true" length="50">
         <meta attribute="scope-field">protected</meta>
@@ -41,11 +46,6 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Quantity returned</meta>
     </property>
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    

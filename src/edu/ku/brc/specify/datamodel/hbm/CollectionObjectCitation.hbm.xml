@@ -4,18 +4,18 @@
 <class name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" table="collectionobjectcitation" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="collectionObjectCitationId" type="java.lang.Integer" column="CollectionObjectCitationID">
+    <id name="collectionObjectCitationId" type="java.lang.Long" column="CollectionObjectCitationID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
     
-    <property name="remarks" type="text" column="Remarks">
+    <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>

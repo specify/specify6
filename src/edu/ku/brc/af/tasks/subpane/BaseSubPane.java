@@ -23,6 +23,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -42,7 +45,7 @@ import edu.ku.brc.af.core.Taskable;
 @SuppressWarnings("serial")
 public class BaseSubPane extends JPanel implements SubPaneIFace
 {
-    //private static final Logger log = Logger.getLogger(BaseSubPane.class);
+    private static final Logger log = Logger.getLogger(BaseSubPane.class);
 
     protected String            name;
     protected Taskable          task;
@@ -51,7 +54,43 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     protected JLabel            progressLabel;
     
     protected JPanel			progressBarPanel;
+    
+    protected Session           session;
 
+    /**
+     * Constructs a base class that implements the SubPanelIFace interface
+     * which enables derived classes to participate in the main pane.
+     * It also adds the progress indicator and it provide.
+     *
+     * @param name the name of the subpane
+     * @param task the owning task
+     */
+    public BaseSubPane(final Session session,
+                       final String name,
+                       final Taskable task)
+    {
+        this.session = session;
+        this.name    = name;
+        this.task    = task;
+
+        setLayout(new BorderLayout());
+
+        progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
+        PanelBuilder    builder    = new PanelBuilder(formLayout);
+        CellConstraints cc         = new CellConstraints();
+
+        builder.add(progressBar, cc.xy(1,1));
+        builder.add(progressLabel = new JLabel("", JLabel.CENTER), cc.xy(1,3));
+
+        PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
+        builder2.add(builder.getPanel(), cc.xy(1,1));
+
+        progressBarPanel = builder2.getPanel();
+        add(progressBarPanel, BorderLayout.CENTER);
+    }
+    
     /**
      * Constructsa base class that implements the SubPanelIFace interface
      * which enables derived classes to participate in the main pane.
@@ -63,26 +102,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     public BaseSubPane(final String name,
                        final Taskable task)
     {
-        this.name = name;
-        this.task = task;
-
-        setLayout(new BorderLayout());
-
-        progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
-        FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
-        PanelBuilder    builder    = new PanelBuilder(formLayout);
-        CellConstraints cc         = new CellConstraints();
-
-        builder.add(progressBar,                  cc.xy(1,1));
-        builder.add(progressLabel = new JLabel("", JLabel.CENTER), cc.xy(1,3));
-
-        PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
-        builder2.add(builder.getPanel(), cc.xy(1,1));
-
-        progressBarPanel = builder2.getPanel();
-        add(progressBarPanel, BorderLayout.CENTER);
-
+        this(null, name, task);
     }
 
 
@@ -101,7 +121,20 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         super.paintChildren(g);
 
     }*/
+    
+    
 
+
+    public Session getSession()
+    {
+        return session;
+    }
+
+    public void setSession(Session session)
+    {
+        this.session = session;
+    }
+    
     //----------------------------------
     // SubPaneIFace
     //----------------------------------
@@ -175,8 +208,13 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
      */
     public void shutdown()
     {
-
+        if (session != null)
+        {
+            session.flush();
+            session.close();
+            
+            log.debug("Session Close["+session.hashCode()+"]");
+            session = null;
+        }
     }
-
-
 }

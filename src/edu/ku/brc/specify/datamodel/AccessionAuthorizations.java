@@ -12,7 +12,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer accessionAuthorizationsId;
+     protected Long accessionAuthorizationsId;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
@@ -29,7 +29,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public AccessionAuthorizations(Integer accessionAuthorizationsId) {
+    public AccessionAuthorizations(Long accessionAuthorizationsId) {
         this.accessionAuthorizationsId = accessionAuthorizationsId;
     }
    
@@ -41,7 +41,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     {
         accessionAuthorizationsId = null;
         remarks = null;
-        timestampModified = new Date();
+        timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
         permit = null;
@@ -55,11 +55,11 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getAccessionAuthorizationsId() {
+    public Long getAccessionAuthorizationsId() {
         return this.accessionAuthorizationsId;
     }
     
-    public void setAccessionAuthorizationsId(Integer accessionAuthorizationsId) {
+    public void setAccessionAuthorizationsId(Long accessionAuthorizationsId) {
         this.accessionAuthorizationsId = accessionAuthorizationsId;
     }
 

@@ -13,7 +13,7 @@ public class Workbench  implements java.io.Serializable {
 
     // Fields    
 
-     private Integer workbenchID;
+     private Long workbenchId;
      private String name;
      private Integer tableId;
      protected String remarks;
@@ -32,8 +32,8 @@ public class Workbench  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Workbench(Integer workbenchID) {
-        this.workbenchID = workbenchID;
+    public Workbench(Long workbenchId) {
+        this.workbenchId = workbenchId;
     }
    
     
@@ -44,12 +44,12 @@ public class Workbench  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getWorkbenchID() {
-        return this.workbenchID;
+    public Long getWorkbenchId() {
+        return this.workbenchId;
     }
     
-    public void setWorkbenchID(Integer workbenchID) {
-        this.workbenchID = workbenchID;
+    public void setWorkbenchId(Long workbenchId) {
+        this.workbenchId = workbenchId;
     }
 
     /**

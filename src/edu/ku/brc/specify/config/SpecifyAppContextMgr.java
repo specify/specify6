@@ -296,7 +296,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     for (CatalogSeries cs : catSeries)
                     {
                         if (strBuf.length() > 0) strBuf.append(", ");
-                        strBuf.append(Integer.toString(cs.getCatalogSeriesId()));
+                        strBuf.append(Long.toString(cs.getCatalogSeriesId()));
                     }
                     appPrefs.put(prefName, strBuf.toString());
                 } else
@@ -405,7 +405,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (colObjDef != null)
         {
             CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
-            appPrefs.putInt(recentColObjDefId, colObjDef.getCollectionObjDefId());
+            appPrefs.putLong(recentColObjDefId, colObjDef.getCollectionObjDefId());
 
         }
         return colObjDef;

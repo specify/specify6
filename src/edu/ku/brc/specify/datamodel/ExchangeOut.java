@@ -13,7 +13,7 @@ public class ExchangeOut  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer exchangeOutId;
+     protected Long exchangeOutId;
      protected Calendar exchangeDate;
      protected Short quantityExchanged;
      protected String descriptionOfMaterial;
@@ -39,7 +39,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public ExchangeOut(Integer exchangeOutId) {
+    public ExchangeOut(Long exchangeOutId) {
         this.exchangeOutId = exchangeOutId;
     }
    
@@ -59,7 +59,7 @@ public class ExchangeOut  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -74,11 +74,11 @@ public class ExchangeOut  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getExchangeOutId() {
+    public Long getExchangeOutId() {
         return this.exchangeOutId;
     }
     
-    public void setExchangeOutId(Integer exchangeOutId) {
+    public void setExchangeOutId(Long exchangeOutId) {
         this.exchangeOutId = exchangeOutId;
     }
 

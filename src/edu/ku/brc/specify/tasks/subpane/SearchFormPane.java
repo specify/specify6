@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -28,12 +29,20 @@ public class SearchFormPane extends FormPane
     protected Hashtable<String, Hashtable<String, String>> hashTables = new Hashtable<String, Hashtable<String, String>>();
 
 
-    public SearchFormPane(String   name,
-                          Taskable task,
-                          String   viewSetName,
-                          String   viewName)
+    /**
+     * Creates a a Search Pane "Form". 
+     * @param name the name of the SubPane
+     * @param task the task
+     * @param viewSetName the viewset name
+     * @param viewName the view name
+     */
+    public SearchFormPane(final String   name,
+                          final Taskable task,
+                          final String   viewSetName,
+                          final String   viewName)
     {
-        super(name, task, viewSetName, viewName, AltView.CreationMode.Search.toString(), null, true);
+        super(HibernateUtil.getNewSession(),
+              name, task, viewSetName, viewName, AltView.CreationMode.Search.toString(), null, true);
 
         Viewable viewable = multiView.getCurrentView();
         if (viewable instanceof FormViewObj)
@@ -112,6 +121,7 @@ public class SearchFormPane extends FormPane
     {
         super.shutdown();
         formViewObj = null;
+        super.shutdown(); // closes session
     }
 
 }

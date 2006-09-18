@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
 
-	<class name="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-		table="taxontreedef" lazy="true">
-		<meta attribute="class-description" inherit="false" />
+    <class name="edu.ku.brc.specify.datamodel.TaxonTreeDef"
+        table="taxontreedef" lazy="true">
+        <meta attribute="class-description" inherit="false" />
 
-		<id name="taxonTreeDefId" type="java.lang.Integer"
-			column="TaxonTreeDefID">
-			<meta attribute="scope-field">protected</meta>
-			<generator class="foreign">
-				<param name="property">collObjDef</param>
-			</generator>
+        <id name="taxonTreeDefId" type="java.lang.Long"
+            column="TaxonTreeDefID">
+            <meta attribute="scope-field">protected</meta>
+            <generator class="foreign">
+                <param name="property">collObjDef</param>
+            </generator>
 		</id>
 
-		<property name="name" type="java.lang.String" column="Name"
-			length="64">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="name" type="java.lang.String" column="Name"
+            length="64">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<property name="remarks" type="java.lang.String"
-			column="Remarks" length="255">
-			<meta attribute="scope-field">protected</meta>
-		</property>
+        <property name="remarks" type="java.lang.String"
+            column="Remarks" length="255">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
-		<!-- Associations -->
+        <!-- Associations -->
 
-		<one-to-one name="collObjDef"
-			class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-			constrained="true" />
+        <one-to-one name="collObjDef"
+            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            constrained="true" />
 
-		<set name="treeEntries" table="Taxon" inverse="true"
-			lazy="extra">
-			<key column="TaxonTreeDefID" />
-			<one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
-		</set>
+        <set name="treeEntries" table="Taxon" inverse="true"
+            lazy="extra">
+            <key column="TaxonTreeDefID" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
+        </set>
 
-		<set name="treeDefItems" table="TaxonTreeDefItem" inverse="true"
-			lazy="false" cascade="all-delete-orphan">
-			<key column="TaxonTreeDefID" />
-			<one-to-many
-				class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
-		</set>
+        <set name="treeDefItems" table="TaxonTreeDefItem" inverse="true"
+            lazy="false" cascade="all-delete-orphan">
+            <key column="TaxonTreeDefID" />
+            <one-to-many
+                class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
+        </set>
 
-	</class>
+    </class>
 
 </hibernate-mapping>

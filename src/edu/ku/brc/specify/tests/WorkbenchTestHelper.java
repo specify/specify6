@@ -64,7 +64,7 @@ public class WorkbenchTestHelper {
 		// make sure that the template that was just created is in teh database
 		for (int i = 0; i < list.size(); i++) {
 			WorkbenchTemplate template = (WorkbenchTemplate) list.get(i);
-			if (template.getWorkbenchTemplateID() == templateId) 
+			if (template.getWorkbenchTemplateId() == templateId) 
 				templateIsFound = true;
 		}
 		return templateIsFound;
@@ -82,7 +82,7 @@ public class WorkbenchTestHelper {
 		// make sure that the template that was just created is in teh database
 		for (int i = 0; i < list.size(); i++) {
 			WorkbenchTemplateMappingItem item = (WorkbenchTemplateMappingItem) list.get(i);
-			if (item.getWorkbenchTemplateMappingItemID() == templateMappingId) 
+			if (item.getWorkbenchTemplateMappingItemId() == templateMappingId) 
 				mappingItemIsFound = true;
 		}
 		return mappingItemIsFound;
@@ -100,7 +100,7 @@ public class WorkbenchTestHelper {
 		// make sure that the template that was just created is in teh database
 		for (int i = 0; i < list.size(); i++) {
 			Workbench workbench = (Workbench) list.get(i);
-			if (workbench.getWorkbenchID() == workbenchId) 
+			if (workbench.getWorkbenchId() == workbenchId) 
 				mappingItemIsFound = true;
 		}
 		return mappingItemIsFound;
@@ -122,7 +122,7 @@ public class WorkbenchTestHelper {
 			//make sure that the template that was just created is in teh database
 			for(int i = 0; i< list.size(); i++) {
 				WorkbenchTemplate template = (WorkbenchTemplate)list.get(i);
-				if(template.getWorkbenchTemplateID()== templateId) {
+				if(template.getWorkbenchTemplateId()== templateId) {
 					session.delete(template);
 					isTemplateDeleted = true;					
 				}
@@ -155,7 +155,7 @@ public class WorkbenchTestHelper {
 			//make sure that the template that was just created is in teh database
 			for(int i = 0; i< list.size(); i++) {
 				WorkbenchTemplateMappingItem item = (WorkbenchTemplateMappingItem)list.get(i);
-				if(item.getWorkbenchTemplateMappingItemID()== mappingItemId) {
+				if(item.getWorkbenchTemplateMappingItemId()== mappingItemId) {
 					session.delete(item);
 					isTemplateDeleted = true;					
 				}
@@ -187,7 +187,7 @@ public class WorkbenchTestHelper {
 			//make sure that the template that was just created is in teh database
 			for(int i = 0; i< list.size(); i++) {
 				Workbench workbench = (Workbench)list.get(i);
-				if(workbench.getWorkbenchID()== workbenchId) {
+				if(workbench.getWorkbenchId()== workbenchId) {
 					session.delete(workbench);
 					isWorkbenchDeleted = true;					
 				}

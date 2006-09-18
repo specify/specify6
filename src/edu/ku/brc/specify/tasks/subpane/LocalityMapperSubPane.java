@@ -56,6 +56,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Session;
 import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -124,16 +125,19 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     protected LocalityMapperSubPane           thisPane;
 
     /**
-     * The incoming List of Collecting Events is already Sorted by StartDate
+     * The incoming List of Collecting Events is already Sorted by StartDate.
+     * @param session the DB Session to use
      * @param name the name
      * @param task the owning task
      * @param colEvents sorted list of collecting events
      */
-    public LocalityMapperSubPane(final String name,
+    public LocalityMapperSubPane(final Session session,
+                                 final String name,
                                  final Taskable task,
                                  final List<CollectingEvent> colEvents)
     {
-        super(name, task);
+        super(session, name, task);
+        
         this.colEvents = colEvents;
         this.thisPane  = this;
 
@@ -299,7 +303,8 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 
-
+        multiView.setSession(session);
+        
         formViewObj = (FormViewObj)multiView.getCurrentView();
         formViewObj.getUIComponent().setBackground(Color.WHITE);
 

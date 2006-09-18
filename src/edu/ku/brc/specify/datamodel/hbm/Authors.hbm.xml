@@ -4,11 +4,16 @@
 <class name="edu.ku.brc.specify.datamodel.Authors" table="authors">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="authorsId" type="java.lang.Integer" column="AuthorsID">
+    <id name="authorsId" type="java.lang.Long" column="AuthorsID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <timestamp name="timestampModified" column="TimestampModified">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
 
     <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_AuthorsRefOrder">
         <meta attribute="scope-field">protected</meta>
@@ -16,11 +21,6 @@
     </property>
     
     <property name="remarks" type="text" column="Remarks">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-    
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>

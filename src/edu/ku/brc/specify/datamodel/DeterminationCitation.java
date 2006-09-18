@@ -12,7 +12,7 @@ public class DeterminationCitation  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer determinationCitationId;
+     protected Long determinationCitationId;
      protected String remarks;
      protected Date timestampCreated;
      protected Date timestampModified;
@@ -28,7 +28,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public DeterminationCitation(Integer determinationCitationId) {
+    public DeterminationCitation(Long determinationCitationId) {
         this.determinationCitationId = determinationCitationId;
     }
    
@@ -41,7 +41,7 @@ public class DeterminationCitation  implements java.io.Serializable {
         determinationCitationId = null;
         remarks = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         referenceWork = null;
         determination = null;
@@ -53,11 +53,11 @@ public class DeterminationCitation  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getDeterminationCitationId() {
+    public Long getDeterminationCitationId() {
         return this.determinationCitationId;
     }
     
-    public void setDeterminationCitationId(Integer determinationCitationId) {
+    public void setDeterminationCitationId(Long determinationCitationId) {
         this.determinationCitationId = determinationCitationId;
     }
 

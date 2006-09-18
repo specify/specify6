@@ -45,6 +45,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -72,7 +73,6 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.db.PickList;
@@ -127,7 +127,7 @@ public class GenericDBConversion
     protected String[]                  standardDataTypes    = {"Plant", "Animal", "Mineral", "Fungi", "Anthropology"};
     protected Hashtable<String, Integer> dataTypeNameIndexes = new Hashtable<String, Integer>(); // Name to Index in Array
 
-    protected Hashtable<String, Integer> dataTypeNameToIds = new Hashtable<String, Integer>(); // name to Record ID
+    protected Hashtable<String, Long> dataTypeNameToIds = new Hashtable<String, Long>(); // name to Record ID
 
 
     // Helps during debuggin
@@ -779,8 +779,8 @@ public class GenericDBConversion
     {
     	IdMapperIFace idMapper = idMapperMgr.get("determination","DeterminationID");
     	
-    	Vector<Integer> statusCurrent = new Vector<Integer>();
-    	Vector<Integer> statusUnknown = new Vector<Integer>();
+    	Vector<Long> statusCurrent = new Vector<Long>();
+    	Vector<Long> statusUnknown = new Vector<Long>();
     	
     	StringBuilder sql = new StringBuilder();
     	try
@@ -790,9 +790,9 @@ public class GenericDBConversion
         	ResultSet oldDeters = deterQuery.executeQuery(sql.toString());
         	while(oldDeters.next())
         	{
-        		Integer oldId = oldDeters.getInt(1);
+                Long oldId = new Long(oldDeters.getInt(1));
         		Boolean isCurrent = oldDeters.getBoolean(2);
-        		Integer newId = idMapper.get(oldId);
+        		Long newId = idMapper.get(oldId);
         		if(isCurrent.booleanValue())
         		{
         			statusCurrent.add(newId);
@@ -824,11 +824,11 @@ public class GenericDBConversion
 	    		sql.append(" WHERE DeterminationID IN (");
 	    		for(int i = 0; i < statusCurrent.size()-1; ++i)
 	    		{
-	    			Integer newId = statusCurrent.get(i);
+	    			Long newId = statusCurrent.get(i);
 	    			sql.append(newId);
 	    			sql.append(",");
 	    		}
-	    		Integer newId = statusCurrent.lastElement();
+                Long newId = statusCurrent.lastElement();
 	    		sql.append(newId);
 	    		sql.append(");");
 	    		
@@ -853,11 +853,11 @@ public class GenericDBConversion
 	    		sql.append(" WHERE DeterminationID IN (");
 	    		for(int i = 0; i < statusUnknown.size()-1; ++i)
 	    		{
-	    			Integer newId = statusUnknown.get(i);
+                    Long newId = statusUnknown.get(i);
 	    			sql.append(newId);
 	    			sql.append(",");
 	    		}
-	    		Integer newId = statusUnknown.lastElement();
+                Long newId = statusUnknown.lastElement();
 	    		sql.append(newId);
 	    		sql.append(");");
 	    		
@@ -876,7 +876,7 @@ public class GenericDBConversion
      * @param userName the user name
      * @return the record id
      */
-    public int createDefaultUser(final String userName, final String userType)
+    public long createDefaultUser(final String userName, final String userType)
     {
         /*
          describe usergroup;
@@ -914,7 +914,7 @@ public class GenericDBConversion
             updateStatement.close();
             updateStatement = null;
 
-            int userGroupId = BasicSQLUtils.getHighestId(newDBConn, "UserGroupID", "usergroup");
+            long userGroupId = BasicSQLUtils.getHighestId(newDBConn, "UserGroupID", "usergroup");
 
             updateStatement = newDBConn.createStatement();
             strBuf = new StringBuilder(128);
@@ -931,7 +931,7 @@ public class GenericDBConversion
             updateStatement.close();
             updateStatement = null;
 
-            int specifyUserId = BasicSQLUtils.getHighestId(newDBConn, "SpecifyUserID", "specifyuser");
+            long specifyUserId = BasicSQLUtils.getHighestId(newDBConn, "SpecifyUserID", "specifyuser");
             return specifyUserId;
 
         } catch (SQLException e)
@@ -949,9 +949,9 @@ public class GenericDBConversion
      * @param taxonomyTypeName the name
      * @return the ID (record id) of the data type
      */
-    public int createDataType(final String taxonomyTypeName)
+    public long createDataType(final String taxonomyTypeName)
     {
-        int    dataTypeId   = -1;
+        long   dataTypeId   = -1;
         String dataTypeName = getStandardDataTypeName(taxonomyTypeName);
         if (dataTypeName == null)
         {
@@ -1002,7 +1002,7 @@ public class GenericDBConversion
      * @param specifyUserId
      * @return true on success, false on failure
      */
-    public boolean convertCollectionObjectDefs(final int specifyUserId)
+    public boolean convertCollectionObjectDefs(final long specifyUserId)
     {
         // The Old Table catalogseriesdefinition is being converted to collectionobjdef
         IdMapperIFace catalogSeriesMapper = idMapperMgr.get("CatalogSeries", "CatalogSeriesID");
@@ -1015,8 +1015,8 @@ public class GenericDBConversion
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectionobjdef");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "catseries_colobjdef");
 
-            Hashtable<Integer, Integer> taxonomyTypeIDToColObjID     = new Hashtable<Integer, Integer>();
-            Hashtable<Integer, String>  taxonomyTypeIDToTaxonomyName = new Hashtable<Integer, String>();
+            Hashtable<Long, Long> taxonomyTypeIDToColObjID     = new Hashtable<Long, Long>();
+            Hashtable<Long, String>  taxonomyTypeIDToTaxonomyName = new Hashtable<Long, String>();
 
             // First, create a CollectionObjDef for TaxonomyType record
             Statement stmt = oldDBConn.createStatement();
@@ -1025,7 +1025,7 @@ public class GenericDBConversion
             int recordCnt = 0;
             while (rs.next())
             {
-                int    taxonomyTypeID   = rs.getInt(1);
+                long    taxonomyTypeID  = rs.getLong(1);
                 String taxonomyTypeName = rs.getString(2);
                 
                 String disciplineName = getStandardDisciplineName(taxonomyTypeName);
@@ -1046,7 +1046,7 @@ public class GenericDBConversion
                 taxonomyTypeName = disciplineName;
                 
                 // Figure out what type of standard adat type this is from the CollectionObjectTypeName
-                int dataTypeId = createDataType(taxonomyTypeName);
+                long dataTypeId = createDataType(taxonomyTypeName);
                 if (dataTypeId == -1)
                 {
                     log.error("**** Had to Skip record because of DataType mapping error["+taxonomyTypeName+"]");
@@ -1089,7 +1089,7 @@ public class GenericDBConversion
                 updateStatement = null;
                 recordCnt++;
 
-                int colObjDefID = BasicSQLUtils.getHighestId(newDBConn, "CollectionObjDefID", "collectionobjdef");
+                Long colObjDefID = BasicSQLUtils.getHighestId(newDBConn, "CollectionObjDefID", "collectionobjdef");
                 taxonomyTypeIDToColObjID.put(taxonomyTypeID, colObjDefID);
 
                 log.info("Created new collectionobjdef["+taxonomyTypeName+"] is dataType ["+dataTypeId+"]");
@@ -1114,13 +1114,13 @@ public class GenericDBConversion
                  recordCnt = 0;
                  while (rs.next())
                  {
-                     int    catalogSeriesID = rs.getInt(1);
-                     int    taxonomyTypeID  = rs.getInt(2);
+                     long catalogSeriesID = rs.getLong(1);
+                     long taxonomyTypeID  = rs.getLong(2);
     
                      // Now craete the proper record in the  Join Table
     
-                     int newCatalogSeriesID = catalogSeriesMapper.get(catalogSeriesID);
-                     int newColObjdefID     = taxonomyTypeMapper.get(taxonomyTypeID);
+                     long newCatalogSeriesID = catalogSeriesMapper.get(catalogSeriesID);
+                     long newColObjdefID     = taxonomyTypeMapper.get(taxonomyTypeID);
     
                      Statement updateStatement = newDBConn.createStatement();
                      strBuf.setLength(0);
@@ -1152,6 +1152,100 @@ public class GenericDBConversion
             log.error(e);
         }
         return false;
+    }
+
+    /**
+     * Looks up all the current Permit Types and uses them, instead of the usystable
+     */
+    @SuppressWarnings("unchecked")
+    public void createPermitTypePickList()
+    {
+        /*
+        try
+        {
+            Statement stmt   = oldDBConn.createStatement();
+            String    sqlStr = "select count(Type) from (select distinct Type from permit where Type is not null) as t";
+
+            log.info(sqlStr);
+
+            boolean   useField = false;
+            ResultSet rs       = stmt.executeQuery(sqlStr);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+        }*/
+        
+        Session session = HibernateUtil.getCurrentSession();
+        PickList pl     = new PickList();
+        Set      items  = new HashSet<Object>();
+
+        try
+        {
+            pl.setName("Permit");
+            pl.setCreated(new Date());
+            pl.setItems(items);
+            pl.setReadOnly(false);
+            pl.setSizeLimit(-1);
+
+
+            HibernateUtil.beginTransaction();
+            session.saveOrUpdate(pl);
+            HibernateUtil.commitTransaction();
+
+        } catch (Exception ex)
+        {
+            log.error("******* " + ex);
+            HibernateUtil.rollbackTransaction();
+            throw new RuntimeException("Couldn't create PickList for [Permit]");
+        }
+        
+        try
+        {
+            Statement stmt   = oldDBConn.createStatement();
+            String    sqlStr = "select distinct Type from permit where Type is not null";
+
+            log.info(sqlStr);
+
+            ResultSet rs       = stmt.executeQuery(sqlStr);
+
+            // check for no records which is OK
+            if (!rs.first())
+            {
+                return;
+            }
+
+            int count = 0;
+            do
+            {
+                String typeStr = rs.getString(1);
+                if (typeStr != null)
+                {
+                    log.info("Permit Type["+typeStr+"]");
+                    PickListItem pli = new PickListItem();
+                    pli.setTitle(typeStr);
+                    pli.setValue(typeStr);
+                    pli.setCreatedDate(new Date());
+                    items.add(pli);
+                    count++;
+
+                }
+            } while (rs.next());
+
+            log.info("Processed Permit Types "+count+" records.");
+
+            HibernateUtil.beginTransaction();
+
+            session.saveOrUpdate(pl);
+
+            HibernateUtil.commitTransaction();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+        }
+
     }
 
     /**
@@ -1706,7 +1800,7 @@ public class GenericDBConversion
             IdMapperIFace idMapper =  idMapperMgr.get(fromTableName, oldColName);
             if (idMapper != null)
             {
-                return idMapper.get((Integer)data);
+                return idMapper.get((Long)data);
             } else
             {
                 //throw new RuntimeException("No Map for ["+fromTableName+"]["+oldMappedColName+"]");
@@ -2058,7 +2152,7 @@ public class GenericDBConversion
             int       count   = 0;
             while (rs.next())
             {
-                Integer   preparedById = null;
+                Long      preparedById = null;
                 Date      preparedDate = null;
 
 
@@ -2071,7 +2165,7 @@ public class GenericDBConversion
                     ResultSet subQueryRS   = subStmt.executeQuery(subQueryStr);
                     if (subQueryRS.first())
                     {
-                        preparedById = subQueryRS.getInt(1);
+                        preparedById = subQueryRS.getLong(1);
                         preparedDate = UIHelper.convertIntToDate(subQueryRS.getInt(2));
                     }
                     subQueryRS.close();
@@ -2134,16 +2228,42 @@ public class GenericDBConversion
                         {
                             value = "n/a";
                         }
-                        Integer prepTypeId = prepTypeMap.get(value.toLowerCase()).getPrepTypeId();
-                        if (prepTypeId != null)
-                        {
-                            str.append(getStrValue(prepTypeId));
 
+                        PrepType prepType = prepTypeMap.get(value.toLowerCase());
+                        if (prepType != null)
+                        {
+                            Long prepTypeId = prepType.getPrepTypeId();
+                            if (prepTypeId != null)
+                            {
+                                str.append(getStrValue(prepTypeId));
+    
+                            } else
+                            {
+                                str.append("NULL");
+                                log.error("***************** Couldn't find PreparationMethod["+value+"] in PrepTypeMap");
+                            }
                         } else
                         {
-                            str.append("NULL");
-                            log.error("***************** Couldn't find PreparationMethod["+value+"] in PrepTypeMap");
+                            log.info("Couldn't find PrepType["+value+"] creating it.");
+                            prepType = new PrepType();
+                            prepType.initialize();
+                            prepType.setName(value);
+                            try
+                            {
+                                Session session = HibernateUtil.getCurrentSession();
+                                Transaction trans = session.beginTransaction();
+                                trans.begin();
+                                session.save(prepType);
+                                trans.commit();
+                                
+                                str.append(getStrValue(prepType.getPrepTypeId()));
+                                
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                            }
                         }
+
 
                     } else if (newFieldName.equals("LocationID"))
                     {
@@ -2174,7 +2294,7 @@ public class GenericDBConversion
                             }
                             if (idMapper != null)
                             {
-                                data = idMapper.get(rs.getInt(index));
+                                data = idMapper.get(rs.getLong(index));
                             } else
                             {
                                 System.out.println("No Map for [collectionobject]["+mappedName+"]");
@@ -2331,18 +2451,18 @@ public class GenericDBConversion
                     {
                         try
                         {
-                            int oldColObjectTypeId = rs.getInt(objTypeInx);
+                            long oldColObjectTypeId = rs.getLong(objTypeInx);
                             //log.info("1* "+oldColObjectTypeId);
 
-                            Integer taxonomyTreeId = colObjTaxonMapper.get(oldColObjectTypeId);
+                            Long taxonomyTreeId = colObjTaxonMapper.get(oldColObjectTypeId);
                             //log.info("2* "+taxonomyTreeId);
 
                             if (taxonomyTreeId != null)
                             {
-                                Integer newTaxonomyTreeId = taxonomyTypeMapper.get(taxonomyTreeId);
+                                Long newTaxonomyTreeId = taxonomyTypeMapper.get(taxonomyTreeId);
                                 //log.info("3* "+newTaxonomyTreeId);
     
-                                str.append(Integer.toString(newTaxonomyTreeId));
+                                str.append(Long.toString(newTaxonomyTreeId));
                             } else
                             {
                                 //log.debug("Was unable to Map old Index["++"] to get it's TaxonTreeID");
@@ -2396,7 +2516,7 @@ public class GenericDBConversion
                                 IdMapperIFace idMapper =  idMapperMgr.get(tableName, newFieldName);
                                 if (idMapper != null)
                                 {
-                                    data = idMapper.get(rs.getInt(index+1));
+                                    data = idMapper.get(rs.getLong(index+1));
                                 } else
                                 {
                                     log.error("No Map for ["+tableName+"]["+newFieldName+"]");
@@ -2715,10 +2835,10 @@ public class GenericDBConversion
 
 		ResultSet rs = oldDbStmt.executeQuery(sqlStr);
 
-    	Vector<Integer> typeIds = new Vector<Integer>();
+    	Vector<Long> typeIds = new Vector<Long>();
     	while(rs.next())
     	{
-    		Integer typeId = rs.getInt(1);
+    		Long typeId = rs.getLong(1);
     		if( !rs.wasNull() )
     		{
         		typeIds.add(typeId);
@@ -2729,16 +2849,16 @@ public class GenericDBConversion
 		IdMapperIFace typeIdMapper = idMapperMgr.get("taxonomytype", "TaxonomyTypeID");
 
     	// for each value of TaxonomyType...
-    	for( Integer typeId: typeIds )
+    	for( Long typeId: typeIds )
     	{
     		// get all of the values of RequiredParentRankID (the enforced ranks)
     		sqlStr = "SELECT DISTINCT RequiredParentRankID from taxonomicunittype WHERE TaxonomyTypeID=" + typeId;
     		rs = oldDbStmt.executeQuery(sqlStr);
 
-    		Vector<Integer> enforcedIds = new Vector<Integer>();
+    		Vector<Long> enforcedIds = new Vector<Long>();
     		while( rs.next() )
     		{
-    			Integer reqId = rs.getInt(1);
+    			Long reqId = rs.getLong(1);
     			if( !rs.wasNull() )
     			{
     				enforcedIds.add(reqId);
@@ -2749,7 +2869,7 @@ public class GenericDBConversion
     		// fix the new DB values accordingly
 
     		// what is the corresponding TreeDefID?
-    		int treeDefId = typeIdMapper.get(typeId);
+    		long treeDefId = typeIdMapper.get(typeId);
 
     		StringBuilder sqlUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsEnforced=TRUE WHERE TaxonTreeDefID="+treeDefId+" AND RankID IN (");
     		// add all the enforced ranks
@@ -2784,9 +2904,9 @@ public class GenericDBConversion
     	// we still need to fix the ParentItemID values to point at each row's parent
 
     	// we'll work with the items in sets as determined by the TreeDefID
-    	for( Integer typeId: typeIds )
+    	for( Long typeId: typeIds )
     	{
-    		int treeDefId = typeIdMapper.get(typeId);
+    		long treeDefId = typeIdMapper.get(typeId);
         	sqlStr = "SELECT TaxonTreeDefItemID FROM taxontreedefitem WHERE TaxonTreeDefID="+treeDefId+" ORDER BY RankID";
         	rs = newDbStmt.executeQuery(sqlStr);
 
@@ -3018,7 +3138,7 @@ public class GenericDBConversion
         	counter++;
         	
         	// add this new ID to the ID mapper
-        	geoIdMapper.put(oldId,newGeo.getGeographyId());
+        	geoIdMapper.put(oldId, newGeo.getGeographyId());
     	}
     	HibernateUtil.commitTransaction();
 		log.info("Converted " + counter + " geography records");
@@ -3330,6 +3450,21 @@ public class GenericDBConversion
     		Float uError = (Float)rs.getObject(9);
     		Float lower  = rs.getFloat(10);
     		Float lError = (Float)rs.getObject(11);
+            
+
+            if (modT == null && creT == null)
+            {
+                creT = Calendar.getInstance().getTime();
+                modT = Calendar.getInstance().getTime();
+                
+            } else if (modT == null && creT != null)
+            {
+                modT = new Date(creT.getTime());
+            } else
+            {
+                creT = new Date(modT.getTime());
+            }
+
     		
     		GeologicTimePeriod gtp = new GeologicTimePeriod();
     		gtp.initialize();
@@ -3346,6 +3481,7 @@ public class GenericDBConversion
     		gtp.setRemarks(rem);
     		gtp.setTimestampCreated(creT);
     		gtp.setTimestampModified(modT);
+
     		
     		session.save(gtp);
 
@@ -3593,7 +3729,9 @@ public class GenericDBConversion
        // These represent the New columns of Agent Table
        // So the order of the names are for the new table
        // the names reference the old table
-       String[] agentColumns = {"agent.AgentID",
+       String[] agentColumns = {
+               "agent.AgentID",
+               "agent.TimestampModified",
                "agent.AgentType",
                "agentaddress.JobTitle",
                "agent.FirstName",
@@ -3606,13 +3744,13 @@ public class GenericDBConversion
                "agentaddress.Email",
                "agentaddress.URL",
                "agent.Remarks",
-               "agent.TimestampModified",
                "agent.TimestampCreated",
                "agent.LastEditedBy",
                "agent.ParentOrganizationID"};
 
        // See comments for agent Columns
        String[] addressColumns = {"address.AddressID",
+                                   "address.TimestampModified",
                                     "address.Address",
                                     "address.Address2",
                                     "address.City",
@@ -3620,7 +3758,6 @@ public class GenericDBConversion
                                     "address.Country",
                                     "address.Postalcode",
                                     "address.Remarks",
-                                    "address.TimestampModified",
                                     "address.TimestampCreated",
                                     "address.LastEditedBy",
                                     "agentaddress.IsCurrent",
@@ -3630,10 +3767,10 @@ public class GenericDBConversion
                                     "agentaddress.RoomOrBuilding",
                                     "address.AgentID"};
 
-       Hashtable<Integer, Integer> agentTracker = new Hashtable<Integer, Integer>();
-       Hashtable<Integer, Integer> addressTracker = new Hashtable<Integer, Integer>();
-       Hashtable<Integer, Integer> oldAddrIds = new Hashtable<Integer, Integer>();
-       Hashtable<Integer, Integer> oldAgentIds = new Hashtable<Integer, Integer>();
+       Hashtable<Long, Long> agentTracker = new Hashtable<Long, Long>();
+       Hashtable<Long, Long> addressTracker = new Hashtable<Long, Long>();
+       Hashtable<Long, Long> oldAddrIds = new Hashtable<Long, Long>();
+       Hashtable<Long, Long> oldAgentIds = new Hashtable<Long, Long>();
 
        // Create a Hashtable to track which IDs have been handled during the conversion process
        try
@@ -3642,8 +3779,8 @@ public class GenericDBConversion
            ResultSet rsX   = stmtX.executeQuery("select AddressID from address order by AddressID");
            while (rsX.next())
            {
-               int addrId = rsX.getInt(1);
-               oldAddrIds.put(addrId, 0);
+               long addrId = rsX.getLong(1);
+               oldAddrIds.put(addrId, 0L);
            }
            rsX.close();
            stmtX.close();
@@ -3652,8 +3789,8 @@ public class GenericDBConversion
            rsX   = stmtX.executeQuery("select AgentID from agent order by AgentID");
            while (rsX.next())
            {
-               int agentId = rsX.getInt(1);
-               oldAgentIds.put(agentId, 0);
+               long agentId = rsX.getLong(1);
+               oldAgentIds.put(agentId, 0L);
            }
            rsX.close();
            stmtX.close();
@@ -3676,23 +3813,23 @@ public class GenericDBConversion
            }
 
            // Figure out certain icolumn indexes we will need ater
-           int agentIdInx = indexFromNameMap.get("agent.AgentID");
-           int addrIdInx  = indexFromNameMap.get("address.AddressID");
-           int agentTypeInx  = indexFromNameMap.get("agent.AgentType");
+           long agentIdInx = indexFromNameMap.get("agent.AgentID");
+           long addrIdInx  = indexFromNameMap.get("address.AddressID");
+           long agentTypeInx  = indexFromNameMap.get("agent.AgentType");
 
-           int newAgentId = 1;
-           int newAddrId  = 1;
+           long newAgentId = 1;
+           long newAddrId  = 1;
 
-           int recordCnt = 0;
+           long recordCnt = 0;
            while (rs.next())
            {
-               byte agentType     = rs.getByte(agentTypeInx);
-               int agentAddressId = rs.getInt(1);
-               int agentId        = rs.getInt(agentIdInx);
-               int addrId         = rs.getInt(addrIdInx);
+               byte agentType     = rs.getByte((int)agentTypeInx);
+               long agentAddressId = rs.getLong(1);
+               long agentId        = rs.getLong((int)agentIdInx);
+               long addrId         = rs.getLong((int)addrIdInx);
 
                recordCnt++;
-               int currentNewAgentId = newAgentId;
+               long currentNewAgentId = newAgentId;
 
                // Because of the old DB relationships we want to make sure we only add each agent in one time
                boolean alreadyInserted = agentTracker.get(agentId) != null;
@@ -3706,6 +3843,11 @@ public class GenericDBConversion
 
                         if (i > 0) strBuf.append(",");
                         //log.info(agentColumns[i]);
+                        if (agentColumns[i].equals("agent.AgentType"))
+                        {
+                           int x = 0;
+                           x++;
+                        }
                         if (i == 0)
                         {
                             strBuf.append(newAgentId);
@@ -3744,7 +3886,7 @@ public class GenericDBConversion
 
                         // Here we add to the agent tracker a mapping from the Old ID to the New Id
                         agentTracker.put(agentId, newAgentId);
-                        oldAgentIds.put(agentId, 1);
+                        oldAgentIds.put(agentId, 1L);
                         // Tell the IDMapper about the mapping from NewID to the Old
                         agentIDMapper.put(agentId, newAgentId);
                         // Now tell the AgentAddress Mapper the New ID to the Old AgentAddressID
@@ -3764,7 +3906,7 @@ public class GenericDBConversion
                {
                    log.info("Agent already Used ["+BasicSQLUtils.getStrValue(rs.getObject(indexFromNameMap.get("agent.LastName")))+"]");
 
-                   int newAID = agentTracker.get(agentId);
+                   long newAID = agentTracker.get(agentId);
                    agentAddrIDMapper.put(agentAddressId, newAID);
                    currentNewAgentId = newAID;
                }
@@ -3787,7 +3929,7 @@ public class GenericDBConversion
                            String value;
                            if (i == 0)
                            {
-                               value = Integer.toString(newAddrId);
+                               value = Long.toString(newAddrId);
 
                            } else if (inxInt == null && addressColumns[i].equals("address.Address2"))
                            {
@@ -3825,7 +3967,7 @@ public class GenericDBConversion
                        updateStatement = null;
 
                        addressTracker.put(addrId, newAddrId);
-                       oldAddrIds.put(addrId, 1);
+                       oldAddrIds.put(addrId, 1L);
 
                        addrIDMapper.put(addrId, newAddrId);
                        newAddrId++;
@@ -3887,7 +4029,7 @@ public class GenericDBConversion
            while (rs.next())
            {
                //int agentAddressId = rs.getInt(1);
-               int addrId         = rs.getInt(addrIdInx);
+               long addrId         = rs.getLong((int)addrIdInx);
 
                recordCnt++;
 
@@ -3910,7 +4052,7 @@ public class GenericDBConversion
                            String value;
                            if (i == 0)
                            {
-                               value = Integer.toString(newAddrId);
+                               value = Long.toString(newAddrId);
 
                            } else if (inxInt == null && addressColumns[i].equals("address.Address2"))
                            {
@@ -3948,7 +4090,7 @@ public class GenericDBConversion
                        updateStatement = null;
 
                        addressTracker.put(addrId, newAddrId);
-                       oldAddrIds.put(addrId, 1);
+                       oldAddrIds.put(addrId, 1L);
 
                        addrIDMapper.put(addrId, newAddrId);
                        newAddrId++;
@@ -4011,8 +4153,8 @@ public class GenericDBConversion
            recordCnt = 0;
            while (rs.next())
            {
-               int agentAddressId = rs.getInt(1);
-               int agentId = rs.getInt(agentIdInx);
+               long agentAddressId = rs.getLong(1);
+               long agentId        = rs.getLong((int)agentIdInx);
 
                recordCnt++;
 
@@ -4051,7 +4193,7 @@ public class GenericDBConversion
                         updateStatement = null;
 
                         agentTracker.put(agentId, newAgentId);
-                        oldAgentIds.put(agentId, 1);
+                        oldAgentIds.put(agentId, 1L);
                         agentIDMapper.put(agentId, newAgentId);
 
                         agentAddrIDMapper.put(agentAddressId, newAgentId);
@@ -4093,11 +4235,11 @@ public class GenericDBConversion
                sqlStr.append(" from address where AddressId in (");
 
                int cnt = 0;
-               for (Enumeration<Integer> e=oldAddrIds.keys();e.hasMoreElements();)
+               for (Enumeration<Long> e=oldAddrIds.keys();e.hasMoreElements();)
                {
 
-                   Integer id = e.nextElement();
-                   Integer val = oldAddrIds.get(id);
+                   Long id = e.nextElement();
+                   Long val = oldAddrIds.get(id);
                    if (val == 0)
                    {
                        addrIDMapper.put(id, newAddrId);
@@ -4127,11 +4269,11 @@ public class GenericDBConversion
                sqlStr.append(" from agent where AgentId in (");
 
                int cnt = 0;
-               for (Enumeration<Integer> e=oldAgentIds.keys();e.hasMoreElements();)
+               for (Enumeration<Long> e=oldAgentIds.keys();e.hasMoreElements();)
                {
 
-                   Integer id = e.nextElement();
-                   Integer val = oldAgentIds.get(id);
+                   Long id = e.nextElement();
+                   Long val = oldAgentIds.get(id);
                    if (val == 0)
                    {
                        agentIDMapper.put(id, newAgentId);

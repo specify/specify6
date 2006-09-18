@@ -33,8 +33,10 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -73,6 +75,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Object                       parentDataObj   = null;
     protected CardLayout                   cardLayout      = new CardLayout();
     protected Viewable                     currentView     = null;
+    protected Session                      session         = null;
 
     protected boolean                      specialEditView = false;
     protected boolean                      editable        = false;
@@ -214,9 +217,36 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             if (viewable.getValidator() != null && viewable.getValidator().hasChanged()) // XXX Not sure why it must have a validator ???
             {
                 viewable.getDataFromUI();
+                if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
+                {
+                    if (UIHelper.updateLastEdittedInfo(viewable.getDataObj(), "ZZZ"))
+                    {
+                        viewable.setDataIntoUI();
+                    }
+                }
             }
         }
     }
+
+    /**
+     * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
+     * the DB object.
+     */
+    public void setSession(final Session session)
+    {
+        this.session = session;
+        
+        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
+        {
+            e.nextElement().setSession(session);
+        }
+        
+        for (MultiView mv : kids)
+        {
+            mv.setSession(session);
+        }
+    }
+
 
     /**
      * Returns the View (the definition).
@@ -401,6 +431,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode = altView.getMode();
                     viewable = ViewFactory.createFormView(this, view, altViewName, data, createRecordSetController, createViewSwitcher);
+                    viewable.setSession(session);
                     if (add(viewable, altViewName))
                     {
                         viewable.aboutToShow(true);
@@ -619,6 +650,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         parentDataObj = null;
         currentView   = null;
         externalOKBtn = null;
+        session       = null;
 
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {

@@ -15,7 +15,7 @@ public class Project  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer projectId;
+     protected Long projectId;
      protected String projectName;
      protected String projectDescription;
      protected String url;
@@ -42,7 +42,7 @@ public class Project  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Project(Integer projectId) {
+    public Project(Long projectId) {
         this.projectId = projectId;
     }
    
@@ -64,7 +64,7 @@ public class Project  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         timestampCreated = new Date();
-        timestampModified = new Date();
+        timestampModified = null;
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -78,11 +78,11 @@ public class Project  implements java.io.Serializable {
     /**
      *      * Primary key
      */
-    public Integer getProjectId() {
+    public Long getProjectId() {
         return this.projectId;
     }
     
-    public void setProjectId(Integer projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
