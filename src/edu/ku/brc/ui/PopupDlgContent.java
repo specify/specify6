@@ -17,9 +17,8 @@
 package edu.ku.brc.ui;
 import java.awt.Container;
 
-import javax.swing.JComponent;
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 /**

@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.ui;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
