@@ -17,63 +17,74 @@ package edu.ku.brc.ui;
 import org.apache.log4j.Logger;
 
 /**
- * Class generates unique Ids for dialogs based on the content of the dialog being
- * displayed, as well as a unique defined String from that class.
+ * Class generates unique Ids for dialogs based on the content of the dialog
+ * being displayed, as well as a unique defined String from that class.
  * 
- *@code_status Beta
+ * @code_status Alpha
  * 
  * @author megkumin
- *
+ * 
  */
+@SuppressWarnings("unused")
 public class PopupDlgId
 {
-	private static final Logger log = Logger.getLogger(PopupDlgId.class);
-	private String idString = "";
-	private String title,  message, uniqueIdentifier = "";
-	int callingLinenumber;
-	int id = -1;
+    private static final Logger log = Logger.getLogger(PopupDlgId.class);
 
-	/**
-	 * Constructor
-	 * @param title - title of the dialog being dispalyed
-	 * @param message - the message being displayed in the dialog
-	 * @param uniqueIdentifier - a unique string (typically classname + dialog number)
-	 */
-	public PopupDlgId(String title, String message,  String uniqueIdentifier) {
-		this.title = title;
-		this.message = message;
-		this.uniqueIdentifier = uniqueIdentifier;
-		idString =  
-			"title:"+ title + ";" +
-			"message:" + message  + ";" +
-			"uniqueIdentifier:" + uniqueIdentifier;
-		id = idString.hashCode();
-		log.info("id [" + id + "] created for dialog [" + idString + "]");
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString()
-	{
-		return idString;
-	}
-	
-	/**
-	 * @return 
-	 * int - the unique id
-	 */
-	public int getId() {
-		return id;
-	}
-	/**
-	 * @param args
-	 * void
-	 */
-	public static void main(String[] args)
-	{
-		// TODO Auto-generated method stub
+    private String idString = "";
 
-	}
+    private String title, message, uniqueIdentifier = "";
+
+    int callingLinenumber;
+
+    int id = -1;
+
+    /**
+     * Constructor
+     * 
+     * @param title -
+     *            title of the dialog being dispalyed
+     * @param message -
+     *            the message being displayed in the dialog
+     * @param uniqueIdentifier -
+     *            a unique string (typically classname + dialog number)
+     */
+    public PopupDlgId(String title, String message, String uniqueIdentifier)
+    {
+        this.title = title;
+        this.message = message;
+        this.uniqueIdentifier = uniqueIdentifier;
+        idString = "title:" + title + ";" + "message:" + message + ";"
+                        + "uniqueIdentifier:" + uniqueIdentifier;
+        id = idString.hashCode();
+        log.info("id [" + id + "] created for dialog [" + idString + "]");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return idString;
+    }
+
+    /**
+     * @return int - the unique id
+     */
+    public int getId()
+    {
+        return id;
+    }
+
+    /**
+     * @param args
+     *            void
+     */
+    public static void main(String[] args)
+    {
+        // TODO Auto-generated method stub
+
+    }
 
 }
