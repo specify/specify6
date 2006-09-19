@@ -15,10 +15,10 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 
-import static edu.ku.brc.helpers.UIHelper.createDuplicateJGoodiesDef;
-import static edu.ku.brc.helpers.UIHelper.getInt;
-import static edu.ku.brc.helpers.UIHelper.getString;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.ui.UIHelper.getInt;
+import static edu.ku.brc.ui.UIHelper.getString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;

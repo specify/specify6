@@ -69,7 +69,6 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -114,6 +113,7 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 
 public class CreateTestDatabases
 {

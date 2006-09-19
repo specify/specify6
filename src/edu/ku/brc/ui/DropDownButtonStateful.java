@@ -33,7 +33,7 @@ import javax.swing.border.EmptyBorder;
  * because the buttons toggles between 2 or more states by clicking on the main button. Or you can switch states by selecting
  * a "state" from the list.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -43,25 +43,40 @@ public class DropDownButtonStateful extends DropDownButton
 {
     protected ImageIcon[]            imgIcons      = null;
     protected String[]               labels        = null;
+    protected String[]               toolTips      = null;
     protected String                 currLabel     = null;
     protected int                    currInx       = 0;
     protected Dimension              preferredSize = null;
-    
+
     /**
-     * Constructs a UI component with a label and an icon which can be clicked to execute an action
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action.
      * @param labels the text labels for the UI
      * @param imgIcons the icons for the UI
      */
     public DropDownButtonStateful(final String[]    labels, 
                                   final ImageIcon[] imgIcons)
     {
-       super(labels[0], imgIcons[0], JButton.CENTER);
+        this(labels, imgIcons, null);
+    }
+    
+    /**
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action.
+     * @param labels the text labels for the UI
+     * @param imgIcons the icons for the UI
+     * @param toolTips toolTip text
+     */
+    public DropDownButtonStateful(final String[]    labels, 
+                                  final ImageIcon[] imgIcons, 
+                                  final String[]    toolTips)
+    {
+       super(labels[0], imgIcons[0], toolTips != null ? toolTips[0] : null, JButton.CENTER);
        
         setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         setLayout(new BorderLayout());
        
         this.imgIcons = imgIcons;
         this.labels   = labels;
+        this.toolTips = toolTips;
         
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -82,7 +97,7 @@ public class DropDownButtonStateful extends DropDownButton
             menus.add(menuItem);
         }
         
-        init(labels[0], imgIcons[0]);
+        init(labels[0], imgIcons[0], toolTips != null ? toolTips[0] : null);
         
         mainBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
@@ -133,7 +148,7 @@ public class DropDownButtonStateful extends DropDownButton
     }*/
     
     /**
-     * Sets Current Index
+     * Sets Current Index.
      * @param index the new index
      */
     public void setCurrentIndex(final int index)
@@ -142,10 +157,15 @@ public class DropDownButtonStateful extends DropDownButton
         int nxtInx = getNextIndex();
         mainBtn.setIcon(imgIcons[nxtInx]);
         mainBtn.setText(labels[nxtInx]);
+        
+        if (toolTips != null)
+        {
+            mainBtn.setToolTipText(toolTips[nxtInx]);
+        }
     }
     
     /**
-     * Returns the current state index
+     * Returns the current state index.
      * @return the current state index
      */
     public int getCurrentIndex()
@@ -154,7 +174,7 @@ public class DropDownButtonStateful extends DropDownButton
     }
     
     /**
-     * Tells the class that an items was selected from the list
+     * Tells the class that an items was selected from the list.
      * @param obj the object that made the state change (a JMenuItem)
      */
     protected void itemSelected(final Object obj)

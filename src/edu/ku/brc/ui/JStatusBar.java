@@ -30,7 +30,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.helpers.UIHelper;
 
 /**
  * This is a statusbar component. It currently enables a progressbar to be shown and

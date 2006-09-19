@@ -49,5 +49,11 @@ public interface NavBoxItemIFace
      * @return the data object
      */
     public Object getData();
+    
+    /**
+     * Sest a tooltip string on the item (if appropriate).
+     * @param toolTip the already localized tool tip string
+     */
+    public void setToolTip(String toolTip);
 
 }

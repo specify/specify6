@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.ui.DBObjDialogFactory;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.ViewSetMgrManager;

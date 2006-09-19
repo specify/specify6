@@ -20,8 +20,8 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.time.FastDateFormat;
 
-import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 
 /**

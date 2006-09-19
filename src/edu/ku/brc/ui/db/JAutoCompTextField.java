@@ -28,7 +28,7 @@ import javax.swing.JTextField;
  * An auto-complete text field which is supported through PickList/PickListItem.
  * The searches in the list can be case-sensitive or insensitive
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -40,6 +40,7 @@ public class JAutoCompTextField extends JTextField
     protected boolean            enableAdditions = true;
     protected boolean            caseInsensitve  = true;
     protected boolean            askBeforeSave   = true;
+    protected boolean            hasChanged      = false;
 
     protected boolean            foundMatch      = false;
     protected boolean            ignoreFocus     = false;
@@ -47,7 +48,7 @@ public class JAutoCompTextField extends JTextField
     protected PickListDBAdapter  dbAdapter       = null;
 
     /**
-     * Constructor without Adaptor
+     * Constructor without Adaptor.
      */
     public JAutoCompTextField()
     {
@@ -55,7 +56,7 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
-     * Constructor
+     * Constructor.
      * @param arg0 initial value
      */    
     public JAutoCompTextField(String arg0)
@@ -65,7 +66,7 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
-     * Constructor
+     * Constructor.
      * @param arg0 initial number of columns
      */
     public JAutoCompTextField(int arg0)
@@ -75,7 +76,7 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
-     * Constructor
+     * Constructor.
      * @param arg0 initial number of columns
      */
     public JAutoCompTextField(int arg0, PickListDBAdapter pickListDBAdapter)
@@ -86,7 +87,7 @@ public class JAutoCompTextField extends JTextField
     }
    
     /**
-     * Constructor
+     * Constructor.
      * @param arg0 initial value
      * @param arg1 initial number of columns
      */
@@ -97,7 +98,7 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
-     * Constructor with Adapter
+     * Constructor with Adapter.
      * @param dbAdapter the adaptor for enabling autocomplete
      */
     public JAutoCompTextField(PickListDBAdapter dbAdapter)
@@ -109,7 +110,7 @@ public class JAutoCompTextField extends JTextField
 
     
     /**
-     * Initializes the TextField by setting up all the listeners for auto-complete
+     * Initializes the TextField by setting up all the listeners for auto-complete.
      */
     protected void init()
     {
@@ -144,6 +145,9 @@ public class JAutoCompTextField extends JTextField
                             //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
                             setText(s.substring(0, s.length()-1));
                             
+                        } else
+                        {
+                            hasChanged = true;
                         }
                         
                     } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
@@ -180,7 +184,6 @@ public class JAutoCompTextField extends JTextField
                     int inx = 0;
                     for (PickListItem pli : dbAdapter.getList())
                     {
-                        //System.out.println("str: "+str);
                         String title = pli.getTitle();
                         int ind;
                         if (caseInsensitve) 
@@ -198,13 +201,14 @@ public class JAutoCompTextField extends JTextField
                         inx++;
                     }
                     foundMatch = false;
+                    hasChanged = true;
                 }
             });
         }
     }
     
     /**
-     * Sets the text into the control via an index into the list of possible values
+     * Sets the text into the control via an index into the list of possible values.
      * @param index the index of the value
      */
     public void setSelectedIndex(int index)
@@ -218,7 +222,7 @@ public class JAutoCompTextField extends JTextField
     }
    
     /**
-     * Sets whether new items can be added
+     * Sets whether new items can be added.
      * @param enableAdditions indicates items can be added
      */
     public void setEnableAdditions(final boolean enableAdditions)
@@ -227,7 +231,7 @@ public class JAutoCompTextField extends JTextField
     }
 
     /**
-     * Sets whether to ask via a dialog if a value should be added
+     * Sets whether to ask via a dialog if a value should be added.
      * @param askBeforeSave indicates it should ask
      */
     public void setAskBeforeSave(final boolean askBeforeSave)
@@ -236,7 +240,7 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
-     * Sets wehether the searches for the items are case insensitive or not
+     * Sets wehether the searches for the items are case insensitive or not.
      * @param caseInsensitve
      */
     public void setCaseInsensitive(final boolean caseInsensitve)
@@ -245,7 +249,7 @@ public class JAutoCompTextField extends JTextField
     }
 
     /**
-     * It may or may not ask if it can add, and then it adds the new item
+     * It may or may not ask if it can add, and then it adds the new item.
      * @param strArg the string that is to be added
      * @return whether it was added
      */
@@ -257,7 +261,7 @@ public class JAutoCompTextField extends JTextField
             return false;
         }
         
-        if (isNotEmpty(strArg))
+        if (hasChanged && isNotEmpty(strArg))
         {
             ignoreFocus = true;
 	        if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Remember value `"+strArg+"`?", "Remember Value", 
@@ -267,6 +271,7 @@ public class JAutoCompTextField extends JTextField
 	            {
 	                dbAdapter.addItem(strArg, null);
 	            }
+                hasChanged  = false;
 	            ignoreFocus = false;
 	            return true;
 	        }
@@ -276,7 +281,7 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
-     * Check to see if it can add the the item that is in the combobox'es testfield
+     * Check to see if it can add the the item that is in the combobox'es testfield.
      */
     protected void addNewItemFromTextField()
     {
@@ -288,7 +293,6 @@ public class JAutoCompTextField extends JTextField
             setSelectionStart(0);
             setSelectionEnd(0);
             moveCaretPosition(0);
-            //System.out.println("Clearing Selection.");
             
         } else 
         {
@@ -301,9 +305,6 @@ public class JAutoCompTextField extends JTextField
 	                setSelectionEnd(0);
 	                moveCaretPosition(0);	   
                     
-	            } else 
-	            {
-	                //setText("");
 	            }
             }
         }        

@@ -70,10 +70,12 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.JAutoCompTextField;
+import edu.ku.brc.ui.db.PickListDBAdapter;
 /**
  * This task will enable the user to index there database and preform express searches
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -88,7 +90,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     // Data Members
     protected Analyzer                     analyzer       = new StandardAnalyzer();
     protected File                         lucenePath     = null;
-    protected JTextField                   searchText;
+    protected JAutoCompTextField           searchText;
     protected JButton                      searchBtn;
     protected Color                        textBGColor    = null;
     protected Color                        badSearchColor = new Color(255,235,235);
@@ -96,7 +98,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     protected Hashtable<String, ExpressResultsTableInfo> tables = null;
 
     /**
-     * Deafult Constructor
+     * Deafult Constructor.
      */
     public ExpressSearchTask()
     {
@@ -122,7 +124,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
 
     /**
-     * Helper function to return the path to the express search directory
+     * Helper function to return the path to the express search directory.
      * @return return the path to the express search directory
      */
     public static File getIndexDirPath()
@@ -152,7 +154,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
 
     /**
-     * Collects information about all the tables that will be processed for the express search
+     * Collects information about all the tables that will be processed for the express search.
      * @return hash of named ExpressResultsTableInfo
      */
     public static Hashtable<String, ExpressResultsTableInfo> intializeTableInfo()
@@ -185,7 +187,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
 
     /**
-     * Check to see of the index has been run and then enables the express search controls
+     * Check to see of the index has been run and then enables the express search controls.
      *
      */
     public void checkForIndexer()
@@ -199,7 +201,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
 
     /**
-     * Displays the config pane for the express search
+     * Displays the config pane for the express search.
      *
      */
     public void showIndexerPane()
@@ -209,8 +211,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
 
     /**
-     * Performs the express search and returns the results
-     * @param searchTerm the term to be searched
+     * Performs the express search and returns the results.
      */
     protected void doQuery()
     {
@@ -230,7 +231,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
 
 
     /**
-     * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace
+     * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace/
      * @param lucenePath the path to lucene
      * @param analyzer the analyzer to use for the indexer
      * @param searchText the Text Control that contains the search string
@@ -250,7 +251,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
 
     /**
-     * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace
+     * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace/
      * @param lucenePath the path to lucene
      * @param analyzer the analyzer to use for the indexer
      * @param searchTextStr the string to use as the search
@@ -476,10 +477,17 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
         JLabel     spacer      = new JLabel(" ");
 
         searchBtn   = new JButton(getResourceString("Search"));
+        searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
 
         //searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
         //searchText  = new JTextField("beanii", 15);
-        searchText  = new JTextField("2004-IZ-121", 15);
+                
+        searchText = new JAutoCompTextField(15, new PickListDBAdapter("ExpressSearch", true));
+        searchText.setAskBeforeSave(false);
+        
+        searchText.setText("2004-IZ-121");
+        
+        //searchText  = searchTextAutoComp.getTnew JTextField("2004-IZ-121", 15);
 
         //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();

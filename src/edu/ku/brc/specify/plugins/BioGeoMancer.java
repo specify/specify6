@@ -68,7 +68,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -79,6 +78,7 @@ import edu.ku.brc.specify.tasks.services.MapGrabber;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 
 /**

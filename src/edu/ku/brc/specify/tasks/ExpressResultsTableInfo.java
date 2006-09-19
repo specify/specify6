@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.helpers.UIHelper.getBoolean;
+import static edu.ku.brc.ui.UIHelper.getBoolean;
 
 import java.awt.Color;
 import java.util.Hashtable;

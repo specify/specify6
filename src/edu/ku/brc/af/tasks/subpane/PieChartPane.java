@@ -15,9 +15,9 @@
 
 package edu.ku.brc.af.tasks.subpane;
 
-import static edu.ku.brc.helpers.UIHelper.getInt;
-import static edu.ku.brc.helpers.UIHelper.getString;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIHelper.getInt;
+import static edu.ku.brc.ui.UIHelper.getString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

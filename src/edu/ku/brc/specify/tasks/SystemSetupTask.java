@@ -40,12 +40,12 @@ import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickList;
 
 

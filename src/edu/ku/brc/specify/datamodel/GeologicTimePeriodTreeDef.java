@@ -1,3 +1,17 @@
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
@@ -6,7 +20,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefIface<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
-	protected Long   				taxonTreeDefId;
+	protected Long   				geologicTimePeriodTreeDefId;
 	protected String				name;
 	protected String				remarks;
 	protected Set<CollectionObjDef>		collObjDefs;
@@ -22,15 +36,15 @@ public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefI
 	}
 
 	/** constructor with id */
-	public GeologicTimePeriodTreeDef(Long taxonTreeDefId)
+	public GeologicTimePeriodTreeDef(Long geologicTimePeriodTreeDefId)
 	{
-		this.taxonTreeDefId = taxonTreeDefId;
+		this.geologicTimePeriodTreeDefId = geologicTimePeriodTreeDefId;
 	}
 
 	// Initializer
 	public void initialize()
 	{
-		taxonTreeDefId = null;
+		geologicTimePeriodTreeDefId = null;
 		name = null;
 		remarks = null;
 		collObjDefs = new HashSet<CollectionObjDef>();
@@ -47,12 +61,21 @@ public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefI
 	 */
 	public Long getGeologicTimePeriodTreeDefId()
 	{
-		return this.taxonTreeDefId;
+		return this.geologicTimePeriodTreeDefId;
 	}
 
-	public void setGeologicTimePeriodTreeDefId(Long taxonTreeDefId)
+    /**
+     * Generic Getter for the ID Property.
+     * @returns ID Property.
+     */
+    public Long getId()
+    {
+        return this.geologicTimePeriodTreeDefId;
+    }
+
+	public void setGeologicTimePeriodTreeDefId(Long geologicTimePeriodTreeDefId)
 	{
-		this.taxonTreeDefId = taxonTreeDefId;
+		this.geologicTimePeriodTreeDefId = geologicTimePeriodTreeDefId;
 	}
 
 	/**

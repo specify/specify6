@@ -56,7 +56,6 @@ import javax.swing.event.MouseInputAdapter;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.DndDeletable;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -476,7 +475,14 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         return label;
     }
 
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.NavBoxItemIFace#setToolTip(java.lang.String)
+     */
+    public void setToolTip(final String toolTip)
+    {
+        super.setToolTipText(toolTip);
+    }
+    
     //-----------------------------------------------
     // GhostActionable Interface
     // Note: Both GhostActionable and NavBoxItemIFace both hace a get/set Data

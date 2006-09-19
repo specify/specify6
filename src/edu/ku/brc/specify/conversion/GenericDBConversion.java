@@ -51,7 +51,6 @@ import org.hibernate.criterion.Expression;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -75,6 +74,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickList;
 import edu.ku.brc.ui.db.PickListItem;
 import edu.ku.brc.util.Pair;
@@ -2673,13 +2673,13 @@ public class GenericDBConversion
     	ttd.initialize();
 
     	ResultSet rs = st.executeQuery("SELECT TaxonomyTypeID FROM taxonomytype");
-    	Vector<Integer> ttIds = new Vector<Integer>();
+    	Vector<Long> ttIds = new Vector<Long>();
     	while( rs.next() )
     	{
-    		ttIds.add(rs.getInt(1));
+    		ttIds.add(rs.getLong(1));
     	}
 
-    	for( Integer id: ttIds )
+    	for( Long id: ttIds )
     	{
     		convertTaxonTreeDefinition(id);
     	}
@@ -2694,7 +2694,7 @@ public class GenericDBConversion
      * @throws SQLException
      */
     @SuppressWarnings("unchecked")
-	public TaxonTreeDef convertTaxonTreeDefinition( int taxonomyTypeId ) throws SQLException
+	public TaxonTreeDef convertTaxonTreeDefinition( long taxonomyTypeId ) throws SQLException
     {
     	Statement  st   = oldDBConn.createStatement();
 
@@ -2915,18 +2915,18 @@ public class GenericDBConversion
         	{
         		continue;
         	}
-        	int prevTreeDefItemId = rs.getInt(1);
-        	Vector<Pair<Integer,Integer>> idAndParentIdPairs = new Vector<Pair<Integer,Integer>>();
+        	long prevTreeDefItemId = rs.getLong(1);
+        	Vector<Pair<Long,Long>> idAndParentIdPairs = new Vector<Pair<Long,Long>>();
         	while( rs.next() )
         	{
-        		int treeDefItemId = rs.getInt(1);
-        		idAndParentIdPairs.add(new Pair<Integer,Integer>(treeDefItemId,prevTreeDefItemId));
+        		long treeDefItemId = rs.getLong(1);
+        		idAndParentIdPairs.add(new Pair<Long,Long>(treeDefItemId,prevTreeDefItemId));
         		prevTreeDefItemId = treeDefItemId;
         	}
 
         	// now we have all the pairs (ID,ParentID) in a Vector of Pair objects
         	rowsUpdated = 0;
-        	for( Pair<Integer,Integer> idPair: idAndParentIdPairs )
+        	for( Pair<Long,Long> idPair: idAndParentIdPairs )
         	{
         		sqlStr = "UPDATE taxontreedefitem SET ParentItemID=" + idPair.second + " WHERE TaxonTreeDefItemID=" + idPair.first;
         		rowsUpdated += newDbStmt.executeUpdate(sqlStr);

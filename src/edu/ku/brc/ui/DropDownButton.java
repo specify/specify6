@@ -50,12 +50,11 @@ import com.jgoodies.forms.layout.FormLayout;
  * 
  * XXX NOTE: This only drops menu down and doesn't check for where it is on the screen
  * 
- * (Adpated from an example by santhosh kumar)
+ * (Adpated from an example by santhosh kumar - santhosh@in.fiorano.com)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
- * @author rods
- * @author  santhosh kumar - santhosh@in.fiorano.com 
+ * @author rods  
  *
  */
 @SuppressWarnings("serial")
@@ -83,34 +82,36 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     // this class needs a mouse tracker to pop down the menu when the mouse isn't over it or the button
 
     /**
-     * Default Constructor  
+     * Default Constructor.
      */
     public DropDownButton()
     {
         super();
-        init(null, null);
+        init(null, null, null);
     }
 
     /**
      * Creates a toolbar item with label and icon and their positions.
      * @param label label of the toolbar item
      * @param icon the icon
+     * @param toolTip the tooltip text that has already been localized
      * @param textPosition the position of the text as related to the icon
      */
-    public DropDownButton(String label, Icon icon, int textPosition)
+    public DropDownButton(String label, Icon icon, String toolTip, int textPosition)
     {
-        init(label, icon);
+        init(label, icon, toolTip);
+        
         mainBtn.setVerticalTextPosition(textPosition);
         mainBtn.setHorizontalTextPosition(JButton.CENTER);
     }
 
     /**
-     * Constructor with only an icon
+     * Constructor with only an icon.
      * @param icon the icon
      */
     public DropDownButton(Icon icon)
     {
-        init(null, icon);
+        init(null, icon, null);
     }
 
     /**
@@ -124,15 +125,21 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     public DropDownButton(final String label, final Icon icon, final int textPosition, final List<JComponent> menus)
     {
         this.menus = menus;
-        init(label, icon);
+        init(label, icon, null);
+        
         mainBtn.setVerticalTextPosition(textPosition);
         mainBtn.setHorizontalTextPosition(JButton.CENTER);
     }
 
     /**
-     * INitializes the internal UI
+     * Initializes the internal UI.
      */
-    protected void init(final String label, final Icon icon)
+    /**
+     * @param label
+     * @param icon
+     * @param toolTip
+     */
+    protected void init(final String label, final Icon icon, String toolTip)
     {
         mainBtn   = new JButton(label, icon);
         arrowBtn  = new JButton(dropDownArrow);
@@ -141,8 +148,12 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         mainBtn.setIconTextGap(1); 
         mainBtn.setMargin(new Insets(0,0,0,0));
         mainBtn.getModel().addChangeListener(this);
-        mainBtn.addPropertyChangeListener("enabled", this); // NO I18N
-        
+        mainBtn.addPropertyChangeListener("enabled", this);
+        if (toolTip != null)
+        {
+            mainBtn.setToolTipText(toolTip);
+        }
+
         arrowBtn.setBorder(new EmptyBorder(4,4,4,4));
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);
@@ -201,11 +212,19 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
           mainBtn.addActionListener(this);
     }
     
+    /**
+     * Adds listener.
+     * @param al the action listener
+     */
     public void addActionListener(ActionListener al)
     {
         listeners.add(al);
     }
     
+    /**
+     * Removes listener.
+     * @param al the action listener
+     */
     public void removeActionListener(ActionListener al)
     {
         listeners.remove(al);
@@ -322,7 +341,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
 
 
     /**
-     * Returns a new JPopMenu each time it is called, the poopup menu is created from the internal list
+     * Returns a new JPopMenu each time it is called, the poopup menu is created from the internal list.
      * @return Returns a new JPopMenu each time it is called, the poopup menu is created from the internal list
      */
     protected JPopupMenu getPopupMenu()
@@ -387,8 +406,9 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
          }
     }
     
-     /**
-     * @return Returns the statusBarHintText.
+    /**
+     * Returns the statusBarHintText.
+     * @return the statusBarHintText.
      */
     public String getStatusBarHintText()
     {
@@ -396,6 +416,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     }
 
     /**
+     * Sets the hint.
      * @param statusBarHintText The statusBarHintText to set.
      */
     public void setStatusBarHintText(String statusBarHintText)
@@ -403,6 +424,9 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         this.statusBarHintText = statusBarHintText;
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
     public void setEnabled(boolean value)
     {
     	mainBtn.setEnabled(value);

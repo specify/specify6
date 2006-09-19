@@ -41,15 +41,15 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
@@ -220,6 +220,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         if (StringUtils.isNotEmpty(displayInfoDialogName))
         {
             infoBtn = new JButton(IconManager.getImage("InfoIcon"));
+            infoBtn.setToolTipText(getResourceString("ShowRecordInfoTT"));
             infoBtn.setFocusable(false);
             infoBtn.setMargin(new Insets(1,1,1,1));
             infoBtn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));

@@ -9,15 +9,14 @@ import junit.framework.TestCase;
 
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 
-import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Tests the AppPreferences and AppPreferences cache

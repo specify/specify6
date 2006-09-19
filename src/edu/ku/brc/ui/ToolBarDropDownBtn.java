@@ -20,9 +20,9 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 
 /**
- * Toolbar button derived from DropDownBtn, this provides a way to set menu items
+ * Toolbar button derived from DropDownBtn, this provides a way to set menu items.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -30,7 +30,7 @@ import javax.swing.JComponent;
 @SuppressWarnings("serial")
 public class ToolBarDropDownBtn extends DropDownButton
 {
-     /**
+    /**
      * Creates a toolbar item with label and icon and their positions.
      * @param label label of the toolbar item
      * @param icon the icon
@@ -38,7 +38,19 @@ public class ToolBarDropDownBtn extends DropDownButton
      */
     public ToolBarDropDownBtn(final String label, final Icon icon, final int textPosition)
     {
-        super(label, icon, textPosition);
+        super(label, icon, null, textPosition);
+    }
+
+    /**
+     * Creates a toolbar item with label and icon and their positions.
+     * @param label label of the toolbar item
+     * @param icon the icon
+     * @param toolTip the toolTip
+     * @param textPosition the position of the text as related to the icon
+     */
+    public ToolBarDropDownBtn(final String label, final Icon icon, final String toolTip, final int textPosition)
+    {
+        super(label, icon, toolTip, textPosition);
     }
 
     /**
@@ -55,7 +67,8 @@ public class ToolBarDropDownBtn extends DropDownButton
      }
 
     /**
-     * @param icon the icon for the button
+     * Creates a toolbar item with icon.
+     * @param icon the icon for the button.
      */
     public ToolBarDropDownBtn(final Icon icon)
     {

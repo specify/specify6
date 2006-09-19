@@ -14,15 +14,18 @@
  */
 package edu.ku.brc.specify.tests;
 import java.util.Random;
+
 import junit.framework.TestCase;
+
 import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.PopupDlg;
 import edu.ku.brc.ui.PopupDlgPrefsMgr;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 
 
 /**

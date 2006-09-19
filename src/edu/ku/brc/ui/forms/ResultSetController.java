@@ -13,6 +13,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -112,6 +114,11 @@ public class ResultSetController implements ValidationListener
         nextBtn.setMargin(insets);
         lastBtn.setMargin(insets);
         
+        firstBtn.setToolTipText(getResourceString("GotoFirstRecordTT"));
+        prevBtn.setToolTipText(getResourceString("GotoPreviousRecordTT"));
+        nextBtn.setToolTipText(getResourceString("GotoNextRecordTT"));
+        lastBtn.setToolTipText(getResourceString("GotoLastRecordTT"));
+        
         CellConstraints cc = new CellConstraints();
         rowBuilder.add(firstBtn, cc.xy(1,1));
         rowBuilder.add(prevBtn, cc.xy(3,1));
@@ -123,6 +130,7 @@ public class ResultSetController implements ValidationListener
         if (addNewBtn)
         {
             newRecBtn = new JButton(IconManager.getImage("NewRec"));
+            newRecBtn.setToolTipText(getResourceString("NewRecordTT"));
             newRecBtn.setMargin(insets);
             rowBuilder.add(newRecBtn, cc.xy(row,1));
             row += 2;
@@ -141,6 +149,7 @@ public class ResultSetController implements ValidationListener
         if (addDelBtn)
         {
             delRecBtn = new JButton(IconManager.getImage("SmallTrash"));
+            delRecBtn.setToolTipText(getResourceString("RemoveRecordTT"));
             delRecBtn.setMargin(insets);
             rowBuilder.add(delRecBtn, cc.xy(row++,1));
             row += 2;

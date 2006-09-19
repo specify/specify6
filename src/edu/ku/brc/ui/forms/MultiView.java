@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -219,7 +219,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 viewable.getDataFromUI();
                 if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
                 {
-                    if (UIHelper.updateLastEdittedInfo(viewable.getDataObj(), "ZZZ"))
+                    if (HibernateUtil.updateLastEdittedInfo(viewable.getDataObj()))
                     {
                         viewable.setDataIntoUI();
                     }

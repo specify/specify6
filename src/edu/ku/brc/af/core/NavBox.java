@@ -316,5 +316,28 @@ public class NavBox extends JPanel implements NavBoxIFace
         return createBtn(label, iconName, null, iconSize, al);
     }
 
+    /**
+     * Returns a NavBoxItemIFace item built from a RolloverCommand.
+     * @param label the text label
+     * @param iconName the icon name, not the image filename, but the IconManager name for the icon
+     * @param iconSize the size  to use
+     * @param iconSize the size  to use
+     * @param al the action listener that will be added the item 
+     * @return a NavBoxItemIFace item built from a RolloverCommand
+     */
+    public static NavBoxItemIFace createBtnWithTT(final String label,
+                                                  final String iconName, 
+                                                  final String toolTip,
+                                                  final IconManager.IconSize iconSize,
+                                                  final ActionListener al)
+    {
+        NavBoxItemIFace nbi = createBtn(label, iconName, null, iconSize, al);
+        if (toolTip != null)
+        {
+            nbi.setToolTip(toolTip);
+        }
+        return  nbi;
+    }
+
 
 }

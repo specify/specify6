@@ -34,9 +34,9 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-/*
+/**
  * @code_status Unknown (auto-generated)
- **
+ *
  * @author rods
  *
  */

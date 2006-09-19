@@ -41,11 +41,11 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.TaskCommandDef;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Manages all the plugins as described in the plugin registry. 

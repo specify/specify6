@@ -60,11 +60,11 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -238,6 +238,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         createBtn.setEnabled(enabled);
 
     }
+    
+    /**
+     * Helper to create a buuton.
+     * @param iconName the name of the icon (not localized)
+     * @param tooltip the name of the tooltip (not localized)
+     * @return the new button
+     */
+    protected JButton createBtn(final String iconName, final String tooltip)
+    {
+        JButton btn = new JButton(IconManager.getIcon(iconName, IconManager.IconSize.Std16));
+        btn.setToolTipText(getResourceString(tooltip));
+        btn.setFocusable(false);
+        btn.setMargin(new Insets(1,1,1,1));
+        btn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        return btn;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.JAutoCompComboBox#init(boolean)
@@ -264,26 +280,17 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         builder.add(comboBox, cc.xy(1,1));
 
         int x = 3;
-        editBtn = new JButton(IconManager.getIcon("EditForm", IconManager.IconSize.Std16));
-        editBtn.setFocusable(false);
-        editBtn.setMargin(new Insets(1,1,1,1));
-        editBtn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        editBtn = createBtn("EditForm", "EditRecordTT");
         builder.add(editBtn, cc.xy(x,1));
         x += 2;
 
-        createBtn = new JButton(IconManager.getIcon("CreateObj", IconManager.IconSize.Std16));
-        createBtn.setFocusable(false);
-        createBtn.setMargin(new Insets(1,1,1,1));
-        createBtn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        createBtn = createBtn("CreateObj", "NewRecordTT"); 
         builder.add(createBtn, cc.xy(x,1));
         x += 2;
 
         if (hasSearchBtn)
         {
-            searchBtn = new JButton(IconManager.getIcon("Search", IconManager.IconSize.Std16));
-            searchBtn.setFocusable(false);
-            searchBtn.setMargin(new Insets(1,1,1,1));
-            searchBtn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+            searchBtn = createBtn("Search", "SearchForRecordTT"); 
             builder.add(searchBtn, cc.xy(x,1));
             x += 2;
         }
@@ -381,8 +388,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {
-            newDataObj = UIHelper.createAndNewDataObj(classObj);
-            UIHelper.initDataObj(newDataObj);
+            newDataObj = HibernateUtil.createAndNewDataObj(classObj);
+            HibernateUtil.initDataObj(newDataObj);
             //frame.setData(newDataObj);
 
             // Now get the setter for an object and set the value they typed into the combobox and place it in
@@ -707,7 +714,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public Object getValue()
     {
         Object value = null;
-        Integer id = comboBox.getSelectedId();
+        Long id = comboBox.getSelectedId();
         if (id != null)
         {
             Session session = HibernateUtil.getSessionFactory().openSession();
@@ -760,7 +767,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 if (currentMode == MODE.NewAndEmpty)
                 {
-                    UIHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
+                    HibernateUtil.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
                     setValue(newDataObj, null);
                     newDataObj = null;
                  }

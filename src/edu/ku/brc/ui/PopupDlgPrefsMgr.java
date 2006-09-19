@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui;
 import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.prefs.AppPreferences;
 
 

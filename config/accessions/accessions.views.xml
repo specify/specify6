@@ -106,7 +106,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Description"/>
-                    <cell type="field" id="7" name="text2" uitype="textarea" cols="60" rows="6" colspan="10"/>
+                    <cell type="field" id="7" name="text2" uitype="textarea" cols="60" rows="6" colspan="10" valtype="Changed"/>
                 </row>
                 
                 <row>
@@ -159,7 +159,7 @@
 
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="9" cols="50"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="9" cols="50" valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>
@@ -187,28 +187,28 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
-                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true"/>
+                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Middle Initial"/>
-                    <cell type="field" id="4" name="middleInitial" uitype="text" cols="3"/>
+                    <cell type="field" id="4" name="middleInitial" uitype="text" cols="3" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="First Name"/>
-                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Organization"/>
-                    <cell type="field" id="6" name="name" uitype="text" cols="30" colspan="5"/>
+                    <cell type="field" id="6" name="name" uitype="text" cols="30" colspan="5" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Abbreviation"/>
-                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="10"/>
+                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="10" valtype="Changed"/>
                     <cell type="label" labelfor="8" label="Interests"/>
-                    <cell type="field" id="8" name="interests" uitype="text" cols="30"/>
+                    <cell type="field" id="8" name="interests" uitype="text" cols="30" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7"/>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>
@@ -232,7 +232,7 @@
                     <cell type="field" id="2" name="permitNumber" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="3" label="Type"/>
-                    <cell type="field" id="3" name="type" uitype="combobox" picklist="PermitType"/>
+                    <cell type="field" id="3" name="type" uitype="combobox" picklist="PermitType" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Issued By"/>
@@ -244,23 +244,23 @@
 
                 <row>
                     <cell type="label" labelfor="6" label="Date Issued"/>
-                    <cell type="field" id="6" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="6" name="issuedDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
 
                     <cell type="label" labelfor="7" label="Date Renewed"/>
-                    <cell type="field" id="7" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="7" name="renewalDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
                 </row>
 
                 <row>
                     <cell type="label" labelfor="8" label="Start Date"/>
-                    <cell type="field" id="8" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="8" name="startDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
 
                     <cell type="label" labelfor="9" label="End Date"/>
-                    <cell type="field" id="9" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" id="9" name="endDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
                 </row>
 
                 <row>
                     <cell type="label" labelfor="10" label="Remarks"/>
-                    <cell type="field" id="10" name="remarks" uitype="textarea" colspan="9" cols="50"/>
+                    <cell type="field" id="10" name="remarks" uitype="textarea" colspan="9" cols="50" valtype="Changed"/>
                 </row>
 
             </rows>
@@ -285,7 +285,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" />
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3"  valtype="Changed"/>
                 </row>
 
             </rows>

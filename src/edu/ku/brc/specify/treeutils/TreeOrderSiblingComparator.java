@@ -5,6 +5,7 @@ package edu.ku.brc.specify.treeutils;
 
 import java.util.Comparator;
 
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.util.NameBasedComparator;
 import edu.ku.brc.util.RankBasedComparator;

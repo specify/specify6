@@ -18,7 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.dbsupport.HibernateUtil;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -49,6 +49,6 @@ public class CreateViewAction implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         
-        DataEntryTask.openView(task, viewSetName, viewName, mode, UIHelper.createAndNewDataObj(newDataObjClass), true);
+        DataEntryTask.openView(task, viewSetName, viewName, mode, HibernateUtil.createAndNewDataObj(newDataObjClass), true);
     }
 }

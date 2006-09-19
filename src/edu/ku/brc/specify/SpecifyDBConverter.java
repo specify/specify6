@@ -38,7 +38,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
@@ -55,6 +54,7 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.

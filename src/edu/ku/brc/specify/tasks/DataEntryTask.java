@@ -19,9 +19,12 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -42,7 +45,6 @@ import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -65,6 +67,7 @@ public class DataEntryTask extends BaseTask
     private static final Logger log = Logger.getLogger(DataEntryTask.class);
 
     public static final String DATA_ENTRY = "Data_Entry";
+    protected static Hashtable<String, ImageIcon> iconForFormClass = new Hashtable<String, ImageIcon>();
 
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -80,7 +83,10 @@ public class DataEntryTask extends BaseTask
         super(DATA_ENTRY, getResourceString(DATA_ENTRY));
         CommandDispatcher.register(DATA_ENTRY, this);
         CommandDispatcher.register("App", this);
-
+        
+        // Do this here instead of in initialize because the static method will need to access the icon mapping first
+        viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
+        initializeViewsNavBox();
     }
 
     /* (non-Javadoc)
@@ -96,10 +102,20 @@ public class DataEntryTask extends BaseTask
             NavBox navBox = new NavBox(getResourceString("Actions"));
             navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
-            
-            viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
+           
             navBoxes.addElement(viewsNavBox);
         }
+    }
+    
+    /**
+     * Common method for creating a consistent name for lookups in the Icon cache for forms.
+     * @param viewSetName the viewSetName
+     * @param viewName the view name
+     * @return the full appended name
+     */
+    protected static String createFullName(final String viewSetName, final String viewName)
+    {
+        return viewSetName + "_" + viewName;
     }
 
     /**
@@ -116,29 +132,35 @@ public class DataEntryTask extends BaseTask
                                 final String   viewName, 
                                 final String   mode, 
                                 final Object   data,
-                                final boolean isNewForm)
+                                final boolean  isNewForm)
     {
         View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         
         Object dataObj = data;
-        if (dataObj == null && isNewForm)
+        if (dataObj == null)
         {
-            try
+            if (isNewForm)
             {
-                dataObj = UIHelper.createAndNewDataObj(Class.forName(view.getClassName()));
-                UIHelper.initDataObj(dataObj);
-                
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                throw new RuntimeException(ex);
+                try
+                {
+                    dataObj = HibernateUtil.createAndNewDataObj(Class.forName(view.getClassName()));
+                    HibernateUtil.initDataObj(dataObj);
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    throw new RuntimeException(ex);
+                }
             }
+            
+        } else
+        {
+            HibernateUtil.getSessionFactory().evict(data.getClass());    
         }
         
-        HibernateUtil.getSessionFactory().evict(data.getClass());
-
         FormPane formPane = new FormPane(HibernateUtil.getNewSession(), 
                                          view.getName(), task, viewSetName, viewName, mode, dataObj, isNewForm);
+        formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
         SubPaneMgr.getInstance().addPane(formPane);
     }
 
@@ -160,7 +182,7 @@ public class DataEntryTask extends BaseTask
             if (data != null && data.size() > 0)
             {
                 FormPane formPane = new FormPane(session, view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0), false);
-                SubPaneMgr.getInstance().addPane(formPane);
+                formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
 
             } else
             {
@@ -196,7 +218,10 @@ public class DataEntryTask extends BaseTask
         
         View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
         
-        return new FormPane(session, name, task, view, null, query.list(), false);
+        FormPane formPane = new FormPane(session, name, task, view, null, query.list(), false);
+        formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+        
+        return formPane;
 
     }
     
@@ -222,9 +247,14 @@ public class DataEntryTask extends BaseTask
                     String viewset  = getAttr(element, "viewset", null);
                     String view     = getAttr(element, "view", null);
                     
+                    String toolTip  = getAttr(element, "tooltip", null);
+                    
+                    ImageIcon icon = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
+                    iconForFormClass.put(createFullName(viewset, view), icon);
+                    
                     ShowViewAction sva = new ShowViewAction(this, viewset, view);
                     
-                    viewsNavBox.add(NavBox.createBtn(name, iconname, IconManager.IconSize.Std16, sva));
+                    viewsNavBox.add(NavBox.createBtnWithTT(name, iconname, toolTip, IconManager.IconSize.Std16, sva));
                 }
     
             } catch (Exception ex)
@@ -393,11 +423,13 @@ public class DataEntryTask extends BaseTask
 
     class ShowViewAction implements ActionListener
     {
-        private Taskable task;
-        private String   viewSetName;
-        private String   viewName;
+        private Taskable  task;
+        private String    viewSetName;
+        private String    viewName;
 
-        public ShowViewAction(final Taskable task, final String viewSetName, final String viewName)
+        public ShowViewAction(final Taskable task, 
+                              final String viewSetName, 
+                              final String viewName)
         {
             this.task        = task;
             this.viewSetName = viewSetName;

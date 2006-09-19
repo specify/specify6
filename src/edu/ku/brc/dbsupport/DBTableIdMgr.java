@@ -65,7 +65,7 @@ public class DBTableIdMgr
 	 */
 	protected void initialize()
 	{
-		log.info("Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath()+ " to create and populate DBTableMgr");
+		log.debug("Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath()+ " to create and populate DBTableMgr");
 		String classname = null;
 		try
 		{
@@ -100,7 +100,7 @@ public class DBTableIdMgr
 						log.debug("populating DBTableMgr - no default view provided for table: " + tablename + "; check input file");
 					if (primaryKeyField == null)
 						log.error("populating DBTableMgr - primary key is null; check input file");
-					log.info("Populating hashtable for class: " + classname);
+					log.debug("Populating hashtable for class: " + classname);
 					instance.hash.put(tableId, new TableInfo(tableId, classname, tablename,
 							primaryKeyField, defaultView));
 				}
@@ -123,7 +123,7 @@ public class DBTableIdMgr
 	}
 
 	/**
-	 * Returns the defualt form name for a given table ID
+	 * Returns the defualt form name for a given table ID.
 	 * 
 	 * @param id
 	 *            the ID of a table
@@ -142,7 +142,7 @@ public class DBTableIdMgr
 
 	/**
 	 * This looks it up by table name (not Object name) the look up is case
-	 * insensitive
+	 * insensitive.
 	 * 
 	 * @param name
 	 *            the name
@@ -166,7 +166,7 @@ public class DBTableIdMgr
 
     /**
      * This looks it up by fully specified class name the look up is case
-     * sensitive
+     * sensitive.
      * 
      * @param className
      *            the full class name

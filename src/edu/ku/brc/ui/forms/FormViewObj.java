@@ -68,7 +68,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
@@ -76,6 +76,7 @@ import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItem;
 import edu.ku.brc.ui.forms.persist.AltView;
@@ -208,8 +209,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             if (createViewSwitcher && (!view.isSpecialViewEdit() || mvParent.getMultiViewParent() == null))
             {
 
-                ImageIcon[] icons  = new ImageIcon[view.getAltViews().size()];
-                String[]    labels = new String[view.getAltViews().size()];
+                ImageIcon[] icons    = new ImageIcon[view.getAltViews().size()];
+                String[]    labels   = new String[view.getAltViews().size()];
+                String[]    toolTips = new String[view.getAltViews().size()];
 
                 // loop thru and add the AltViews to the comboxbox and make sure that the
                 // this form is always at the top of the list.
@@ -235,21 +237,25 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     // define its own icon
                     if (av.getMode() == AltView.CreationMode.Edit)
                     {
-                        icons[inx] = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
+                        icons[inx]    = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
+                        toolTips[inx] = getResourceString("ShowEditViewTT");
 
                     } else if (av.getViewDef().getType() == ViewDef.ViewType.table)
                     {
-                        icons[inx] = IconManager.getImage("Speadsheet", IconManager.IconSize.Std16);
+                        icons[inx]    = IconManager.getImage("Speadsheet", IconManager.IconSize.Std16);
+                        toolTips[inx] = getResourceString("ShowSpeadsheetTT");
 
                     } else
                     {
-                        icons[inx] = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
+                        icons[inx]    = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
+                        toolTips[inx] = getResourceString("ShowViewTT");
                     }
                     inx++;
                 }
 
 
-                altViewUI = new DropDownButtonStateful(labels, icons);
+                altViewUI = new DropDownButtonStateful(labels, icons, toolTips);
+                altViewUI.setToolTipText(getResourceString("SwitchViewsTT"));
                 altViewUI.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae)
                     {
@@ -260,6 +266,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 if (altView.getMode() == AltView.CreationMode.Edit)
                 {
                     saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
+                    saveBtn.setToolTipText(getResourceString("SaveRecordTT"));
                     saveBtn.setMargin(new Insets(1,1,1,1));
                     saveBtn.setEnabled(false);
                     saveBtn.addActionListener(new ActionListener() {
@@ -353,6 +360,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (formValidator != null)
         {
             validationInfoBtn = new JButton(IconManager.getImage("ValidationValid"));
+            validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
             validationInfoBtn.setMargin(new Insets(1,1,1,1));
             validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());
             validationInfoBtn.setFocusable(false);
@@ -650,39 +658,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      * Adds new child object to its parent to a Set
      * @param newDataObj the new object to be added to a Set
      */
-    protected void initAndAddToParent(final Object newDataObj)
-    {
-        if (parentDataObj != null)
-        {
-            String methodName = "add" + newDataObj.getClass().getSimpleName();
-            log.debug("Invoking method["+methodName+"]");
-            try
-            {
-                Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
-                method.invoke(newDataObj, new Object[] {});
-
-                method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
-                method.invoke(parentDataObj, new Object[] {newDataObj});
-
-            } catch (NoSuchMethodException ex)
-            {
-                ex.printStackTrace();
-
-            } catch (IllegalAccessException ex)
-            {
-                ex.printStackTrace();
-
-            } catch (InvocationTargetException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Adds new child object to its parent to a Set
-     * @param newDataObj the new object to be added to a Set
-     */
     protected void removeFromParent(final Object oldDataObj)
     {
         if (parentDataObj != null)
@@ -745,8 +720,8 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (formValidator != null && formValidator.hasChanged())
         {
             int rv = JOptionPane.showConfirmDialog(null,
-                        getResourceString("SaveRecord"),
-                        getResourceString("SaveRecordTitle"),
+                        getResourceString("SaveChanges"),
+                        getResourceString("SaveChangesTitle"),
                         JOptionPane.YES_NO_CANCEL_OPTION);
 
             if (rv == JOptionPane.YES_OPTION)
@@ -862,7 +837,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             Class  classObj = Class.forName(view.getClassName());
             Object obj      = classObj.newInstance();
-            UIHelper.initAndAddToParent(parentDataObj, obj);
+            HibernateUtil.initAndAddToParent(parentDataObj, obj);
 
             if (carryFwdDataObj == null && dataObj != null)
             {
@@ -916,35 +891,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         Transaction transaction = null;
         try
         {
-            /*
-            if (dataObj instanceof Accession)
-            {
-                //session.clear();
-                
-                Accession accession = (Accession)dataObj;
-                String queryStr = "select timestampModified From Accession where accessionId = "+accession.getAccessionId();
-                Query  query = session.createQuery(queryStr);
-                List list = query.list();
-                Date timestampModified = (Date)list.iterator().next();
-                
-                session.evict(accession);
-                session.load(accession, LockMode.NONE);//, accession.getAccessionId()); 
-                
-                //session.merge(accession);
-                //dataObj = accession;
-//                Connection con = DBConnection.getConnection();
-//                Statement stmt = con.createStatement();
-//                ResultSet rs = stmt.executeQuery("select TimestampModified From accession where accessionId = "+accession.getAccessionId());
-//                rs.first();
-//                Date timestampModifiedJDBC = rs.getDate(1);
-//                log.info("["+rs.getString(1)+"]");
-//                stmt.close();
-//                con.close();
-                
-                log.info("["+timestampModified+"]["+accession.getTimestampModified()+"]["+accession.getTimestampModified().compareTo(timestampModified)+"]");
-                log.info("["+timestampModified.getTime()+"]["+accession.getTimestampModified().getTime()+"]["+accession.getTimestampModified().compareTo(timestampModified)+"]");
-            }*/
-
             transaction = session.beginTransaction();
 
             this.getDataFromUI();
@@ -952,7 +898,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             traverseToGetDataFromForms(mvParent);
             
             
-             if (UIHelper.updateLastEdittedInfo(dataObj, "ZZZ"))
+            if (HibernateUtil.updateLastEdittedInfo(dataObj))
             {
                 setDataIntoUI();
             }
@@ -973,11 +919,12 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         } catch (StaleObjectStateException e)
         {
-            /*
+            JOptionPane.showMessageDialog(null, getResourceString("DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+            
             session.close();
             
             session = HibernateUtil.getSessionFactory().openSession();
-            dataObj = session.load(dataObj.getClass(), ((Accession)dataObj).getAccessionId());
+            dataObj = session.load(dataObj.getClass(), HibernateUtil.getId(dataObj));
             
             if (mvParent != null)
             {
@@ -989,7 +936,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 this.setDataObj(dataObj);
             }
             this.setDataIntoUI();
-            */
+            
         } catch (Exception e)
         {
             log.error("******* " + e);
@@ -1524,7 +1471,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     if (uiData != null)
                     {
                         //log.debug(fieldInfo.getFormCell().getName());
-                        UIHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
+                        HibernateUtil.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
                     }
                 }
             }

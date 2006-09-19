@@ -1,3 +1,17 @@
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.datamodel;
 
 import java.io.Serializable;
@@ -10,7 +24,7 @@ public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geog
 
 	// Fields    
 
-	protected Long			    	taxonTreeDefItemId;
+	protected Long			    	geographyTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -30,15 +44,15 @@ public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geog
 	}
 
 	/** constructor with id */
-	public GeographyTreeDefItem(Long taxonTreeDefItemId)
+	public GeographyTreeDefItem(Long geographyTreeDefItemId)
 	{
-		this.taxonTreeDefItemId = taxonTreeDefItemId;
+		this.geographyTreeDefItemId = geographyTreeDefItemId;
 	}
 
 	// Initializer
 	public void initialize()
 	{
-		taxonTreeDefItemId = null;
+		geographyTreeDefItemId = null;
 		name = null;
 		remarks = null;
 		rankId = null;
@@ -59,12 +73,21 @@ public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geog
 	 */
 	public Long getGeographyTreeDefItemId()
 	{
-		return this.taxonTreeDefItemId;
+		return this.geographyTreeDefItemId;
 	}
 
-	public void setGeographyTreeDefItemId(Long taxonTreeDefItemId)
+    /**
+     * Generic Getter for the ID Property.
+     * @returns ID Property.
+     */
+    public Long getId()
+    {
+        return this.geographyTreeDefItemId;
+    }
+
+	public void setGeographyTreeDefItemId(Long geographyTreeDefItemId)
 	{
-		this.taxonTreeDefItemId = taxonTreeDefItemId;
+		this.geographyTreeDefItemId = geographyTreeDefItemId;
 	}
 
 	/**

@@ -349,8 +349,20 @@ public class ViewFactory
         ValTextArea textArea = new ValTextArea("", cellField.getRows(), cellField.getCols());
         if (validator != null)
         {
-            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getId(), false, UIValidator.Type.Focus, null, true);
-            textArea.addFocusListener(dcn);
+            UIValidator.Type type = parseValidationType(cellField.getValidationType());
+            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getId(), false, type, null, true);
+            if (type == UIValidator.Type.Changed)
+            {
+                textArea.getDocument().addDocumentListener(dcn);
+
+            } else if (type == UIValidator.Type.Focus)
+            {
+                textArea.addFocusListener(dcn);
+
+            } else
+            {
+               // Do nothing for UIValidator.Type.OK
+            }
         }
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);

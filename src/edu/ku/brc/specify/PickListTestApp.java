@@ -68,9 +68,9 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickList;

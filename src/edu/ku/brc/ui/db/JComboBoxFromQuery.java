@@ -57,7 +57,7 @@ public class JComboBoxFromQuery extends JComboBox
     protected boolean              allowNewValues   = false;
 
     protected DefaultComboBoxModel model;
-    protected Vector<Integer>      idList           = new Vector<Integer>();
+    protected Vector<Long>         idList           = new Vector<Long>();
     protected Vector<String>       list             = new Vector<String>();
     protected String               entryStr         = "";
     protected int                  searchStopLength = Integer.MAX_VALUE;
@@ -179,7 +179,7 @@ public class JComboBoxFromQuery extends JComboBox
     /**
      * @return the id of the selected item
      */
-    public Integer getSelectedId()
+    public Long getSelectedId()
     {
         if (idList.size() > 0 && getSelectedIndex() > -1)
         {
@@ -194,7 +194,7 @@ public class JComboBoxFromQuery extends JComboBox
      * Returns the list of IDs for the combobox
      * @return the list of IDs for the combobox
      */
-    public List<Integer> getIDList()
+    public List<Long> getIDList()
     {
         return idList;
     }
@@ -311,14 +311,14 @@ public class JComboBoxFromQuery extends JComboBox
                 {
                     if (numColumns == 1)
                     {
-                        idList.addElement(rs.getInt(2));
+                        idList.addElement(rs.getLong(2));
                         list.addElement(rs.getString(1));
 
                     } else
                     {
                         try
                         {
-                            idList.addElement(rs.getInt(numColumns+1));
+                            idList.addElement(rs.getLong(numColumns+1));
                             for (int i=0;i<numColumns;i++)
                             {
                                 Object val = rs.getObject(i+1);

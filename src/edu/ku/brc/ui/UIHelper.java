@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.helpers;
+package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
@@ -21,9 +21,6 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -45,21 +42,18 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.ui.forms.DataObjectGettable;
-import edu.ku.brc.ui.forms.DataObjectSettable;
-import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.persist.FormCell;
 
 /**
@@ -621,283 +615,6 @@ public final class UIHelper
         }
     }
 
-    /**
-     * Initializes the Data Obj by calling the "initialize" method
-     * @param newDataObj the new object to be added to a Set
-     */
-    public static boolean initDataObj(final Object newDataObj)
-    {
-        try
-        {
-            Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
-            method.invoke(newDataObj, new Object[] {});
-            return true;
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return false;
-    }
-    /**
-     * Adds new child object to its parent's set and set the parent point in the new obj
-     * @param parentDataObj the parent object
-     * @param newDataObj the new object to be added to a Set
-     */
-    public static boolean addToParent(final Object parentDataObj, final Object newDataObj)
-    {
-        try
-        {
-            String methodName = "add" + newDataObj.getClass().getSimpleName();
-            log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
-
-            Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
-            method.invoke(parentDataObj, new Object[] {newDataObj});
-            log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
-
-            return true;
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return false;
-    }
-    /**
-     * Adds new child object to its parent's set and set the parent point in the new obj
-     * @param parentDataObj the parent object
-     * @param newDataObj the new object to be added to a Set
-     */
-    public static boolean initAndAddToParent(final Object parentDataObj, final Object newDataObj)
-    {
-        boolean status = initDataObj(newDataObj);
-        if (status && parentDataObj != null)
-        {
-            status = addToParent(parentDataObj, newDataObj);
-        }
-        return status;
-    }
-
-     /**
-      * intializes the data object for searching
-     * @param dataObj
-     * @return true is successful, false if error
-     */
-    public static boolean initForSearch(final Object dataObj)
-    {
-        try
-        {
-            Method method = dataObj.getClass().getMethod("initForSearch", new Class[] {});
-            method.invoke(dataObj, new Object[] {});
-
-            return true;
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return false;
-    }
-
-    /**
-      * Creates a new data object and initializes it
-      * @param newDataClass class of new Object to be created and initialized
-     */
-    public static Object createAndNewDataObj(final Class newDataClass)
-    {
-        try
-        {
-            Object dataObj = newDataClass.newInstance();
-            if (newDataClass != null)
-            {
-                Method method = newDataClass.getMethod("initialize", new Class[] {});
-                method.invoke(dataObj, new Object[] {});
-
-                return dataObj;
-
-            } else
-            {
-                log.error("Couldn't create new Data Object for Class["+newDataClass.getSimpleName()+"]");
-            }
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InstantiationException ex)
-        {
-            ex.printStackTrace();
-
-        }
-
-        return null;
-    }
-    
-    /**
-     * Sets the "timestampModified" and the "lastEditedBy" by fields if the exist, if they don't then 
-     * then it just ignores the request (no error is thrown)
-     * @param dataObj the data object to have the fields set
-     * @param userName the current user name as to who changed the values.
-     */
-    public static boolean updateLastEdittedInfo(final Object dataObj, final String userName)
-    {
-        if (dataObj != null)
-        {
-            try
-            {
-                DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                if (setter != null)
-                {
-                    boolean foundOne = false;
-                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampModified");
-                    if (descr != null)
-                    {
-                        setter.setFieldValue(dataObj, "timestampModified", new Date());
-                        foundOne = true;
-                    }
-                    descr = PropertyUtils.getPropertyDescriptor(dataObj, "lastEditedBy");
-                    if (descr != null)
-                    {
-                        setter.setFieldValue(dataObj, "lastEditedBy", userName);
-                        foundOne = true;
-                    }
-                    return foundOne;
-                }
-    
-            } catch (NoSuchMethodException ex)
-            {
-                ex.printStackTrace();
-    
-            } catch (IllegalAccessException ex)
-            {
-                ex.printStackTrace();
-    
-            } catch (InvocationTargetException ex)
-            {
-                ex.printStackTrace();
-            } 
-        }
-        return false;
-    }
-
-    /**
-     * Helper for setting a value into a data object using reflection
-     * @param fieldNames the field name(s)
-     * @param dataObj the data object that will get the new value
-     * @param newData the new data object
-     * @param getter the getter to use
-     * @param setter the setter to use
-     */
-    public static void setFieldValue(final String fieldNames,
-                                     final Object dataObj,
-                                     final Object newData,
-                                     final DataObjectGettable getter,
-                                     final DataObjectSettable setter)
-    {
-    	if( StringUtils.isNotEmpty(fieldNames) )
-    	{
-            if (setter.usesDotNotation())
-            {
-    	   		int inx = fieldNames.indexOf(".");
-    	        if (inx > -1)
-    	        {
-    	            String[] fileNameArray = StringUtils.split(fieldNames, '.');
-    	            Object data = dataObj;
-    	            for (int i=0;i<fileNameArray.length;i++)
-    	            {
-    	                String fieldName = fileNameArray[i];
-    	               if (i < fileNameArray.length-1)
-    	                {
-    	                     data = getter.getFieldValue(dataObj, fieldName);
-    	                    if (data == null)
-    	                    {
-    	                        try
-    	                        {
-    	                            PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
-    	                            Class  classObj = descr.getPropertyType();
-    	                            Object newObj = classObj.newInstance();
-    	                            log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
-    	                            if (newObj != null)
-    	                            {
-
-    	                                Method method = newObj.getClass().getMethod("initialize", new Class[] {});
-    	                                method.invoke(newObj, new Object[] {});
-    	                                setter.setFieldValue(dataObj, fieldName, newObj);
-    	                                data = newObj;
-
-    	                                log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
-
-    	                            }
-    	                        } catch (NoSuchMethodException ex)
-    	                        {
-    	                            ex.printStackTrace();
-
-    	                        } catch (IllegalAccessException ex)
-    	                        {
-    	                            ex.printStackTrace();
-
-    	                        } catch (InvocationTargetException ex)
-    	                        {
-    	                            ex.printStackTrace();
-
-    	                        } catch (InstantiationException ex)
-    	                        {
-    	                            ex.printStackTrace();
-    	                        }
-    	                    }
-    	                } else
-    	                {
-    	                    log.info("Data Obj ["+newData+" being added to ["+data+"]");
-    	                    setter.setFieldValue(data, fieldName, newData);
-    	                }
-    	            }
-    	        } else
-    	        {
-    	            log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
-    	            setter.setFieldValue(dataObj, fieldNames, newData);
-    	        }
-            } else
-            {
-                log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
-                setter.setFieldValue(dataObj, fieldNames, newData);
-            }
-    	}
-    }
 
     /**
      * Returns a single String value that formats all the value in the array per the format mask
@@ -996,6 +713,8 @@ public final class UIHelper
                                    final String dbUsername,
                                    final String dbPassword)
     {
+        HibernateUtil.setCurrentUserEditStr("");
+
         DBConnection dbConn = DBConnection.getInstance();
 
         dbConn.setDriver(dbDriver);
@@ -1010,7 +729,10 @@ public final class UIHelper
             try
             {
                 connection.close();
-
+                
+                // This is used to fill who editted the object
+                HibernateUtil.setCurrentUserEditStr(dbUsername);
+                
             } catch (SQLException ex)
             {
 

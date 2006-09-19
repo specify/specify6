@@ -41,7 +41,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
@@ -53,6 +52,7 @@ import edu.ku.brc.ui.GradiantButton;
 import edu.ku.brc.ui.GradiantLabel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.TriangleButton;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where

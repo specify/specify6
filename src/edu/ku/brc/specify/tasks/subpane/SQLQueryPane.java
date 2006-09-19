@@ -15,8 +15,8 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.helpers.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIHelper.centerAndShow;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

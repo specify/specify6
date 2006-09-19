@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -28,23 +29,27 @@ import org.hibernate.criterion.Expression;
 import edu.ku.brc.dbsupport.HibernateUtil;
 
 /**
- * This is an adaptor class that supports all the necessary functions for supporting a PickList
+ * This is an adaptor class that supports all the necessary functions for supporting a PickList.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
  */
 public class PickListDBAdapter
 {
+    // Static Data Memebers
+    protected static final Logger log                = Logger.getLogger(PickListDBAdapter.class);
+    protected static PickListItem searchablePLI = new PickListItem(); // used for binary searches
+    
+    // Data Memebers        
     protected Vector<PickListItem> items    = new Vector<PickListItem>(); // Make this Vector because the combobox can use it directly
     protected PickList             pickList = null;
     
-    protected static PickListItem searchablePLI = new PickListItem(); // used for binary searches
     
     
     /**
-     * Protected Default constructor derving subclasses 
+     * Protected Default constructor derving subclasses.
      */
     protected PickListDBAdapter()
     {
@@ -53,7 +58,7 @@ public class PickListDBAdapter
     }
     
     /**
-     * Constructor with a unique name
+     * Constructor with a unique name.
      * @param name the name of the picklist
      * @param createWhenNotFound indicates whether to automatically create the picklist when the name is not found,
      */
@@ -73,10 +78,32 @@ public class PickListDBAdapter
             
          } else if (createWhenNotFound) 
          {
-             pickList = new PickList();
-             pickList.setCreated(new Date());
-             pickList.setName(name);
-             pickList.setItems(new HashSet<PickListItem>());
+             Session session = HibernateUtil.getSessionFactory().openSession();
+             try
+             {
+                 pickList = new PickList();
+                 pickList.setCreated(new Date());
+                 pickList.setName(name);
+                 pickList.setReadOnly(false);
+                 pickList.setItems(new HashSet<PickListItem>());
+                 
+                 session.beginTransaction();
+                 session.save(pickList);
+                 session.getTransaction().commit();
+                 
+             } catch (Exception ex)
+             {
+                 log.error(ex);
+                 session.getTransaction().rollback();
+                 
+             } finally 
+             {
+                 if (session != null)
+                 {
+                     session.close();
+                 }
+             }
+
              
          } else 
          {
@@ -85,7 +112,7 @@ public class PickListDBAdapter
      }
     
     /**
-     * Gets the PickList Item from the Database
+     * Gets the PickList Item from the Database.
      * @param name the name of the picklist to get
      * @return the picklist
      */
@@ -104,9 +131,10 @@ public class PickListDBAdapter
                 pkList = (PickList)items.get(0);
 	        }
 	        
-        } catch (Exception e)
+        } catch (Exception ex)
         {
-            e.printStackTrace();
+            log.error(ex);
+            ex.printStackTrace();
             
         } finally 
         {
@@ -121,7 +149,7 @@ public class PickListDBAdapter
     }
     
     /**
-     * Returns the pciklist object
+     * Returns the pciklist object.
      * @return Returns the pciklist object
      */
     public PickList getPickList()
@@ -130,7 +158,7 @@ public class PickListDBAdapter
     }
 
     /**
-     * Returns the list of PickList items
+     * Returns the list of PickList items.
      * @return Returns the list of PickList items
      */
     public Vector<PickListItem> getList()
@@ -139,7 +167,7 @@ public class PickListDBAdapter
     }
     
     /**
-     * Gets a pick list item by index
+     * Gets a pick list item by index.
      * @param index the index in question
      * @return pick list item by index
      */
@@ -149,7 +177,7 @@ public class PickListDBAdapter
     }
     
     /**
-     * Adds a new item to a picklist
+     * Adds a new item to a picklist.
      * @param title the title (or text) of the picklist
      * @param value although currently no supported we may want to display one text string but save a different one
      * @return returns the new PickListItem
@@ -208,8 +236,7 @@ public class PickListDBAdapter
     }
     
     /**
-     * Persists the picklist and it's items
-     * @throws Exception some strange DB exception
+     * Persists the picklist and it's items.
      */
     public void save()
     {

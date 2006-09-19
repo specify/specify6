@@ -14,8 +14,8 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import static edu.ku.brc.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -39,11 +39,11 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;

@@ -14,9 +14,9 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
-import static edu.ku.brc.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 

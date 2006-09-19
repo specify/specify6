@@ -18,7 +18,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
 
-import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.ui.UIHelper;
 
 
 public class MiscUtilTest extends TestCase

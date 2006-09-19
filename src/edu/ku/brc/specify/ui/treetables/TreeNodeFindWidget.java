@@ -3,6 +3,8 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -19,8 +21,6 @@ import javax.swing.JTextField;
 
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
-
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 /**
  *
@@ -197,4 +197,13 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 			inputField.setText((String)data);
 		}
 	}
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.NavBoxItemIFace#setToolTip(java.lang.String)
+     */
+    public void setToolTip(String toolTip)
+    {
+        setToolTip(toolTip);
+    }
 }

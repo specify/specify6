@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
+
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -39,7 +41,8 @@ public class FormPane extends DroppableTaskPane
     protected MultiView     multiView     = null;
     protected FormProcessor formProcessor = null;
 
-    protected String        cacheDesc   = null;
+    protected String        cacheDesc     = null;
+    protected ImageIcon     icon          = null;
 
     /**
      * Creates a form pane for a task.
@@ -127,6 +130,15 @@ public class FormPane extends DroppableTaskPane
     {
         this.formProcessor = formProcessor;
         formProcessor.setViewable(this);
+    }
+
+    /**
+     * Sets the Icon.
+     * @param icon the icon for the pane
+     */
+    public void setIcon(ImageIcon icon)
+    {
+        this.icon = icon;
     }
 
     /* (non-Javadoc)
@@ -331,6 +343,14 @@ public class FormPane extends DroppableTaskPane
             return ((FormViewObj)viewable).checkForChanges();
         }
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getIcon()
+     */
+    public ImageIcon getIcon()
+    {
+        return icon;
     }
 
 }

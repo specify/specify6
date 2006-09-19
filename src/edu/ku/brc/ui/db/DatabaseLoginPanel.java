@@ -60,10 +60,10 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * This panel enables the user to configure all the params necessary to log into a JDBC database.<BR><BR>
