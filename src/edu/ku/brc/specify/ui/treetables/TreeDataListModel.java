@@ -30,11 +30,10 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.util.Pair;
 
-/*
- * @code_status Unknown (auto-generated)
- **
+/**
+ * 
+ * @code_status Beta
  * @author jstewart
- *
  */
 @SuppressWarnings("serial")
 public class TreeDataListModel<T extends Treeable<T,D,I>,

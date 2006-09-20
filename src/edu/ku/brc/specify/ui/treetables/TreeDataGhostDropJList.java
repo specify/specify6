@@ -30,11 +30,8 @@ import edu.ku.brc.ui.DragDropJList;
  * it should fire before the internal MouseListener used by the JList to notify the
  * ListSelectionModel of user selection changes.
  * 
- * @status CodeFreez
- * @code_status Unknown (auto-generated)
- *
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 @SuppressWarnings("serial")
 public class TreeDataGhostDropJList extends DragDropJList
