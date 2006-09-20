@@ -748,16 +748,16 @@ public class GenericDBConversion
 
     		// setup the insert statement
     		insert.append("INSERT INTO determinationstatus ");
-    		insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated) ");
+    		insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified) ");
     		insert.append("values ");
     		// the 'unknown status' record
     		insert.append("(");
     		insert.append(D_STATUS_UNKNOWN);
-    		insert.append(",'unknown','',CURRENT_DATE)");
+    		insert.append(",'unknown','',CURRENT_DATE,CURRENT_DATE)");
     		// followed by the 'current status' record
     		insert.append(", (");
     		insert.append(D_STATUS_CURRENT);
-    		insert.append(",'current','mirror of the old schema isCurrent field',CURRENT_DATE)");
+    		insert.append(",'current','mirror of the old schema isCurrent field',CURRENT_DATE,CURRENT_DATE)");
 
     		Statement st = newDBConn.createStatement();
     		st.executeUpdate(insert.toString());
