@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -529,27 +528,8 @@ public class FileCache
 	public void cacheFile( String key, File f ) throws IOException
 	{
 		File cachedFile = createCacheFile();
-		copyFile(f,cachedFile);
+		FileUtils.copyFile(f,cachedFile);
 		cacheNewItem(key,cachedFile);
-	}
-
-	/**
-	 * Copy the source file to the destination.
-	 * 
-	 * @param src the source filename
-	 * @param dest the destination filename
-	 * @throws IOException an error occurred while reading the source file or writing the destination file.
-	 */
-	protected void copyFile( File src, File dest ) throws IOException
-	{
-		FileChannel sourceChannel = new FileInputStream(src).getChannel();
-		FileChannel destinationChannel = new FileOutputStream(dest).getChannel();
-		sourceChannel.transferTo(0, sourceChannel.size(), destinationChannel);
-
-		// or
-		//  destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-		sourceChannel.close();
-		destinationChannel.close();
 	}
 
 	/**
