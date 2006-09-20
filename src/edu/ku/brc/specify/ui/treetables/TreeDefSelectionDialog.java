@@ -45,7 +45,7 @@ public class TreeDefSelectionDialog extends JDialog
 	protected JButton okButton;
 	protected JButton cancelButton;
 	
-	public TreeDefSelectionDialog(Frame owner,List<TreeDefIface> defs,TreeSelectionDialogCallback dialogCallback,boolean includeNewOption)
+	public TreeDefSelectionDialog(Frame owner,List<TreeDefIface<?,?,?>> defs,TreeSelectionDialogCallback dialogCallback,boolean includeNewOption)
 	{
 		super(owner);
 		this.setLayout(new BorderLayout());
@@ -56,8 +56,14 @@ public class TreeDefSelectionDialog extends JDialog
 		// EVEN IF includeNewOption IS FALSE
 		newDef = new Nameable()
 		{
-			public String getName(){return "Create new def...";}
-			public void setName(String name){}
+			public String getName()
+            {
+                return "Create new def...";
+            }
+			public void setName(String name)
+            {
+                //do nothing
+            }
 		};
 		if(includeNewOption)
 		{
@@ -109,7 +115,8 @@ public class TreeDefSelectionDialog extends JDialog
 		
 		addWindowListener(new WindowAdapter()
 		{
-			public void windowClosing(WindowEvent we)
+			@Override
+            public void windowClosing(WindowEvent we)
 			{
 				callback.cancelled();
 			}
@@ -121,26 +128,27 @@ public class TreeDefSelectionDialog extends JDialog
 		optionList.setRenderer(renderer);
 	}
 	
-	public void setVisible(boolean visible)
+	@Override
+    public void setVisible(boolean visible)
 	{
 		super.setVisible(visible);
 		okButton.requestFocusInWindow();
 		okButton.requestFocus();
 	}
 	
-	public void addOption(TreeDefIface option)
+	public void addOption(TreeDefIface<?,?,?> option)
 	{
 		options.add(option);
 	}
 	
-	public void removeOption(TreeDefIface option)
+	public void removeOption(TreeDefIface<?,?,?> option)
 	{
 		options.remove(option);
 	}
 	
 	public interface TreeSelectionDialogCallback
 	{
-		public void defSelected(TreeDefIface def);
+		public void defSelected(TreeDefIface<?,?,?> def);
 		public void newDefOptionSelected();
 		public void cancelled();
 	}
