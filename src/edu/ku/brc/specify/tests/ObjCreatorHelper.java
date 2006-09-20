@@ -36,8 +36,6 @@ import edu.ku.brc.specify.datamodel.DeaccessionCollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
-import edu.ku.brc.specify.datamodel.ExternalResource;
-import edu.ku.brc.specify.datamodel.ExternalResourceAttr;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -1517,48 +1515,6 @@ public class ObjCreatorHelper
         }
         return exchangeout;
     }*/
-
-    public static ExternalResource createExternalResource(final String mimeType,
-                                                          final String fileName,
-                                                          final Calendar fileCreatedDate,
-                                                          final String externalLocation,
-                                                          final Agent createdByAgent)
-    {
-        ExternalResource externalresource = new ExternalResource();
-        externalresource.initialize();
-        externalresource.setTimestampCreated(new Date());
-        externalresource.setTimestampModified(new Date());
-        externalresource.setMimeType(mimeType);
-        externalresource.setFileName(fileName);
-        externalresource.setFileCreatedDate(fileCreatedDate);
-        externalresource.setExternalLocation(externalLocation);
-        externalresource.setCreatedByAgent(createdByAgent);
-        if (session != null)
-        {
-          session.saveOrUpdate(externalresource);
-        }
-        return externalresource;
-    }
-
-    public static ExternalResourceAttr createExternalResourceAttr(final String strValue,
-                                                                  final Double dblValue,
-                                                                  final ExternalResource externalResource,
-                                                                  final AttributeDef definition)
-    {
-        ExternalResourceAttr externalresourceattr = new ExternalResourceAttr();
-        externalresourceattr.initialize();
-        externalresourceattr.setTimestampCreated(new Date());
-        externalresourceattr.setTimestampModified(new Date());
-        externalresourceattr.setStrValue(strValue);
-        externalresourceattr.setDblValue(dblValue);
-        externalresourceattr.setDefinition(definition);
-        externalresourceattr.setExternalResource(externalResource);
-        if (session != null)
-        {
-          session.saveOrUpdate(externalresourceattr);
-        }
-        return externalresourceattr;
-    }
 
     public static GroupPersons createGroupPerson(final Short orderNumber,
                                                 final Agent agentByGroup,
