@@ -24,9 +24,8 @@ import edu.ku.brc.specify.tasks.DualViewSearchable;
 
 /**
  *
- *
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, ActionListener
 {
