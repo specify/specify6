@@ -37,7 +37,7 @@ public class TreeDefListCellRenderer extends DefaultListCellRenderer
 		
 		if(value instanceof TreeDefItemIface)
 		{
-			TreeDefItemIface defItem = (TreeDefItemIface)value;
+			TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface)value;
 			l.setText(defItem.getName());
 			if(defItem.getIsEnforced()!=null && defItem.getIsEnforced().booleanValue()==true)
 			{
