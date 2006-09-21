@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class AccessionAuthorizations  implements java.io.Serializable {
+public class AccessionAuthorizations  implements java.io.Serializable, Comparable<AccessionAuthorizations> {
 
     // Fields    
 
@@ -163,7 +163,17 @@ public class AccessionAuthorizations  implements java.io.Serializable {
         this.repositoryAgreement = repositoryAgreement;
     }
 
-
+    public int compareTo(AccessionAuthorizations obj)
+    {
+        if (permit != null && permit.permitNumber != null &&
+            obj.permit.permitNumber != null && obj.permit.permitNumber != null )
+        {
+            return permit.permitNumber.compareTo(obj.permit.permitNumber);
+        } else
+        {
+            return timestampCreated.compareTo(obj.timestampCreated);
+        }
+    }
 
 
 

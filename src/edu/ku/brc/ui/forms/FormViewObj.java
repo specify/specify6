@@ -906,7 +906,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             session.saveOrUpdate(dataObj);
             transaction.commit();
             session.flush();
-            log.debug("Session Saved["+session.hashCode()+"]");
+            log.debug("Session Saved[ and Flushed "+session.hashCode()+"]");
             
             formIsInNewDataMode = false;
             traverseToToSetAsNew(mvParent, false);
@@ -1181,7 +1181,18 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (data instanceof java.util.Set)
         {
             origDataSet = (Set)dataObj;
-            data = Collections.list(Collections.enumeration(origDataSet));
+            List newList = Collections.list(Collections.enumeration(origDataSet));
+            data = newList;
+            
+            if (newList.size() > 0)
+            {
+                Object firstDataObj = newList.get(0);
+                if (firstDataObj instanceof Comparable<?>)
+                {
+                    Collections.sort(newList);
+                }
+            }
+
         }
 
         // If there is a formValidator then we set the current object into the formValidator's scripting context
@@ -1761,7 +1772,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public void validationWasOK(boolean wasOK)
     {
-       if (saveBtn != null)
+       if (saveBtn != null && (mvParent == null || mvParent.hasChanged()))
        {
            saveBtn.setEnabled(wasOK);
        }

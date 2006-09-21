@@ -36,8 +36,10 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.validation.FormValidator;
 
 /**
  * This is the content panel portion of "display" dialogs/frames that are created by the implemenation of the ViewBasedDialogFactoryIFace
@@ -163,7 +165,17 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             cancelBtn.addActionListener(this);
             btnBuilder.addGriddedButtons(new JButton[] { okBtn, cancelBtn });
         }
-        multiView.setExternalOKBtn(okBtn);
+        //multiView.setExternalOKBtn(okBtn);
+        
+        for (Viewable viewable : multiView.getViewables())
+        {
+            FormValidator fv = viewable.getValidator();
+            if (fv != null)
+            {
+                fv.registerOKButton(okBtn);
+            }
+        }
+        
         
         add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 

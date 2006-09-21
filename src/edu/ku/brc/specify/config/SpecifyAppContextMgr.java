@@ -652,7 +652,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResourceList.add(appResource);
             } else
             {
-                log.info("***** Couldn't add Backstop for ["+discipline+"]["+userType+"]");
+                log.info("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
             }
         }
 
@@ -669,7 +669,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResourceList.add(appResource);
             } else
             {
-                log.info("***** Couldn't add Backstop for ["+discipline+"]");
+                log.info("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
             }
         }
 

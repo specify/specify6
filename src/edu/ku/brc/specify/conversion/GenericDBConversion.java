@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -111,6 +112,8 @@ public class GenericDBConversion
 
     protected static StringBuilder strBuf   = new StringBuilder("");
     protected static Calendar     calendar  = Calendar.getInstance();
+
+    protected static SimpleDateFormat dateFormatter  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     protected String oldDriver   = "";
     protected String oldDBName   = "";
@@ -767,6 +770,7 @@ public class GenericDBConversion
             log.error(insert.toString());
             e.printStackTrace();
             log.error(e);
+            throw new RuntimeException(e);
         }
     }
     
@@ -807,7 +811,8 @@ public class GenericDBConversion
     	{
     		log.error(sql.toString(),sqlEx);
     		sqlEx.printStackTrace();
-    	}
+            throw new RuntimeException(sqlEx);
+   	}
     	
     	// at this point we have all the info from the old DB
     	// now we need to update the new DB
@@ -838,6 +843,7 @@ public class GenericDBConversion
 	    	{
 	    		log.error(sql,sqlEx);
 	    		sqlEx.printStackTrace();
+                throw new RuntimeException(sqlEx);
 	    	}
     	}
 
@@ -867,6 +873,7 @@ public class GenericDBConversion
 	    	{
 	    		log.error(sql,sqlEx);
 	    		sqlEx.printStackTrace();
+                throw new RuntimeException(sqlEx);
 	    	}
     	}
 }
@@ -939,8 +946,8 @@ public class GenericDBConversion
             log.error(strBuf.toString());
             e.printStackTrace();
             log.error(e);
+            throw new RuntimeException(e);
         }
-        return -1;
     }
 
 
@@ -993,6 +1000,7 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
+            throw new RuntimeException(e);
         }
         return dataTypeId;
     }
@@ -1074,15 +1082,19 @@ public class GenericDBConversion
                 Statement updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf = new StringBuilder();
                 strBuf.append("INSERT INTO collectionobjdef VALUES (");
-                strBuf.append(taxonomyTypeMapper.get(taxonomyTypeID)+",");
-                strBuf.append("'"+discipline.getTitle()+"',");
+                strBuf.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); // TimestampModified
+               strBuf.append("'"+dateFormatter.format(new Date())+"',");
+                 strBuf.append("'"+discipline.getTitle()+"',");
                 strBuf.append("'"+discipline.getName()+"',");
+                strBuf.append("'"+dateFormatter.format(new Date())+"',");  // TimestampCreated
                 strBuf.append(dataTypeId+",");
                 strBuf.append(specifyUserId+",");
                 strBuf.append("1,"); // GeographyTreeDefID
                 strBuf.append("1,"); // GeologicTimePeriodTreeDefID
                 strBuf.append("1)"); // LocationTreeDefID
 
+                log.info(strBuf.toString());
+                
                 updateStatement.executeUpdate(strBuf.toString());
                 updateStatement.clearBatch();
                 updateStatement.close();
@@ -1150,6 +1162,7 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
+            throw new RuntimeException(e);
         }
         return false;
     }
@@ -1244,6 +1257,7 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
+            throw new RuntimeException(e);
         }
 
     }
@@ -1378,8 +1392,9 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
+            throw new RuntimeException(e);
         }
-        return false;
+
     }
 
     /**
@@ -1660,8 +1675,8 @@ public class GenericDBConversion
         {
             log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
             log.error(ex);
+            throw new RuntimeException(ex);
         }
-        return "";
     }
 
     /**
@@ -1748,6 +1763,7 @@ public class GenericDBConversion
         {
             log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
             log.error(ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -1921,6 +1937,7 @@ public class GenericDBConversion
                         {
                             log.error("******* " + e);
                             HibernateUtil.rollbackTransaction();
+                            throw new RuntimeException(e);
                         }
 
                     }
@@ -2058,7 +2075,7 @@ public class GenericDBConversion
                                     log.error("Count: "+recordCount);
                                     e.printStackTrace();
                                     log.error(e);
-                                    return false;
+                                    throw new RuntimeException(e);
                                 }
 
                                 if (recordCount % 2000 == 0)
@@ -2086,7 +2103,7 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
-            return false;
+            throw new RuntimeException(e);
         }
         return true;
     }
@@ -2261,6 +2278,7 @@ public class GenericDBConversion
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
+                                throw new RuntimeException(ex);
                             }
                         }
 
@@ -2327,7 +2345,7 @@ public class GenericDBConversion
                     log.error("Count: "+count);
                     e.printStackTrace();
                     log.error(e);
-                    return false;
+                    throw new RuntimeException(e);
                 }
 
                 count++;
@@ -2340,7 +2358,7 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
-            return false;
+            throw new RuntimeException(e);
         }
 
         return true;
@@ -2548,7 +2566,7 @@ public class GenericDBConversion
                     log.error(e);
                     rs.close();
                     stmt.close();
-                    return false;
+                    throw new RuntimeException(e);
                 }
 
                 count++;
@@ -2563,7 +2581,7 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
-            return false;
+            throw new RuntimeException(e);
         }
 
 
@@ -2605,6 +2623,7 @@ public class GenericDBConversion
         {
             log.error("******* " + e);
             HibernateUtil.rollbackTransaction();
+            throw new RuntimeException(e);
         }
         return retDataType;
     }
@@ -2661,8 +2680,8 @@ public class GenericDBConversion
             log.error("******* " + e);
             e.printStackTrace();
             HibernateUtil.rollbackTransaction();
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     public void convertAllTaxonTreeDefs() throws SQLException
@@ -3900,6 +3919,7 @@ public class GenericDBConversion
                         log.error("Count: "+recordCnt);
                         e.printStackTrace();
                         log.error(e);
+                        throw new RuntimeException(e);
                     }
 
                } else
@@ -3978,6 +3998,7 @@ public class GenericDBConversion
                        log.error("Count: "+recordCnt);
                        e.printStackTrace();
                        log.error(e);
+                       throw new RuntimeException(e);
                    }
                }
 
@@ -4103,7 +4124,7 @@ public class GenericDBConversion
                        log.error("Count: "+recordCnt);
                        e.printStackTrace();
                        log.error(e);
-                       return false;
+                       throw new RuntimeException(e);
                    }
                }
 
@@ -4208,7 +4229,7 @@ public class GenericDBConversion
                         log.error("Count: "+recordCnt);
                         e.printStackTrace();
                         log.error(e);
-                        return false;
+                        throw new RuntimeException(e);
                     }
 
                }
@@ -4301,10 +4322,8 @@ public class GenericDBConversion
        {
            log.error(ex);
            ex.printStackTrace();
+           throw new RuntimeException(ex);
        }
-
-       return false;
-
    }
 
   

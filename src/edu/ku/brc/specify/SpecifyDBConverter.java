@@ -203,12 +203,6 @@ public class SpecifyDBConverter
         	GenericDBConversion.setShouldCreateMapTables(true);
             GenericDBConversion.setShouldDeleteMapTables(true);
 
-//        	// to enable faster testing (assuming mapping tables have already
-//        	// been created and are still in the DB)
-//        	GenericDBConversion.setShouldCreateMapTables(false);
-//            GenericDBConversion.setShouldDeleteMapTables(false);
-
-
             boolean doConvert = true;
             if (doConvert)
             {

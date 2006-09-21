@@ -140,6 +140,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
 
     /**
+     * Construct.
      * @param sql the fully specified SQL statement with a "%s" in the string for the substitution for what the user entered
      * @param className the Class name of the java object that represents the table
      * @param idName the POJO field name of the ID column
@@ -172,7 +173,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     *  Constructor
+     *  Constructor.
      * @param tableName name of the table to be searched
      * @param idColumn the column name that contains the record ID
      * @param keyColumn the column that is searched
@@ -406,12 +407,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             frame.setData(dataObj);
         }
         frame.setCloseListener(this);
-        frame.showDisplay(true);
-
+        
         if (multiView != null)
         {
             multiView.registerDisplayFrame(frame);
         }
+        
+        frame.showDisplay(true);
+
+
     }
 
     /**
@@ -772,6 +776,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     newDataObj = null;
                  }
             }
+            
+            MultiView mv = frame.getMultiView();
+            if (mv != null)
+            {           
+               if (mv.hasChanged())
+               {
+                   this.setChanged(true);
+                   // TODO: Change this, this is SOOOO lame
+                   // I set and reset it to make the change data listener get activated.
+                   // There has to be a better way!
+                   int inx = comboBox.getSelectedIndex();
+                   comboBox.setSelectedIndex(-1);
+                   comboBox.setSelectedIndex(inx);
+               }
+            }
+            
             frame.getMultiView().getDataFromUI();
             refreshUIFromData();
         }

@@ -13,13 +13,15 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
+	        <![CDATA[Select ColFieldsDef From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col>2</col>
-	       <col>3</col>
-	       <col>4</col>
+	       <col pos="1" id="true">collectionobject.CollectionObjectID</col>
+	       <col pos="2">collectionobject.CatalogNumber</col>
+	       <col pos="3">collectionobject.CatalogedDate</col>
+	       <col pos="4">taxon.FullName</col>
+	       <join>determination.CollectionObjectID</join>
+	       <join>determination.TaxonID</join>
 	    </cols>
 	</index>
     <detailView icon="ColObj">
@@ -42,11 +44,11 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select LocalityID, localityname from locality;]]>
+	        <![CDATA[select ColFieldsDef from locality;]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col>2</col>
+	        <col pos="1" id="true">LocalityID</col>
+	        <col pos="2">localityname</col>
 	    </cols>
 	</index>
     <detailView icon="Locality">
@@ -63,37 +65,28 @@
 	</detailView>
   </table>
 
-  <!--
-  <table id="3" name="geography" title="Geography" priority="1" color="30, 144, 255"
-         expresssearch="true">
+
+  <table id="3" name="geography" title="Geography" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="geography" title="Geography"/>
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select * from geography;]]>
+	        <![CDATA[select ColFieldsDef from geography;]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col>3</col>
-	       <col>4</col>
-	       <col>5</col>
-	       <col>6</col>
-	       <col>7</col>
-	       <col>8</col>
-	       <col>9</col>
-	       <col>10</col>
-	       <col>11</col>
+	        <col pos="1" id="true">GeographyID</col>
+	        <col pos="2">Name</col>
+	        <col pos="3">FullName</col>
+	        <col pos="4">CommonName</col>
 	    </cols>
 	</index>
     <detailView icon="Geography">
 	    <sql>
-	        <![CDATA[select County,State,Country, GeographyID from geography where GeographyID in (%s)]]>
+	        <![CDATA[select FullName, GeographyID from geography where GeographyID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="County" text="County"/>
-            <caption col="State" text="State"/>
-            <caption col="Country" text="Country"/>
+            <caption col="FullName" text="Full Name"/>
             <caption col="GeographyID" text="ID" visible="false"/>
         </captions>
         <recordset tabletype="3" col="4"/>
@@ -108,12 +101,12 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select TaxonID,Name,CommonName from taxon;]]>
+	        <![CDATA[select ColFieldsDef from taxon;]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col>2</col>
-	       <col>3</col>
+	        <col pos="1" id="true">TaxonID</col>
+	        <col pos="2">Name</col>
+	        <col pos="3">CommonName</col>
 	    </cols>
 	</index>
     <detailView icon="Taxon">
@@ -135,12 +128,12 @@
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select AgentID,FirstName,LastName from agent]]>
+                <![CDATA[select ColFieldsDef from agent]]>
             </sql>
             <cols>
-                <col>1</col>
-                <col>2</col>
-                <col>3</col>
+                <col pos="1" id="true">AgentID</col>
+                <col pos="2">FirstName</col>
+                <col pos="3">LastName</col>
             </cols>
         </index>
         <detailView icon="Agent">
@@ -162,14 +155,14 @@
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select PermitID,PermitNumber,Type,IssuedDate,StartDate from permit]]>
+                <![CDATA[select  ColFieldsDef from permit]]>
             </sql>
             <cols>
-                <col>1</col>
-                <col>2</col>
-                <col>3</col>
-                <col>4</col>
-                <col>5</col>
+                <col pos="1" id="true">PermitID</col>
+                <col pos="2">PermitNumber</col>
+                <col pos="3">Type</col>
+                <col pos="4">IssuedDate</col>
+                <col pos="5">StartDate</col>
             </cols>
         </index>
         <detailView icon="Permit">
@@ -193,15 +186,15 @@
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select AccessionID,Number,DateAccessioned,Status,Type,Text1 from accession]]>
+                <![CDATA[select ColFieldsDef from accession]]>
             </sql>
             <cols>
-                <col>1</col>
-                <col>2</col>
-                <col key="Accessioned">3</col>
-                <col>4</col>
-                <col>5</col>
-                <col>6</col>
+                <col pos="1" id="true">AccessionID</col>
+                <col pos="2">Number</col>
+                <col pos="3" key="Accessioned">DateAccessioned</col>
+                <col pos="4">Status</col>
+                <col pos="5">Type</col>
+                <col pos="6">Text1</col>
             </cols>
         </index>
         <detailView icon="Accession">
@@ -226,15 +219,16 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select Address, Address2, City, State, Country, PostalCode from address;]]>
+	        <![CDATA[select ColFieldsDef from address;]]>
 	    </sql>
 	    <cols>
-	        <col key="address">1</col>
-	        <col key="address">2</col>
-	        <col key="city">3</col>
-	        <col key="state">4</col>
-	        <col key="country">5</col>
-	        <col key="postalcode">6</col>
+	        <col pos="1" id="true">AddressID</col>
+	        <col pos="2" key="address">Address</col>
+	        <col pos="3" key="address">Address2</col>
+	        <col pos="4" key="city">City</col>
+	        <col pos="5" key="state">State</col>
+	        <col pos="6" key="country">Country</col>
+	        <col pos="7" key="postalcode">PostalCode</col>
 	    </cols>
 	</index>
     <detailView icon="Address">
@@ -257,13 +251,7 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select
- collectionobject.CollectionObjectID,
- taxon.FullName,
- taxon.CommonName,
- agent.LastName,
- agent.FirstName
-  From
+	        <![CDATA[Select ColFieldsDef From
  collectionobject
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  Inner Join agent ON determination.DeterminerID = agent.AgentID
@@ -272,11 +260,11 @@
  where determinationstatus.DeterminationStatusID = 2]]>
 	    </sql>
 	    <cols>
-	        <col>1</col>
-	        <col>2</col>
-	        <col>3</col>
-	        <col>4</col>
-	        <col>5</col>
+	        <col pos="1" id="true">collectionobject.CollectionObjectID</col>
+	        <col pos="2">taxon.FullName</col>
+	        <col pos="3">taxon.CommonName</col>
+	        <col pos="4">agent.LastName</col>
+	        <col pos="5">agent.FirstName</col>
 	    </cols>
 	</index>
     <detailView icon="Agent">
@@ -307,23 +295,22 @@
 	</detailView>
   </table>
 
-  <table id="10" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255"
-         expresssearch="true">
+  <table id="10" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="collectingevent" title="Collecting Event"/>
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectingevent.CollectingEventID, StartDate, EndDate, locality.NamedPlace, locality.LocalityName, locality.Township, locality.Section From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
+	        <![CDATA[Select ColFieldsDef From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col key="startdate">2</col>
-	       <col key="enddate">3</col>
-	       <col>4</col>
-	       <col>5</col>
-	       <col>6</col>
-	       <col>7</col>
+	        <col pos="1" id="true">collectingevent.CollectingEventID</col>
+	        <col pos="2" key="startdate">StartDate</col>
+	        <col pos="3" key="enddate">EndDate</col>
+	        <col pos="4">locality.NamedPlace</col>
+	        <col pos="5">locality.LocalityName</col>
+	        <col pos="6">locality.Township</col>
+	        <col pos="7">locality.Section</col>
 	    </cols>
 	</index>
     <detailView icon="ColEvent">
@@ -350,14 +337,14 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select CollectingEventID, StartDate, EndDate, Method, StationFieldNumber From collectingevent]]>
+	        <![CDATA[Select ColFieldsDef From collectingevent]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col key="startdate">2</col>
-	       <col key="enddate">3</col>
-	       <col>4</col>
-	       <col>5</col>
+	        <col pos="1" id="true">CollectingEventID</col>
+	        <col pos="2" key="startdate">StartDate</col>
+	        <col pos="3" key="enddate">EndDate</col>
+	        <col pos="4">Method</col>
+	        <col pos="5">StationFieldNumber</col>
 	    </cols>
 	</index>
     <detailView icon="ColEvent">
@@ -376,7 +363,7 @@
   </table>
 
     <!-- ************************************************* -->
-    <!--  These are for Other Non Express Search Searches  -->
+    <!--  These are for Other Non-Express Search Searches  -->
     <!-- ************************************************* -->
 
 
@@ -472,4 +459,3 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON per
   </table>
 
 </tables>
-

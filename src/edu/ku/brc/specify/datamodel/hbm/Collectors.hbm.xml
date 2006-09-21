@@ -15,7 +15,7 @@
         <meta attribute="field-description">Versioning TimeStamp</meta>
     </timestamp>
 
-    <property name="orderNumber" type="int" column="OrderNumber" not-null="true" length="10" unique-key="IX_CollectorsCEOrder">
+    <property name="orderNumber" type="java.lang.Integer" column="OrderNumber" not-null="true" length="10" unique-key="IX_CollectorsCEOrder">
         <meta attribute="field-description"></meta>    
     </property>
     

@@ -15,6 +15,7 @@
 
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIHelper.getBoolean;
 
 import java.awt.Color;
@@ -28,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different
@@ -50,13 +50,12 @@ public class ExpressResultsTableInfo
     protected String                    name;
     protected boolean                   isExpressSearch = true;
 
-    // These are useed for viewing the results
+    // These are used for viewing the results
     protected String                    iconName      = null;
     protected String                    viewSql;
     protected boolean                   viewSQLOverridden = false;
     protected Vector<Integer>           recIds        = new Vector<Integer>();
-    protected int[]                     cols          = null;
-    protected String[]                  secondaryKeys = null;
+    protected ColInfo[]                 cols          = null;
 
     // These data members are use for indexing
     protected boolean                   useHitsCache = false;
@@ -114,7 +113,7 @@ public class ExpressResultsTableInfo
         tableId         = tableElement.attributeValue("id");
         title           = tableElement.attributeValue("title");
         name            = tableElement.attributeValue("name");
-        isExpressSearch = XMLHelper.getAttr(tableElement, "expresssearch", true);
+        isExpressSearch = getAttr(tableElement, "expresssearch", true);
         priority        = Integer.parseInt(tableElement.attributeValue("priority"));
         color           = parseRGB(tableElement.attributeValue("color"));
 
@@ -135,15 +134,18 @@ public class ExpressResultsTableInfo
 
             buildSql  = indexElement.selectSingleNode("sql").getText();
 
+            StringBuilder strBuf = new StringBuilder();
             List colItems = indexElement.selectNodes("cols/col");
-            cols = new int[colItems.size()];
-            secondaryKeys = new String[colItems.size()];
+            cols = new ColInfo[colItems.size()];
             for (int i=0;i<colItems.size();i++)
             {
-                Element colElement = (Element)colItems.get(i);
-                cols[i] = Integer.parseInt(colElement.getTextTrim());
-                secondaryKeys[i] = XMLHelper.getAttr(colElement, "key", null);
+                cols[i] = new ColInfo((Element)colItems.get(i));
+                if (i > 0) strBuf.append(',');
+                strBuf.append(cols[i].getColName());
             }
+            
+            buildSql = buildSql.replaceFirst("ColFieldsDef", strBuf.toString());
+            System.err.println("["+buildSql+"]");
         }
 
         if (loadType == LOAD_TYPE.Viewing || loadType == LOAD_TYPE.Both)
@@ -308,23 +310,13 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array of the columns that are to be indexes.
+     * Returns an array of ColINfo Objects that describe the indexed Columns.
      * @return an array of the columns that are to be indexes
      */
-    public int[] getCols()
+    public ColInfo[] getCols()
     {
         return cols;
     }
-
-    /**
-     * Returns the array of secodary keys for the indexes that are being mapped.
-     * @return the array of secodary keys for the indexes that are being mapped.
-     */
-    public String[] getSecondaryKeys()
-    {
-        return this.secondaryKeys;
-    }
-
 
     /**
      * Returns the current LoadType: this object's internal contents were parsed for indexing or search processing.
@@ -442,6 +434,64 @@ public class ExpressResultsTableInfo
     {
         return priority;
     }
+    
+    public int getIdColIndex()
+    {
+        // this will usually return the position from the first array element
+        for (ColInfo ci : cols)
+        {
+            if (ci.isIdColumn())
+            {
+                return ci.getPosition();
+            }
+        }
+        return -1;
+    }
+    
+    //-------------------------------------------------------------
+    //-- Inner Classes
+    //-------------------------------------------------------------
 
+    public class ColInfo 
+    {
+        protected int     position;
+        protected boolean isIdColumn;
+        protected String  colName;
+        protected String  secondaryKey;
+        protected int     idIndex = -1;
+        
+        public ColInfo(final Element element)
+        {
+            position     = getAttr(element, "pos", -1);
+            isIdColumn   = getAttr(element, "id", false);
+            colName      = element.getTextTrim();
+            secondaryKey = getAttr(element, "key", null);
+            if (isIdColumn)
+            {
+                idIndex = position;
+            }
+        }
+
+        public String getColName()
+        {
+            return colName;
+        }
+
+        public boolean isIdColumn()
+        {
+            return isIdColumn;
+        }
+
+        public int getPosition()
+        {
+            return position;
+        }
+
+        public String getSecondaryKey()
+        {
+            return secondaryKey;
+        }
+        
+    }
 }
 

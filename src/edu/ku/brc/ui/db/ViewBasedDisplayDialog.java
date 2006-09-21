@@ -66,6 +66,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
 
         setContentPane(mainPanel);
         pack();
+        this.setModal(true);
 
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         this.setAlwaysOnTop(true);

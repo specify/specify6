@@ -123,6 +123,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public boolean hasChanged()
     {
+        log.info(this.hashCode()+"  "+hasChanged);
         return hasChanged;
     }
 
@@ -777,6 +778,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected void turnOnOKButton(final boolean itsOKToEnable)
     {
         //log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
+        log.info(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
         if (okBtn != null)
         {

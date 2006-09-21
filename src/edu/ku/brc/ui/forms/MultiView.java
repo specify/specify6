@@ -81,6 +81,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected boolean                      editable        = false;
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
+    protected boolean                      dataHasChanged  = false;    
 
     protected boolean                      createRecordSetController;
     protected boolean                      createViewSwitcher;
@@ -88,8 +89,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
 
     protected List<ViewBasedDisplayIFace>  displayFrames   = null;
-    
-    protected JButton                      externalOKBtn   = null;
 
     // Temp
     protected MultiView                    thisObj           = null;
@@ -287,6 +286,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void setIsNewForm(final boolean isNewForm)
     {
+        dataHasChanged = false;
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
             Viewable viewable = e.nextElement();
@@ -295,6 +295,50 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 viewable.getValidator().setAllUIValidatorsToNew(isNewForm);
             }
         }
+    }
+    
+    /**
+     * Returns true if any of the validators have changed, false if it has no validators or they haven't changed.
+     * @return true if any of the validators have changed, false if it has no validators or they haven't changed.
+     */
+    public boolean hasChanged()
+    {
+        if (!dataHasChanged)
+        {
+            log.info("MV ---------- "+hashCode());
+            for (FormValidator validator : formValidators)
+            {
+                log.info("FV1 ---------- "+validator.hashCode());
+                if (validator.hasChanged())
+                {
+                    return true;
+                }
+            }
+            
+            for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
+            {
+                Viewable viewable = e.nextElement();
+                FormValidator validator = viewable.getValidator();
+                if (validator != null)
+                {
+                    log.info("FV2 ---------- "+validator.hashCode());
+                    if (validator.hasChanged())
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            for (MultiView mv : kids)
+            {
+                if (mv.hasChanged())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return dataHasChanged;
     }
 
     /**
@@ -501,16 +545,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         this.data = data;
         currentView.setDataObj(data);
-        
-        // CurrentView will Validate the Form if it has a Validator so the Validator's state will be correct, 
-        // but it will not call any of the listeners when validating on a "setData" method call.
-        // 
-        // So we need to manually check here
-        FormValidator fv = currentView.getValidator();
-        if (fv != null && externalOKBtn != null)
-        {
-            externalOKBtn.setEnabled(fv.getState() == UIValidatable.ErrorType.Valid);
-        }
+        dataHasChanged = false;
     }
 
     /**
@@ -621,16 +656,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Sets an "externa;" that will have its enable state set depending on whether form is valid. 
-     * This is very help for those who want to place an edit for in there own panel, frame or dialog.
-     * @param externalValidationListener the listener
-     */
-    public void setExternalOKBtn(final JButton externalOKBtn)
-    {
-        this.externalOKBtn = externalOKBtn;
-    }
-
-    /**
      * Returns the current view.
      * @return the current view
      */
@@ -649,7 +674,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         data          = null;
         parentDataObj = null;
         currentView   = null;
-        externalOKBtn = null;
         session       = null;
 
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
@@ -698,11 +722,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             Viewable viewable = e.nextElement();
             viewable.validationWasOK(wasOK);
         }
-        
-        if (externalOKBtn != null)
-        {
-            externalOKBtn.setEnabled(wasOK);
-        }
     }
 
     //-----------------------------------------------------
@@ -714,16 +733,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void dataChanged(final String name, final Component comp, DataChangeNotifier dcn)
     {
+        
         boolean wasOK = isAllValidationOK();
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
             Viewable viewable = e.nextElement();
             viewable.validationWasOK(wasOK);
         }
-        if (externalOKBtn != null)
-        {
-            externalOKBtn.setEnabled(wasOK);
-        }
-
     }
 }

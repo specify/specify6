@@ -15,7 +15,7 @@
         <meta attribute="field-description">Versioning TimeStamp</meta>
     </timestamp>
 
-    <property name="collectionObjectId" type="int" column="CollectionObjectID" not-null="false">
+    <property name="collectionObjectId" type="java.lang.Long" column="CollectionObjectID" not-null="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
@@ -35,7 +35,7 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="number" type="int" column="Number">
+    <property name="number" type="java.lang.Integer" column="Number">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>

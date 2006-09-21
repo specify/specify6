@@ -17,7 +17,7 @@
         <meta attribute="field-description">Name of workbench</meta>
     </property>
 
-    <property name="tableId" column="TableID" update="true" type="int">
+    <property name="tableId" column="TableID" update="true" type="java.lang.Integer">
     </property>
 
     <property name="remarks" type="text" column="Remarks">

@@ -37,7 +37,7 @@ public interface BusinessRulesIFace
      * @param dataObj the data object for rthe rules to be processed on.
      * @return the result status after processing the busniess rules.
      */
-    public STATUS processBusiessRules(Object dataObj);
+    public STATUS processBusinessRules(Object dataObj);
     
     /**
      * Returns a list of warnings and errors after processing the business rules.
@@ -59,5 +59,12 @@ public interface BusinessRulesIFace
      * @param dataObj the data object to be checked.
      */
     public void saveStandAloneData(Object dataObj, List<BusinessRulesDataItem> list);
+    
+    /**
+     * Asks if the object can be deleted.
+     * @param dataObj the data object in question
+     * @return true if it can be deleted, false if not
+     */
+    public boolean okToDelete(Object dataObj);
     
 }

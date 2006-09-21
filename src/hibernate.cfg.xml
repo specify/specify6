@@ -33,7 +33,7 @@
 		<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="cache.use_query_cache">true</property>
 		-->
-
+		
 		<!-- Specify mapping files. -->
 		<mapping resource="edu/ku/brc/ui/db/PickList.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSet.hbm.xml"/>
@@ -125,7 +125,13 @@
         <collection-cache collection="org.hibernate.auction.model.Category.items" usage="read-write"/>
         <collection-cache collection="org.hibernate.auction.model.Item.bids" usage="read-write"/>
         -->
-
+        
+	    <!--     
+	    <listener type="save" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
+	    <listener type="save-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
+	    <listener type="flush" class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" />
+	    -->
+	    
 	</session-factory>
 
 </hibernate-configuration>

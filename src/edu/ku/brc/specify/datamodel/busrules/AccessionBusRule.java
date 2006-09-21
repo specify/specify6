@@ -75,7 +75,7 @@ public class AccessionBusRule implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
      */
-    public STATUS processBusiessRules(Object dataObj)
+    public STATUS processBusinessRules(Object dataObj)
     {
         if (!(dataObj instanceof Accession))
         {
@@ -163,7 +163,14 @@ public class AccessionBusRule implements BusinessRulesIFace
         {
             log.error(ex);
         }
-
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
+     */
+    public boolean okToDelete(Object dataObj)
+    {
+        return true; // TODO Implement me!
     }
     
     //-----------------------------------------------------------------
