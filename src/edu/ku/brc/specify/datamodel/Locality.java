@@ -78,13 +78,15 @@ public class Locality  implements java.io.Serializable {
      protected Geography geography;
      protected Set<LocalityCitation> localityCitations;
      protected Set<CollectingEvent> collectingEvents;
-     protected Set<ExternalResource> externalResources;
+     protected Set<Attachment>          attachments;
 
 
     // Constructors
 
     /** default constructor */
-    public Locality() {
+    public Locality()
+    {
+        // do nothing
     }
     
     /** constructor with id */
@@ -148,7 +150,7 @@ public class Locality  implements java.io.Serializable {
         geography = null;
         localityCitations = new HashSet<LocalityCitation>();
         collectingEvents = new HashSet<CollectingEvent>();
-        externalResources = new HashSet<ExternalResource>();
+        attachments = new HashSet<Attachment>();
     }
     // End Initializer
 
@@ -702,6 +704,16 @@ public class Locality  implements java.io.Serializable {
         this.localityCitations = localityCitations;
     }
 
+    public Set<Attachment> getAttachments()
+    {
+        return attachments;
+    }
+
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+
     /**
      * 
      */
@@ -712,19 +724,6 @@ public class Locality  implements java.io.Serializable {
     public void setCollectingEvents(Set<CollectingEvent> collectingEvents) {
         this.collectingEvents = collectingEvents;
     }
-
-    /**
-     * 
-     */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
-    }
-    
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
-    }
-
-
 
 
 
@@ -748,11 +747,6 @@ public class Locality  implements java.io.Serializable {
         collectingEvent.setLocality(this);
     }
 
-    public void addExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.add(externalResource);
-        externalResource.getLocalities().remove(this);
-    }
 
     // Done Add Methods
 
@@ -776,11 +770,6 @@ public class Locality  implements java.io.Serializable {
         collectingEvent.setLocality(null);
     }
 
-    public void removeExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.remove(externalResource);
-        externalResource.getLocalities().remove(this);
-    }
 
     // Delete Add Methods
 }

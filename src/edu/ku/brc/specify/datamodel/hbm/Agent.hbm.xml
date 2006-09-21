@@ -192,12 +192,10 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
     </set>
 
-    <!-- bi-directional many-to-many association to ExternalResource -->
-    <set name="externalResources" table="agent_extres" lazy="true" inverse="true" cascade="save-update">
-        <key>
-            <column name="AgentID"/>
-        </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
+    <!-- bi-directional one-to-many association to Attachment -->
+    <set name="attachments" inverse="true" cascade="save-update">
+        <key column="AgentID"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>
 
     <!-- bi-directional one-to-many association to RepositoryAgreement -->

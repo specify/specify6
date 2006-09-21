@@ -115,12 +115,10 @@
         <column name="IssuerID"/>
     </many-to-one>
 
-    <!-- bi-directional many-to-many association to ExternalResource -->
-    <set name="externalResources" table="permit_extres" lazy="true" inverse="true" cascade="save-update">
-        <key>
-            <column name="PermitID"/>
-        </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResource"/>
+    <!-- bi-directional one-to-many association to Attachment -->
+    <set name="attachments" inverse="true" cascade="save-update">
+        <key column="PermitID"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>
 
 </class>

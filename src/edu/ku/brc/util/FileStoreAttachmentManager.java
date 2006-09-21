@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.AttachmentGroup;
 
 /**
  *
@@ -42,26 +41,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     }
 
     /**
-     * 
-     * 
-     * @see edu.ku.brc.util.AttachmentManagerIface#getGroupOriginals(edu.ku.brc.specify.datamodel.AttachmentGroup)
-     * @param group
-     * @return
-     */
-    public File[] getGroupOriginals(AttachmentGroup group)
-    {
-        int groupSize = group.getAttachments().size();
-        File[] attachments = new File[groupSize];
-        int index = 0;
-        for( Attachment a: group.getAttachments() )
-        {
-            attachments[index] = getOriginal(a);
-            ++index;
-        }
-        return attachments;
-    }
-
-    /**
      *
      *
      * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
@@ -77,26 +56,6 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             return thumbnail;
         }
         return null;
-    }
-
-    /**
-     *
-     *
-     * @see edu.ku.brc.util.AttachmentManagerIface#getGroupThumbnails(edu.ku.brc.specify.datamodel.AttachmentGroup)
-     * @param group
-     * @return
-     */
-    public File[] getGroupThumbnails(AttachmentGroup group)
-    {
-        int groupSize = group.getAttachments().size();
-        File[] thumbnails = new File[groupSize];
-        int index = 0;
-        for( Attachment a: group.getAttachments() )
-        {
-            thumbnails[index] = getThumbnail(a);
-            ++index;
-        }
-        return thumbnails;
     }
 
     /**

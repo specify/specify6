@@ -50,22 +50,21 @@ public class Loan  implements java.io.Serializable {
      protected Set<LoanAgents> loanAgents;
      protected Set<LoanPhysicalObject> loanPhysicalObjects;
      protected Shipment shipment;
-     protected Set<ExternalResource> externalResources;
+     protected Set<Attachment> attachments;
 
 
     // Constructors
 
     /** default constructor */
-    public Loan() {
+    public Loan()
+    {
+        // do nothing
     }
     
     /** constructor with id */
     public Loan(Long loanId) {
         this.loanId = loanId;
     }
-   
-    
-    
 
     // Initializer
     public void initialize()
@@ -91,7 +90,7 @@ public class Loan  implements java.io.Serializable {
         loanAgents = new HashSet<LoanAgents>();
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         shipment = null;
-        externalResources = new HashSet<ExternalResource>();
+        attachments = new HashSet<Attachment>();
     }
     // End Initializer
 
@@ -337,22 +336,15 @@ public class Loan  implements java.io.Serializable {
         this.shipment = shipment;
     }
 
-    /**
-     * 
-     */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
-    }
-    
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
+    public Set<Attachment> getAttachments()
+    {
+        return attachments;
     }
 
-
-
-
-
-    // Add Methods
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
+    }
 
     public void addLoanAgents(final LoanAgents loanAgent)
     {
@@ -366,11 +358,6 @@ public class Loan  implements java.io.Serializable {
         loanPhysicalObject.setLoan(this);
     }
 
-    public void addExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.add(externalResource);
-        externalResource.getLoans().add(this);
-    }
 
     // Done Add Methods
 
@@ -388,11 +375,6 @@ public class Loan  implements java.io.Serializable {
         loanPhysicalObject.setLoan(null);
     }
 
-    public void removeExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.remove(externalResource);
-        externalResource.getLoans().remove(this);
-    }
 
     // Delete Add Methods
 }

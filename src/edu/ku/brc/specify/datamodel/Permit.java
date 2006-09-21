@@ -49,13 +49,14 @@ public class Permit  implements java.io.Serializable {
      protected Set<AccessionAuthorizations> accessionAuthorizations;
      protected Agent agentByIssuee;
      protected Agent agentByIssuer;
-     protected Set<ExternalResource> externalResources;
+     protected Set<Attachment>          attachments;
 
 
     // Constructors
 
     /** default constructor */
     public Permit() {
+        // do nothing
     }
 
     /** constructor with id */
@@ -89,7 +90,7 @@ public class Permit  implements java.io.Serializable {
         accessionAuthorizations = new HashSet<AccessionAuthorizations>();
         agentByIssuee = null;
         agentByIssuer = null;
-        externalResources = new HashSet<ExternalResource>();
+        attachments = new HashSet<Attachment>();
     }
     // End Initializer
 
@@ -324,38 +325,16 @@ public class Permit  implements java.io.Serializable {
         this.agentByIssuer = agentByIssuer;
     }
 
-    /**
-     *
-     */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
-    }
-
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
-    }
-
-
-
-
-
-    // Add Methods
-
-    public void addExternalResources(final ExternalResource externalResource)
+    public Set<Attachment> getAttachments()
     {
-        this.externalResources.add(externalResource);
-        externalResource.getPermits().add(this);
+        return attachments;
     }
 
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeExternalResources(final ExternalResource externalResource)
+    public void setAttachments(Set<Attachment> attachments)
     {
-        this.externalResources.remove(externalResource);
-        externalResource.getPermits().remove(this);
+        this.attachments = attachments;
     }
 
-    // Delete Add Methods
+
+
 }

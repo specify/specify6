@@ -70,7 +70,7 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 	protected TaxonTreeDef			definition;
 	protected TaxonTreeDefItem		definitionItem;
 	protected Taxon					parent;
-	protected Set<ExternalResource>	externalResources;
+    protected Set<Attachment>          attachments;
 	protected Set<Taxon>			children;
 
 	// Constructors
@@ -137,7 +137,7 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 		definition = null;
 		definitionItem = null;
 		parent = null;
-		externalResources = new HashSet<ExternalResource>();
+		attachments = new HashSet<Attachment>();
 		children = new HashSet<Taxon>();
 	}
 
@@ -597,18 +597,6 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 */
-	public Set<ExternalResource> getExternalResources()
-	{
-		return this.externalResources;
-	}
-
-	public void setExternalResources(Set<ExternalResource> externalResources)
-	{
-		this.externalResources = externalResources;
-	}
 
 	/**
 	 * 
@@ -636,8 +624,20 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 		// TODO Auto-generated method stub
 
 	}
+    
+    
 
-	public void addChild(Taxon child)
+	public Set<Attachment> getAttachments()
+    {
+        return attachments;
+    }
+
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+
+    public void addChild(Taxon child)
 	{
 		Taxon oldParent = child.getParent();
 		if( oldParent!=null )
@@ -685,22 +685,10 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 		determination.setTaxon(null);
 	}
 
-	public void addExternalResources(final ExternalResource externalResource)
-	{
-		this.externalResources.add(externalResource);
-		externalResource.getTaxonomy().add(this);
-	}
-
 	public void removeTaxonCitations(final TaxonCitation taxonCitation)
 	{
 		this.taxonCitations.remove(taxonCitation);
 		taxonCitation.setTaxon(null);
-	}
-
-	public void removeExternalResources(final ExternalResource externalResource)
-	{
-		this.externalResources.remove(externalResource);
-		externalResource.getTaxonomy().remove(this);
 	}
 
 	@Override
@@ -739,7 +727,7 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 		// force all collections to be loaded
 		boolean noCitations = getTaxonCitations().isEmpty();
 		boolean noAcceptedChildren = getAcceptedChildren().isEmpty();
-		boolean noExtRes = getExternalResources().isEmpty();
+		boolean noAttachments = getAttachments().isEmpty();
 		boolean noDeter = getDeterminations().isEmpty();
 
 		boolean descendantsDeletable = true;
@@ -752,7 +740,7 @@ public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTre
 			}
 		}
 
-		if( noCitations&&noAcceptedChildren&&noExtRes&&noDeter&&descendantsDeletable )
+		if( noCitations&&noAcceptedChildren&&noAttachments&&noDeter&&descendantsDeletable )
 		{
 			return true;
 		}

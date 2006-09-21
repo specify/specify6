@@ -240,12 +240,10 @@
     </many-to-one>
 
 
-    <!-- bi-directional many-to-many association to ExternalResource -->
-    <set name="externalResources" table="colobj_extres" lazy="true" inverse="true" cascade="save-update">
-        <key>
-            <column name="CollectionObjectID"/>
-        </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
+    <!-- bi-directional one-to-many association to Attachment -->
+    <set name="attachments" inverse="true" cascade="save-update">
+        <key column="CollectionObjectID"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>
 
     <!-- bi-directional many-to-one association to Container -->

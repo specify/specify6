@@ -86,7 +86,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 			results.add(t);
 		}
 		
-		Collections.sort(results,new TreePathComparator(true));
+		Collections.sort(results,new TreePathComparator<T,D,I>(true));
 		
 		return results;
 	}

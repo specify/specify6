@@ -47,13 +47,14 @@ public class Preparation  implements java.io.Serializable {
      protected CollectionObject collectionObject;
      protected Agent preparedByAgent;
      protected Location location;
-     protected Set<ExternalResource> externalResources;
+     protected Set<Attachment>          attachments;
 
 
     // Constructors
 
     /** default constructor */
     public Preparation() {
+        // do nothing
     }
     
     /** constructor with id */
@@ -83,7 +84,7 @@ public class Preparation  implements java.io.Serializable {
         collectionObject = null;
         preparedByAgent = null;
         location = null;
-        externalResources = new HashSet<ExternalResource>();
+        attachments = new HashSet<Attachment>();
     }
     // End Initializer
 
@@ -263,6 +264,16 @@ public class Preparation  implements java.io.Serializable {
         this.preparedByAgent = preparedByAgent;
     }
 
+    public Set<Attachment> getAttachments()
+    {
+        return attachments;
+    }
+
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+
     /**
      * 
      */
@@ -274,20 +285,7 @@ public class Preparation  implements java.io.Serializable {
         this.location = location;
     }
 
-    /**
-     * 
-     */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
-    }
-    
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
-    }
-
-
-
-
+ 
 
     // Add Methods
 
@@ -301,12 +299,6 @@ public class Preparation  implements java.io.Serializable {
     {
         this.attrs.add(attr);
         attr.setPreparation(this);
-    }
-
-    public void addExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.add(externalResource);
-        externalResource.getPreparations().add(this);
     }
 
     // Done Add Methods
@@ -323,12 +315,6 @@ public class Preparation  implements java.io.Serializable {
     {
         this.attrs.remove(attr);
         attr.setPreparation(null);
-    }
-
-    public void removeExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.remove(externalResource);
-        externalResource.getPreparations().remove(this);
     }
 
     // Delete Add Methods

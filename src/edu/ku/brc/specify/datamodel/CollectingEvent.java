@@ -53,14 +53,17 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
      protected Set<Collectors> collectors;
      protected Locality locality;
      protected Stratigraphy stratigraphy;
+     protected CollectingTrip collectingTrip;
      protected Set<AttributeIFace> attrs;
-     protected Set<ExternalResource> externalResources;
+     protected Set<Attachment> attachments;
 
 
     // Constructors
 
     /** default constructor */
-    public CollectingEvent() {
+    public CollectingEvent()
+    {
+    	// do nothing
     }
     
     /** constructor with id */
@@ -97,7 +100,7 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
         locality = null;
         stratigraphy = null;
         attrs = new HashSet<AttributeIFace>();
-        externalResources = new HashSet<ExternalResource>();
+        attachments = new HashSet<Attachment>();
     }
     // End Initializer
 
@@ -365,24 +368,29 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
         this.attrs = attrs;
     }
 
-    /**
-     * 
-     */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
-    }
-    
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
+    public CollectingTrip getCollectingTrip()
+    {
+        return collectingTrip;
     }
 
+    public void setCollectingTrip(CollectingTrip collectingTrip)
+    {
+        this.collectingTrip = collectingTrip;
+    }
 
+    public Set<Attachment> getAttachments()
+	{
+		return attachments;
+	}
 
-
+	public void setAttachments(Set<Attachment> attachments)
+	{
+		this.attachments = attachments;
+	}
 
     // Add Methods
 
-    public void addCollectionObjects(final CollectionObject collectionObject)
+	public void addCollectionObjects(final CollectionObject collectionObject)
     {
         this.collectionObjects.add(collectionObject);
         collectionObject.setCollectingEvent(this);
@@ -398,12 +406,6 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
     {
         this.attrs.add(attr);
         attr.setCollectingEvent(this);
-    }
-
-    public void addExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.add(externalResource);
-        externalResource.getCollectinEvents().add(this);
     }
 
     // Done Add Methods
@@ -426,12 +428,6 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
     {
         this.attrs.remove(attr);
         attr.setCollectingEvent(null);
-    }
-
-    public void removeExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.remove(externalResource);
-        externalResource.getCollectinEvents().remove(null);
     }
 
     // Delete Add Methods

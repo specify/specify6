@@ -7,11 +7,13 @@
 
 		<!-- Don't forget to copy your JDBC driver to the lib/ directory! -->
 
-	    <!-- <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+	    <!--
+	    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
 	    <property name="hibernate.connection.url">jdbc:mysql://localhost/fish</property> 
 		<property name="hibernate.connection.username">rods</property>
-	    <property name="hibernate.connection.password">rods</property>-->
+	    <property name="hibernate.connection.password">rods</property>
+	    -->
 	    
 	    <!--
 	    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
@@ -46,6 +48,8 @@
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceDefault.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResource.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceData.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Attachment.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AttachmentMetadata.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AttributeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Authors.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowAgents.hbm.xml"/>
@@ -56,6 +60,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CatalogSeries.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEvent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEventAttr.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingTrip.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectionObjectCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectionObject.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectionObjectAttr.hbm.xml"/>
@@ -72,8 +77,6 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationStatus.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ExchangeIn.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ExchangeOut.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ExternalResource.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ExternalResourceAttr.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Geography.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GeographyTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GeographyTreeDefItem.hbm.xml"/>

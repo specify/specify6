@@ -7,129 +7,70 @@
 
     <class name="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
         table="geologictimeperiod" lazy="true">
-        <meta attribute="class-description" inherit="false" />
 
         <id name="geologicTimePeriodId" type="java.lang.Long" column="GeologicTimePeriodID">
-            <meta attribute="scope-field">protected</meta>
             <generator class="native" />
 		</id>
 
-        <timestamp name="timestampModified" column="TimestampModified">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description">Versioning TimeStamp</meta>
-        </timestamp>
+        <timestamp name="timestampModified" column="TimestampModified"/>
 
-        <property name="rankId" type="java.lang.Integer" column="RankID"
-            length="10" index="IX_GTP_RankId">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="rankId" type="java.lang.Integer" column="RankID" length="10"/>
 
-        <property name="name" type="java.lang.String" column="Name"
-            length="64">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="name" type="java.lang.String" column="Name" length="64"/>
 
-        <property name="fullName" type="java.lang.String" column="FullName"
-            length="255">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="fullName" type="java.lang.String" column="FullName" length="255"/>
 
-        <property name="remarks" type="java.lang.String"
-            column="Remarks" length="255">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="remarks" type="java.lang.String" column="Remarks" length="255"/>
         
-        <property name="nodeNumber" type="java.lang.Integer"
-            column="NodeNumber" length="10" index="IX_GTP_NodeNumber">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10" index="IX_GTP_NodeNumber"/>
 
-        <property name="highestChildNodeNumber" type="java.lang.Integer"
-            column="HighestChildNodeNumber" length="10"
-            index="IX_GTP_NighestChildNodeNumber">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10"/>
 
-        <property name="standard" type="java.lang.String"
-            column="Standard" length="64">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="standard" type="java.lang.String" column="Standard" length="64"/>
 
-        <property name="start" type="java.lang.Float" column="Start"
-            length="24">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="start" type="java.lang.Float" column="Start" length="24"/>
         
-        <property name="StartUncertainty" type="java.lang.Float"
-            column="AgeStartUncertainty" length="24">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="StartUncertainty" type="java.lang.Float" column="AgeStartUncertainty" length="24"/>
         
-        <property name="end" type="java.lang.Float" column="End"
-            length="24">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="end" type="java.lang.Float" column="End" length="24"/>
         
-        <property name="endUncertainty" type="java.lang.Float"
-            column="EndUncertainty" length="24">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="endUncertainty" type="java.lang.Float" column="EndUncertainty" length="24"/>
         
-        <property name="timestampCreated" type="java.sql.Timestamp"
-            column="TimestampCreated" length="23">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23"/>
 
-        <property name="timestampVersion" type="java.sql.Timestamp"
-            column="TimestampVersion" length="16">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="timestampVersion" type="java.sql.Timestamp" column="TimestampVersion" length="16"/>
 
-        <property name="lastEditedBy" type="java.lang.String"
-            column="LastEditedBy" length="32">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="32"/>
 
         <!-- Associations -->
 
         <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-        <many-to-one name="definition"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
+        <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
             not-null="true" lazy="false" outer-join="true">
             <column name="GeologicTimePeriodTreeDefID" />
         </many-to-one>
 
         <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDefItem -->
-        <many-to-one name="definitionItem"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+        <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
             lazy="false" not-null="true" outer-join="true">
-            <column name="GeologicTimePeriodTreeDefItemID" />
+            <column name="GeologicTimePeriodTreeDefItemID"/>
         </many-to-one>
 
         <!-- bi-directional many-to-one association to GeologicTimePeriod -->
-        <many-to-one name="parent"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            not-null="true" outer-join="true" lazy="false">
-            <column name="ParentID" />
+        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            outer-join="true" lazy="false">
+            <column name="ParentID"/>
         </many-to-one>
 
-        <set name="children"
-            inverse="true"
-            cascade="none">
-            <key>
-                <column name="ParentID" />
-            </key>
-            <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
+        <set name="children" inverse="true" cascade="none">
+            <key column="ParentID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
         </set>
 
         <!-- bi-directional many-to-one association to Stratigraphy -->
-        <set name="stratigraphies" lazy="true" inverse="true"
-            cascade="none">
-            <meta attribute="scope-field">protected</meta>
-            <key>
-                <column name="GeologicTimePeriodID" />
-            </key>
-            <one-to-many class="edu.ku.brc.specify.datamodel.Stratigraphy" />
+        <set name="stratigraphies" lazy="true" inverse="true" cascade="none">
+            <key column="GeologicTimePeriodID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.Stratigraphy"/>
         </set>
         
     </class>

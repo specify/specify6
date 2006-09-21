@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+
+<class name="edu.ku.brc.specify.datamodel.AttachmentMetadata" table="attachmentmetadata" lazy="true">
+
+    <id name="attachmentMetadataID" type="java.lang.Long" column="AttachmentMetadataID">
+      <generator class="native"/>
+    </id>
+
+    <property name="name" type="java.lang.String" column="Name" length="64"/>
+    
+    <property name="value" type="java.lang.String" column="Value" length="255"/>
+    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false"/>
+    
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23"/>
+    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50"/>
+
+	<!-- bi-directional many-to-one association to Attachment -->
+    <many-to-one name="attachment" class="edu.ku.brc.specify.datamodel.Attachment" outer-join="true">
+        <column name="AttachmentID"/>
+    </many-to-one>
+	
+    </class>
+</hibernate-mapping>

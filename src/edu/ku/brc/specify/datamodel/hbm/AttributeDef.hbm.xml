@@ -77,18 +77,6 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
     </set>    
-        
-    <!-- bi-directional one-to-many association to ExternalResourceAttr -->
-    <set name="externalResourcesAttrs" lazy="true" inverse="true" cascade="delete">
-    <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-        <key>
-            <column name="AttributeDefID"/>
-        </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.ExternalResourceAttr"/>
-    </set>    
-        
-
     
 </class>
 </hibernate-mapping>

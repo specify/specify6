@@ -116,11 +116,16 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.Collectors"/>
     </set>
     
-   <!-- bi-directional many-to-one association to Locality -->
-   <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" not-null="true" outer-join="true" index="IX_CollectingEventLocalityID">
+    <!-- bi-directional many-to-one association to Locality -->
+    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" not-null="true" outer-join="true" index="IX_CollectingEventLocalityID">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Locality where collection took place</meta>
         <column name="LocalityID"/>
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to CollectingTrip -->
+    <many-to-one name="collectingTrip" class="edu.ku.brc.specify.datamodel.CollectingTrip" outer-join="true">
+        <column name="CollectingTripID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-one association to Stratigraphy -->
@@ -139,12 +144,10 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectingEventAttr"/>
     </set>    
         
-    <!-- bi-directional many-to-many association to ExternalResource -->
-    <set name="externalResources" table="coleve_extres" lazy="true" inverse="true" cascade="save-update">
-        <key>
-            <column name="CollectingEventID"/>
-        </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
+    <!-- bi-directional one-to-many association to Attachment -->
+    <set name="attachments" inverse="true" cascade="save-update">
+        <key column="CollectingEventID"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>
     
 </class>

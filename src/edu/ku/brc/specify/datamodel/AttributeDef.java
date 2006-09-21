@@ -35,8 +35,6 @@ public class AttributeDef  implements java.io.Serializable {
      protected Set<CollectingEventAttr> collectingEventAttrs;
      protected Set<PreparationAttr> preparationAttr;
      protected Set<CollectionObjectAttr> collectionObjectAttrs;
-     protected Set<ExternalResourceAttr> externalResourcesAttrs;
-
 
     // Constructors
 
@@ -64,7 +62,6 @@ public class AttributeDef  implements java.io.Serializable {
         collectingEventAttrs = new HashSet<CollectingEventAttr>();
         preparationAttr = new HashSet<PreparationAttr>();
         collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
-        externalResourcesAttrs = new HashSet<ExternalResourceAttr>();
     }
     // End Initializer
 
@@ -178,20 +175,6 @@ public class AttributeDef  implements java.io.Serializable {
         this.collectionObjectAttrs = collectionObjectAttrs;
     }
 
-    /**
-     *
-     */
-    public Set<ExternalResourceAttr> getexternalResourcesAttrs() {
-        return this.externalResourcesAttrs;
-    }
-
-    public void setexternalResourcesAttrs(Set<ExternalResourceAttr> externalResourcesAttrs) {
-        this.externalResourcesAttrs = externalResourcesAttrs;
-    }
-
-
-
-
 
     // Add Methods
 
@@ -211,12 +194,6 @@ public class AttributeDef  implements java.io.Serializable {
     {
         this.collectionObjectAttrs.add(collectionObjectAttr);
         collectionObjectAttr.setDefinition(this);
-    }
-
-    public void addExternalResourcesAttrs(final ExternalResourceAttr externalResourceAttr)
-    {
-        this.externalResourcesAttrs.add(externalResourceAttr);
-        externalResourceAttr.setDefinition(this);
     }
 
     // Done Add Methods
@@ -239,12 +216,6 @@ public class AttributeDef  implements java.io.Serializable {
     {
         this.collectionObjectAttrs.remove(collectionObjectAttr);
         collectionObjectAttr.setCollectionObject(null);
-    }
-
-    public void removeExternalResourcesAttrs(final ExternalResourceAttr externalResource)
-    {
-        this.externalResourcesAttrs.remove(externalResource);
-        externalResource.setExternalResource(null);
     }
 
     // Delete Add Methods

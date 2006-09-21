@@ -16,13 +16,22 @@ public class Attachment implements java.io.Serializable
     private String                  mimeType;
     private String                  origFilename;
     private Calendar                fileCreatedDate;
+    private Integer                 order;
     private String                  remarks;
     private String                  attachmentLocation;
     private Date                    timestampCreated;
     private Date                    timestampModified;
     private String                  lastEditedBy;
-    private Set<AttachmentGroup>    attachmentGroups;
     private Set<AttachmentMetadata> metadata;
+    private Agent                   agent;
+    private CollectionObject        collectionObject;
+    private CollectingEvent         collectingEvent;
+    private Loan                    loan;
+    private Locality                locality;
+    private Permit                  permit;
+    private Preparation             preparation;
+    private Taxon                   taxon;
+
 
     // Constructors
 
@@ -44,13 +53,21 @@ public class Attachment implements java.io.Serializable
         mimeType = null;
         origFilename = null;
         fileCreatedDate = null;
+        order = null;
         remarks = null;
         attachmentLocation = null;
         timestampCreated = null;
         timestampModified = null;
         lastEditedBy = null;
-        attachmentGroups = new HashSet<AttachmentGroup>();
         metadata = new HashSet<AttachmentMetadata>();
+        agent = null;
+        collectionObject = null;
+        collectingEvent = null;
+        loan = null;
+        locality = null;
+        permit = null;
+        preparation = null;
+        taxon = null;
     }
 
     // Property accessors
@@ -105,6 +122,16 @@ public class Attachment implements java.io.Serializable
     public void setFileCreatedDate(Calendar fileCreatedDate)
     {
         this.fileCreatedDate = fileCreatedDate;
+    }
+
+    public Integer getOrder()
+    {
+        return order;
+    }
+
+    public void setOrder(Integer order)
+    {
+        this.order = order;
     }
 
     /**
@@ -175,19 +202,6 @@ public class Attachment implements java.io.Serializable
     /**
      * 
      */
-    public Set<AttachmentGroup> getAttachmentGroups()
-    {
-        return this.attachmentGroups;
-    }
-
-    public void setAttachmentGroups(Set<AttachmentGroup> attachmentGroups)
-    {
-        this.attachmentGroups = attachmentGroups;
-    }
-
-    /**
-     * 
-     */
     public Set<AttachmentMetadata> getMetadata()
     {
         return this.metadata;
@@ -196,6 +210,86 @@ public class Attachment implements java.io.Serializable
     public void setMetadata(Set<AttachmentMetadata> metadata)
     {
         this.metadata = metadata;
+    }
+
+    public Agent getAgent()
+    {
+        return agent;
+    }
+
+    public void setAgent(Agent agent)
+    {
+        this.agent = agent;
+    }
+
+    public CollectingEvent getCollectingEvent()
+    {
+        return collectingEvent;
+    }
+
+    public void setCollectingEvent(CollectingEvent collectingEvent)
+    {
+        this.collectingEvent = collectingEvent;
+    }
+
+    public CollectionObject getCollectionObject()
+    {
+        return collectionObject;
+    }
+
+    public void setCollectionObject(CollectionObject collectionObject)
+    {
+        this.collectionObject = collectionObject;
+    }
+
+    public Loan getLoan()
+    {
+        return loan;
+    }
+
+    public void setLoan(Loan loan)
+    {
+        this.loan = loan;
+    }
+
+    public Locality getLocality()
+    {
+        return locality;
+    }
+
+    public void setLocality(Locality localitie)
+    {
+        this.locality = localitie;
+    }
+
+    public Permit getPermit()
+    {
+        return permit;
+    }
+
+    public void setPermit(Permit permit)
+    {
+        this.permit = permit;
+    }
+
+    public Preparation getPreparation()
+    {
+        return preparation;
+    }
+
+    public void setPreparation(Preparation preparation)
+    {
+        this.preparation = preparation;
+    }
+
+    public Taxon getTaxon()
+    {
+        return taxon;
+    }
+
+    public void setTaxon(Taxon taxon)
+    {
+        this.taxon = taxon;
     }
 
 }

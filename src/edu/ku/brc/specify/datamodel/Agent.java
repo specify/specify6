@@ -57,7 +57,7 @@ public class Agent  implements java.io.Serializable {
     protected Set<Shipment>                 shipments;
     protected Set<Collectors>                collectors;
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
-    protected Set<ExternalResource>         externalResources;
+    protected Set<Attachment>          attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
      
     // From AgentAddress
@@ -81,6 +81,7 @@ public class Agent  implements java.io.Serializable {
 
     /** default constructor */
     public Agent() {
+        // do nothing
     }
 
     /** constructor with id */
@@ -120,7 +121,7 @@ public class Agent  implements java.io.Serializable {
         shipments = new HashSet<Shipment>();
         collectors = new HashSet<Collectors>();
         exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
-        externalResources = new HashSet<ExternalResource>();
+        attachments = new HashSet<Attachment>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
         
         // Agent
@@ -166,6 +167,16 @@ public class Agent  implements java.io.Serializable {
 
     public void setAgentId(Long agentId) {
         this.agentId = agentId;
+    }
+
+    public Set<Attachment> getAttachments()
+    {
+        return attachments;
+    }
+
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
     }
 
     /**
@@ -391,7 +402,7 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set getGroupPersonsByGroup() {
+    public Set<GroupPersons> getGroupPersonsByGroup() {
         return this.groupPersonsByGroup;
     }
 
@@ -476,15 +487,15 @@ public class Agent  implements java.io.Serializable {
         this.exchangeOutCatalogedBys = exchangeOutCatalogedBys;
     }
 
-    /**
-     *
-     */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
+
+    public Set<Attachment> getAttachmentGroups()
+    {
+        return attachments;
     }
 
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
+    public void setAttachmentGroups(Set<Attachment> attachmentGroups)
+    {
+        this.attachments = attachmentGroups;
     }
 
     /**
@@ -550,7 +561,7 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set getShipmentsByShipper() {
+    public Set<Shipment> getShipmentsByShipper() {
         return this.shipmentsByShipper;
     }
 
@@ -691,12 +702,6 @@ public class Agent  implements java.io.Serializable {
         project.setAgent(this);
     }
     
-    public void addExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.add(externalResource);
-        externalResource.getAgents().add(this);
-    }
-
     public void addAddresses(final Address address)
     {
         this.addresses.add(address);
@@ -721,12 +726,6 @@ public class Agent  implements java.io.Serializable {
         project.setAgent(null);
     }
 
-    public void removeExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.remove(externalResource);
-        externalResource.getAgents().remove(this);
-    }
-    
     public void removeAddresses(final Address address)
     {
         this.addresses.remove(address);

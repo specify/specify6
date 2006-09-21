@@ -67,14 +67,16 @@ public class CollectionObject  implements java.io.Serializable {
      protected CatalogSeries catalogSeries;
      protected Accession accession;
      protected Agent cataloger;
-     protected Set<ExternalResource> externalResources;
+     protected Set<Attachment>          attachments;
      protected Container container;
 
 
     // Constructors
 
     /** default constructor */
-    public CollectionObject() {
+    public CollectionObject()
+    {
+        // do nothing
     }
 
     /** constructor with id */
@@ -124,7 +126,7 @@ public class CollectionObject  implements java.io.Serializable {
         catalogSeries = null;
         accession = null;
         cataloger = null;
-        externalResources = new HashSet<ExternalResource>();
+        attachments = new HashSet<Attachment>();
         container = null;
     }
     // End Initializer
@@ -548,15 +550,15 @@ public class CollectionObject  implements java.io.Serializable {
         this.cataloger = cataloger;
     }
 
-    /**
-     *
-     */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
+
+    public Set<Attachment> getAttachments()
+    {
+        return attachments;
     }
 
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
     }
 
     /**
@@ -615,12 +617,6 @@ public class CollectionObject  implements java.io.Serializable {
         otherIdentifier.setCollectionObject(this);
     }
 
-    public void addExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.add(externalResource);
-        externalResource.getCollectionObjects().add(this);
-    }
-
     // Done Add Methods
 
     // Delete Methods
@@ -665,12 +661,6 @@ public class CollectionObject  implements java.io.Serializable {
     {
         this.otherIdentifiers.remove(otherIdentifier);
         otherIdentifier.setCollectionObject(null);
-    }
-
-    public void removeExternalResources(final ExternalResource externalResource)
-    {
-        this.externalResources.remove(externalResource);
-        externalResource.getCollectionObjects().remove(this);
     }
 
     // Delete Add Methods
