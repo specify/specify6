@@ -22,7 +22,7 @@ import edu.ku.brc.util.Pair;
 
 public class LocalityMapperTestMain implements MapperListener
 {
-    private static final Logger log = Logger.getLogger(LocalityMapperTestMain.class);
+    protected static final Logger log = Logger.getLogger(LocalityMapperTestMain.class);
 
     protected Vector<Locality> localities;
     protected Vector<String> labels;
@@ -69,7 +69,9 @@ public class LocalityMapperTestMain implements MapperListener
 		l.addMouseMotionListener(new MouseMotionListener()
 				{
 					public void mouseDragged(MouseEvent e)
-					{}
+                    {
+                        // do nothing
+                    }
 					public void mouseMoved(MouseEvent e)
 					{
 						Pair<Double,Double> latLong = cem.getLatLongForPointOnMapIcon(e.getX(), e.getY());

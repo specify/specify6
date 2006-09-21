@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.io.IOException;
@@ -28,16 +27,14 @@ import edu.ku.brc.util.Pair;
 
 /**
  * Maps a grouping of <code>Locality</code> objects.
- 
- * @code_status Unknown (auto-generated)
- **
- * @author jstewart
  *
+ * @author jstewart
+ * @code_status Complete
  */
 public class LocalityMapper implements TimingTarget
 {
 	/** Logger for all messages emitted from this class. */
-	private static final Logger       log					= Logger.getLogger(LocalityMapper.class);
+	protected static final Logger       log					= Logger.getLogger(LocalityMapper.class);
 	/** List of <code>Locality</code> objects to be mapped. */
 	protected List<Locality>	localities;
 	/** A member of <code>localities</code> to be considered the 'current' item. */
@@ -625,44 +622,46 @@ public class LocalityMapper implements TimingTarget
 	 */
 	public void pan(double latChange, double longChange)
 	{
+        double latChg = latChange;
+        double longChg = longChange;
 		cacheValid = false;
 		if( mapMinLat+latChange<-90 )
 		{
-			latChange = -90-mapMinLat;
+            latChg = -90-mapMinLat;
 		}
 		if( mapMaxLat+latChange>90 )
 		{
-			latChange = 90-mapMaxLat;
+            latChg = 90-mapMaxLat;
 		}
 		if( mapMinLong+longChange<-180 )
 		{
-			longChange = -180-mapMinLong;
+            longChg = -180-mapMinLong;
 		}
 		if( mapMaxLong+longChange>180 )
 		{
-			longChange = 180-mapMaxLong;
+            longChg = 180-mapMaxLong;
 		}
 
-		mapMinLat += latChange;
-		mapMaxLat += latChange;
-		mapMinLong += longChange;
-		mapMaxLong += longChange;
+		mapMinLat += latChg;
+		mapMaxLat += latChg;
+		mapMinLong += longChg;
+		mapMaxLong += longChg;
 	}
 
 	/**
 	 * Determines if the given map bounding box is valid.
 	 *
-	 * @param minLat min lat
-	 * @param minLong min long
-	 * @param maxLat max lat
-	 * @param maxLong max long
+	 * @param minimumLat min lat
+	 * @param minimumLong min long
+	 * @param maximumLat max lat
+	 * @param maximumLong max long
 	 * @return true if valid
 	 */
-	protected boolean boxIsValid(double minLat, double minLong, double maxLat, double maxLong)
+	protected boolean boxIsValid(double minimumLat, double minimumLong, double maximumLat, double maximumLong)
 	{
-		if( -90<=minLat&&minLat<maxLat&&maxLat<=90 )
+		if( -90<=minimumLat&&minimumLat<maximumLat&&maximumLat<=90 )
 		{
-			if( -180<=minLong&&minLong<maxLong&&maxLong<=180 )
+			if( -180<=minimumLong&&minimumLong<maximumLong&&maximumLong<=180 )
 			{
 				return true;
 			}
@@ -832,20 +831,20 @@ public class LocalityMapper implements TimingTarget
 	protected Image getMapFromService(final String host,
                                       final String defaultPathAndParams,
                                       final String layers,
-                                      double minLat,
-                                      double minLong,
-                                      double maxLat,
-                                      double maxLong)	throws HttpException, IOException
+                                      double miniLat,
+                                      double miniLong,
+                                      double maxiLat,
+                                      double maxiLong)	throws HttpException, IOException
 	{
 
         mapGrabber.setHost(host);
         mapGrabber.setDefaultPathAndParams(defaultPathAndParams);
         mapGrabber.setLayers(layers);
 
-		mapGrabber.setMinLat(minLat);
-		mapGrabber.setMaxLat(maxLat);
-		mapGrabber.setMinLong(minLong);
-		mapGrabber.setMaxLong(maxLong);
+		mapGrabber.setMinLat(miniLat);
+		mapGrabber.setMaxLat(maxiLat);
+		mapGrabber.setMinLong(miniLong);
+		mapGrabber.setMaxLong(maxiLong);
 
 		mapGrabber.setMaxHeight(maxMapHeight);
 		mapGrabber.setMaxWidth(maxMapWidth);
@@ -922,7 +921,8 @@ public class LocalityMapper implements TimingTarget
 	{
 		Thread mapGrabberThread = new Thread("Mapper Grabber")
 		{
-			public void run()
+			@Override
+            public void run()
 			{
 				try
 				{
@@ -971,8 +971,8 @@ public class LocalityMapper implements TimingTarget
 			mapLatRange = mapMaxLat-mapMinLat;
 			mapLongRange = mapMaxLong-mapMinLong;
 
-			pixelPerLatRatio = (double) mapHeight/(double) mapLatRange;
-			pixelPerLongRatio = (double) mapWidth/(double) mapLongRange;
+			pixelPerLatRatio = mapHeight/mapLatRange;
+			pixelPerLongRatio = mapWidth/mapLongRange;
 
 			for( int i = 0; i<localities.size(); ++i )
 			{
@@ -1032,7 +1032,7 @@ public class LocalityMapper implements TimingTarget
 						{
 							g.setColor(arrowColor);
 						}
-						GraphicsUtils.drawArrow((Graphics2D) g,x1,y1,x2,y2,2,2);
+						GraphicsUtils.drawArrow(g,x1,y1,x2,y2,2,2);
 						g.setColor(origColor);
 					}
 					if( current )

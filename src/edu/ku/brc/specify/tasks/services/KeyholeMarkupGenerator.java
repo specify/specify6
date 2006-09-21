@@ -22,11 +22,9 @@ import edu.ku.brc.util.Pair;
 
 /**
  * Creates Google Earth KML for the LocalityMapper.
- 
- * @code_status Unknown (auto-generated)
- **
+ * 
  * @author jstewart
- * @version %I% %G%
+ * @code_status Complete
  */
 public class KeyholeMarkupGenerator
 {
@@ -189,7 +187,10 @@ public class KeyholeMarkupGenerator
 		// build the placemark
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
 		sb.append("<name>");
-		//sb.append(label);
+        if(label != null)
+        {
+            sb.append(label);
+        }
         sb.append(startString);
         if (!startString.equals(endString))
         {

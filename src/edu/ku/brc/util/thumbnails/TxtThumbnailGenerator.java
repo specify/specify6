@@ -3,8 +3,6 @@
  */
 package edu.ku.brc.util.thumbnails;
 
-import java.io.IOException;
-
 /**
  *
  * @code_status Alpha
@@ -23,9 +21,8 @@ public class TxtThumbnailGenerator implements ThumbnailGenerator
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String)
 	 * @param originalFile
 	 * @param thumbnailFile
-	 * @throws IOException
 	 */
-	public void generateThumbnail(String originalFile, String thumbnailFile) throws IOException
+	public void generateThumbnail(String originalFile, String thumbnailFile)
 	{
 		System.out.println("Not yet implemented");
 	}

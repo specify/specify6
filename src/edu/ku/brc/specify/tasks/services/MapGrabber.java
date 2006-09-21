@@ -31,9 +31,8 @@ import edu.ku.brc.util.FileCache;
 /**
  * Grabs a Map from a web-based mapping service.
  *
- * @code_status Unknown (auto-generated)
- * 
  * @author jstewart
+ * @code_status Complete
  */
 public class MapGrabber
 {
@@ -150,11 +149,12 @@ public class MapGrabber
 	 */
 	public void setMaxHeight(Integer height)
 	{
-		if( height != null && height > 2048 )
+        Integer ht = height;
+		if( ht != null && ht > 2048 )
 		{
-			height = 2048;
+            ht = 2048;
 		}
-		this.maxHeight = height;
+		this.maxHeight = ht;
 	}
 
 	/**
@@ -176,11 +176,12 @@ public class MapGrabber
 	 */
 	public void setMaxWidth(Integer width)
 	{
-		if( width != null && width.intValue() > 2048 )
+        Integer wt = width;
+		if( wt != null && wt.intValue() > 2048 )
 		{
-			width = 2048;
+            wt = 2048;
 		}
-		this.maxWidth = width;
+		this.maxWidth = wt;
 	}
 
 	/**
