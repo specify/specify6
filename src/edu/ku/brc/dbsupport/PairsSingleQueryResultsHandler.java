@@ -49,7 +49,7 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, java.util.List)
      */
-    public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainer> list)
+    public void init(final QueryResultsListener listenerArg, final java.util.List<QueryResultsContainer> list)
     {
         throw new RuntimeException("PairsSingleQueryResultsHandler can't handle more than one QueryResultsContainer!");
     }
@@ -57,10 +57,10 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void init(final QueryResultsListener listener, final QueryResultsContainer container)
+    public void init(final QueryResultsListener listenerArg, final QueryResultsContainer containerArg)
     {
-        this.listener = listener;
-        this.container = container;   
+        this.listener  = listenerArg;
+        this.container = containerArg;   
     }
     
     /* (non-Javadoc)

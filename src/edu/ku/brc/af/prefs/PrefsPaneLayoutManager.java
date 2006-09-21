@@ -74,7 +74,7 @@ public class PrefsPaneLayoutManager implements LayoutManager, LayoutManager2
         
         if (arg1 instanceof PrefPanelRow)
         {
-            comps.add((PrefPanelRow)arg1);
+            comps.add(arg1);
         }
 
     }

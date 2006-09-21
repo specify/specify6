@@ -94,8 +94,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
     protected boolean doingCache = true;
 
-    protected static final int WIDTH  = 500;
-    protected static final int HEIGHT = 400;
+    protected static final int BGM_WIDTH  = 500;
+    protected static final int BGM_HEIGHT = 400;
 
     protected JTextField          latitude;
     protected JTextField          longitude;
@@ -191,14 +191,14 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param country country
      * @param adm1 country
      * @param adm2 adm2
-     * @param locality locality
+     * @param localityArg locality
      * @return always returns null
      */
-    public String getBioGeoMancerResponse(final String id,
-                                          final String country,
-                                          final String adm1,
-                                          final String adm2,
-                                          final String locality)
+    public static String getBioGeoMancerResponse(final String id,
+                                                 final String country,
+                                                 final String adm1,
+                                                 final String adm2,
+                                                 final String localityArg)
     {
 /*
         System.out.println("["+id+"]");
@@ -216,7 +216,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             strBuf.append("\""+ country + "\",");
             strBuf.append("\""+ adm1 + "\",");
             strBuf.append("\""+ (adm2 != null ? adm2 : "") + "\",");
-            strBuf.append("\""+ locality + "\"\r\n");
+            strBuf.append("\""+ localityArg + "\"\r\n");
 
             NameValuePair[] postData = {
                 //new NameValuePair("batchtext", "\"12931\",\"Mexico\",\"Veracruz\",\"\",\"12 km NW of Catemaco\"\r\n"),
@@ -303,7 +303,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param element
      * @param builder
      * @param cc
-     * @param label
+     * @param labelArg
      * @param name
      * @param column
      * @param row
@@ -311,12 +311,12 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     protected void addRow(final Element element,
                           final PanelBuilder builder,
                           final CellConstraints cc,
-                          final String label,
+                          final String labelArg,
                           final String name,
                           final int column,
                           final int row)
     {
-        builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(column,row));
+        builder.add(new JLabel(labelArg+":", JLabel.RIGHT), cc.xy(column,row));
         builder.add(createDataLabel(element, name), cc.xy(column+2,row));
     }
 
@@ -324,7 +324,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param element
      * @param builder
      * @param cc
-     * @param label
+     * @param labelArg
      * @param name
      * @param column
      * @param row
@@ -333,13 +333,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     protected void addRow(final Element element,
             final PanelBuilder builder,
             final CellConstraints cc,
-            final String label,
+            final String labelArg,
             final String name,
             final int column,
             final int row,
             int colSpan)
     {
-        builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(column,row));
+        builder.add(new JLabel(labelArg+":", JLabel.RIGHT), cc.xy(column,row));
         builder.add(createDataLabel(element, name), cc.xywh(column+2,row, colSpan,1));
     }
 
@@ -369,7 +369,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            label.setText("Loading Map...");
            builder.add(label, cc.xywh(7,1,1,11));
 
-           label.setPreferredSize(new Dimension(WIDTH,HEIGHT));
+           label.setPreferredSize(new Dimension(BGM_WIDTH,BGM_HEIGHT));
 
            int rowInx = 13;
            String [] dataNames  = {"countryBoundingBox",   "matchedRecordCount", "boundingBox",  "boundingBoxCentroid",   "boundingBoxCentroidErrorRadius", "boundingBoxCentroidErrorRadiusUnits", "multiPointMatch",  "weightedCentroid"};
@@ -417,8 +417,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                                box[i] = Double.parseDouble(boxList[i]);
                            }
                            bioGeoMancerMapper.addBGMDataAndLabel(lat, lon, box[1], box[0], box[3], box[2], Integer.toString(cnt));
-                           bioGeoMancerMapper.setMaxMapWidth(WIDTH);
-                           bioGeoMancerMapper.setMaxMapHeight(HEIGHT);
+                           bioGeoMancerMapper.setMaxMapWidth(BGM_WIDTH);
+                           bioGeoMancerMapper.setMaxMapHeight(BGM_HEIGHT);
                        }
                    }
                    rowData.add(row);
@@ -632,15 +632,16 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                 });
     }
 
-    protected String getGeo(Geography g, final int rankId)
+    protected String getGeo(final Geography g, final int rankId)
     {
-        while (g != null && g.getRankId() != rankId)
+        Geography geo = g;
+        while (geo != null && geo.getRankId() != rankId)
         {
-            g = g.getParent();
+            geo = geo.getParent();
         }
-        if (g != null)
+        if (geo != null)
         {
-            return g.getName();
+            return geo.getName();
         }
         return "";
     }

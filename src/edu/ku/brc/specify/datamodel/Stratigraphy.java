@@ -313,9 +313,9 @@ public class Stratigraphy  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addChildren(final GeologicTimePeriod children)
+    public void addChildren(final GeologicTimePeriod childrenArg)
     {
-        this.children.add(children);
+        this.children.add(childrenArg);
         //children.set(this);
     }
 
@@ -323,9 +323,9 @@ public class Stratigraphy  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeChildren(final GeologicTimePeriod children)
+    public void removeChildren(final GeologicTimePeriod childrenArg)
     {
-        this.children.remove(children);
+        this.children.remove(childrenArg);
         //children.setStratigraphy(null);
     }
 

@@ -293,20 +293,20 @@ public class ExpressResultsTableInfo
      */
     public int[] getDisplayColIndexes()
     {
-        int[] cols = null;
+        int[] colsArray = null;
         if (visCols != null && getVisColCount() < visCols.length)
         {
-            cols = new int[visColCount];
+            colsArray = new int[visColCount];
             int j = 0;
             for (int i=0;i<visCols.length;i++)
             {
                 if (visCols[i])
                 {
-                    cols[j++] = i;
+                    colsArray[j++] = i;
                 }
             }
         }
-        return cols;
+        return colsArray;
     }
 
     /**

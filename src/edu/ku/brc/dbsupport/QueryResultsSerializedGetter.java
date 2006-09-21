@@ -69,11 +69,12 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     
     /**
      * Adds a QueryResultsContainer and starts its execution on a separate thread.
-     * @param qrcs the collection of containers to be executed
+     * @param qrcsArg the collection of containers to be executed
      */
-    public void add(final List<QueryResultsContainer> qrcs)
+    public void add(final List<QueryResultsContainer> qrcsArg)
     {
-        this.qrcs.addAll(qrcs);
+        this.qrcs.addAll(qrcsArg);
+        
         currentProcessingIndex = 0;
         startContainer(qrcs.get(currentProcessingIndex));
     }

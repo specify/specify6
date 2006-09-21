@@ -27,7 +27,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -43,7 +42,6 @@ import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.DataChangeListener;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValidationListener;
 

@@ -246,17 +246,17 @@ public class JStatusBar extends JPanel
     {
 
         // Dimensions
-        private static final int WIDTH  = 13;
-        private static final int HEIGHT = 13;
+        private static final int BGM_WIDTH  = 13;
+        private static final int BGM_HEIGHT = 13;
 
         public int getIconHeight()
         {
-            return WIDTH;
+            return BGM_WIDTH;
         }
 
         public int getIconWidth()
         {
-            return HEIGHT;
+            return BGM_HEIGHT;
         }
 
         public void paintIcon(Component c, Graphics g, int x, int y)

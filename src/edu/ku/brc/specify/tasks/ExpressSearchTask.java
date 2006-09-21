@@ -215,6 +215,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
      */
     protected void doQuery()
     {
+        searchText.setBackground(textBGColor);
+        
         String searchTerm = searchText.getText();
         if (isNotEmpty(searchTerm))
         {

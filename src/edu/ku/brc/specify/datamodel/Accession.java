@@ -347,10 +347,10 @@ public class Accession  implements java.io.Serializable {
         collectionObject.setAccession(this);
     }
 
-    public void addAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizations)
+    public void addAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizationsArg)
     {
-        this.accessionAuthorizations.add(accessionAuthorizations);
-        accessionAuthorizations.setAccession(this);
+        this.accessionAuthorizations.add(accessionAuthorizationsArg);
+        accessionAuthorizationsArg.setAccession(this);
     }
 
     public void addAccessionAgents(final AccessionAgents accessionAgent)
@@ -369,10 +369,10 @@ public class Accession  implements java.io.Serializable {
         collectionObject.setAccession(null);
     }
 
-    public void removeAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizations)
+    public void removeAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizationsArg)
     {
-        this.accessionAuthorizations.remove(accessionAuthorizations);
-        accessionAuthorizations.setAccession(null);
+        this.accessionAuthorizations.remove(accessionAuthorizationsArg);
+        accessionAuthorizationsArg.setAccession(null);
     }
 
     public void removeAccessionAgents(final AccessionAgents accessionAgent)

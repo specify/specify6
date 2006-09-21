@@ -179,10 +179,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     /**
      * Creates the initial panels that will be shown at start up and sets up the Application Context
-     * @param databaseName the database name
-     * @param userName the user name
+     * @param databaseNameArg the database name
+     * @param userNameArg the user name
      */
-    protected void initStartUpPanels(final String databaseName, final String userName)
+    protected void initStartUpPanels(final String databaseNameArg, final String userNameArg)
     {
 
         if( !SwingUtilities.isEventDispatchThread() )
@@ -191,7 +191,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void run()
                     {
-                        initStartUpPanels(databaseName, userName);
+                        initStartUpPanels(databaseNameArg, userNameArg);
                     }
                 });
             return;
@@ -426,9 +426,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     {
                         class DBListener implements DatabaseLoginListener
                         {
-                            public void loggedIn(final String databaseName, final String userName)
+                            public void loggedIn(final String databaseNameArg, final String userNameArg)
                             {
-                                specifyApp.loggedIn(databaseName, userName);
+                                specifyApp.loggedIn(databaseNameArg, userNameArg);
                             }
 
                             public void cancelled()
@@ -697,12 +697,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
     /**
      * Restarts the app with a new or old database and user name and creates the core app UI.
-     * @param databaseName the database name
-     * @param userName the user name
+     * @param databaseNameArg the database name
+     * @param userNameArg the user name
      * @param startOver tells the AppContext to start over
      * @param firstTime indicates this is the first time in the app and it should create all the UI for the core app
      */
-    public void restartApp(final String databaseName, final String userName, final boolean startOver, final boolean firstTime)
+    public void restartApp(final String databaseNameArg, final String userNameArg, final boolean startOver, final boolean firstTime)
     {
         if (dbLoginPanel != null)
         {
@@ -717,7 +717,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //CollectionObjDef.setCurrentCollectionObjDef(null);
         
         // "false" means that it should use any cached values it can find to automatically initialize itself
-        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseName, userName, startOver);
+        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {  
             if (firstTime)
@@ -730,7 +730,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 UICacheManager.register(UICacheManager.FRAME, topFrame);
             }
             
-            initStartUpPanels(databaseName, userName);
+            initStartUpPanels(databaseNameArg, userNameArg);
             
             changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
             
@@ -773,12 +773,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
      */
-    public void loggedIn(final String databaseName, final String userName)
+    public void loggedIn(final String databaseNameArg, final String userNameArg)
     {
         boolean firstTime = this.databaseName == null;
         
-        this.databaseName = databaseName;
-        this.userName     = userName;
+        this.databaseName = databaseNameArg;
+        this.userName     = userNameArg;
         
         
         restartApp(databaseName, userName, false, firstTime);

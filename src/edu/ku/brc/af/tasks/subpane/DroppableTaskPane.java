@@ -166,7 +166,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      */
     public List<DataFlavor> getDragDataFlavors()
     {
-        return (List<DataFlavor>)null; // this is not draggable
+        return null; // this is not draggable
     }   
 
 }

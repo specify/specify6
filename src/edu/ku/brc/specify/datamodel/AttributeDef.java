@@ -206,10 +206,10 @@ public class AttributeDef  implements java.io.Serializable {
         collectingEventAttr.setCollectingEvent(null);
     }
 
-    public void removePreparationAttrs(final PreparationAttr preparationAttr)
+    public void removePreparationAttrs(final PreparationAttr preparationAttrArg)
     {
-        this.preparationAttr.remove(preparationAttr);
-        preparationAttr.setPreparation(null);
+        this.preparationAttr.remove(preparationAttrArg);
+        preparationAttrArg.setPreparation(null);
     }
 
     public void removeCollectionObjectAttrs(final CollectionObjectAttr collectionObjectAttr)

@@ -310,7 +310,7 @@ public class DBTableIdMgr
 		protected String defaultFormName;
 
 		public TableInfo(int tableId, String className, String tableName, String primaryKeyName,
-				String defaultFormName) throws ClassNotFoundException
+				String defaultFormName)
 		{
 			this.tableId = tableId;
 			this.className = className;

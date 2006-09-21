@@ -20,7 +20,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 
 /**
@@ -33,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class IdTableMapper extends IdHashMapper
 {
-    protected static final Logger log = Logger.getLogger(IdTableMapper.class);
+    //protected static final Logger log = Logger.getLogger(IdTableMapper.class);
 
     protected String idName;
 
@@ -70,11 +69,11 @@ public class IdTableMapper extends IdHashMapper
 
     /**
      * Map all the old IDs to new IDs
-     * @param sql the string to use to fill the map
+     * @param sqlArg the string to use to fill the map
      */
-    public void mapAllIds(final String sql)
+    public void mapAllIds(final String sqlArg)
     {
-        this.sql = sql;
+        this.sql = sqlArg;
 
         BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
         try

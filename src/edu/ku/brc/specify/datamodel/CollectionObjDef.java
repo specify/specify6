@@ -285,10 +285,10 @@ public class CollectionObjDef  implements java.io.Serializable
 
     // Add Methods
 
-    public void addCatalogSeries(final CatalogSeries catalogSeries)
+    public void addCatalogSeries(final CatalogSeries catalogSeriesArg)
     {
-        this.catalogSeries.add(catalogSeries);
-        catalogSeries.getCollectionObjDefItems().add(this);
+        this.catalogSeries.add(catalogSeriesArg);
+        catalogSeriesArg.getCollectionObjDefItems().add(this);
     }
 
     public void addAttributeDefs(final AttributeDef attributeDef)
@@ -307,10 +307,10 @@ public class CollectionObjDef  implements java.io.Serializable
 
     // Delete Methods
 
-    public void removeCatalogSeries(final CatalogSeries catalogSeries)
+    public void removeCatalogSeries(final CatalogSeries catalogSeriesArg)
     {
-        this.catalogSeries.remove(catalogSeries);
-        catalogSeries.getCollectionObjDefItems().remove(this);
+        this.catalogSeries.remove(catalogSeriesArg);
+        catalogSeriesArg.getCollectionObjDefItems().remove(this);
     }
 
     public void removeAttributeDefs(final AttributeDef attributeDef)
@@ -319,10 +319,10 @@ public class CollectionObjDef  implements java.io.Serializable
         attributeDef.setCollectionObjDef(null);
     }
 
-    public void removeLocalities(final Locality localities)
+    public void removeLocalities(final Locality localitiesArg)
     {
-        this.localities.remove(localities);
-        localities.getCollectionObjDefs().remove(this);
+        this.localities.remove(localitiesArg);
+        localitiesArg.getCollectionObjDefs().remove(this);
        ;
     }
 

@@ -365,18 +365,24 @@ public class SpecifyAppContextMgr extends AppContextMgr
             class CatSeriesColObjDefItem
             {
                 protected String name;
-                public CollectionObjDef colObjDef;
+                protected CollectionObjDef collectionObjDef;
                 
-                public CatSeriesColObjDefItem(CatalogSeries catSeries, CollectionObjDef colObjDef)
+                public CatSeriesColObjDefItem(CatalogSeries catSeries, CollectionObjDef colObjDefArg)
                 {
-                    name = catSeries.getSeriesName() + " / " + colObjDef.getName();
-                    this.colObjDef = colObjDef;
+                    name = catSeries.getSeriesName() + " / " + colObjDefArg.getName();
+                    this.collectionObjDef = colObjDefArg;
                 }
                 
                 public String toString()
                 {
                     return name;
                 }
+                
+                public CollectionObjDef getColObjDef()
+                {
+                    return collectionObjDef;
+                }
+                
             }
             
             List<CatSeriesColObjDefItem> list = new ArrayList<CatSeriesColObjDefItem>(10);
@@ -398,7 +404,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (!dlg.isCancelled() && dlg.getSelectedObject() != null) // shouldn't need to check for null (but just in case)
             {
                 CatSeriesColObjDefItem item = dlg.getSelectedObject();
-                colObjDef = item.colObjDef;
+                colObjDef = item.getColObjDef();
              }
         }
 
@@ -424,13 +430,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Finds a AppResourceDefault from an "object" list where it matches the user, CatSeries and ColObjdef
      * @param appResDefList the list to search
-     * @param user the Specify user
+     * @param userArg the Specify user
      * @param catSeries the CatalogSeries
      * @param colObjDef the CollectionObjDef
      * @return the AppResourceDefault object or null
      */
     protected AppResourceDefault find(final List appResDefList,
-                                      final SpecifyUser user,
+                                      final SpecifyUser userArg,
                                       final CatalogSeries catSeries,
                                       final CollectionObjDef colObjDef)
     {
@@ -442,7 +448,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             CatalogSeries    cs   = ard.getCatalogSeries();
             CollectionObjDef cod  = ard.getCollectionObjDef();
 
-            if (spUser != null && spUser.getSpecifyUserId() == user.getSpecifyUserId() &&
+            if (spUser != null && spUser.getSpecifyUserId() == userArg.getSpecifyUserId() &&
                 cs != null && cs.getCatalogSeriesId() == catSeries.getCatalogSeriesId() &&
                 cod != null && cod.getCollectionObjDefId() == colObjDef.getCollectionObjDefId())
             {

@@ -468,7 +468,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         if (step == trigger)
                         {
                             progressBar.setValue(rowCnt);
-                            progressBar.setString((int)(((double)rowCnt / numRows) * 100.0)+"%");
+                            progressBar.setString((int)((rowCnt / numRows) * 100.0)+"%");
                             step = 0;
                         }
 
@@ -977,7 +977,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             indvLabel.setText(String.format(getResourceString("TermsIndexedInTime"), new Object[] {termsIndexed, minutes, seconds}));
             globalLabel.setText(getResourceString("OptimizingIndex"));
             log.debug(deltaTime);
-            log.debug("Time to index all (" + (((double)deltaTime) / 1000.0) + " seconds)");
+            log.debug("Time to index all (" + (deltaTime / 1000.0) + " seconds)");
             
             optWriter = writer;
             
@@ -1067,9 +1067,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         java.util.List<Object> list = handler.getDataObjects();
         for (int i=0;i<list.size();i++)
         {
-            Object name   = list.get(i++);
-            Object valObj = list.get(i);
-            JLabel label  = resultsLabels.get(getString(name));
+            Object nameObj = list.get(i++);
+            Object valObj  = list.get(i);
+            JLabel label   = resultsLabels.get(getString(nameObj));
             if (label != null)
             {
                 int num = getInt(valObj);
@@ -1080,7 +1080,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 }
             } else
             {
-                log.error("Couldn't find label["+getString(name)+"]");
+                log.error("Couldn't find label["+getString(nameObj)+"]");
             }
         }
         list.clear();

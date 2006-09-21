@@ -46,7 +46,7 @@ public class MainPanel extends JSplitPane
         
         setOneTouchExpandable(true);
         
-        navBoxMgr  =  NavBoxMgr.getInstance();
+        navBoxMgr  = NavBoxMgr.getInstance();
         subPaneMgr = SubPaneMgr.getInstance();
         
         this.setLeftComponent(navBoxMgr);

@@ -56,7 +56,7 @@ public class IdHashMapper implements IdMapperIFace
      * Create a IdHashMapper with a Table Name.
      * @param tableName the table name
      */
-    public IdHashMapper(final String tableName) throws SQLException
+    public IdHashMapper(final String tableName)
     {
         this.tableName    = tableName.toLowerCase();
         this.mapTableName = tableName;
@@ -80,7 +80,7 @@ public class IdHashMapper implements IdMapperIFace
     /**
      * Initializes the Hash Database Table.
      */
-    protected void init(final boolean checkOldDB) throws SQLException
+    protected void init(final boolean checkOldDB)
     {
         oldConn = IdMapperMgr.getInstance().getOldConnection();
         newConn = IdMapperMgr.getInstance().getNewConnection();
@@ -197,7 +197,7 @@ public class IdHashMapper implements IdMapperIFace
     /**
      * Cleans up temporary data.
      */
-    public void cleanup() throws SQLException
+    public void cleanup()
     {
     	if (mapTableName != null)
     	{

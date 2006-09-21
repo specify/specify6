@@ -49,7 +49,7 @@ public class Thumbnailer
 		{
 			Node generatorNode = generatorNodes.item(i);
 			Node classNameNode = generatorNode.getAttributes().getNamedItem("class");
-			String generatorClassName = classNameNode.getTextContent();
+			String generatorClassName = classNameNode.getNodeValue();
 			ThumbnailGenerator gen = Class.forName(generatorClassName).asSubclass(ThumbnailGenerator.class).newInstance();
 			for(String supportedMimeType: gen.getSupportedMimeTypes())
 			{

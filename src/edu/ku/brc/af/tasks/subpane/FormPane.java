@@ -158,16 +158,15 @@ public class FormPane extends DroppableTaskPane
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
      */
-    public void doAction(GhostActionable src)
+    public void doAction(final GhostActionable src)
     {
         if (src != null)
         {
 
-            Object data = src.getData();
-
-            if (data != null && data instanceof DroppableFormObject)
+            Object srcData = src.getData();
+            if (srcData != null && srcData instanceof DroppableFormObject)
             {
-                DroppableFormObject dfo = (DroppableFormObject)data;
+                DroppableFormObject dfo = (DroppableFormObject)srcData;
                 createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), AltView.CreationMode.View, dfo.getData(), false);
              }
         }
@@ -175,45 +174,45 @@ public class FormPane extends DroppableTaskPane
 
     /**
      * Creates a form from the viewSet name and id and sets the data in
-     * @param viewSetName the name of the view set to use.
-     * @param viewName the ID of the form to be created from within the ViewSet
+     * @param viewSetNameArg the name of the view set to use.
+     * @param viewNameArg the ID of the form to be created from within the ViewSet
      * @param mode the creation mode
-     * @param data the data to fill the form
+     * @param dataArg the data to fill the form
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
-    public void createForm(final String  viewSetName,
-                           final String  viewName,
+    public void createForm(final String  viewSetNameArg,
+                           final String  viewNameArg,
                            final AltView.CreationMode mode,
-                           final Object  data,
+                           final Object  dataArg,
                            final boolean isNewForm)
     {
-        this.viewSetName = viewSetName;
-        this.viewName    = viewName;
+        this.viewSetName = viewSetNameArg;
+        this.viewName    = viewNameArg;
 
-        createForm(AppContextMgr.getInstance().getView(viewSetName, viewName), mode, data, isNewForm);
+        createForm(AppContextMgr.getInstance().getView(viewSetName, viewName), mode, dataArg, isNewForm);
     }
 
     /**
      * Creates a form from the view and sets the data in
      * @param view the view to use (throws RuntimeException if null)
      * @param mode the creation mode
-     * @param data the data to fill the form
+     * @param dataArg the data to fill the form
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
     public void createForm(final View    view,
                            final AltView.CreationMode mode,
-                           final Object  data,
+                           final Object  dataArg,
                            final boolean isNewForm)
     {
         if (view != null)
         {
             name = view.getName(); // names the Tab
 
-            boolean isList = data != null && (data instanceof List || data instanceof Set);
+            boolean isList = dataArg != null && (dataArg instanceof List || dataArg instanceof Set);
             multiView = new MultiView(null, view, mode, isList, true);
             if (multiView != null)
             {
-                this.data = data;
+                this.data = dataArg;
                 this.removeAll();
                 
                 multiView.setSession(session);

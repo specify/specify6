@@ -819,7 +819,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
             }
             
             log.debug(deltaTime);
-            log.debug("Time to index all (" + (((double)deltaTime) / 1000.0) + " seconds)");
+            log.debug("Time to index all (" + (deltaTime / 1000.0) + " seconds)");
             
             optWriter = writer;
             

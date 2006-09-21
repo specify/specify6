@@ -241,7 +241,7 @@ public class DataEntryTask extends BaseTask
                 for ( Iterator iter = tables.iterator(); iter.hasNext(); )
                 {
                     Element element = (Element)iter.next();
-                    String name     = getAttr(element, "name", "N/A");
+                    String nameStr  = getAttr(element, "name", "N/A");
                     String iconname = getAttr(element, "iconname", null);
                     
                     String viewset  = getAttr(element, "viewset", null);
@@ -249,12 +249,12 @@ public class DataEntryTask extends BaseTask
                     
                     String toolTip  = getAttr(element, "tooltip", null);
                     
-                    ImageIcon icon = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
-                    iconForFormClass.put(createFullName(viewset, view), icon);
+                    ImageIcon iconImage = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
+                    iconForFormClass.put(createFullName(viewset, view), iconImage);
                     
                     ShowViewAction sva = new ShowViewAction(this, viewset, view);
                     
-                    viewsNavBox.add(NavBox.createBtnWithTT(name, iconname, toolTip, IconManager.IconSize.Std16, sva));
+                    viewsNavBox.add(NavBox.createBtnWithTT(nameStr, iconname, toolTip, IconManager.IconSize.Std16, sva));
                 }
     
             } catch (Exception ex)

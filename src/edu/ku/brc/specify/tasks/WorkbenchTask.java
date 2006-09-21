@@ -119,9 +119,8 @@ public class WorkbenchTask extends BaseTask
         } else
         {
             FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File f, String name) {
-                //System.out.println(name);
-                String fileName = name;
+            public boolean accept(File f, String nameArg) {
+                String fileName = nameArg;
                 if( fileName.length() < 4 )
                 {
                     return false;

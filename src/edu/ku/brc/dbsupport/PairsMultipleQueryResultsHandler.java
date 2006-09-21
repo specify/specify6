@@ -50,18 +50,18 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, java.util.List)
      */
-    public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainer> list)
+    public void init(final QueryResultsListener listenerArg, final java.util.List<QueryResultsContainer> list)
     {
-        this.listener = listener;
+        this.listener = listenerArg;
         qrcs          = list; // XXX should we copy to the list instead of just wacking it??
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void init(final QueryResultsListener listener, final QueryResultsContainer qrc)
+    public void init(final QueryResultsListener dataArg, final QueryResultsContainer qrc)
     {
-        this.listener = listener;
+        this.listener = dataArg;
         if (qrcs == null)
         {
             qrcs = new Vector<QueryResultsContainer>();

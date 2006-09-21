@@ -16,8 +16,6 @@ package edu.ku.brc.util;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
@@ -31,7 +29,7 @@ import edu.ku.brc.helpers.XMLHelper;
 public class DatamodelHelper 
 {
 	// Static Data Members
-	private static final Logger log = Logger.getLogger(DatamodelHelper.class);
+	//private static final Logger log = Logger.getLogger(DatamodelHelper.class);
 
 	public DatamodelHelper() 
 	{

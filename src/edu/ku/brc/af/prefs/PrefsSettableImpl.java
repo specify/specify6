@@ -41,14 +41,15 @@ public class PrefsSettableImpl implements DataObjectSettable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.DataObjectSettable#setFieldValue(java.lang.Object, java.lang.String, java.lang.Object)
      */
-    public void setFieldValue(Object dataObj, String fieldName, Object data)
+    public void setFieldValue(final Object dataObj, final String fieldName, final Object data)
     {
-            if (data instanceof Color)
-            {
-                data = ColorWrapper.toString((Color)data);
-            }
-            System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ data+"]");
-            AppPreferences.getRemote().put(fieldName, data == null ? "" : data.toString());
+        Object newData = data;
+        if (newData instanceof Color)
+        {
+            newData = ColorWrapper.toString((Color)newData);
+        }
+        System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ newData+"]");
+        AppPreferences.getRemote().put(fieldName, newData == null ? "" : newData.toString());
     }
     
     /* (non-Javadoc)

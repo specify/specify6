@@ -105,11 +105,11 @@ public class TableModel2Excel
                 oddCellStyle.setFont(cellFont);
                 evenCellStyle.setFont(cellFont);
                 
-                evenCellStyle.setFillPattern((short) HSSFCellStyle.SOLID_FOREGROUND);
-                oddCellStyle.setFillPattern((short) HSSFCellStyle.SOLID_FOREGROUND);
+                evenCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                oddCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
                 
-                oddCellStyle.setFillForegroundColor((short) HSSFColor.WHITE.index);
-                evenCellStyle.setFillForegroundColor((short) HSSFColor.GREY_25_PERCENT.index);
+                oddCellStyle.setFillForegroundColor(HSSFColor.WHITE.index);
+                evenCellStyle.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
                 
                 oddCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
                 evenCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);

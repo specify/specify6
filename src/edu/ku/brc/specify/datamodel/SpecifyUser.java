@@ -200,10 +200,10 @@ public class SpecifyUser  implements java.io.Serializable {
     // Add Methods
 
 
-    public void addCollectionObjDefs(final CollectionObjDef collectionObjDef)
+    public void addCollectionObjDefs(final CollectionObjDef collectionObjDefArg)
     {
-        this.collectionObjDef.add(collectionObjDef);
-        collectionObjDef.setSpecifyUser(this);
+        this.collectionObjDef.add(collectionObjDefArg);
+        collectionObjDefArg.setSpecifyUser(this);
     }
 
     public void addRecordSets(final RecordSet recordSet)
@@ -223,10 +223,10 @@ public class SpecifyUser  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeCollectionObjDefs(final CollectionObjDef collectionObjDef)
+    public void removeCollectionObjDefs(final CollectionObjDef collectionObjDefArg)
     {
-        this.collectionObjDef.remove(collectionObjDef);
-        collectionObjDef.setSpecifyUser(null);
+        this.collectionObjDef.remove(collectionObjDefArg);
+        collectionObjDefArg.setSpecifyUser(null);
     }
 
     public void removeRecordSets(final RecordSet recordSet)

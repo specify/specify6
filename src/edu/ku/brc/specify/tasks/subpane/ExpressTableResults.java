@@ -83,9 +83,9 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
-    public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
+    public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSetArg)
     {
-        this.resultSet = resultSet;
+        this.resultSet = resultSetArg;
 
         ResultSetTableModelDM rsm = new ResultSetTableModelDM(resultSet);
         table.setRowSelectionAllowed(true);

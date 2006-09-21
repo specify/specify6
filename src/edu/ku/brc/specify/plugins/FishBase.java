@@ -149,15 +149,15 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.extras.FishBaseInfoGetterListener#infoArrived(edu.ku.brc.specify.extras.FishBaseInfoGetter)
      */
-    public void infoArrived(FishBaseInfoGetter getter)
+    public void infoArrived(FishBaseInfoGetter getterArg)
     {
-        setDataIntoframe(getter.getDom());
+        setDataIntoframe(getterArg.getDom());
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.extras.FishBaseInfoGetterListener#infoGetWasInError(edu.ku.brc.specify.extras.FishBaseInfoGetter)
      */
-    public void infoGetWasInError(FishBaseInfoGetter getter)
+    public void infoGetWasInError(FishBaseInfoGetter getterArg)
     {
         setDataIntoframe(null);
     }

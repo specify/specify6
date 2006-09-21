@@ -104,9 +104,9 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
      * @param actualCellSize the actual size of a cell
      * @return the max width calulated from the actual cell size
      */
-    public int getActualWidth(final Dimension actualCellSize)
+    public int getActualWidth(final Dimension cellSize)
     {
-        return Math.max((comps.size() * (actualCellSize.width + xSeparation)) + xSeparation, title.getPreferredSize().width+(2 * xSeparation));
+        return Math.max((comps.size() * (cellSize.width + xSeparation)) + xSeparation, title.getPreferredSize().width+(2 * xSeparation));
     }
 
 

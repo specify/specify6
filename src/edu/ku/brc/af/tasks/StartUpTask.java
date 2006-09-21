@@ -63,9 +63,9 @@ public class StartUpTask extends BaseTask
      */
     public void createStartUpStatPanel()
     {
-        StatsPane statPane = new StatsPane(title, this, "StartUpPanel", true, null);
+        StatsPane pane = new StatsPane(title, this, "StartUpPanel", true, null);
         SubPaneMgr.getInstance().removePane(blankPanel);
-        SubPaneMgr.getInstance().addPane(statPane);
+        SubPaneMgr.getInstance().addPane(pane);
         blankPanel = null;
     }
 
@@ -83,12 +83,7 @@ public class StartUpTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        //blankPanel = new SimpleDescPane("", this, "");
-        //System.out.println(blankPanel);
-        //return blankPanel;
-
-        StatsPane statPane = new StatsPane(title, this, "StartUpPanel", true, null);
-        return statPane;
+        return new StatsPane(title, this, "StartUpPanel", true, null);
     }
 
     //-------------------------------------------------------

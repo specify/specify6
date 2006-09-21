@@ -64,27 +64,27 @@ public class SearchFormPane extends FormPane
         });
     }
 
-    protected void walkMultiViewsSetHash(final MultiView multiView)
+    protected void walkMultiViewsSetHash(final MultiView multiViewArg)
     {
         Hashtable<String, String> formData        = new Hashtable<String, String>();
-        Viewable                  currentViewable = multiView.getCurrentView();
+        Viewable                  currentViewable = multiViewArg.getCurrentView();
 
         //System.out.println("["+currentViewable.getView().getName()+"]");
         hashTables.put(currentViewable.getView().getName(), formData);
-        multiView.setData(formData);
+        multiViewArg.setData(formData);
 
-        for (MultiView mv : multiView.getKids())
+        for (MultiView mv : multiViewArg.getKids())
         {
             walkMultiViewsSetHash(mv);
         }
     }
 
-    protected void walkMultiViewsGetValues(final MultiView multiView)
+    protected void walkMultiViewsGetValues(final MultiView multiViewArg)
     {
         //Viewable currentViewable = multiView.getCurrentView();
-        multiView.getCurrentView().getDataFromUI();
+        multiViewArg.getCurrentView().getDataFromUI();
 
-        for (MultiView mv : multiView.getKids())
+        for (MultiView mv : multiViewArg.getKids())
         {
             walkMultiViewsGetValues(mv);
         }
@@ -99,10 +99,10 @@ public class SearchFormPane extends FormPane
 
         for (int i=0;i<nameMap.length;i++)
         {
-            String name    = nameMap[i++];
+            String nameStr    = nameMap[i++];
             //String objName = nameMap[i];
 
-            Hashtable<String, String> formData = hashTables.get(name);
+            Hashtable<String, String> formData = hashTables.get(nameStr);
 
             for (Enumeration<String> e = formData.keys(); e.hasMoreElements();)
             {

@@ -118,20 +118,20 @@ public class DataType  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectionObjDef(final CollectionObjDef collectionObjDef)
+    public void addCollectionObjDef(final CollectionObjDef collectionObjDefArg)
     {
-        this.collectionObjDef.add(collectionObjDef);
-        collectionObjDef.setDataType(this);
+        this.collectionObjDef.add(collectionObjDefArg);
+        collectionObjDefArg.setDataType(this);
     }
 
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeCollectionObjDef(final CollectionObjDef collectionObjDef)
+    public void removeCollectionObjDef(final CollectionObjDef collectionObjDefArg)
     {
-        this.collectionObjDef.remove(collectionObjDef);
-        collectionObjDef.setDataType(null);
+        this.collectionObjDef.remove(collectionObjDefArg);
+        collectionObjDefArg.setDataType(null);
     }
 
     // Delete Add Methods
