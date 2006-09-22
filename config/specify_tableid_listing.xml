@@ -8,6 +8,8 @@
     <table name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" id="13"/>
     <table name="edu.ku.brc.specify.datamodel.Address" id="8" view="Address"/>
     <table name="edu.ku.brc.specify.datamodel.Agent" id="5" view="Agent"/>
+    <table name="edu.ku.brc.specify.datamodel.Attachment" id="41"/>
+    <table name="edu.ku.brc.specify.datamodel.AttachmentMetadata" id="42"/>
     <table name="edu.ku.brc.specify.datamodel.AttributeDef" id="16"/>
     <table name="edu.ku.brc.specify.datamodel.Authors" id="17"/>
     <table name="edu.ku.brc.specify.datamodel.Borrow" id="18"/>
@@ -18,6 +20,7 @@
     <table name="edu.ku.brc.specify.datamodel.CatalogSeries" id="23"/>
     <table name="edu.ku.brc.specify.datamodel.CollectingEvent" id="10" view="CollectingEvent"/>
     <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" id="25"/>
+    <table name="edu.ku.brc.specify.datamodel.CollectingTrip" id="87"/>
     <table name="edu.ku.brc.specify.datamodel.CollectionObjDef" id="26"/>
     <table name="edu.ku.brc.specify.datamodel.CollectionObject" id="1" view="CollectionObject"/>
     <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" id="28"/>
@@ -34,8 +37,6 @@
     <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" id="501"/>
     <table name="edu.ku.brc.specify.datamodel.ExchangeIn" id="39"/>
     <table name="edu.ku.brc.specify.datamodel.ExchangeOut" id="40"/>
-    <table name="edu.ku.brc.specify.datamodel.ExternalResource" id="41"/>
-    <table name="edu.ku.brc.specify.datamodel.ExternalResourceAttr" id="42"/>
     <table name="edu.ku.brc.specify.datamodel.Geography" id="3"/>
     <table name="edu.ku.brc.specify.datamodel.GeographyTreeDef" id="44"/>
     <table name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" id="45"/>
@@ -80,7 +81,7 @@
     <table name="edu.ku.brc.specify.datamodel.AppResource" id="83" view=""/>
     <table name="edu.ku.brc.specify.datamodel.AppResourceData" id="84" view=""/>
     <table name="edu.ku.brc.specify.datamodel.AppResourceDefault" id="85" view=""/>    
-    <table name="edu.ku.brc.specify.datamodel.ViewSetObj" id="86" view=""/>   
+    <table name="edu.ku.brc.specify.datamodel.ViewSetObj" id="86" view=""/>
 </database>
 
 </tableIdMapping>
