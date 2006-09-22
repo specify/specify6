@@ -83,7 +83,7 @@ public class ViewDef
             // Can't imagine why you would not ALWAYS want to have a Gettable
             if (isNotEmpty(dataGettableName))
             {
-                dataGettable = (DataObjectGettable)DataObjectGettableFactory.get(className, dataGettableName);
+                dataGettable = DataObjectGettableFactory.get(className, dataGettableName);
             } else
             {
                 log.error("dataGettableName or is null for "+name);
@@ -92,7 +92,7 @@ public class ViewDef
             // OK to NOT have a Settable
             if (isNotEmpty(dataSettableName))
             {
-                dataSettable = (DataObjectSettable)DataObjectSettableFactory.get(className, dataSettableName);
+                dataSettable = DataObjectSettableFactory.get(className, dataSettableName);
             }
             
         } catch (Exception ex)

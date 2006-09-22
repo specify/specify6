@@ -101,8 +101,14 @@ public class ViewLoader
         if (altviews != null)
         {
             AltView defaultAltView = null;
-
-            // iterate through child elements of root with element name "foo"
+            
+            AltView.CreationMode defaultMode  = AltView.parseMode(getAttr(altviews, "mode", ""), AltView.CreationMode.View);
+            String               selectorName = altviews.attributeValue("selector");
+            
+            view.setDefaultMode(defaultMode);
+            view.setSelectorName(selectorName);
+            
+            // iterate through child elements
             for ( Iterator i = altviews.elementIterator( "altview" ); i.hasNext(); )
             {
                 Element altElement = (Element) i.next();
@@ -128,7 +134,21 @@ public class ViewLoader
                 }
 
                 AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
-
+                if (StringUtils.isNotEmpty(selectorName))
+                {
+                    altView.setSelectorName(selectorName);
+                    
+                    String selectorValue = altElement.attributeValue("selector_value");
+                    if (StringUtils.isNotEmpty(selectorValue))
+                    {
+                        altView.setSelectorValue(selectorValue);
+                        
+                    } else
+                    {
+                        throw new RuntimeException("Selector Value is missing for viewDefName["+viewDefName+"] altName["+altName+"]");
+                    }
+                }
+                
                 if (defaultAltView == null && isDefault)
                 {
                     defaultAltView = altView;
@@ -136,6 +156,82 @@ public class ViewLoader
 
                 view.addAltView(altView);
             }
+
+            /*
+            // iterate through child elements of root with element name "foo"
+            for ( Iterator i = altviews.elementIterator( "altview" ); i.hasNext(); )
+            {
+                Element altElement = (Element) i.next();
+
+                String altName      = altElement.attributeValue(NAME);
+                String viewDefName  = altElement.attributeValue("viewdef");
+                String label        = altElement.attributeValue(LABEL);
+                boolean isValidated = getAttr(altElement, "validated", false);
+                boolean isDefault   = getAttr(altElement, "default", false);
+
+                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltView.CreationMode.View);
+
+
+
+                // Make sure we only have one default view
+                if (defaultAltView != null && isDefault)
+                {
+                    isDefault = false;
+                }
+
+                
+                String selectorName = altElement.attributeValue("selector");
+                if (StringUtils.isNotEmpty(selectorName))
+                {
+                    List subViewList = altElement.elements("subview");
+                    if (subViewList.size() > 0)
+                    {
+                        //List<AltView> subViews = new ArrayList<AltView>(subViewList.size());
+                        for (Object svObj : subViewList)
+                        {
+                            Element sbvElement = (Element)svObj;
+                            altName      = sbvElement.attributeValue(NAME);
+                            viewDefName  = sbvElement.attributeValue("viewdef");
+                            
+                            ViewDef viewDef = viewDefs.get(viewDefName);
+                            if (viewDef == null)
+                            {
+                                throw new RuntimeException("View Name["+name+"] refers to a ViewDef that doesn't exist.");
+                            }
+                            String selectorValue  = sbvElement.attributeValue("selector_value");
+                            AltView subView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
+                            subView.setSelectorName(selectorName);
+                            subView.setSelectorValue(selectorValue);
+                            //subViews.add(subView);
+                            view.addAltView(subView);
+                            if (defaultAltView == null && isDefault)
+                            {
+                                defaultAltView = subView;
+                                isDefault = false;
+                            }
+                        }
+                        //altView.setSelectorName(selectorName);
+                        //altView.setSubViews(subViews);
+                    }
+                } else
+                {
+                    
+                    ViewDef viewDef = viewDefs.get(viewDefName);
+                    if (viewDef == null)
+                    {
+                        throw new RuntimeException("View Name["+name+"] refers to a ViewDef that doesn't exist.");
+                    }
+                    
+                    AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
+
+                    if (defaultAltView == null && isDefault)
+                    {
+                        defaultAltView = altView;
+                    }
+                    view.addAltView(altView);
+                }
+            }
+            */
 
             // No default Alt View was indicated, so choose the first one
             if (defaultAltView == null && view.getAltViews() != null)

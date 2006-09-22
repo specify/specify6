@@ -40,6 +40,9 @@ public class View implements Comparable<View>
     protected List<AltView>        altViews       = new Vector<AltView>();
     protected String               resourceLabels = null;
     
+    protected AltView.CreationMode defaultMode    = AltView.CreationMode.View;
+    protected String               selectorName   = null;
+    
     // transient data members
     protected BusinessRulesIFace   businessRule = null;
     
@@ -66,6 +69,7 @@ public class View implements Comparable<View>
         this.businessRulesClassName = businessRulesClassName;
         this.desc           = desc;
         this.resourceLabels = resourceLabels;
+
     }
     
     /**
@@ -124,19 +128,20 @@ public class View implements Comparable<View>
 
     /**
      * Finds a AltView by name, if the name is null then it returs the default AltView.
-     * @param name the name of the altView
+     * @param nameStr the name of the altView
      * @return the altView
      */
-    public AltView getAltView(final String name)
+    public AltView getAltView(final String nameStr)
     {
-        if (name == null)
+        if (nameStr == null)
         {
             return getDefaultAltView();
+            
         } else
         {
             for (AltView altView : altViews)
             {
-                if (altView.getName().equals(name))
+                if (altView.getName().equals(nameStr))
                 {
                     return altView;
                 }
@@ -234,6 +239,26 @@ public class View implements Comparable<View>
     public String getViewSetName()
     {
         return viewSetName;
+    }
+
+    public AltView.CreationMode getDefaultMode()
+    {
+        return defaultMode;
+    }
+
+    public String getSelectorName()
+    {
+        return selectorName;
+    }
+
+    public void setDefaultMode(AltView.CreationMode defaultMode)
+    {
+        this.defaultMode = defaultMode;
+    }
+
+    public void setSelectorName(String selectorName)
+    {
+        this.selectorName = selectorName;
     }
 
     public String toString()

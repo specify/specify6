@@ -31,6 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -72,7 +73,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Object                       data            = null;
     protected Object                       parentDataObj   = null;
     protected CardLayout                   cardLayout      = new CardLayout();
-    protected Viewable                     currentView     = null;
+    protected Viewable                     currentViewable = null;
     protected Session                      session         = null;
 
     protected boolean                      specialEditView = false;
@@ -137,7 +138,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 }
                 public void mouseClicked(MouseEvent e)
                 {
-                    ((FormViewObj)thisObj.currentView).listFieldChanges();
+                    ((FormViewObj)thisObj.currentViewable).listFieldChanges();
                 }
             });
 
@@ -155,7 +156,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             JPopupMenu popup = new JPopupMenu();
             JMenuItem menuItem = new JMenuItem("Configure Carry Forward"); // I18N
             menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
+                public void actionPerformed(ActionEvent ex)
                 {
                     carryForwardSetup = new CarryForwardSetUp(thisObj);
                     thisObj.add(carryForwardSetup, "carryforward");
@@ -177,7 +178,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         if (carryForwardSetup != null)
         {
-            cardLayout.show(thisObj, currentView.getName());
+            cardLayout.show(thisObj, currentViewable.getName());
             remove(carryForwardSetup);
             carryForwardSetup = null;
         }
@@ -269,9 +270,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void aboutToShow(final boolean show)
     {
-        if (currentView != null)
+        if (currentViewable != null)
         {
-            currentView.aboutToShow(show);
+            currentViewable.aboutToShow(show);
         }
         showDisplayFrames(show);
     }
@@ -341,12 +342,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     /**
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef.
-     * @param createRecordSetController indicates that a RecordSet Contoller should be created
-     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
+     * @param createRecordSetControllerArg indicates that a RecordSet Contoller should be created
+     * @param createViewSwitcherArg can be used to make sure that the multiview switcher is not created
      * @return return the default Viewable (ViewDef)
      */
-    protected Viewable createDefaultViewable(final boolean createRecordSetController,
-                                             final boolean createViewSwitcher)
+    protected Viewable createDefaultViewable(final boolean createRecordSetControllerArg,
+                                             final boolean createViewSwitcherArg)
     {
         AltView  altView;
         if (createWithMode != null)
@@ -360,7 +361,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
-        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetController, createViewSwitcher);
+        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetControllerArg, createViewSwitcherArg);
         viewable.setParentDataObj(parentDataObj);
 
         if (add(viewable, altView.getName()))
@@ -423,12 +424,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Show the component by name.
-     * @param name the registered name of the component
+     * Show a Viewable by name.
+     * @param name the registered name of the component (In this case it is the name of the Viewable)
      */
     public void showView(final String name)
     {
-        //System.out.println("Show["+name+"]");
         // This needs to always map from the incoming name to the ID for that view
         // so first look it up by name
         Viewable viewable = viewMapByName.get(name);
@@ -437,7 +437,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         // all the view are created when needed.
         if (viewable == null)
         {
-            List<AltView> list = currentView.getView().getAltViews();
+            List<AltView> list = currentViewable.getView().getAltViews();
             int inx = 0;
             for (AltView altView : list)
             {
@@ -451,8 +451,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             if (inx < list.size())
             {
                 AltView altView = list.get(inx);
-                View view = AppContextMgr.getInstance().getView(currentView.getView().getViewSetName(), altView.getView().getName());
-                if (view != null)
+                View newView = AppContextMgr.getInstance().getView(currentViewable.getView().getViewSetName(), altView.getView().getName());
+                if (newView != null)
                 {
                     log.debug("--------------------------");
                     for (int i=0;i<getComponentCount();i++)
@@ -469,10 +469,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     log.debug("--------------------------");
 
                     String altViewName = altView.getName();
-                    currentView.aboutToShow(false);
+                    currentViewable.aboutToShow(false);
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode = altView.getMode();
-                    viewable = ViewFactory.createFormView(this, view, altViewName, data, createRecordSetController, createViewSwitcher);
+                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createRecordSetController, createViewSwitcher);
                     viewable.setSession(session);
                     if (add(viewable, altViewName))
                     {
@@ -483,7 +483,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
                 } else
                 {
-                    log.error("Unable to load form ViewSetName ["+currentView.getView().getViewSetName()+"] Name["+altView.getName()+"]");
+                    log.error("Unable to load form ViewSetName ["+currentViewable.getView().getViewSetName()+"] Name["+altView.getName()+"]");
                 }
             } else
             {
@@ -492,19 +492,19 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         } else
         {
-            if (currentView != null)
+            if (currentViewable != null)
             {
-                currentView.aboutToShow(false);
+                currentViewable.aboutToShow(false);
             }
             viewable.aboutToShow(true);
             cardLayout.show(this, name);
         }
 
-        currentView = viewable;
+        currentViewable = viewable;
 
-        if (currentView != null)
+        if (currentViewable != null)
         {
-            currentView.setParentDataObj(parentDataObj);
+            currentViewable.setParentDataObj(parentDataObj);
         }
     }
 
@@ -542,7 +542,36 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public void setData(Object data)
     {
         this.data = data;
-        currentView.setDataObj(data);
+        
+        AltView altView      = currentViewable.getAltView();
+        String  selectorName = altView.getSelectorName();
+        if (StringUtils.isNotEmpty(selectorName))
+        {
+            currentViewable.setDataObj(data);
+            
+            DataObjectGettable getter       = currentViewable.getViewDef().getDataGettable();
+            Object             fieldDataObj = getter.getFieldValue(currentViewable.getDataObj(), selectorName);
+            if (fieldDataObj != null)
+            {
+                String             fieldDataStr = fieldDataObj.toString();
+                for (AltView av : view.getAltViews())
+                {
+                    log.info("["+av.getSelectorName()+"]["+av.getSelectorValue()+"]["+fieldDataStr+"]");
+                    if (StringUtils.isNotEmpty(av.getSelectorName()) && av.getSelectorValue().equals(fieldDataStr))
+                    {
+                        showView(av.getName());
+                    }
+                }
+            } else
+            {
+                currentViewable.setDataObj(data);
+            }
+            
+        } else
+        {
+            currentViewable.setDataObj(data);
+        }
+        
         dataHasChanged = false;
     }
 
@@ -554,7 +583,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         if (data instanceof Collection<?>)
         {
-            return currentView.getDataObj();
+            return currentViewable.getDataObj();
         }
         return data;
     }
@@ -585,9 +614,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public void setParentDataObj(Object parentDataObj)
     {
         this.parentDataObj = parentDataObj;
-        if (currentView != null)
+        if (currentViewable != null)
         {
-            currentView.setParentDataObj(parentDataObj);
+            currentViewable.setParentDataObj(parentDataObj);
         }
     }
 
@@ -659,7 +688,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public Viewable getCurrentView()
     {
-        return currentView;
+        return currentViewable;
     }
 
     /**
@@ -671,7 +700,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         view          = null;
         data          = null;
         parentDataObj = null;
-        currentView   = null;
+        currentViewable = null;
         session       = null;
 
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)

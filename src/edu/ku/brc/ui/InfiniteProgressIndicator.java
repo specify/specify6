@@ -292,7 +292,7 @@ public class InfiniteProgressIndicator extends JComponent implements MouseListen
      */
     private Area[] buildTicker()
     {
-        Area[] ticker = new Area[barsCount];
+        Area[] tickerArray = new Area[barsCount];
         Point2D.Double center = new Point2D.Double((double) getWidth() / 2, (double) getHeight() / 2);
         double fixedAngle = 2.0 * Math.PI / barsCount;
 
@@ -311,10 +311,10 @@ public class InfiniteProgressIndicator extends JComponent implements MouseListen
             primitive.transform(toWheel);
             primitive.transform(toCircle);
 
-            ticker[(int) i] = primitive;
+            tickerArray[(int) i] = primitive;
         }
 
-        return ticker;
+        return tickerArray;
     }
 
     /**

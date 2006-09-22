@@ -95,10 +95,8 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
             public void propertyChange(PropertyChangeEvent evt) 
             {
                 itself.hidePopup();
-                Color color = (Color)evt.getNewValue();
-                setValue(color, null);
-                //System.out.println(color);
-                //visible_comp.setBackground((Color)evt.getNewValue());
+                Color colorVal = (Color)evt.getNewValue();
+                setValue(colorVal, null);
             }
         });
 
@@ -145,8 +143,9 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
     }
 
     
-    protected Frame getFrame(Component comp) 
+    protected Frame getFrame(Component component) 
     {
+        Component comp = component;
         if (comp == null) 
         {
             comp = this;
@@ -294,9 +293,9 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
                         button.setSize(dim);
                         button.setPreferredSize(dim);
                         button.setMinimumSize(dim);
-                        Color color = new Color(rgbs[inx++], rgbs[inx++], rgbs[inx++]);
-                        button.setBackground(color);
-                        button.setForeground(color);
+                        Color colorVal = new Color(rgbs[inx++], rgbs[inx++], rgbs[inx++]);
+                        button.setBackground(colorVal);
+                        button.setForeground(colorVal);
                         button.setOpaque(true);
                         button.setBorderPainted(false);
                         button.setBorder(BorderFactory.createEtchedBorder());

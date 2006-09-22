@@ -618,14 +618,14 @@ public final class UIHelper
 
     /**
      * Returns a single String value that formats all the value in the array per the format mask
-     * @param values the array of values
+     * @param valuesArg the array of values
      * @param format the format mask
      * @return a string with the formatted values
      */
-    public static Object getFormattedValue(final Object[] values,
+    public static Object getFormattedValue(final Object[] valuesArg,
                                            final String format)
     {
-        if (values == null)
+        if (valuesArg == null)
         {
             return "";
         }
@@ -633,12 +633,12 @@ public final class UIHelper
         try
         {
             Formatter formatter = new Formatter();
-            formatter.format(format, (Object[])values);
+            formatter.format(format, valuesArg);
             return formatter.toString();
 
         } catch (java.util.IllegalFormatConversionException ex)
         {
-            return values[0] != null ? values[0].toString() : "";
+            return valuesArg[0] != null ? valuesArg[0].toString() : "";
         }
 
     }
@@ -775,18 +775,21 @@ public final class UIHelper
             {
                 protected JFrame                frame;
                 protected DatabaseLoginListener frameDBListener;
-                protected boolean               doAutoClose;
+                protected boolean               doAutoCloseOfListener;
 
-                public DBListener(JFrame frame, DatabaseLoginListener frameDBListener, boolean doAutoClose)
+                public DBListener(JFrame frame, DatabaseLoginListener frameDBListener, boolean doAutoCloseOfListener)
                 {
-                    this.frame = frame;
-                    this.frameDBListener = frameDBListener;
-                    this.doAutoClose = doAutoClose;
+                    this.frame                 = frame;
+                    this.frameDBListener       = frameDBListener;
+                    this.doAutoCloseOfListener = doAutoCloseOfListener;
                 }
+                
                 public void loggedIn(final String databaseName, final String userName)
                 {
-                    if (doAutoClose)
+                    if (doAutoCloseOfListener)
+                    {
                         frame.setVisible(false);
+                    }
                     frameDBListener.loggedIn(databaseName, userName);
                 }
 

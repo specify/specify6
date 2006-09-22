@@ -16,10 +16,8 @@ package edu.ku.brc.ui.db;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.Frame;
-
 import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import edu.ku.brc.ui.UICacheManager;
 
@@ -39,6 +37,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      protected DatabaseLoginListener listener;
      protected boolean               doAutoLogin = false;
      protected boolean               doAutoClose = true;
+     protected JPanel                glassPane   = new JPanel();
 
     /**
      * Constructor that has the form created from the view system.
@@ -54,7 +53,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         dbPanel = new DatabaseLoginPanel(this, true);
         setContentPane(dbPanel);
 
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setModal(true);
         this.setAlwaysOnTop(true);
@@ -130,6 +129,15 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     //---------------------------------------------------------
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#aboutToLoginIn()
+     */
+    public void aboutToLoginIn()
+    {
+        glassPane.setSize(this.getSize());
+        this.setGlassPane(glassPane);
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String)
      */
     public void loggedIn(final String databaseName, final String userName)
@@ -140,6 +148,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         {
             listener.loggedIn(databaseName, userName);
         }
+        this.setGlassPane(null);
     }
 
     /* (non-Javadoc)
@@ -153,6 +162,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         {
             listener.cancelled();
         }
+        this.setGlassPane(null);
     }
 
 

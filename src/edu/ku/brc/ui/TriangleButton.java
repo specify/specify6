@@ -60,7 +60,7 @@ public class TriangleButton extends GradiantButton
         }
         poly.reset();
         Rectangle r = getBounds();
-        int delta = (int)((double)r.width * 0.28);
+        int delta = (int)(r.width * 0.28);
         r.grow(-delta, -delta);
         
         if (isDown)

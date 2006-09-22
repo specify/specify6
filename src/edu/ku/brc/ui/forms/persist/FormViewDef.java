@@ -73,16 +73,16 @@ public class FormViewDef extends ViewDef
     
     /**
      * Returns a FormCell by ID (searches the rows and then the columns)
-     * @param name the ID of the field 
+     * @param idStr the ID of the field 
      * @return a FormCell by ID (searches the rows and then the columns)
      */
-    public FormCell getFormCellById(String name)
+    public FormCell getFormCellById(String idStr)
     {
         for (FormRow row : rows)
         {
             for (FormCell c : row.getCells())
             {
-                if (c.getId().equals(name))
+                if (c.getId().equals(idStr))
                 {
                     return c;
                 }
@@ -93,16 +93,16 @@ public class FormViewDef extends ViewDef
     
     /**
      * Returns a FormCell by name (searches the rows and then the columns)
-     * @param name the name of the field 
+     * @param nameStr the name of the field 
      * @return a FormCell by name (searches the rows and then the columns)
      */
-    public FormCell getFormCellByName(final String name)
+    public FormCell getFormCellByName(final String nameStr)
     {
         for (FormRow row : rows)
         {
             for (FormCell c : row.getCells())
             {
-                if (c.getName().equals(name))
+                if (c.getName().equals(nameStr))
                 {
                     return c;
                 }

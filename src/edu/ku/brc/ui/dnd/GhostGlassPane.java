@@ -119,10 +119,10 @@ public class GhostGlassPane extends JPanel
         int x2 = (int) (oldLocation.getX() - (width * zoom / 2)) - 5;
         int y2 = (int) (oldLocation.getY() - (height * zoom / 2)) - 5;
 
-        int width = (int) (this.width * zoom + 10.0);
-        int height = (int) (this.height * zoom + 10.0);
+        int w  = (int) (this.width * zoom + 10.0);
+        int h = (int) (this.height * zoom + 10.0);
 
-        return new Rectangle(x, y, width, height).union(new Rectangle(x2, y2, width, height));
+        return new Rectangle(x, y, w, h).union(new Rectangle(x2, y2, w, h));
     }
 
     /* (non-Javadoc)
@@ -200,11 +200,11 @@ public class GhostGlassPane extends JPanel
 
     /**
      * Start animation where painting will occur for the given rect
-     * @param visibleRect the rect to be painted
+     * @param visibleRectArg the rect to be painted
      */
-    public void startAnimation(Rectangle visibleRect)
+    public void startAnimation(Rectangle visibleRectArg)
     {
-        this.visibleRect = visibleRect;
+        this.visibleRect = visibleRectArg;
         new Timer(1000 / 30, new FadeOutAnimation()).start();
     }
 
@@ -235,8 +235,8 @@ public class GhostGlassPane extends JPanel
                 DragAndDropLock.setLocked(false);
             } else
             {
-                alpha = 0.6f - (0.6f * (float) elapsed / (float) ANIMATION_DELAY);
-                zoom = 1.0f + 3.0f * ((float) elapsed / (float) ANIMATION_DELAY);
+                alpha = 0.6f - (0.6f * elapsed / ANIMATION_DELAY);
+                zoom = 1.0f + 3.0f * (elapsed / (float) ANIMATION_DELAY);
             }
             repaint(getRepaintRect());
         }

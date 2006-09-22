@@ -52,7 +52,7 @@ public class CloseButton extends GradiantButton
         super.paint(g);
         
         FontMetrics fm = this.getFontMetrics(getFont());
-        int w = (int)((double)fm.getAscent() * 0.8);
+        int w = (int)(fm.getAscent() * 0.8);
         Rectangle r = new Rectangle((getWidth() - w) / 2, (getHeight() - w) / 2, w, w);
         
         if (pressed) 

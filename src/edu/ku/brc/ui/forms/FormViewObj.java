@@ -448,15 +448,22 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         }
     }
 
-    /**
-     * Returns the definition of the form
-     * @return the definition of the form
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getViewDef()
      */
     public FormViewDef getViewDef()
     {
         return formViewDef;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getAltView()
+     */
+    public AltView getAltView()
+    {
+        return altView;
+    }
+    
     /**
      * Returns the name of the form from the FormView
      * @return the name of the form from the FormView

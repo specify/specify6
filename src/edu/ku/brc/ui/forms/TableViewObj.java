@@ -27,6 +27,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.hibernate.Session;
 
+import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.TableViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
@@ -263,6 +265,23 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getViewDef()
+     */
+    public FormViewDef getViewDef()
+    {
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getAltView()
+     */
+    public AltView getAltView()
+    {
+        return null;
+    }
+    
     /* (non
      * -Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#hideMultiViewSwitch(boolean)

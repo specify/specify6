@@ -129,29 +129,29 @@ public class FormCellField extends FormCell
         this.properties = properties;
     }
 
-    public void addProperty(final String name, final String value)
+    public void addProperty(final String nameStr, final String value)
     {
         if (properties == null)
         {
             properties = new Hashtable<String, String>();
         }
-        properties.put(name, value);
+        properties.put(nameStr, value);
     }
 
-    public String getProperty(final String name)
+    public String getProperty(final String nameStr)
     {
         if (properties != null)
         {
-            return properties.get(name);
+            return properties.get(nameStr);
         }
         return null;
     }
 
-    public int getPropertyAsInt(final String name, final int defVal)
+    public int getPropertyAsInt(final String nameStr, final int defVal)
     {
         if (properties != null)
         {
-            String str = properties.get(name);
+            String str = properties.get(nameStr);
             if (StringUtils.isNotEmpty(str))
             {
                 return Integer.parseInt(str);
@@ -163,11 +163,11 @@ public class FormCellField extends FormCell
         return -1;
     }
 
-    public boolean getPropertyAsBoolean(final String name, final boolean defVal)
+    public boolean getPropertyAsBoolean(final String nameStr, final boolean defVal)
     {
         if (properties != null)
         {
-            String str = properties.get(name);
+            String str = properties.get(nameStr);
             if (StringUtils.isNotEmpty(str))
             {
                 return str.equalsIgnoreCase("true");

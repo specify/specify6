@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 
 import org.hibernate.Session;
 
+import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.validation.FormValidator;
@@ -42,6 +43,7 @@ public interface Viewable
      * @return a unique name
      */
     public String getName();
+    
     /**
      * Returns the form's type (field, form, table).
      * @return the form's type (field, form, table)
@@ -160,6 +162,18 @@ public interface Viewable
      * @return the View definition for this viewable
      */
     public View getView();
+
+    /**
+     * Returns the ViewDef definition for this viewable.
+     * @return the ViewDef definition for this viewable
+     */
+    public ViewDef getViewDef();
+
+    /**
+     * Returns the AltView definition for this viewable.
+     * @return the AltView definition for this viewable
+     */
+    public AltView getAltView();
 
     /**
      * Indicates it should hide the UI that enables switching between different AltViews;

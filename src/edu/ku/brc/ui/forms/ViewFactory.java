@@ -246,12 +246,12 @@ public class ViewFactory
             ValTextField textField = new ValTextField(cellField.getCols(), pickListDBAdapter);
             textField.setRequired(cellField.isRequired());
 
-            validator.hookupTextField((JTextField)textField,
-                                        cellField.getId(),
-                                        cellField.isRequired(),
-                                        parseValidationType(cellField.getValidationType()),
-                                        cellField.getValidationRule(),
-                                        cellField.isChangeListenerOnly());
+            validator.hookupTextField(textField,
+                                      cellField.getId(),
+                                      cellField.isRequired(),
+                                      parseValidationType(cellField.getValidationType()),
+                                      cellField.getValidationRule(),
+                                      cellField.isChangeListenerOnly());
 
             txtField = textField;
             textField.setEditable(!cellField.isReadOnly());
@@ -282,12 +282,12 @@ public class ViewFactory
             textField.setRequired(cellField.isRequired());
             textField.setEncrypted(cellField.isEncrypted());
 
-            validator.hookupTextField((JTextField)textField,
-                                        cellField.getId(),
-                                        cellField.isRequired(),
-                                        parseValidationType(cellField.getValidationType()),
-                                        validationRule,
-                                        cellField.isChangeListenerOnly());
+            validator.hookupTextField(textField,
+                                      cellField.getId(),
+                                      cellField.isRequired(),
+                                      parseValidationType(cellField.getValidationType()),
+                                      validationRule,
+                                      cellField.isChangeListenerOnly());
 
            txt = textField;
 
@@ -320,7 +320,7 @@ public class ViewFactory
             textField = new ValFormattedTextField(cellField.getUIFieldFormatter());
             textField.setRequired(cellField.isRequired());
 
-            validator.hookupTextField((JTextField)textField,
+            validator.hookupTextField(textField,
                                       cellField.getId(),
                                       cellField.isRequired(),
                                       UIValidator.Type.Changed,  cellField.getValidationRule(), false);

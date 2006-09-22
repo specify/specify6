@@ -493,8 +493,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
      */
     public void doAction(GhostActionable src)
     {
-        Object data = src != null ? src.getData() : null;
-        DataActionEvent ae = new DataActionEvent(this, data);
+        Object dataObj = src != null ? src.getData() : null;
+        DataActionEvent ae = new DataActionEvent(this, dataObj);
         for (ActionListener al : listeners)
         {
             al.actionPerformed(ae);
@@ -595,12 +595,12 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         int shadowWidth  = bgBufImg.getWidth() - getItemWidth();
         int shadowHeight = bgBufImg.getHeight() - getItemHeight();
 
-        int left   = (int)(((double)shadowWidth) * 0.5);
-        int top    = (int)(((double)shadowHeight)* 0.4);
+        int left   = (int)((shadowWidth) * 0.5);
+        int top    = (int)((shadowHeight)* 0.4);
         int width  = getItemWidth() - 2;
         int height = getItemHeight() - 2;
 
-        Graphics2D g2 = (Graphics2D) buffer.createGraphics();
+        Graphics2D g2 = buffer.createGraphics();
         g2.setRenderingHints(hints);
 
         g2.drawImage(bgBufImg, 0, 0, bgBufImg.getWidth(), bgBufImg.getHeight(), null);

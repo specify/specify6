@@ -208,7 +208,7 @@ public class VectorLabel extends JLabel
         
         // draw the text
         g2.setColor(textColorShadow);
-        g2.drawString(text,(int)((float)textx+scale*(0.04f)), (int)((float)texty + scale*(0.04f)));
+        g2.drawString(text,(int)(textx+scale*(0.04f)), (int)(texty + scale*(0.04f)));
         g2.setColor(textColor);
         g2.drawString(text, textx, texty);
 

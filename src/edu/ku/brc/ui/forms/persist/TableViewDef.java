@@ -79,9 +79,9 @@ public class TableViewDef extends ViewDef
     //-------------------------------------------------------------------
     // Helpers
     //-------------------------------------------------------------------
-    public FormColumn createColumn(final String name, final String label, final String format)
+    public FormColumn createColumn(final String nameStr, final String label, final String format)
     {
-        return addColumn(new FormColumn(name, label, format));
+        return addColumn(new FormColumn(nameStr, label, format));
     }
     
    

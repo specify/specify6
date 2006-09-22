@@ -47,7 +47,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -82,7 +81,7 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class DatabaseLoginPanel extends JPanel
 {
-    private static final Logger log  = Logger.getLogger(DatabaseLoginPanel.class);
+    //private static final Logger log  = Logger.getLogger(DatabaseLoginPanel.class);
 
     // Form Stuff
 
@@ -175,7 +174,7 @@ public class DatabaseLoginPanel extends JPanel
     }
 
     /**
-     * Creates a line in the form
+     * Creates a line in the form.
      * @param label JLabel text
      * @param comp the component to be added
      * @param pb the PanelBuilder to use
@@ -183,16 +182,17 @@ public class DatabaseLoginPanel extends JPanel
      * @param y the 'y' coordinate in the layout of the form
      * @return return an incremented by 2 'y' position
      */
-    protected int addLine(final String label, final JComponent comp, final PanelBuilder pb, final CellConstraints cc, int y)
+    protected int addLine(final String label, final JComponent comp, final PanelBuilder pb, final CellConstraints cc, final int y)
     {
-        pb.add(new JLabel(label != null ? getResourceString(label)+":" : " ", JLabel.RIGHT), cc.xy(1, y));
-        pb.add(comp, cc.xy(3, y));
-        y += 2;
-        return y;
+        int yy = y;
+        pb.add(new JLabel(label != null ? getResourceString(label)+":" : " ", JLabel.RIGHT), cc.xy(1, yy));
+        pb.add(comp, cc.xy(3, yy));
+        yy += 2;
+        return yy;
     }
 
     /**
-     * Creates the UI for the login and hooks up any listeners
+     * Creates the UI for the login and hooks up any listeners.
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      */
     protected void createUI(final boolean isDlg)
@@ -467,20 +467,21 @@ public class DatabaseLoginPanel extends JPanel
     {
         class KeyAdp extends KeyAdapter
         {
-            private boolean checkForRet = false;
-            public KeyAdp(final boolean checkForRet)
+            private boolean checkForRetLocal = false;
+            public KeyAdp(final boolean checkForRetArg)
             {
-                this.checkForRet = checkForRet;
+                this.checkForRetLocal = checkForRetArg;
             }
             public void keyPressed(KeyEvent e)
             {
                 updateUIControls();
-                if (checkForRet && e.getKeyCode() == KeyEvent.VK_ENTER)
+                if (checkForRetLocal && e.getKeyCode() == KeyEvent.VK_ENTER)
                 {
                     doLogin();
                 }
             }
         }
+        
         comp.addKeyListener(new KeyAdp(checkForRet));
     }
 
@@ -632,7 +633,6 @@ public class DatabaseLoginPanel extends JPanel
         autoLoginCBX.setEnabled(false);
         moreBtn.setEnabled(false);
 
-
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] {getDatabaseName()}), false);
 
         String basePrefName = getDatabaseName() + "." + getUserName() + ".";
@@ -733,7 +733,7 @@ public class DatabaseLoginPanel extends JPanel
                     rememberPasswordCBX.setEnabled(true);
                     autoLoginCBX.setEnabled(true);
                     moreBtn.setEnabled(true);
-                    
+
                     updateUIControls();
                 }
 
@@ -744,9 +744,9 @@ public class DatabaseLoginPanel extends JPanel
 
                     if (loginCount < 1000)
                     {
-                        String basePrefName = getDatabaseName() + "." + getUserName() + ".";
-                        AppPreferences.getLocalPrefs().putLong(basePrefName+"logincount", ++loginCount);
-                        AppPreferences.getLocalPrefs().putLong(basePrefName+"loginaccumtime", loginAccumTime);
+                        String basePrefNameStr = getDatabaseName() + "." + getUserName() + ".";
+                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr+"logincount", ++loginCount);
+                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr+"loginaccumtime", loginAccumTime);
                     }
                 }
 
@@ -956,13 +956,13 @@ public class DatabaseLoginPanel extends JPanel
         }
 
         /**
-         * @param pickList the picklist which is the model
+         * @param pickListArg the picklist which is the model
          * @return a string representing the model
          */
-        protected String convertModelToStr(final PickList pickList)
+        protected String convertModelToStr(final PickList pickListArg)
         {
             StringBuilder strBuf = new StringBuilder();
-            for (PickListItem item : pickList.getItems())
+            for (PickListItem item : pickListArg.getItems())
             {
                 if (strBuf.length() > 0) strBuf.append(",");
                 strBuf.append(item.getValue());

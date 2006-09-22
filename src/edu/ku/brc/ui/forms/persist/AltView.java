@@ -15,6 +15,8 @@
 
  import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.util.List;
+
 /**
  * Definition of an Alternate View which can be an "Edit", "View", "None"
  * 
@@ -35,13 +37,26 @@ public class AltView
     protected boolean      isDefault;
     
     protected ViewDef      viewDef = null;
+    
+    protected String        selectorName  = null;
+    protected String        selectorValue = null;
+    protected List<AltView> subViews      = null;
 
+    /**
+     * 
+     */
     public AltView()
     {
 
     }
 
-    public AltView(View view, String name, String label, CreationMode mode, boolean validated, boolean isDefault, final ViewDef viewDef)
+    public AltView(final View view, 
+                   final String name, 
+                   final String label, 
+                   final CreationMode mode, 
+                   final boolean validated, 
+                   final boolean isDefault, 
+                   final ViewDef viewDef)
     {
         this.view = view;
         this.name = name;
@@ -108,6 +123,38 @@ public class AltView
         return label;
     }
     
+    
+    
+    public String getSelectorName()
+    {
+        return selectorName;
+    }
+
+    public void setSelectorName(String selectorName)
+    {
+        this.selectorName = selectorName;
+    }
+
+    public String getSelectorValue()
+    {
+        return selectorValue;
+    }
+
+    public void setSelectorValue(String selectorValue)
+    {
+        this.selectorValue = selectorValue;
+    }
+
+    public List<AltView> getSubViews()
+    {
+        return subViews;
+    }
+
+    public void setSubViews(List<AltView> subViews)
+    {
+        this.subViews = subViews;
+    }
+
     public static AltView.CreationMode parseMode(final String modeStr, final AltView.CreationMode defaultMode)
     {
         if (isNotEmpty(modeStr))

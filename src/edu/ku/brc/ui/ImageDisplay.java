@@ -151,7 +151,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     /**
      * @param imgIcon
      */
-    public synchronized void setImage(ImageIcon imgIcon)
+    public synchronized void setImage(final ImageIcon imgIcon)
     {
         this.imgIcon = imgIcon;
 
@@ -161,7 +161,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
         } else
         {
-            imgIcon = null;
+            this.imgIcon = null;
             imagePanel.setImage(imgIcon);
             imagePanel.setNoImage(true);
         }
@@ -251,7 +251,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     //--------------------------------------------------------------
     class ImagePanel extends JComponent
     {
-        protected ImageIcon imgIcon;
+        protected ImageIcon imageIcon;
         protected Dimension preferredSize;
         protected String    noImageStr      = getResourceString("noimage");
         protected String    loadingImageStr = getResourceString("loadingimage");
@@ -260,18 +260,18 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
         public ImagePanel(final int x, final int y)
         {
-            this.imgIcon = null;
+            this.imageIcon = null;
             preferredSize = new Dimension(x, y);
         }
 
-        public ImagePanel(ImageIcon imgIcon)
+        public ImagePanel(ImageIcon imageIcon)
         {
-            this.imgIcon  = imgIcon;
+            this.imageIcon  = imageIcon;
         }
 
-        public void setImage(final ImageIcon imgIcon)
+        public void setImage(final ImageIcon imageIcon)
         {
-            this.imgIcon  = imgIcon;
+            this.imageIcon  = imageIcon;
         }
 
         public Dimension getPreferredSize()
@@ -283,7 +283,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
            super.paint(g);
 
            Dimension size = imagePanel.getSize();
-           if (imgIcon != null)
+           if (imageIcon != null)
            {
 
                Insets    insets = imagePanel.getInsets();
@@ -295,8 +295,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                int x = insets.left;
                int y = insets.top;
 
-               int imgW = imgIcon.getIconWidth();
-               int imgH = imgIcon.getIconHeight();
+               int imgW = imageIcon.getIconWidth();
+               int imgH = imageIcon.getIconHeight();
 
                if (imgW > w || imgH > h)
                {
@@ -314,8 +314,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                    }
                    scale = Math.min(scaleW, scaleH);
 
-                   imgW = (int) ((double) imgW * scale);
-                   imgH = (int) ((double) imgH * scale);
+                   imgW = (int) (imgW * scale);
+                   imgH = (int) (imgH * scale);
                }
 
                if (imgW < w)
@@ -326,7 +326,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                {
                    y = (h - imgH) / 2;
                }
-               Image image = imgIcon.getImage();
+               Image image = imageIcon.getImage();
                g.drawImage(image, x, y, imgW, imgH, null);
            } else
            {
@@ -358,14 +358,13 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
       public int kIOError      = 4;
       public int kURLError     = 5;
 
-      //private int           status         = kNoError;
-      private Thread        thread         = null;
-      private String        url;
+      private Thread        thread = null;
+      private String        urlStr;
 
 
-      public ImageGetter(String url)
+      public ImageGetter(String urlStr)
       {
-           this.url = url;
+           this.urlStr = urlStr;
       }
 
 
@@ -412,10 +411,10 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                FileCache fileCache = UICacheManager.getLongTermFileCache();
                if (fileCache != null)
                {
-                   File file = fileCache.getCacheFile(url);
+                   File file = fileCache.getCacheFile(urlStr);
                    if (file == null)
                    {
-                       String    fileName  = fileCache.cacheWebResource(url);
+                       String    fileName  = fileCache.cacheWebResource(urlStr);
                        file      = fileCache.getCacheFile(fileName);
                    }
                    Image     img       = getToolkit().getImage(file.toURL());

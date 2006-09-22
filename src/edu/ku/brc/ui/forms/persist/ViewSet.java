@@ -146,14 +146,14 @@ public class ViewSet implements Comparable<ViewSet>
 
     /**
      * Gets a view by name.
-     * @param name name of view to be retrieved
+     * @param nameStr name of view to be retrieved
      * @return the view or null if it isn't found
      */
-    public View getView(final String name)
+    public View getView(final String nameStr)
     {
         loadViews();
 
-        return views.get(name);
+        return views.get(nameStr);
     }
 
     /**

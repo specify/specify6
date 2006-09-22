@@ -212,15 +212,13 @@ public class Trash extends JComponent implements GhostActionable
     {
         createRenderingHints();
         
-        BufferedImage buffer = new BufferedImage(imgIcon.getIconWidth(),imgIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-
-        
-        Graphics2D g2 = (Graphics2D) buffer.createGraphics();
+        BufferedImage buf = new BufferedImage(imgIcon.getIconWidth(),imgIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D    g2  = buf.createGraphics();
         g2.setRenderingHints(hints);
 
         g2.drawImage(paperIcon.getImage(), 0, 0, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
         
-        return buffer;
+        return buf;
     }
     
     /**
@@ -264,9 +262,9 @@ public class Trash extends JComponent implements GhostActionable
         if (src != null)
         {
             
-            Object data = src.getData();
+            Object dataObj = src.getData();
             
-            if (src instanceof DndDeletable && data != null)
+            if (src instanceof DndDeletable && dataObj != null)
             {
                 if (((DndDeletable)src).deleteRequest())
                 {
@@ -350,7 +348,7 @@ public class Trash extends JComponent implements GhostActionable
         
         buffer = new BufferedImage(imgIcon.getIconWidth(), imgIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
 
-        Graphics2D g2 = (Graphics2D) buffer.createGraphics();
+        Graphics2D g2 = buffer.createGraphics();
         g2.setRenderingHints(hints);
 
         g2.fillRect(0, 0, imgIcon.getIconWidth(), imgIcon.getIconHeight());
@@ -386,7 +384,7 @@ public class Trash extends JComponent implements GhostActionable
      */
     public List<DataFlavor> getDragDataFlavors()
     {
-        return (List<DataFlavor>)null; // this is not draggable
+        return null; // this is not draggable
     }
     
 
