@@ -37,7 +37,6 @@ public class Attachment implements java.io.Serializable, OrderedTrayable
     private Preparation             preparation;
     private Taxon                   taxon;
 
-
     // Constructors
 
     /** default constructor */
@@ -51,7 +50,7 @@ public class Attachment implements java.io.Serializable, OrderedTrayable
     {
         this.attachmentID = attachmentID;
     }
-    
+
     public void initialize()
     {
         attachmentID = null;
@@ -296,7 +295,7 @@ public class Attachment implements java.io.Serializable, OrderedTrayable
     {
         this.taxon = taxon;
     }
-    
+
     public ImageIcon getIcon()
     {
         return MimeTypeIconProvider.getInstance().getIconForMimeType(this.mimeType);
@@ -307,13 +306,10 @@ public class Attachment implements java.io.Serializable, OrderedTrayable
      */
     public int getOrderIndex()
     {
-        if(order != null)
-        {
-            return this.order;
-        }
+        if (order != null) { return this.order; }
         return 0;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderedTrayable#setOrderIndex(int)
      */
