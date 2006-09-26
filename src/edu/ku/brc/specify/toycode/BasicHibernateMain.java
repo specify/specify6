@@ -28,7 +28,8 @@ public class BasicHibernateMain implements DatabaseLoginListener
 {
     public void aboutToLoginIn()
     {
-        
+        // do nothing
+        // fill-in with your code
     }
     
     public void loggedIn(final String databaseName, final String userName)
