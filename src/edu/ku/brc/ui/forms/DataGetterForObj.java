@@ -47,6 +47,7 @@ public class DataGetterForObj implements DataObjectGettable
      */
     public DataGetterForObj()
     {
+        // do nothing
     }
 
     /**
@@ -63,7 +64,7 @@ public class DataGetterForObj implements DataObjectGettable
         {
             try
             {
-                Iterator iter = null;
+                Iterator<?> iter = null;
                 if (dataObj instanceof Set)
                 {
                     iter = ((Set)dataObj).iterator();

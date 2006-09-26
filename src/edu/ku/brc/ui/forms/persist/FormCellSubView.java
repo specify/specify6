@@ -57,8 +57,7 @@ public class FormCellSubView extends FormCell
                            final String classDesc, 
                            final String description, 
                            final int    colspan, 
-                           final int    rowspan,
-                           final boolean singleValueFromSet)
+                           final int    rowspan)
     {
         super(CellType.subview, id, name, colspan, rowspan);
         this.viewName    = viewName;

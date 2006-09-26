@@ -34,7 +34,7 @@ public class DataSetterForHashMap implements DataObjectSettable
      */
     public DataSetterForHashMap()
     {
-
+        // do nothing
     }
 
 

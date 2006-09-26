@@ -28,6 +28,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.apache.commons.lang.StringUtils;
@@ -142,7 +143,7 @@ public class ResultSetController implements ValidationListener
         prevBtn  = new JButton(IconManager.getImage("PrevRec"));
         
         recDisp  = new JLabel("  ");
-        recDisp.setHorizontalAlignment(JLabel.CENTER);
+        recDisp.setHorizontalAlignment(SwingConstants.CENTER);
         recDisp.setOpaque(true);
         recDisp.setBackground(Color.WHITE);
         recDisp.setBorder(enabledBorder);

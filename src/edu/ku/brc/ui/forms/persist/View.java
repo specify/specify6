@@ -141,14 +141,13 @@ public class View implements Comparable<View>
         {
             return getDefaultAltView();
             
-        } else
+        }
+        // else
+        for (AltView altView : altViews)
         {
-            for (AltView altView : altViews)
+            if (altView.getName().equals(nameStr))
             {
-                if (altView.getName().equals(nameStr))
-                {
-                    return altView;
-                }
+                return altView;
             }
         }
         return null;
@@ -270,6 +269,7 @@ public class View implements Comparable<View>
         this.selectorName = selectorName;
     }
 
+    @Override
     public String toString()
     {
         return this.name;

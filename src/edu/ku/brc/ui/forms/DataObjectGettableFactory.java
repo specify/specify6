@@ -38,7 +38,7 @@ public class DataObjectGettableFactory
      */
     protected DataObjectGettableFactory()
     {
-        
+        // do nothing
     }
     
     /**

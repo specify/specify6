@@ -38,7 +38,7 @@ public class DataObjectSettableFactory
      */
     protected DataObjectSettableFactory()
     {
-        
+        // do nothing
     }
     
     /**

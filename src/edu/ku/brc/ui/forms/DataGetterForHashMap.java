@@ -40,6 +40,7 @@ public class DataGetterForHashMap implements DataObjectGettable
      */
     public DataGetterForHashMap()
     {
+        // do nothing
     }
 
     /* (non-Javadoc)

@@ -84,7 +84,7 @@ public class UIFieldFormatterMgr
             Element root  = AppContextMgr.getInstance().getResourceAsDOM("UIFormatters");
             if (root != null)
             {
-                List formats = root.selectNodes("/formats/format");
+                List<?> formats = root.selectNodes("/formats/format");
                 for (Object fObj : formats)
                 {
                     Element formatElement = (Element)fObj;
@@ -92,7 +92,7 @@ public class UIFieldFormatterMgr
                     String  name   = formatElement.attributeValue("name");
                     String  fType  = formatElement.attributeValue("type");
 
-                    List                 fieldsList = formatElement.selectNodes("field");
+                    List<?>              fieldsList = formatElement.selectNodes("field");
                     List<FormatterField> fields     = new ArrayList<FormatterField>();
 
                     for (Object fldObj : fieldsList)

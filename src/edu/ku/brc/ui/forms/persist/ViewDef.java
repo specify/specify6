@@ -52,7 +52,7 @@ public class ViewDef
      */
     public ViewDef()
     {
-        
+        // do nothing
     }
     
     /**
@@ -171,7 +171,9 @@ public class ViewDef
         return dataSettable;
     }
 
+    @Override
     public String toString()
     {
         return this.name;
-    }}
+    }
+}

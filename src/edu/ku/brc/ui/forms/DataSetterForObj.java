@@ -43,7 +43,7 @@ public class DataSetterForObj implements DataObjectSettable
      */
     public DataSetterForObj()
     {
-
+        // do nothing
     }
 
     

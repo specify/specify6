@@ -39,7 +39,7 @@ public class DataObjFieldFormatMgr
 
     protected Hashtable<String, DataFieldFormat> hash     = new Hashtable<String, DataFieldFormat>();
     protected Object[]                           args     = new Object[2]; // start with two slots
-    protected Hashtable<String, Class>           typeHash = new Hashtable<String, Class>();
+    protected Hashtable<String, Class<?>>           typeHash = new Hashtable<String, Class<?>>();
 
     protected StringBuilder                      strBuf   = new StringBuilder(128);
     /**
@@ -68,7 +68,7 @@ public class DataObjFieldFormatMgr
             Element root  = AppContextMgr.getInstance().getResourceAsDOM("DataObjFormatters");
             if (root != null)
             {
-                List formatters = root.selectNodes("/formatters/format");
+                List<?> formatters = root.selectNodes("/formatters/format");
                 for ( Object formatObj : formatters)
                 {
                     Element formatElement = (Element)formatObj;
@@ -77,7 +77,7 @@ public class DataObjFieldFormatMgr
                     String className = formatElement.attributeValue("class");
                     String format    = formatElement.attributeValue("format");
 
-                    List fieldsElements = formatElement.selectNodes("fields/field");
+                    List<?> fieldsElements = formatElement.selectNodes("fields/field");
                     DataField[] fields = new DataField[fieldsElements.size()];
                     int inx = 0;
                     for (Object fieldObj : fieldsElements)
@@ -87,7 +87,7 @@ public class DataObjFieldFormatMgr
                         String  dataTypeStr  = XMLHelper.getAttr(fieldElement, "type", "string");
                         String  formatStr    = XMLHelper.getAttr(fieldElement, "format", null);
                         String  sepStr       = XMLHelper.getAttr(fieldElement, "sep", null);
-                        Class   classObj     = typeHash.get(dataTypeStr);
+                        Class<?>   classObj     = typeHash.get(dataTypeStr);
                         if (classObj == null)
                         {
                             log.error("Couldn't map standard type["+dataTypeStr+"]");
@@ -261,7 +261,7 @@ public class DataObjFieldFormatMgr
         protected String   className;
         protected String   format;
         protected DataField[] fields;
-        protected Class    classObj;
+        protected Class<?>    classObj;
 
         public DataFieldFormat(String name, String className, String format, DataField[] fields)
         {
@@ -300,7 +300,7 @@ public class DataObjFieldFormatMgr
             return name;
         }
 
-        public Class getClassObj()
+        public Class<?> getClassObj()
         {
             return classObj;
         }
@@ -309,10 +309,10 @@ public class DataObjFieldFormatMgr
     protected class DataField
     {
         protected String name;
-        protected Class  type;
+        protected Class<?>  type;
         protected String format;
         protected String sep;
-        public DataField(String name, Class type, String format, String sep)
+        public DataField(String name, Class<?> type, String format, String sep)
         {
             super();
             // TODO Auto-generated constructor stub
@@ -333,7 +333,7 @@ public class DataObjFieldFormatMgr
         {
             return sep;
         }
-        public Class getType()
+        public Class<?> getType()
         {
             return type;
         }

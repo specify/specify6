@@ -57,10 +57,10 @@ public class ControlBarPanel extends JPanel
      * Adds a ResultSetController to the center pane
      * @param recordSetController the recordset cntroller
      */
-    public void add(final ResultSetController recordSetController)
+    public void add(final ResultSetController _recordSetController)
     {
         CellConstraints cc = new CellConstraints();
-        builder.add(recordSetController.getPanel(), cc.xy(3,1));
+        builder.add(_recordSetController.getPanel(), cc.xy(3,1));
     }
 
     /**

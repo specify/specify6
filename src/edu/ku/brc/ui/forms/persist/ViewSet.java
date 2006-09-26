@@ -57,6 +57,7 @@ public class ViewSet implements Comparable<ViewSet>
      */
     public ViewSet()
     {
+        // do nothing
     }
 
     /**

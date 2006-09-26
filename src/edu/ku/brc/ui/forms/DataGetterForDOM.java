@@ -67,10 +67,9 @@ public class DataGetterForDOM implements DataObjectGettable
             {
                 return XMLHelper.getAttr(element, attr, null);
                 
-            } else
-            {
-                return element.getTextTrim();
             }
+            // else
+            return element.getTextTrim();
         }
         return null;
     }

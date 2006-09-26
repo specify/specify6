@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.hibernate.Session;
@@ -79,7 +80,7 @@ public class TableViewObj implements Viewable
         mainComp = new JPanel(new BorderLayout());
         table = new JTable();
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setHorizontalAlignment(JLabel.CENTER);
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
 
         //for (int i=0;i<_model.getColumnCount();i++) {
         //    TableColumn column = _table.getColumn(_model.getColumnName(i));
@@ -172,7 +173,7 @@ public class TableViewObj implements Viewable
      */
     public void setDataObj(final Object dataObj)
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -188,7 +189,7 @@ public class TableViewObj implements Viewable
      */
     public void setParentDataObj(Object parentDataObj)
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -205,7 +206,7 @@ public class TableViewObj implements Viewable
      */
     public void setDataIntoUI()
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -213,7 +214,7 @@ public class TableViewObj implements Viewable
      */
     public void getDataFromUI()
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -229,7 +230,7 @@ public class TableViewObj implements Viewable
      */
     public void setDataIntoUIComp(final String name, Object data)
     {
-
+        // do nothing
     }
 
 
@@ -247,7 +248,7 @@ public class TableViewObj implements Viewable
      */
     public void getFieldIds(final List<String> fieldIds)
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -255,7 +256,7 @@ public class TableViewObj implements Viewable
      */
     public void aboutToShow(boolean show)
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -301,7 +302,7 @@ public class TableViewObj implements Viewable
      */
     public void validationWasOK(boolean wasOK)
     {
-
+        // do nothing
     }
     
     /* (non-Javadoc)

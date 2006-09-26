@@ -73,6 +73,7 @@ public class ViewLoader
      */
     protected ViewLoader()
     {
+        // do nothing
     }
 
 
@@ -110,7 +111,7 @@ public class ViewLoader
             view.setSelectorName(selectorName);
             
             // iterate through child elements
-            for ( Iterator i = altviews.elementIterator( "altview" ); i.hasNext(); )
+            for ( Iterator<?> i = altviews.elementIterator( "altview" ); i.hasNext(); )
             {
                 Element altElement = (Element) i.next();
 
@@ -274,7 +275,7 @@ public class ViewLoader
         switch (type)
         {
             case form :
-                viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc, instance.doingResourceLabels);
+                viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
                 break;
 
             case table :
@@ -322,7 +323,7 @@ public class ViewLoader
         Element viewsElement = (Element)doc.selectSingleNode("views");
         if (viewsElement != null)
         {
-            for ( Iterator i = viewsElement.elementIterator( "view" ); i.hasNext(); )
+            for ( Iterator<?> i = viewsElement.elementIterator( "view" ); i.hasNext(); )
             {
                 Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
                 View     view    = createView(element, viewDefs);
@@ -354,7 +355,7 @@ public class ViewLoader
         Element viewDefsElement = (Element)doc.selectSingleNode("viewdefs");
         if (viewDefsElement != null)
         {
-            for ( Iterator i = viewDefsElement.elementIterator( "viewdef" ); i.hasNext(); )
+            for ( Iterator<?> i = viewDefsElement.elementIterator( "viewdef" ); i.hasNext(); )
             {
                 Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
                 ViewDef  viewDef = createViewDef(element);
@@ -389,7 +390,7 @@ public class ViewLoader
             if (enableRules != null)
             {
                 // iterate through child elements of root with element name "foo"
-                for ( Iterator i = enableRules.elementIterator( "rule" ); i.hasNext(); )
+                for ( Iterator<?> i = enableRules.elementIterator( "rule" ); i.hasNext(); )
                 {
                     Element ruleElement = (Element) i.next();
                     String id = getAttr(ruleElement, "id", "");
@@ -428,18 +429,15 @@ public class ViewLoader
                 if (cellStr != null && sepStr != null)
                 {
                     return createDuplicateJGoodiesDef(cellStr, sepStr, dup);
-                } else
-                {
-                    throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' on column def.");
                 }
-            } else
-            {
-                return cellDef.getText();
+                // else
+                throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' on column def.");
             }
-        } else
-        {
-            log.error("Element ["+element.getName()+"] must have a columnDef");
+            // else
+            return cellDef.getText();
         }
+        // else
+        log.error("Element ["+element.getName()+"] must have a columnDef");
         return "";
     }
 
@@ -454,10 +452,9 @@ public class ViewLoader
         if (isNotEmpty(label))
         {
             return instance.doingResourceLabels  ? getResourceString(label) : label;
-        } else
-        {
-            return "";
         }
+        // else
+        return "";
 
     }
 
@@ -514,12 +511,12 @@ public class ViewLoader
         Element rowsElement = (Element)element.selectSingleNode("rows");
         if (rowsElement != null)
         {
-            for ( Iterator i = rowsElement.elementIterator( "row" ); i.hasNext(); ) {
+            for ( Iterator<?> i = rowsElement.elementIterator( "row" ); i.hasNext(); ) {
                 Element rowElement = (Element) i.next();
 
                 FormRow formRow = new FormRow();
 
-                for ( Iterator cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
+                for ( Iterator<?> cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
                 {
                     Element cellElement = (Element)cellIter.next();
                     String  cellId      = getAttr(cellElement, "id", "");
@@ -533,13 +530,15 @@ public class ViewLoader
                     switch (cellType)
                     {
                         case label:
+                        {
                             cell = formRow.addCell(new FormCellLabel(cellId, cellName, getLabel(cellElement), getAttr(cellElement, "labelfor", ""), colspan));
                             break;
-
+                        }
                         case separator:
+                        {
                             cell = formRow.addCell(new FormCellSeparator(cellId, cellName, getLabel(cellElement), colspan));
                             break;
-
+                        }
                         case field:
                         {
                             String uitype         = getAttr(cellElement, "uitype", "");
@@ -645,16 +644,16 @@ public class ViewLoader
                             field.setProperties(properties);
 
                             cell = formRow.addCell(field);
-                        } break;
-
+                            break;
+                        }
                         case command:
                         {
                             cell =  formRow.addCell(new FormCellCommand(cellId, cellName,
                                                                 getLabel(cellElement),
                                                                 getAttr(cellElement, "commandtype", ""),
                                                                 getAttr(cellElement, "action", "")));
-                        } break;
-
+                            break;
+                        }
                         case panel:
                         {
                             FormCellPanel cellPanel = new FormCellPanel(cellId, cellName,
@@ -664,8 +663,8 @@ public class ViewLoader
                                                                         colspan, rowspan);
                             processRows(cellElement, cellPanel.getRows());
                             cell = formRow.addCell(cellPanel);
-                        } break;
-
+                            break;
+                        } 
                         case subview:
                         {
                             String vsName = cellElement.attributeValue("viewsetname");
@@ -680,16 +679,22 @@ public class ViewLoader
                                                    cellElement.attributeValue("class"),
                                                    getAttr(cellElement, "desc", ""),
                                                    colspan,
-                                                   rowspan,
-                                                   getAttr(cellElement, "single", false)));
+                                                   rowspan));
 
+                            break;
                         }
-                        break;
                         
                         case statusbar:
+                        {
                             cell = formRow.addCell(new FormCell(FormCell.CellType.statusbar, cellId, cellName, colspan, rowspan));
                             break;
-
+                        }
+                        default:
+                        {
+                            // what is this?
+                            log.error("Encountered unknown cell type");
+                            continue;
+                        }
                     } // switch
                     cell.setIgnoreSetGet(getAttr(cellElement, "ignore", false));
                 }
@@ -718,8 +723,7 @@ public class ViewLoader
                                                    final String  className,
                                                    final String  gettableClassName,
                                                    final String  settableClassName,
-                                                   final String  desc,
-                                                   final boolean resLabels)
+                                                   final String  desc)
     {
         FormViewDef formView = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
@@ -738,25 +742,19 @@ public class ViewLoader
      * Creates a Table Form View
      * @param type the type of form to be built
      * @param element the DOM element for building the form
-     * @param id the id of the form
      * @param name the name of the form
      * @param className the class name of the data object
      * @param gettableClassName the class name of the getter
      * @param settableClassName the class name of the setter
      * @param desc the description
-     * @param resLabels indicates whether the labels are really resource identifiers so the labels should come froma resource bundle
-     * @param isValidated whether to turn on validation
      * @return a form view of type "table"
      */
     protected static TableViewDef createTableView(final Element element,
-                                                   final int     id,
                                                    final String  name,
                                                    final String  className,
                                                    final String  gettableClassName,
                                                    final String  settableClassName,
-                                                   final String  desc,
-                                                   final boolean resLabels,
-                                                   final boolean isValidated)
+                                                   final String  desc)
     {
         TableViewDef tableView = new TableViewDef( name, className, gettableClassName, settableClassName, desc);
 
@@ -765,7 +763,7 @@ public class ViewLoader
         Element columns = (Element)element.selectSingleNode("columns");
         if (columns != null)
         {
-            for ( Iterator i = columns.elementIterator( "column" ); i.hasNext(); ) {
+            for ( Iterator<?> i = columns.elementIterator( "column" ); i.hasNext(); ) {
                 Element colElement = (Element) i.next();
 
                 FormColumn column = new FormColumn(colElement.attributeValue(NAME),

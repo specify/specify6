@@ -32,7 +32,7 @@ public class FormAltView
      */
     public FormAltView()
     {
-        
+        // do nothing
     }
 
     /**

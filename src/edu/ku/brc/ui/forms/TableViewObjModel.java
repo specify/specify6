@@ -19,8 +19,6 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.w3c.dom.Node;
-
 /**
  * This classes is the abstract "base" class implementation of the model that is used in the
  * JTables. Classes are derived from this class so they can show more or less information for the
@@ -36,9 +34,9 @@ public class TableViewObjModel extends AbstractTableModel
     public static final int TABLE_FIELDS = 0;
     public static final int QUERY_FIELDS = 1;
 
-    protected Vector        colInfo     = new Vector();
-    protected List          data        = null;
-    protected Class         classObj       = null;
+    protected Vector<Object>        colInfo     = new Vector<Object>();
+    protected List<Object>          data        = null;
+    protected Class<?>         classObj       = null;
     protected boolean       isAttr      = false;
 
     // protected DataGetter _dataGetter = null;
@@ -51,26 +49,26 @@ public class TableViewObjModel extends AbstractTableModel
         // changeView(aNode);
     }
 
-    /**
-     * Change the view.
-     * @param node node
-     */
-    public void changeView(Node node)
-    {
-        /*
-         * if (aNode == null || classObj == null) { return; } colInfo.clear(); try { NodeList colList =
-         * XPathAPI.selectNodeList(aNode, "columns/column"); for (int i=0;i<colList.getLength();i++) {
-         * Node node = colList.item(i); String label = XMLHelper.findAttrValue(node, "label");
-         *  // Get the Value for the TextField String fieldName = XMLHelper.findAttrValue(node,
-         * "name"); Class typeClass = null;
-         * 
-         * if (!isAttr) { if (fieldName.indexOf(".") == -1) { typeClass =
-         * classObj.getDeclaredField(fieldName).getType(); } else { typeClass = String.class; } } else {
-         * typeClass = String.class; } ColumnInfo colInfo = new ColumnInfo(label, typeClass,
-         * fieldName); colInfo.addElement(colInfo);
-         *  } } catch (Exception e) { System.err.println(e); } fireTableModelChanged();
-         */
-    }
+//    /**
+//     * Change the view.
+//     * @param node node
+//     */
+//    public void changeView(Node node)
+//    {
+//        /*
+//         * if (aNode == null || classObj == null) { return; } colInfo.clear(); try { NodeList colList =
+//         * XPathAPI.selectNodeList(aNode, "columns/column"); for (int i=0;i<colList.getLength();i++) {
+//         * Node node = colList.item(i); String label = XMLHelper.findAttrValue(node, "label");
+//         *  // Get the Value for the TextField String fieldName = XMLHelper.findAttrValue(node,
+//         * "name"); Class typeClass = null;
+//         * 
+//         * if (!isAttr) { if (fieldName.indexOf(".") == -1) { typeClass =
+//         * classObj.getDeclaredField(fieldName).getType(); } else { typeClass = String.class; } } else {
+//         * typeClass = String.class; } ColumnInfo colInfo = new ColumnInfo(label, typeClass,
+//         * fieldName); colInfo.addElement(colInfo);
+//         *  } } catch (Exception e) { System.err.println(e); } fireTableModelChanged();
+//         */
+//    }
 
     /**
      * Clears the data.
@@ -88,7 +86,7 @@ public class TableViewObjModel extends AbstractTableModel
      * Sets the data
      * @param aData
      */
-    public void setData(final List aData)
+    public void setData(final List<Object> aData)
     {
         this.data = aData;
         fireTableModelChanged();
@@ -104,33 +102,28 @@ public class TableViewObjModel extends AbstractTableModel
         return colInfo.size();
     }
 
-    /**
-     * Returns the Class object for a column.
-     * 
-     * @param column the column in question
-     * @return the Class of the column
+    /* (non-Javadoc)
+     * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
      */
+    @Override
     public Class<?> getColumnClass(int column)
     {
-        return ((ColumnInfo) colInfo.elementAt(column)).classObj;
+        return ((ColumnInfo) colInfo.elementAt(column))._classObj;
     }
 
-    /**
-     * Indicates if col and row is editable.
-     * 
-     * @param aRow the row of the cell
-     * @param aColumn the column of the cell
+    /* (non-Javadoc)
+     * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
      */
+    @Override
     public boolean isCellEditable(int aRow, int aColumn)
     {
         return false;
     }
 
-    /**
-     * Get the column name
-     * 
-     * @param aColumn the column of the cell to be gotten
+    /* (non-Javadoc)
+     * @see javax.swing.table.AbstractTableModel#getColumnName(int)
      */
+    @Override
     public String getColumnName(int aColumn)
     {
         return ((ColumnInfo) colInfo.elementAt(aColumn))._label;
@@ -177,9 +170,10 @@ public class TableViewObjModel extends AbstractTableModel
      * @param aColumn
      *            the column of the cell to be set
      */
+    @Override
     public void setValueAt(Object aValue, int aRow, int aColumn)
     {
-
+        // do nothing
     }
 
     /**
@@ -209,13 +203,13 @@ public class TableViewObjModel extends AbstractTableModel
     protected class ColumnInfo
     {
         public String _label     = null;
-        public Class  classObj     = null;
+        public Class<?>  _classObj     = null;
         public String _fieldName = null;
 
-        public ColumnInfo(String aLabel, Class aClass, String aFieldName)
+        public ColumnInfo(String aLabel, Class<?> aClass, String aFieldName)
         {
             _label = aLabel;
-            classObj = aClass;
+            _classObj = aClass;
             _fieldName = aFieldName;
             // System.out.println("["+_label+"]["+classObj.getName()+"]["+_fieldName+"]");
         }

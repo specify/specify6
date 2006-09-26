@@ -130,16 +130,19 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             thisObj = this;
 
             addMouseListener(new MouseAdapter() {
+                @Override
                 public void mousePressed(MouseEvent e)
                 {
                     showContextMenu(e);
                 }
 
+                @Override
                 public void mouseReleased(MouseEvent e)
                 {
                     showContextMenu(e);
 
                 }
+                @Override
                 public void mouseClicked(MouseEvent e)
                 {
                     ((FormViewObj)thisObj.currentViewable).listFieldChanges();
@@ -176,9 +179,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     /**
      * Called to indicate acceptence of CarryForward setup.
-     * @param accept true accept, false denied
      */
-    public void acceptCarryForwardSetup(final boolean accept)
+    public void acceptCarryForwardSetup()
     {
         if (carryForwardSetup != null)
         {
@@ -399,12 +401,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             log.error("Adding a Viewable by a name that is already used["+name+"]");
             return false;
 
-        } else
-        {
-            viewMapByName.put(name, viewable);
-            add(viewable.getUIComponent(), name);
-            return true;
         }
+        // else
+        viewMapByName.put(name, viewable);
+        add(viewable.getUIComponent(), name);
+        return true;
     }
 
     /**

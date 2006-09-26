@@ -47,7 +47,7 @@ public class AltView
      */
     public AltView()
     {
-
+        // do nothing
     }
 
     public AltView(final View view, 
@@ -118,6 +118,7 @@ public class AltView
         return view;
     }
 
+    @Override
     public String toString()
     {
         return label;

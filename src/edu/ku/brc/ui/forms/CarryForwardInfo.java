@@ -44,7 +44,7 @@ public class CarryForwardInfo
     /**
      * @param classObj
      */
-    public CarryForwardInfo(final Class classObj, final FormViewObj formViewObj, final FormViewDef formViewDef)
+    public CarryForwardInfo(final Class<?> classObj, final FormViewObj formViewObj, final FormViewDef formViewDef)
     {
         this.formViewObj = formViewObj;
         this.formViewDef = formViewDef;
@@ -72,7 +72,7 @@ public class CarryForwardInfo
         FormCell cellField = formViewDef.getFormCellById(id);
         if (cellField != null && cellField instanceof FormCellField)
         {
-            fieldList.remove((FormCellField)cellField);
+            fieldList.remove(cellField);
             formViewObj.setDoCarryForward(fieldList.size() > 0);
         }
     }

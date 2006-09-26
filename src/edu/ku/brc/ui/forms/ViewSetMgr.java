@@ -66,7 +66,7 @@ public class ViewSetMgr
      */
     public ViewSetMgr()
     {
-        
+        // do nothing
     }
     
     /**
@@ -192,15 +192,14 @@ public class ViewSetMgr
             {
                 return userVS.get(0);
                 
-            } else
-            {
-                log.error("User ViewSets:");
-                for (ViewSet vs : userVS)
-                {
-                    log.error(vs.getName());
-                }
-                throw new RuntimeException("There are multiple User ViewSets so I don't know which one to choose for the default.");
             }
+            // else
+            log.error("User ViewSets:");
+            for (ViewSet vs : userVS)
+            {
+                log.error(vs.getName());
+            }
+            throw new RuntimeException("There are multiple User ViewSets so I don't know which one to choose for the default.");
         }
         return viewsHash.get(viewSetName);        
     }
@@ -271,7 +270,7 @@ public class ViewSetMgr
     {
         if (rootDOM != null)
         {
-            for ( Iterator i = rootDOM.elementIterator( "file" ); i.hasNext(); ) 
+            for ( Iterator<?> i = rootDOM.elementIterator( "file" ); i.hasNext(); ) 
             {
                 Element fileElement = (Element) i.next();
                 String  name        = getAttr(fileElement, "name", null);
@@ -293,13 +292,12 @@ public class ViewSetMgr
                     if (StringUtils.isEmpty(fileName))
                     {
                         throw new RuntimeException("ViewSet file cannot be null!");
-                    } else
+                    }
+                    // else
+                    File viewSetFile = new File(contextDir.getAbsoluteFile() + File.separator + fileName);
+                    if (!viewSetFile.exists())
                     {
-                        File viewSetFile = new File(contextDir.getAbsoluteFile() + File.separator + fileName);
-                        if (viewSetFile == null || !viewSetFile.exists())
-                        {
-                            throw new RuntimeException("ViewSet file cannot be found at["+viewSetFile.getAbsolutePath()+"]");
-                        }
+                        throw new RuntimeException("ViewSet file cannot be found at["+viewSetFile.getAbsolutePath()+"]");
                     }
                     
                     ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), name, title, fileName, contextDir);
@@ -325,14 +323,14 @@ public class ViewSetMgr
      * 
      * @param contextDir the directory in which load the view sets
      */
-    protected void init(final File contextDir, final boolean emptyIsOK)
+    protected void init(final File _contextDir, final boolean emptyIsOK)
     {
-        this.contextDir = contextDir;
+        this.contextDir = _contextDir;
         registryExists = false;
         
-        if (contextDir != null)
+        if (_contextDir != null)
         { 
-            File vsRegFile = new File(contextDir.getAbsoluteFile() + File.separator + REGISTRY_FILENAME);
+            File vsRegFile = new File(_contextDir.getAbsoluteFile() + File.separator + REGISTRY_FILENAME);
             if (vsRegFile.exists())
             {
                 registryExists = true;

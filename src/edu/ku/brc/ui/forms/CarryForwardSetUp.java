@@ -107,6 +107,7 @@ public class CarryForwardSetUp extends JComponent
         g2.dispose();
         
         addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e)
             {
                 Point p = e.getPoint();
@@ -118,6 +119,7 @@ public class CarryForwardSetUp extends JComponent
                 }
             }
             
+            @Override
             public void mousePressed(MouseEvent e) 
             {
                 if (dlg.getTitleBounds().contains(e.getPoint()))
@@ -134,6 +136,7 @@ public class CarryForwardSetUp extends JComponent
         });
         
         addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
             public void mouseDragged(MouseEvent e)
             {
                 if (doingDrag)
@@ -185,7 +188,7 @@ public class CarryForwardSetUp extends JComponent
      */
     protected void accept()
     {
-        root.acceptCarryForwardSetup(true);
+        root.acceptCarryForwardSetup();
         root.repaint();
     }
 
@@ -442,7 +445,7 @@ public class CarryForwardSetUp extends JComponent
     {
         private String           id;
         private boolean          isChecked = false;
-        private Rectangle        rect;
+        protected Rectangle        rect;
         private CarryForwardInfo cfi;
         
         public CarryFwdItem(final String id, final CarryForwardInfo cfi, final Rectangle rect)

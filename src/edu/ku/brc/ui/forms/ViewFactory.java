@@ -43,6 +43,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -118,6 +120,7 @@ public class ViewFactory
      */
     protected ViewFactory()
     {
+        // do nothing
     }
 
     /**
@@ -436,10 +439,9 @@ public class ViewFactory
             }
             return cbx;
 
-        } else
-        {
-            throw new RuntimeException("CBX Name for ValComboBoxFromQuery ["+cbxName+"] is empty!");
         }
+        // else
+        throw new RuntimeException("CBX Name for ValComboBoxFromQuery ["+cbxName+"] is empty!");
     }
 
     /**
@@ -557,7 +559,7 @@ public class ViewFactory
                     FormCellLabel cellLabel = (FormCellLabel)cell;
 
                     String lblStr = cellLabel.getLabel();
-                     JLabel        lbl       = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", JLabel.RIGHT);
+                     JLabel        lbl       = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", SwingConstants.RIGHT);
                     //lbl.setFont(boldLabelFont);
                     labelsForHash.put(cellLabel.getLabelFor(), lbl);
 
@@ -597,7 +599,7 @@ public class ViewFactory
 
                     } else if (uiType.equals("label"))
                     {
-                        compToAdd = new JLabel("", JLabel.LEFT);
+                        compToAdd = new JLabel("", SwingConstants.LEFT);
 
                     } else if (uiType.equals("dsptextfield"))
                     {
@@ -738,8 +740,8 @@ public class ViewFactory
 
                         JScrollPane scrollPane = new JScrollPane(ta);
                         insets = scrollPane.getBorder().getBorderInsets(scrollPane);
-                        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-                        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+                        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                         scrollPane.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
 
                         compToAdd = scrollPane;
@@ -748,8 +750,8 @@ public class ViewFactory
                     {
                         JTextArea ta = createTextArea(validator, cellField);
                         JScrollPane scrollPane = new JScrollPane(ta);
-                        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-                        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+                        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
                         addToValidator = validator == null; // might already added to validator
                         compToReg = ta;
@@ -774,8 +776,8 @@ public class ViewFactory
                         JList list = createList(validator, cellField);
 
                         JScrollPane scrollPane = new JScrollPane(list);
-                        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
                         addToValidator = validator == null;
                         compToReg = list;
@@ -811,7 +813,7 @@ public class ViewFactory
                         
                         try
                         {
-                            Class  classObj = Class.forName(classNameStr);
+                            Class<?>  classObj = Class.forName(classNameStr);
                             Object uiObj    = classObj.newInstance();
                             
                             if (!(uiObj instanceof GetSetValueIFace))
@@ -857,7 +859,7 @@ public class ViewFactory
 
                 } else if (cell.getType() == FormCell.CellType.separator)
                 {
-                    compToAdd = null;
+                    // still have compToAdd = null;
                     Component sep = builder.addSeparator(((FormCellSeparator)cell).getLabel(), cc.xyw(colInx, rowInx, cell.getColspan()));
                     if (cell.getName().length() > 0)
                     {
@@ -903,7 +905,7 @@ public class ViewFactory
                     {
                         log.error("buildFormView - Could find subview's with ViewSet["+cellSubView.getViewSetName()+"] ViewName["+subViewName+"]");
                     }
-                    compToAdd = null;
+                    // still have compToAdd = null;
                     colInx += 2;
 
                 } else if (cell.getType() == FormCell.CellType.statusbar)
@@ -932,7 +934,7 @@ public class ViewFactory
                     } else if (panelType.equalsIgnoreCase("buttonbar"))
                     {
 
-                        JButton[] btns = processRows(formViewDef, validator, formViewObj, cellPanel.getRows());
+                        JButton[] btns = processRows(formViewObj, cellPanel.getRows());
                         compToAdd      = com.jgoodies.forms.factories.ButtonBarFactory.buildCenteredBar(btns);
                    }
 
@@ -970,15 +972,11 @@ public class ViewFactory
 
     /**
      * Processes the rows for a button bar.
-     * @param formViewDef formViewDef
-     * @param validator validator
      * @param formViewObj formViewObj
      * @param formRows formRows
      * @return the array of buttons
      */
-    protected JButton[] processRows(final FormViewDef    formViewDef,
-                                    final FormValidator  validator,
-                                    final FormViewObj    formViewObj,
+    protected JButton[] processRows(final FormViewObj    formViewObj,
                                     final List<FormRow>  formRows)
     {
         List<JButton> btns = new ArrayList<JButton>();
@@ -1254,5 +1252,5 @@ public class ViewFactory
         {
             BrowserLauncher.openURL(url);
         }
-    };
+    }
 }

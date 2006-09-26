@@ -48,7 +48,7 @@ public class FormCell implements Comparable<FormCell>
      */
     public FormCell()
     {
-
+        // do nothing
     }
 
     /**
