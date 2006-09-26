@@ -181,7 +181,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         if (debug)
         {
             log.debug(name+" ****** processFormRules  ");
-            Map map = jc.getVars();
+            Map<?,?> map = jc.getVars();
             Object[] keys = map.keySet().toArray();
             for (Object key : keys)
             {
@@ -251,10 +251,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         UIValidator uiv;
         if (valStr == null)
         {
-            uiv = createValidator(id, textField, valType);
+            uiv = createValidator(textField, valType);
         } else
         {
-            uiv = changeListenerOnly ? null : createValidator(id, textField, isRequired, type, valStr);
+            uiv = changeListenerOnly ? null : createValidator(textField, type, valStr);
         }
         DataChangeNotifier dcn = new DataChangeNotifier(id, textField, uiv);
         dcn.addDataChangeListener(this);
@@ -281,7 +281,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * Hooks up generic component to be validated
      * @param comp component to be hooked up
      * @param id id of control
-     * @param isRequired whether the field must be filled in
      * @param valType the type of validation to do
      * @param valStr the validation rule where the subject is its name
      * @param changeListenerOnly indicates whether to create a validator
@@ -289,7 +288,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public DataChangeNotifier hookupComponent(final JComponent       comp,
                                               final String           id,
-                                              final boolean          isRequired,
                                               final UIValidator.Type valType,
                                               final String           valStr,
                                               final boolean          changeListenerOnly)
@@ -302,10 +300,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             if (isNotEmpty(valStr))
             {
-                uiv = createValidator(id, comp, isRequired, valType, valStr);
+                uiv = createValidator(comp, valType, valStr);
             } else
             {
-                uiv = createValidator(id, comp, valType);
+                uiv = createValidator(comp, valType);
             }
         }
         DataChangeNotifier dcn = new DataChangeNotifier(id, comp, uiv);
@@ -424,16 +422,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
     /**
      * Creates a validator for the control (usually a JTextField) that can have a string as a default value
      *
-     * @param componentName the name of the component
      * @param comp the component to be validated (MUST implement UIValidatable)
-     * @param isRequired whether the component must have a value
      * @param valType the type of validation to occur
      * @param valStr the default value
      * @return the validator for the control
      */
-    protected UIValidator createValidator(String          componentName,
-                                         JComponent       comp,
-                                         boolean          isRequired,
+    protected UIValidator createValidator(JComponent       comp,
                                          UIValidator.Type valType,
                                          String           valStr)
     {
@@ -446,20 +440,18 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
             return validator;
 
-        } else
-        {
-            throw new RuntimeException("Component is NOT an UIValidatable "+comp);
         }
+        // else
+        throw new RuntimeException("Component is NOT an UIValidatable "+comp);
     }
 
     /**
      * Create a validator for any generic UI control (defaults to be validated as Type.OK)
-     * @param componentName the name of the component
      * @param comp the component to be validated (MUST implement UIValidatable)
      * @param valType the type of validation to occur
      * @return the validator for the control
      */
-    public UIValidator createValidator(String componentName, JComponent comp, UIValidator.Type valType)
+    public UIValidator createValidator(JComponent comp, UIValidator.Type valType)
     {
         UIValidator validator = new UIValidator(comp, valType);
         validator.setJc(jc);
@@ -529,10 +521,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
             UIValidator uiv = dcn.getUIV();
             if (uiv != null)
             {
-                
-
                 // Make sure we validate the fields that only get validated the type matches
-                if (uiv != null && (validateAll || uiv.getType() == valType))
+                if (validateAll || uiv.getType() == valType)
                 {
                     if (!uiv.validate())
                     {
@@ -550,9 +540,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                             // to see if there are any errors
                             //break;
                         }
-
                     }
-
                 }
             }
         }
@@ -587,9 +575,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void resetFields()
     {
-        for (Enumeration e=dcNotifiers.elements();e.hasMoreElements();)
+        for (Enumeration<DataChangeNotifier> e=dcNotifiers.elements();e.hasMoreElements();)
         {
-            DataChangeNotifier dcn = (DataChangeNotifier)e.nextElement();
+            DataChangeNotifier dcn = e.nextElement();
             //UIValidator        uiv = dcn.getUIV();
             //if (uiv != null && uiv.getType() == UIValidator.Type.OK)
             //{

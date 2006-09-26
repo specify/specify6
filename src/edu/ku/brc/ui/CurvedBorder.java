@@ -42,6 +42,7 @@ public class CurvedBorder extends AbstractBorder
      */
     public CurvedBorder()
     {
+        // do nothing
     }
 
     /**
@@ -76,6 +77,7 @@ public class CurvedBorder extends AbstractBorder
     /* (non-Javadoc)
      * @see javax.swing.border.Border#paintBorder(java.awt.Component, java.awt.Graphics, int, int, int, int)
      */
+    @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int w, int h)
     {
         g.setColor(getBorderColor());
@@ -86,6 +88,7 @@ public class CurvedBorder extends AbstractBorder
     /* (non-Javadoc)
      * @see javax.swing.border.Border#getBorderInsets(java.awt.Component)
      */
+    @Override
     public Insets getBorderInsets(Component c)
     {
         return new Insets(borderWidth, borderWidth, borderWidth, borderWidth);
@@ -94,6 +97,7 @@ public class CurvedBorder extends AbstractBorder
     /* (non-Javadoc)
      * @see javax.swing.border.AbstractBorder#getBorderInsets(java.awt.Component, java.awt.Insets)
      */
+    @Override
     public Insets getBorderInsets(Component c, Insets i)
     {
         i.left = i.right = i.bottom = i.top = borderWidth;
@@ -103,6 +107,7 @@ public class CurvedBorder extends AbstractBorder
     /* (non-Javadoc)
      * @see javax.swing.border.Border#isBorderOpaque()
      */
+    @Override
     public boolean isBorderOpaque()
     {
         return true;

@@ -45,10 +45,10 @@ public class GhostDropAdapter extends MouseAdapter
 
     protected void fireGhostDropEvent(GhostDropEvent evt) 
     {
-        Iterator it = listeners.iterator();
+        Iterator<GhostDropListener> it = listeners.iterator();
         while (it.hasNext()) 
         {
-            ((GhostDropListener) it.next()).ghostDropped(evt);
+            it.next().ghostDropped(evt);
         }
     }
     

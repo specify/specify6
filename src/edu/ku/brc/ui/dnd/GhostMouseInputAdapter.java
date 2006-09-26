@@ -119,6 +119,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     /* (non-Javadoc)
      * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
      */
+    @Override
     public void mousePressed(MouseEvent e)
     {
         //System.out.println("mousePressed");
@@ -128,6 +129,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     /* (non-Javadoc)
      * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
      */
+    @Override
     public void mouseReleased(MouseEvent e)
     {
         //System.out.println(e.getButton()+" mouseReleased "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked()+"  dragButtonIndex "+dragButtonIndex);
@@ -223,6 +225,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     /**
      * Updates (draws) the glass pane as the image is dragged
      */
+    @Override
     public void mouseDragged(MouseEvent e)
     {
         //System.out.println("mouseDragged "+DragAndDropLock.isDragAndDropStarted()+" btn "+e.getButton());
@@ -300,10 +303,10 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
     protected void fireGhostDropEvent(GhostDropEvent evt)
     {
-        Iterator it = listeners.iterator();
+        Iterator<GhostDropListener> it = listeners.iterator();
         while (it.hasNext())
         {
-            ((GhostDropListener) it.next()).ghostDropped(evt);
+            it.next().ghostDropped(evt);
         }
     }
 

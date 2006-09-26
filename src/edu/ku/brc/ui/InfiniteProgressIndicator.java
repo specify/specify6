@@ -248,6 +248,7 @@ public class InfiniteProgressIndicator extends JComponent implements MouseListen
         }
     }
 
+    @Override
     public void paintComponent(Graphics g)
     {
         if (started)
@@ -408,18 +409,28 @@ public class InfiniteProgressIndicator extends JComponent implements MouseListen
         }
     }
 
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(MouseEvent e)
+    {
+        // do nothing
     }
 
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent e)
+    {
+        // do nothing
     }
 
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e)
+    {
+        // do nothing
     }
 
-    public void mouseEntered(MouseEvent e) {
+    public void mouseEntered(MouseEvent e)
+    {
+        // do nothing
     }
 
-    public void mouseExited(MouseEvent e) {
+    public void mouseExited(MouseEvent e)
+    {
+        // do nothing
     }
 }

@@ -45,7 +45,8 @@ public class CommandDispatcher
      *
      */
     protected CommandDispatcher()
-    { 
+    {
+        // do nothing
     }
     
     /**
@@ -117,10 +118,9 @@ public class CommandDispatcher
                 }
             }
             return false;
-        } else
-        {
-            throw new RuntimeException("Type of Listeners couldn't be found["+cmdAction.getType()+"]");
-        } 
+        }
+        // else
+        throw new RuntimeException("Type of Listeners couldn't be found["+cmdAction.getType()+"]"); 
     }
 
 }

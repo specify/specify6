@@ -36,6 +36,7 @@ public class TableColumnHeaderListener extends MouseAdapter
     protected int columnIndex     = -1;
     protected int leftColumnIndex = -1;
     
+    @Override
     public void mouseClicked(MouseEvent evt)
     {
         JTable table = ((JTableHeader) evt.getSource()).getTable();

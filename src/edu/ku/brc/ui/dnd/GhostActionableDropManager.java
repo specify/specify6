@@ -43,6 +43,7 @@ public class GhostActionableDropManager extends AbstractGhostDropManager
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostDropListener#ghostDropped(edu.ku.brc.ui.dnd.GhostDropEvent)
      */
+    @Override
     public void ghostDropped(GhostDropEvent e) 
     {
         Point p = getTranslatedPoint(e.getDropLocation());

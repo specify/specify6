@@ -117,6 +117,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.JAutoCompTextField#init()
      */
+    @Override
     public void init()
     {
         super.init();
@@ -132,6 +133,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         addFocusListener(new FocusAdapter() {
+            @Override
             public void focusLost(FocusEvent e)
             {
                 isNew = false;
@@ -152,6 +154,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -169,6 +172,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
@@ -180,6 +184,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
      */
+    @Override
     public void setText(String text)
     {
         document.setIgnoreNotify(true);

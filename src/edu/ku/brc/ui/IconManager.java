@@ -79,6 +79,7 @@ public class IconManager
         public Integer size()         { return size; }
         public boolean faded()        { return faded; }
         public boolean blackWhite()   { return blackWhite; }
+        @Override
         public String  toString()     { return "Std" + Integer.toString(size) + (faded ? "f":"") + (blackWhite ? "BW":""); }
         public void setSize(int size) { this.size = size; }
         public void setFaded(boolean faded) { this.faded = faded; }
@@ -89,7 +90,7 @@ public class IconManager
     protected static final String      relativePath = "images/";
     protected static final IconManager instance     = new IconManager();
 
-    protected Class                        appClass = null;
+    protected Class<?>                        appClass = null;
     protected Hashtable<String, IconEntry> entries = new Hashtable<String, IconEntry>();
 
     /**
@@ -98,6 +99,7 @@ public class IconManager
      */
     protected IconManager()
     {
+        // do nothing
     }
 
     /**
@@ -106,7 +108,7 @@ public class IconManager
      * using any methods in the IconManager.
      * @param appClass the application's Class object
      */
-    public static void setApplicationClass(Class appClass)
+    public static void setApplicationClass(Class<?> appClass)
     {
         instance.appClass = appClass;
 
@@ -133,13 +135,7 @@ public class IconManager
         }
 
         ImageIcon icon = new ImageIcon(url);
-
-        if (icon != null)
-        {
-            return register(iconName, icon, id);
-        }
-
-        return null;
+        return register(iconName, icon, id);
     }
 
     /**
@@ -157,10 +153,9 @@ public class IconManager
             instance.entries.put(iconName, entry);
             return entry;
 
-        } else
-        {
-            throw new RuntimeException("Can't register null icon name["+iconName+"] Size:"+id.toString());
         }
+        // else
+        throw new RuntimeException("Can't register null icon name["+iconName+"] Size:"+id.toString());
     }
 
     public static IconSize getIconSize(int size, boolean bw, boolean faded)
@@ -207,22 +202,14 @@ public class IconManager
      */
     public static ImageIcon getScaledIcon(final ImageIcon icon, final IconSize iconSize, final IconSize scaledIconSize)
     {
-
         if (icon != null)
         {
-            ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(), scaledIconSize.size(), Image.SCALE_SMOOTH));
-            if (scaledIcon != null)
-            {
-                return scaledIcon;
-            } else
-            {
-                log.error("Can't scale icon ["+iconSize+"] to ["+scaledIconSize+"]");
-            }
-
-        } else
-        {
-            log.error("Couldn't find icon ["+iconSize+"] to scale to ["+scaledIconSize+"]");
+            ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(),
+                    scaledIconSize.size(), Image.SCALE_SMOOTH));
+            return scaledIcon;
         }
+        // else
+        log.error("Couldn't find icon [" + iconSize + "] to scale to [" + scaledIconSize + "]");
         return null;
     }
 
@@ -249,17 +236,16 @@ public class IconManager
                 if (id.size() != 32)
                 {
                     return entry.getScaledIcon(getIconSize(32, id.blackWhite(), id.faded()), id);
+                }
+                // else
+                // last ditch effort to see if it is a non-Standard size
+                icon = entry.getIcon(IconSize.NonStd);
+                if (icon == null)
+                {
+                    log.error("Couldn't find Std size for icon ["+ iconName+"] is not registered.");
                 } else
                 {
-                    // last ditch effort to see if it is a non-Standard size
-                    icon = entry.getIcon(IconSize.NonStd);
-                    if (icon == null)
-                    {
-                        log.error("Couldn't find Std size for icon ["+ iconName+"] is not registered.");
-                    } else
-                    {
-                        return icon;
-                    }
+                    return icon;
                 }
             } else
             {
@@ -301,8 +287,8 @@ public class IconManager
             Element root  = XMLHelper.readDOMFromConfigDir("icons.xml");
             if (root != null)
             {
-                List boxes = root.selectNodes("/icons/icon");
-                for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
+                List<?> boxes = root.selectNodes("/icons/icon");
+                for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
                     org.dom4j.Element iconElement = (org.dom4j.Element) iter.next();
 

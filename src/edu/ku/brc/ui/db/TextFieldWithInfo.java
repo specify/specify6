@@ -86,7 +86,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     protected String             keyName;
     protected String             format;
     protected String             formatName;
-    protected Class              classObj    = null;
+    protected Class<?>              classObj    = null;
     protected DataGetterForObj   getter      = null;
     protected String             displayInfoDialogName;
     protected String[]           fieldNames;
@@ -122,7 +122,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
         textField = new JTextField();
 
-        init(false, objTitle);
+        init(objTitle);
     }
 
     /**
@@ -178,6 +178,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     /* (non-Javadoc)
      * @see java.awt.Component#requestFocus()
      */
+    @Override
     public void requestFocus()
     {
         textField.requestFocus();
@@ -186,6 +187,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
@@ -199,10 +201,9 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
     /**
      * Creates the UI for the ComboBox.
-     * @param makeEditable whether it can be editable
      * @param objTitle the title of one object needed for the Info Button
      */
-    public void init(final boolean makeEditable, final String objTitle)
+    public void init(final String objTitle)
     {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
@@ -255,6 +256,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);

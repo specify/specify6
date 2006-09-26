@@ -39,7 +39,7 @@ public class PickListItem implements java.io.Serializable, Comparable<PickListIt
     /** default constructor */
     public PickListItem()
     {
-
+        // do nothing
     }
 
     // Property accessors
@@ -84,12 +84,15 @@ public class PickListItem implements java.io.Serializable, Comparable<PickListIt
         {
             return 0;
 
-        } else
-        {
-            return title.compareTo(obj.title);
         }
+        // else
+        return title.compareTo(obj.title);
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
     public String toString()
     {
         return title;

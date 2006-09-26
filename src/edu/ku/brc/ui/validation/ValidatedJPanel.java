@@ -92,6 +92,7 @@ public class ValidatedJPanel extends JPanel
     /* (non-Javadoc)
      * @see java.lang.Object#finalize()
      */
+    @Override
     public void finalize()
     {
         cleanUp();

@@ -22,10 +22,10 @@ import java.util.Comparator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
@@ -41,14 +41,14 @@ import javax.swing.table.TableModel;
 public class SortableTableModel implements TableModel, TableModelListener
 {
 
-    protected EventListenerList listenerList = new EventListenerList();
-    protected TableModel        delegatedModel;
-    protected int[]             sortedIndicies;
-    protected int               sortColumn;
-    protected Comparator        comparator;
-    protected Comparator[]      comparators;
-    protected boolean[]         sortDirection;
-    protected boolean           isSorted         = false;
+    protected EventListenerList    listenerList = new EventListenerList();
+    protected TableModel           delegatedModel;
+    protected int[]                sortedIndicies;
+    protected int                  sortColumn;
+    protected Comparator<Object>   comparator;
+    protected Comparator[] comparators;
+    protected boolean[]            sortDirection;
+    protected boolean              isSorted     = false;
 
     /**
      * @param tm
@@ -100,10 +100,9 @@ public class SortableTableModel implements TableModel, TableModelListener
         {
             return delegatedModel.getValueAt(0, column).getClass();
             
-        } else 
-        {
-            return Object.class;
         }
+        // else
+        return Object.class;
     }
     
     public TableModel getDelegateModel()
@@ -151,7 +150,7 @@ public class SortableTableModel implements TableModel, TableModelListener
      * @param c
      * @param i
      */
-    protected void setComparatorForColumn(Comparator c, int i)
+    protected void setComparatorForColumn(Comparator<Object> c, int i)
     {
         // range check
         if (i > comparators.length)
@@ -167,6 +166,7 @@ public class SortableTableModel implements TableModel, TableModelListener
     /**
      * @param i
      */
+    @SuppressWarnings("unchecked")
     public void setSortColumn(int i)
     {
         sortColumn = i;
@@ -290,12 +290,12 @@ public class SortableTableModel implements TableModel, TableModelListener
 
     // comparator which applies current comparator's compare rule
     // to value 2 in 
-    class SortingDelegateComparator extends Object implements Comparator
+    class SortingDelegateComparator extends Object implements Comparator<Object>
     {
-        protected Comparator comp;
+        protected Comparator<Object> comp;
         protected int columnIndex;
 
-        public SortingDelegateComparator(Comparator c, int columnIndex)
+        public SortingDelegateComparator(Comparator<Object> c, int columnIndex)
         {
             comp = c;
             this.columnIndex = columnIndex;
@@ -341,7 +341,7 @@ public class SortableTableModel implements TableModel, TableModelListener
             downIcon  = IconManager.getScaledIcon(IconManager.getIcon("DownArrow", IconManager.IconSize.Std16), IconManager.IconSize.Std16, IconManager.IconSize.Std8);
             upIcon    = IconManager.getScaledIcon(IconManager.getIcon("UpArrow", IconManager.IconSize.Std16), IconManager.IconSize.Std16, IconManager.IconSize.Std8);
             blankIcon = IconManager.getScaledIcon(IconManager.getIcon("BlankIcon", IconManager.IconSize.Std16), IconManager.IconSize.Std16, IconManager.IconSize.Std8);
-            this.setHorizontalTextPosition(DefaultTableCellRenderer.LEFT);
+            this.setHorizontalTextPosition(SwingConstants.LEFT);
             //setBorder(BorderFactory.createBevelBorder(SortableTableModel.this.hashCode(), getBackground(), getForeground()));
             
         }
@@ -357,10 +357,29 @@ public class SortableTableModel implements TableModel, TableModelListener
         
         
         // The following methods override the defaults for performance reasons
-        public void validate() {}
-        public void revalidate() {}
-        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
-        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
+        @Override
+        public void validate()
+        {
+            // do nothing
+        }
+
+        @Override
+        public void revalidate()
+        {
+            // do nothing
+        }
+
+        @Override
+        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue)
+        {
+            // do nothing
+        }
+
+        @Override
+        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue)
+        {
+            // do nothing
+        }
     }
-    
+
 }

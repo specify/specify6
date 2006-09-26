@@ -39,6 +39,7 @@ public class DndDeletableListCellRenderer extends JLabel implements ListCellRend
      */
     public DndDeletableListCellRenderer()
     {
+        // do nothing
     }
     
     // This is the only method defined by ListCellRenderer.

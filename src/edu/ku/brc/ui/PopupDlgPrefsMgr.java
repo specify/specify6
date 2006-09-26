@@ -39,7 +39,7 @@ public class PopupDlgPrefsMgr
 	 */
 	public PopupDlgPrefsMgr()
 	{
-		
+		// do nothing
 	}
 	
 	/**

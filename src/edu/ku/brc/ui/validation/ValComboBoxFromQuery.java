@@ -49,7 +49,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -121,7 +121,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected String             keyName;
     protected String             format;
     protected String             formatName;
-    protected Class              classObj = null;
+    protected Class<?>              classObj = null;
     protected DataGetterForObj   getter   = null;
     protected String             searchDialogName;
     protected String[]           fieldNames;
@@ -171,7 +171,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox = new JComboBoxFromQuery(sql, format);
         comboBox.setAllowNewValues(true);
 
-        init(false, objTitle);
+        init(objTitle);
     }
 
     /**
@@ -217,12 +217,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox = new JComboBoxFromQuery(tableName, idColumn, keyColumn, displayColumn, format);
         comboBox.setAllowNewValues(true);
 
-        init(false, objTitle);
+        init(objTitle);
     }
 
     /* (non-Javadoc)
      * @see java.awt.Component#requestFocus()
      */
+    @Override
     public void requestFocus()
     {
         comboBox.requestFocus();
@@ -231,6 +232,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
@@ -267,10 +269,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
     /**
      * Creates the UI for the ComboBox.
-     * @param makeEditable whether it can be editable
      * @param objTitle the title of one object needed for the Info Button
      */
-    public void init(final boolean makeEditable, final String objTitle)
+    public void init(final String objTitle)
     {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
@@ -322,6 +323,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         comboBox.getTextField().addFocusListener(new FocusAdapter()
                 {
+                    @Override
                     public void focusGained(FocusEvent e)
                     {
                         for (FocusListener l : focusListeners)
@@ -330,6 +332,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                         }
                     }
 
+                    @Override
                     public void focusLost(FocusEvent e)
                     {
                         isNew = false;
@@ -479,6 +482,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -499,6 +503,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#addFocusListener(java.awt.event.FocusListener)
      */
+    @Override
     public void addFocusListener(FocusListener l)
     {
         focusListeners.add(l);
@@ -507,6 +512,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#removeFocusListener(java.awt.event.FocusListener)
      */
+    @Override
     public void removeFocusListener(FocusListener l)
     {
         focusListeners.remove(l);
@@ -701,6 +707,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void intervalAdded(ListDataEvent e)
     {
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -708,6 +715,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void intervalRemoved(ListDataEvent e)
     {
+        // do nothing
     }
 
 
@@ -735,8 +743,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             Session session = HibernateUtil.getSessionFactory().openSession();
             Criteria criteria = session.createCriteria(classObj);
-            criteria.add(Expression.eq(idName, id));
-            List list = criteria.list();
+            criteria.add(Restrictions.eq(idName, id));
+            List<?> list = criteria.list();
 
             if (list.size() != 0)
             {

@@ -93,6 +93,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     protected ValFormattedTextField()
     {
+        // do nothing
     }
 
     /**
@@ -123,12 +124,14 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         setDocument(document);
         addFocusListener(new FocusAdapter()
                 {
+                    @Override
                     public void focusGained(FocusEvent e)
                     {
                         ((JTextField)e.getSource()).selectAll();
                         repaint();
                     }
 
+                    @Override
                     public void focusLost(FocusEvent e)
                     {
                         isNew = false;
@@ -167,6 +170,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -197,6 +201,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
@@ -207,6 +212,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
      */
+    @Override
     public void setText(String text)
     {
         document.setIgnoreNotify(true);
@@ -411,10 +417,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             }
             return null;
 
-        } else
-        {
-            return getText();
         }
+        // else
+        return getText();
 
     }
 
@@ -529,6 +534,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         /* (non-Javadoc)
          * @see javax.swing.text.Document#remove(int, int)
          */
+        @Override
         public void remove(int offset, int len)
         {
             try
@@ -545,6 +551,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         /* (non-Javadoc)
          * @see javax.swing.text.Document#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
          */
+        @Override
         public void insertString(final int offset, final String strArg, final AttributeSet attr) throws BadLocationException
         {
             String str = strArg;

@@ -157,6 +157,7 @@ public class JComboBoxFromQuery extends JComboBox
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setSelectedIndex(int)
      */
+    @Override
     public void setSelectedIndex(int index)
     {
         super.setSelectedIndex(index);
@@ -184,10 +185,9 @@ public class JComboBoxFromQuery extends JComboBox
         if (idList.size() > 0 && getSelectedIndex() > -1)
         {
             return idList.get(getSelectedIndex());
-        } else
-        {
-            return null;
         }
+        // else
+        return null;
     }
 
     /**
@@ -357,6 +357,7 @@ public class JComboBoxFromQuery extends JComboBox
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setEditor(javax.swing.ComboBoxEditor)
      */
+    @Override
     public void setEditor(ComboBoxEditor anEditor)
     {
         super.setEditor(anEditor);
@@ -366,6 +367,7 @@ public class JComboBoxFromQuery extends JComboBox
             tf = (JTextField) anEditor.getEditorComponent();
             tf.addFocusListener(new FocusAdapter()
             {
+                @Override
                 public void focusGained(FocusEvent e)
                 {
                     searchStopLength = Integer.MAX_VALUE;
@@ -375,11 +377,15 @@ public class JComboBoxFromQuery extends JComboBox
                         try
                         {
                             dbConnection.close();
-                        } catch (SQLException ex) {};
+                        } catch (SQLException ex)
+                        {
+                            // do nothing
+                        }
                     }
                     dbConnection = DBConnection.getConnection();
                 }
 
+                @Override
                 public void focusLost(FocusEvent e)
                 {
                     tf.setSelectionStart(0);
@@ -388,7 +394,10 @@ public class JComboBoxFromQuery extends JComboBox
                     try
                     {
                         dbConnection.close();
-                    } catch (SQLException ex) {};
+                    } catch (SQLException ex)
+                    {
+                        // do nothing
+                    }
                     dbConnection = null;
                     if (tf.getText().length() == 0)
                     {
@@ -402,11 +411,13 @@ public class JComboBoxFromQuery extends JComboBox
             {
                 protected int prevCaretPos = -1;
 
+                @Override
                 public void keyPressed(KeyEvent ev)
                 {
                     prevCaretPos = tf.getCaretPosition();
                 }
 
+                @Override
                 public void keyReleased(KeyEvent ev)
                 {
                     String textStr = tf.getText();
@@ -433,19 +444,18 @@ public class JComboBoxFromQuery extends JComboBox
                             oldLength = tf.getText().length();
                             return;
 
-                        } else
+                        }
+                        // else
+                        if (foundMatch)
                         {
-                            if (foundMatch)
-                            {
-                                tf.setText(textStr.substring(0, len-1));
+                            tf.setText(textStr.substring(0, len-1));
 
-                            } else if (len > 0)
-                            {
-                                tf.setText(textStr.substring(0, len-1));
-                                lookForMatch();
-                                oldLength = tf.getText().length();
-                                return;
-                            }
+                        } else if (len > 0)
+                        {
+                            tf.setText(textStr.substring(0, len-1));
+                            lookForMatch();
+                            oldLength = tf.getText().length();
+                            return;
                         }
 
                     } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) &&

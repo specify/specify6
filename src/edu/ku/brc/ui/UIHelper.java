@@ -41,6 +41,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
@@ -297,10 +298,9 @@ public final class UIHelper
             if (valObj instanceof String)
             {
                 return (String)valObj;
-            } else
-            {
-                log.error("getString - Class type is "+valObj.getClass().getName()+" should be String");
             }
+            // else
+            log.error("getString - Class type is "+valObj.getClass().getName()+" should be String");
         } else
         {
             log.error("getString - Result Object is null for["+valObj+"] in getString");
@@ -314,7 +314,7 @@ public final class UIHelper
      * @param cls the class that the string is to be converted t
      * @return the data object
      */
-    public static Object convertDataFromString(final String dataStr, final Class cls)
+    public static <T> Object convertDataFromString(final String dataStr, final Class<T> cls)
     {
         if (cls == Integer.class)
         {
@@ -382,7 +382,7 @@ public final class UIHelper
      * @param classObj the class in questions
      * @return the data if it is derived from or implements, can it be cast to
      */
-    public static Object getDataForClass(final Object data, Class classObj)
+    public static Object getDataForClass(final Object data, Class<?> classObj)
     {
         // Short circut if all they are interested in is the generic "Object"
         if (classObj == Object.class)
@@ -400,11 +400,11 @@ public final class UIHelper
             }
         }
 
-        Vector<Class> classes = new Vector<Class>();
+        Vector<Class<?>> classes = new Vector<Class<?>>();
 
         // First Check interfaces
-        Class[] theInterfaces = data.getClass().getInterfaces();
-        for (Class co : theInterfaces)
+        Class<?>[] theInterfaces = data.getClass().getInterfaces();
+        for (Class<?> co : theInterfaces)
         {
             classes.add(co);
         }
@@ -416,7 +416,7 @@ public final class UIHelper
         classes.clear();
 
         // Now Check super classes
-        Class superclass = data.getClass().getSuperclass();
+        Class<?> superclass = data.getClass().getSuperclass();
         while (superclass != null)
         {
             classes.addElement(superclass);
@@ -463,7 +463,7 @@ public final class UIHelper
      * @param includeCutCopyPaste
      * @return the menubar
      */
-    public static JMenuBar getBasicMenuBar(final Object app, final boolean isPlatformSpecific, final boolean includeCutCopyPaste)
+    public static JMenuBar getBasicMenuBar(final boolean includeCutCopyPaste)
     {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = createMenu(menuBar, getResourceString("FileMenu"), getResourceString("FileMneu"));
@@ -647,10 +647,8 @@ public final class UIHelper
         {
             return getFieldValues(fieldNames, dataObj, getter);
         }
-        else
-        {
-        	return null;
-        }
+        // else
+        return null;
     }
 
 
@@ -773,14 +771,13 @@ public final class UIHelper
                 
             } catch (SQLException ex)
             {
-
+                // do nothing
             }
             return true;
 
-        } else
-        {
-            return false;
         }
+        // else
+        return false;
     }
 
     /**
@@ -807,56 +804,55 @@ public final class UIHelper
 
             return dlg.getDatabaseLoginPanel();
 
-        } else
+        }
+        // else
+        class DBListener implements DatabaseLoginListener
         {
-            class DBListener implements DatabaseLoginListener
+            protected JFrame                frame;
+            protected DatabaseLoginListener frameDBListener;
+            protected boolean               doAutoCloseOfListener;
+
+            public DBListener(JFrame frame, DatabaseLoginListener frameDBListener, boolean doAutoCloseOfListener)
             {
-                protected JFrame                frame;
-                protected DatabaseLoginListener frameDBListener;
-                protected boolean               doAutoCloseOfListener;
-
-                public DBListener(JFrame frame, DatabaseLoginListener frameDBListener, boolean doAutoCloseOfListener)
-                {
-                    this.frame                 = frame;
-                    this.frameDBListener       = frameDBListener;
-                    this.doAutoCloseOfListener = doAutoCloseOfListener;
-                }
-                
-                public void loggedIn(final String databaseName, final String userName)
-                {
-                    if (doAutoCloseOfListener)
-                    {
-                        frame.setVisible(false);
-                    }
-                    frameDBListener.loggedIn(databaseName, userName);
-                }
-
-                public void cancelled()
+                this.frame                 = frame;
+                this.frameDBListener       = frameDBListener;
+                this.doAutoCloseOfListener = doAutoCloseOfListener;
+            }
+            
+            public void loggedIn(final String databaseName, final String userName)
+            {
+                if (doAutoCloseOfListener)
                 {
                     frame.setVisible(false);
-                    frameDBListener.cancelled();
                 }
+                frameDBListener.loggedIn(databaseName, userName);
             }
-            JFrame.setDefaultLookAndFeelDecorated(false);
 
-            JFrame frame = new JFrame(getResourceString("logintitle"));
-            DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
-            panel.setAutoClose(doAutoClose);
-            panel.setWindow(frame);
-            frame.setContentPane(panel);
-            frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
-            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-            frame.pack();
-
-            if (doAutoLoginNow)
+            public void cancelled()
             {
-                panel.doLogin();
+                frame.setVisible(false);
+                frameDBListener.cancelled();
             }
-            UIHelper.centerAndShow(frame);
-
-            return panel;
         }
+        JFrame.setDefaultLookAndFeelDecorated(false);
+
+        JFrame frame = new JFrame(getResourceString("logintitle"));
+        DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
+        panel.setAutoClose(doAutoClose);
+        panel.setWindow(frame);
+        frame.setContentPane(panel);
+        frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+        frame.pack();
+
+        if (doAutoLoginNow)
+        {
+            panel.doLogin();
+        }
+        UIHelper.centerAndShow(frame);
+
+        return panel;
 
     }
 

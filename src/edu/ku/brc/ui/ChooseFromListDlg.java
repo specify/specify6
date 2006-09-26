@@ -37,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -153,7 +154,7 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
         
         if (desc != null)
         {
-            panel.add(new JLabel(desc, JLabel.CENTER), BorderLayout.NORTH);
+            panel.add(new JLabel(desc, SwingConstants.CENTER), BorderLayout.NORTH);
         }
 
         try
@@ -172,6 +173,7 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
             }
             list.setVisibleRowCount(10);
             list.addMouseListener(new MouseAdapter() {
+                @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() == 2) {
                         okBtn.doClick(); //emulate button click

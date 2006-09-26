@@ -27,7 +27,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 /**
  * A "liquid" button that default to a gradeient filled square button.
@@ -84,6 +84,7 @@ public class VectorButton extends JButton implements MouseListener
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
+    @Override
     public Dimension getPreferredSize()
     {
         String text = getText();
@@ -99,6 +100,7 @@ public class VectorButton extends JButton implements MouseListener
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
+    @Override
     public void paintComponent(Graphics g)
     {
         Graphics2D g2 = (Graphics2D)g;
@@ -149,7 +151,7 @@ public class VectorButton extends JButton implements MouseListener
         drawText(w,h,scale,text,g2);
         if (isDrawHighlight)
         {
-            drawHighlight(w,h,scale,base,g2);
+            drawHighlight(w,scale,g2);
         }
 
         if (isBorderPainted())
@@ -212,7 +214,7 @@ public class VectorButton extends JButton implements MouseListener
         int fw = g2.getFontMetrics().stringWidth(text);
         int fh = g2.getFontMetrics().getAscent() - g2.getFontMetrics().getDescent();
 
-        int textx = this.getHorizontalAlignment() == JLabel.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
+        int textx = this.getHorizontalAlignment() == SwingConstants.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
         //int textx = (w-fw)/2;//this.getHorizontalAlignment() == JLabel.LEFT ? (int)(w-scale*.2f) : (w-fw)/2;
         int texty = h/2 + fh/2;
 
@@ -226,7 +228,7 @@ public class VectorButton extends JButton implements MouseListener
     }
 
 
-    protected void drawHighlight(int w, int h, float scale, Color base, Graphics2D g2)
+    protected void drawHighlight(int w, float scale, Graphics2D g2)
     {
         // create the highlight
         GradientPaint highlight = new GradientPaint(
@@ -307,12 +309,26 @@ public class VectorButton extends JButton implements MouseListener
 
     /* mouse listener implementation */
     protected boolean pressed = false;
-    public void mouseExited(MouseEvent evt) { }
-    public void mouseEntered(MouseEvent evt) { }
-    public void mouseClicked(MouseEvent evt) { }
-    public void mouseReleased(MouseEvent evt) {
+    public void mouseExited(MouseEvent evt)
+    {
+        // do nothing
+    }
+
+    public void mouseEntered(MouseEvent evt)
+    {
+        // do nothing
+    }
+
+    public void mouseClicked(MouseEvent evt)
+    {
+        // do nothing
+    }
+
+    public void mouseReleased(MouseEvent evt)
+    {
         pressed = false;
     }
+    
     public void mousePressed(MouseEvent evt)
     {
         pressed = true;
@@ -359,11 +375,13 @@ public class VectorButton extends JButton implements MouseListener
         textColorShadow = new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 70);
     }
 
+    @Override
     public boolean isBorderPainted()
     {
         return isBorderPainted;
     }
 
+    @Override
     public void setBorderPainted(boolean isBorderPainted)
     {
         this.isBorderPainted = isBorderPainted;

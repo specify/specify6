@@ -274,10 +274,12 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
             this.imageIcon  = imageIcon;
         }
 
+        @Override
         public Dimension getPreferredSize()
         {
             return preferredSize;
         }
+        @Override
         public void paint(Graphics g)
         {
            super.paint(g);

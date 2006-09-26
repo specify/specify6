@@ -30,7 +30,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -91,6 +91,7 @@ public class GradiantButton extends JButton implements MouseListener
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
+    @Override
     public Dimension getPreferredSize() 
     {
         String text = getText();
@@ -106,6 +107,7 @@ public class GradiantButton extends JButton implements MouseListener
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g) 
     {        
         Graphics2D g2 = (Graphics2D)g;
@@ -168,7 +170,7 @@ public class GradiantButton extends JButton implements MouseListener
         int fw = g2.getFontMetrics().stringWidth(text);
         int fh = g2.getFontMetrics().getAscent() - g2.getFontMetrics().getDescent();
         
-        int textx = this.getHorizontalAlignment() == JLabel.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
+        int textx = this.getHorizontalAlignment() == SwingConstants.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
         int texty = h/2 + fh/2;
 
         // draw the text
@@ -226,7 +228,10 @@ public class GradiantButton extends JButton implements MouseListener
     { 
         UICacheManager.displayStatusBarText(itself.getToolTipText());
     }
-    public void mouseClicked(MouseEvent evt) { }
+    public void mouseClicked(MouseEvent evt)
+    {
+        // do nothing
+    }
     
     public void mouseReleased(MouseEvent evt) 
     { 

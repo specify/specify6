@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -185,7 +186,7 @@ public class DatabaseLoginPanel extends JPanel
     protected int addLine(final String label, final JComponent comp, final PanelBuilder pb, final CellConstraints cc, final int y)
     {
         int yy = y;
-        pb.add(new JLabel(label != null ? getResourceString(label)+":" : " ", JLabel.RIGHT), cc.xy(1, yy));
+        pb.add(new JLabel(label != null ? getResourceString(label)+":" : " ", SwingConstants.RIGHT), cc.xy(1, yy));
         pb.add(comp, cc.xy(3, yy));
         yy += 2;
         return yy;
@@ -365,7 +366,8 @@ public class DatabaseLoginPanel extends JPanel
         svPickList.setSelectedIndex();
 
         servers.getTextField().addKeyListener(new KeyAdapter()
-                {
+        {
+            @Override
             public void keyReleased(KeyEvent e)
             {
                 updateUIControls();
@@ -373,7 +375,8 @@ public class DatabaseLoginPanel extends JPanel
         });
 
         databases.getTextField().addKeyListener(new KeyAdapter()
-                {
+        {
+            @Override
             public void keyReleased(KeyEvent e)
             {
                 updateUIControls();
@@ -429,6 +432,7 @@ public class DatabaseLoginPanel extends JPanel
     protected void addFocusListenerForTextComp(final JTextComponent textField)
     {
         textField.addFocusListener(new FocusAdapter(){
+            @Override
             public void focusLost(FocusEvent e)
             {
                 updateUIControls();
@@ -472,6 +476,7 @@ public class DatabaseLoginPanel extends JPanel
             {
                 this.checkForRetLocal = checkForRetArg;
             }
+            @Override
             public void keyPressed(KeyEvent e)
             {
                 updateUIControls();
@@ -657,6 +662,7 @@ public class DatabaseLoginPanel extends JPanel
             long    eTime;
             boolean timeOK = false;
 
+            @Override
             public Object construct()
             {
                 eTime = System.currentTimeMillis();
@@ -692,6 +698,7 @@ public class DatabaseLoginPanel extends JPanel
             }
 
             //Runs on the event-dispatching thread.
+            @Override
             public void finished()
             {
 
@@ -806,10 +813,9 @@ public class DatabaseLoginPanel extends JPanel
         {
             return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getConnectionStr(getServerName(), getDatabaseName());
 
-        } else
-        {
-            return null; // we should never get here
         }
+        // else
+        return null; // we should never get here
     }
 
     /**
@@ -821,10 +827,9 @@ public class DatabaseLoginPanel extends JPanel
         {
             return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getDialectClassName();
 
-        } else
-        {
-            return null; // we should never get here
         }
+        // else
+        return null; // we should never get here
     }
 
     /**
@@ -836,10 +841,9 @@ public class DatabaseLoginPanel extends JPanel
         {
             return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getDriverClassName();
 
-        } else
-        {
-            return null; // we should never get here
         }
+        // else
+        return null; // we should never get here
     }
 
 
@@ -974,6 +978,7 @@ public class DatabaseLoginPanel extends JPanel
         /* (non-Javadoc)
          * @see edu.ku.brc.ui.db.PickListDBAdapter#save()
          */
+        @Override
         public void save()
         {
             log.debug("Saving PickList");
@@ -1017,6 +1022,7 @@ public class DatabaseLoginPanel extends JPanel
             //log.info("Creating PW: "+count+"  "+this.totalCount);
         }
 
+        @Override
         public Object construct()
         {
             count++;
@@ -1024,7 +1030,10 @@ public class DatabaseLoginPanel extends JPanel
             try
             {
                 Thread.sleep(1000 / timesASecond);
-            } catch (Exception ex) {}
+            } catch (Exception ex)
+            {
+                // do nothing
+            }
 
             return null;
         }
@@ -1035,6 +1044,7 @@ public class DatabaseLoginPanel extends JPanel
         }
 
         //Runs on the event-dispatching thread.
+        @Override
         public void finished()
         {
             if (!stop)

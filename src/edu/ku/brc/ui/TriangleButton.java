@@ -50,6 +50,7 @@ public class TriangleButton extends GradiantButton
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g) 
     {       
         super.paint(g);
@@ -123,6 +124,7 @@ public class TriangleButton extends GradiantButton
     /* (non-Javadoc)
      * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
      */
+    @Override
     public void mouseClicked(MouseEvent evt) 
     { 
         //isDown = !isDown;

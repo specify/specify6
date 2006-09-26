@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -46,10 +47,9 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
 
     /**
      * CReate a FormValidator.
-     * @param name the name of the validator (mostly for debug purposes)
      * @param formViewObj the FormViewObj that will be validated
      */
-    public FormValidatorInfo(final String name, final FormViewObj formViewObj)
+    public FormValidatorInfo(final FormViewObj formViewObj)
     {
         
         model = new FormValidatorInfoModel(formViewObj);
@@ -59,7 +59,7 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
         formValidator.addValidationListener(this);
         
         setLayout(new BorderLayout());
-        JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
 
     }
@@ -81,7 +81,7 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
      */
     public void wasValidated(final UIValidator validator)
     {
-        model.updateModel(validator);
+        model.updateModel();
         model.fireTableDataChanged();
         table.repaint();
     }
@@ -156,7 +156,7 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
 
         }
         
-        public void updateModel(final UIValidator validator)
+        public void updateModel()
         {
             // Not optimzied
             int inx = 0;
@@ -176,6 +176,7 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
             return 2;
         }
 
+        @Override
         public String getColumnName(int column)
         {
             return header[column];
@@ -193,16 +194,19 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
             return column == 0 ? ci.getLabel() : ci.getState();
         }
 
+        @Override
         public boolean isCellEditable(int row, int column)
         {
             return false;
         }
 
+        @Override
         public Class<?> getColumnClass(int columnIndex)
         {
             return String.class;
         }
 
+        @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
             return;

@@ -128,6 +128,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
 
 
         addFocusListener(new FocusAdapter() {
+            @Override
             public void focusLost(FocusEvent e)
             {
                 isNew = false;
@@ -138,6 +139,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         // Enable being able to TAB out of TextArea
         getInputMap().put(KeyStroke.getKeyStroke("TAB"), "none");
         addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent event) {
                 if (event.getKeyCode() == KeyEvent.VK_TAB )
                 {
@@ -160,6 +162,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -177,6 +180,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);

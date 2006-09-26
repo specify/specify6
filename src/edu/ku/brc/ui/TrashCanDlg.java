@@ -35,6 +35,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -91,7 +92,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
         
-        panel.add(new JLabel(getResourceString("DeletedItems"), JLabel.CENTER), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("DeletedItems"), SwingConstants.CENTER), BorderLayout.NORTH);
 
         try
         {
@@ -106,6 +107,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
             list.setCellRenderer(new DndDeletableListCellRenderer()); // icon comes from the base class (it's probably size 16)
             list.setVisibleRowCount(10);
             list.addMouseListener(new MouseAdapter() {
+                @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() == 2) {
                         okBtn.doClick(); //emulate button click

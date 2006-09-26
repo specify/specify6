@@ -96,15 +96,6 @@ public class PopupDlgContent
 	}
 
 	/**
-	 * @param component - 
-	 * void - 
-	 */
-	public void setComponent(JComponent component)
-	{
-
-	}
-
-	/**
 	 * @return - 
 	 * boolean - 
 	 */

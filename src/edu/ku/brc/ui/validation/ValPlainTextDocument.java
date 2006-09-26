@@ -48,6 +48,7 @@ public class ValPlainTextDocument extends PlainDocument
         this.ignoreNotify = ignoreNotify;
     }
 
+    @Override
     protected void fireChangedUpdate(DocumentEvent e)
     {
         if (!ignoreNotify)
@@ -56,6 +57,7 @@ public class ValPlainTextDocument extends PlainDocument
         }
     }
 
+    @Override
     protected void fireInsertUpdate(DocumentEvent e)
     {
         if (!ignoreNotify)
@@ -64,6 +66,7 @@ public class ValPlainTextDocument extends PlainDocument
         }
     }
 
+    @Override
     protected void fireRemoveUpdate(DocumentEvent e)
     {
         if (!ignoreNotify)

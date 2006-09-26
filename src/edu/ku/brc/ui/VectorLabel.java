@@ -25,6 +25,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 
 /**
@@ -92,6 +93,7 @@ public class VectorLabel extends JLabel
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
+    @Override
     public Dimension getPreferredSize() {
         String text = getText();
         FontMetrics fm = this.getFontMetrics(getFont());
@@ -106,6 +108,7 @@ public class VectorLabel extends JLabel
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
+    @Override
     public void paintComponent(Graphics g) 
     {        
         Graphics2D g2 = (Graphics2D)g;
@@ -141,7 +144,7 @@ public class VectorLabel extends JLabel
         
         if (isDrawHighlight)
         {
-            drawHighlight(w,h,scale,base,g2);
+            drawHighlight(w,scale,g2);
         }
         
         if (isBorderPainted())
@@ -201,7 +204,7 @@ public class VectorLabel extends JLabel
         int fw = g2.getFontMetrics().stringWidth(text);
         int fh = g2.getFontMetrics().getAscent() - g2.getFontMetrics().getDescent();
         
-        int textx = this.getHorizontalAlignment() == JLabel.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
+        int textx = this.getHorizontalAlignment() == SwingConstants.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
         //int textx = (w-fw)/2;//this.getHorizontalAlignment() == JLabel.LEFT ? (int)(w-scale*.2f) : (w-fw)/2;
         int texty = h/2 + fh/2;
 
@@ -215,8 +218,7 @@ public class VectorLabel extends JLabel
     }
     
     
-    protected void drawHighlight(int w, int h, float scale,
-        Color base, Graphics2D g2) 
+    protected void drawHighlight(int w, float scale, Graphics2D g2)
     {
         // create the highlight
         GradientPaint highlight = new GradientPaint(

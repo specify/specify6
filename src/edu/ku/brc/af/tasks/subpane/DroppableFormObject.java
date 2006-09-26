@@ -68,7 +68,7 @@ public class DroppableFormObject implements GhostDataAggregatable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostDataAggregatable#getDataForClass(java.lang.Class)
      */
-    public Object getDataForClass(Class classObj)
+    public Object getDataForClass(Class<?> classObj)
     {
         if (classObj == DroppableFormObject.class)
         {

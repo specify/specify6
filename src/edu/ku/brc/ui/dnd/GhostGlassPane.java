@@ -36,18 +36,18 @@ public class GhostGlassPane extends JPanel
     private final int   ANIMATION_DELAY = 500;
     private final float STD_ALPHA       = 0.7f;
 
-    private BufferedImage dragged = null;
-    private Point location = new Point(0, 0);
-    private Point oldLocation = new Point(0, 0);
+    protected BufferedImage dragged = null;
+    protected Point location = new Point(0, 0);
+    protected Point oldLocation = new Point(0, 0);
 
-    private int width;
-    private int height;
-    private Rectangle visibleRect = null;
+    protected int width;
+    protected int height;
+    protected Rectangle visibleRect = null;
 
-    private float zoom  = 1.0f;
-    private float alpha = STD_ALPHA;
+    protected float zoom  = 1.0f;
+    protected float alpha = STD_ALPHA;
 
-    private ImagePaintMode paintPositionMode = ImagePaintMode.DRAG;
+    protected ImagePaintMode paintPositionMode = ImagePaintMode.DRAG;
 
     /**
      * Default Constructor

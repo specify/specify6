@@ -55,6 +55,7 @@ public class SortableJTable extends JTable
     /* (non-Javadoc)
      * @see javax.swing.JTable#getModel()
      */
+    @Override
     public TableModel getModel()
     {
         return model != null ? model.getDelegateModel() : null;
@@ -77,6 +78,7 @@ public class SortableJTable extends JTable
     {
         class LocalTableColHeaderListener extends TableColumnHeaderListener
         {
+            @Override
             public void mouseClicked(MouseEvent evt)
             {
                 super.mouseClicked(evt);
@@ -85,7 +87,7 @@ public class SortableJTable extends JTable
                     getSortableTableModel().setSortColumn(columnIndex);
                 }
             }
-        };
+        }
         
         JTableHeader header = getTableHeader();
         if (header != null)

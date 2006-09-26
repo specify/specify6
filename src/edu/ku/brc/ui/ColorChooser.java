@@ -78,6 +78,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
         init();
     }
     
+    @Override
     public void paint(Graphics g)
     {
         g.setColor(getBackground());
@@ -126,6 +127,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
         
         popup.addWindowFocusListener(new WindowAdapter() 
         {
+            @Override
             public void windowLostFocus(WindowEvent evt) 
             {
                 popup.setVisible(false);

@@ -352,7 +352,7 @@ public class ViewFactory
         if (validator != null)
         {
             UIValidator.Type type = parseValidationType(cellField.getValidationType());
-            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getId(), false, type, null, true);
+            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getId(), type, null, true);
             if (type == UIValidator.Type.Changed)
             {
                 textArea.getDocument().addDocumentListener(dcn);
@@ -398,7 +398,7 @@ public class ViewFactory
         ValListBox valList = initArray == null ? new ValListBox() : new ValListBox(initArray);
         if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
         {
-            DataChangeNotifier dcn = validator.hookupComponent(valList, cellField.getId(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            DataChangeNotifier dcn = validator.hookupComponent(valList, cellField.getId(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
             valList.getModel().addListDataListener(dcn);
             valList.addFocusListener(dcn);
         }
@@ -426,7 +426,7 @@ public class ViewFactory
             cbx.setRequired(cellField.isRequired());
             if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
-                DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+                DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
                 cbx.getComboBox().getModel().addListDataListener(dcn);
                 
                 if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
@@ -477,7 +477,7 @@ public class ViewFactory
 
         if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
         {
-            DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
             //cbx.getModel().addListDataListener(dcn);
             cbx.getComboBox().addActionListener(dcn);
 

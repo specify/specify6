@@ -83,10 +83,9 @@ public class RuleExpression implements FormValidationRuleIFace
             if (result instanceof Boolean)
             {
                 return (Boolean)result;
-            } else
-            {
-                log.debug("the return from the evaluation is of class "+result);
             }
+            // else
+            log.debug("the return from the evaluation is of class "+result);
         } catch (Exception ex)
         {
             log.error(ex);

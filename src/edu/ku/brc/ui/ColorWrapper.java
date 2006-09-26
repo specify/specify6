@@ -150,6 +150,7 @@ public class ColorWrapper
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString()
     {
         return toString(color); 

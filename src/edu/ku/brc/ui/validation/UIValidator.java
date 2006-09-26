@@ -131,10 +131,9 @@ public class UIValidator
             {
                 return Type.OK;
             }
-        } else
-        {
-            return Type.OK;
         }
+        // else
+        return Type.OK;
     }
 
 
@@ -175,7 +174,7 @@ public class UIValidator
             {
                 Object result = exp.evaluate(jc);
 
-                Map map = jc.getVars();
+                Map<?,?> map = jc.getVars();
                 Object[] keys = map.keySet().toArray();
                 for (Object key : keys)
                 {

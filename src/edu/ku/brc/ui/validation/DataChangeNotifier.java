@@ -377,7 +377,8 @@ public class DataChangeNotifier implements FocusListener,
      * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
      */
     public void keyPressed(KeyEvent e)    
-    { 
+    {
+        // do nothing
     }
     
     /* (non-Javadoc)
@@ -396,7 +397,10 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
      */
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e)
+    {
+        // do nothing
+    }
     
     //--------------------------------------------------------
     // ListDataListener (JComboxBox)

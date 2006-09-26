@@ -86,6 +86,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
             
             addWindowListener(new WindowAdapter()
                     {
+                        @Override
                         public void windowClosing(WindowEvent e)
                         {
                             mainPanel.getCancelBtn().doClick();

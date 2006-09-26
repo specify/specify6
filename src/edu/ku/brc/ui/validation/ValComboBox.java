@@ -162,6 +162,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         FocusAdapter focusAdapter = new FocusAdapter() {
+            @Override
             public void focusLost(FocusEvent e)
             {
                 //valState = isRequired && comboBox.getSelectedIndex() == -1;
@@ -181,6 +182,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
@@ -212,6 +214,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -258,6 +261,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     /* (non-Javadoc)
      * @see java.awt.Component#addFocusListener(java.awt.event.FocusListener)
      */
+    @Override
     public void addFocusListener(FocusListener l)
     {
         comboBox.addFocusListener(l);
@@ -270,6 +274,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     /* (non-Javadoc)
      * @see java.awt.Component#removeFocusListener(java.awt.event.FocusListener)
      */
+    @Override
     public void removeFocusListener(FocusListener l)
     {
         comboBox.removeFocusListener(l);
@@ -415,6 +420,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void intervalAdded(ListDataEvent e)
     {
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -422,6 +428,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void intervalRemoved(ListDataEvent e)
     {
+        // do nothing
     }
 
 
@@ -508,9 +515,6 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             if (comboBox.hasAdapter())
             {
                 return selectedObj instanceof PickListItem? ((PickListItem)selectedObj).getValue() : selectedObj;
-            } else
-            {
-                //selectedObj.toString();
             }
         }
         return selectedObj;

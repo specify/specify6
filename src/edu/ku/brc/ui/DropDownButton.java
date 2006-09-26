@@ -33,6 +33,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.event.ChangeEvent;
@@ -102,7 +104,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         init(label, icon, toolTip);
         
         mainBtn.setVerticalTextPosition(textPosition);
-        mainBtn.setHorizontalTextPosition(JButton.CENTER);
+        mainBtn.setHorizontalTextPosition(SwingConstants.CENTER);
     }
 
     /**
@@ -128,7 +130,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         init(label, icon, null);
         
         mainBtn.setVerticalTextPosition(textPosition);
-        mainBtn.setHorizontalTextPosition(JButton.CENTER);
+        mainBtn.setHorizontalTextPosition(SwingConstants.CENTER);
     }
 
     /**
@@ -169,12 +171,13 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         builder.add(mainBtn, cc.xy(1,1));
         builder.add(arrowBtn, cc.xy(3,1));
         
-        raisedBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
+        raisedBorder = new SoftBevelBorder(BevelBorder.RAISED);
         emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
         setBorder(emptyBorder);
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
         {
+            @Override
             public void mouseEntered(MouseEvent e) 
             {
                 setBorder(raisedBorder);
@@ -184,6 +187,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
                 arrowBtn.setEnabled(getPopMenuSize() > 0);
                 repaint();
             }
+            @Override
             public void mouseExited(MouseEvent e) 
             {
                 setBorder(emptyBorder);
@@ -376,6 +380,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g) 
     {
         mainBtn.setMargin(new Insets(0,0,0,0));
@@ -427,6 +432,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean value)
     {
     	mainBtn.setEnabled(value);

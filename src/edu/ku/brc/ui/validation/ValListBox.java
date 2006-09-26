@@ -102,6 +102,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
         
         addFocusListener(new FocusAdapter() {
+            @Override
             public void focusLost(FocusEvent e)
             {
                 isNew = false;
@@ -113,6 +114,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -262,7 +264,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
             return;
         }
         
-        Iterator iter = null;
+        Iterator<?> iter = null;
         if (value instanceof Set)
         {
             iter = ((Set)value).iterator();

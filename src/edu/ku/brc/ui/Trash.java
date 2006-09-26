@@ -76,7 +76,7 @@ public class Trash extends JComponent implements GhostActionable
     protected GhostMouseInputAdapter  mouseInputAdapter    = null;
     protected RenderingHints         hints               = null;
     protected BufferedImage          shadowBuffer        = null;
-    protected BufferedImage          buffer              = null;;
+    protected BufferedImage          buffer              = null;
     protected Dimension              prefferedRenderSize = new Dimension(0,0);
     protected boolean                verticalLayout      = false;
     protected Vector<DndDeletable>   items               = new Vector<DndDeletable>();
@@ -133,10 +133,12 @@ public class Trash extends JComponent implements GhostActionable
                       popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
                   }
               }
-              public void mousePressed(MouseEvent mouseEvent) {
+              @Override
+            public void mousePressed(MouseEvent mouseEvent) {
                 showIfPopupTrigger(mouseEvent);
               }
-              public void mouseReleased(MouseEvent mouseEvent) {
+              @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
                 showIfPopupTrigger(mouseEvent);
               }
             };
@@ -175,6 +177,7 @@ public class Trash extends JComponent implements GhostActionable
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -199,6 +202,7 @@ public class Trash extends JComponent implements GhostActionable
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
+    @Override
     public Dimension getPreferredSize()
     {
         return new Dimension(imgIcon.getIconWidth(), imgIcon.getIconHeight());
@@ -295,7 +299,7 @@ public class Trash extends JComponent implements GhostActionable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
-    public Object getDataForClass(Class classObj)
+    public Object getDataForClass(Class<?> classObj)
     {
         return UIHelper.getDataForClass(data, classObj);
     }
@@ -333,7 +337,9 @@ public class Trash extends JComponent implements GhostActionable
             try {
                 Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
                 value = declaredField.get(null);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
+                // do nothing
             }
             hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
         }

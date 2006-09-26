@@ -531,12 +531,12 @@ public class ShadowFactory {
 
     // creates a blur convolve operation by generating a kernel of
     // dimensions (size, size).
-    private ConvolveOp getLinearBlurOp(final int size) {
-        float[] data = new float[size * size];
-        float value = 1.0f / (float) (size * size);
+    private ConvolveOp getLinearBlurOp(final int _size) {
+        float[] data = new float[_size * _size];
+        float value = 1.0f / (_size * _size);
         for (int i = 0; i < data.length; i++) {
             data[i] = value;
         }
-        return new ConvolveOp(new Kernel(size, size, data));
+        return new ConvolveOp(new Kernel(_size, _size, data));
     }
 }

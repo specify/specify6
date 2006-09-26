@@ -104,6 +104,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         addFocusListener(new FocusAdapter() {
+            @Override
             public void focusLost(FocusEvent e)
             {
                 isNew = false;
@@ -124,6 +125,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -141,6 +143,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
+    @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
@@ -151,6 +154,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
      */
+    @Override
     public void setText(String text)
     {
         super.setText(isEncrypted ? Encryption.decrypt(text) : text);
@@ -169,6 +173,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#getText()
      */
+    @Override
     public String getText()
     {
         String text = new String(super.getPassword());

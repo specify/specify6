@@ -117,6 +117,7 @@ public class JAutoCompTextField extends JTextField
         if (dbAdapter != null)
         {
             addFocusListener(new FocusAdapter() {
+                @Override
                 public void focusLost(FocusEvent e)
                 {
                     addNewItemFromTextField();
@@ -128,11 +129,13 @@ public class JAutoCompTextField extends JTextField
             {
                 protected int prevCaretPos = -1;
                 
+                @Override
                 public void keyPressed(KeyEvent ev)
                 {
                     prevCaretPos = getCaretPosition();
                 }
                 
+                @Override
                 public void keyReleased(KeyEvent ev)
                 {
                     char key = ev.getKeyChar();

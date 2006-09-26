@@ -65,6 +65,7 @@ public class ExtendedTabbedPane extends JTabbedPane
         itself = this;
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
+            @Override
             public void mouseExited(MouseEvent e) 
             {
                 if (!closerRect.contains(e.getPoint()))
@@ -74,6 +75,7 @@ public class ExtendedTabbedPane extends JTabbedPane
                     //UICacheManager.displayStatusBarText("");
                 }
             }
+            @Override
             public void mouseMoved(MouseEvent e)
             {
                 if (closerRect.contains(e.getPoint()))
@@ -89,6 +91,7 @@ public class ExtendedTabbedPane extends JTabbedPane
                 }
                 
             }
+            @Override
             public void mouseClicked(MouseEvent e) 
             {
                 if (closerRect.contains(e.getPoint()))
@@ -130,6 +133,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);

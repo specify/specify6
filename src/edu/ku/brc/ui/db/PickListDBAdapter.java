@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 
@@ -116,6 +116,7 @@ public class PickListDBAdapter
      * @param name the name of the picklist to get
      * @return the picklist
      */
+    @SuppressWarnings("unchecked")
     protected PickList getPickList(final String name)
     {
         PickList pkList  = null;
@@ -123,12 +124,13 @@ public class PickListDBAdapter
         try
         {
             session = HibernateUtil.getSessionFactory().openSession();
-	        Criteria criteria = session.createCriteria(PickList.class).add(Expression.eq("name", name));
+	        Criteria criteria = session.createCriteria(PickList.class).add(Restrictions.eq("name", name));
             
-	        List itemsList = criteria.list();
+            // unchecked warning: Criteria results are always the requested class
+	        List<PickList> itemsList = criteria.list();
 	        if (itemsList != null && itemsList.size() > 0)
 	        {
-                pkList = (PickList)itemsList.get(0);
+                pkList = itemsList.get(0);
 	        }
 	        
         } catch (Exception ex)
@@ -229,15 +231,15 @@ public class PickListDBAdapter
 
             return item;
             
-        } else
-        {
-            return items.elementAt(index);
         }
+        // else
+        return items.elementAt(index);
     }
     
     /**
      * Persists the picklist and it's items.
      */
+    @SuppressWarnings("null")
     public void save()
     {
         Session     session = null;
@@ -255,12 +257,14 @@ public class PickListDBAdapter
 
         } catch (Exception e) 
         {
+            // ignoring warning about 'null'
             trans.rollback();
             
             e.printStackTrace();
             
         } finally 
         {
+            // ignoring warning about 'null'
             session.close();
         } 
     }

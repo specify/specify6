@@ -24,6 +24,7 @@ import java.awt.Insets;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -100,7 +101,7 @@ public class JStatusBar extends JPanel
             labels = new JLabel[sectionSize.length];
             for (int i=0;i<sectionSize.length;i++)
             {
-                labels[i] = new JLabel(" ", JLabel.CENTER);
+                labels[i] = new JLabel(" ", SwingConstants.CENTER);
                 labels[i].setBorder(new EndsBorder(i == sectionSize.length-1));
                 sbBldr.add(labels[i], cc.xy(i+2, 1));
             }
@@ -169,6 +170,7 @@ public class JStatusBar extends JPanel
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
+    @Override
     protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
@@ -206,6 +208,7 @@ public class JStatusBar extends JPanel
             super(BevelBorder.LOWERED);
         }
 
+        @Override
         protected void paintLoweredBevel(Component c,
                                          Graphics g,
                                          int x,
@@ -293,6 +296,7 @@ public class JStatusBar extends JPanel
             insets = new Insets(2, 0, 0, bothEnds ? 2 : 0);
         }
 
+        @Override
         protected void paintLoweredBevel(Component c,
                                          Graphics g,
                                          int x,
@@ -330,6 +334,7 @@ public class JStatusBar extends JPanel
         /* (non-Javadoc)
          * @see javax.swing.border.Border#getBorderInsets(java.awt.Component)
          */
+        @Override
         public Insets getBorderInsets(Component c)
         {
             return insets;

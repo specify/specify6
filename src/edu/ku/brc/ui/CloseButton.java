@@ -47,6 +47,7 @@ public class CloseButton extends GradiantButton
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g) 
     {       
         super.paint(g);

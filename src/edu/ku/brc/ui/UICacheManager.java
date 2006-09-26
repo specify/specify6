@@ -63,7 +63,7 @@ public class UICacheManager
     public static final String LONGTERM_CACHE_MAP = "longterm-cache-map.xml";
 
     private static final Logger         log      = Logger.getLogger(UICacheManager.class);
-    private static final UICacheManager instance = new UICacheManager();
+    protected static final UICacheManager instance = new UICacheManager();
 
     // Data Members
     protected Hashtable<String, Component> components = new Hashtable<String, Component>();

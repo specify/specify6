@@ -64,6 +64,7 @@ public class GhostMotionAdapter extends MouseMotionAdapter
     /**
      * Updates (draws) the glass pane as the image is dragged
      */
+    @Override
     public void mouseDragged(MouseEvent e) 
     {
         if (!DragAndDropLock.isDragAndDropStarted()) 

@@ -175,6 +175,7 @@ public class JEditComboBox extends JComboBox
     /* (non-Javadoc)
      * @see java.awt.Component#setBackground(java.awt.Color)
      */
+    @Override
     public void setBackground(Color bgColor)
     {
         super.setBackground(bgColor);
@@ -187,6 +188,7 @@ public class JEditComboBox extends JComboBox
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setSelectedIndex(int)
      */
+    @Override
     public void setSelectedIndex(int index)
     {
         super.setSelectedIndex(index);
@@ -275,6 +277,7 @@ public class JEditComboBox extends JComboBox
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setEditor(javax.swing.ComboBoxEditor)
      */
+    @Override
     public void setEditor(ComboBoxEditor anEditor)
     {
         super.setEditor(anEditor);
@@ -285,6 +288,7 @@ public class JEditComboBox extends JComboBox
             //textField.setBackground(super.getBackground());
             textField.addFocusListener(new FocusAdapter() 
             {
+                @Override
                 public void focusLost(FocusEvent e)
                 {
                     addNewItemFromTextField();
@@ -294,6 +298,7 @@ public class JEditComboBox extends JComboBox
             //System.out.println(textField.getKeyListeners());
             textField.addKeyListener(new KeyAdapter()
             {
+                @Override
                 public void keyReleased(KeyEvent ev)
                 {
                     char key = ev.getKeyChar();

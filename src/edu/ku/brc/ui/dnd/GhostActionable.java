@@ -41,7 +41,7 @@ public interface GhostActionable
      * @param classObj the object of this desired class type
      * @return the object representing that type of object
      */
-    public Object getDataForClass(Class classObj);
+    public Object getDataForClass(Class<?> classObj);
     
     /**
      * Creates a adpator for the DnD action 

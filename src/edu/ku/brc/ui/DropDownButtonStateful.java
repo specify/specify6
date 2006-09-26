@@ -22,9 +22,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -69,7 +69,7 @@ public class DropDownButtonStateful extends DropDownButton
                                   final ImageIcon[] imgIcons, 
                                   final String[]    toolTips)
     {
-       super(labels[0], imgIcons[0], toolTips != null ? toolTips[0] : null, JButton.CENTER);
+       super(labels[0], imgIcons[0], toolTips != null ? toolTips[0] : null, SwingConstants.CENTER);
        
         setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         setLayout(new BorderLayout());

@@ -86,6 +86,7 @@ public class JAutoCompComboBox extends JEditComboBox
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setSelectedIndex(int)
      */
+    @Override
     public void setSelectedIndex(int index)
     {
         super.setSelectedIndex(index);
@@ -166,6 +167,7 @@ public class JAutoCompComboBox extends JEditComboBox
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setEditor(javax.swing.ComboBoxEditor)
      */
+    @Override
     public void setEditor(ComboBoxEditor anEditor)
     {
         super.setEditor(anEditor);
@@ -175,6 +177,7 @@ public class JAutoCompComboBox extends JEditComboBox
             //textField.setBackground(super.getBackground());
             textField.addFocusListener(new FocusAdapter() 
             {
+                @Override
                 public void focusLost(FocusEvent e)
                 {
                     addNewItemFromTextField();
@@ -186,11 +189,13 @@ public class JAutoCompComboBox extends JEditComboBox
             {
                 protected int prevCaretPos = -1;
                 
+                @Override
                 public void keyPressed(KeyEvent ev)
                 {
                     prevCaretPos = textField.getCaretPosition();
                 }
                 
+                @Override
                 public void keyReleased(KeyEvent ev)
                 {
                     char key = ev.getKeyChar();
@@ -204,18 +209,17 @@ public class JAutoCompComboBox extends JEditComboBox
                             setSelectedIndex(-1);
                             return;
                             
-                        } else
+                        }
+                        // else
+                        if (foundMatch)
                         {
-                            if (foundMatch)
-                            {
-                                textField.setText(textStr.substring(0, len-1));
-                                
-                            } else if (!enableAdditions && len > 0)
-                            {
-                                textField.setText(textStr.substring(0, len-1));
-                                lookForMatch();
-                                return;
-                            }
+                            textField.setText(textStr.substring(0, len-1));
+                            
+                        } else if (!enableAdditions && len > 0)
+                        {
+                            textField.setText(textStr.substring(0, len-1));
+                            lookForMatch();
+                            return;
                         }
                         
                     } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 

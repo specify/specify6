@@ -55,5 +55,6 @@ public abstract class AbstractGhostDropManager implements GhostDropListener
 
 	public void ghostDropped(GhostDropEvent e) 
     {
+        // do nothing
 	}
 }

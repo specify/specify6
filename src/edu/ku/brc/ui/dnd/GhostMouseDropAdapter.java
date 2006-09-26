@@ -42,6 +42,7 @@ public class GhostMouseDropAdapter extends GhostDropAdapter
     /* (non-Javadoc)
      * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
      */
+    @Override
     public void mousePressed(MouseEvent e) 
     {
         if (DragAndDropLock.isLocked() || e.getButton() != 1) 
@@ -69,6 +70,7 @@ public class GhostMouseDropAdapter extends GhostDropAdapter
     /* (non-Javadoc)
      * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
      */
+    @Override
     public void mouseReleased(MouseEvent e) 
     {
         if (e.getButton() != 1 || !DragAndDropLock.isDragAndDropStarted()) 

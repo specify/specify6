@@ -115,6 +115,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     /* (non-Javadoc)
      * @see java.awt.Component#setVisible(boolean)
      */
+    @Override
     public void setVisible(final boolean show)
     {
         if (show && doAutoLogin)

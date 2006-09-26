@@ -25,6 +25,7 @@ import java.awt.RenderingHints;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -72,6 +73,7 @@ public class GradiantLabel extends JLabel
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
+    @Override
     public Dimension getPreferredSize() 
     {
         String text = getText();
@@ -94,6 +96,7 @@ public class GradiantLabel extends JLabel
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g) 
     {
         Graphics2D g2 = (Graphics2D)g;
@@ -114,7 +117,7 @@ public class GradiantLabel extends JLabel
         {
             drawText(w, h, text, textWidth, g2);
             
-        } else if (this.getHorizontalTextPosition() == JLabel.LEFT)
+        } else if (this.getHorizontalTextPosition() == SwingConstants.LEFT)
         {
             int offsetX = drawText(w, h, text, textWidth, g2);
             icon.paintIcon(this, g2, offsetX+textWidth+this.getIconTextGap(), h > icon.getIconHeight() ? (h - icon.getIconHeight())/2 : 0);
@@ -122,7 +125,7 @@ public class GradiantLabel extends JLabel
         } else
         {
             icon.paintIcon(this, g2, 0, h > icon.getIconHeight() ? (h - icon.getIconHeight())/2 : 0);
-            drawText(this.getIconTextGap()+icon.getIconWidth(), w, h, text, textWidth, g2);
+            drawText(this.getIconTextGap()+icon.getIconWidth(), h, text, g2);
             
         }
     }
@@ -142,12 +145,12 @@ public class GradiantLabel extends JLabel
     protected int drawText(int w, int h, String text, int textWidth, Graphics2D g2) 
     {
         // calculate the width and height
-        int textx = this.getHorizontalAlignment() == JLabel.LEFT ? Math.max(getInsets().left, 2) : (w-textWidth)/2;
-        drawText(textx, w, h, text, textWidth, g2);
+        int textx = this.getHorizontalAlignment() == SwingConstants.LEFT ? Math.max(getInsets().left, 2) : (w-textWidth)/2;
+        drawText(textx, h, text, g2);
         return textx;
     }
     
-    protected void drawText(int x, int w, int h, String text, int textWidth, Graphics2D g2) 
+    protected void drawText(int x, int h, String text, Graphics2D g2) 
     {
         // calculate the width and height
         int fh = g2.getFontMetrics().getAscent() - g2.getFontMetrics().getDescent();

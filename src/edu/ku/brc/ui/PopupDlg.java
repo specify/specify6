@@ -53,7 +53,7 @@ public class PopupDlg
 	 */
 	public PopupDlg()
 	{
-
+	    // do nothing
 	}
 	
 	/**

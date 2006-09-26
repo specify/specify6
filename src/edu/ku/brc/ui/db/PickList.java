@@ -45,6 +45,7 @@ public class PickList implements java.io.Serializable
     /** default constructor */
     public PickList()
     {
+        // do nothing
     }
 
     /** constructor with id */

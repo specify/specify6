@@ -35,6 +35,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -115,7 +116,7 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
         JPanel panel = new JPanel(new BorderLayout());
         if (desc != null)
         {
-            panel.add(new JLabel(desc, JLabel.CENTER), BorderLayout.NORTH);
+            panel.add(new JLabel(desc, SwingConstants.CENTER), BorderLayout.NORTH);
         }
 
         JPanel listPanel = new JPanel();
@@ -250,7 +251,7 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
 
     public void stateChanged(ChangeEvent e)
     {
-
+        // do nothing
     }
 
 

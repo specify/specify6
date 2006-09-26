@@ -455,7 +455,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     {
         if (true)
         {
-            FormValidatorInfo formInfo = new FormValidatorInfo(formValidator.getName(), this);
+            FormValidatorInfo formInfo = new FormValidatorInfo(this);
 
             JDialog dialog = new JDialog();
             dialog.setTitle(formValidator.getName());
@@ -493,7 +493,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         } else
         {
-            FormValidatorInfo formInfo = new FormValidatorInfo(formValidator.getName(), this);
+            FormValidatorInfo formInfo = new FormValidatorInfo(this);
             JFrame frame = new JFrame();
             frame.setContentPane(formInfo);
             frame.pack();

@@ -84,6 +84,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
         {
             addWindowListener(new WindowAdapter()
                     {
+                        @Override
                         public void windowClosing(WindowEvent e)
                         {
                             mainPanel.getCancelBtn().doClick();

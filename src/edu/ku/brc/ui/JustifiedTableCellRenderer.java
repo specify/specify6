@@ -23,7 +23,8 @@ public class JustifiedTableCellRenderer extends DefaultTableCellRenderer
 
 	// This method is called each time a cell in a column
 	// using this renderer needs to be rendered.
-	public Component getTableCellRendererComponent(JTable table, Object value,
+	@Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex)
 	{
 		JLabel l = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);

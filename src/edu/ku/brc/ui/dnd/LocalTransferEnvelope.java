@@ -17,7 +17,6 @@ package edu.ku.brc.ui.dnd;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
@@ -62,16 +61,14 @@ public class LocalTransferEnvelope implements Transferable
 	}
 
 	public Object getTransferData(DataFlavor flavor)
-			throws UnsupportedFlavorException, IOException
+			throws UnsupportedFlavorException
 	{
 		if( isDataFlavorSupported(flavor) )
 		{
 			return transferObject;
 		}
-		else
-		{
-			throw new UnsupportedFlavorException(flavor);
-		}
+        // else
+        throw new UnsupportedFlavorException(flavor);
 	}
 
 }

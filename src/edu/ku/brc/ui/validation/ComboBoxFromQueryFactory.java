@@ -144,23 +144,21 @@ public class ComboBoxFromQueryFactory
                                                  info.getSearchDialogName(),
                                                  info.getCreateDialogName(),
                                                  info.getObjTitle());
-            } else
-            {
-                return new ValComboBoxFromQuery(info.getSQL(),
-                                                info.getClassName(),
-                                                info.getIdName(),
-                                                info.getKeyName(),
-                                                info.getFormat(),
-                                                info.getFormatName(),
-                                                info.getSearchDialogName(),
-                                                info.getCreateDialogName(),
-                                                info.getObjTitle()
-                                                );
             }
-        } else
-        {
-            throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
+            // else
+            return new ValComboBoxFromQuery(info.getSQL(),
+                                            info.getClassName(),
+                                            info.getIdName(),
+                                            info.getKeyName(),
+                                            info.getFormat(),
+                                            info.getFormatName(),
+                                            info.getSearchDialogName(),
+                                            info.getCreateDialogName(),
+                                            info.getObjTitle()
+                                            );
         }
+        // else
+        throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
     }
 
     //-----------------------------------------------------
