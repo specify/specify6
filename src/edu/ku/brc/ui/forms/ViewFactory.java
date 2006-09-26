@@ -1061,7 +1061,7 @@ public class ViewFactory
                 builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
             }
 
-            if (altView.isValidated())
+            if (validatedPanel != null)
             {
                 validatedPanel.addPanel(builder.getPanel());
 
