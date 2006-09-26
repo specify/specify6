@@ -102,14 +102,14 @@ public class JEditComboBox extends JComboBox
     
     /**
      * An initializer so a PickListAdaptor can be set after the control is created, and automatically makes it editable
-     * @param dbAdapter the PickListAdaptor
-     * @param makeEditable oindicates whether it is editable
+     * @param dbAdapterArg the PickListAdaptor
+     * @param makeEditable indicates whether it is editable
      */
-    public void init(final PickListDBAdapter dbAdapter, final boolean makeEditable)
+    public void init(final PickListDBAdapter dbAdapterArg, final boolean makeEditable)
     {
-        setModel(new DefaultComboBoxModel(dbAdapter.getList()));
+        setModel(new DefaultComboBoxModel(dbAdapterArg.getList()));
         
-        this.dbAdapter = dbAdapter;
+        this.dbAdapter = dbAdapterArg;
         init(makeEditable);  
     }
     

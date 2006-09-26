@@ -184,10 +184,10 @@ public class AttributeDef  implements java.io.Serializable {
         collectingEventAttr.setDefinition(this);
     }
 
-    public void addPreparationAttrs(final PreparationAttr preparationAttr)
+    public void addPreparationAttrs(final PreparationAttr preparationAttrArg)
     {
-        this.preparationAttr.add(preparationAttr);
-        preparationAttr.setDefinition(this);
+        this.preparationAttr.add(preparationAttrArg);
+        preparationAttrArg.setDefinition(this);
     }
 
     public void addCollectionObjectAttrs(final CollectionObjectAttr collectionObjectAttr)

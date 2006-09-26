@@ -174,13 +174,15 @@ public class ViewFactory
      * @param parentView the MultiViw that this view/form will be parented to
      * @param createRecordSetController indicates that a RecordSet Contoller should be created
      * @param createViewSwitcher can be used to make sure that the multiview switc her is not created
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @return a Viewable Obj with the form UI built
      */
     public Viewable buildViewable(final View      view, 
                                   final AltView   altView, 
                                   final MultiView parentView, 
                                   final boolean   createRecordSetController,
-                                  final boolean   createViewSwitcher)
+                                  final boolean   createViewSwitcher,
+                                  final boolean   isNewObject)
     {
         if (scrDateFormat == null)
         {
@@ -199,7 +201,7 @@ public class ViewFactory
 
         if (viewDef.getType() == ViewDef.ViewType.form)
         {
-            Viewable viewable = buildFormViewable(view, altView, parentView, createRecordSetController, createViewSwitcher);
+            Viewable viewable = buildFormViewable(view, altView, parentView, createRecordSetController, createViewSwitcher, isNewObject);
             this.rootMultiView =  null;
             return viewable;
 
@@ -875,7 +877,12 @@ public class ViewFactory
                     {
                         if (parent != null)
                         {
-                            MultiView multiView = new MultiView(parent, subView, parent.getCreateWithMode(), !cellSubView.isSingleValueFromSet(), true);
+                            MultiView multiView = new MultiView(parent, 
+                                                                subView, 
+                                                                parent.getCreateWithMode(), 
+                                                                !cellSubView.isSingleValueFromSet(), 
+                                                                true,
+                                                                false);
                             parent.addChild(multiView);
                             
                             
@@ -1014,13 +1021,15 @@ public class ViewFactory
      * @param parentView the MultiView parent (this may be null)
      * @param createRecordSetController indicates that a RecordSet Contoller should be created
      * @param createViewSwitcher can be used to make sure that the multiview switc her is not created
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @return the form
      */
     public FormViewObj buildFormViewable(final View        view,
                                          final AltView     altView,
                                          final MultiView   parentView,
                                          final boolean     createRecordSetController,
-                                         final boolean     createViewSwitcher)
+                                         final boolean     createViewSwitcher,
+                                         final boolean     isNewObject)
     {
         try
         {
@@ -1037,7 +1046,7 @@ public class ViewFactory
                 validator.setDataChangeNotification(true);
             }
 
-            FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, createRecordSetController, createViewSwitcher);
+            FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, createRecordSetController, createViewSwitcher, isNewObject);
 
             Object currDataObj = formViewObj.getCurrentDataObj();
 
@@ -1107,14 +1116,16 @@ public class ViewFactory
      * @param view the definition of the form view to be created
      * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
      * @param data the data to be set into the form
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @return a new FormViewObj
      */
     public static FormViewObj createFormView(final MultiView multiView, 
                                              final View view, 
                                              final String altName, 
-                                             final Object data)
+                                             final Object data,
+                                             final boolean isNewObject)
     {
-        return createFormView(multiView, view, altName, data, false, true);
+        return createFormView(multiView, view, altName, data, false, true, isNewObject);
     }
     
 
@@ -1125,14 +1136,16 @@ public class ViewFactory
      * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
      * @param data the data to be set into the form
      * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @return a new FormViewObj
      */
     public static FormViewObj createFormView(final MultiView multiView, 
-                                             final View view, 
-                                             final String altName, 
-                                             final Object data,
-                                             final boolean createRecordSetContoller,
-                                             final boolean createViewSwitcher)
+                                             final View      view, 
+                                             final String    altName, 
+                                             final Object    data,
+                                             final boolean   createRecordSetContoller,
+                                             final boolean   createViewSwitcher,
+                                             final boolean   isNewObject)
     {
         if (scrDateFormat == null)
         {
@@ -1149,7 +1162,12 @@ public class ViewFactory
         {
             if (altView.getViewDef().getType() == ViewDef.ViewType.form)
             {
-                FormViewObj form = (FormViewObj)instance.buildViewable(view, altView, multiView, createRecordSetContoller, createViewSwitcher);
+                FormViewObj form = (FormViewObj)instance.buildViewable(view, 
+                                                                       altView,
+                                                                       multiView, 
+                                                                       createRecordSetContoller, 
+                                                                       createViewSwitcher,
+                                                                       isNewObject);
                 if (form != null)
                 {
                     if (data != null)

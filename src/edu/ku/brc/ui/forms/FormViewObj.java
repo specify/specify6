@@ -17,11 +17,13 @@ package edu.ku.brc.ui.forms;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -54,6 +56,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
@@ -75,6 +79,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
@@ -143,7 +148,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected JButton                       saveBtn         = null;
     protected JButton                       validationInfoBtn = null;
     protected boolean                       wasNull         = false;
-    protected DropDownButtonStateful        altViewUI;
+    protected DropDownButtonStateful        switcherUI;
+    protected JComboBox                     selectorCBX     = null;
+    protected int                           mainCompRowInx  = 1;
 
     protected PanelBuilder                  mainBuilder;
     protected BusinessRulesIFace            businessRules   = null; 
@@ -161,13 +168,15 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      * @param createRecordSetController indicates that a RecordSet Contoller should be created
      * @param formValidator the form's formValidator
      * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      */
     public FormViewObj(final View          view,
                        final AltView       altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
                        final boolean       createRecordSetController,
-                       final boolean       createViewSwitcher)
+                       final boolean       createViewSwitcher,
+                       final boolean       isNewObject)
     {
         this.view        = view;
         this.altView     = altView;
@@ -189,13 +198,51 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
         boolean addExtraRow = addController || altView.getMode() == AltView.CreationMode.Search;
+        
+        // See if we need to add a Selector ComboBox
+        boolean addSelectorCBX = false;
+        if (StringUtils.isNotEmpty(view.getSelectorName()) && isNewObject)
+        {
+            addSelectorCBX = true;
+        }
 
-        String rowDefs = (mvParent == null ? "p" : "p:g") + (addExtraRow ? ",2px,p" : "");
+        String rowDefs = (addSelectorCBX ? "p," : "") + (mvParent == null ? "p" : "p:g") + (addExtraRow ? ",2px,p" : "");
 
         mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         mainComp = mainBuilder.getPanel();
-
+        
         List<JComponent> comps = new ArrayList<JComponent>();
+
+        if (addSelectorCBX)
+        {
+            mainCompRowInx++;
+            
+            Vector<String> cbxList = new Vector<String>();
+            cbxList.add(altView.getName());
+            for (AltView av : view.getAltViews())
+            {
+                if (av != altView && av.getMode() == AltView.CreationMode.Edit)
+                {
+                    cbxList.add(av.getName());
+                }
+            }
+            JPanel p = new JPanel(new BorderLayout());
+            p.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+            selectorCBX = new JComboBox(cbxList);
+            p.add(selectorCBX, BorderLayout.WEST);
+            mainBuilder.add(p, cc.xy(1, 1));
+            
+            if (mvParent != null)
+            {
+                selectorCBX.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent ex)
+                    {
+                        mvParent.showView(((JComboBox)ex.getSource()).getSelectedItem().toString());
+                    }
+                });
+            }
+        }
+ 
 
         // We will add the switchable UI if we are mvParented to a MultiView and have multiple AltViews
         if (addController)
@@ -209,9 +256,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             if (createViewSwitcher && (!view.isSpecialViewEdit() || mvParent.getMultiViewParent() == null))
             {
 
-                ImageIcon[] icons    = new ImageIcon[view.getAltViews().size()];
-                String[]    labels   = new String[view.getAltViews().size()];
-                String[]    toolTips = new String[view.getAltViews().size()];
+                ImageIcon[] iconsArray    = new ImageIcon[view.getAltViews().size()];
+                String[]    labelsArray   = new String[view.getAltViews().size()];
+                String[]    toolTipsArray = new String[view.getAltViews().size()];
 
                 // loop thru and add the AltViews to the comboxbox and make sure that the
                 // this form is always at the top of the list.
@@ -228,65 +275,75 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     }
                 }
 
+                Hashtable<String, Boolean> useLabels = new Hashtable<String, Boolean>();
                 for (AltView av : altViewsList)
                 {
-                    labels[inx] = av.getLabel();
+                    String selectorName = av.getSelectorName();
+                    if (StringUtils.isNotEmpty(selectorName))
+                    {
+                        String combinedName = av.getMode().toString() + "_" + selectorName;
+                        if (useLabels.get(combinedName) == null)
+                        {
+                            useLabels.put(combinedName, true);
+                            
+                        } else
+                        {
+                            continue;
+                        }
+                    }
+                    
+                    labelsArray[inx] = av.getLabel();
 
                     // TODO This is Sort of Temporary until I get it all figured out
                     // But somehow we need to externalize this, possible have the AltView Definition
                     // define its own icon
                     if (av.getMode() == AltView.CreationMode.Edit)
                     {
-                        icons[inx]    = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
-                        toolTips[inx] = getResourceString("ShowEditViewTT");
+                        iconsArray[inx]    = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
+                        toolTipsArray[inx] = getResourceString("ShowEditViewTT");
 
                     } else if (av.getViewDef().getType() == ViewDef.ViewType.table)
                     {
-                        icons[inx]    = IconManager.getImage("Speadsheet", IconManager.IconSize.Std16);
-                        toolTips[inx] = getResourceString("ShowSpeadsheetTT");
+                        iconsArray[inx]    = IconManager.getImage("Speadsheet", IconManager.IconSize.Std16);
+                        toolTipsArray[inx] = getResourceString("ShowSpeadsheetTT");
 
                     } else
                     {
-                        icons[inx]    = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
-                        toolTips[inx] = getResourceString("ShowViewTT");
+                        iconsArray[inx]    = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
+                        toolTipsArray[inx] = getResourceString("ShowViewTT");
                     }
                     inx++;
                 }
 
 
-                altViewUI = new DropDownButtonStateful(labels, icons, toolTips);
-                altViewUI.setToolTipText(getResourceString("SwitchViewsTT"));
-                altViewUI.addActionListener(new ActionListener() {
+                switcherUI = new DropDownButtonStateful(labelsArray, iconsArray, toolTipsArray);
+                switcherUI.setToolTipText(getResourceString("SwitchViewsTT"));
+                switcherUI.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        mvParent.showView(altViewsList.get(altViewUI.getCurrentIndex()));
+                        mvParent.showView(altViewsList.get(switcherUI.getCurrentIndex()));
                     }
                 });
 
                 if (altView.getMode() == AltView.CreationMode.Edit)
                 {
-                    saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
-                    saveBtn.setToolTipText(getResourceString("SaveRecordTT"));
-                    saveBtn.setMargin(new Insets(1,1,1,1));
-                    saveBtn.setEnabled(false);
-                    saveBtn.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            saveObject();
-                        }
-                    });
-
                     // We want it on the left side of other buttons
                     // so wee need to add it before the Save button
                     addValidationIndicator(comps);
 
+                    addSaveBtn();
                     comps.add(saveBtn);
 
                 }
-                comps.add(altViewUI);
+                comps.add(switcherUI);
 
             } else if (altView.getMode() == AltView.CreationMode.Edit)
             {
+                if (mvParent.getMultiViewParent() == null)
+                {
+                    addSaveBtn();
+                    comps.add(saveBtn);
+                }
                 addValidationIndicator(comps);
             }
         }
@@ -303,13 +360,30 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             controlPanel = new ControlBarPanel();
             controlPanel.addComponents(comps, false); // false -> right side
-            mainBuilder.add(controlPanel, cc.xy(1, 3));
+            mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
         }
 
         if (createRecordSetController)
         {
             addRSController();
         }
+    }
+    
+    /**
+     * 
+     */
+    protected void addSaveBtn()
+    {
+        saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
+        saveBtn.setToolTipText(ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle()));
+        saveBtn.setMargin(new Insets(1,1,1,1));
+        saveBtn.setEnabled(false);
+        saveBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                saveObject();
+            }
+        });
     }
 
     /**
@@ -386,7 +460,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             JDialog dialog = new JDialog();
             dialog.setTitle(formValidator.getName());
             PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("p", "p,5px,p"));
-            CellConstraints cc = new CellConstraints();
             panelBuilder.add(formInfo, cc.xy(1,1));
 
             class Closer implements ActionListener
@@ -436,12 +509,20 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public void aboutToShow(final boolean show)
     {
-        if (altViewUI != null)
+        if (switcherUI != null)
         {
             ignoreSelection = true;
-            altViewUI.setCurrentIndex(0);
+            switcherUI.setCurrentIndex(0);
             ignoreSelection = false;
         }
+        
+        if (selectorCBX != null)
+        {
+            ignoreSelection = true;
+            selectorCBX.setSelectedIndex(0);
+            ignoreSelection = false;
+        }
+        
         for (MultiView mv : kids)
         {
             mv.aboutToShow(show);
@@ -508,7 +589,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         this.formComp = formComp;
 
         // add new component
-        mainBuilder.add(formComp, cc.xy(1,1));
+        mainBuilder.add(formComp, cc.xy(1, mainCompRowInx));
     }
 
     /**
@@ -761,68 +842,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                             businessRules.saveStandAloneData(dataObj, dataToSaveList);
                         }
                     }
-                    
-                    /*
-                    List<String> needToSaveList = new ArrayList<String>(2);
-                    PropertyDescriptor[] props = PropertyUtils.getPropertyDescriptors(dataObj);
-                    for (PropertyDescriptor prop : props)
-                    {
-                        Class cls  = prop.getPropertyType();
-                        if (cls != Integer.class && 
-                            cls != Long.class && 
-                            cls != String.class && 
-                            cls != Double.class && 
-                            cls != Float.class &&
-                            cls != Date.class &&
-                            cls != Boolean.class &&
-                            cls != Calendar.class &&
-                            cls != Class.class)
-                        {
-                            boolean addToList;
-                            if (cls == Set.class)
-                            {
-                                addToList = false;
-                                try
-                                {
-                                    Method getter = prop.getReadMethod();
-                                    Set set = (Set)getter.invoke(dataObj, new Object[] {});
-                                    if (set != null && set.size() > 0)
-                                    {
-                                        addToList = true;
-                                    }
-                                } catch (Exception ex)
-                                {
-                                    ex.printStackTrace();
-                                }
-                            } else
-                            {
-                                addToList = true;
-                            }
-                            
-                            if (addToList)
-                            {
-                                String   name = prop.getDisplayName();
-                                FormCell cell = formViewDef.getFormCellByName(name);
-                                String   desc = name;
-                                if (cell instanceof FormCellSubView)
-                                {
-                                    FormCellSubView cellSubView = (FormCellSubView)cell;
-                                    desc = StringUtils.isNotEmpty(cellSubView.getDescription()) ? cellSubView.getDescription() : name;
-                                }
-                                log.info(cls.getName()+"  "+name+ "  "+ desc);
-                                needToSaveList.add(desc);      
-                            }
-                        }
-                   }
-                    
-                    if (needToSaveList.size() > 0)
-                    {
-                        CheckboxChooserDlg<String> dlg = new CheckboxChooserDlg<String>("Save", "Check the items you would like to have saved.", needToSaveList);
-                        UIHelper.centerAndShow(dlg);
-                    }*/
-                    
                 }
-
             }
         }
         return true;
@@ -898,18 +918,28 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         Transaction transaction = null;
         try
         {
-            transaction = session.beginTransaction();
-
             this.getDataFromUI();
 
             traverseToGetDataFromForms(mvParent);
             
+            if (businessRules != null && businessRules.processBusinessRules(dataObj) == BusinessRulesIFace.STATUS.Error)
+            {
+                StringBuilder strBuf = new StringBuilder();
+                for (String s : businessRules.getWarningsAndErrors())
+                {
+                    strBuf.append(s);
+                    strBuf.append("\n");
+                }
+                JOptionPane.showMessageDialog(null, strBuf, getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                return;
+            }
             
             if (HibernateUtil.updateLastEdittedInfo(dataObj))
             {
                 setDataIntoUI();
             }
 
+            transaction = session.beginTransaction();
             session.saveOrUpdate(dataObj);
             transaction.commit();
             session.flush();
@@ -948,7 +978,10 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             log.error("******* " + e);
             e.printStackTrace();
-            transaction.rollback();
+            if (transaction != null)
+            {
+                transaction.rollback();
+            }
         }
         saveBtn.setEnabled(false);
     }
@@ -962,6 +995,8 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         try
         {
             removeFromParent(dataObj);
+            
+            String delMsg = businessRules.deleteMsg(dataObj);
 
             transaction = session.beginTransaction();
             session.delete(dataObj);
@@ -976,19 +1011,31 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 rsController.setLength(rsController.getLength()-1);
 
                 int newInx = Math.min(currInx, rsController.getLength());
-                if (newInx > 0)
+                if (newInx > -1 && list.size() > 0)
                 {
                     rsController.setIndex(newInx);
                     dataObj = list.get(newInx);
-                    this.setDataIntoUI();
+                    
+                    setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
+                } else
+                {
+                    setDataObj(null, true); // true means the dataObj is already in the current "list" of data items we are working with
                 }
+            } else
+            {
+                setDataObj(null); 
             }
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
+
 
         } catch (Exception e)
         {
             log.error("******* " + e);
             e.printStackTrace();
-            transaction.rollback();
+            if (transaction != null)
+            {
+                transaction.rollback();
+            }
         }
     }
 
@@ -1016,15 +1063,21 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public void listFieldChanges()
     {
-        if (formValidator != null)
+        try
         {
-            log.debug("=================================== "+formValidator.getDCNs().values().size());
-            for (DataChangeNotifier dcn : formValidator.getDCNs().values())
+            if (formValidator != null)
             {
-                FieldInfo fieldInfo = controlsById.get(dcn.getId());
-                log.debug("Changed Field["+fieldInfo.getName()+"]\t["+(dcn.isDataChanged() ? "CHANGED" : "not changed")+"]");
+                log.debug("=================================== "+formValidator.getDCNs().values().size());
+                for (DataChangeNotifier dcn : formValidator.getDCNs().values())
+                {
+                    FieldInfo fieldInfo = controlsById.get(dcn.getId());
+                    log.debug("Changed Field["+fieldInfo.getName()+"]\t["+(dcn.isDataChanged() ? "CHANGED" : "not changed")+"]");
+                }
+                log.debug("===================================");
             }
-            log.debug("===================================");
+        } catch (Exception ex)
+        {
+            log.error(ex);
         }
     }
 
@@ -1051,7 +1104,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (rsController == null)
         {
             boolean inEditMode = altView.getMode() == AltView.CreationMode.Edit;
-            rsController = new ResultSetController(formValidator, inEditMode, inEditMode, 0);
+            rsController = new ResultSetController(formValidator, inEditMode, inEditMode, view.getObjTitle(), 0);
             rsController.addListener(this);
             controlPanel.add(rsController);
 
@@ -1171,8 +1224,18 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataObj(java.lang.Object)
      */
-    @SuppressWarnings("unchecked")
     public void setDataObj(final Object dataObj)
+    {
+        setDataObj(dataObj, false);
+    }
+
+    /**
+     * Set the datObj into the form but controls 
+     * @param dataObj the data object
+     * @param alreadyInTheList indicates whether this dataObj is already in the list of data objects we are working with
+     */
+    @SuppressWarnings("unchecked")
+    protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
         // We really shouldn't get here.
         // This condition is true only if a new Object (record) was being entered and some how the user was
@@ -1185,26 +1248,28 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
-        if (data instanceof java.util.Set)
+        if (!alreadyInTheList)
         {
-            origDataSet = (Set)dataObj;
-            List newList = Collections.list(Collections.enumeration(origDataSet));
-            data = newList;
-            
-            if (newList.size() > 0)
+            if (data instanceof java.util.Set)
             {
-                Object firstDataObj = newList.get(0);
-                if (firstDataObj instanceof Comparable<?>)
+                origDataSet = (Set)dataObj;
+                List newList = Collections.list(Collections.enumeration(origDataSet));
+                data = newList;
+                
+                if (newList.size() > 0)
                 {
-                    Collections.sort(newList);
+                    Object firstDataObj = newList.get(0);
+                    if (firstDataObj instanceof Comparable<?>)
+                    {
+                        Collections.sort(newList);
+                    }
                 }
             }
-
         }
 
         // If there is a formValidator then we set the current object into the formValidator's scripting context
         // then turn off change notification while the form is filled
-        if (formValidator != null)
+        if (formValidator != null && dataObj != null)
         {
             formValidator.addRuleObjectMapping("dataObj", dataObj);
         }
@@ -1225,6 +1290,10 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             if (rsController != null)
             {
                 rsController.setLength(list.size());
+                if (rsController.getDelRecBtn() != null)
+                {
+                    rsController.getDelRecBtn().setEnabled((businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0);
+                }
             }
 
             // Set the data from the into the form
@@ -1234,7 +1303,11 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             // OK, it is a single data object
             this.dataObj = dataObj;
-            this.list    = null;
+            
+            if (!alreadyInTheList)
+            {
+                this.list = null;
+            }
 
             setDataIntoUI();
 
@@ -1243,6 +1316,10 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             if (this.dataObj != null && rsController != null)
             {
                 controlPanel.setRSCVisibility(!isEditting);
+                if (rsController.getDelRecBtn() != null)
+                {
+                    rsController.getDelRecBtn().setEnabled(businessRules == null || businessRules.okToDelete(this.dataObj));
+                }
             }
         }
 
@@ -1399,13 +1476,13 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                         			throw new RuntimeException("No Format but mulitple fields were specified for["+cellField.getName()+"]");
                         		}
 
-                        		if (isTextFieldPerMode)
+                                if (values == null || values[0] == null)
+                                {
+                                    setDataIntoUIComp(comp, isTextFieldPerMode ? "" : null, defaultValue);
+                                    
+                                } else
                         		{
-                        			setDataIntoUIComp(comp, values != null && values[0] != null ? values[0].toString() : "", defaultValue);
-
-                        		} else
-                        		{
-                        			setDataIntoUIComp(comp, values == null ? null : values[0], defaultValue);
+                        			setDataIntoUIComp(comp, isTextFieldPerMode ? values[0].toString() : values[0], defaultValue);
                         		}
 
                         	}
@@ -1468,6 +1545,27 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         DataObjectGettable dg = formViewDef.getDataGettable();
         if (ds != null)
         {
+            
+            // Get Data From Selector
+            if (selectorCBX != null)
+            {
+                String selectorName = altView.getSelectorName();
+                if (StringUtils.isNotEmpty(selectorName))
+                {
+                    try
+                    {
+                        PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, selectorName);
+                        Object selectorValObj = UIHelper.convertDataFromString(altView.getSelectorValue(), descr.getPropertyType());
+                        HibernateUtil.setFieldValue(selectorName, dataObj, selectorValObj, dg, ds);
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        // XXX TOFO Show error dialog here
+                    }
+                }
+            }
+            
             for (FieldInfo fieldInfo : controlsById.values())
             {
                 FormCell fc = fieldInfo.getFormCell();
@@ -1768,9 +1866,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public void hideMultiViewSwitch(boolean hide)
     {
-        if (altViewUI != null)
+        if (switcherUI != null)
         {
-            altViewUI.setVisible(!hide);
+            switcherUI.setVisible(!hide);
         }
     }
 
@@ -1941,10 +2039,8 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     {
         if (evt.getKey().equals("viewfieldcolor"))
         {
-            ColorWrapper viewFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
-            Color vfColor = viewFieldColor.getColor();
-
-            setColorOnControls(0, vfColor);
+            ColorWrapper viewFieldColorLocal = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
+            setColorOnControls(0, viewFieldColorLocal.getColor());
         }
         //log.debug("Pref: ["+evt.getKey()+"]["+pref.get(evt.getKey(), "XXX")+"]");
     }

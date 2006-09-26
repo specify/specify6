@@ -72,7 +72,7 @@ public class DataEntryTask extends BaseTask
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
-
+    protected SubPaneIFace        starterPane      = null;
 
     /**
      * Default Constructor
@@ -127,12 +127,12 @@ public class DataEntryTask extends BaseTask
      * @param data the data to fill in 
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
-    public static void openView(final Taskable task, 
-                                final String   viewSetName, 
-                                final String   viewName, 
-                                final String   mode, 
-                                final Object   data,
-                                final boolean  isNewForm)
+    public void openView(final Taskable task, 
+                         final String   viewSetName, 
+                         final String   viewName, 
+                         final String   mode, 
+                         final Object   data,
+                         final boolean  isNewForm)
     {
         View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         
@@ -159,9 +159,19 @@ public class DataEntryTask extends BaseTask
         }
         
         FormPane formPane = new FormPane(HibernateUtil.getNewSession(), 
-                                         view.getName(), task, viewSetName, viewName, mode, dataObj, isNewForm);
+                                         view.getName(), task, viewSetName, viewName, mode, dataObj, false, isNewForm);
         formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
-        SubPaneMgr.getInstance().addPane(formPane);
+        
+        
+        if (starterPane == null)
+        {
+            SubPaneMgr.getInstance().addPane(formPane);
+            
+        } else
+        {
+            SubPaneMgr.getInstance().replacePane(starterPane, formPane);
+            starterPane = null;
+        }
     }
 
     /**
@@ -181,7 +191,7 @@ public class DataEntryTask extends BaseTask
             List data = query.list();
             if (data != null && data.size() > 0)
             {
-                FormPane formPane = new FormPane(session, view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0), false);
+                FormPane formPane = new FormPane(session, view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0), true, false);
                 formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
 
             } else
@@ -218,7 +228,7 @@ public class DataEntryTask extends BaseTask
         
         View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
         
-        FormPane formPane = new FormPane(session, name, task, view, null, query.list(), false);
+        FormPane formPane = new FormPane(session, name, task, view, null, query.list(), true, false);
         formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
         
         return formPane;
@@ -297,7 +307,8 @@ public class DataEntryTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(title, this, "This is the Data Entry Pane");
+        starterPane = new SimpleDescPane(title, this, "This is the Data Entry Pane");
+        return starterPane;
     }
 
     //-------------------------------------------------------
@@ -438,7 +449,7 @@ public class DataEntryTask extends BaseTask
 
         public void actionPerformed(ActionEvent e)
         {
-            DataEntryTask.openView(task, viewSetName, viewName, "edit", null, true);
+            ((DataEntryTask)task).openView(task, viewSetName, viewName, "edit", null, true);
         }
     }
 }

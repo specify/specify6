@@ -259,7 +259,7 @@ public class PickListTestApp
           
           ValComboBoxFromQuery valCBX = new ValComboBoxFromQuery("agent", "AgentID", "LastName", "LastName", 
                                                                  "edu.ku.brc.specify.datamodel.Agent", "agentId", "lastName", 
-                                                                 "%s", null, null, "AgentDisplay");
+                                                                 "%s", null, null, "AgentDisplay", "Agent");
           
           builder.add(new JLabel("Enter ValCBX:"), cc.xy(1,y));
           builder.add(valCBX, cc.xy(3,y));
@@ -319,7 +319,7 @@ public class PickListTestApp
         JMenu menu = null;
         try
         {
-            menu = (JMenu) menuBar.add(new JMenu(getResourceString(labelKey)));
+            menu = menuBar.add(new JMenu(getResourceString(labelKey)));
             menu.setMnemonic(getResourceString(mneuKey).charAt(0));
         } catch (Exception ex)
         {
@@ -383,7 +383,7 @@ public class PickListTestApp
                                        final boolean aEnabled,
                                        final AbstractAction aAction)
     {
-        JMenuItem mi = (JMenuItem) aMenu.add(new JMenuItem(aLabel));
+        JMenuItem mi = aMenu.add(new JMenuItem(aLabel));
         if (aMnemonic.length() > 0)
         {
             mi.setMnemonic(aMnemonic.charAt(0));

@@ -33,7 +33,6 @@ import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -228,7 +227,7 @@ public class LabelsTask extends BaseTask
         if (recordSet.getItems().size() > 200) // XXX Pref
         {
             Object[] options = {"Create Labels", "Cancel"};
-            int n = JOptionPane.showOptionDialog((Frame)UICacheManager.get(UICacheManager.FRAME),
+            int n = JOptionPane.showOptionDialog(UICacheManager.get(UICacheManager.FRAME),
                                                 String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getItems().size())}),
                                                 getResourceString("LotsOfLabelsTitle"),
                                                 JOptionPane.YES_NO_OPTION,
@@ -270,7 +269,7 @@ public class LabelsTask extends BaseTask
         if (labelsList.size() == 1)
         {
             Map<String, String> params = convertDataToMap(labelsList.get(0).getData());
-            return (String)params.get("file");
+            return params.get("file");
 
         } else
         {
@@ -480,23 +479,23 @@ public class LabelsTask extends BaseTask
      */
     class DisplayAction implements ActionListener
     {
-        private String    name;
-        private String    title;
+        private String    nameStr;
+        private String    titleStr;
         private int       tableId;
         private RecordSet recordSet = null;
 
 
         public DisplayAction(final TaskCommandDef tcd)
         {
-            this.name    = tcd.getParams().get("file");
-            this.title   = tcd.getParams().get("title");
-            this.tableId = Integer.parseInt(tcd.getParams().get("tableid"));
+            this.nameStr  = tcd.getParams().get("file");
+            this.titleStr = tcd.getParams().get("title");
+            this.tableId  = Integer.parseInt(tcd.getParams().get("tableid"));
         }
 
-        public DisplayAction(final String name, final String title)
+        public DisplayAction(final String nameStr, final String titleStr)
         {
-            this.name = name;
-            this.title = title;
+            this.nameStr  = nameStr;
+            this.titleStr = titleStr;
         }
 
         public void actionPerformed(ActionEvent e)
@@ -527,7 +526,7 @@ public class LabelsTask extends BaseTask
 
             if (data instanceof RecordSet)
             {
-                doLabels(name, title, (RecordSet)data);
+                doLabels(nameStr, titleStr, (RecordSet)data);
 
             } else
             {
@@ -563,7 +562,7 @@ public class LabelsTask extends BaseTask
         {
             super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("ChooseLabel"), true);
             createUI();
-            setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             this.setAlwaysOnTop(true);
         }
@@ -649,7 +648,7 @@ public class LabelsTask extends BaseTask
             int inx = list.getSelectedIndex();
             if (inx != -1)
             {
-                return (String)convertDataToMap(labelsList.get(inx).getData()).get("file");
+                return convertDataToMap(labelsList.get(inx).getData()).get("file");
 
             } else
             {

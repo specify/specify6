@@ -19,7 +19,6 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -42,7 +41,6 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -109,7 +107,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     public AgentSearchDialogES() throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("AgentSearchTitle"), true);
-        tables     = ExpressSearchTask.intializeTableInfo();
+        tables     = ExpressSearchTask.getTableInfoHash();
         lucenePath = ExpressSearchTask.getIndexDirPath();
         tableId    = DBTableIdMgr.lookupIdByShortName("agent");
 
@@ -120,7 +118,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
             i++;
         }
         createUI();
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
 
@@ -178,7 +176,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         formView = AppContextMgr.getInstance().getView(name, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, dataMap);
+            form = ViewFactory.createFormView(null, formView, null, dataMap, false);
             add(form.getUIComponent(), BorderLayout.CENTER);
             //getter = new DataGetterForObj();
 
@@ -280,11 +278,11 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
                         if (etrb != null && !e.getValueIsAdjusting())
                         {
                             recordSet = etrb.getRecordSet(false);
-                            for (Object obj : recordSet.getItems())
+                            /*for (Object obj : recordSet.getItems())
                             {
                                 RecordSetItem rsi = (RecordSetItem)obj;
-                                //System.out.println(rsi.getRecordId());
-                            }
+                                System.out.println(rsi.getRecordId());
+                            }*/
 
                         } else
                         {
@@ -300,9 +298,9 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public void removeTable(ExpressTableResultsBase table)
+    public void removeTable(ExpressTableResultsBase expTblRes)
     {
-        contentPanel.remove(table);
+        contentPanel.remove(expTblRes);
         contentPanel.invalidate();
         contentPanel.doLayout();
         contentPanel.repaint();

@@ -84,6 +84,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     protected boolean                      createRecordSetController;
     protected boolean                      createViewSwitcher;
+    protected boolean                      isNewObject;
 
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
 
@@ -99,14 +100,16 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param mvParent parent of this MultiView the root MultiView is null
      * @param view the view to create for
      * @param createWithMode how the form should be created (Noe, Edit or View mode)
-     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @param createRecordSetController indicates that a RecordSet Contoller should be created
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      */
     public MultiView(final MultiView mvParent,
                      final View view,
                      final AltView.CreationMode createWithMode,
                      final boolean createRecordSetController,
-                     final boolean createViewSwitcher)
+                     final boolean createViewSwitcher,
+                     final boolean isNewObject)
     {
         setLayout(cardLayout);
 
@@ -115,10 +118,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createWithMode            = createWithMode;
         this.createRecordSetController = createRecordSetController;
         this.createViewSwitcher        = createViewSwitcher;
+        this.isNewObject                = isNewObject;
 
         specialEditView = view.isSpecialViewEdit();
 
-        createDefaultViewable(createRecordSetController, createViewSwitcher);
+        createDefaultViewable();
 
         // Testing
         if (mvParent == null)
@@ -342,12 +346,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     /**
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef.
-     * @param createRecordSetControllerArg indicates that a RecordSet Contoller should be created
-     * @param createViewSwitcherArg can be used to make sure that the multiview switcher is not created
-     * @return return the default Viewable (ViewDef)
+      * @return return the default Viewable (ViewDef)
      */
-    protected Viewable createDefaultViewable(final boolean createRecordSetControllerArg,
-                                             final boolean createViewSwitcherArg)
+    protected Viewable createDefaultViewable()
     {
         AltView  altView;
         if (createWithMode != null)
@@ -361,9 +362,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
-        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetControllerArg, createViewSwitcherArg);
+        // this call parents the viewable to the multiview
+        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetController, createViewSwitcher, isNewObject);
         viewable.setParentDataObj(parentDataObj);
 
+        // Add Viewable to the CardLayout
         if (add(viewable, altView.getName()))
         {
             showView(altView.getName());
@@ -385,6 +388,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     /**
      * Adds a viewable to the MultiView.
      * @param viewable the viewablew to be added
+     * @param name the name of the view to be added
      * @return true if it was added, false if name conflicts
      */
     protected boolean add(final Viewable viewable, final String name)
@@ -405,13 +409,28 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     /**
      * Adds a form validator.
-     * @param validator
+     * @param validator the validator
      */
     public void addFormValidator(final FormValidator validator)
     {
-        validator.addDataChangeListener(this);
-        formValidators.add(validator);
+        if (validator != null)
+        {
+            validator.addDataChangeListener(this);
+            formValidators.add(validator);
+        }
+    }
 
+    /**
+     * Removes a form validator.
+     * @param validator the validator
+     */
+    public void removeFormValidator(final FormValidator validator)
+    {
+        if (validator != null)
+        {
+            validator.removeDataChangeListener(this);
+            formValidators.remove(validator);
+        }
     }
 
     /**
@@ -469,10 +488,13 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     log.debug("--------------------------");
 
                     String altViewName = altView.getName();
+                    
                     currentViewable.aboutToShow(false);
+                    removeFormValidator(currentViewable.getValidator());
+                    
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode = altView.getMode();
-                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createRecordSetController, createViewSwitcher);
+                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createRecordSetController, createViewSwitcher, isNewObject);
                     viewable.setSession(session);
                     if (add(viewable, altViewName))
                     {
@@ -495,8 +517,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             if (currentViewable != null)
             {
                 currentViewable.aboutToShow(false);
+                removeFormValidator(currentViewable.getValidator());
             }
             viewable.aboutToShow(true);
+            addFormValidator(viewable.getValidator());
             cardLayout.show(this, name);
         }
 
@@ -557,9 +581,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 for (AltView av : view.getAltViews())
                 {
                     log.info("["+av.getSelectorName()+"]["+av.getSelectorValue()+"]["+fieldDataStr+"]");
-                    if (StringUtils.isNotEmpty(av.getSelectorName()) && av.getSelectorValue().equals(fieldDataStr))
+                    if (StringUtils.isNotEmpty(av.getSelectorName()) && 
+                        av.getSelectorValue().equals(fieldDataStr) &&
+                        altView.getMode() == av.getMode())
                     {
                         showView(av.getName());
+                        break;
                     }
                 }
             } else

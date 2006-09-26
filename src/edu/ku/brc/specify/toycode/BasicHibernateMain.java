@@ -26,6 +26,11 @@ import edu.ku.brc.ui.db.DatabaseLoginListener;
  */
 public class BasicHibernateMain implements DatabaseLoginListener
 {
+    public void aboutToLoginIn()
+    {
+        
+    }
+    
     public void loggedIn(final String databaseName, final String userName)
     {
     	SpecifyAppPrefs.initialPrefs();

@@ -120,7 +120,7 @@ public class ChartPanel extends JPanel implements Chartable
     public class ChartLayoutManager implements LayoutManager, LayoutManager2
     {
     	protected ChartPanel                 parentChartPanel;
-    	protected org.jfree.chart.ChartPanel chartPanel;
+    	protected org.jfree.chart.ChartPanel freeChartPanel;
     	protected Dimension                  preferredSize = new Dimension(100,100);
     	
         /**
@@ -141,7 +141,7 @@ public class ChartPanel extends JPanel implements Chartable
             {
                 throw new NullPointerException("Null component in addLayoutComponent");
             }
-            chartPanel = (org.jfree.chart.ChartPanel)arg1;
+            freeChartPanel = (org.jfree.chart.ChartPanel)arg1;
 
         }
 
@@ -154,7 +154,7 @@ public class ChartPanel extends JPanel implements Chartable
             {
                 throw new NullPointerException("Null component in addLayoutComponent");
             }
-            //chartPanel = (org.jfree.chart.ChartPanel)arg0;
+            //freeChartPanel = (org.jfree.chart.ChartPanel)arg0;
         }
 
         /* (non-Javadoc)
@@ -186,7 +186,7 @@ public class ChartPanel extends JPanel implements Chartable
         	//System.out.println("parentSize "+parentSize);
 
             //preferredSize.setSize(parentSize.width, parentSize.height-5);
-            chartPanel.setBounds(0,0,parentSize.width, parentSize.height-5);
+            freeChartPanel.setBounds(0,0,parentSize.width, parentSize.height-5);
         }
 
 
@@ -197,7 +197,7 @@ public class ChartPanel extends JPanel implements Chartable
             {
                 throw new NullPointerException("Null component in addLayoutComponent");
             }
-            chartPanel = (org.jfree.chart.ChartPanel)comp;
+            freeChartPanel = (org.jfree.chart.ChartPanel)comp;
         }
         public float   getLayoutAlignmentX(Container target)
         {

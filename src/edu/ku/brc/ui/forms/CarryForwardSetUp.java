@@ -290,7 +290,7 @@ public class CarryForwardSetUp extends JComponent
     //-----------------------------------------------------------------------------
     class ControlDialog extends JComponent
     {
-        protected BufferedImage bufImg;
+        protected BufferedImage bufferedImg;
         protected String        title      = "Carry Forward Setup";                    // XXX I18N
         protected String[]      buttonStrs = {"Select All", "Select None", "Close"};   // XXX I18N
         protected int[]         widths     = new int[buttonStrs.length];
@@ -311,8 +311,8 @@ public class CarryForwardSetUp extends JComponent
         {
             this.cfsu = cfsu;
             
-            bufImg = new BufferedImage(1,1, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = bufImg.createGraphics();
+            bufferedImg = new BufferedImage(1,1, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = bufferedImg.createGraphics();
             strHeight = g2.getFontMetrics().getHeight();
             
             titleBarHeight = strHeight + titleBarGap*2;
@@ -338,8 +338,8 @@ public class CarryForwardSetUp extends JComponent
             setSize(width, height);
             g2.dispose();
             
-            bufImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            g2 = bufImg.createGraphics();
+            bufferedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            g2 = bufferedImg.createGraphics();
              g2.setColor(Color.WHITE);
             g2.fillRoundRect(0, 0, width-1, height-1, 10, 10);
             
@@ -366,13 +366,13 @@ public class CarryForwardSetUp extends JComponent
             
             int shadowWidth = 10;
             ShadowFactory factory = new ShadowFactory(shadowWidth, 0.17f, Color.BLACK);
-            BufferedImage shadowImage = factory.createShadow(bufImg);
+            BufferedImage shadowImage = factory.createShadow(bufferedImg);
             g2 = shadowImage.createGraphics();
-            int left   = (int)(((double)shadowWidth) * 0.5);
-            int top    = (int)(((double)shadowWidth)* 0.4);
-            g2.drawImage(bufImg, left, top, bufImg.getWidth(), bufImg.getHeight(), null);
+            int left   = (int)(shadowWidth * 0.5);
+            int top    = (int)(shadowWidth* 0.4);
+            g2.drawImage(bufferedImg, left, top, bufferedImg.getWidth(), bufferedImg.getHeight(), null);
             g2.dispose();
-            bufImg = shadowImage;
+            bufferedImg = shadowImage;
             
             for (int i=0;i<rects.length;i++)
             {
@@ -429,7 +429,7 @@ public class CarryForwardSetUp extends JComponent
         {
             super.paintComponent(g);
             Point p = getLocation();
-            g.drawImage(bufImg, p.x, p.y, bufImg.getWidth(), bufImg.getHeight(), null);
+            g.drawImage(bufferedImg, p.x, p.y, bufferedImg.getWidth(), bufferedImg.getHeight(), null);
         }
     }
     

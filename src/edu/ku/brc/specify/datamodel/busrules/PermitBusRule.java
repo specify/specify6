@@ -6,8 +6,6 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -18,11 +16,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgents;
-import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.ui.forms.BusinessRulesDataItem;
@@ -36,16 +30,16 @@ import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
  * @author rods
  *
  */
-public class AccessionBusRule implements BusinessRulesIFace
+public class PermitBusRule implements BusinessRulesIFace
 {
-    private static final Logger  log      = Logger.getLogger(AccessionBusRule.class);
+    private static final Logger  log = Logger.getLogger(PermitBusRule.class);
     
     private List<String> errorList = new Vector<String>();
-   
+    
     /**
      * Constructor.
      */
-    public AccessionBusRule()
+    public PermitBusRule()
     {
         
     }
@@ -65,45 +59,46 @@ public class AccessionBusRule implements BusinessRulesIFace
     {
         errorList.clear();
         
-        if (!(dataObj instanceof Accession))
+        if (!(dataObj instanceof Permit))
         {
             return STATUS.Error;
         }
         
-        Accession accession       = (Accession)dataObj;
-        String    accessionNumber = accession.getNumber();
-        if (StringUtils.isNotEmpty(accessionNumber))
+        Permit permit = (Permit)dataObj;
+        
+        String permitNum = permit.getPermitNumber();
+        if (StringUtils.isNotEmpty(permitNum))
         {
             // Start by checking to see if the permit number has changed
-            boolean checkAccessionNumberForDuplicates = true;
-            Long id = accession.getAccessionId();
+            boolean checkPermitNumberForDuplicates = true;
+            Long id = permit.getPermitId();
             if (id != null)
             {
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
-                criteria.add(Expression.eq("accessionId", id));
-                List accessions = criteria.list();
-                if (accessions.size() == 1)
+                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Permit.class);
+                criteria.add(Expression.eq("permitId", id));
+                List permits = criteria.list();
+                if (permits.size() == 1)
                 {
-                    Accession oldAccession       = (Accession)accessions.get(0);
-                    String    oldAccessionNumber = oldAccession.getNumber();
-                    if (oldAccessionNumber.equals(accession.getNumber()))
+                    Permit oldPermit = (Permit)permits.get(0);
+                    String oldPermitNumber = oldPermit.getPermitNumber();
+                    if (oldPermitNumber.equals(permit.getPermitNumber()))
                     {
-                        checkAccessionNumberForDuplicates = false;
+                        checkPermitNumberForDuplicates = false;
                     }
                 }
             }
             
-            // If the Id is null then it is a new permit, if not then we are editting the accession
+            // If the Id is null then it is a new permit, if not then we are editting the permit
             //
-            // If the accession has not changed then we shouldn't check for duplicates
-            if (checkAccessionNumberForDuplicates)
+            // If the permit has not changed then we shouldn't check for duplicates
+            if (checkPermitNumberForDuplicates)
             {
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
-                criteria.add(Expression.eq("number", accessionNumber));
-                List accessionNumbers = criteria.list();
-                if (accessionNumbers.size() > 0)
+                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Permit.class);
+                criteria.add(Expression.eq("permitNumber", permitNum));
+                List permitNumbers = criteria.list();
+                if (permitNumbers.size() > 0)
                 {
-                    errorList.add("Accession Number is already in use."); // I18N
+                    errorList.add("Permit Number is already in use."); // I18N
                 } else
                 {
                     return STATUS.OK;
@@ -116,7 +111,7 @@ public class AccessionBusRule implements BusinessRulesIFace
             
         } else
         {
-            errorList.add("Accession Number is missing!"); // I18N
+            errorList.add("Permit Number is missing!"); // I18N
         }
 
         return STATUS.Error;
@@ -127,25 +122,23 @@ public class AccessionBusRule implements BusinessRulesIFace
      */
     public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj)
     {
-        
+        Permit permit = (Permit)dataObj;
         List<BusinessRulesDataItem> list = new ArrayList<BusinessRulesDataItem>();
-        Accession accession = (Accession)dataObj;
-        
-        for (AccessionAgents accAgent : accession.getAccessionAgents())
+
+        Agent agent = permit.getAgentByIssuee();
+        if (agent != null)
         {
-            Agent agent = accAgent.getAgent();
             if (agent != null && agent.getAgentId() == null)
             {
-                list.add(new AccessionBRS(agent));
+                list.add(new PermitBRS(agent));
             }
         }
-        
-        for (AccessionAuthorizations auth : accession.getAccessionAuthorizations())
+        agent = permit.getAgentByIssuer();
+        if (agent != null)
         {
-            Permit permit = auth.getPermit();
-            if (permit != null && permit.getPermitId() == null)
+            if (agent != null && agent.getAgentId() == null)
             {
-                list.add(new AccessionBRS(permit));
+                list.add(new PermitBRS(agent));
             }
         }
         return list;
@@ -156,7 +149,7 @@ public class AccessionBusRule implements BusinessRulesIFace
      */
     public void saveStandAloneData(final Object dataObj, final List<BusinessRulesDataItem> list)
     {
-        if (!(dataObj instanceof Accession))
+        if (!(dataObj instanceof Permit))
         {
             return;
         }
@@ -186,43 +179,25 @@ public class AccessionBusRule implements BusinessRulesIFace
      */
     public boolean okToDelete(Object dataObj)
     {
-        if (dataObj instanceof Accession)
+        if (dataObj instanceof Permit)
         {
-            Accession accession = (Accession)dataObj;
-            
-            // Doing "accession.getCollectionObjects().size() == 0"
-            // potentially is REALLY slow if a lot of CollectionObjects are attached 
-            // to an Accessions
-            // So instead we will use straight SQL
-            try
+            Permit permit = (Permit)dataObj;
+            if (permit.getAccessionAuthorizations().size() == 0)
             {
-                Statement stmt = DBConnection.getConnection().createStatement();
-                ResultSet rs = stmt.executeQuery("select count(*) from collectionobject where AccessionID = "+accession.getAccessionId());
-                if (rs.first())
-                {
-                    return rs.getInt(1) == 0;
-                }
-                rs.close();
-                stmt.close();
-                
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                throw new RuntimeException(ex);
+                return true;
             }
-        }        
-        throw new RuntimeException("DataObj is not an Accession ["+dataObj.getClass().getSimpleName()+"]");
+        }
+        return false;
     }
-    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#deleteMsg(java.lang.Object)
      */
     public String deleteMsg(final Object dataObj)
     {
-        if (dataObj instanceof Accession)
+        if (dataObj instanceof Permit)
         {
-            return "Accession "+((Accession)dataObj).getNumber() + " was deleted."; // I18N
+            return "Permit "+((Permit)dataObj).getPermitNumber() + " was deleted."; // I18N
         }
         return null;
     }
@@ -230,9 +205,9 @@ public class AccessionBusRule implements BusinessRulesIFace
     //-----------------------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------------------
-    class AccessionBRS extends BusinessRulesDataItem
+    class PermitBRS extends BusinessRulesDataItem
     {
-        public AccessionBRS(final Object data)
+        public PermitBRS(final Object data)
         {
             super(data);
         }
@@ -243,12 +218,8 @@ public class AccessionBusRule implements BusinessRulesIFace
             {
                 return DataObjFieldFormatMgr.format(data, "Agent"); // NOTE: This assumes we definitely have an "Agent" format
 
-            } else if (data instanceof Permit)
-            {
-                return ((Permit)data).getPermitNumber();
             }
             return null;
         }
     }
-
 }

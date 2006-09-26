@@ -99,32 +99,33 @@ public class BasicSQLUtils
      * @param ignoreMap the map to be be crated or cleared and nulled
      * @return the same map or a newly created one
      */
-    protected static Map<String, String> configureIgnoreMap(final String[] fieldNames, Map<String, String> ignoreMap)
+    protected static Map<String, String> configureIgnoreMap(final String[] fieldNames, final Map<String, String> ignoreMap)
     {
+        Map<String, String> ignoreMapLocal = ignoreMap;
         if (fieldNames == null)
         {
-            if (ignoreMap != null)
+            if (ignoreMapLocal != null)
             {
-                ignoreMap.clear();
-                ignoreMap = null;
+                ignoreMapLocal.clear();
+                ignoreMapLocal = null;
             }
         } else
         {
-            if (ignoreMap == null)
+            if (ignoreMapLocal == null)
             {
-                ignoreMap  = UIHelper.createMap();
+                ignoreMapLocal  = UIHelper.createMap();
             } else
             {
-                ignoreMap.clear();
+                ignoreMapLocal.clear();
             }
             log.info("Ignore these Field Names when mapping:");
             for (String name : fieldNames)
             {
-                ignoreMap.put(name, "X");
+                ignoreMapLocal.put(name, "X");
                 log.info(name);
             }
         }
-        return ignoreMap;
+        return ignoreMapLocal;
     }
 
     /**
@@ -751,7 +752,7 @@ public class BasicSQLUtils
                                 {
                                     if (isAccessionTable)
                                     {
-                                        str.append(getStrValue(UIHelper.convertIntToDate((Integer)rs.getInt(fromHash.get("DateAccessioned")))));
+                                        str.append(getStrValue(UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")))));
     
                                     } else
                                     {
@@ -769,7 +770,7 @@ public class BasicSQLUtils
                                 {
                                     if (isAccessionTable)
                                     {
-                                        str.append(getStrValue(UIHelper.convertIntToDate((Integer)rs.getInt(fromHash.get("DateAccessioned")))));
+                                        str.append(getStrValue(UIHelper.convertIntToDate(rs.getInt(fromHash.get("DateAccessioned")))));
     
                                     } else
                                     {

@@ -50,7 +50,8 @@ public class ComboBoxFromQueryFactory
                 "%s,%s",
                 "Agent", // format Name
                 "AgentSearch",
-                "AgentDisplay"));
+                "AgentDisplay",
+                "Agent"));
 
         comboBoxes.put("Taxon", new ComboBoxFromQueryInfo(null, 
                 "taxon",
@@ -63,7 +64,8 @@ public class ComboBoxFromQueryFactory
                 null,
                 null,
                 null,
-                null));
+                null,
+                "Taxon"));
         
         comboBoxes.put("Permit", new ComboBoxFromQueryInfo(null, "permit",
                 "PermitID",
@@ -75,7 +77,8 @@ public class ComboBoxFromQueryFactory
                 "%s",
                 null,
                 "PermitSearch",
-                "PermitDisplay"));
+                "PermitDisplay",
+                "Permit"));
     }
 
     /**
@@ -95,8 +98,8 @@ public class ComboBoxFromQueryFactory
                                                  info.getKeyName(),
                                                  info.getFormat(),
                                                  info.getFormatName(),
-                                                 info.getCreateDialogName()
-                                                 );
+                                                 info.getCreateDialogName(),
+                                                 info.getObjTitle());
             }
         }
         return null;
@@ -139,8 +142,8 @@ public class ComboBoxFromQueryFactory
                                                  info.getFormat(),
                                                  info.getFormatName(),
                                                  info.getSearchDialogName(),
-                                                 info.getCreateDialogName()
-                                                 );
+                                                 info.getCreateDialogName(),
+                                                 info.getObjTitle());
             } else
             {
                 return new ValComboBoxFromQuery(info.getSQL(),
@@ -150,7 +153,8 @@ public class ComboBoxFromQueryFactory
                                                 info.getFormat(),
                                                 info.getFormatName(),
                                                 info.getSearchDialogName(),
-                                                info.getCreateDialogName()
+                                                info.getCreateDialogName(),
+                                                info.getObjTitle()
                                                 );
             }
         } else
@@ -176,6 +180,7 @@ public class ComboBoxFromQueryFactory
         protected String formatName;
         protected String searchDialogName;
         protected String createDialogName;
+        protected String objTitle;
 
         public ComboBoxFromQueryInfo(String sql,
                                      String tableName,
@@ -188,7 +193,8 @@ public class ComboBoxFromQueryFactory
                                      String format,
                                      String formatName,
                                      String searchDialogName,
-                                     String createDialogName)
+                                     String createDialogName,
+                                     String objTitle)
         {
             this.sql = sql;
             this.tableName = tableName;
@@ -202,6 +208,7 @@ public class ComboBoxFromQueryFactory
             this.formatName = formatName;
             this.searchDialogName = searchDialogName;
             this.createDialogName = createDialogName;
+            this.objTitle = objTitle;
             //this.displayDialogName = displayDialogName;
         }
 
@@ -263,6 +270,11 @@ public class ComboBoxFromQueryFactory
         public String getCreateDialogName()
         {
             return createDialogName;
+        }
+
+        public String getObjTitle()
+        {
+            return objTitle;
         }
 
         /*public String getDisplayDialogName()

@@ -149,14 +149,15 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, boolean, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
+     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, boolean, boolean, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
      */
     public ViewBasedDisplayIFace createDisplay(final String name,
-                                           final String     frameTitle,
-                                           final String     closeBtnTitle,
-                                           final boolean    isEdit,
-                                           final boolean    showSwitcher,
-                                           final FRAME_TYPE type)
+                                               final String     frameTitle,
+                                               final String     closeBtnTitle,
+                                               final boolean    isEdit,
+                                               final boolean    showSwitcher,
+                                               boolean          isNewObjectForm,
+                                               final FRAME_TYPE type)
     {
         DialogInfo info =  instance.dialogs.get(name);
         if (info != null)
@@ -171,6 +172,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                 info.getClassName(),
                                                 info.getIdFieldName(),
                                                 isEdit,
+                                                isNewObjectForm,
                                                 showSwitcher);
             } else
             {
@@ -182,6 +184,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                   info.getClassName(),
                                                   info.getIdFieldName(),
                                                   isEdit,
+                                                  isNewObjectForm,
                                                   showSwitcher);
             }
         } else

@@ -35,6 +35,7 @@ public class View implements Comparable<View>
     protected String               viewSetName;
     protected String               name;
     protected String               desc;
+    protected String               objTitle; // The title of a single object
     protected String               className;
     protected String               businessRulesClassName;
     protected List<AltView>        altViews       = new Vector<AltView>();
@@ -50,6 +51,7 @@ public class View implements Comparable<View>
     /**
      * Constructs a View.
      * @param viewSetName the ViewSet Name
+     * @param objTitle the name of a single object of this view
      * @param name the name of the view
      * @param className the class name fr the data object
      * @param businessRulesClassName the fully specified class name of the busniess rules object (implementing BusniessRulesIFace)
@@ -58,6 +60,7 @@ public class View implements Comparable<View>
      */
     public View(final String viewSetName, 
                 final String name, 
+                final String objTitle, 
                 final String className, 
                 final String businessRulesClassName,
                 final String desc,
@@ -65,6 +68,7 @@ public class View implements Comparable<View>
     {
         this.viewSetName    = viewSetName;
         this.name           = name;
+        this.objTitle       = objTitle;
         this.className      = className;
         this.businessRulesClassName = businessRulesClassName;
         this.desc           = desc;
@@ -229,6 +233,11 @@ public class View implements Comparable<View>
     public String getName()
     {
         return name;
+    }
+
+    public String getObjTitle()
+    {
+        return StringUtils.isNotEmpty(objTitle) ? objTitle : name;
     }
 
     public String getClassName()

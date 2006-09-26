@@ -320,26 +320,26 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
     /**
      * Create a label and register it
-     * @param name the logical name
+     * @param labelName the logical name
      * @param labelStr the string to be shown in the label
      * @return returns the new JLabel
      */
-    public JLabel createLabel(final String name, final String labelStr)
+    public JLabel createLabel(final String labelName, final String labelStr)
     {
         JLabel lbl = new JLabel(labelStr);
-        labels.put(name, lbl);
+        labels.put(labelName, lbl);
         return lbl;
     }
 
     /**
      * Register the label by name
-     * @param name the logical name of the label
+     * @param labelName the logical name of the label
      * @param lbl the label component
      * @return return the label that is passed in
      */
-    public JLabel addUILabel(final String name, final JLabel lbl)
+    public JLabel addUILabel(final String labelName, final JLabel lbl)
     {
-        labels.put(name, lbl);
+        labels.put(labelName, lbl);
         return lbl;
     }
 
@@ -812,7 +812,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.validation.DataChangeNotifier)
      */
-    public void dataChanged(final String name, final Component comp, DataChangeNotifier dcn)
+    public void dataChanged(final String dcName, final Component comp, DataChangeNotifier dcn)
     {
 
         if (!okToDataChangeNotification)
@@ -851,7 +851,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         for (DataChangeListener dcl : dcListeners)
         {
-            dcl.dataChanged(name, comp, dcn);
+            dcl.dataChanged(dcName, comp, dcn);
         }
 
         hasChanged = true;

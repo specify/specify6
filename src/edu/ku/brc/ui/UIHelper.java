@@ -307,6 +307,44 @@ public final class UIHelper
         }
         return "";
    }
+    
+    /**
+     * Converts a String to the class that is passed in.
+     * @param dataStr the data string to be converted
+     * @param cls the class that the string is to be converted t
+     * @return the data object
+     */
+    public static Object convertDataFromString(final String dataStr, final Class cls)
+    {
+        if (cls == Integer.class)
+        {
+            return Integer.parseInt(dataStr);
+            
+        } else if (cls == Float.class)
+        {
+            return Float.parseFloat(dataStr);
+            
+        } else if (cls == Double.class)
+        {
+            return Double.parseDouble(dataStr);
+            
+        } else if (cls == Long.class)
+        {
+            return Long.parseLong(dataStr);
+            
+        } else if (cls == Short.class)
+        {
+            return Short.parseShort(dataStr);
+            
+        } else if (cls == Byte.class)
+        {
+            return Byte.parseByte(dataStr);
+            
+        } else
+        {
+            throw new RuntimeException("Unsupported type for conversion["+cls.getSimpleName()+"]");
+        }
+    }
 
     public static boolean getBoolean(Object valObj)
     {

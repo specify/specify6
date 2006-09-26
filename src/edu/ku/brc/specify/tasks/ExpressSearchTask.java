@@ -27,6 +27,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -95,7 +96,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     protected Color                        textBGColor    = null;
     protected Color                        badSearchColor = new Color(255,235,235);
 
-    protected Hashtable<String, ExpressResultsTableInfo> tables = null;
+    protected static WeakReference<Hashtable<String, ExpressResultsTableInfo>> tableHash = null;
 
     /**
      * Deafult Constructor.
@@ -118,9 +119,28 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-
-            tables = intializeTableInfo();
         }
+    }
+    
+    /**
+     * Returns the HashMap of ExpressResultsTableInfo items.
+     * @return the HashMap of ExpressResultsTableInfo items
+     */
+    public static Hashtable<String, ExpressResultsTableInfo> getTableInfoHash()
+    {
+
+        Hashtable<String, ExpressResultsTableInfo> tableInfoHashMap = null;
+        if (tableHash != null)
+        {
+            tableInfoHashMap = tableHash.get();
+        }
+        
+        if (tableInfoHashMap == null)
+        {
+            tableInfoHashMap = intializeTableInfo();
+            tableHash = new WeakReference<Hashtable<String, ExpressResultsTableInfo>>(tableInfoHashMap);
+        }
+        return tableInfoHashMap;
     }
 
     /**
@@ -157,13 +177,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
      * Collects information about all the tables that will be processed for the express search.
      * @return hash of named ExpressResultsTableInfo
      */
-    public static Hashtable<String, ExpressResultsTableInfo> intializeTableInfo()
+    protected static Hashtable<String, ExpressResultsTableInfo> intializeTableInfo()
     {
         Hashtable<String, ExpressResultsTableInfo> tables = null;
         try
         {
             tables = new Hashtable<String, ExpressResultsTableInfo>();
-            Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig");         // Describes the definitions of the full text search
+            Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
             List tableItems = esDOM.selectNodes("/tables/table");
             for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
             {
@@ -221,7 +241,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
         if (isNotEmpty(searchTerm))
         {
             ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
-            if (doQuery(lucenePath, analyzer, searchText, badSearchColor, tables, expressSearchPane))
+            if (doQuery(lucenePath, analyzer, searchText, badSearchColor, getTableInfoHash(), expressSearchPane))
             {
                 SubPaneMgr.getInstance().addPane(expressSearchPane);
             } else

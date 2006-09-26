@@ -1,7 +1,5 @@
 package edu.ku.brc.af.tasks.subpane;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import java.awt.BorderLayout;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +15,6 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -67,6 +64,7 @@ public class FormPane extends DroppableTaskPane
      * @param viewSetName the name of the view set to use
      * @param viewName the ID of the form to be created from within the ViewSet
      * @param data the data to fill the form
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
     public FormPane(final Session session,
@@ -76,6 +74,7 @@ public class FormPane extends DroppableTaskPane
                     final String   viewName,
                     final String   mode,
                     final Object   data,
+                    final boolean  createViewSwitcher,
                     final boolean  isNewForm)
     {
         this(session, name, task, null);
@@ -84,7 +83,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = viewName;
         this.data        = data;
 
-        createForm(viewSetName, viewName, AltView.parseMode(mode, AltView.CreationMode.View), data, isNewForm);
+        createForm(viewSetName, viewName, AltView.parseMode(mode, AltView.CreationMode.View), data, createViewSwitcher, isNewForm);
     }
 
     /**
@@ -94,6 +93,7 @@ public class FormPane extends DroppableTaskPane
      * @param task the owning task
      * @param view the view to use
      * @param data the data to fill the form
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
     public FormPane(final Session session,
@@ -102,6 +102,7 @@ public class FormPane extends DroppableTaskPane
                     final View     view,
                     final String   mode,
                     final Object   data,
+                    final boolean  createViewSwitcher,
                     final boolean  isNewForm)
     {
         this(session, name, task, null);
@@ -110,7 +111,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = view.getName();
         this.data        = data;
 
-        createForm(view, AltView.parseMode(mode, AltView.CreationMode.View), data, isNewForm);
+        createForm(view, AltView.parseMode(mode, AltView.CreationMode.View), data, createViewSwitcher, isNewForm);
     }
 
     /**
@@ -167,7 +168,7 @@ public class FormPane extends DroppableTaskPane
             if (srcData != null && srcData instanceof DroppableFormObject)
             {
                 DroppableFormObject dfo = (DroppableFormObject)srcData;
-                createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), AltView.CreationMode.View, dfo.getData(), false);
+                createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), AltView.CreationMode.View, dfo.getData(), true, false);
              }
         }
     }
@@ -178,18 +179,20 @@ public class FormPane extends DroppableTaskPane
      * @param viewNameArg the ID of the form to be created from within the ViewSet
      * @param mode the creation mode
      * @param dataArg the data to fill the form
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
     public void createForm(final String  viewSetNameArg,
                            final String  viewNameArg,
                            final AltView.CreationMode mode,
                            final Object  dataArg,
+                           final boolean createViewSwitcher,
                            final boolean isNewForm)
     {
         this.viewSetName = viewSetNameArg;
         this.viewName    = viewNameArg;
 
-        createForm(AppContextMgr.getInstance().getView(viewSetName, viewName), mode, dataArg, isNewForm);
+        createForm(AppContextMgr.getInstance().getView(viewSetName, viewName), mode, dataArg, createViewSwitcher, isNewForm);
     }
 
     /**
@@ -197,11 +200,13 @@ public class FormPane extends DroppableTaskPane
      * @param view the view to use (throws RuntimeException if null)
      * @param mode the creation mode
      * @param dataArg the data to fill the form
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
     public void createForm(final View    view,
                            final AltView.CreationMode mode,
                            final Object  dataArg,
+                           final boolean createViewSwitcher,
                            final boolean isNewForm)
     {
         if (view != null)
@@ -209,7 +214,7 @@ public class FormPane extends DroppableTaskPane
             name = view.getName(); // names the Tab
 
             boolean isList = dataArg != null && (dataArg instanceof List || dataArg instanceof Set);
-            multiView = new MultiView(null, view, mode, isList, true);
+            multiView = new MultiView(null, view, mode, isList, createViewSwitcher, isNewForm);
             if (multiView != null)
             {
                 this.data = dataArg;
@@ -274,13 +279,13 @@ public class FormPane extends DroppableTaskPane
      * @param data the data to fill into the form
      * @return the form component
      */
-    public static Viewable createFormView(final String viewSetName, final String viewName, final Object data)
+    /*public static Viewable createFormView(final String viewSetName, final String viewName, final Object data)
     {
         // create form
         View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (view != null)
         {
-            Viewable form = ViewFactory.createFormView(null, view, null, data);
+            Viewable form = ViewFactory.createFormView(null, view, null, data, false);
             if (form != null)
             {
                 return form;
@@ -294,7 +299,7 @@ public class FormPane extends DroppableTaskPane
             UICacheManager.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+viewName+"]");
         }
         return null;
-    }
+    }*/
 
     /**
      * Return the ID of the form.

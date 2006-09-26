@@ -23,8 +23,11 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -129,6 +132,17 @@ public class ValTextArea extends JTextArea implements UIValidatable,
             {
                 isNew = false;
                 repaint();
+            }
+        });
+        
+        // Enable being able to TAB out of TextArea
+        getInputMap().put(KeyStroke.getKeyStroke("TAB"), "none");
+        addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.VK_TAB )
+                {
+                    transferFocus();
+                }
             }
         });
 

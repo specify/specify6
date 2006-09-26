@@ -771,6 +771,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
     //---------------------------------------------------------
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#aboutToLoginIn()
+     */
+    public void aboutToLoginIn()
+    {
+        
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
      */
     public void loggedIn(final String databaseNameArg, final String userNameArg)

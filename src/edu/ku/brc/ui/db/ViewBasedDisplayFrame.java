@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.ui.db;
 
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
@@ -47,6 +46,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
      * @param closeBtnTitle the title of close btn
      * @param className the name of the class to be created from the selected results
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @param showSwitcher whether it should show the "Switch mode" UI combobox
      */
     public ViewBasedDisplayFrame(final String viewSetName,
@@ -57,16 +57,26 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
                                  final String className,
                                  final String idFieldName,
                                  final boolean isEdit,
+                                 final boolean isNewObject,
                                  final boolean showSwitcher)
     {
         this.setTitle(title);
 
-        mainPanel = new ViewBasedDisplayPanel(this, viewSetName, viewName, displayName, closeBtnTitle, className, idFieldName, isEdit, showSwitcher);
+        mainPanel = new ViewBasedDisplayPanel(this, 
+                                              viewSetName, 
+                                              viewName, 
+                                              displayName, 
+                                              closeBtnTitle, 
+                                              className, 
+                                              idFieldName, 
+                                              isEdit, 
+                                              isNewObject,
+                                              showSwitcher);
 
         setContentPane(mainPanel);
         pack();
 
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             
@@ -122,6 +132,8 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
     public void setData(final Object dataObj)
     {
         mainPanel.setData(dataObj);
+        
+        pack(); // this is because the data may be a selector to change the form
     }
 
     /* (non-Javadoc)

@@ -325,7 +325,7 @@ public class JComboBoxFromQuery extends JComboBox
                                 values[i] = val != null ? val : "";
                             }
                             Formatter formatter = new Formatter();
-                            formatter.format(format, (Object[])values);
+                            formatter.format(format, values);
                             list.addElement(formatter.toString());
 
                         } catch (java.util.IllegalFormatConversionException ex)

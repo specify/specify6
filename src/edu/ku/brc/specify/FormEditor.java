@@ -69,7 +69,6 @@ import org.hibernate.criterion.Expression;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
@@ -105,7 +104,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
-import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -228,11 +226,11 @@ public class FormEditor implements DatabaseLoginListener
     {
         UserGroup        userGroup        = createUserGroup(disciplineName);
         SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
-        DataType         dataType         = createDataType(disciplineName);
+        DataType         dType            = createDataType(disciplineName);
 
 
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("TreeDef");
-        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef);
+        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dType, user, taxonTreeDef);
 
         Geography[] geographies = createGeographies(collectionObjDef, "GeoTree");
 
@@ -356,14 +354,14 @@ public class FormEditor implements DatabaseLoginListener
 
                 for (String name : dataTypeNames)
                 {
-                    DataType dataType = new DataType();
-                    dataType.setName(name);
-                    dataType.setCollectionObjDef(null);
-                    session.save(dataType);
+                    DataType dType = new DataType();
+                    dType.setName(name);
+                    dType.setCollectionObjDef(null);
+                    session.save(dType);
 
                     if (returnName != null && name.equals(returnName))
                     {
-                        retDataType = dataType;
+                        retDataType = dType;
                     }
                 }
 
@@ -378,12 +376,11 @@ public class FormEditor implements DatabaseLoginListener
         {
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(DataType.class);
             criteria.add(Expression.eq("name", "Animal"));
-            java.util.List list = criteria.list();
-            for (Object obj : list)
+            for (Object obj : criteria.list())
             {
-                DataType dataType = (DataType)obj;
+                DataType dType = (DataType)obj;
                 //System.out.println(dataType.getName());
-                retDataType = dataType;
+                retDataType = dType;
                 break;
             }
 
@@ -398,7 +395,7 @@ public class FormEditor implements DatabaseLoginListener
     protected Viewable createView(View view)
     {
         //multiView   = new MultiView(null, view, AltView.CreationMode.View, false, false);
-        multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true);
+        multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true, false);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
 
@@ -484,18 +481,17 @@ public class FormEditor implements DatabaseLoginListener
                 {
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setMaxResults(10);
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
-                    java.util.List list = criteria.list();//session.find("from collev");
-                    dataObj = list;
+                    dataObj = criteria.list();//session.find("from collev");
 
                 } else
                 {
                     Accession[] accessions = CreateTestDatabases.createAccessionsInMemory();
-                    Vector<Object> list = new Vector<Object>();
+                    Vector<Object> accessionsList = new Vector<Object>();
                     for (Accession accession : accessions)
                     {
-                        list.add(accession);
+                        accessionsList.add(accession);
                     }
-                    dataObj = list;
+                    dataObj = accessionsList;
                 }
                 multiView.setData(dataObj);
             }
@@ -638,6 +634,8 @@ public class FormEditor implements DatabaseLoginListener
    * this method should be invoked from the
    * event-dispatching thread.
    */
+    /*
+  @SuppressWarnings("unused")
   private void startup(final String databaseName, final String userName)
   {
 
@@ -716,7 +714,8 @@ public class FormEditor implements DatabaseLoginListener
         }
 
     }
-
+    */
+    
     /**
      * Create menus
      */
@@ -798,7 +797,7 @@ public class FormEditor implements DatabaseLoginListener
         JMenu menu = null;
         try
         {
-            menu = (JMenu) menuBar.add(new JMenu(getResourceString(labelKey)));
+            menu = menuBar.add(new JMenu(getResourceString(labelKey)));
             menu.setMnemonic(getResourceString(mneuKey).charAt(0));
         } catch (Exception ex)
         {
@@ -869,7 +868,7 @@ public class FormEditor implements DatabaseLoginListener
                                        final boolean aEnabled,
                                        final AbstractAction aAction)
     {
-        JMenuItem mi = (JMenuItem) aMenu.add(new JMenuItem(aLabel));
+        JMenuItem mi = aMenu.add(new JMenuItem(aLabel));
         if (aMnemonic.length() > 0)
         {
             mi.setMnemonic(aMnemonic.charAt(0));
@@ -897,7 +896,7 @@ public class FormEditor implements DatabaseLoginListener
     //---------------------------------------------------------
     // DatabaseLoginListener Interface
     //---------------------------------------------------------
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
      */

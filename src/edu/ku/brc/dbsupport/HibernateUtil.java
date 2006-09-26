@@ -765,6 +765,7 @@ public class HibernateUtil {
      * then it just ignores the request (no error is thrown). The lastEditedBy use the value of the string
      * set by the method currentUserEditStr.
      * @param dataObj the data object to have the fields set
+     * @return true if it was able to set the at least one of the fields
      */
     public static boolean updateLastEdittedInfo(final Object dataObj)
     {

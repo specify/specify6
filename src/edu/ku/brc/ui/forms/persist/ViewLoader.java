@@ -90,12 +90,13 @@ public class ViewLoader
         instance.doingResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
 
         String   name              = element.attributeValue(NAME);
+        String   objTitle          = getAttr(element, "objtitle", null);
         String   className         = element.attributeValue(CLASSNAME);
         String   resLabels         = element.attributeValue(RESOURCELABELS);
         String   desc              = getDesc(element);
         String   businessRules     = getAttr(element, "busrules", null);
 
-        View view = new View(instance.viewSetName, name, className, businessRules != null ? businessRules.trim() : null, desc, resLabels);
+        View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc, resLabels);
 
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)

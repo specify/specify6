@@ -47,7 +47,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     protected List<SubPaneMgrListener> listeners = new ArrayList<SubPaneMgrListener>();
 
     /**
-     * Singleton Constructor
+     * Singleton Constructor.
      *
      */
     protected SubPaneMgr()
@@ -59,12 +59,31 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
 
     /**
-     * Returns the reference to the singleton
+     * Returns the reference to the singleton.
      * @return the reference to the singleton
      */
     public static SubPaneMgr getInstance()
     {
         return instance;
+    }
+    
+    /**
+     * Returns a unique tab name based on the generic tab name.
+     * @param paneName the "generic" name of the panel (without the "()")
+     * @return the new unique name with possibly parenthises
+     */
+    protected String buildUniqueName(final String paneName)
+    {
+        String title = paneName;
+        boolean nameInUse = (panes.get(paneName) != null) ? true : false;
+        int     index     = 2;
+        while (nameInUse)
+        {
+            title = paneName + "("+index+")";
+            nameInUse = (panes.get(title) != null) ? true : false;
+            index++;
+        }
+        return title;
     }
 
     /**
@@ -80,26 +99,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         }
 
         // Add this pane to the tabs
-        String title = pane.getName();
-        boolean nameInUse = (panes.get(title) != null) ? true : false;
-        int index = 2;
-        while(nameInUse)
-        {
-        	title = pane.getName() + "("+index+")";
-        	nameInUse = (panes.get(title) != null) ? true : false;
-        	index++;
-        }
-        
-        //log.debug("addPane: adding pane "+pane.getTitle());
-        // When the first the pane is added there is no notification via the listener so we nedd to do it here
-        // when items are added and there is already items then the listener gets notified.
-        /*if (currentPane != null)
-        {
-            currentPane.showingPane(false);
-        }
-        pane.showingPane(true);
-        currentPane = pane;
-        */
+        String title = buildUniqueName(pane.getName());
         pane.setName(title);
 
         panes.put(title, pane); // this must be done before adding it
@@ -135,6 +135,33 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         panes.put(newName, fndPane);
         
         return pane;
+    }
+
+    /**
+     * Replaces  the "old pane" with a new pane, the main point here that the new gets inserted into the same position.
+     * @param oldPane the old pane to be replaced
+     * @param newName the new name for the tab
+     * @return the same pane as the one renamed
+     */
+    public SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
+    {
+        SubPaneIFace fndPane = panes.get(oldPane.getName());
+        if (oldPane != fndPane)
+        {
+            throw new RuntimeException("Couldn't find Pane ["+oldPane.getName()+"]");
+        }
+        // Add this pane to the tabs
+        String title = buildUniqueName(newPane.getName());
+        newPane.setName(title);
+        
+        int index = this.indexOfComponent(oldPane.getUIComponent());
+        panes.remove(oldPane.getName());
+        this.remove(index);
+        panes.put(newPane.getName(), newPane);
+        
+        this.insertTab(newPane.getName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
+        this.setSelectedIndex(index);
+        return newPane;
     }
 
 

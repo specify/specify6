@@ -383,7 +383,7 @@ address.State, address.PostalCode, address.Country From agent  Left Join address
                 <caption col="AgentID" text="AgentID"  visible="false"/>
                 <caption col="FirstName" text="First Name"/>
                 <caption col="LastName" text="Last Name"/>
-                <caption col="Organization" text="Name"/>
+                <caption col="Name" text="Organization"/>
                 <caption col="EMail" text="EMail"/>
                 <caption col="Address" text="Address"/>
                 <caption col="City" text="City"/>

@@ -14,6 +14,7 @@
         </view>
 
         <view name="AccessionAgent"
+              objtitle="Accession Agent"
               class="edu.ku.brc.specify.datamodel.AccessionAgents"
               resourcelabels="false">
             <desc><![CDATA[Subform within the Accession form.]]></desc>
@@ -23,6 +24,7 @@
             </altviews>
         </view>
 
+        <!--
         <view name="Agent"
              class="edu.ku.brc.specify.datamodel.Agent"
              resourcelabels="false">
@@ -32,33 +34,35 @@
                 <altview name="Agent Edit" viewdef="Agent" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
+        -->
         
-        <!--
+
         <view name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
-            <altviews>
-                <altview name="Agent View" viewdef="Agent" label="View" mode="view" validated="false" default="true"/>
-                <altview name="Agent Edit" label="Edit" mode="edit" validated="true" selector="AgentType">
-                    <subview name="Agent Edit"        viewdef="Agent" selector_value="0"/>
-                    <subview name="Organization Edit" viewdef="Organization" selector_value="0"/>
-                </altview>
+            <altviews defaultmode="view" selector="agentType">
+                <altview name="Organization View" viewdef="Organization" label="View" mode="view" validated="false" selector_value="0"/>
+                <altview name="Agent View"        viewdef="Agent"        label="View" mode="view" validated="false" selector_value="1"/>
+                <altview name="Organization Edit" viewdef="Organization" label="Edit" mode="edit" validated="true" selector_value="0"/>
+                <altview name="Agent Edit"        viewdef="Agent"        label="Edit" mode="edit" validated="true" selector_value="1"/>
             </altviews>
         </view>
-        -->
+        
         
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
+            busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRule"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
-            <altviews>
-                <altview name="Permit View" viewdef="Permit" label="View" mode="view" validated="false" default="true"/>
+            <altviews  defaultmode="view">
+                <altview name="Permit View" viewdef="Permit" label="View" mode="view" validated="false"/>
                 <altview name="Permit Edit" viewdef="Permit" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
 
         <view name="AccessionAuthorizations"
+            objtitle="Accession Authorization"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
@@ -213,17 +217,44 @@
                     <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Organization"/>
-                    <cell type="field" id="6" name="name" uitype="text" cols="30" colspan="5" valtype="Changed"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="7" label="Abbreviation"/>
-                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="10" valtype="Changed"/>
-                    <cell type="label" labelfor="8" label="Interests"/>
-                    <cell type="field" id="8" name="interests" uitype="text" cols="30" valtype="Changed"/>
+                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Organization"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Agent subform for Acessions.]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="Organization Info" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Organization"/>
+                    <cell type="field" id="6" name="name" uitype="text" cols="30" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Contact Name"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Abbreviation"/>
+                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="4" valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>

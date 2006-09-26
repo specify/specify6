@@ -185,6 +185,9 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         super.setEnabled(enabled);
         comboBox.setEnabled(enabled);
+        
+        // Cheap and easy way to set the BG Color depending on Enabled state
+        setRequired(isRequired);
     }
 
     /**
@@ -318,8 +321,13 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void setRequired(boolean isRequired)
     {
-        comboBox.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
+        Color newBGColor = isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor;
+        comboBox.setBackground(newBGColor);
+        if (comboBox.getTextField() != null)
+        {
+            comboBox.getTextField().setBackground(newBGColor);
+        }
+        //setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
         this.isRequired = isRequired;
     }
 

@@ -147,6 +147,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * @param keyName the POJO field name of the key column
      * @param format the format specification (null is OK if displayNames is null)
      * @param searchDialogName the name to look up to display the search dialog (from the search dialog factory)
+     * @param objTitle the title of a single object
      */
     public ValComboBoxFromQuery(final String sql,
                                 final String className,
@@ -155,13 +156,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String format,
                                 final String formatName,
                                 final String searchDialogName,
-                                final String displayInfoDialogName)
+                                final String displayInfoDialogName,
+                                final String objTitle)
     {
         this.className        = className;
         this.idName           = idName;
         this.keyName          = keyName;
         this.format           = format;
-        this.formatName = formatName;
+        this.formatName       = formatName;
 
         this.searchDialogName = searchDialogName;
         this.displayInfoDialogName = displayInfoDialogName;
@@ -169,7 +171,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox = new JComboBoxFromQuery(sql, format);
         comboBox.setAllowNewValues(true);
 
-        init(false);
+        init(false, objTitle);
     }
 
     /**
@@ -185,6 +187,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * @param formatName the name of the pre-deined (user-defined) format
      * @param searchDialogName the name to look up to display the search dialog (from the dialog factory)
      * @param displayInfoDialogName the name to look up to display the info dialog (from the dialog factory)
+     * @param objTitle the title of a single object
      */
     public ValComboBoxFromQuery(final String tableName,
                                 final String idColumn,
@@ -196,7 +199,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String format,
                                 final String formatName,
                                 final String searchDialogName,
-                                final String displayInfoDialogName)
+                                final String displayInfoDialogName,
+                                final String objTitle)
     {
         if (displayColumn != null && format == null && formatName == null)
         {
@@ -213,7 +217,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox = new JComboBoxFromQuery(tableName, idColumn, keyColumn, displayColumn, format);
         comboBox.setAllowNewValues(true);
 
-        init(false);
+        init(false, objTitle);
     }
 
     /* (non-Javadoc)
@@ -230,6 +234,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
+        
         comboBox.setEnabled(enabled);
         if (searchBtn != null)
         {
@@ -237,29 +242,35 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         editBtn.setEnabled(enabled && dataObj != null);
         createBtn.setEnabled(enabled);
+        
+        // Cheap easy way of setting the Combobox's Text Field to the proper BG Color
+        setRequired(isRequired);
 
     }
     
     /**
      * Helper to create a buuton.
      * @param iconName the name of the icon (not localized)
-     * @param tooltip the name of the tooltip (not localized)
+     * @param tooltipKey the name of the tooltip (not localized)
+     * @param objTitle the title of one object needed for the Info Button
      * @return the new button
      */
-    protected JButton createBtn(final String iconName, final String tooltip)
+    protected JButton createBtn(final String iconName, final String tooltipKey, final String objTitle)
     {
         JButton btn = new JButton(IconManager.getIcon(iconName, IconManager.IconSize.Std16));
-        btn.setToolTipText(getResourceString(tooltip));
+        btn.setToolTipText(String.format(getResourceString(tooltipKey), new Object[] {objTitle}));
         btn.setFocusable(false);
         btn.setMargin(new Insets(1,1,1,1));
         btn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         return btn;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.JAutoCompComboBox#init(boolean)
+    /**
+     * Creates the UI for the ComboBox.
+     * @param makeEditable whether it can be editable
+     * @param objTitle the title of one object needed for the Info Button
      */
-    public void init(final boolean makeEditable)
+    public void init(final boolean makeEditable, final String objTitle)
     {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
@@ -281,17 +292,17 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         builder.add(comboBox, cc.xy(1,1));
 
         int x = 3;
-        editBtn = createBtn("EditForm", "EditRecordTT");
+        editBtn = createBtn("EditForm", "EditRecordTT", objTitle);
         builder.add(editBtn, cc.xy(x,1));
         x += 2;
 
-        createBtn = createBtn("CreateObj", "NewRecordTT"); 
+        createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
         builder.add(createBtn, cc.xy(x,1));
         x += 2;
 
         if (hasSearchBtn)
         {
-            searchBtn = createBtn("Search", "SearchForRecordTT"); 
+            searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
             builder.add(searchBtn, cc.xy(x,1));
             x += 2;
         }
@@ -386,6 +397,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    closeBtnTitle,
                                                                    true,   // false means View Mode
                                                                    false,  // false means don't show switcher
+                                                                   isNewObject,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {
@@ -395,7 +407,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name
-            DataObjectSettable ds = (DataObjectSettable)DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+            DataObjectSettable ds = DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
             if (ds != null)
             {
                 ds.setFieldValue(newDataObj, fieldNames[0], comboBox.getTextField().getText());

@@ -139,42 +139,42 @@ public class DataChangeNotifier implements FocusListener,
     
     /**
      * Returns a string value for a control to compare to see if the value has changed.
-     * @param comp the component to get the value fromn
+     * @param component the component to get the value fromn
      * @return Returns a string value for a control to compare to see if the value has changed
      */
-    public String getValueForControl(Component comp)
+    public String getValueForControl(Component component)
     {
-        log.debug("DataChangeNotifier - getValueForControl "+comp);
+        log.debug("DataChangeNotifier - getValueForControl "+component);
         
-        if (comp instanceof JTextComponent)
+        if (component instanceof JTextComponent)
         {
-            return  ((JTextComponent)comp).getText();
+            return  ((JTextComponent)component).getText();
             
-        } else if (comp instanceof JToggleButton)
+        } else if (component instanceof JToggleButton)
         {
-            return Boolean.toString(((JToggleButton)comp).isSelected());
+            return Boolean.toString(((JToggleButton)component).isSelected());
             
-        } else if (comp instanceof JComboBox)
+        } else if (component instanceof JComboBox)
         {
-            return ((JComboBox)comp).getSelectedItem().toString();
+            return ((JComboBox)component).getSelectedItem().toString();
             
-        } else if (comp instanceof JList)
+        } else if (component instanceof JList)
         {
-            JList list = (JList)comp;
+            JList list = (JList)component;
             int   inx = list.getSelectedIndex();
             return inx == -1 ? "" : list.getModel().getElementAt(inx).toString();
             
-        } else if (comp instanceof JCheckBox)
+        } else if (component instanceof JCheckBox)
         {
-            return ((JCheckBox)comp).isSelected() ? "true" : "false";
+            return ((JCheckBox)component).isSelected() ? "true" : "false";
             
-        } else if (comp instanceof GetSetValueIFace)
+        } else if (component instanceof GetSetValueIFace)
         {
-            return ((GetSetValueIFace)comp).getValue().toString();
+            return ((GetSetValueIFace)component).getValue().toString();
             
         } else
         {
-            throw new RuntimeException("Can't get a value for component: "+comp);
+            throw new RuntimeException("Can't get a value for componentonent: "+component);
         }
     }
     
@@ -187,9 +187,9 @@ public class DataChangeNotifier implements FocusListener,
         
         if (comp instanceof UIValidatable)
         {
-            UIValidatable uiv = (UIValidatable)comp;
-            uiv.setChanged(false);
-            uiv.setState(UIValidatable.ErrorType.Valid);
+            UIValidatable uiVal = (UIValidatable)comp;
+            uiVal.setChanged(false);
+            uiVal.setState(UIValidatable.ErrorType.Valid);
             
         } else
         {

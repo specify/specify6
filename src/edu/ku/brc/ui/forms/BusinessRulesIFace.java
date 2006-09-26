@@ -17,7 +17,8 @@ package edu.ku.brc.ui.forms;
 import java.util.List;
 
 /**
- * This interface represents the actions that can be performed on a data object by a business rules object.
+ * This interface represents the actions that can be performed on a data object by a business rules object.<br>
+ * NOTE: This cannot be turned into a generic because of how it is called.
  *
  * @code_status Beta
  * 
@@ -66,5 +67,13 @@ public interface BusinessRulesIFace
      * @return true if it can be deleted, false if not
      */
     public boolean okToDelete(Object dataObj);
+    
+    
+    /**
+     * Returns a message for the user describing what was deleted (intended to be a single line of text).
+     * @param dataObj the data object that will be or has been deleted but still continas its values
+     * @return the single line text string
+     */
+    public String deleteMsg(Object dataObj);
     
 }

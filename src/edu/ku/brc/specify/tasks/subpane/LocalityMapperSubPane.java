@@ -299,7 +299,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         View view = AppContextMgr.getInstance().getView(null, "LocalityMapper");
         
         // WHERE's the ERROR checking !
-        multiView = new MultiView(null, view, AltView.CreationMode.View, false, false);
+        multiView = new MultiView(null, view, AltView.CreationMode.View, false, false, false);
         multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 
@@ -314,22 +314,22 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             {
                 if (!e.getValueIsAdjusting())
                 {
-                	String name = (String)imageJList.getSelectedValue();
-                    if (name != null)
+                	String nameStr = (String)imageJList.getSelectedValue();
+                    if (nameStr != null)
                     {
-                        int inx = name.indexOf(" (");
-                        if (inx > -1)
+                        int index = nameStr.indexOf(" (");
+                        if (index > -1)
                         {
-                            name = name.substring(0, inx);
+                            nameStr = nameStr.substring(0, index);
                         }
                     }
 
 
                     //System.out.println("Getting["+name+"]");
                     Image img = null;
-                    if (StringUtils.isNotEmpty(name))
+                    if (StringUtils.isNotEmpty(nameStr))
                     {
-                        img = imageMap.get(name); // might return null
+                        img = imageMap.get(nameStr); // might return null
                         ImageDisplay imgDisplay = (ImageDisplay)formViewObj.getCompById("image");
                         if (img != null)
                         {
@@ -354,7 +354,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         Font font = titleLabel.getFont();
         titleLabel.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()+2));
 
-        recordSetController = new ResultSetController(null, false, false, collectingEvents.size());
+        recordSetController = new ResultSetController(null, false, false, null, collectingEvents.size());
         recordSetController.addListener(this);
         recordSetController.getPanel().setBackground(Color.WHITE);
 
@@ -557,19 +557,19 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     		getter.start();
     	}
 
-        public void infoArrived(FishBaseInfoGetter getter)
+        public void infoArrived(FishBaseInfoGetter getterArg)
         {
         	//System.out.println("["+name+"]["+getter.getImage()+"]");
-        	if (getter.getImage() != null)
+        	if (getterArg.getImage() != null)
         	{
-                imageURLMap.put(genus+" "+species, getter.getImageURL());
+                imageURLMap.put(genus+" "+species, getterArg.getImageURL());
                 //System.out.println("["+genus+" "+species+"]["+getter.getImageURL()+"]");
-        		map.put(species, getter.getImage());
+        		map.put(species, getterArg.getImage());
         	}
         	cleanUp();
         }
 
-        public void infoGetWasInError(FishBaseInfoGetter getter)
+        public void infoGetWasInError(FishBaseInfoGetter getterArg)
         {
         	cleanUp();
         }
@@ -608,7 +608,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     {
     	protected final int                   gap = 5;
     	protected final LocalityMapperSubPane parent;
-        protected final JLabel                titleLabel;
+        protected final JLabel                titleLbl;
         protected final JLabel                label;
         protected final JPanel                controlBar;
     	protected final MultiView             form;
@@ -623,20 +623,20 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
          * @param ySeparation the vertical separation inbetween the boxes.
          */
         public LocalityMapperLayoutManager(final LocalityMapperSubPane parent,
-                                           final JLabel titleLabel,
+                                           final JLabel titleLbl,
                                            final JLabel label,
                                            final JPanel controlBar,
                                            final MultiView form)
         {
         	this.parent     = parent;
             this.label      = label;
-            this.titleLabel = titleLabel;
+            this.titleLbl = titleLbl;
             this.controlBar = controlBar;
             this.form       = form;
 
         	parent.add(label);
             parent.add(form);
-            parent.add(titleLabel);
+            parent.add(titleLbl);
             parent.add(controlBar);
         }
 
@@ -701,8 +701,8 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         		form.setSize(formSize);
         		form.setVisible(true);
 
-                Dimension compSize = titleLabel.getPreferredSize();
-                titleLabel.setBounds((size.width - compSize.width) / 2, (formY - compSize.height) / 2, compSize.width, compSize.height);
+                Dimension compSize = titleLbl.getPreferredSize();
+                titleLbl.setBounds((size.width - compSize.width) / 2, (formY - compSize.height) / 2, compSize.width, compSize.height);
 
                 //label.setLocation((size.width - (preferredSize.width + (gap * 2))) / 2, (size.height - preferredSize.height)/2);
                 int labelX = gap;

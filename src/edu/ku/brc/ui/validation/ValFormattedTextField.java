@@ -448,8 +448,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         protected int limit;
         protected ValFormattedTextField textField;
-        protected UIFieldFormatterMgr.Formatter formatter;
-        protected UIFieldFormatterMgr.FormatterField[] fields;
+        protected UIFieldFormatterMgr.Formatter docFormatter;
+        protected UIFieldFormatterMgr.FormatterField[] docFields;
 
         /**
          * CReate a special formatted document
@@ -460,16 +460,16 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         public JFormattedDoc(ValFormattedTextField textField, UIFieldFormatterMgr.Formatter formatter, int limit)
         {
             super();
-            this.textField   = textField;
-            this.formatter  = formatter;
-            this.limit      = limit;
-            fields = new UIFieldFormatterMgr.FormatterField[limit];
+            this.textField    = textField;
+            this.docFormatter = formatter;
+            this.limit        = limit;
+            docFields = new UIFieldFormatterMgr.FormatterField[limit];
             int inx = 0;
-            for (UIFieldFormatterMgr.FormatterField f : formatter.getFields())
+            for (UIFieldFormatterMgr.FormatterField f : docFormatter.getFields())
             {
                 for (int i=0;i<f.getSize();i++)
                 {
-                    fields[inx++] = f;
+                    docFields[inx++] = f;
                 }
             }
         }
@@ -509,16 +509,16 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             for (int i=0;i<len;i++)
             {
                 char c = str.charAt(i);
-                if (fields[i].getType() == UIFieldFormatterMgr.FieldType.separator)
+                if (docFields[i].getType() == UIFieldFormatterMgr.FieldType.separator)
                 {
-                    if (c != fields[i].getValue().charAt(0))
+                    if (c != docFields[i].getValue().charAt(0))
                     {
                         return false;
                     }
                 }
                 String s = "";
                 c += c;
-                if (!isCharOK(fields[i], s))
+                if (!isCharOK(docFields[i], s))
                 {
                     return false;
                 }
@@ -545,8 +545,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         /* (non-Javadoc)
          * @see javax.swing.text.Document#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
          */
-        public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException
+        public void insertString(final int offset, final String strArg, final AttributeSet attr) throws BadLocationException
         {
+            String str = strArg;
             if (str == null)
             {
                 return;
@@ -577,7 +578,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             int len = getLength() + str.length();
             if (len <= limit)
             {
-                UIFieldFormatterMgr.FormatterField field =  fields[offset];
+                UIFieldFormatterMgr.FormatterField field =  docFields[offset];
                 if (!isCharOK(field, str))
                 {
                     getToolkit().beep();
@@ -591,7 +592,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 {
                     if (str.charAt(0) != field.getValue().charAt(0))
                     {
-                        if (!isCharOK(fields[offset + 1], str))
+                        if (!isCharOK(docFields[offset + 1], str))
                         {
                             //valState = UIValidatable.ErrorType.Error;
                             getToolkit().beep();

@@ -93,6 +93,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
                                                                    getResourceString("Close"),
                                                                    false,
                                                                    false,
+                                                                   false,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
         frame.setCloseListener(this);
         frame.setData(null);

@@ -36,7 +36,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -143,7 +142,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         this.idFieldName = idFieldName;  
         this.searchName  = searchName;  
 
-        Hashtable<String, ExpressResultsTableInfo> tmpTables = ExpressSearchTask.intializeTableInfo();
+        Hashtable<String, ExpressResultsTableInfo> tmpTables = ExpressSearchTask.getTableInfoHash();
         for (Enumeration<ExpressResultsTableInfo> e=tmpTables.elements();e.hasMoreElements();)
         {
             ExpressResultsTableInfo tblInfo = e.nextElement();
@@ -158,7 +157,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
 
         createUI(viewSetName, viewName, title);
         
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
 
@@ -166,7 +165,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     }
 
     /**
-     * Creates the Default UI
+     * Creates the Default UI.
      *
      */
     protected void createUI(final String viewSetName, 
@@ -188,21 +187,20 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                 String[] columnNames = tableInfo.getColNames();
                 for (String colName : columnNames)
                 {
-                  Object value  = dataMap.get(colName);
-                  if (value != null)
-                  {
-                      String valStr = value.toString();
-                      if (valStr.length() > 0)
-                      {
-                          if (cnt > 0)
-                          {
-                              strBuf.append(" OR ");
-                          }
-                          strBuf.append(" lower("+colName+") like '%"+valStr+"%'");
-                          cnt++;
-                      }
-                  }
-
+                    Object value  = dataMap.get(colName);
+                    if (value != null)
+                    {
+                        String valStr = value.toString();
+                        if (valStr.length() > 0)
+                        {
+                            if (cnt > 0)
+                            {
+                                strBuf.append(" OR ");
+                            }
+                            strBuf.append(" lower("+colName+") like '%"+valStr+"%'");
+                            cnt++;
+                        }
+                    }
                 }
                 String fullSQL = sqlStr.replace("%s", strBuf.toString());
                 tableInfo.setViewSql(fullSQL);
@@ -228,7 +226,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, dataMap);
+            form = ViewFactory.createFormView(null, formView, null, dataMap, false);
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else
@@ -317,13 +315,13 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
      */
-    public void addSearchResults(final ExpressResultsTableInfo tableInfo, final Hits hits)
+    public void addSearchResults(final ExpressResultsTableInfo tblInfo, final Hits hits)
     {
         idList = null;
         
         updateUI();
 
-        contentPanel.add(etrb = new ExpressTableResults(this, tableInfo, false));
+        contentPanel.add(etrb = new ExpressTableResults(this, tblInfo, false));
         
         table = etrb.getTable();
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -356,9 +354,9 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.af.tasks.subpane.ExpressTableResultsBase)
      */
-    public void removeTable(ExpressTableResultsBase table)
+    public void removeTable(ExpressTableResultsBase etrbTable)
     {
-        contentPanel.remove(table);
+        contentPanel.remove(etrbTable);
         contentPanel.invalidate();
         contentPanel.doLayout();
         contentPanel.repaint();

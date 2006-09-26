@@ -110,7 +110,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                              final String keyName,
                              final String format,
                              final String formatName,
-                             final String displayInfoDialogName)
+                             final String displayInfoDialogName,
+                             final String objTitle)
     {
         this.className        = className;
         this.idName           = idName;
@@ -121,7 +122,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
         textField = new JTextField();
 
-        init(false);
+        init(false, objTitle);
     }
 
     /**
@@ -162,6 +163,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                                                                    getResourceString("Close"),
                                                                    false,  // false means View mode
                                                                    false,  // false means don't show switcher
+                                                                   false,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
         frame.setCloseListener(this);
         frame.setData(dataObj);
@@ -195,10 +197,12 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.JAutoCompComboBox#init(boolean)
+    /**
+     * Creates the UI for the ComboBox.
+     * @param makeEditable whether it can be editable
+     * @param objTitle the title of one object needed for the Info Button
      */
-    public void init(final boolean makeEditable)
+    public void init(final boolean makeEditable, final String objTitle)
     {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
@@ -220,7 +224,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         if (StringUtils.isNotEmpty(displayInfoDialogName))
         {
             infoBtn = new JButton(IconManager.getImage("InfoIcon"));
-            infoBtn.setToolTipText(getResourceString("ShowRecordInfoTT"));
+            infoBtn.setToolTipText(String.format(getResourceString("ShowRecordInfoTT"), new Object[] {objTitle}));
             infoBtn.setFocusable(false);
             infoBtn.setMargin(new Insets(1,1,1,1));
             infoBtn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));

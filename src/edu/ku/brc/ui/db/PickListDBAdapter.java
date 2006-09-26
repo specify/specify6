@@ -125,10 +125,10 @@ public class PickListDBAdapter
             session = HibernateUtil.getSessionFactory().openSession();
 	        Criteria criteria = session.createCriteria(PickList.class).add(Expression.eq("name", name));
             
-	        List items = criteria.list();
-	        if (items != null && items.size() > 0)
+	        List itemsList = criteria.list();
+	        if (itemsList != null && itemsList.size() > 0)
 	        {
-                pkList = (PickList)items.get(0);
+                pkList = (PickList)itemsList.get(0);
 	        }
 	        
         } catch (Exception ex)
@@ -173,7 +173,7 @@ public class PickListDBAdapter
      */
     public PickListItem getItem(final int index)
     {
-        return (PickListItem)items.get(index);
+        return items.get(index);
     }
     
     /**

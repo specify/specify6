@@ -110,7 +110,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote());
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), false);
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else

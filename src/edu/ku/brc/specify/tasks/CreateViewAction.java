@@ -17,6 +17,7 @@ package edu.ku.brc.specify.tasks;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.HibernateUtil;
 
@@ -46,9 +47,13 @@ public class CreateViewAction implements ActionListener
         this.mode = mode;
         this.newDataObjClass = newDataObjClass;
     }
+    
     public void actionPerformed(ActionEvent e)
     {
-        
-        DataEntryTask.openView(task, viewSetName, viewName, mode, HibernateUtil.createAndNewDataObj(newDataObjClass), true);
+        DataEntryTask dataEntryTask = (DataEntryTask)ContextMgr.getTaskByClass(DataEntryTask.class);
+        if (dataEntryTask != null)
+        {
+            dataEntryTask.openView(task, viewSetName, viewName, mode, HibernateUtil.createAndNewDataObj(newDataObjClass), true);
+        }
     }
 }

@@ -14,13 +14,11 @@
  */
 package edu.ku.brc.ui.db;
 
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
@@ -48,6 +46,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
      * @param closeBtnTitle the title of close btn
      * @param className the name of the class to be created from the selected results
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
+     * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @param showSwitcher whether it should show the "Switch mode" UI combobox
      */
     public ViewBasedDisplayDialog(final String viewSetName,
@@ -58,17 +57,27 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
                                  final String className,
                                  final String idFieldName,
                                  final boolean isEdit,
+                                 final boolean isNewObject,
                                  final boolean showSwitcher)
     {
         this.setTitle(title);
 
-        mainPanel = new ViewBasedDisplayPanel(this, viewSetName, viewName, displayName, closeBtnTitle, className, idFieldName, isEdit, showSwitcher);
+        mainPanel = new ViewBasedDisplayPanel(this, 
+                                              viewSetName, 
+                                              viewName, 
+                                              displayName, 
+                                              closeBtnTitle, 
+                                              className, 
+                                              idFieldName, 
+                                              isEdit, 
+                                              isNewObject,
+                                              showSwitcher);
 
         setContentPane(mainPanel);
         pack();
         this.setModal(true);
 
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         this.setAlwaysOnTop(true);
         
         if (mainPanel.getCancelBtn() != null)
@@ -131,6 +140,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
         {
             mainPanel.getMultiView().getCurrentView().getValidator().validateForm();
         }*/
+        pack(); // this is because the data may be a selector to change the form
     }
 
     /* (non-Javadoc)
