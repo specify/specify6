@@ -119,7 +119,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      */
     public boolean isNotEmpty()
     {
-        return getText().length() > 0;
+        return getPassword().length > 0;
     }
 
     /* (non-Javadoc)
@@ -174,10 +174,10 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      * @see javax.swing.text.JTextComponent#getText()
      */
     @Override
-    public String getText()
+    public char[] getPassword()
     {
         String text = new String(super.getPassword());
-        return text.length() == 0 ? "" : isEncrypted ? Encryption.encrypt(text) : text;
+        return (text.length() == 0) ? ("").toCharArray() : isEncrypted ? Encryption.encrypt(text).toCharArray() : text.toCharArray();
     }
 
     public boolean isEncrypted()
@@ -238,7 +238,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      */
     public Object getValue()
     {
-        return getText();
+        return new String(getPassword());
     }
 
     //--------------------------------------------------
@@ -316,7 +316,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        valState = isRequired && getText().length() == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        valState = isRequired && getPassword().length == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
 
