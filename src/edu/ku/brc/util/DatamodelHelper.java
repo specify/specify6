@@ -46,7 +46,8 @@ public class DatamodelHelper
 	 */
 	public static String getHbmDirPath() 
 	{
-		String fileName = "Accession.hbm.xml";
+        //return ClassLoader.getSystemResource("Accession.hbm.xml").getFile();
+        String fileName = "Accession.hbm.xml";
 		String path = new File(".").getAbsolutePath();
 		if (path.endsWith(".")) {
 			path = path.substring(0, path.length() - 2);
@@ -55,7 +56,7 @@ public class DatamodelHelper
 				+ "edu" + File.separator + "ku" + File.separator + "brc"
 				+ File.separator + "specify" + File.separator + "datamodel"
 				+ File.separator + "hbm"
-				+ (fileName != null ? (File.separator + fileName) : "");
+				+ File.separator + fileName;
 	}
 
 	/**
@@ -65,6 +66,7 @@ public class DatamodelHelper
 	 */
 	public static String getUiHbmDirPath() 
 	{
+	    // return ClassLoader.getSystemResource("PickList.hbm.xml").getFile();
 		String fileName = "PickList.hbm.xml";
 		String path = new File(".").getAbsolutePath();
 		if (path.endsWith(".")) {
@@ -73,7 +75,7 @@ public class DatamodelHelper
 		return path + File.separator + File.separator + "src" + File.separator
 				+ "edu" + File.separator + "ku" + File.separator + "brc"
 				+ File.separator + "ui" + File.separator + "db"
-				+ (fileName != null ? (File.separator + fileName) : "");
+				+ File.separator + fileName;
 	}
 
 	/**
