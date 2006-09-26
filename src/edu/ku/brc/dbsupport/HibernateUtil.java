@@ -502,13 +502,12 @@ public class HibernateUtil {
      *
      * @param session The Hibernate Session to be reconnected.
      */
-    @SuppressWarnings("deprecation")
     public static void reconnect(Session session)
     {
         if (useThreadLocal)
         {
             log.debug("Reconnecting Session to this thread.");
-            session.reconnect();
+            session.reconnect(DBConnection.getConnection());
             threadSession.set(session);
         } else
         {
