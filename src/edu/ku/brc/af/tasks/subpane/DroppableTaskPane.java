@@ -53,13 +53,11 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      * Constructor.
      * @param name the name of the subpane
      * @param task the owning task
-     * @param desc a description to be displayed in the middle of the pane
      */
     public DroppableTaskPane(final String name, 
-                             final Taskable task,
-                             final String desc)
+                             final Taskable task)
     {
-        this(null, name, task, desc);
+        this(null, name, task);
     }
     
     /**
@@ -67,12 +65,10 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      * @param session the DB session to use
      * @param name the name of the subpane
      * @param task the owning task
-     * @param desc a description to be displayed in the middle of the pane
      */
     public DroppableTaskPane(final Session session,
                              final String name, 
-                             final Taskable task,
-                             final String desc)
+                             final Taskable task)
     {
         super(session, name, task);
     }

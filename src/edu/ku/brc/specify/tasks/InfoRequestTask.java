@@ -488,9 +488,10 @@ public class InfoRequestTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
-        recentFormPane = new FormPane(null, name, this, "Drop Me");
+        recentFormPane = new FormPane(null, name, this);
         return recentFormPane;
     }
     

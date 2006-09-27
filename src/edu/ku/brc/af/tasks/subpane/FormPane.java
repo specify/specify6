@@ -46,14 +46,12 @@ public class FormPane extends DroppableTaskPane
      * @param session the DB session to use
      * @param name the name of the pane
      * @param task the owning task
-     * @param desc a description to display until a component is added to the pane
      */
     public FormPane(final Session  session,
                     final String   name,
-                    final Taskable task,
-                    final String   desc)
+                    final Taskable task)
     {
-        super(session, name, task, desc);
+        super(session, name, task);
     }
 
     /**
@@ -77,7 +75,7 @@ public class FormPane extends DroppableTaskPane
                     final boolean  createViewSwitcher,
                     final boolean  isNewForm)
     {
-        this(session, name, task, null);
+        this(session, name, task);
 
         this.viewSetName = viewSetName;
         this.viewName    = viewName;
@@ -105,7 +103,7 @@ public class FormPane extends DroppableTaskPane
                     final boolean  createViewSwitcher,
                     final boolean  isNewForm)
     {
-        this(session, name, task, null);
+        this(session, name, task);
 
         this.viewSetName = view.getViewSetName();
         this.viewName    = view.getName();
