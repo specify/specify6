@@ -296,9 +296,24 @@ public class Attachment implements java.io.Serializable, OrderedTrayable
         this.taxon = taxon;
     }
 
+    //////////////////////////////////
+    // OrderTrayable implementation //
+    //////////////////////////////////
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.Trayable#getIcon()
+     */
     public ImageIcon getIcon()
     {
         return MimeTypeIconProvider.getInstance().getIconForMimeType(this.mimeType);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.Trayable#getName()
+     */
+    public String getName()
+    {
+        return origFilename;
     }
 
     /* (non-Javadoc)
@@ -316,13 +331,5 @@ public class Attachment implements java.io.Serializable, OrderedTrayable
     public void setOrderIndex(int order)
     {
         this.order = order;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.Trayable#getName()
-     */
-    public String getName()
-    {
-        return origFilename;
     }
 }
