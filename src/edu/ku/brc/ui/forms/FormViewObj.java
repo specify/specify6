@@ -138,7 +138,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
     protected Object                        dataObj         = null;
-    protected Set                           origDataSet     = null;
+    protected Set<?>                           origDataSet     = null;
     protected Object[]                      singleItemArray = new Object[1];
 
     protected JPanel                        mainComp        = null;
@@ -198,7 +198,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
-        boolean addController = mvParent != null && view.getAltViews().size() > 1;
+        boolean addController = (mvParent != null) && (view.getAltViews().size() > 1);
 
         boolean addExtraRow = addController || altView.getMode() == AltView.CreationMode.Search;
         
@@ -248,7 +248,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
  
 
         // We will add the switchable UI if we are mvParented to a MultiView and have multiple AltViews
-        if (addController)
+        // the check for mvParent != null is there to resolve some warnings, even though it is
+        // guaranteed to be true if addController is true
+        if (addController && (mvParent!=null))
         {
             // Now we have a Special case that when when there are only two AltViews and
             // they differ only by Edit & View we hide the switching UI unless
@@ -399,7 +401,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             try
             {
-                Class classObj = Class.forName(formViewDef.getClassName());
+                Class<?> classObj = Class.forName(formViewDef.getClassName());
                 carryFwdInfo = new CarryForwardInfo(classObj, this, formViewDef);
 
             } catch (ClassNotFoundException ex)
@@ -573,7 +575,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      * Return list of data objects if this is a recordset
      * @return the list of data objects
      */
-    public List getDataList()
+    public List<?> getDataList()
     {
         return list;
     }
@@ -686,7 +688,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                      mv.showView((AltView)((JComboBox)ae.getSource()).getSelectedItem());
                 }
             }
-        };
+        }
 
         if (cbx != null)
         {
@@ -865,7 +867,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         try
         {
-            Class  classObj = Class.forName(view.getClassName());
+            Class<?>  classObj = Class.forName(view.getClassName());
             Object obj      = classObj.newInstance();
             HibernateUtil.initAndAddToParent(parentDataObj, obj);
 
@@ -1185,10 +1187,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (fi != null)
         {
             return fi.getComp();
-        } else
-        {
-            throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
         }
+        // else
+        throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
     }
 
      /* (non-Javadoc)
@@ -1200,10 +1201,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (fi != null)
         {
             return (JLabel)fi.getComp();
-        } else
-        {
-            throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
         }
+        // else
+        throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
     }
 
     /* (non-Javadoc)
@@ -1487,7 +1487,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                         			throw new RuntimeException("No Format but mulitple fields were specified for["+cellField.getName()+"]");
                         		}
 
-                                if (values == null || values[0] == null)
+                                if (values[0] == null)
                                 {
                                     setDataIntoUIComp(comp, isTextFieldPerMode ? "" : null, defaultValue);
                                     
@@ -1510,7 +1510,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     {
                         if (((FormCellSubView)fieldInfo.getFormCell()).isSingleValueFromSet() && data instanceof Set)
                         {
-                            Set set = (Set)data;
+                            Set<?> set = (Set)data;
                             if (set.size() > 0)
                             {
                                 data = set.iterator().next();
@@ -1652,10 +1652,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     if (((FormCellSubView)fieldInfo.getFormCell()).isSingleValueFromSet())
                     {
                         return ((MultiView)comp).getData();
-                    } else
-                    {
-                        return null;
                     }
+                    // else
+                    return null;
 
                 } else if (comp instanceof JTextField)
                 {
@@ -1668,10 +1667,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                         PickListItem pli = (PickListItem)((JAutoCompComboBox)comp).getSelectedItem();
                         return pli.getValue();
 
-                    } else
-                    {
-                        return ((JComboBox)comp).getSelectedItem().toString();
                     }
+                    // else
+                    return ((JComboBox)comp).getSelectedItem().toString();
 
                 } else if (comp instanceof JLabel)
                 {
@@ -1823,7 +1821,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected void setListValue(final JList list, final Object data)
     {
 
-        Iterator iter = null;
+        Iterator<?> iter = null;
         if (data instanceof Set)
         {
             iter = ((Set)data).iterator();
