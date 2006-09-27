@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -73,6 +74,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getIcon()
      */
+    @Override
     public Icon getIcon()
     {
         return IconManager.getIcon("Bar_Chart", IconManager.IconSize.Std16);
@@ -171,7 +173,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
         
-        addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
+        addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), SwingConstants.CENTER));
     }
 
    

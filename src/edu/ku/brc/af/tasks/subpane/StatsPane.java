@@ -110,12 +110,12 @@ public class StatsPane extends BaseSubPane
             // count up rows and column
             StringBuilder rowsDef = new StringBuilder(128);
 
-            List rows = rootElement.selectNodes("/panel/row");
+            List<?> rows = rootElement.selectNodes("/panel/row");
             int maxCols = 0;
             for (Object obj : rows)
             {
                 Element rowElement = (Element)obj;
-                List    boxes      = rowElement.selectNodes("box");
+                List<?>    boxes      = rowElement.selectNodes("box");
                 maxCols = Math.max(maxCols, boxes.size());
                 if (rowsDef.length() > 0)
                 {
@@ -138,7 +138,7 @@ public class StatsPane extends BaseSubPane
                 Element rowElement = (Element)obj;
 
                 int x = 1;
-                List boxes = rowElement.selectNodes("box");
+                List<?> boxes = rowElement.selectNodes("box");
                 for (Object bo : boxes)
                 {
                     Element boxElement = (Element)bo;
@@ -203,7 +203,7 @@ public class StatsPane extends BaseSubPane
 
                         } else
                         {
-                            List items = boxElement.selectNodes("item");
+                            List<?> items = boxElement.selectNodes("item");
                             StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"),
                                                                            new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")},
                                                                            useSeparatorTitles, items.size());
@@ -221,7 +221,7 @@ public class StatsPane extends BaseSubPane
                                 }
 
                                 StatDataItem statItem   = new StatDataItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
-                                List         statements = itemElement.selectNodes("sql/statement");
+                                List<?>      statements = itemElement.selectNodes("sql/statement");
 
                                 if (statements.size() == 1)
                                 {

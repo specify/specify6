@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
@@ -108,6 +108,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     /**
      * Remove self from ContextMgr.
      */
+    @Override
     public void finalize()
     {
         ContextMgr.unregister(this);
@@ -149,7 +150,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
 
-        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(label, buttonIcon, JButton.BOTTOM, menus);
+        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(label, buttonIcon, SwingConstants.BOTTOM, menus);
         btn.setStatusBarHintText(hint);
 
         btn.addActionListener(actionListener);
@@ -163,7 +164,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
 
-        MemoryDropDownButton btn = new MemoryDropDownButton(label, buttonIcon, JButton.BOTTOM, menus);
+        MemoryDropDownButton btn = new MemoryDropDownButton(label, buttonIcon, SwingConstants.BOTTOM, menus);
         btn.setStatusBarHintText(hint);
         return btn;
     }
@@ -294,7 +295,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     /* (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    public Class<? extends BaseTask> getTaskClass()
     {
     	return this.getClass();
     }
@@ -523,7 +524,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public void installPrefs()
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -531,7 +532,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public void removePrefs()
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)
@@ -584,7 +585,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public void subPaneShown(SubPaneIFace subPane)
     {
-
+        // do nothing
     }
 
 

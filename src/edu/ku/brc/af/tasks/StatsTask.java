@@ -83,14 +83,14 @@ public class StatsTask extends BaseTask
         // Process the NavBox Panel and create all the commands
         // XXX This needs to be made generic so everyone can use it
         //
-        List boxes = panelDOM.selectNodes("/boxes/box");
-        for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
+        List<?> boxes = panelDOM.selectNodes("/boxes/box");
+        for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
         {
             Element box = (Element) iter.next();
             NavBox navBox = new NavBox(box.attributeValue("title"));
 
-            List items = box.selectNodes("item");
-            for ( Iterator iter2 = items.iterator(); iter2.hasNext(); )
+            List<?> items = box.selectNodes("item");
+            for ( Iterator<?> iter2 = items.iterator(); iter2.hasNext(); )
             {
                 Element item = (Element) iter2.next();
                 String boxName  = item.attributeValue("name");
@@ -117,6 +117,7 @@ public class StatsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         return new StatsPane(name, this, "StatsSummaryPanel", true, null);
@@ -151,6 +152,7 @@ public class StatsTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -168,17 +170,18 @@ public class StatsTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
-
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    @Override
+    public Class<? extends StatsTask> getTaskClass()
     {
         return this.getClass();
     }

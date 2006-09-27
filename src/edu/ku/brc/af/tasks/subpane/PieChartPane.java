@@ -82,6 +82,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getIcon()
      */
+    @Override
     public Icon getIcon()
     {
         return IconManager.getIcon("Pie_Chart", IconManager.IconSize.Std16);
@@ -202,6 +203,6 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
-
+        // do nothing
     }
 }

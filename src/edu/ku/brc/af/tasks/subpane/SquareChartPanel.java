@@ -60,11 +60,19 @@ public class SquareChartPanel extends ChartPanel
         // TODO Auto-generated constructor stub
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.Component#setBounds(java.awt.Rectangle)
+     */
+    @Override
     public void setBounds(Rectangle r)
     {
         setBounds(r.x, r.y, r.height, r.height);
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.Component#setBounds(int, int, int, int)
+     */
+    @Override
     public void setBounds(int x, int y, int width, int height)
     {
         super.setBounds(x, y, height, height);

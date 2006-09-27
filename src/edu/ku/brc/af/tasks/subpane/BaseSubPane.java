@@ -22,6 +22,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -82,7 +83,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         CellConstraints cc         = new CellConstraints();
 
         builder.add(progressBar, cc.xy(1,1));
-        builder.add(progressLabel = new JLabel("", JLabel.CENTER), cc.xy(1,3));
+        builder.add(progressLabel = new JLabel("", SwingConstants.CENTER), cc.xy(1,3));
 
         PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
         builder2.add(builder.getPanel(), cc.xy(1,1));
@@ -158,6 +159,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     /* (non-Javadoc)
      * @see java.awt.Component#getName()
      */
+    @Override
     public String getName()
     {
         return name;
@@ -166,6 +168,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     /* (non-Javadoc)
      * @see java.awt.Component#setName(java.lang.String)
      */
+    @Override
     public void setName(String name)
     {
         this.name = name;

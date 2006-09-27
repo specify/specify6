@@ -52,6 +52,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     /* (non-Javadoc)
      * @see java.awt.Component#getName()
      */
+    @Override
     public String getName()
     {
         return isNotEmpty(title) ? title : super.getName();

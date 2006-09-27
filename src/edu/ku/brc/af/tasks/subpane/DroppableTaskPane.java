@@ -80,6 +80,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -123,7 +124,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
-    public Object getDataForClass(Class classObj)
+    public Object getDataForClass(Class<?> classObj)
     {
         return null;
     }
@@ -134,7 +135,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      */
     public void createMouseInputAdapter()
     {
-
+        // do nothing
     }
     
     /* (non-Javadoc)

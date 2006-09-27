@@ -81,6 +81,7 @@ public class StartUpTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         return new StatsPane(title, this, "StartUpPanel", true, null);
@@ -94,6 +95,7 @@ public class StartUpTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -113,6 +115,7 @@ public class StartUpTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -124,7 +127,8 @@ public class StartUpTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    @Override
+    public Class<? extends StartUpTask> getTaskClass()
     {
         return this.getClass();
     }
