@@ -168,11 +168,10 @@ public class AppPrefsCache
     /**
      * Get the prefValue, if it is new than it sets the default into the prefs, if not it gets the value and returns it
      * @param prefNode the pref's name
-     * @param attrName the actual attribute
      * @param defValue the default value
      * @return return the pref's value
      */
-    protected String checkForPref(final String fullName, final String attrName, final String defValue)
+    protected String checkForPref(final String fullName, final String defValue)
     {
         AppPreferences appPrefs = AppPreferences.getRemote();
         
@@ -217,7 +216,7 @@ public class AppPrefsCache
         if (hash.get(fullName) == null)
         {
             String defValue = colorWrapper.toString();
-            String prefVal  = checkForPref(fullName, attrName, defValue);
+            String prefVal  = checkForPref(fullName, defValue);
             colorWrapper.setRGB(prefVal);
             
             ColorCacheEntry colorEntry = new ColorCacheEntry(colorWrapper, fullName, prefVal, defValue);
@@ -290,7 +289,7 @@ public class AppPrefsCache
         if (hash.get(fullName) == null)
         {
             String defValue = simpleFormat.toPattern();
-            String prefVal  = checkForPref(fullName, attrName, defValue);
+            String prefVal  = checkForPref(fullName, defValue);
             simpleFormat.applyPattern(prefVal);
             DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, fullName, prefVal, defValue);
             AppPreferences.getRemote().addChangeListener(fullName, dateEntry);
