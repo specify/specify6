@@ -123,7 +123,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         navBoxes.addElement(admin);
 	}
 	
-	@SuppressWarnings({ "serial", "serial" })
 	protected void createMenus(@SuppressWarnings("unused") List<D> defs)
 	{
 		// do nothing
@@ -162,11 +161,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		return finderWidget;
 	}
 	
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
-	 * @return
 	 */
 	@Override
 	public List<MenuItemDesc> getMenuItems()
@@ -174,11 +170,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		return menuItems;
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see edu.ku.brc.af.tasks.BaseTask#getStarterPane()
-	 * @return
 	 */
 	@Override
 	public SubPaneIFace getStarterPane()
@@ -186,11 +179,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		return new SimpleDescPane(title, this, "This is the taxonomy tree editor");
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see edu.ku.brc.af.tasks.BaseTask#getToolBarItems()
-	 * @return
 	 */
 	@Override
 	public List<ToolBarItemDesc> getToolBarItems()
@@ -201,8 +191,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
      */
-    @SuppressWarnings("unchecked")
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public Class<? extends BaseTreeTask> getTaskClass()
     {
         return this.getClass();
@@ -274,6 +264,9 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	}
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+     */
     @Override
 	public void subPaneRemoved(SubPaneIFace subPane)
 	{
@@ -289,6 +282,9 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#subPaneShown(edu.ku.brc.af.core.SubPaneIFace)
+	 */
 	@Override
 	public void subPaneShown(SubPaneIFace subPane)
 	{
