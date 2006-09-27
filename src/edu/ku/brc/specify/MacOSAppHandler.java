@@ -31,7 +31,7 @@ import com.apple.eawt.ApplicationEvent;
  */
 public class MacOSAppHandler extends Application
 {
-    protected WeakReference app;
+    protected WeakReference<Specify> app;
 
     public MacOSAppHandler(final Specify app)
     {
@@ -46,19 +46,19 @@ public class MacOSAppHandler extends Application
     {
         public void handleAbout(ApplicationEvent event)
         {
-            ((Specify)app.get()).doAbout();
+            app.get().doAbout();
             event.setHandled(true);
         }
 
         public void handleAppPrefsMgr(ApplicationEvent event)
         {
-            ((Specify)app.get()).preferences();
+            app.get().preferences();
             event.setHandled(true);
         }
 
         public void handleQuit(ApplicationEvent event)
         {
-            ((Specify)app.get()).doExit();
+            app.get().doExit();
             event.setHandled(true);
          }
     }
