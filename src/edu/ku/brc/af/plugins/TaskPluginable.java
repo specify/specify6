@@ -52,7 +52,7 @@ public interface TaskPluginable
      * Returns the implementing Class type
      * @return Returns the implementing Class type
      */
-    public abstract Class getTaskClass();
+    public abstract Class<?> getTaskClass();
 
     /**
      * Returns the toolbar items (usually only one item)

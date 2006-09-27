@@ -73,7 +73,7 @@ public class PluginMgr
      */
     protected PluginMgr()
     {
-
+        // do nothing
     }
 
     /**
@@ -247,14 +247,13 @@ public class PluginMgr
         return null;
     }
 
-    /**
-     * Unregisters the plugin's UI components from the various different pasts of the application
-     * @param plugin the plugin that is being unregistered
-     */
-    protected static void unregisterWithUI(final TaskPluginable plugin)
-    {
-
-    }
+//    /**
+//     * Unregisters the plugin's UI components from the various different pasts of the application
+//     * @param plugin the plugin that is being unregistered
+//     */
+//    protected static void unregisterWithUI(final TaskPluginable plugin)
+//    {
+//    }
 
     /**
      * Forces an initialization of all the plugins. Can be called mulitple times because plugins are responsible
@@ -294,8 +293,8 @@ public class PluginMgr
             {
                 Element root  = XMLHelper.readDOMFromConfigDir("plugin_registry.xml");
     
-                List boxes = root.selectNodes("/plugins/core/plugin");
-                for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
+                List<?> boxes = root.selectNodes("/plugins/core/plugin");
+                for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
                     org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
     
@@ -304,7 +303,7 @@ public class PluginMgr
                     try
                     {
     
-                        Class cls = Class.forName(name);
+                        Class<?> cls = Class.forName(name);
                         newObj = cls.newInstance();
     
                     } catch (Exception ex)
@@ -322,8 +321,8 @@ public class PluginMgr
                         TaskPluginable tp = (TaskPluginable)newObj;
                         register(tp);
     
-                        List servicesList = pluginElement.selectNodes("service");
-                        for ( Iterator iterServices = servicesList.iterator(); iterServices.hasNext(); )
+                        List<?> servicesList = pluginElement.selectNodes("service");
+                        for ( Iterator<?> iterServices = servicesList.iterator(); iterServices.hasNext(); )
                         {
                             Element       serviceElement = (Element)iterServices.next();
                             int           tableId        = Integer.parseInt(serviceElement.attributeValue("tableid"));
@@ -350,7 +349,7 @@ public class PluginMgr
      * @param classObj a class object
      * @return the lst of commands for the class
      */
-    public static List<TaskCommandDef> getCommandDefinitions(final Class classObj)
+    public static List<TaskCommandDef> getCommandDefinitions(final Class<?> classObj)
     {
         List<TaskCommandDef> list = new ArrayList<TaskCommandDef>();
         try
@@ -360,9 +359,9 @@ public class PluginMgr
                 instance.commandDOMRoot = XMLHelper.readDOMFromConfigDir("command_registry.xml");
             }
 
-            List cmds = instance.commandDOMRoot.selectNodes("/commands/command[@class='"+classObj.getName()+"']");
+            List<?> cmds = instance.commandDOMRoot.selectNodes("/commands/command[@class='"+classObj.getName()+"']");
 
-            for ( Iterator iter = cmds.iterator(); iter.hasNext(); )
+            for ( Iterator<?> iter = cmds.iterator(); iter.hasNext(); )
             {
                 Element cmdElement = (Element)iter.next();
 
@@ -371,8 +370,8 @@ public class PluginMgr
                 if (StringUtils.isNotEmpty(cmdName) && StringUtils.isNotEmpty(cmdIconName))
                 {
                     Map<String, String> params = null;
-                    List paramsList = cmdElement.selectNodes("param");
-                    for ( Iterator iterServices = paramsList.iterator(); iterServices.hasNext(); )
+                    List<?> paramsList = cmdElement.selectNodes("param");
+                    for ( Iterator<?> iterServices = paramsList.iterator(); iterServices.hasNext(); )
                     {
                         Element paramElement = (Element)iterServices.next();
                         String name  = XMLHelper.getAttr(paramElement, "name", null);
