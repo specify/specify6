@@ -133,9 +133,8 @@ public class NavBoxMgr extends JPanel
     
     /**
      * Registers a Task's NavBoxes into the Manager.
-     * @param task the task to be registered 
      */
-    public static void unregister(final Taskable task)
+    public static void unregister()
     {
         // for now just clear everything
         instance.layout.removeAll();

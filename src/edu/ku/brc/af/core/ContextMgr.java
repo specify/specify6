@@ -54,7 +54,7 @@ public class ContextMgr
      */
     protected ContextMgr()
     {
-
+        // do nothing
     }
 
     /**
@@ -76,7 +76,7 @@ public class ContextMgr
         {
             if (instance.currentContext != null)
             {
-                NavBoxMgr.unregister(instance.currentContext);
+                NavBoxMgr.unregister();
             }
 
             if (task != null)
@@ -141,7 +141,7 @@ public class ContextMgr
      * @param theClass the class of task to be returned
      * @return Returns a task by a given Class
      */
-    public static Taskable getTaskByClass(final Class theClass)
+    public static Taskable getTaskByClass(final Class<?> theClass)
     {
         if (theClass == null)
         {

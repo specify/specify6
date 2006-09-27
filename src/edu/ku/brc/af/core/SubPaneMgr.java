@@ -38,7 +38,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 {
     private static final SubPaneMgr instance = new SubPaneMgr();
 
-    protected enum NotificationType {Added, Removed, Shown};
+    protected enum NotificationType {Added, Removed, Shown}
 
     // Data Members
     protected Hashtable<String, SubPaneIFace> panes = new Hashtable<String, SubPaneIFace>();
@@ -316,9 +316,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         SubPaneIFace subPane = this.getCurrentSubPane();
         if (subPane != null)
         {
-            for (Enumeration e=panes.elements();e.hasMoreElements();)
+            for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
             {
-                SubPaneIFace sp = (SubPaneIFace)e.nextElement();
+                SubPaneIFace sp = e.nextElement();
                 sp.showingPane(false); // Not sure about this notification
                 notifyListeners(NotificationType.Removed, sp);
             }
@@ -330,6 +330,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     /**
      * Removes the current tab.
      */
+    @Override
     public void closeCurrent()
     {
         SubPaneIFace subPane = this.getCurrentSubPane();

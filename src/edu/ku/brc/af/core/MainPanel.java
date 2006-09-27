@@ -16,7 +16,7 @@ package edu.ku.brc.af.core;
 
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 
 
 /**
@@ -52,7 +52,7 @@ public class MainPanel extends JSplitPane
         this.setLeftComponent(navBoxMgr);
         this.setRightComponent(subPaneMgr);
         
-        setTabPlacement(JTabbedPane.BOTTOM);  // PREF
+        setTabPlacement(SwingConstants.BOTTOM);  // PREF
         this.setDividerLocation(0);         // PREF
         this.setLastDividerLocation(175);
         navBoxMgr.setSplitPane(this);

@@ -87,6 +87,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     /* (non-Javadoc)
      * @see java.awt.Component#getName()
      */
+    @Override
     public String getName()
     {
         return name;
@@ -95,6 +96,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     /* (non-Javadoc)
      * @see java.awt.Component#setName(java.lang.String)
      */
+    @Override
     public void setName(final String name)
     {
         this.name = name;
@@ -203,6 +205,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
+    @Override
     public Dimension getPreferredSize()
     {
         Dimension size = super.getPreferredSize();
@@ -218,6 +221,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -260,13 +264,11 @@ public class NavBox extends JPanel implements NavBoxIFace
      * Returns a NavBoxItemIFace item built from a RolloverCommand.
      * @param label the text label
      * @param iconName the icon name, not the image filename, but the IconManager name for the icon
-     * @param fileName the file name for the icon
      * @param iconSize the size  to use
      * @return a NavBoxItemIFace item built from a RolloverCommand
      */
     public static NavBoxItemIFace createBtn(final String label, 
                                             final String iconName, 
-                                            final String fileName, 
                                             final IconManager.IconSize iconSize, 
                                             final ActionListener al)
     {
@@ -297,25 +299,9 @@ public class NavBox extends JPanel implements NavBoxIFace
                                             final String iconName, 
                                             final IconManager.IconSize iconSize)
     {
-        return createBtn(label, iconName, null, iconSize, null);
+        return createBtn(label, iconName, iconSize, null);
     }
     
-    /**
-     * Returns a NavBoxItemIFace item built from a RolloverCommand.
-     * @param label the text label
-     * @param iconName the icon name, not the image filename, but the IconManager name for the icon
-     * @param iconSize the size  to use
-     * @param al the action listener that will be added the item 
-     * @return a NavBoxItemIFace item built from a RolloverCommand
-     */
-    public static NavBoxItemIFace createBtn(final String label,
-                                            final String iconName, 
-                                            final IconManager.IconSize iconSize,
-                                            final ActionListener al)
-    {
-        return createBtn(label, iconName, null, iconSize, al);
-    }
-
     /**
      * Returns a NavBoxItemIFace item built from a RolloverCommand.
      * @param label the text label
@@ -331,7 +317,7 @@ public class NavBox extends JPanel implements NavBoxIFace
                                                   final IconManager.IconSize iconSize,
                                                   final ActionListener al)
     {
-        NavBoxItemIFace nbi = createBtn(label, iconName, null, iconSize, al);
+        NavBoxItemIFace nbi = createBtn(label, iconName, iconSize, al);
         if (toolTip != null)
         {
             nbi.setToolTip(toolTip);
