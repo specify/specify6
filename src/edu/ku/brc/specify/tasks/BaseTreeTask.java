@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.tasks;

@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.tasks;
@@ -21,9 +24,8 @@ import edu.ku.brc.ui.IconManager;
 
 /**
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>
 {
@@ -44,9 +46,9 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
 		String label    = getResourceString("GeoTimePeriodMenu");
 		String mnemonic = getResourceString("GeoTimePeriodMnemonic");
 		
-		JMenu locMenu = new JMenu(label);
-		locMenu.setMnemonic(mnemonic.charAt(0));
-		MenuItemDesc miDesc = new MenuItemDesc(locMenu, "AdvMenu");
+		JMenu gtpMenu = new JMenu(label);
+        gtpMenu.setMnemonic(mnemonic.charAt(0));
+		MenuItemDesc miDesc = new MenuItemDesc(gtpMenu, "AdvMenu");
 		menuItems.add(miDesc);
 		
 		for(GeologicTimePeriodTreeDef def: defs)
@@ -62,7 +64,7 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
 					showTree(chosenDef);
 				}
 			});
-			locMenu.add(defMenuItem);
+            gtpMenu.add(defMenuItem);
 		}
 	}
 }

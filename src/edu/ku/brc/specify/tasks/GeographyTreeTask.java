@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.tasks;
@@ -21,9 +24,8 @@ import edu.ku.brc.ui.IconManager;
 
 /**
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,GeographyTreeDefItem>
 {
@@ -44,9 +46,9 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
 		String label    = getResourceString("GeographyMenu");
 		String mnemonic = getResourceString("GeographyMnemonic");
 		
-		JMenu locMenu = new JMenu(label);
-		locMenu.setMnemonic(mnemonic.charAt(0));
-		MenuItemDesc miDesc = new MenuItemDesc(locMenu, "AdvMenu");
+		JMenu geogMenu = new JMenu(label);
+        geogMenu.setMnemonic(mnemonic.charAt(0));
+		MenuItemDesc miDesc = new MenuItemDesc(geogMenu, "AdvMenu");
 		menuItems.add(miDesc);
 		
 		for(GeographyTreeDef def: defs)
@@ -62,7 +64,7 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
 					showTree(chosenDef);
 				}
 			});
-			locMenu.add(defMenuItem);
+            geogMenu.add(defMenuItem);
 		}
 	}
 }

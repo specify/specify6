@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.tasks;
@@ -26,7 +29,7 @@ import edu.ku.brc.ui.IconManager;
 
 /**
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
  */
 public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefItem>
@@ -50,9 +53,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 		String label    = getResourceString("TaxonMenu");
 		String mnemonic = getResourceString("TaxonMnemonic");
 		
-		JMenu locMenu = new JMenu(label);
-		locMenu.setMnemonic(mnemonic.charAt(0));
-		MenuItemDesc miDesc = new MenuItemDesc(locMenu, "AdvMenu");
+		JMenu taxMenu = new JMenu(label);
+        taxMenu.setMnemonic(mnemonic.charAt(0));
+		MenuItemDesc miDesc = new MenuItemDesc(taxMenu, "AdvMenu");
 		menuItems.add(miDesc);
 		
 		for(TaxonTreeDef def: defs)
@@ -68,7 +71,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 					showTree(chosenDef);
 				}
 			});
-			locMenu.add(defMenuItem);
+            taxMenu.add(defMenuItem);
 		}
 	}
 

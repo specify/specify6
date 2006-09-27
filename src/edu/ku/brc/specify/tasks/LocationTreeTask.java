@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.tasks;
@@ -21,9 +24,8 @@ import edu.ku.brc.ui.IconManager;
 
 /**
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,LocationTreeDefItem>
 {
