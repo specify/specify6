@@ -32,6 +32,7 @@ public class RecordSet  implements java.io.Serializable {
      protected Long recordSetID;
      protected String name;
      protected Integer tableId;
+     protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected Set<RecordSetItem> items;
@@ -64,6 +65,7 @@ public class RecordSet  implements java.io.Serializable {
         recordSetID = null;
         //name = null;
         //tableId = null;
+        remarks = null;
         timestampModified = null;
         timestampCreated = new Date();
         items = new HashSet<RecordSetItem>();
@@ -151,10 +153,20 @@ public class RecordSet  implements java.io.Serializable {
     }
 
 
+    public String getRemarks()
+    {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks)
+    {
+        this.remarks = remarks;
+    }
 
 
 
     // Add Methods
+
 
     public void addItem(final Long recordId)
     {

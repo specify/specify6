@@ -531,7 +531,14 @@ public class ViewLoader
                     {
                         case label:
                         {
-                            cell = formRow.addCell(new FormCellLabel(cellId, cellName, getLabel(cellElement), getAttr(cellElement, "labelfor", ""), colspan));
+                            cell = formRow.addCell(new FormCellLabel(cellId, 
+                                                                     cellName, 
+                                                                     getLabel(cellElement), 
+                                                                     getAttr(cellElement, "labelfor", ""),
+                                                                     getAttr(cellElement, "icon", null),
+                                                                     getAttr(cellElement, "recordobj", false), 
+                                                                     colspan));
+
                             break;
                         }
                         case separator:

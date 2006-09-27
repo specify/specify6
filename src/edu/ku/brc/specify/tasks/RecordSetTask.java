@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -47,6 +48,9 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
  
@@ -62,7 +66,7 @@ public class RecordSetTask extends BaseTask
     public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, "RECORD_SET");
 
     // Data Members
-    protected NavBox navBox = null;
+    protected DroppableNavBox navBox = null;
 
     /**
      * Default Constructor
@@ -87,7 +91,7 @@ public class RecordSetTask extends BaseTask
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
             List recordSets = criteria.list();
 
-            navBox = new NavBox(title);
+            navBox = new DroppableNavBox(title);
 
             for (Iterator iter=recordSets.iterator();iter.hasNext();)
             {
@@ -133,10 +137,15 @@ public class RecordSetTask extends BaseTask
 
         NavBoxMgr.getInstance().addBox(navBox);
 
-        // XXX This needs to be made generic
+        // XXX this is pathetic and needs to be generized
         navBox.invalidate();
+        navBox.setSize(navBox.getPreferredSize());
         navBox.doLayout();
         navBox.repaint();
+        NavBoxMgr.getInstance().invalidate();
+        NavBoxMgr.getInstance().doLayout();
+        NavBoxMgr.getInstance().repaint();
+        UICacheManager.forceTopFrameRepaint();
 
         CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
     }
@@ -310,5 +319,99 @@ public class RecordSetTask extends BaseTask
 
     }
 
+    class DroppableNavBox extends NavBox implements GhostActionable
+    {
+        // DnD
+        protected List<DataFlavor>       dropFlavors         = new ArrayList<DataFlavor>(); 
+        protected Object data;
+        
+        public DroppableNavBox(final String name)
+        {
+            super(name);
+            dropFlavors.add(RECORDSET_FLAVOR);
+        }
+        
+        //-----------------------------------------------
+        // GhostActionable Interface
+        //-----------------------------------------------
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
+         */
+        public void doAction(GhostActionable src)
+        {
+            if (src != null)
+            {  
+                Object dataObj = src.getData();
+                System.out.println(dataObj);
+                
+                CommandDispatcher.dispatch(new CommandAction(RECORD_SET, "Save", src.getData()));
+            }
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
+         */
+        public void setData(final Object data)
+        {
+            this.data = data;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
+         */
+        public Object getData()
+        {
+            return data;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
+         */
+        public Object getDataForClass(Class classObj)
+        {
+            return UIHelper.getDataForClass(data, classObj);
+        }
+       
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseInputAdapter()
+         */
+        public void createMouseInputAdapter()
+        {
+        }
+        
+        /**
+         * Returns the adaptor for tracking mouse drop gestures
+         * @return Returns the adaptor for tracking mouse drop gestures
+         */
+        public GhostMouseInputAdapter getMouseInputAdapter()
+        {
+            return null;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
+         */
+        public BufferedImage getBufferedImage() 
+        {
+            return null;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getDataFlavor()
+         */
+        public List<DataFlavor> getDropDataFlavors()
+        {
+            return dropFlavors;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
+         */
+        public List<DataFlavor> getDragDataFlavors()
+        {
+            return null; // this is not draggable
+        }
+    }
 
 }

@@ -1080,22 +1080,22 @@ public class GenericDBConversion
                 // use the old CollectionObjectTypeName as the new CollectionObjDef name
 
                 Statement updateStatement = newDBConn.createStatement();
-                StringBuilder strBuf = new StringBuilder();
-                strBuf.append("INSERT INTO collectionobjdef VALUES (");
-                strBuf.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); // TimestampModified
-               strBuf.append("'"+dateFormatter.format(new Date())+"',");
-                 strBuf.append("'"+discipline.getTitle()+"',");
-                strBuf.append("'"+discipline.getName()+"',");
-                strBuf.append("'"+dateFormatter.format(new Date())+"',");  // TimestampCreated
-                strBuf.append(dataTypeId+",");
-                strBuf.append(specifyUserId+",");
-                strBuf.append("1,"); // GeographyTreeDefID
-                strBuf.append("1,"); // GeologicTimePeriodTreeDefID
-                strBuf.append("1)"); // LocationTreeDefID
+                StringBuilder strBuf2 = new StringBuilder();
+                strBuf2.append("INSERT INTO collectionobjdef VALUES (");
+                strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); // TimestampModified
+                strBuf2.append("'"+dateFormatter.format(new Date())+"',");
+                strBuf2.append("'"+discipline.getTitle()+"',");
+                strBuf2.append("'"+discipline.getName()+"',");
+                strBuf2.append("'"+dateFormatter.format(new Date())+"',");  // TimestampCreated
+                strBuf2.append(dataTypeId+",");
+                strBuf2.append(specifyUserId+",");
+                strBuf2.append("1,"); // GeographyTreeDefID
+                strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
+                strBuf2.append("1)"); // LocationTreeDefID
 
-                log.info(strBuf.toString());
+                log.info(strBuf2.toString());
                 
-                updateStatement.executeUpdate(strBuf.toString());
+                updateStatement.executeUpdate(strBuf2.toString());
                 updateStatement.clearBatch();
                 updateStatement.close();
                 updateStatement = null;
@@ -1970,7 +1970,7 @@ public class GenericDBConversion
                     countVerify[i] = 0;
                 }
                 boolean       useHibernate = false;
-                StringBuilder strBuf       = new StringBuilder();
+                StringBuilder strBufInner  = new StringBuilder();
                 int           recordCount  = 0;
                 while (rs.next())
                 {
@@ -2038,23 +2038,23 @@ public class GenericDBConversion
 
                                 countVerify[inx - 2]++;
 
-                                strBuf.setLength(0);
+                                strBufInner.setLength(0);
                                 Date date = new Date();
-                                strBuf.append("INSERT INTO collectionobjectattr VALUES (");
-                                strBuf.append("NULL");//Integer.toString(recordCount));
-                                strBuf.append(",");
-                                strBuf.append(getStrValue(isStr ? data : null));
-                                strBuf.append(",");
-                                strBuf.append(getStrValue(isStr ? null : data));
-                                strBuf.append(",");
-                                strBuf.append(getStrValue(date));
-                                strBuf.append(",");
-                                strBuf.append(getStrValue(date));
-                                strBuf.append(",");
-                                strBuf.append(newRecId.intValue());
-                                strBuf.append(",");
-                                strBuf.append(getStrValue(attrDef.getAttributeDefId()));
-                                strBuf.append(")");
+                                strBufInner.append("INSERT INTO collectionobjectattr VALUES (");
+                                strBufInner.append("NULL");//Integer.toString(recordCount));
+                                strBufInner.append(",");
+                                strBufInner.append(getStrValue(isStr ? data : null));
+                                strBufInner.append(",");
+                                strBufInner.append(getStrValue(isStr ? null : data));
+                                strBufInner.append(",");
+                                strBufInner.append(getStrValue(date));
+                                strBufInner.append(",");
+                                strBufInner.append(getStrValue(date));
+                                strBufInner.append(",");
+                                strBufInner.append(newRecId.intValue());
+                                strBufInner.append(",");
+                                strBufInner.append(getStrValue(attrDef.getAttributeDefId()));
+                                strBufInner.append(")");
 
                                 try
                                 {
@@ -2062,16 +2062,16 @@ public class GenericDBConversion
                                     updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                                     if (false)
                                     {
-                                        System.out.println(strBuf.toString());
+                                        System.out.println(strBufInner.toString());
                                     }
-                                    updateStatement.executeUpdate(strBuf.toString());
+                                    updateStatement.executeUpdate(strBufInner.toString());
                                     updateStatement.clearBatch();
                                     updateStatement.close();
                                     updateStatement = null;
 
                                 } catch (SQLException e)
                                 {
-                                    log.error(strBuf.toString());
+                                    log.error(strBufInner.toString());
                                     log.error("Count: "+recordCount);
                                     e.printStackTrace();
                                     log.error(e);
@@ -3129,7 +3129,7 @@ public class GenericDBConversion
     			break;
     		}
     	}
-    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)treeDef.getDefItemByRank(0);
+    	GeographyTreeDefItem defItem = treeDef.getDefItemByRank(0);
     	planetEarth.setDefinitionItem(defItem);
     	session.save(planetEarth);
     	
@@ -3206,20 +3206,21 @@ public class GenericDBConversion
     }
     
     /**
-     * @param name
-     * @param parent
-     * @param session
+     * @param nameArg
+     * @param parentArg
+     * @param sessionArg
      * @return
      */
-    protected Geography buildGeoLevel( String name, Geography parent, Session session )
+    protected Geography buildGeoLevel( String nameArg, Geography parentArg, Session sessionArg )
     {
+        String name = nameArg;
     	if( name == null )
     	{
     		name = "N/A";
     	}
     	
     	// search through all of parent's children to see if one already exists with the same name
-    	Set<Geography> children = parent.getChildren();
+    	Set<Geography> children = parentArg.getChildren();
     	for( Geography child: children )
     	{
     		if( name.equalsIgnoreCase(child.getName()) )
@@ -3235,14 +3236,14 @@ public class GenericDBConversion
     	Geography newGeo = new Geography();
     	newGeo.initialize();
     	newGeo.setName(name);
-    	newGeo.setParent(parent);
-    	parent.addChild(newGeo);
-    	newGeo.setDefinition(parent.getDefinition());
-    	int newGeoRank = parent.getRankId()+100;
-    	GeographyTreeDefItem defItem = parent.getDefinition().getDefItemByRank(newGeoRank);
+    	newGeo.setParent(parentArg);
+        parentArg.addChild(newGeo);
+    	newGeo.setDefinition(parentArg.getDefinition());
+    	int newGeoRank = parentArg.getRankId()+100;
+    	GeographyTreeDefItem defItem = parentArg.getDefinition().getDefItemByRank(newGeoRank);
     	newGeo.setDefinitionItem(defItem);
     	newGeo.setRankId(newGeoRank);
-    	session.save(newGeo);
+        sessionArg.save(newGeo);
     	
     	return newGeo;
     }
@@ -3651,12 +3652,11 @@ public class GenericDBConversion
 
         for (int i=1;i<=rsmd.getColumnCount();i++)
         {
-            StringBuilder strBuf = new StringBuilder();
+            strBuf.setLength(0);
             String tableName = rsmd.getTableName(i);
             strBuf.append(StringUtils.isNotEmpty(tableName) ? tableName : missingTableName);
             strBuf.append(".");
             strBuf.append(rsmd.getColumnName(i));
-//          log.info("["+strBuf.toString()+"] "+i);
             map.put(strBuf.toString(), i);
         }
     }
@@ -3673,16 +3673,16 @@ public class GenericDBConversion
     {
         map.clear();
 
+        StringBuilder sb = new StringBuilder();
         for (int i=1;i<=rsmd.getColumnCount();i++)
         {
-            StringBuilder strBuf = new StringBuilder();
-
+            sb.setLength(0);
             String tableName = rsmd.getTableName(i);
             String fieldName = rsmd.getColumnName(i);
 
             if (StringUtils.isNotEmpty(tableName))
             {
-                strBuf.append(tableName);
+                sb.append(tableName);
             } else
             {
                 for (String fullName : origList)
@@ -3690,15 +3690,15 @@ public class GenericDBConversion
                     String[] parts = StringUtils.split(fullName, ".");
                     if (parts[1].equals(fieldName))
                     {
-                        strBuf.append(parts[0]);
+                        sb.append(parts[0]);
                         break;
                     }
                 }
             }
-            strBuf.append(".");
-            strBuf.append(fieldName);
+            sb.append(".");
+            sb.append(fieldName);
             //log.info("["+strBuf.toString()+"] "+i);
-            map.put(strBuf.toString(), i);
+            map.put(sb.toString(), i);
         }
     }
 
@@ -3855,12 +3855,12 @@ public class GenericDBConversion
                if (!alreadyInserted)
                {
                    // Create Agent
-                    StringBuilder strBuf = new StringBuilder("INSERT INTO agent VALUES (");
+                    StringBuilder sqlStr = new StringBuilder("INSERT INTO agent VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
                         //log.info(agentColumns[i]);
 
-                        if (i > 0) strBuf.append(",");
+                        if (i > 0) sqlStr.append(",");
                         //log.info(agentColumns[i]);
                         if (agentColumns[i].equals("agent.AgentType"))
                         {
@@ -3869,26 +3869,26 @@ public class GenericDBConversion
                         }
                         if (i == 0)
                         {
-                            strBuf.append(newAgentId);
+                            sqlStr.append(newAgentId);
 
                         } else if (agentColumns[i].equals("agent.Name"))
                         {
                             if (agentType == 1) // when it is an individual, clear the name field
                             {
-                                strBuf.append("null");
+                                sqlStr.append("null");
                             } else
                             {
                                 inx = indexFromNameMap.get(agentColumns[i]);
-                                strBuf.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
+                                sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                             }
 
                         } else
                         {
                             inx = indexFromNameMap.get(agentColumns[i]);
-                            strBuf.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
+                            sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
-                    strBuf.append(")");
+                    sqlStr.append(")");
 
                     try
                     {
@@ -3896,9 +3896,9 @@ public class GenericDBConversion
                         updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         if (false)
                         {
-                            log.info(strBuf.toString());
+                            log.info(sqlStr.toString());
                         }
-                        updateStatement.executeUpdate(strBuf.toString());
+                        updateStatement.executeUpdate(sqlStr.toString());
                         updateStatement.clearBatch();
                         updateStatement.close();
                         updateStatement = null;
@@ -3915,7 +3915,7 @@ public class GenericDBConversion
 
                     } catch (SQLException e)
                     {
-                        log.error(strBuf.toString());
+                        log.error(sqlStr.toString());
                         log.error("Count: "+recordCnt);
                         e.printStackTrace();
                         log.error(e);
@@ -3935,13 +3935,13 @@ public class GenericDBConversion
                boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
                if (!alreadyInsertedAddr)
                {
-                   StringBuilder strBuf = new StringBuilder("INSERT INTO address VALUES (");
+                   StringBuilder sqlStr = new StringBuilder("INSERT INTO address VALUES (");
                    for (int i=0;i<addressColumns.length;i++)
                    {
-                       if (i > 0) strBuf.append(",");
+                       if (i > 0) sqlStr.append(",");
                        if (i == addressColumns.length-1)
                        {
-                           strBuf.append(currentNewAgentId);
+                           sqlStr.append(currentNewAgentId);
 
                        } else
                        {
@@ -3968,10 +3968,10 @@ public class GenericDBConversion
                                //log.info(addressColumns[i]);
                                value = BasicSQLUtils.getStrValue(rs.getObject(inxInt));
                            }
-                           strBuf.append(value);
+                           sqlStr.append(value);
                        }
                    }
-                   strBuf.append(")");
+                   sqlStr.append(")");
 
                    try
                    {
@@ -3979,9 +3979,9 @@ public class GenericDBConversion
                        updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                        if (false)
                        {
-                           log.info(strBuf.toString());
+                           log.info(sqlStr.toString());
                        }
-                       updateStatement.executeUpdate(strBuf.toString());
+                       updateStatement.executeUpdate(sqlStr.toString());
                        updateStatement.clearBatch();
                        updateStatement.close();
                        updateStatement = null;
@@ -3994,7 +3994,7 @@ public class GenericDBConversion
 
                    } catch (SQLException e)
                    {
-                       log.error(strBuf.toString());
+                       log.error(sqlStr.toString());
                        log.error("Count: "+recordCnt);
                        e.printStackTrace();
                        log.error(e);
@@ -4058,13 +4058,13 @@ public class GenericDBConversion
                boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
                if (!alreadyInsertedAddr)
                {
-                   StringBuilder strBuf = new StringBuilder("INSERT INTO address VALUES (");
+                   StringBuilder sqlStr = new StringBuilder("INSERT INTO address VALUES (");
                    for (int i=0;i<addressColumns.length;i++)
                    {
-                       if (i > 0) strBuf.append(",");
+                       if (i > 0) sqlStr.append(",");
                        if (i == addressColumns.length-1)
                        {
-                           strBuf.append("NULL");
+                           sqlStr.append("NULL");
 
                        } else
                        {
@@ -4092,10 +4092,10 @@ public class GenericDBConversion
                                //log.info(addressColumns[i]);
                                value = BasicSQLUtils.getStrValue(rs.getObject(inxInt));
                            }
-                           strBuf.append(value);
+                           sqlStr.append(value);
                        }
                    }
-                   strBuf.append(")");
+                   sqlStr.append(")");
 
                    try
                    {
@@ -4103,9 +4103,9 @@ public class GenericDBConversion
                        updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                        if (false)
                        {
-                           log.info(strBuf.toString());
+                           log.info(sqlStr.toString());
                        }
-                       updateStatement.executeUpdate(strBuf.toString());
+                       updateStatement.executeUpdate(sqlStr.toString());
                        updateStatement.clearBatch();
                        updateStatement.close();
                        updateStatement = null;
@@ -4120,7 +4120,7 @@ public class GenericDBConversion
 
                    } catch (SQLException e)
                    {
-                       log.error(strBuf.toString());
+                       log.error(sqlStr.toString());
                        log.error("Count: "+recordCnt);
                        e.printStackTrace();
                        log.error(e);
@@ -4183,22 +4183,22 @@ public class GenericDBConversion
                if (!alreadyInserted)
                {
                    // Create Agent
-                    StringBuilder strBuf = new StringBuilder("INSERT INTO agent VALUES (");
+                    StringBuilder sqlStr = new StringBuilder("INSERT INTO agent VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
-                        if (i > 0) strBuf.append(",");
+                        if (i > 0) sqlStr.append(",");
                         if (i == 0)
                         {
-                            strBuf.append(newAgentId);
+                            sqlStr.append(newAgentId);
 
 
                         } else
                         {
                             inx = indexFromNameMap.get(agentColumns[i]);
-                            strBuf.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
+                            sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
-                    strBuf.append(")");
+                    sqlStr.append(")");
 
                     try
                     {
@@ -4206,9 +4206,9 @@ public class GenericDBConversion
                         updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         if (false)
                         {
-                            log.info(strBuf.toString());
+                            log.info(sqlStr.toString());
                         }
-                        updateStatement.executeUpdate(strBuf.toString());
+                        updateStatement.executeUpdate(sqlStr.toString());
                         updateStatement.clearBatch();
                         updateStatement.close();
                         updateStatement = null;
@@ -4225,7 +4225,7 @@ public class GenericDBConversion
 
                     } catch (SQLException e)
                     {
-                        log.error(strBuf.toString());
+                        log.error(sqlStr.toString());
                         log.error("Count: "+recordCnt);
                         e.printStackTrace();
                         log.error(e);

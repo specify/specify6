@@ -281,12 +281,14 @@ public class CreateTestDatabases
             GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(null, treeDef, "Level 0", 0);
             GeologicTimePeriodTreeDefItem defItemLevel1 = createGeologicTimePeriodTreeDefItem(defItemLevel0, treeDef, "Level 1", 100);
             GeologicTimePeriodTreeDefItem defItemLevel2 = createGeologicTimePeriodTreeDefItem(defItemLevel1, treeDef, "Level 2", 200);
+            @SuppressWarnings("unused")
             GeologicTimePeriodTreeDefItem defItemLevel3 = createGeologicTimePeriodTreeDefItem(defItemLevel2, treeDef, "Level 3", 300);
 
             // Create the defItemLevel0
             GeologicTimePeriod level0 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, null, "Time As We Know It", defItemLevel0.getRankId());
             GeologicTimePeriod level1 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level0, "Some Really Big Time Period", defItemLevel0.getRankId());
             GeologicTimePeriod level2 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level1, "A Slightly Smaller Time Period", defItemLevel0.getRankId());
+            @SuppressWarnings("unused")
             GeologicTimePeriod level3 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level2, "Yesterday", defItemLevel0.getRankId());
 
             colObjDef.setGeologicTimePeriodTreeDef(treeDef);
@@ -313,6 +315,7 @@ public class CreateTestDatabases
      * @param treeDefName treeDefName
      * @return true on success
      */
+    @SuppressWarnings("unused")
     public static boolean createSimpleLocation(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createSimpleLocation "+treeDefName);
@@ -410,6 +413,7 @@ public class CreateTestDatabases
      * @param taxonTreeDef tree def
      * @return true on success
      */
+    @SuppressWarnings("unused")
     public static boolean createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
     {
         log.info("createSimpleTaxon "+taxonTreeDef.getName());
@@ -755,6 +759,7 @@ public class CreateTestDatabases
      * @param disciplineName fish, birds, bees etc
      * @return true on success
      */
+    @SuppressWarnings("unused")
     public static boolean createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         BasicSQLUtils.cleanAllTables();
@@ -905,6 +910,7 @@ public class CreateTestDatabases
      * @param disciplineName fish, birds, bees etc
      * @return true on success
      */
+    @SuppressWarnings("unused")
     public static boolean createMultiDiscipline(final String[] colObjDefNames,
                                                 final String[] disciplineNames,
                                                 final String[] catalogSeriesPrefix,
@@ -969,7 +975,7 @@ public class CreateTestDatabases
                  AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
 
                  // Create CollectingEventAttr
-                 CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
+                CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
 
                  // Create Collection Object
                  Object[]  values = {1001010.1f, "RCS101", agents[0], 5,
@@ -1192,6 +1198,7 @@ public class CreateTestDatabases
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
 
             // Create CollectingEventAttr
+            @SuppressWarnings("unused")
             CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
 
             // Create Collection Object
@@ -1208,6 +1215,7 @@ public class CreateTestDatabases
             AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
 
             // Create CollectionObjectAttr
+            @SuppressWarnings("unused")
             CollectionObjectAttr colObjAttr = createCollectionObjectAttr(colObjs[0], colObjAttrDef, "Full", null);
 
             String[] speciesNames = {"asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "vivax",
@@ -1223,6 +1231,7 @@ public class CreateTestDatabases
             DeterminationStatus currentStatus = createDeterminationStatus("Current","Test Determination Status");
 
             // Create Determination
+            @SuppressWarnings("unused")
             Determination determination = createDetermination(colObjs[0], agents[3], t[0], currentStatus, null);
             determination = createDetermination(colObjs[0], agents[0], t[1], oldDetermination, null);
 
@@ -1286,6 +1295,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(name);
+            @SuppressWarnings("unused")
             SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
 
             createMultipleAgents();
@@ -1297,7 +1307,7 @@ public class CreateTestDatabases
                 agents[i] = getAgentByLastName(agentNames[i]);
             }
 
-            Object[] permitInfo = {"101", "Field Work"};
+            //Object[] permitInfo = {"101", "Field Work"};
             /*
             final String permitNumber,
             final String type,
@@ -1323,6 +1333,7 @@ public class CreateTestDatabases
      * @param disciplineName fish, birds, bees etc
      * @return true on success
      */
+    @SuppressWarnings("unused")
     public static boolean createPlantDatabaseWithContainers(final String colObjDefName, final String disciplineName)
     {
         BasicSQLUtils.cleanAllTables();

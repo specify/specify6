@@ -660,8 +660,8 @@ public class BioGeoMancerMapper implements TimingTarget
             mapLatRange = mapMaxLat-mapMinLat;
             mapLongRange = mapMaxLong-mapMinLong;
 
-            pixelPerLatRatio = (double) mapHeight/(double) mapLatRange;
-            pixelPerLongRatio = (double) mapWidth/(double) mapLongRange;
+            pixelPerLatRatio = mapHeight / mapLatRange;
+            pixelPerLongRatio = mapWidth / mapLongRange;
 
             for( int i = 0; i<bgmDatas.size(); ++i )
             {

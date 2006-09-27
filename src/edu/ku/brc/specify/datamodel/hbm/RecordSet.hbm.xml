@@ -16,9 +16,16 @@
     </timestamp>
 
     <property name="name" column="Name" update="true" type="java.lang.String" length="64">
+        <meta attribute="scope-field">protected</meta>
     </property>
 
     <property name="tableId" column="TableID" update="true" type="java.lang.Integer">
+        <meta attribute="scope-field">protected</meta>
+    </property>
+    
+    <property name="remarks" type="text" column="Remarks">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
     </property>
 
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">

@@ -76,6 +76,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DraggableIcon;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -155,6 +156,8 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected PanelBuilder                  mainBuilder;
     protected BusinessRulesIFace            businessRules   = null; 
 
+    protected DraggableIcon                 draggableIcon   = null;
+    
     // Carry Forward
     protected CarryForwardInfo              carryFwdInfo    = null;
     protected boolean                       doCarryForward  = false;
@@ -996,7 +999,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             removeFromParent(dataObj);
             
-            String delMsg = businessRules.deleteMsg(dataObj);
+            String delMsg = businessRules.getDeleteMsg(dataObj);
 
             transaction = session.beginTransaction();
             session.delete(dataObj);
@@ -1131,7 +1134,10 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         }
     }
 
-
+    public void setDataObjectRep(DraggableIcon draggableIcon)
+    {
+        this.draggableIcon = draggableIcon;
+    }
 
     /**
      * Returns the "Save" Button
@@ -1321,6 +1327,11 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     rsController.getDelRecBtn().setEnabled(businessRules == null || businessRules.okToDelete(this.dataObj));
                 }
             }
+        }
+        
+        if (draggableIcon != null && this.dataObj != null && businessRules != null)
+        {
+            businessRules.setObjectIdentity(this.dataObj, draggableIcon);
         }
 
     }

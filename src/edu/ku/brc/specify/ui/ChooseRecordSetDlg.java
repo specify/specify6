@@ -29,7 +29,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -76,7 +75,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
         createUI(tableId);
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
     }

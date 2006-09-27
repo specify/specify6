@@ -118,10 +118,7 @@ public class FishBaseInfoGetter extends HTTPGetter
         {
             try
             {
-                //imageURL = file.toURI().toString();
-
-                ImageIcon image = new ImageIcon(fullPath);
-                return image.getImage();
+                return new ImageIcon(fullPath).getImage();
 
             } catch (Exception ex)
             {
@@ -140,8 +137,7 @@ public class FishBaseInfoGetter extends HTTPGetter
                 fos.flush();
                 fos.close();
 
-                ImageIcon image = new ImageIcon(bytes);
-                return image.getImage();
+                return new ImageIcon(bytes).getImage();
 
             } catch (Exception ex)
             {
@@ -228,10 +224,10 @@ public class FishBaseInfoGetter extends HTTPGetter
 
             if (status == ErrorCode.NoError)
             {
-                Element species = (Element)dom.selectSingleNode("/fishbase/species");
-                if (species != null)
+                Element speciesElement = (Element)dom.selectSingleNode("/fishbase/species");
+                if (speciesElement != null)
                 {
-                    int numPictures = XMLHelper.getAttr(species, "total_adult", 0);
+                    int numPictures = XMLHelper.getAttr(speciesElement, "total_adult", 0);
                     if (numPictures > 0)
                     {
                         List adults = dom.selectNodes("/fishbase/pictures[@type='adult']");

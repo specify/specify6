@@ -171,6 +171,7 @@ public class PreferenceTest extends TestCase
     /**
      * Tests the Date formating
      */
+    @SuppressWarnings("unused")
     public void testColorWrapper()
     {
         try
@@ -307,7 +308,7 @@ public class PreferenceTest extends TestCase
         AppPrefsCache.register(colorWrapper, "ui", "formatting", attrName);
 
         String newColorStr = "64, 255, 128";
-        Color newColor = new Color(64, 255, 128);
+        //Color newColor = new Color(64, 255, 128);
 
         AppPreferences.getRemote().put("ui.formatting."+attrName, newColorStr);
         //try {

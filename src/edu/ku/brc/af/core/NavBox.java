@@ -55,7 +55,7 @@ public class NavBox extends JPanel implements NavBoxIFace
      * Constructor (with name).
      * @param name the name of the NavBox.
      */
-    public NavBox(String name)
+    public NavBox(final String name)
     {
         super();
         this.name = name;

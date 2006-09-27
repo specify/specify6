@@ -163,14 +163,15 @@ public class ResultSetTableModel extends AbstractTableModel
     }
 
     /**
-     * Gets the value of the row col
-     * @param row the row of the cell to be gotten
-     * @param column the column of the cell to be gotten
+     * Gets the value of the row col.
+     * @param rowArg the row of the cell to be gotten
+     * @param colArg the column of the cell to be gotten
      */
-    public Object getValueAt(int row, int column)
+    public Object getValueAt(final int rowArg, final int colArg)
     {
-        column++;
-
+        int column = colArg + 1;
+        int row    = rowArg;
+        
         if (resultSet == null) return null;
 
         try

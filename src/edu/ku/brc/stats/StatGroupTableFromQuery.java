@@ -180,8 +180,8 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
                     String desc     = data.get(i++).toString();
                     Object val      = data.get(i++);
                     Object colIdObj = data.get(i);
-                    String colId    = colIdObj != null ? colIdObj.toString() : null;
-                    StatDataItem statItem = new StatDataItem(desc, linkStr == null || colId == null ? null : (linkStr+",id="+colId), false);
+                    String columnId = colIdObj != null ? colIdObj.toString() : null;
+                    StatDataItem statItem = new StatDataItem(desc, linkStr == null || columnId == null ? null : (linkStr+",id="+columnId), false);
                     statItem.setValue(val);
                     model.addDataItem(statItem);
                 }

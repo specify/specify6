@@ -168,11 +168,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     /**
      * Starts the report creation process
      * @param fileName the XML file name of the report definition
-     * @param recordSet the recordset to use to fill the labels
+     * @param recrdSet the recordset to use to fill the labels
      */
-    public void createReport(final String fileName, final RecordSet recordSet)
+    public void createReport(final String fileName, final RecordSet recrdSet)
     {
-        this.recordSet = recordSet;
+        this.recordSet = recrdSet;
      
         refreshCacheFromDatabase();
 

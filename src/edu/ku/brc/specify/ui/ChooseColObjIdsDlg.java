@@ -29,7 +29,6 @@ import javax.swing.AbstractListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -76,7 +75,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
         createUI();
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
     }
@@ -111,7 +110,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
                 // This is the only method defined by ListCellRenderer.
                 // We just reconfigure the JLabel each time we're called.
 
-                public Component getListCellRendererComponent(JList list,
+                public Component getListCellRendererComponent(JList renderList,
                                                               Object value,            // value to display
                                                               int index,               // cell index
                                                               boolean isSelected,      // is the cell selected
@@ -122,15 +121,15 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
                     setIcon(icon);
                     if (isSelected) 
                     {
-                        setBackground(list.getSelectionBackground());
-                        setForeground(list.getSelectionForeground());
+                        setBackground(renderList.getSelectionBackground());
+                        setForeground(renderList.getSelectionForeground());
                     } else 
                     {
-                        setBackground(list.getBackground());
-                        setForeground(list.getForeground());
+                        setBackground(renderList.getBackground());
+                        setForeground(renderList.getForeground());
                     }
-                    setEnabled(list.isEnabled());
-                    setFont(list.getFont());
+                    setEnabled(renderList.isEnabled());
+                    setFont(renderList.getFont());
                     setOpaque(true);
                     return this;
                 }

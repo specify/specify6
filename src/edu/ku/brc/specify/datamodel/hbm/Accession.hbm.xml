@@ -121,7 +121,6 @@
     
     <!-- bi-directional one-to-many association to AccessionAgents -->
     <set name="accessionAgents" lazy="true" inverse="true" cascade="all-delete-orphan">
-        <!-- meg change cascade="none" to cascade="delete - above and below -->
         <meta attribute="scope-field">protected</meta> 
         <meta attribute="field-description"></meta>
         <key>
@@ -129,6 +128,15 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAgents"/>
     </set>
+    
+    <!-- bi-directional many-to-one association to Accession -->
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="false" outer-join="true" cascade="none" index="IX_RepositoryAgreementAccessionID" unique-key="IX_AccessionAgents">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">RepositoryAgreement for this Accession</meta>
+        <column name="RepositoryAgreementID"/>
+    </many-to-one>
+    
+    
     
 </class>
 </hibernate-mapping>

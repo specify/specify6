@@ -235,6 +235,7 @@ public class DBSchemaTest extends TestCase
     /**
      * 
      */
+    @SuppressWarnings("unused")
     public void testGeography()
     {
         log.info("Create GeographyTreeDef, GeographyTreeDefItem and Geography objects");
@@ -367,6 +368,7 @@ public class DBSchemaTest extends TestCase
     /**
      *
      */
+    @SuppressWarnings("unused")
     public void testCollectionObject()
     {
         log.info("Create CollectionObject");

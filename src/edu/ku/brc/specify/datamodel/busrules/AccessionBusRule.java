@@ -25,6 +25,8 @@ import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.ui.DraggableIcon;
 import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
@@ -218,7 +220,7 @@ public class AccessionBusRule implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#deleteMsg(java.lang.Object)
      */
-    public String deleteMsg(final Object dataObj)
+    public String getDeleteMsg(final Object dataObj)
     {
         if (dataObj instanceof Accession)
         {
@@ -226,6 +228,40 @@ public class AccessionBusRule implements BusinessRulesIFace
         }
         return null;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.DraggableIcon)
+     */
+    public void setObjectIdentity(final Object dataObj, final DraggableIcon draggableIcon)
+    {
+        if (dataObj == null)
+        {
+            draggableIcon.setLabel("");
+        }
+        
+        if (dataObj instanceof Accession)
+        {
+            Accession accession = (Accession)dataObj;
+            
+            draggableIcon.setLabel(accession.getNumber());
+            
+            Object data = draggableIcon.getData();
+            if (data == null)
+            {
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.addItem(accession.getAccessionId());
+                data = rs;
+                draggableIcon.setData(data);
+                
+            } else
+            {
+                RecordSet rs = (RecordSet)data;
+                rs.getItems().clear();
+                rs.addItem(accession.getAccessionId());
+            }
+        }
+     }
     
     //-----------------------------------------------------------------
     //-- Inner Classes

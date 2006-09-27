@@ -412,16 +412,16 @@ public abstract class ExpressTableResultsBase extends JPanel
     {
         protected CommandAction cmd;
         protected RecordSet     recordSet;
-        protected JTable        table;
-        protected ExpressResultsTableInfo tableInfo;
+        protected JTable        estTable;
+        protected ExpressResultsTableInfo estTableInfo;
 
         public ESTableAction(final CommandAction cmd,
-                             final JTable table,
-                             final ExpressResultsTableInfo tableInfo)
+                             final JTable estTable,
+                             final ExpressResultsTableInfo estTableInfo)
         {
-            this.cmd       = cmd;
-            this.table     = table;
-            this.tableInfo = tableInfo;
+            this.cmd          = cmd;
+            this.estTable     = estTable;
+            this.estTableInfo = estTableInfo;
         }
 
         public void actionPerformed(ActionEvent e)

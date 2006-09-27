@@ -50,6 +50,7 @@ public class Accession  implements java.io.Serializable {
      protected Set<CollectionObject> collectionObjects;
      protected Set<AccessionAuthorizations> accessionAuthorizations;
      protected Set<AccessionAgents> accessionAgents;
+     protected RepositoryAgreement repositoryAgreement;
 
 
     // Constructors
@@ -90,6 +91,7 @@ public class Accession  implements java.io.Serializable {
         collectionObjects = new HashSet<CollectionObject>();
         accessionAuthorizations = new HashSet<AccessionAuthorizations>();
         accessionAgents = new HashSet<AccessionAgents>();
+        repositoryAgreement = null;
     }
     // End Initializer
 
@@ -336,6 +338,16 @@ public class Accession  implements java.io.Serializable {
     }
 
 
+    /**
+     * RepositoryAgreement for this Accession
+     */
+    public RepositoryAgreement getRepositoryAgreement() {
+        return this.repositoryAgreement;
+    }
+    
+    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
+        this.repositoryAgreement = repositoryAgreement;
+    }
 
 
 

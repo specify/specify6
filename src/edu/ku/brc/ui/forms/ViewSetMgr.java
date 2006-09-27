@@ -321,16 +321,16 @@ public class ViewSetMgr
      * Reads the Form Registry. The forms are loaded when needed and onlu one ViewSet can be the "core" ViewSet which is where most of the forms
      * reside. This could also be thought of as the "default" set of forms.
      * 
-     * @param contextDir the directory in which load the view sets
+     * @param contextDirArg the directory in which load the view sets
      */
-    protected void init(final File _contextDir, final boolean emptyIsOK)
+    protected void init(final File contextDirArg, final boolean emptyIsOK)
     {
-        this.contextDir = _contextDir;
+        this.contextDir = contextDirArg;
         registryExists = false;
         
-        if (_contextDir != null)
+        if (contextDirArg != null)
         { 
-            File vsRegFile = new File(_contextDir.getAbsoluteFile() + File.separator + REGISTRY_FILENAME);
+            File vsRegFile = new File(contextDirArg.getAbsoluteFile() + File.separator + REGISTRY_FILENAME);
             if (vsRegFile.exists())
             {
                 registryExists = true;

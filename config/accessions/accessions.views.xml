@@ -99,7 +99,14 @@
 
             <rows>
                 <row>
-                    <cell type="separator" label="KU Accessions" colspan="12"/>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" icon="Accession" recordobj="true"/>
+                                <cell type="separator" label="KU Accessions"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
@@ -118,10 +125,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Accessioned"/>
-                    <cell type="field" id="5" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus"/>
+                    <cell type="field" id="5" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
 
                     <cell type="label" labelfor="6" label="Received"/>
-                    <cell type="field" id="6" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus"/>
+                    <cell type="field" id="6" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Description"/>

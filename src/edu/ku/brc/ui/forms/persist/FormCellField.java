@@ -16,10 +16,14 @@ package edu.ku.brc.ui.forms.persist;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.af.prefs.AppPrefsCache;
 
 /**
  * This represents all the information about a cell in the form
@@ -30,6 +34,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FormCellField extends FormCell
 {
+    protected static SimpleDateFormat scrDateFormat = null;
+    
     protected String   uiType;
     protected String   dspUIType;
     protected String   format;
@@ -40,6 +46,8 @@ public class FormCellField extends FormCell
     protected boolean  isEncrypted    = false;
     protected String   label          = null;
     protected String   defaultValue   = null;
+    
+    protected Boolean defaultDateToday = null;
     
     protected String   pickListName       = null; // Comboboxes and TextFields
 
@@ -241,6 +249,20 @@ public class FormCellField extends FormCell
 
     public String getDefaultValue()
     {
+        if (defaultDateToday == null)
+        {
+            defaultDateToday = uiFieldFormatter.equals("Date") && defaultValue.equals("today");
+        }
+        
+        if (defaultDateToday)
+        {
+            Date date = new Date();
+            if (scrDateFormat == null)
+            {
+                scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+            }
+            return scrDateFormat.format(date);
+        }
         return defaultValue;
     }
 

@@ -120,16 +120,16 @@ public class StatDataItem implements QueryResultsListener
 
     /**
      * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to 1,1
-     * @param sql the SQl statement
+     * @param sqlStr the SQl statement
      * @return Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      */
-    public QueryResultsContainer add(final String sql)
+    public QueryResultsContainer add(final String sqlStr)
     {
-        if (sql == null)
+        if (sqlStr == null)
         {
             throw new RuntimeException("sql is null for ["+description+"]");
         }
-        QueryResultsContainer qrc = new QueryResultsContainer(sql);
+        QueryResultsContainer qrc = new QueryResultsContainer(sqlStr);
         qrc.add( new QueryResultsDataObj(1, 1));
         valuesType.addElement(VALUE_TYPE.Ignore);
         qrcs.addElement(qrc);
@@ -139,19 +139,19 @@ public class StatDataItem implements QueryResultsListener
 
     /**
      * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
-     * @param sql the SQL to be executed
+     * @param sqlStr the SQL to be executed
      * @param row the QueryResultsDataObj row in the resultset
      * @param col the QueryResultsDataObj column in the resultset
      * @param valType whether to ignore the value or indicate it is the description or value
      * @return Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      */
-    public QueryResultsContainer add(final String sql, final int row, final int col, final VALUE_TYPE valType)
+    public QueryResultsContainer add(final String sqlStr, final int row, final int col, final VALUE_TYPE valType)
     {
-        if (sql == null)
+        if (sqlStr == null)
         {
             throw new RuntimeException("sql is null for ["+description+"]");
         }
-        QueryResultsContainer qrc = new QueryResultsContainer(sql);
+        QueryResultsContainer qrc = new QueryResultsContainer(sqlStr);
         qrc.add( new QueryResultsDataObj(row, col));
         valuesType.addElement(valType);
         qrcs.addElement(qrc);

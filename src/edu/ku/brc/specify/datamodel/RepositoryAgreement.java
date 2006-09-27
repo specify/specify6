@@ -49,6 +49,8 @@ public class RepositoryAgreement  implements java.io.Serializable {
      protected Set<CollectionObject> collectionObjects;
      protected Set<RepositoryAgreement> repositoryAgreementAuthorizations;
      protected Set<RepositoryAgreement> repositoryAgreementAgents;
+     protected Set<Accession> accessions;
+
      protected Agent originator;
 
 
@@ -89,6 +91,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
         collectionObjects = new HashSet<CollectionObject>();
         repositoryAgreementAuthorizations = new HashSet<RepositoryAgreement>();
         repositoryAgreementAgents = new HashSet<RepositoryAgreement>();
+        accessions = new HashSet<Accession>();
         originator = null;
     }
     // End Initializer
@@ -333,6 +336,17 @@ public class RepositoryAgreement  implements java.io.Serializable {
 
     public void setOriginator(Agent originator) {
         this.originator = originator;
+    }
+    
+    /**
+     * 
+     */
+    public Set<Accession> getAccessions() {
+        return this.accessions;
+    }
+    
+    public void setAccessions(Set<Accession> accessions) {
+        this.accessions = accessions;
     }
     
 }

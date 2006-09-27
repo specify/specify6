@@ -297,10 +297,10 @@ public class CollectionObjDef  implements java.io.Serializable
         attributeDef.setCollectionObjDef(this);
     }
 
-    public void addLocalities(final Locality localities)
+    public void addLocalities(final Locality localitiesArg)
     {
-        this.localities.add(localities);
-        localities.getCollectionObjDefs().add(this);
+        this.localities.add(localitiesArg);
+        localitiesArg.getCollectionObjDefs().add(this);
     }
 
     // Done Add Methods

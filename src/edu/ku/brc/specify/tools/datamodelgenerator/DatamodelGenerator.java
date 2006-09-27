@@ -36,7 +36,8 @@ import edu.ku.brc.util.DatamodelHelper;
 /**
  * This generates the specify datamodel file
  * 
- * @code_status Alpha *
+ * @code_status Alpha
+ * 
  * @author rods
  * 
  */
@@ -50,14 +51,13 @@ public class DatamodelGenerator
 	 * Given and XML node, returns a Field object by grabbing the appropriate
 	 * attribute values
 	 * 
-	 * @param aElementnthe
-	 *            XML node
+	 * @param element the XML node
 	 * @return Field object
 	 */
-	private Field createField(Element aElement)
+	private Field createField(final Element element)
 	{
-		return new Field(aElement.attributeValue("name"), aElement.attributeValue("type"), aElement
-				.attributeValue("column"), aElement.attributeValue("length"));
+		return new Field(element.attributeValue("name"), element.attributeValue("type"), element
+				.attributeValue("column"), element.attributeValue("length"));
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class DatamodelGenerator
 	{
 		String tableName = aElement.attributeValue("name");
 		log.info("attempting to pull TableMetaData out of hashtbale for table: " + tableName);
-		TableMetaData tableData = (TableMetaData) hash.get(tableName);
+		TableMetaData tableData = hash.get(tableName);
 		if (tableData == null)
 			log.error("Could not retrieve TableMetaData from hashtable for table: " + tableName);
 		String id = tableData.getId();
@@ -221,21 +221,21 @@ public class DatamodelGenerator
 						log.error("Could not get class node of document");
 					else
 					{
-						Table table = createTable((Element) classNode);
+						Table table = createTable(classNode);
 						tableList.add(table);
 
 						// iterate through child elements of propery ndoe
 						for (Iterator i = classNode.elementIterator("property"); i.hasNext();)
 						{
 							Element element = (Element) i.next();
-							table.addField(createField((Element) element));
+							table.addField(createField(element));
 						}
 
 						// iterate through child elements of id node
 						for (Iterator i = classNode.elementIterator("id"); i.hasNext();)
 						{
 							Element element = (Element) i.next();
-							table.addId(createId((Element) element));
+							table.addId(createId(element));
 						}
 						// iterate through child elements of set node
 						for (Iterator i = classNode.elementIterator("set"); i.hasNext();)

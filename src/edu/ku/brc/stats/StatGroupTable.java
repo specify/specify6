@@ -172,30 +172,30 @@ public class StatGroupTable extends JPanel
     }
 
     /**
-     * Get the StatDataItem at a given row
-     * @param tableModel the table model
+     * Get the StatDataItem at a given row.
+     * @param tableArg the table 
      * @param rowIndex the row index in question
      * @return the StatDataItem at the rowIndex
      */
-    protected StatDataItem getStatDataItem(final JTable table, final int rowIndex)
+    protected static StatDataItem getStatDataItem(final JTable tableArg, final int rowIndex)
     {
         int rowInx = rowIndex;
 
-        TableModel model;
-        if (table instanceof SortableJTable)
+        TableModel tblModel;
+        if (tableArg instanceof SortableJTable)
         {
-            SortableJTable     sTable        = (SortableJTable)table;
+            SortableJTable     sTable        = (SortableJTable)tableArg;
             SortableTableModel sortableModel = sTable.getSortableTableModel();
 
             rowInx = sortableModel.getDelegatedRow(rowInx);
-            model  = sTable.getModel();
+            tblModel  = sTable.getModel();
 
         } else
         {
-            model = table.getModel();
+            tblModel = tableArg.getModel();
         }
 
-        return (StatDataItem)((StatGroupTableModel)model).getDataItem(rowInx);
+        return ((StatGroupTableModel)tblModel).getDataItem(rowInx);
 
     }
 
@@ -441,10 +441,14 @@ public class StatGroupTable extends JPanel
 
         // This method is called each time a cell in a column
         // using this renderer needs to be rendered.
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex)
+        public Component getTableCellRendererComponent(JTable renderTable, 
+                                                       Object value,
+                                                       boolean isSelected, 
+                                                       boolean hasFocus, 
+                                                       int rowIndex, 
+                                                       int vColIndex)
         {
-            StatDataItem sdi = getStatDataItem(table, rowIndex);
+            StatDataItem sdi = getStatDataItem(renderTable, rowIndex);
             if (sdi != null)
             {
 

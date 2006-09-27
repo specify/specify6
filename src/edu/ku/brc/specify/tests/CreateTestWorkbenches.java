@@ -104,6 +104,7 @@ public class CreateTestWorkbenches {
             Session session = HibernateUtil.getCurrentSession();
             ObjCreatorHelper.setSession(session);
             HibernateUtil.beginTransaction();           
+            @SuppressWarnings("unused")
             WorkbenchTemplate testtemplate = ObjCreatorHelper.createWorkbenchTemplate("Test Template1", "This is a template for testing the application");
             HibernateUtil.commitTransaction();
             HibernateUtil.closeSession();  
@@ -133,6 +134,7 @@ public class CreateTestWorkbenches {
             Session session = HibernateUtil.getCurrentSession();
             ObjCreatorHelper.setSession(session);
             HibernateUtil.beginTransaction();           
+            @SuppressWarnings("unused")
             WorkbenchTemplate testtemplate = ObjCreatorHelper.createWorkbenchTemplate(templateName, templateDescription);
             HibernateUtil.commitTransaction();
             HibernateUtil.closeSession();  
@@ -298,6 +300,7 @@ public class CreateTestWorkbenches {
             Session session = HibernateUtil.getCurrentSession();
             ObjCreatorHelper.setSession(session);
             HibernateUtil.beginTransaction();                       
+            @SuppressWarnings("unused")
             Workbench wb1 = ObjCreatorHelper.createWorkbench("Test WB", "Test workbench", "", 0, template);                    
             HibernateUtil.commitTransaction();         
         }catch (Exception ex)

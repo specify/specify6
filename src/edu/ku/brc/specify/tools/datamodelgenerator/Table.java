@@ -75,19 +75,19 @@ public class Table
 	}
 
 	/**
-	 * @param name
-	 * @return
-	 * String
+     * Returns the name portion before the ".".
+	 * @param nameArg the name to be shortened
+	 * @return the shortened name
 	 */
-	protected String createShortName(String name)
+	protected String createShortName(String nameArg)
 	{
-		int inx = name.lastIndexOf('.');
+		int inx = nameArg.lastIndexOf('.');
 		if (inx != -1)
 		{
-			return name.substring(inx + 1, name.length());
+			return nameArg.substring(inx + 1, nameArg.length());
 		} else
 		{
-			return name;
+			return nameArg;
 		}
 
 	}

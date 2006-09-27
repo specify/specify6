@@ -225,6 +225,7 @@ public class FixMetaTags
      */
     public static void main(String[] args)
     {
+        @SuppressWarnings("unused")
         FixMetaTags tablesToLower = new FixMetaTags();
 
     }

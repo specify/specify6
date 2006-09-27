@@ -222,11 +222,11 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 
         /**
          * Sets the display indexes to display only a portion of the recordset
-         * @param indexes the array of indexes
+         * @param indexesArg the array of indexes
          */
-        public void addDisplayIndexes(int[] indexes)
+        public void addDisplayIndexes(int[] indexesArg)
         {
-            displayIndexes  = indexes;
+            displayIndexes  = indexesArg;
             this.fireTableDataChanged();
         }
 

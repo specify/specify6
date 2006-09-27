@@ -105,7 +105,7 @@ public class AttrUtils
                 {
                     HibernateUtil.beginTransaction();
                     AttributeDef attrsDef = new AttributeDef();
-                    attrsDef.setTableType((short)tableType.getType());
+                    attrsDef.setTableType(tableType.getType());
                     attrsDef.setCollectionObjDef(colObjDef);
                     attrsDef.setPrepType(prepType);
                     attrsDef.setFieldName(attrNames[i]);

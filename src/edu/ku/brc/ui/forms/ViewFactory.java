@@ -63,6 +63,7 @@ import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
+import edu.ku.brc.ui.DraggableIcon;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
@@ -559,14 +560,25 @@ public class ViewFactory
                     FormCellLabel cellLabel = (FormCellLabel)cell;
 
                     String lblStr = cellLabel.getLabel();
-                     JLabel        lbl       = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", SwingConstants.RIGHT);
-                    //lbl.setFont(boldLabelFont);
-                    labelsForHash.put(cellLabel.getLabelFor(), lbl);
+                    if (cellLabel.isRecordObj())
+                    {
+                        DraggableIcon dor = new DraggableIcon(cellLabel.getIcon());
+                        compToAdd = dor;
+                        //dor.createMouseInputAdapter(); // this makes it draggable
+                        //dor.setData(null);
+                        formViewObj.setDataObjectRep(dor);
+                        
+                    } else
+                    {
+                        JLabel lbl = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", SwingConstants.RIGHT);
+                        //lbl.setFont(boldLabelFont);
+                        labelsForHash.put(cellLabel.getLabelFor(), lbl);
+                        compToAdd      =  lbl;
+                        formViewObj.addLabel(cellLabel, lbl);
+                    }
 
-                    compToAdd      =  lbl;
                     addToValidator = false;
                     addControl     = false;
-                    formViewObj.addLabel(cellLabel, lbl);
 
 
                 } else if (cell.getType() == FormCell.CellType.field)

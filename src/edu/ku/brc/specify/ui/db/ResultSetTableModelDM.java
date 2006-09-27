@@ -111,11 +111,13 @@ public class ResultSetTableModelDM extends ResultSetTableModel
     
     /**
      * Gets the value of the row col
-     * @param row the row of the cell to be gotten
+     * @param rowArg the row of the cell to be gotten
      * @param column the column of the cell to be gotten
      */
-    public Object getValueAt(int row, int column)
+    public Object getValueAt(int rowArg, int colArg)
     {
+        int row    = rowArg;
+        int column = colArg;
         
         if (resultSet == null) return null;
         

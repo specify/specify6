@@ -151,10 +151,10 @@ public class ViewSetMgrTests extends TestCase
      * Helper method 
      * @param srcDir source dir
      * @param dstDir destination dir
-     * @param viewsetFileName the name of the viewSet
+     * @param viewsetFileNameStr the name of the viewSet
      * @return true if copy worked
      */
-    protected boolean copyTestViewSetFile(final File srcDir, final File dstDir, final String viewsetFileName)
+    protected boolean copyTestViewSetFile(final File srcDir, final File dstDir, final String viewsetFileNameStr)
     {
         
         if (!srcDir.exists())
@@ -169,8 +169,8 @@ public class ViewSetMgrTests extends TestCase
         
         try
         {
-            FileUtils.copyFile(new File(srcDir + File.separator + viewsetFileName), 
-                               new File(dstDir + File.separator + viewsetFileName));
+            FileUtils.copyFile(new File(srcDir + File.separator + viewsetFileNameStr), 
+                               new File(dstDir + File.separator + viewsetFileNameStr));
             return true;
             
         } catch (IOException ex)
