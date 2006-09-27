@@ -41,7 +41,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
      */
     public AppPrefsDiskIOIImpl()
     {
-        
+        // do nothing
     }
     
     /* (non-Javadoc)

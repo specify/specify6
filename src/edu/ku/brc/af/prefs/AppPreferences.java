@@ -79,21 +79,20 @@ public class AppPreferences
             {
                 throw new InternalError("System Property '"+factoryName+"' must be set!");
                 
-            } else
+            }
+            // else
+            this.isRemote = true;
+            
+            try 
             {
-                this.isRemote = true;
+                appPrefsIO = (AppPrefsIOIFace)Class.forName(remoteSaverClassName).newInstance();
+                appPrefsIO.setAppPrefsMgr(this);
                 
-                try 
-                {
-                    appPrefsIO = (AppPrefsIOIFace)Class.forName(remoteSaverClassName).newInstance();
-                    appPrefsIO.setAppPrefsMgr(this);
-                    
-                } catch (Exception e) 
-                {
-                    InternalError error = new InternalError("Can't instantiate "+factoryName+" factory " + remoteSaverClassName);
-                    error.initCause(e);
-                    throw error;
-                }
+            } catch (Exception e) 
+            {
+                InternalError error = new InternalError("Can't instantiate "+factoryName+" factory " + remoteSaverClassName);
+                error.initCause(e);
+                throw error;
             }
            
         } else
@@ -418,7 +417,7 @@ public class AppPreferences
         {
             List<String> names = new ArrayList<String>();
             int len = nodeName.length();
-            for (Enumeration e=properties.propertyNames();e.hasMoreElements();)
+            for (Enumeration<?> e=properties.propertyNames();e.hasMoreElements();)
             {
                 String name = (String)e.nextElement();
                 if (name.startsWith(nodeName))
@@ -458,7 +457,7 @@ public class AppPreferences
         }
         int len = nodeName.length();
         List<String> names = new ArrayList<String>();
-        for (Enumeration e=properties.propertyNames();e.hasMoreElements();)
+        for (Enumeration<?> e=properties.propertyNames();e.hasMoreElements();)
         {
             String name = (String)e.nextElement();
             System.out.println("["+name+"]");
@@ -590,11 +589,12 @@ public class AppPreferences
                 }
         })));
 
-    private static Timer syncTimer = new Timer(true); // Daemon Thread
+    protected static Timer syncTimer = new Timer(true); // Daemon Thread
 
     static {
         // Add periodic timer task to periodically sync cached prefs
         syncTimer.schedule(new TimerTask() {
+            @Override
             public void run() {
                 syncPrefs();
             }
@@ -604,6 +604,7 @@ public class AppPreferences
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
                 Runtime.getRuntime().addShutdownHook(new Thread() {
+                    @Override
                     public void run() {
                         syncTimer.cancel();
                         syncPrefs();
@@ -617,7 +618,7 @@ public class AppPreferences
     /**
      * Saves the prefs
      */
-    private static void syncPrefs() {
+    protected static void syncPrefs() {
         /*
          * Synchronization necessary because userRoot and systemRoot are
          * lazily initialized.

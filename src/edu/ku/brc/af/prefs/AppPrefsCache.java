@@ -261,10 +261,9 @@ public class AppPrefsCache
         if (colorEntry != null)
         {
             return colorEntry.getColorWrapper();
-        } else
-        {
-            throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
         }
+        // else
+        throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
     }
 
 
@@ -333,11 +332,10 @@ public class AppPrefsCache
         {
             return dateEntry.getSimpleDateFormat();
             
-        } else
-        {
-            //throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
-            return new SimpleDateFormat("mm/dd/yy");
         }
+        // else
+        //throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
+        return new SimpleDateFormat("mm/dd/yy");
     }
 
     /**
@@ -354,6 +352,7 @@ public class AppPrefsCache
             this.colorWrapper = colorWrapper;
         }
         
+        @Override
         public void preferenceChange(AppPrefsChangeEvent evt)
         {
             super.preferenceChange(evt);
@@ -380,6 +379,7 @@ public class AppPrefsCache
             this.simpleDateFormat = simpleDateFormat;
         }
         
+        @Override
         public void preferenceChange(AppPrefsChangeEvent evt)
         {
             super.preferenceChange(evt);

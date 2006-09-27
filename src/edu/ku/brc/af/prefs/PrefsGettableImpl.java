@@ -36,7 +36,7 @@ public class PrefsGettableImpl implements DataObjectGettable
      */
     public PrefsGettableImpl()
     {
-
+        // do nothing
     }
 
     /* (non-Javadoc)

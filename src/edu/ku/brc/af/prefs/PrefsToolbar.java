@@ -86,8 +86,8 @@ public class PrefsToolbar extends JPanel
                 return; // XXX FIXME
             }
 
-            List sections = root.selectNodes("/prefs/section");
-            for ( Iterator iter = sections.iterator(); iter.hasNext(); )
+            List<?> sections = root.selectNodes("/prefs/section");
+            for ( Iterator<?> iter = sections.iterator(); iter.hasNext(); )
             {
                 org.dom4j.Element section = (org.dom4j.Element)iter.next();
 
@@ -117,8 +117,8 @@ public class PrefsToolbar extends JPanel
         
         try
         {
-            List prefs = sectionElement.selectNodes("pref");
-            for ( Iterator iterPrefs = prefs.iterator(); iterPrefs.hasNext(); )
+            List<?> prefs = sectionElement.selectNodes("pref");
+            for ( Iterator<?> iterPrefs = prefs.iterator(); iterPrefs.hasNext(); )
             {
                 org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
 
@@ -155,7 +155,7 @@ public class PrefsToolbar extends JPanel
 
                     try
                     {
-                        Class panelClassObj = Class.forName(panelClass);
+                        Class<?> panelClassObj = Class.forName(panelClass);
                         Component comp = (Component)panelClassObj.newInstance();
                         mainPanel.addPanel(prefTitle, comp);
 

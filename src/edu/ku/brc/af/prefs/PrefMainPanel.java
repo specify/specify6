@@ -68,7 +68,7 @@ import edu.ku.brc.ui.validation.DataChangeNotifier;
 @SuppressWarnings("serial")
 public class PrefMainPanel extends JPanel implements DataChangeListener
 {
-    private static final Logger log = Logger.getLogger(PrefMainPanel.class);
+    protected static final Logger log = Logger.getLogger(PrefMainPanel.class);
     
     protected JDialog       dialog;
     protected JTextField    searchText;
@@ -347,6 +347,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         searchText.addActionListener(doQuery);
         searchText.addKeyListener(new KeyAdapter()
         {
+            @Override
             public void keyPressed(KeyEvent e)
             {
                 if (searchText.getBackground() != textBGColor)

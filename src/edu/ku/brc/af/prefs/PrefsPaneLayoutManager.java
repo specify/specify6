@@ -50,6 +50,7 @@ public class PrefsPaneLayoutManager implements LayoutManager, LayoutManager2
     */
     public PrefsPaneLayoutManager()
     {
+        // do nothing
     }
     
     /**

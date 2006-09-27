@@ -112,66 +112,66 @@ public class PrefsPane extends JPanel
         */
     }
 
-    /**
-     * @param parentPref
-     * @param rowPanel
-     */
-    protected void loadSectionPrefs(final String parentPref,
-                                    final PrefPanelRow rowPanel)
-    {
-        /*
-        try
-        {
-            String[] childrenNames = parentPref.childrenNames();
-            for (String childName : childrenNames)
-            {
-                AppPreferences pref  = parentPref.node(childName);
-
-                String title      = pref.get(TITLE, null);
-                String panelClass = pref.get(PANEL_CLASS, null);
-                String iconPath   = pref.get(ICON_PATH, null);
-
-                if (title != null && panelClass != null && iconPath != null)
-                {
-                    ImageIcon icon = new ImageIcon(new URL(iconPath));
-                    if (icon == null)
-                    {
-                        log.error("Icon was created - path["+iconPath+"]");
-                    }
-
-                    JButton btn = new JButton(getResourceString(title), icon);
-                    btn.setHorizontalTextPosition(JLabel.CENTER);
-                    btn.setVerticalTextPosition(JLabel.BOTTOM);
-                    btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-                    btn.setBorderPainted(false);
-                    btn.setOpaque(false);
-
-                    try
-                    {
-                        Class panelClassObj = Class.forName(panelClass);
-                        Component comp = (Component)panelClassObj.newInstance();
-                        if (!mainPanel.addPanel(title, comp))
-                        {
-                            log.error("The Class ["+panelClass+"] couldn't loaded into prefs because it doesn't implement the proper interfaces");
-                        } else
-                        {
-                            rowPanel.add(btn);
-                        }
-
-                    } catch (Exception ex)
-                    {
-                        log.error(ex); // XXX FIXME
-                    }
-                    btn.addActionListener(new ShowAction(title));
-                }
-            }
-
-        } catch (Exception ex)
-        {
-            throw new RuntimeException(ex);
-        }
-        */
-    }
+//    /**
+//     * @param parentPref
+//     * @param rowPanel
+//     */
+//    protected void loadSectionPrefs(final String parentPref,
+//                                    final PrefPanelRow rowPanel)
+//    {
+//        /*
+//        try
+//        {
+//            String[] childrenNames = parentPref.childrenNames();
+//            for (String childName : childrenNames)
+//            {
+//                AppPreferences pref  = parentPref.node(childName);
+//
+//                String title      = pref.get(TITLE, null);
+//                String panelClass = pref.get(PANEL_CLASS, null);
+//                String iconPath   = pref.get(ICON_PATH, null);
+//
+//                if (title != null && panelClass != null && iconPath != null)
+//                {
+//                    ImageIcon icon = new ImageIcon(new URL(iconPath));
+//                    if (icon == null)
+//                    {
+//                        log.error("Icon was created - path["+iconPath+"]");
+//                    }
+//
+//                    JButton btn = new JButton(getResourceString(title), icon);
+//                    btn.setHorizontalTextPosition(JLabel.CENTER);
+//                    btn.setVerticalTextPosition(JLabel.BOTTOM);
+//                    btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+//                    btn.setBorderPainted(false);
+//                    btn.setOpaque(false);
+//
+//                    try
+//                    {
+//                        Class panelClassObj = Class.forName(panelClass);
+//                        Component comp = (Component)panelClassObj.newInstance();
+//                        if (!mainPanel.addPanel(title, comp))
+//                        {
+//                            log.error("The Class ["+panelClass+"] couldn't loaded into prefs because it doesn't implement the proper interfaces");
+//                        } else
+//                        {
+//                            rowPanel.add(btn);
+//                        }
+//
+//                    } catch (Exception ex)
+//                    {
+//                        log.error(ex); // XXX FIXME
+//                    }
+//                    btn.addActionListener(new ShowAction(title));
+//                }
+//            }
+//
+//        } catch (Exception ex)
+//        {
+//            throw new RuntimeException(ex);
+//        }
+//        */
+//    }
 
     protected void showPanel(final String panelName)
     {

@@ -52,7 +52,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
     public AppPrefsEditor(final boolean isRemote)
     {
         appPrefs = isRemote ? AppPreferences.getRemote(): AppPreferences.getLocalPrefs();         
-        for (Enumeration enumerator = appPrefs.getProperties().keys();enumerator.hasMoreElements();)
+        for (Enumeration<Object> enumerator = appPrefs.getProperties().keys();enumerator.hasMoreElements();)
         {
             items.add((String)enumerator.nextElement());
         }
@@ -101,7 +101,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
     
     public void tableChanged(TableModelEvent e)
     {
-        
+        // do nothing
     }
     
     //--------------------------------
