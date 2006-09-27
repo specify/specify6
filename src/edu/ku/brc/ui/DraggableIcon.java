@@ -120,10 +120,12 @@ public class DraggableIcon extends JComponent implements GhostActionable
                       popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
                   }
               }
-              public void mousePressed(MouseEvent mouseEvent) {
+              @Override
+            public void mousePressed(MouseEvent mouseEvent) {
                 showIfPopupTrigger(mouseEvent);
               }
-              public void mouseReleased(MouseEvent mouseEvent) {
+              @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
                 showIfPopupTrigger(mouseEvent);
               }
             };
@@ -138,6 +140,7 @@ public class DraggableIcon extends JComponent implements GhostActionable
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
+    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -148,6 +151,7 @@ public class DraggableIcon extends JComponent implements GhostActionable
    /* (non-Javadoc)
     * @see java.awt.Component#getPreferredSize()
     */
+   @Override
    public Dimension getPreferredSize()
    {
        calcPreferredSize();
@@ -250,7 +254,7 @@ public class DraggableIcon extends JComponent implements GhostActionable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
-    public Object getDataForClass(Class classObj)
+    public Object getDataForClass(Class<?> classObj)
     {
         return UIHelper.getDataForClass(data, classObj);
     }
@@ -306,7 +310,9 @@ public class DraggableIcon extends JComponent implements GhostActionable
             try {
                 Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
                 value = declaredField.get(null);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
+                // do nothing
             }
             hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
         }
