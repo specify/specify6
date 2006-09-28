@@ -7,6 +7,7 @@
 package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -130,5 +131,18 @@ public class IconTray<T extends Trayable> extends JPanel
             set.add(listModel.getElementAt(i));
         }
         return set;
+    }
+    
+    public synchronized void clear()
+    {
+        listModel.clear();
+    }
+    
+    public synchronized void addAll(Collection<T> items)
+    {
+        for (T t: items)
+        {
+            listModel.add(t);
+        }
     }
 }
