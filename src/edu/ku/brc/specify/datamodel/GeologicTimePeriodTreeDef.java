@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeologicTimePeriodTreeDef implements java.io.Serializable, TreeDefIface<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
+public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
 	protected Long   				geologicTimePeriodTreeDefId;
 	protected String				name;

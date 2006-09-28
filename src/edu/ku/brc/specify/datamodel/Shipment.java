@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class Shipment  implements java.io.Serializable {
+public class Shipment extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

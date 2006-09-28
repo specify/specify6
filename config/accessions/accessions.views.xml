@@ -277,9 +277,19 @@
             <enableRules/>
 
             <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
             <rows>
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" icon="Permit" recordobj="true"/>
+                                <cell type="separator" label="Permit"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
                     <cell type="field" id="2" name="permitNumber" uitype="text" isrequired="true"/>

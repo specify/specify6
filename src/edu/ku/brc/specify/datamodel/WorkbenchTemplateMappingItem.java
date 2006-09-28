@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class WorkbenchTemplateMappingItem  implements java.io.Serializable {
+public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
@@ -30,11 +30,12 @@ public class WorkbenchTemplateMappingItem  implements java.io.Serializable {
      protected String tablename;
      protected Integer tableid;
      protected String fieldname;
-     private String caption;
-     private Integer vieworder;
-     private String datatype;
-     private Date timestampModified;
-     private Date timestampCreated;
+     protected String caption;
+     protected Integer vieworder;
+     protected String datatype;
+     protected Date timestampModified;
+     protected Date timestampCreated;
+     protected String lastEditedBy;
      protected WorkbenchTemplate workbenchTemplates;
 
 
@@ -49,8 +50,13 @@ public class WorkbenchTemplateMappingItem  implements java.io.Serializable {
         this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
    
-    
-    
+    // Initializer
+    public void initialize()
+    {
+        throw new RuntimeException("Meg need to implement me!");
+
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -160,6 +166,16 @@ public class WorkbenchTemplateMappingItem  implements java.io.Serializable {
     
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
+    }
+
+    public String getLastEditedBy()
+    {
+        return lastEditedBy;
+    }
+
+    public void setLastEditedBy(String lastEditedBy)
+    {
+        this.lastEditedBy = lastEditedBy;
     }
 
     /**

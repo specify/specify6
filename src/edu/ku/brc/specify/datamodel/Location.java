@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")
-public class Location implements java.io.Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
+public class Location extends DataModelObjBase implements java.io.Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
 
     /**
      * A <code>Logger</code> object used for all log messages eminating from

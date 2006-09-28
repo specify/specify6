@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class AccessionAgents  implements java.io.Serializable {
+public class AccessionAgents extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

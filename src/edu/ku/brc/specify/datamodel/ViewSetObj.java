@@ -35,7 +35,7 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
 
  */
-public class ViewSetObj  implements java.io.Serializable, AppResourceIFace 
+public class ViewSetObj extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {
 
     private static final Logger  log       = Logger.getLogger(ViewSetObj.class);

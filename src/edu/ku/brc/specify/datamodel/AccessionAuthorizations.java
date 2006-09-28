@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class AccessionAuthorizations  implements java.io.Serializable, Comparable<AccessionAuthorizations> {
+public class AccessionAuthorizations extends DataModelObjBase implements java.io.Serializable, Comparable<AccessionAuthorizations> {
 
     // Fields    
 

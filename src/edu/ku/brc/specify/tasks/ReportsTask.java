@@ -98,7 +98,7 @@ public class ReportsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
     }

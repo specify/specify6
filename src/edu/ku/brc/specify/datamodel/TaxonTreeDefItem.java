@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class TaxonTreeDefItem implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
+public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
 
 	// Fields    

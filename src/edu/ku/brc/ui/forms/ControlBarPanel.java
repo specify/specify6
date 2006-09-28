@@ -113,7 +113,7 @@ public class ControlBarPanel extends JPanel
     }
 
     /**
-     * Sets the RecordSetController's visibility
+     * Sets the ResultSetController's visibility
      * @param vis true visible, false hidden
      */
     public void setRSCVisibility(final boolean vis)

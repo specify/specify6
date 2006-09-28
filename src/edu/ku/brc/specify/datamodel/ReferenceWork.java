@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class ReferenceWork  implements java.io.Serializable {
+public class ReferenceWork extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

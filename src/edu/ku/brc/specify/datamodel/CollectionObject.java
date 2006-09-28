@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.dbsupport.AttributeIFace;
 
 
@@ -27,7 +29,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
 
  */
-public class CollectionObject  implements java.io.Serializable {
+public class CollectionObject extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
@@ -664,4 +666,30 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     // Delete Add Methods
+    
+    //---------------------------------------------------------------------------
+    // Overrides DataModelObjBase
+    //---------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    public String getIdentityTitle()
+    {
+        String title = catalogNumber.toString();
+        if (StringUtils.isNotEmpty(title))
+        {
+            title = fieldNumber;
+        }
+        return title != null ? title : super.getIdentityTitle();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    public Integer getTableId()
+    {
+        return 1;
+    }
 }

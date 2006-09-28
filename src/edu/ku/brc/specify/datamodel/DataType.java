@@ -23,7 +23,7 @@ import java.util.Set;
 /**
 
  */
-public class DataType  implements java.io.Serializable {
+public class DataType extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

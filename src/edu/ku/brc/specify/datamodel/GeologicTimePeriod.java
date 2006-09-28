@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
 
 @SuppressWarnings("serial")
-public class GeologicTimePeriod implements java.io.Serializable, Treeable<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>{
+public class GeologicTimePeriod extends DataModelObjBase implements java.io.Serializable, Treeable<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>{
 
     /**
      * A <code>Logger</code> object used for all log messages eminating from

@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeographyTreeDefItem implements Serializable, TreeDefItemIface<Geography,GeographyTreeDef,GeographyTreeDefItem>
+public class GeographyTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Geography,GeographyTreeDef,GeographyTreeDefItem>
 {
 
 	// Fields    

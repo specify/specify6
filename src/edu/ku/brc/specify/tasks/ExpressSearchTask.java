@@ -571,7 +571,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     /* (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
     }

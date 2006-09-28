@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -204,5 +205,14 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
     public void setToolTip(String toolTip)
     {
         setToolTip(toolTip);
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.NavBoxItemIFace#setIcon(javax.swing.ImageIcon)
+     */
+    public void setIcon(ImageIcon icon)
+    {
+        // does not support an icon (but that is OK)
     }
 }

@@ -27,7 +27,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
 
  */
-public class Preparation  implements java.io.Serializable {
+public class Preparation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

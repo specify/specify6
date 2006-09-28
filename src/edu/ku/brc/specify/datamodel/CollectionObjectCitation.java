@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class CollectionObjectCitation  implements java.io.Serializable {
+public class CollectionObjectCitation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

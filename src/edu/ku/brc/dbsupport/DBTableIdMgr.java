@@ -21,7 +21,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
+
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.hibernate.Query;
@@ -29,6 +32,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -41,9 +45,12 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class DBTableIdMgr
 {
+    // Static Data Members
 	private static final Logger log = Logger.getLogger(DBTableIdMgr.class);
-	protected static final DBTableIdMgr instance;
+    private static final DBTableIdMgr instance;
 	//private static String datamodelFilename = XMLHelper.getConfigDirPath("specify_datamodel.xml");
+    
+    // Data Members
 	Hashtable<Integer, TableInfo> hash = new Hashtable<Integer, TableInfo>();
 
 	static
@@ -69,12 +76,13 @@ public class DBTableIdMgr
 		String classname = null;
 		try
 		{
-			File datamodelFile = new File(DatamodelHelper.getDatamodelFilePath());
+			File            datamodelFile   = new File(DatamodelHelper.getDatamodelFilePath());
 			FileInputStream fileInputStream = new FileInputStream(datamodelFile);
-			SAXReader reader = new SAXReader();
+			SAXReader       reader          = new SAXReader();
 			reader.setValidation(false);
-			org.dom4j.Document doc = reader.read(fileInputStream);
-			Element databaseNode = doc.getRootElement();
+            
+			Document doc          = reader.read(fileInputStream);
+			Element  databaseNode = doc.getRootElement();
 
 			if (databaseNode != null)
 			{
@@ -82,27 +90,37 @@ public class DBTableIdMgr
 				{
 					Element tableNode = (Element) i.next();
 					classname = tableNode.attributeValue("classname");
-					String tablename = tableNode.attributeValue("table");
-					int tableId = Integer.parseInt(tableNode.attributeValue("tableid"));
-					String defaultView = tableNode.attributeValue("view");
+                    
+					String tablename       = tableNode.attributeValue("table");
+					int    tableId         = Integer.parseInt(tableNode.attributeValue("tableid"));
+					String defaultView     = tableNode.attributeValue("view");
 					String primaryKeyField = null;
+                    
 					// iterate through child elements of id nodes, there should only be 1
 					for (Iterator i2 = tableNode.elementIterator("id"); i2.hasNext();)
 					{
 						Element idNode = (Element) i2.next();
 						primaryKeyField = idNode.attributeValue("name");
 					}
+                    
 					if (classname == null)
+                    {
 						log.error("populating DBTableMgr - classname is null; check input file");
+                    }
 					if (tablename == null)
+                    {
 						log.error("populating DBTableMgr - tablename is null; check input file");
+                    }
 					if (defaultView == null)
+                    {
 						log.debug("populating DBTableMgr - no default view provided for table: " + tablename + "; check input file");
+                    }
 					if (primaryKeyField == null)
+                    {
 						log.error("populating DBTableMgr - primary key is null; check input file");
-					log.debug("Populating hashtable for class: " + classname);
-					instance.hash.put(tableId, new TableInfo(tableId, classname, tablename,
-							primaryKeyField, defaultView));
+                    }
+					//log.debug("Populating hashtable for class: " + classname);
+					instance.hash.put(tableId, new TableInfo(tableId, classname, tablename, primaryKeyField, defaultView));
 				}
 			} else
 			{
@@ -144,8 +162,7 @@ public class DBTableIdMgr
 	 * This looks it up by table name (not Object name) the look up is case
 	 * insensitive.
 	 * 
-	 * @param name
-	 *            the name
+	 * @param name the name
 	 * @return the id of the table
 	 */
 	public static int lookupIdByShortName(final String name)
@@ -168,8 +185,7 @@ public class DBTableIdMgr
      * This looks it up by fully specified class name the look up is case
      * sensitive.
      * 
-     * @param className
-     *            the full class name
+     * @param className the full class name
      * @return the id of the table
      */
     public static int lookupIdByClassName(final String className)
@@ -259,8 +275,7 @@ public class DBTableIdMgr
 	/**
 	 * Returns an "in" clause for a recordset
 	 * 
-	 * @param recordSet
-	 *            the recordset of ids
+	 * @param recordSet the recordset of ids
 	 * @return a string "in" clause
 	 */
 	public static String getInClause(final RecordSet recordSet)
@@ -297,20 +312,18 @@ public class DBTableIdMgr
 	// ------------------------------------------------------
 	public class TableInfo
 	{
-		protected int tableId;
-
+		protected int    tableId;
 		protected String className;
-
 		protected String tableName;
-
 		protected String primaryKeyName;
-
-		protected Class classObj;
-
+		protected Class  classObj;
 		protected String defaultFormName;
 
-		public TableInfo(int tableId, String className, String tableName, String primaryKeyName,
-				String defaultFormName)
+		public TableInfo(int tableId, 
+                         String className, 
+                         String tableName, 
+                         String primaryKeyName,
+				         String defaultFormName)
 		{
 			this.tableId = tableId;
 			this.className = className;
@@ -364,6 +377,11 @@ public class DBTableIdMgr
 		{
 			return defaultFormName;
 		}
+        
+        public ImageIcon getIcon(IconManager.IconSize size)
+        {
+            return IconManager.getIcon(getShortClassName(), size);
+        }
 
 	}
 

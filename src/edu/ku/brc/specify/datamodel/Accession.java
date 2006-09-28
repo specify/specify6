@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class Accession  implements java.io.Serializable {
+public class Accession extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
@@ -60,7 +60,8 @@ public class Accession  implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Accession(Long accessionId) {
+    public Accession(Long accessionId) 
+    {
         this.accessionId = accessionId;
     }
 
@@ -140,14 +141,17 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      * A user-visible identifier of the Accession. Typically an integer, but may include alphanumeric characters as prefix, suffix, and separators
+     * A user-visible identifier of the Accession. Typically an integer, but may include alphanumeric characters as prefix, suffix, and separators
      */
     public String getNumber() {
         return this.number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) 
+    {
+        notifyPropListeners("Number", this.number, number);
         this.number = number;
+        
     }
 
     /**
@@ -394,4 +398,26 @@ public class Accession  implements java.io.Serializable {
     }
 
     // Delete Add Methods
+    
+    //---------------------------------------------------------------------------
+    // Overrides DataModelObjBase
+    //---------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    public String getIdentityTitle()
+    {
+        return number != null ? number : super.getIdentityTitle();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 7;
+    }
 }

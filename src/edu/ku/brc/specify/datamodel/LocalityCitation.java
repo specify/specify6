@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class LocalityCitation  implements java.io.Serializable {
+public class LocalityCitation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

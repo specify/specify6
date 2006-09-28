@@ -23,7 +23,7 @@ import java.util.Date;
 /**
 
  */
-public class LoanReturnPhysicalObject  implements java.io.Serializable {
+public class LoanReturnPhysicalObject extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class Deaccession  implements java.io.Serializable {
+public class Deaccession extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

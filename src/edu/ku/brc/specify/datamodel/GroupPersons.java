@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class GroupPersons  implements java.io.Serializable {
+public class GroupPersons extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

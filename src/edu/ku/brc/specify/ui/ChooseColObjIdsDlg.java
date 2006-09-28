@@ -84,12 +84,12 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
      * 
      *
      */
-    protected JPanel createUIRecordSetIFaces()
+    protected JPanel createUIRecordSets()
     {
         JPanel panel = new JPanel(new BorderLayout());
         //panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        panel.add(new JLabel(getResourceString("ChooseRecordSetIFace"), IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), JLabel.LEFT), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("ChooseRecordSet"), IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), JLabel.LEFT), BorderLayout.NORTH);
 
         try
         {
@@ -196,7 +196,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
         setVisible(false);
     }
     
-    public RecordSet getSelectedRecordSetIFace()
+    public RecordSet getSelectedRecordSet()
     {
         int inx = list.getSelectedIndex();
         if (inx != -1)

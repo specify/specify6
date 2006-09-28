@@ -46,6 +46,13 @@
         <meta attribute="field-description"></meta>    
     </property>     
        
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>
+    
+    <!-- Associations -->
+    
     <!-- bi-directional many-to-one association to WorkbenchTemplate -->
     <many-to-one name="workbenchTemplates" class="edu.ku.brc.specify.datamodel.WorkbenchTemplate" not-null="true">
         <meta attribute="scope-field">protected</meta>

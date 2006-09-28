@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class Journal  implements java.io.Serializable {
+public class Journal extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

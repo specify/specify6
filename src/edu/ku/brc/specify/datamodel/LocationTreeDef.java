@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class LocationTreeDef implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
+public class LocationTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
 {
 	protected Long				   locationTreeDefId;
 	protected String				name;

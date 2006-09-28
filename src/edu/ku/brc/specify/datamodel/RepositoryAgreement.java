@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class RepositoryAgreement  implements java.io.Serializable {
+public class RepositoryAgreement extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

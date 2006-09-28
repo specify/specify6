@@ -52,6 +52,8 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -131,20 +133,20 @@ public class DataEntryTask extends BaseTask
                          final String   viewSetName, 
                          final String   viewName, 
                          final String   mode, 
-                         final Object   data,
+                         final FormDataObjIFace data,
                          final boolean  isNewForm)
     {
         View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         
-        Object dataObj = data;
+        FormDataObjIFace  dataObj = data;
         if (dataObj == null)
         {
             if (isNewForm)
             {
                 try
                 {
-                    dataObj = HibernateUtil.createAndNewDataObj(Class.forName(view.getClassName()));
-                    HibernateUtil.initDataObj(dataObj);
+                    dataObj = FormHelper.createAndNewDataObj(Class.forName(view.getClassName()));
+                    dataObj.initialize();
                     
                 } catch (Exception ex)
                 {
@@ -373,7 +375,7 @@ public class DataEntryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
     }

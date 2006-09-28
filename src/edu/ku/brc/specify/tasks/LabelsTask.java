@@ -317,7 +317,7 @@ public class LabelsTask extends BaseTask
 
     /**
      * Counts up how many labels match the same table id as the RecordSet and sets
-     * oneNbi to the non-null match which means if there is only one then it points to it
+     * oneNbi to the non-null match which means if there is only one then it points to it.
      * @param tableId the RecordSet's Table Id
      * @return the count of matches
      */
@@ -327,10 +327,25 @@ public class LabelsTask extends BaseTask
         int count = 0;
         for (NavBoxItemIFace nbi : labelsList)
         {
-            if (Integer.parseInt(convertDataToMap(nbi.getData()).get("tableid")) == tableId)
+            Object data = nbi.getData();
+            if (data != null)
             {
-                oneNbi = nbi;
-                count++;
+                Map<String, String> attrs = convertDataToMap(data);
+                String tableIDStr = attrs.get("tableid");
+                if (StringUtils.isNumeric(tableIDStr))
+                {
+                    if (Integer.parseInt(tableIDStr) == tableId)
+                    {
+                        oneNbi = nbi;
+                        count++;
+                    }
+                } else
+                {
+                    log.error("Attr [tableid] is not numeric for["+nbi.getTitle()+"]!");
+                }
+            } else
+            {
+                log.error(" The meta data is null for ["+nbi.getTitle()+"]");
             }
         }
         return count;
@@ -418,7 +433,7 @@ public class LabelsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
     }
@@ -461,9 +476,15 @@ public class LabelsTask extends BaseTask
                  }
             }
         } else if (cmdAction.getType().equals(RecordSetTask.RECORD_SET) &&
-                   cmdAction.getAction().equals("Selected"))
+                   cmdAction.getAction().equals("Clicked"))
         {
-            createLabelFromSelectedRecordSet(cmdAction.getData());
+            Object srcObj = cmdAction.getSrcObj();
+            Object dstObj = cmdAction.getDstObj();
+            Object data   = cmdAction.getData();
+            
+            log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
+            
+            createLabelFromSelectedRecordSet(srcObj);
         }
 
     }
@@ -503,7 +524,17 @@ public class LabelsTask extends BaseTask
             Object data = null;
             if (e instanceof DataActionEvent)
             {
-                data = ((DataActionEvent)e).getData();
+                DataActionEvent dae = (DataActionEvent)e;
+                data = dae.getData();
+                if (data instanceof RecordSet)
+                {
+                    RecordSet rs = (RecordSet)data;
+                    if (rs.getTableId() != tableId)
+                    {
+                        JOptionPane.showMessageDialog(null, getResourceString("ERROR_LABELS_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
             }
 
             if (data == null || data instanceof Map)

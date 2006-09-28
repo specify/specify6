@@ -26,10 +26,10 @@ import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.ui.DraggableIcon;
 import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
  *
@@ -232,7 +232,7 @@ public class AccessionBusRule implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.DraggableIcon)
      */
-    public void setObjectIdentity(final Object dataObj, final DraggableIcon draggableIcon)
+    public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon)
     {
         if (dataObj == null)
         {

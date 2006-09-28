@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeographyTreeDef implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
+public class GeographyTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
 	protected Long				       geographyTreeDefId;
 	protected String				    name;

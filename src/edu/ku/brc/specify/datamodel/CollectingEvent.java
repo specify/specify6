@@ -27,7 +27,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
 
  */
-public class CollectingEvent  implements java.io.Serializable, Comparable<CollectingEvent> {
+public class CollectingEvent extends DataModelObjBase implements java.io.Serializable, Comparable<CollectingEvent> {
 
     // Fields    
 

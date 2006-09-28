@@ -290,7 +290,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
 
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#valState()
+     * @see edu.ku.brc.ui.validation.UIValidatable#isInError()
      */
     public boolean isInError()
     {
@@ -314,7 +314,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#isRequired()
+     * @see edu.ku.brc.ui.validation.UIValidatable#isRequired()
      */
     public boolean isRequired()
     {
@@ -322,7 +322,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#setRequired(boolean)
+     * @see edu.ku.brc.ui.validation.UIValidatable#setRequired(boolean)
      */
     public void setRequired(boolean isRequired)
     {

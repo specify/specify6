@@ -23,7 +23,7 @@ import java.util.Date;
 /**
 
  */
-public class ExchangeIn  implements java.io.Serializable {
+public class ExchangeIn extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

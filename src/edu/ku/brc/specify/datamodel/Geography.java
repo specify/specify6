@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")
-public class Geography implements java.io.Serializable, Treeable<Geography,GeographyTreeDef,GeographyTreeDefItem>{
+public class Geography extends DataModelObjBase implements java.io.Serializable, Treeable<Geography,GeographyTreeDef,GeographyTreeDefItem>{
 
     /**
      * A <code>Logger</code> object used for all log messages eminating from

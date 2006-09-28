@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class Permit  implements java.io.Serializable {
+public class Permit extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
@@ -335,6 +335,27 @@ public class Permit  implements java.io.Serializable {
         this.attachments = attachments;
     }
 
+    //---------------------------------------------------------------------------
+    // Overrides DataModelObjBase
+    //---------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    public String getIdentityTitle()
+    {
+        return permitNumber != null ? permitNumber : super.getIdentityTitle();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 6;
+    }
 
 
 }

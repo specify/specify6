@@ -21,7 +21,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
  * 
  */
-public class CollectionObjectAttr implements AttributeIFace, java.io.Serializable
+public class CollectionObjectAttr extends DataModelObjBase implements AttributeIFace, java.io.Serializable
 {
 
     // Fields

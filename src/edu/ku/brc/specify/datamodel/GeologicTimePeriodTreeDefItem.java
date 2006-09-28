@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeologicTimePeriodTreeDefItem implements Serializable, TreeDefItemIface<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>
+public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>
 {
 
 	// Fields    

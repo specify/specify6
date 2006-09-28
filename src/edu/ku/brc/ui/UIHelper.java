@@ -48,13 +48,13 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.ui.forms.DataObjectGettable;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.persist.FormCell;
 
 /**
@@ -749,7 +749,7 @@ public final class UIHelper
                                    final String dbUsername,
                                    final String dbPassword)
     {
-        HibernateUtil.setCurrentUserEditStr("");
+        FormHelper.setCurrentUserEditStr("");
 
         DBConnection dbConn = DBConnection.getInstance();
 
@@ -767,7 +767,7 @@ public final class UIHelper
                 connection.close();
                 
                 // This is used to fill who editted the object
-                HibernateUtil.setCurrentUserEditStr(dbUsername);
+                FormHelper.setCurrentUserEditStr(dbUsername);
                 
             } catch (SQLException ex)
             {

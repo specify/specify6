@@ -234,7 +234,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     //--------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#valState()
+     * @see edu.kui.brc.ui.validation.UIValidatable#valState()
      */
     public boolean isInError()
     {
@@ -258,7 +258,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#isRequired()
+     * @see edu.kui.brc.ui.validation.UIValidatable#isRequired()
      */
     public boolean isRequired()
     {
@@ -266,7 +266,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#setRequired(boolean)
+     * @see edu.kui.brc.ui.validation.UIValidatable#setRequired(boolean)
      */
     public void setRequired(boolean isRequired)
     {

@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class Stratigraphy  implements java.io.Serializable {
+public class Stratigraphy extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

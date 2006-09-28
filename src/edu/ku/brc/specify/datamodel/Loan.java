@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class Loan  implements java.io.Serializable {
+public class Loan extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

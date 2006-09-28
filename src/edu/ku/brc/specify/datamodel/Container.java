@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class Container  implements java.io.Serializable {
+public class Container extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

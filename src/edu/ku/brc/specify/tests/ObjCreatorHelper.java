@@ -1891,14 +1891,14 @@ public class ObjCreatorHelper
     }
 
     public static RecordSet createRecordSet(final Long recordSetID,
-                                            final String name,
-                                            final SpecifyUser owner)
+                                                 final String name,
+                                                 final SpecifyUser owner)
     {
         RecordSet recordset = new RecordSet();
         recordset.initialize();
         recordset.setTimestampCreated(new Date());
         recordset.setTimestampModified(new Date());
-        recordset.setRecordSetID(recordSetID);
+        recordset.setRecordSetId(recordSetID);
         recordset.setOwner(owner);
         recordset.setName(name);
         if (session != null)
@@ -2097,11 +2097,11 @@ public class ObjCreatorHelper
     	Workbench workbench = new Workbench();
     	workbench.setName(name);
     	workbench.setRemarks(remarks);
-    	workbench.setExportinstitutionname(exportInstName);
+    	workbench.setExportInstitutionName(exportInstName);
     	//workbench.setFormid(formId);
     	workbench.setTimestampCreated(new Date());
     	workbench.setTimestampModified(new Date());
-    	workbench.setWorkbenchItems(new HashSet<Object>());
+    	workbench.setWorkbenchItems(new HashSet<WorkbenchDataItem>());
     	workbench.setWorkbenchTemplates(workbenchTemplate);
     	
         if (session != null)

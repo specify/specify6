@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class Determination  implements java.io.Serializable {
+public class Determination extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class LoanAgents  implements java.io.Serializable {
+public class LoanAgents extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

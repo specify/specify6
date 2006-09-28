@@ -193,7 +193,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     //--------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#isInError()
+     * @see edu.kui.brc.ui.validation.UIValidatable#isInError()
      */
     public boolean isInError()
     {
@@ -216,7 +216,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         this.valState = state;
     }
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#isRequired()
+     * @see edu.kui.brc.ui.validation.UIValidatable#isRequired()
      */
     public boolean isRequired()
     {
@@ -224,7 +224,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#setRequired(boolean)
+     * @see edu.kui.brc.ui.validation.UIValidatable#setRequired(boolean)
      */
     public void setRequired(boolean isRequired)
     {

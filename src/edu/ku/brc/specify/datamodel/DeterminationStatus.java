@@ -28,7 +28,7 @@ import java.util.Set;
  * @author jstewart
  * @version %I% %G%
  */
-public class DeterminationStatus implements Serializable
+public class DeterminationStatus extends DataModelObjBase implements Serializable
 {
 	protected Long determinationStatusId;
 	protected String name;

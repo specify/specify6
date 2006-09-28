@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class Agent  implements java.io.Serializable {
+public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

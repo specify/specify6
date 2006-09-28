@@ -21,7 +21,7 @@ package edu.ku.brc.specify.datamodel;
 /**
 
  */
-public class AppResourceData  implements java.io.Serializable {
+public class AppResourceData extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

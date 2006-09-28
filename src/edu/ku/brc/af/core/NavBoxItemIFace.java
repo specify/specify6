@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.core;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 /**
@@ -55,5 +56,11 @@ public interface NavBoxItemIFace
      * @param toolTip the already localized tool tip string
      */
     public void setToolTip(String toolTip);
+    
+    /**
+     * Sets a new and/or differet icon for item.
+     * @param icon the new icon
+     */
+    public void setIcon(ImageIcon icon);
 
 }

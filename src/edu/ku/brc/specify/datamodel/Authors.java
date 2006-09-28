@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class Authors  implements java.io.Serializable {
+public class Authors extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

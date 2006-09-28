@@ -23,7 +23,7 @@ import java.util.Set;
 /**
 
  */
-public class UserGroup  implements java.io.Serializable {
+public class UserGroup extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

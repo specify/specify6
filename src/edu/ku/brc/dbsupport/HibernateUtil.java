@@ -3,7 +3,6 @@ package edu.ku.brc.dbsupport;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -22,7 +21,6 @@ import org.hibernate.cfg.Environment;
 
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectSettable;
-import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 
 /**
  * Basic Hibernate helper class, handles SessionFactory, Session and Transaction.
@@ -69,7 +67,6 @@ public class HibernateUtil {
     private static ThreadLocal<Object> threadTransaction  = new ThreadLocal<Object>();
 
     private static boolean             useThreadLocal     = true;
-    private static String              currentUserEditStr = "";
     
     //static {
     //    HibernateUtil.initialize();
@@ -584,230 +581,6 @@ public class HibernateUtil {
     
 
     /**
-     * Initializes the Data Obj by calling the "initialize" method.
-     * @param newDataObj the new object to be added to a Set
-     */
-    public static boolean initDataObj(final Object newDataObj)
-    {
-        try
-        {
-            Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
-            method.invoke(newDataObj, new Object[] {});
-            return true;
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return false;
-    }
-    
-    /**
-     * Returns the Id of the Database Object.
-     * @param dbDataObj the object that MUST have a "getId" method to get its Id
-     * @returns the Id 
-     */
-    public static Long getId(final Object dbDataObj)
-    {
-        try
-        {
-            Method method = dbDataObj.getClass().getMethod("getId", new Class[] {});
-            return (Long)method.invoke(dbDataObj, new Object[] {});
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
-    
-    /**
-     * Adds new child object to its parent's set and set the parent point in the new obj
-     * @param parentDataObj the parent object
-     * @param newDataObj the new object to be added to a Set
-     */
-    public static boolean addToParent(final Object parentDataObj, final Object newDataObj)
-    {
-        try
-        {
-            String methodName = "add" + newDataObj.getClass().getSimpleName();
-            log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
-
-            Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
-            method.invoke(parentDataObj, new Object[] {newDataObj});
-            log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
-
-            return true;
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return false;
-    }
-    /**
-     * Adds new child object to its parent's set and set the parent point in the new obj
-     * @param parentDataObj the parent object
-     * @param newDataObj the new object to be added to a Set
-     */
-    public static boolean initAndAddToParent(final Object parentDataObj, final Object newDataObj)
-    {
-        boolean status = initDataObj(newDataObj);
-        if (status && parentDataObj != null)
-        {
-            status = addToParent(parentDataObj, newDataObj);
-        }
-        return status;
-    }
-
-     /**
-      * intializes the data object for searching
-     * @param dataObj
-     * @return true is successful, false if error
-     */
-    public static boolean initForSearch(final Object dataObj)
-    {
-        try
-        {
-            Method method = dataObj.getClass().getMethod("initForSearch", new Class[] {});
-            method.invoke(dataObj, new Object[] {});
-
-            return true;
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return false;
-    }
-
-    /**
-      * Creates a new data object and initializes it
-      * @param newDataClass class of new Object to be created and initialized
-     */
-    public static Object createAndNewDataObj(final Class newDataClass)
-    {
-        try
-        {
-            Object dataObj = newDataClass.newInstance();
-            if (newDataClass != null)
-            {
-                Method method = newDataClass.getMethod("initialize", new Class[] {});
-                method.invoke(dataObj, new Object[] {});
-
-                return dataObj;
-
-            } else
-            {
-                log.error("Couldn't create new Data Object for Class["+newDataClass.getSimpleName()+"]");
-            }
-
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
-
-        } catch (InstantiationException ex)
-        {
-            ex.printStackTrace();
-
-        }
-
-        return null;
-    }
-    
-    /**
-     * Sets the "timestampModified" and the "lastEditedBy" by fields if the exist, if they don't then 
-     * then it just ignores the request (no error is thrown). The lastEditedBy use the value of the string
-     * set by the method currentUserEditStr.
-     * @param dataObj the data object to have the fields set
-     * @return true if it was able to set the at least one of the fields
-     */
-    public static boolean updateLastEdittedInfo(final Object dataObj)
-    {
-        if (dataObj != null)
-        {
-            try
-            {
-                DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                if (setter != null)
-                {
-                    boolean foundOne = false;
-                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampModified");
-                    if (descr != null)
-                    {
-                        setter.setFieldValue(dataObj, "timestampModified", new Date());
-                        foundOne = true;
-                    }
-                    descr = PropertyUtils.getPropertyDescriptor(dataObj, "lastEditedBy");
-                    if (descr != null)
-                    {
-                        setter.setFieldValue(dataObj, "lastEditedBy", currentUserEditStr);
-                        foundOne = true;
-                    }
-                    return foundOne;
-                }
-    
-            } catch (NoSuchMethodException ex)
-            {
-                ex.printStackTrace();
-    
-            } catch (IllegalAccessException ex)
-            {
-                ex.printStackTrace();
-    
-            } catch (InvocationTargetException ex)
-            {
-                ex.printStackTrace();
-            } 
-        }
-        return false;
-    }
-
-    /**
      * Helper for setting a value into a data object using reflection
      * @param fieldNames the field name(s)
      * @param dataObj the data object that will get the new value
@@ -891,22 +664,5 @@ public class HibernateUtil {
         }
     }
 
-    /**
-     * Returns the string that represents the current user's username.
-     * @return the string that represents the current user's username
-     */
-    public static String getCurrentUserEditStr()
-    {
-        return currentUserEditStr;
-    }
-
-    /**
-     * Sets the string that represents the current user's username
-     * @param currentUserEditStr the username
-     */
-    public static void setCurrentUserEditStr(String currentUserEditStr)
-    {
-        HibernateUtil.currentUserEditStr = currentUserEditStr;
-    }
 }
 

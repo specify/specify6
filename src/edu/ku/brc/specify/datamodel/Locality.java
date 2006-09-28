@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class Locality  implements java.io.Serializable {
+public class Locality extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

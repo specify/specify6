@@ -15,7 +15,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.Serializable;
-
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -28,7 +27,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")
-public class Taxon implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
+public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
     /**
      * A <code>Logger</code> object used for all log messages eminating from

@@ -22,7 +22,7 @@ import java.util.Date;
 /**
 
  */
-public class BorrowShipments  implements java.io.Serializable {
+public class BorrowShipments extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

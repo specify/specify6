@@ -31,8 +31,32 @@ public class CommandAction
     protected final int    tableId;
     
     protected Object data;
+    protected Object srcObj;
+    protected Object dstObj;
     
     protected boolean isConsumed = false;
+    
+    /**
+     * Constructs a command
+     * @param type the type of command determines who listens for it
+     * @param action the name of the action to be performed (contract between producer and consumer)
+     * @param srcObj the source object
+     * @param dstObj the destination object
+     * @param data the data to be passed
+     */
+    public CommandAction(final String type, 
+                         final String action, 
+                         final Object srcObj, 
+                         final Object dstObj, 
+                         final Object data)
+    {
+        this.type    = type;
+        this.action  = action;
+        this.tableId = -1;
+        this.srcObj  = srcObj;
+        this.dstObj  = dstObj;
+        this.data    = data;
+    }
     
     /**
      * Constructs a command
@@ -46,6 +70,8 @@ public class CommandAction
         this.action  = action;
         this.tableId = -1;
         this.data    = data;
+        this.srcObj  = null;
+        this.dstObj  = null;
     }
     
     /**
@@ -60,6 +86,8 @@ public class CommandAction
         this.action  = action;
         this.tableId = tableId;
         this.data    = null;
+        this.srcObj  = null;
+        this.dstObj  = null;
     }
     
     /**
@@ -69,10 +97,12 @@ public class CommandAction
      */
     public CommandAction(final String type, final String action)
     {
-        this.type   = type;
-        this.action = action;
+        this.type    = type;
+        this.action  = action;
         this.tableId = -1;
-        this.data   = null;
+        this.data    = null;
+        this.srcObj  = null;
+        this.dstObj  = null;
     }
     
     public String getAction()
@@ -109,4 +139,15 @@ public class CommandAction
     {
         return tableId;
     }
+
+    public Object getDstObj()
+    {
+        return dstObj;
+    }
+
+    public Object getSrcObj()
+    {
+        return srcObj;
+    }
+    
 }

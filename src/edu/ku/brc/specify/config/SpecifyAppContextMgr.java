@@ -77,15 +77,11 @@ import edu.ku.brc.ui.forms.persist.ViewSet;
  */
 public class SpecifyAppContextMgr extends AppContextMgr
 {
-    private static final Logger  log      = Logger.getLogger(SpecifyAppContextMgr.class);
-    //protected static SpecifyAppContextMgr instance = null;
+    private static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
 
-    protected Hashtable<String, Discipline> hash = new Hashtable<String, Discipline>();
-
-    protected List<AppResourceDefault> appResourceList    = new ArrayList<AppResourceDefault>();
-
-    protected Hashtable<String, List<ViewSet>> viewSetHash = new Hashtable<String, List<ViewSet>>();
-    //protected Stack<List<ViewSet>>             viewSetListStack = new Stack<List<ViewSet>>();
+    protected Hashtable<String, Discipline>    hash            = new Hashtable<String, Discipline>();
+    protected List<AppResourceDefault>         appResourceList = new ArrayList<AppResourceDefault>();
+    protected Hashtable<String, List<ViewSet>> viewSetHash     = new Hashtable<String, List<ViewSet>>();
 
     protected String      databaseName          = null;
     protected String      userName              = null;
@@ -967,8 +963,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                 File resFile = new File(file.getAbsoluteFile() + File.separator + fileName);
                                 if (resFile == null || !resFile.exists())
                                 {
-                                    throw new RuntimeException("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
-
+                                    //throw new RuntimeException("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
+                                    log.error("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
                                 }
 
                                 AppResource appRes = new AppResource();

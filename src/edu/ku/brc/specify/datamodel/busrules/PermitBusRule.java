@@ -19,10 +19,10 @@ import org.hibernate.criterion.Expression;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.ui.DraggableIcon;
 import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
  *
@@ -206,7 +206,7 @@ public class PermitBusRule implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.DraggableIcon)
      */
-    public void setObjectIdentity(final Object dataObj, final DraggableIcon draggableIcon)
+    public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon)
     {
         
     }

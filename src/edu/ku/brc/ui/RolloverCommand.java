@@ -65,9 +65,10 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
 /**
  *
  * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering.
- * This class is used mostly in NavBoxes
+ * This class is used mostly in NavBoxes.<br>
+ * <B><I>NOTE:</I></B> doAction is called if the Rbtn is clicked OR something is dropped on it (a Ghost drop).
  
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  *
@@ -112,9 +113,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected CommandAction          deleteCmdAction = null;
 
     /**
-     * Constructs a UI component with a label and an icon which can be clicked to execute an action
-     * @param label the text label for the UI
-     * @param imgIcon the icon for the UI
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action.
      */
     protected RolloverCommand()
     {
@@ -493,9 +492,20 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         super.setToolTipText(toolTip);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.NavBoxItemIFace#setIcon(javax.swing.ImageIcon)
+     */
+    public void setIcon(ImageIcon icon)
+    {
+        if (icon != null)
+        {
+            imgIcon = icon;
+        }
+    }
+    
     //-----------------------------------------------
     // GhostActionable Interface
-    // Note: Both GhostActionable and NavBoxItemIFace both hace a get/set Data
+    // Note: Both GhostActionable and NavBoxItemIFace both have a get/set Data
     //-----------------------------------------------
 
     /* (non-Javadoc)
@@ -503,8 +513,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
      */
     public void doAction(GhostActionable src)
     {
-        Object dataObj = src != null ? src.getData() : null;
-        DataActionEvent ae = new DataActionEvent(this, dataObj);
+        // The drop has occurred and now we dispatch the event
+        DataActionEvent ae = new DataActionEvent(src, this, src != null ? src.getData() : null);
         for (ActionListener al : listeners)
         {
             al.actionPerformed(ae);

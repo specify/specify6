@@ -24,10 +24,12 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.hibernate.Criteria;
@@ -41,16 +43,21 @@ import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.forms.FormHelper;
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
  
@@ -96,7 +103,21 @@ public class RecordSetTask extends BaseTask
             for (Iterator iter=recordSets.iterator();iter.hasNext();)
             {
                 RecordSet recordSet = (RecordSet)iter.next();
-                addDraggableDataFlavors(addNavBoxItem(navBox, recordSet.getName(), RECORD_SET, "Delete", recordSet));
+                recordSet.getItems(); // loads all lazy object 
+                                      // TODO Probably don't want to do this defer it to later when they are used.
+                HibernateUtil.getCurrentSession().evict(recordSet);
+                
+                NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), RECORD_SET, "Delete", recordSet);
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getTableId());
+                if (tblInfo != null)
+                {
+                    ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
+                    if (rsIcon != null)
+                    {
+                        nbi.setIcon(rsIcon);
+                    }
+                }
+                addDraggableDataFlavors(nbi);
             }
             navBoxes.addElement(navBox);
             HibernateUtil.closeSession();
@@ -108,12 +129,12 @@ public class RecordSetTask extends BaseTask
      * Adds the appropriate flavors to make it draggable
      * @param nbi the item to be made draggable
      */
-    protected void addDraggableDataFlavors(NavBoxItemIFace nbi)
+    protected void addDraggableDataFlavors(final NavBoxItemIFace nbi)
     {
         RolloverCommand roc = (RolloverCommand)nbi;
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        roc.addActionListener(new RecordSetSelectedAction((RecordSet)roc.getData()));
+        roc.addActionListener(new RecordSetSelectedAction((RolloverCommand)nbi, (RecordSet)roc.getData()));
     }
 
     /**
@@ -123,17 +144,23 @@ public class RecordSetTask extends BaseTask
     public void saveRecordSet(final RecordSet recordSet)
     {
         NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
-
+        
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getTableId());
+        if (tblInfo != null)
+        {
+            ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
+            if (rsIcon != null)
+            {
+                nbi.setIcon(rsIcon);
+            }
+        }
+        
         addDraggableDataFlavors(nbi);
-
+        
         recordSet.setTimestampCreated(Calendar.getInstance().getTime());
 
-        // save to database
-        //HibernateUtil.getCurrentSession();
-        HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();
+        persistRecordSet(recordSet);
+        
 
         NavBoxMgr.getInstance().addBox(navBox);
 
@@ -148,6 +175,31 @@ public class RecordSetTask extends BaseTask
         UICacheManager.forceTopFrameRepaint();
 
         CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
+    }
+    
+    /**
+     * Save it out to persistent storage.
+     * @param recordSet the RecordSet
+     */
+    protected void persistRecordSet(final RecordSet recordSet)
+    {
+
+        //FormHelper.updateLastEdittedInfo(recordSet);
+
+        //Object newObj = HibernateUtil.getCurrentSession().merge(recordSet);
+        
+        //HibernateUtil.getCurrentSession().l
+        // save to database
+        
+        // TODO Add StaleObject Code from FormView
+        HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
+        HibernateUtil.commitTransaction();
+        //HibernateUtil.beginTransaction();
+        FormHelper.updateLastEdittedInfo(recordSet);
+        //HibernateUtil.commitTransaction();
+        HibernateUtil.closeSession();
+
     }
 
     /**
@@ -259,7 +311,7 @@ public class RecordSetTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
      */
-    public Class getTaskClass()
+    public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
     }
@@ -283,6 +335,7 @@ public class RecordSetTask extends BaseTask
                 {
                     RecordSet rs = (RecordSet)data;
                     rs.setName(rsName);
+                    rs.setLastEditedBy(FormHelper.getCurrentUserEditStr());
                     saveRecordSet(rs);
                 }
             }
@@ -292,8 +345,52 @@ public class RecordSetTask extends BaseTask
             deleteRecordSet(recordSet);
             deleteRecordSetFromUI(null, recordSet);
 
+        } else if (cmdAction.getType().equals(RecordSetTask.RECORD_SET) && cmdAction.getAction().equals("Dropped"))
+        {
+            Object srcObj = cmdAction.getSrcObj();
+            Object dstObj = cmdAction.getDstObj();
+            
+            if (srcObj != null && dstObj != null && srcObj instanceof RecordSet && dstObj instanceof RecordSet)
+            {
+                RecordSet srcRecordSet = (RecordSet)srcObj;
+                RecordSet dstRecordSet = (RecordSet)dstObj;
+                int oldSize = dstRecordSet.getItems().size();
+                Vector<RecordSetItem> dstList  = new Vector<RecordSetItem>(dstRecordSet.getItems());
+                System.err.println("Source:");
+                for (RecordSetItem rsi : srcRecordSet.getItems())
+                {
+                    System.err.print(" "+rsi.getRecordId());
+                }                
+                System.err.println("\nDest:");
+                for (RecordSetItem rsi : dstRecordSet.getItems())
+                {
+                    System.err.print(" "+rsi.getRecordId());
+                }    
+                System.err.println("");
+                for (RecordSetItem rsi : srcRecordSet.getItems())
+                {
+                    if (Collections.binarySearch(dstList, rsi) < 0)
+                    {
+                        RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
+                        dstRecordSet.getItems().add(newrsi);
+                    }
+                }
+                System.err.println("");
+                System.err.println("New Dest:");
+                for (RecordSetItem rsi : dstRecordSet.getItems())
+                {
+                    System.err.print(" "+rsi.getRecordId());
+                }                
+                System.err.println("");
+                
+                if (dstRecordSet.getItems().size() > oldSize)
+                {
+                    persistRecordSet(dstRecordSet);
+                }
+            }
         }
     }
+    
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
@@ -305,16 +402,30 @@ public class RecordSetTask extends BaseTask
      */
     class RecordSetSelectedAction implements ActionListener
     {
+        private RolloverCommand ro;
         private RecordSet rs;
 
-        public RecordSetSelectedAction(final RecordSet rs)
+        public RecordSetSelectedAction(final RolloverCommand ro, final RecordSet rs)
         {
+            this.ro = ro;
             this.rs = rs;
         }
 
         public void actionPerformed(ActionEvent e)
         {
-            CommandDispatcher.dispatch(new CommandAction(RECORD_SET, "Selected", rs));
+            Object src = e.getSource();
+            
+            System.err.println(src.hashCode()+"  "+ro.hashCode());
+            
+            if (e instanceof DataActionEvent)
+            {
+                DataActionEvent dataActionEv = (DataActionEvent)e;
+                CommandDispatcher.dispatch(new CommandAction(RECORD_SET, src == ro ? "Clicked" : "Dropped", dataActionEv.getData(), rs, null));
+            } else
+            {
+                throw new RuntimeException("How did we get here?");
+                //CommandDispatcher.dispatch(new CommandAction(RECORD_SET, "Clicked", null, rs, null));
+            }
         }
 
     }
@@ -322,9 +433,13 @@ public class RecordSetTask extends BaseTask
     class DroppableNavBox extends NavBox implements GhostActionable
     {
         // DnD
-        protected List<DataFlavor>       dropFlavors         = new ArrayList<DataFlavor>(); 
+        protected List<DataFlavor> dropFlavors = new ArrayList<DataFlavor>(); 
         protected Object data;
         
+        /**
+         * Constructor.
+         * @param name
+         */
         public DroppableNavBox(final String name)
         {
             super(name);

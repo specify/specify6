@@ -23,7 +23,7 @@ import java.util.Date;
 /**
 
  */
-public class InfoRequest  implements java.io.Serializable {
+public class InfoRequest extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

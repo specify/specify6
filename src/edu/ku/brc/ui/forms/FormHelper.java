@@ -1,0 +1,244 @@
+/**
+* Copyright (C) 2006  The University of Kansas
+*
+* [INSERT KU-APPROVED LICENSE TEXT HERE]
+*
+*/
+/**
+ * 
+ */
+package edu.ku.brc.ui.forms;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Logger;
+
+
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ */
+public final class FormHelper
+{
+    private static final Logger log = Logger.getLogger(FormHelper.class);
+    
+    private static String       currentUserEditStr = "";
+
+    /**
+     * Sets the "timestampModified" and the "lastEditedBy" by fields if the exist, if they don't then 
+     * then it just ignores the request (no error is thrown). The lastEditedBy use the value of the string
+     * set by the method currentUserEditStr.
+     * @param dataObj the data object to have the fields set
+     * @return true if it was able to set the at least one of the fields
+     */
+    public static boolean updateLastEdittedInfo(final Object dataObj)
+    {
+        if (dataObj != null)
+        {
+            try
+            {
+                DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                if (setter != null)
+                {
+                    boolean foundOne = false;
+                    //PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampModified");
+                    //if (descr != null)
+                    //{
+                    //    setter.setFieldValue(dataObj, "timestampModified", new Date());
+                    //    foundOne = true;
+                    //}
+                    
+                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "lastEditedBy");
+                    if (descr != null)
+                    {
+                        setter.setFieldValue(dataObj, "lastEditedBy", currentUserEditStr);
+                        foundOne = true;
+                    }
+                    return foundOne;
+                }
+    
+            } catch (NoSuchMethodException ex)
+            {
+                ex.printStackTrace();
+    
+            } catch (IllegalAccessException ex)
+            {
+                ex.printStackTrace();
+    
+            } catch (InvocationTargetException ex)
+            {
+                ex.printStackTrace();
+            } 
+        }
+        return false;
+    }
+
+    /**
+      * Creates a new data object and initializes it
+      * @param newDataClass class of new Object to be created and initialized
+     */
+    public static FormDataObjIFace createAndNewDataObj(final String newDataClassName)
+    {
+        try
+        {
+            //Object dataObj = newDataClass.newInstance();
+            FormDataObjIFace formDataObj = Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class).newInstance();
+            formDataObj.initialize();
+            return formDataObj;
+            
+        } catch (ClassNotFoundException ex)
+        {
+            ex.printStackTrace();
+   
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();
+   
+        } catch (InstantiationException ex)
+        {
+            ex.printStackTrace();
+        }
+    
+        return null;
+
+    }
+
+    /**
+      * Creates a new data object and initializes it
+      * @param newDataClass class of new Object to be created and initialized
+     */
+    public static FormDataObjIFace createAndNewDataObj(final Class newDataClass)
+    {
+        return createAndNewDataObj(newDataClass.getName());
+    }
+
+    /**
+      * intializes the data object for searching
+     * @param dataObj
+     * @return true is successful, false if error
+     */
+    public static boolean initForSearch(final Object dataObj)
+    {
+        try
+        {
+            Method method = dataObj.getClass().getMethod("initForSearch", new Class[] {});
+            method.invoke(dataObj, new Object[] {});
+    
+            return true;
+    
+        } catch (NoSuchMethodException ex)
+        {
+            ex.printStackTrace();
+    
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();
+    
+        } catch (InvocationTargetException ex)
+        {
+            ex.printStackTrace();
+        }
+    
+        return false;
+    }
+
+    /**
+     * Adds new child object to its parent's set and set the parent point in the new obj
+     * @param parentDataObj the parent object
+     * @param newDataObj the new object to be added to a Set
+     */
+    public static boolean initAndAddToParent(final Object parentDataObj, final FormDataObjIFace newDataObj)
+    {
+        newDataObj.initialize();
+        if (parentDataObj != null)
+        {
+            return FormHelper.addToParent(parentDataObj, newDataObj);
+        }
+        return true;
+    }
+
+    /**
+     * Adds new child object to its parent's set and set the parent point in the new obj
+     * @param parentDataObj the parent object
+     * @param newDataObj the new object to be added to a Set
+     */
+    public static boolean addToParent(final Object parentDataObj, final Object newDataObj)
+    {
+        try
+        {
+            String methodName = "add" + newDataObj.getClass().getSimpleName();
+            log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
+    
+            Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
+            method.invoke(parentDataObj, new Object[] {newDataObj});
+            log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
+    
+            return true;
+    
+        } catch (NoSuchMethodException ex)
+        {
+            ex.printStackTrace();
+    
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();
+    
+        } catch (InvocationTargetException ex)
+        {
+            ex.printStackTrace();
+        }
+    
+        return false;
+    }
+
+    /**
+     * Returns the Id of the Database Object.
+     * @param dbDataObj the object that MUST have a "getId" method to get its Id
+     * @returns the Id 
+     */
+    public static Long getId(final Object dbDataObj)
+    {
+        try
+        {
+            Method method = dbDataObj.getClass().getMethod("getId", new Class[] {});
+            return (Long)method.invoke(dbDataObj, new Object[] {});
+    
+        } catch (NoSuchMethodException ex)
+        {
+            ex.printStackTrace();
+    
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();
+    
+        } catch (InvocationTargetException ex)
+        {
+            ex.printStackTrace();
+        }
+    
+        return null;
+    }
+
+    /**
+     * Returns the string that represents the current user's username.
+     * @return the string that represents the current user's username
+     */
+    public static String getCurrentUserEditStr()
+    {
+        return FormHelper.currentUserEditStr;
+    }
+
+    /**
+     * Sets the string that represents the current user's username.
+     * @param currentUserEditStr the username
+     */
+    public static void setCurrentUserEditStr(String currentUserEditStr)
+    {
+        FormHelper.currentUserEditStr = currentUserEditStr;
+    }
+}

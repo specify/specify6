@@ -23,7 +23,7 @@ import java.util.Set;
 /**
 
  */
-public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogSeries>
+public class CatalogSeries extends DataModelObjBase implements java.io.Serializable, Comparable<CatalogSeries>
 {
     protected static List<CatalogSeries> currentCatalogSeries = new ArrayList<CatalogSeries>();
     

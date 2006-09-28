@@ -25,7 +25,7 @@ import java.util.Set;
 /**
 
  */
-public class Project  implements java.io.Serializable {
+public class Project extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 

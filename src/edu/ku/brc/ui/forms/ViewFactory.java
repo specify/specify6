@@ -63,7 +63,6 @@ import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
-import edu.ku.brc.ui.DraggableIcon;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
@@ -176,7 +175,7 @@ public class ViewFactory
      * @param view the view definition
      * @param altView which AltView to build
      * @param parentView the MultiViw that this view/form will be parented to
-     * @param createRecordSetController indicates that a RecordSet Contoller should be created
+     * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param createViewSwitcher can be used to make sure that the multiview switc her is not created
      * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @return a Viewable Obj with the form UI built
@@ -184,7 +183,7 @@ public class ViewFactory
     public Viewable buildViewable(final View      view, 
                                   final AltView   altView, 
                                   final MultiView parentView, 
-                                  final boolean   createRecordSetController,
+                                  final boolean   createResultSetController,
                                   final boolean   createViewSwitcher,
                                   final boolean   isNewObject)
     {
@@ -205,7 +204,7 @@ public class ViewFactory
 
         if (viewDef.getType() == ViewDef.ViewType.form)
         {
-            Viewable viewable = buildFormViewable(view, altView, parentView, createRecordSetController, createViewSwitcher, isNewObject);
+            Viewable viewable = buildFormViewable(view, altView, parentView, createResultSetController, createViewSwitcher, isNewObject);
             this.rootMultiView =  null;
             return viewable;
 
@@ -562,7 +561,7 @@ public class ViewFactory
                     String lblStr = cellLabel.getLabel();
                     if (cellLabel.isRecordObj())
                     {
-                        DraggableIcon dor = new DraggableIcon(cellLabel.getIcon());
+                        DraggableRecordIdentifier dor = DraggableRecordIdentifierFactory.getInstance().createDraggableRecordIdentifier(cellLabel.getIcon());
                         compToAdd = dor;
                         //dor.createMouseInputAdapter(); // this makes it draggable
                         //dor.setData(null);
@@ -1029,7 +1028,7 @@ public class ViewFactory
      * @param view view the view definition
      * @param altView the altView to use (if null, then it uses the default ViewDef)
      * @param parentView the MultiView parent (this may be null)
-     * @param createRecordSetController indicates that a RecordSet Contoller should be created
+     * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param createViewSwitcher can be used to make sure that the multiview switc her is not created
      * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @return the form
@@ -1037,7 +1036,7 @@ public class ViewFactory
     public FormViewObj buildFormViewable(final View        view,
                                          final AltView     altView,
                                          final MultiView   parentView,
-                                         final boolean     createRecordSetController,
+                                         final boolean     createResultSetController,
                                          final boolean     createViewSwitcher,
                                          final boolean     isNewObject)
     {
@@ -1056,7 +1055,7 @@ public class ViewFactory
                 validator.setDataChangeNotification(true);
             }
 
-            FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, createRecordSetController, createViewSwitcher, isNewObject);
+            FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, createResultSetController, createViewSwitcher, isNewObject);
 
             Object currDataObj = formViewObj.getCurrentDataObj();
 
@@ -1153,7 +1152,7 @@ public class ViewFactory
                                              final View      view, 
                                              final String    altName, 
                                              final Object    data,
-                                             final boolean   createRecordSetContoller,
+                                             final boolean   createResultSetContoller,
                                              final boolean   createViewSwitcher,
                                              final boolean   isNewObject)
     {
@@ -1175,7 +1174,7 @@ public class ViewFactory
                 FormViewObj form = (FormViewObj)instance.buildViewable(view, 
                                                                        altView,
                                                                        multiView, 
-                                                                       createRecordSetContoller, 
+                                                                       createResultSetContoller, 
                                                                        createViewSwitcher,
                                                                        isNewObject);
                 if (form != null)

@@ -35,7 +35,7 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
 
  */
-public class AppResource  implements java.io.Serializable, AppResourceIFace 
+public class AppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {
     private static final Logger  log       = Logger.getLogger(AppResource.class);
     
@@ -185,7 +185,7 @@ public class AppResource  implements java.io.Serializable, AppResourceIFace
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getTimestampModified()
      */
     public Date getTimestampModified() {
-        return this.timestampModified;
+        return this.timestampModified != null ? this.timestampModified : this.timestampCreated;
     }
     
     /* (non-Javadoc)

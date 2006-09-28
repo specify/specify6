@@ -4,9 +4,7 @@
 * [INSERT KU-APPROVED LICENSE TEXT HERE]
 *
 */
-package edu.ku.brc.ui;
-
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+package edu.ku.brc.ui.forms;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,50 +15,42 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
-import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.ui.dnd.DndDeletable;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
 
 /**
- * Implements a "trash can" for deleting and recovering RecordSets, labels etc.
+ * Implements a
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  * 
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class DraggableIcon extends JComponent implements GhostActionable
+public class DraggableRecordIdentifier extends JComponent implements GhostActionable
 {
     // Static Data Members
-    public static final DataFlavor DATAOBJREP_FLAVOR = new DataFlavor(DraggableIcon.class, "DraggableIcon");
+    public static final DataFlavor DATAOBJREP_FLAVOR = new DataFlavor(DraggableRecordIdentifier.class, "DraggableRecordIdentifier");
     
     // These used for the Ghosting
     protected static final int SHADOW_SIZE = 10;
     
     protected ImageIcon               imgIcon;
-    protected String                  label      = "";
+    protected String                  label               = "";
     
-    protected BufferedImage          sizeBufImg       = null;
-    protected Dimension              preferredSize    = new Dimension(0,0);
+    protected BufferedImage           sizeBufImg          = null;
+    protected Dimension               preferredSize       = new Dimension(0,0);
 
 
     protected GhostMouseInputAdapter  mouseInputAdapter   = null;
@@ -70,77 +60,41 @@ public class DraggableIcon extends JComponent implements GhostActionable
     protected boolean                 generateImgBuf      = true;    
     protected Dimension               prefferedRenderSize = new Dimension(0,0);
     protected boolean                 verticalLayout      = false;
-    protected Vector<DndDeletable>    items               = new Vector<DndDeletable>();
     
     protected Color                   textColor           = new Color(0,0,0, 90);
     protected Font                    textFont            = null;
-    protected JPopupMenu              popupMenu           = null;
-    protected JMenuItem               emptyMenuItem       = null;
-    protected JMenuItem               openMenuItem        = null;
     
     protected Object                  data                = null;
+    protected FormDataObjIFace        formDataObj         = null;
 
-    protected List<DataFlavor>        dropFlavors  = new ArrayList<DataFlavor>();
-    protected List<DataFlavor>        dragFlavors  = new ArrayList<DataFlavor>();
+    protected List<DataFlavor>        dropFlavors         = new ArrayList<DataFlavor>();
+    protected List<DataFlavor>        dragFlavors         = new ArrayList<DataFlavor>();
 
     /**
-     * Constructor
+     * Constructor.
+     * @param icon the icon
+     * @param label the label
      */
-    public DraggableIcon(final ImageIcon icon)
+    public DraggableRecordIdentifier(final ImageIcon icon, final String label)
     {
         
         imgIcon = icon;
         
-        popupMenu = new JPopupMenu();
-        
-        openMenuItem = new JMenuItem(getResourceString("Open"));
-        openMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                //openTrashCan();
-            }
-          });
-        popupMenu.add(openMenuItem);
-        
-        emptyMenuItem = new JMenuItem(getResourceString("EmptyTrash"));
-        emptyMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                //emptyTrash();
-            }
-          });
-        popupMenu.add(emptyMenuItem);
-        
-        MouseListener mouseListener = new MouseAdapter() {
-              private void showIfPopupTrigger(MouseEvent mouseEvent) 
-              {
-                  emptyMenuItem.setEnabled(items.size() > 0);
-                  openMenuItem.setEnabled(items.size() > 0);
-                  
-                  if (mouseEvent.isPopupTrigger() && popupMenu.getComponentCount() > 0) 
-                  {
-                      popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
-                  }
-              }
-              @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                showIfPopupTrigger(mouseEvent);
-              }
-              @Override
-            public void mouseReleased(MouseEvent mouseEvent) {
-                showIfPopupTrigger(mouseEvent);
-              }
-            };
-            //iconLabel.addMouseListener (mouseListener);            
-        addMouseListener (mouseListener);    
-        
         createMouseInputAdapter(); // this makes it draggable
         setData(null);
-        dragFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
+    }
+    
+    /**
+     * Constructor
+     */
+    public DraggableRecordIdentifier(final ImageIcon icon)
+    {
+        this(icon, null);
     }
     
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
-    @Override
     public void paint(Graphics g)
     {
         super.paint(g);
@@ -151,7 +105,6 @@ public class DraggableIcon extends JComponent implements GhostActionable
    /* (non-Javadoc)
     * @see java.awt.Component#getPreferredSize()
     */
-   @Override
    public Dimension getPreferredSize()
    {
        calcPreferredSize();
@@ -210,6 +163,28 @@ public class DraggableIcon extends JComponent implements GhostActionable
         }
     }
 
+
+    /**
+     * Returns the FormDataObjIFace.
+     * @return the FormDataObjIFace
+     */
+    public FormDataObjIFace getFormDataObj()
+    {
+        return formDataObj;
+    }
+
+    /**
+     * Sets the the FormDataObjIFace.
+     * @param formDataObj thee new 
+     */
+    public void setFormDataObj(FormDataObjIFace formDataObj)
+    {
+        if (this.formDataObj != formDataObj)
+        {
+            this.formDataObj = formDataObj;
+        }
+    }
+    
     //-----------------------------------------------
     // GhostActionable Interface
     //-----------------------------------------------
@@ -219,20 +194,7 @@ public class DraggableIcon extends JComponent implements GhostActionable
      */
     public void doAction(GhostActionable src)
     {
-        if (src != null)
-        {
-            
-            Object dataObj = src.getData();
-            
-            if (src instanceof DndDeletable && dataObj != null)
-            {
-                if (((DndDeletable)src).deleteRequest())
-                {
-                    items.add((DndDeletable)src);
-                    repaint();
-                }
-            }
-        }
+
     }
     
     /* (non-Javadoc)
@@ -254,7 +216,7 @@ public class DraggableIcon extends JComponent implements GhostActionable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
-    public Object getDataForClass(Class<?> classObj)
+    public Object getDataForClass(Class classObj)
     {
         return UIHelper.getDataForClass(data, classObj);
     }
@@ -310,9 +272,7 @@ public class DraggableIcon extends JComponent implements GhostActionable
             try {
                 Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
                 value = declaredField.get(null);
-            } catch (Exception e)
-            {
-                // do nothing
+            } catch (Exception e) {
             }
             hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
         }

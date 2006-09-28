@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class AppResourceDefault  implements java.io.Serializable
+public class AppResourceDefault extends DataModelObjBase implements java.io.Serializable
 {
 
     // Fields

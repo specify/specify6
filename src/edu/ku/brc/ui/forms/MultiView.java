@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -82,7 +81,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
     protected boolean                      dataHasChanged  = false;    
 
-    protected boolean                      createRecordSetController;
+    protected boolean                      createResultSetController;
     protected boolean                      createViewSwitcher;
     protected boolean                      isNewObject;
 
@@ -100,14 +99,14 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param mvParent parent of this MultiView the root MultiView is null
      * @param view the view to create for
      * @param createWithMode how the form should be created (Noe, Edit or View mode)
-     * @param createRecordSetController indicates that a RecordSet Contoller should be created
+     * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @param isNewObject true means it is for creating a new object, false means it is editting one
      */
     public MultiView(final MultiView mvParent,
                      final View view,
                      final AltView.CreationMode createWithMode,
-                     final boolean createRecordSetController,
+                     final boolean createResultSetController,
                      final boolean createViewSwitcher,
                      final boolean isNewObject)
     {
@@ -116,7 +115,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.mvParent                  = mvParent;
         this.view                      = view;
         this.createWithMode            = createWithMode;
-        this.createRecordSetController = createRecordSetController;
+        this.createResultSetController = createResultSetController;
         this.createViewSwitcher        = createViewSwitcher;
         this.isNewObject                = isNewObject;
 
@@ -223,7 +222,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 viewable.getDataFromUI();
                 if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
                 {
-                    if (HibernateUtil.updateLastEdittedInfo(viewable.getDataObj()))
+                    if (FormHelper.updateLastEdittedInfo(viewable.getDataObj()))
                     {
                         viewable.setDataIntoUI();
                     }
@@ -365,7 +364,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
         // this call parents the viewable to the multiview
-        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetController, createViewSwitcher, isNewObject);
+        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createResultSetController, createViewSwitcher, isNewObject);
         viewable.setParentDataObj(parentDataObj);
 
         // Add Viewable to the CardLayout
@@ -495,7 +494,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode = altView.getMode();
-                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createRecordSetController, createViewSwitcher, isNewObject);
+                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createResultSetController, createViewSwitcher, isNewObject);
                     viewable.setSession(session);
                     if (add(viewable, altViewName))
                     {

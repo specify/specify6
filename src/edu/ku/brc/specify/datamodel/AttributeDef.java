@@ -22,7 +22,7 @@ import java.util.Set;
  * @author rods
  *
  */
-public class AttributeDef  implements java.io.Serializable {
+public class AttributeDef extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

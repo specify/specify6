@@ -16,7 +16,6 @@ package edu.ku.brc.ui.forms;
 
 import java.util.List;
 
-import edu.ku.brc.ui.DraggableIcon;
 
 /**
  * This interface represents the actions that can be performed on a data object by a business rules object.<br>
@@ -79,6 +78,6 @@ public interface BusinessRulesIFace
     public String getDeleteMsg(Object dataObj);
     
     
-    public void setObjectIdentity(final Object dataObj, final DraggableIcon draggableIcon);
+    public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon);
     
 }

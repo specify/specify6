@@ -73,6 +73,8 @@ import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
 
 
@@ -126,8 +128,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected String             searchDialogName;
     protected String[]           fieldNames;
 
-    protected Object             dataObj     = null;
-    protected Object             newDataObj  = null;
+    protected FormDataObjIFace   dataObj     = null;
+    protected FormDataObjIFace   newDataObj  = null;
     protected MODE               currentMode = MODE.Unknown;
 
     protected String             displayInfoDialogName;
@@ -404,8 +406,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {
-            newDataObj = HibernateUtil.createAndNewDataObj(classObj);
-            HibernateUtil.initDataObj(newDataObj);
+            newDataObj = FormHelper.createAndNewDataObj(classObj);
+            newDataObj.initialize();
+            
             //frame.setData(newDataObj);
 
             // Now get the setter for an object and set the value they typed into the combobox and place it in
@@ -577,7 +580,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     //--------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#isInError()
+     * @see edu.kui.brc.ui.validation.UIValidatable#isInError()
      */
     public boolean isInError()
     {
@@ -600,7 +603,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.valState = state;
     }
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#isRequired()
+     * @see edu.kui.brc.ui.validation.UIValidatable#isRequired()
      */
     public boolean isRequired()
     {
@@ -608,7 +611,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#setRequired(boolean)
+     * @see edu.kui.brc.ui.validation.UIValidatable#setRequired(boolean)
      */
     public void setRequired(boolean isRequired)
     {
@@ -728,8 +731,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setValue(Object value, String defaultValue)
     {
-        dataObj = value;
-        refreshUIFromData();
+        
+        if (value == null || value instanceof FormDataObjIFace)
+        {
+            dataObj = (FormDataObjIFace)value;
+            refreshUIFromData();
+            
+        } else
+        {
+            throw new RuntimeException("Data is does not extend FormDataObjIFace "+ value);
+        }
     }
 
     /* (non-Javadoc)
@@ -791,7 +802,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 if (currentMode == MODE.NewAndEmpty)
                 {
-                    HibernateUtil.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
+                    FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
                     setValue(newDataObj, null);
                     newDataObj = null;
                  }

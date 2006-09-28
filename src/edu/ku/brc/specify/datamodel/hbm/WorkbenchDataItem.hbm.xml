@@ -30,7 +30,11 @@
         <meta attribute="field-description"></meta>    
     </property>
 
-
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>
+    
     <!-- Associations -->
 
     <!-- many-to-one association to Workbench -->

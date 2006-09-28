@@ -23,15 +23,16 @@ import java.util.Set;
 /**
 
  */
-public class WorkbenchTemplate  implements java.io.Serializable {
+public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
      protected Long workbenchTemplateId;
      protected String name;
      protected String remarks;
-     private Date timestampModified;
-     private Date timestampCreated;
+     protected Date timestampModified;
+     protected Date timestampCreated;
+     protected String lastEditedBy;
      protected Set workbenches;
      protected Set workbenchtemplatemappingitems;
 
@@ -48,7 +49,13 @@ public class WorkbenchTemplate  implements java.io.Serializable {
     }
    
     
-    
+    // Initializer
+    public void initialize()
+    {
+        throw new RuntimeException("Meg need to implement me!");
+
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -114,6 +121,16 @@ public class WorkbenchTemplate  implements java.io.Serializable {
     
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
+    }
+
+    public String getLastEditedBy()
+    {
+        return lastEditedBy;
+    }
+
+    public void setLastEditedBy(String lastEditedBy)
+    {
+        this.lastEditedBy = lastEditedBy;
     }
 
     /**

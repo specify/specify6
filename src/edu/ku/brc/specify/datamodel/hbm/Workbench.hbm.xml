@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
 
 <class name="edu.ku.brc.specify.datamodel.Workbench" table="workbench" lazy="false">
 
@@ -25,11 +26,11 @@
         <meta attribute="field-description"></meta>
     </property>
       
-    <property name="formid" type="java.lang.Integer" column="FormId">
+    <property name="formId" type="java.lang.Integer" column="FormId">
       <meta attribute="scope-field">protected</meta>
     </property>   
       
-    <property name="exportinstitutionname" type="java.lang.String" column="ExportInstitution" length="120">
+    <property name="exportInstitutionName" type="java.lang.String" column="ExportInstitutionName" length="128">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Name of Institution being exported from</meta>
     </property>  
@@ -37,6 +38,12 @@
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="field-description"></meta>    
     </property>
+    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>
+    
     <!-- Associations -->
 
     

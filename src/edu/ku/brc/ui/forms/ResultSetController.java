@@ -43,7 +43,7 @@ import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValidationListener;
 
 /*
- * Creates a RecordSetController with First, Last, Previous, Next, New and Delete buttons.
+ * Creates a ResultSetController with First, Last, Previous, Next, New and Delete buttons.
  * When the current index is -1 then the controller is disabled. Setting the length to zero will
  * automatically set the current index to -1 and disable the controller.
  * 

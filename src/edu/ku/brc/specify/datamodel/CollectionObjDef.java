@@ -24,7 +24,7 @@ import java.util.Set;
 /**
 
  */
-public class CollectionObjDef  implements java.io.Serializable 
+public class CollectionObjDef extends DataModelObjBase implements java.io.Serializable 
 {
 
     protected static CollectionObjDef currentCollectionObjDef = null;

@@ -23,7 +23,7 @@ import java.util.Date;
 /**
 
  */
-public class BorrowReturnMaterial  implements java.io.Serializable {
+public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
