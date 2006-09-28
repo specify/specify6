@@ -39,7 +39,7 @@ import edu.ku.brc.ui.UIHelper;
 public class PopupDlgTests extends TestCase 
 {
 	private static final Logger log = Logger.getLogger(PopupDlgTests.class);
-    private static final String databaseName = "fish";
+    
     private Random generator = new Random();
     
     protected AppPreferences appPrefs = null;
@@ -57,41 +57,7 @@ public class PopupDlgTests extends TestCase
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		log.info("Setup - Loading preferences...");
-        //-----------------------------------------------------
-        // This is needed for loading views
-        //-----------------------------------------------------
-        UICacheManager.getInstance(); // initializes it first thing
-        if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
-        {
-            System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory",   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
-            System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-            System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
-            
-            UICacheManager.getInstance(); // initializes it first thing
-            UICacheManager.setAppName("Specify");
-
-            // Load Local Prefs
-            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
-            localPrefs.load();
-            
-            // This will log us in and return true/false
-            if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
-                                   "org.hibernate.dialect.MySQLDialect", 
-                                   databaseName, 
-                                   "jdbc:mysql://localhost/"+databaseName, 
-                                   "rods", 
-                                   "rods"))
-            {
-                throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
-            } else
-            {
-                HibernateUtil.getCurrentSession();
-                AppPreferences.getRemote().load(); // Loads prefs from the database
-                log.info("Loaded preferences");
-            }
-        }
+        AppPreferenceHelper.setupPreferences();
 	}
 	
 	/**
