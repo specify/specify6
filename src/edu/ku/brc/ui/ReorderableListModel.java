@@ -132,4 +132,14 @@ public class ReorderableListModel<T> extends AbstractListModel implements Modifi
         data.add(moving);
         this.fireContentsChanged(this, index, data.size()-1);
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ModifiableListModel#clear()
+     */
+    public void clear()
+    {
+        int index1 = data.size()-1;
+        data.clear();
+        this.fireIntervalRemoved(this, 0, index1);
+    }
 }

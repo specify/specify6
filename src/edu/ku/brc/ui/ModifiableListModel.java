@@ -44,4 +44,9 @@ public interface ModifiableListModel<T> extends ListModel
      * @see javax.swing.ListModel#getElementAt(int)
      */
     public T getElementAt(int index);
+    
+    /**
+     * Removes all elements from the model.
+     */
+    public void clear();
 }
