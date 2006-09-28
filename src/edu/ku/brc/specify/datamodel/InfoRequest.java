@@ -35,8 +35,6 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      protected Calendar requestDate;
      protected Calendar replyDate;
      protected String remarks;
-     protected Date timestampCreated;
-     protected Date timestampModified;
      protected RecordSet recordSet;
      protected Agent agent;
 
@@ -161,28 +159,6 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
     }
 
     /**

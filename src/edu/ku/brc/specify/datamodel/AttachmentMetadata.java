@@ -13,9 +13,6 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     private Long       attachmentMetadataID;
     private String     name;
     private String     value;
-    private Date       timestampCreated;
-    private Date       timestampModified;
-    private String     lastEditedBy;
     private Attachment attachment;
 
     // Constructors
@@ -79,45 +76,6 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     public void setValue(String value)
     {
         this.value = value;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated()
-    {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated)
-    {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified()
-    {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified)
-    {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy()
-    {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy)
-    {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

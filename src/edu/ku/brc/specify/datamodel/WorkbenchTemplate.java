@@ -30,9 +30,6 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      protected Long workbenchTemplateId;
      protected String name;
      protected String remarks;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Set workbenches;
      protected Set workbenchtemplatemappingitems;
 

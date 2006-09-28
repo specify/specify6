@@ -8,6 +8,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -17,7 +18,11 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 public abstract class DataModelObjBase implements FormDataObjIFace
 {
     protected Hashtable<String, Vector<PropertyChangeListener>> propListenersHash = null;
+    protected PropertyChangeSupport changes = new PropertyChangeSupport(this);
     
+    protected Date timestampCreated;
+    protected Date timestampModified;
+    protected String lastEditedBy;
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#initialize()
@@ -48,7 +53,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     public Date getTimestampCreated()
     {
-        return null;
+        return this.timestampCreated;
     }
 
     /* (non-Javadoc)
@@ -56,7 +61,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     public void setTimestampCreated(Date timestampCreated)
     {
-        
+        this.timestampCreated = timestampCreated;
     }
 
     /* (non-Javadoc)
@@ -64,7 +69,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     public Date getTimestampModified()
     {
-        return null;
+        return this.timestampModified;
     }
 
     /* (non-Javadoc)
@@ -72,7 +77,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     public void setTimestampModified(Date timestampModified)
     {
-        
+        this.timestampModified = timestampModified;
     }
 
     /* (non-Javadoc)
@@ -80,7 +85,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     public String getLastEditedBy()
     {
-        return null;
+        return this.lastEditedBy;
     }
 
     /* (non-Javadoc)
@@ -88,7 +93,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     public void setLastEditedBy(String lastEditedBy)
     {
-
+        this.lastEditedBy = lastEditedBy;
     }
     
     /* (non-Javadoc)
@@ -98,92 +103,48 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     {
         throw new RuntimeException("You must implement this for all the classes! (Or certainly this class)");
     }
-    
+
     //---------------------------------------------------------------------------
     // Property Change Support
     //---------------------------------------------------------------------------
-    
-    /**
-     * Notifies all listeners that a property has changed.
-     * @param propertyName  the property name
-     * @param oldValue the old value
-     * @param newValue the new value
-     */
-    protected void notifyPropListeners(final Vector<PropertyChangeListener> list, final PropertyChangeEvent evt)
+
+    public void addPropertyChangeListener(PropertyChangeListener listener)
     {
-        if (list != null)
-        {
-            for (PropertyChangeListener l : list)
-            {
-                l.propertyChange(evt);
-            }
-        }
+        changes.addPropertyChangeListener(listener);
     }
-    
-    /**
-     * Notifies all listeners that a property has changed.
-     * @param propertyName  the property name
-     * @param oldValue the old value
-     * @param newValue the new value
-     */
-    protected void notifyPropListeners(final String propertyName,
-                                       final Object oldValue, 
-                                       final Object newValue)
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
-        if (propListenersHash != null)
-        {
-            PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-            notifyPropListeners(propListenersHash.get(""), evt);
-            notifyPropListeners(propListenersHash.get(propertyName), evt);
-        }
+        changes.addPropertyChangeListener(propertyName, listener);
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addPropertyChangeListener(java.beans.PropertyChangeListener)
-     */
-    public void addPropertyChangeListener(PropertyChangeListener l)
+
+    public void firePropertyChange(PropertyChangeEvent evt)
     {
-        addPropertyChangeListener("", l);
+        changes.firePropertyChange(evt);
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
-     */
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l)
+
+    public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue)
     {
-        if (propListenersHash == null)
-        {
-            propListenersHash = new Hashtable<String, Vector<PropertyChangeListener>>();
-        }
-        Vector<PropertyChangeListener> list = propListenersHash.get(propertyName);
-        if (list == null)
-        {
-            list = new Vector<PropertyChangeListener>();
-            propListenersHash.put(propertyName, list);
-        }
-        list.add(l);
+        changes.firePropertyChange(propertyName, oldValue, newValue);
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#removePropertyChangeListener(java.beans.PropertyChangeListener)
-     */
-    public void removePropertyChangeListener(PropertyChangeListener l)
+
+    public void firePropertyChange(String propertyName, int oldValue, int newValue)
     {
-        removePropertyChangeListener("", l);
+        changes.firePropertyChange(propertyName, oldValue, newValue);
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
-     */
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l)
+
+    public void firePropertyChange(String propertyName, Object oldValue, Object newValue)
     {
-        if (propListenersHash != null)
-        {
-            Vector<PropertyChangeListener> list = propListenersHash.get(propertyName);
-            if (list != null)
-            {
-                list.remove(l);
-            }
-        }
+        changes.firePropertyChange(propertyName, oldValue, newValue);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener)
+    {
+        changes.removePropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        changes.removePropertyChangeListener(propertyName, listener);
     }
 }

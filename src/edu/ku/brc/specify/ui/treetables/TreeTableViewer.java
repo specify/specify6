@@ -172,6 +172,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return this.treeDef;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
+	 */
 	@Override
 	public void showingPane(boolean show)
 	{
@@ -628,7 +631,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * rules.
 	 */
 	@SuppressWarnings("unchecked")
-	public void deleteSelectedNode(JList list)
+    public void deleteSelectedNode(JList list)
 	{
 		if(busy)
 		{
@@ -642,6 +645,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 		
+        // unchecked cast, unavoidable
 		T node = (T)selection;
 		if( node.canBeDeleted() )
 		{

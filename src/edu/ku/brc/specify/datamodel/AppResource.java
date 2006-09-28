@@ -48,9 +48,6 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      protected String mimeType;
      protected String metaData;
      protected Set<AppResourceData> appResourceDatas;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Set<AppResourceDefault> appResourceDefaults;
      
      // Non Persisted Fields
@@ -165,48 +162,6 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      */
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getTimestampCreated()
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#setTimestampCreated(java.util.Date)
-     */
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getTimestampModified()
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified != null ? this.timestampModified : this.timestampCreated;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#setTimestampModified(java.util.Date)
-     */
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getLastEditedBy()
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#setLastEditedBy(java.lang.String)
-     */
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     public String getMetaData()

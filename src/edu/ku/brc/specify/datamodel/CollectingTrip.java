@@ -12,7 +12,6 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     // Fields    
 
      private Long collectingTripId;
-     private Date timestampModified;
      private String remarks;
      private Calendar startDate;
      private Short startDatePrecision;
@@ -22,8 +21,6 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
      private String endDateVerbatim;
      private Short startTime;
      private Short endTime;
-     private Date timestampCreated;
-     private String lastEditedBy;
      private Set<CollectingEvent> collectingEvents;
 
 
@@ -60,17 +57,6 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     
     public void setCollectingTripId(Long collectingTripId) {
         this.collectingTripId = collectingTripId;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
     }
 
     /**
@@ -170,28 +156,6 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     
     public void setEndTime(Short endTime) {
         this.endTime = endTime;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

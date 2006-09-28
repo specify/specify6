@@ -31,9 +31,6 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
      protected Calendar returnedDate;
      protected Short quantity;
      protected String remarks;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected LoanPhysicalObject loanPhysicalObject;
      protected DeaccessionCollectionObject deaccessionCollectionObject;
      protected Agent agent;
@@ -122,39 +119,6 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    /**
-     *      * Date the record was created
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *      * Date the record was modified
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      * user ID  of the person last editing the record
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

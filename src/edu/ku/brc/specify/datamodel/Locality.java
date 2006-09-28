@@ -60,9 +60,6 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
      protected String text2;
      protected Double number1;
      protected Double number2;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected String lat1text;
@@ -515,39 +512,6 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     
     public void setNumber2(Double number2) {
         this.number2 = number2;
-    }
-
-    /**
-     *      * Date the record was created
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *      * Date the record was modified
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      * Name of the person last editing the record
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

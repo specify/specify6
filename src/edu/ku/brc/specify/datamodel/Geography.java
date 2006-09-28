@@ -48,10 +48,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	protected String				text2;
 	protected Integer				number1;
 	protected Integer				number2;
-	protected Date					timestampCreated;
-	protected Date					timestampModified;
 	protected Date					timestampVersion;
-	protected String				lastEditedBy;
 	protected Boolean				isCurrent;
 	protected Set<Locality>			localities;
 	protected GeographyTreeDef		definition;
@@ -299,32 +296,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-	public Date getTimestampCreated()
-	{
-		return this.timestampCreated;
-	}
-
-	public void setTimestampCreated(Date timestampCreated)
-	{
-		this.timestampCreated = timestampCreated;
-	}
-
-	/**
-	 *
-	 */
-	public Date getTimestampModified()
-	{
-		return this.timestampModified;
-	}
-
-	public void setTimestampModified(Date timestampModified)
-	{
-		this.timestampModified = timestampModified;
-	}
-
-	/**
-	 *
-	 */
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -333,19 +304,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	public void setTimestampVersion(Date timestampVersion)
 	{
 		this.timestampVersion = timestampVersion;
-	}
-
-	/**
-	 *
-	 */
-	public String getLastEditedBy()
-	{
-		return this.lastEditedBy;
-	}
-
-	public void setLastEditedBy(String lastEditedBy)
-	{
-		this.lastEditedBy = lastEditedBy;
 	}
 
 	/**

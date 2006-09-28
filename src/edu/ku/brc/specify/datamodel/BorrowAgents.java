@@ -29,9 +29,6 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
      protected Long borrowAgentsId;
      protected String role;
      protected String remarks;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Agent agent;
      protected Borrow borrow;
 
@@ -108,38 +105,6 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
         this.remarks = remarks;
     }
 
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
-    }
 
     /**
      *      * Address/Organization from which agent participated in the borrow

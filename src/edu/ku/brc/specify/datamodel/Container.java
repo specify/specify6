@@ -34,9 +34,6 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      protected String name;
      protected String description;
      protected Integer number;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Set<ContainerItem> items;
      protected CollectionObject container;
      protected Location location;
@@ -149,39 +146,6 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
 
     public void setNumber(Integer number) {
         this.number = number;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

@@ -35,9 +35,6 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable 
      protected String name;
      protected Integer tableId;
      protected String remarks;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Set<RecordSetItem> items;
      protected SpecifyUser owner;
 
@@ -116,36 +113,6 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable 
     public void setTableId(Integer tableId)
     {
         this.tableId = tableId;
-    }
-
-    public Date getTimestampModified()
-    {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified)
-    {
-        this.timestampModified = timestampModified;
-    }
-
-    public Date getTimestampCreated()
-    {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated)
-    {
-        this.timestampCreated = timestampCreated;
-    }
-
-    public String getLastEditedBy()
-    {
-        return lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy)
-    {
-        this.lastEditedBy = lastEditedBy;
     }
 
     public Set<RecordSetItem> getItems() {

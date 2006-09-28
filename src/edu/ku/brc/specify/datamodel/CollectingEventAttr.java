@@ -31,8 +31,6 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
      protected Long attrId;
      protected String strValue;
      protected Double dblValue;
-     protected Date timestampCreated;
-     protected Date timestampModified;
      protected CollectingEvent collectingEvent;
      protected AttributeDef definition;
 
@@ -187,38 +185,6 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     {
         //verifyType(AttributeIFace.FieldType.BooleanType);
         dblValue = new Double(value ? 1.0 : 0.0);
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.AttributeIFace#getTimestampCreated()
-     */
-    public Date getTimestampCreated()
-    {
-        return this.timestampCreated;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.AttributeIFace#setTimestampCreated(java.util.Date)
-     */
-    public void setTimestampCreated(Date timestampCreated)
-    {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.AttributeIFace#getTimestampModified()
-     */
-    public Date getTimestampModified()
-    {
-        return this.timestampModified;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.AttributeIFace#setTimestampModified(java.util.Date)
-     */
-    public void setTimestampModified(Date timestampModified)
-    {
-        this.timestampModified = timestampModified;
     }
 
 

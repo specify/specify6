@@ -41,9 +41,6 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      protected Float number1;
      protected Float number2;
      protected String remarks;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<CollectionObject> collectionObjects;
@@ -237,39 +234,6 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

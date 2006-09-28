@@ -35,9 +35,6 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      protected String inComments;
      protected Short quantityResolved;
      protected Short quantityReturned;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Preparation preparation;
      protected Loan loan;
      protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
@@ -162,39 +159,6 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     
     public void setQuantityReturned(Short quantityReturned) {
         this.quantityReturned = quantityReturned;
-    }
-
-    /**
-     *      * Date the record was created
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *      * Date the record was modified
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      * Login name of the user last editing the record
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

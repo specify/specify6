@@ -39,9 +39,6 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Short closed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
@@ -212,38 +209,6 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
         this.number2 = number2;
     }
 
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
-    }
 
     /**
      *      * False until all material has been returned

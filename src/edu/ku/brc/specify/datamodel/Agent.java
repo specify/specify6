@@ -38,9 +38,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected String                        abbreviation;
     protected String                        name;
     protected String                        remarks;
-    protected Date                          timestampModified;
-    protected Date                          timestampCreated;
-    protected String                        lastEditedBy;
     protected Set<Authors>                   authors;
     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
     protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
@@ -276,39 +273,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

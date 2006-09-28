@@ -38,9 +38,6 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      protected String storageLocation;
      protected String remarks;
      protected Calendar preparedDate;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Set<LoanPhysicalObject> loanPhysicalObjects;
      protected Set<AttributeIFace> attrs;
      protected PrepType prepType;
@@ -174,39 +171,6 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     
     public void setPreparedDate(Calendar preparedDate) {
         this.preparedDate = preparedDate;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

@@ -29,9 +29,6 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
      protected Long accessionAgentsId;
      protected String role;
      protected String remarks;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Agent agent;
      protected Accession accession;
      protected RepositoryAgreement repositoryAgreement;
@@ -40,11 +37,13 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     // Constructors
 
     /** default constructor */
-    public AccessionAgents() {
+    public AccessionAgents()
+    {
     }
     
     /** constructor with id */
-    public AccessionAgents(Long accessionAgentsId) {
+    public AccessionAgents(Long accessionAgentsId)
+    {
         this.accessionAgentsId = accessionAgentsId;
     }
    
@@ -52,6 +51,7 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         accessionAgentsId = null;
@@ -79,6 +79,7 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.accessionAgentsId;
@@ -108,39 +109,6 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

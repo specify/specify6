@@ -21,9 +21,6 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     protected Long               determinationStatusId;
     protected String             name;
     protected String             remarks;
-    protected Date               timestampCreated;
-    protected Date               timestampModified;
-    protected String             lastEditedBy;
     protected Set<Determination> determinations;
 
     public DeterminationStatus()

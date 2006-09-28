@@ -24,9 +24,6 @@ public class Attachment extends DataModelObjBase implements java.io.Serializable
     private Integer                 order;
     private String                  remarks;
     private String                  attachmentLocation;
-    private Date                    timestampCreated;
-    private Date                    timestampModified;
-    private String                  lastEditedBy;
     private Set<AttachmentMetadata> metadata;
     private Agent                   agent;
     private CollectionObject        collectionObject;
@@ -164,44 +161,6 @@ public class Attachment extends DataModelObjBase implements java.io.Serializable
         this.attachmentLocation = attachmentLocation;
     }
 
-    /**
-     * 
-     */
-    public Date getTimestampCreated()
-    {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated)
-    {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified()
-    {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified)
-    {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy()
-    {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy)
-    {
-        this.lastEditedBy = lastEditedBy;
-    }
 
     /**
      * 

@@ -48,9 +48,6 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      protected String description;
      protected String metaData;
      protected Set<AppResourceData> appResourceDatas;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      private Set<AppResourceDefault> appResourceDefaults;
 
      // Non Persisted Fields
@@ -158,39 +155,6 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
         throw new RuntimeException("Can't set MimeType");
     }
     
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
-    }
-
     public String getMetaData()
     {
         return metaData;

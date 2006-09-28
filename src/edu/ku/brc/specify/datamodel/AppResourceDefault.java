@@ -30,9 +30,6 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     // Fields
 
      protected Long appResourceDefaultId;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected CatalogSeries catalogSeries;
      protected CollectionObjDef collectionObjDef;
      protected SpecifyUser specifyUser;
@@ -92,39 +89,6 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
 
     public void setAppResourceDefaultId(Long appResourceDefaultId) {
         this.appResourceDefaultId = appResourceDefaultId;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      * Login name of user who last edited the record
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /* (non-Javadoc)

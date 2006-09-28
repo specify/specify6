@@ -34,9 +34,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
      protected String remarks;
      protected Integer formId;
      protected String exportInstitutionName;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected WorkbenchTemplate workbenchTemplates;
      protected Set<WorkbenchDataItem> workbenchItems;
 
@@ -146,38 +143,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     
     public void setExportInstitutionName(String exportInstitutionName) {
         this.exportInstitutionName = exportInstitutionName;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    public String getLastEditedBy()
-    {
-        return lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy)
-    {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

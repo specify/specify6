@@ -42,9 +42,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      protected Float number1;
      protected Float number2;
      protected String remarks;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<CollectionObject> collectionObjects;
@@ -56,7 +53,9 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     // Constructors
 
     /** default constructor */
-    public Accession() {
+    public Accession()
+    {
+        // do nothing
     }
 
     /** constructor with id */
@@ -65,10 +64,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         this.accessionId = accessionId;
     }
 
-
-
-
     // Initializer
+    @Override
     public void initialize()
     {
         accessionId = null;
@@ -109,6 +106,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.accessionId;
@@ -149,9 +147,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
 
     public void setNumber(final String number) 
     {
-        notifyPropListeners("Number", this.number, number);
+        firePropertyChange("Number", this.number, number);
         this.number = number;
-        
     }
 
     /**
@@ -251,39 +248,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      * Login name of user who last edited the record
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

@@ -29,8 +29,6 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     // Fields    
 
      protected Long containerItemId;
-     protected Date timestampModified;
-     protected Date timestampCreated;
      protected Container container;
      protected Set<CollectionObject> collectionObjects;
 
@@ -80,28 +78,6 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     
     public void setContainerItemId(Long containerItemId) {
         this.containerItemId = containerItemId;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
     }
 
     /**

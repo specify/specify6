@@ -34,9 +34,6 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
      protected String seriesName;
      protected String catalogSeriesPrefix;
      protected String remarks;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Set<CollectionObjDef> collectionObjDefItems;
      protected CatalogSeries tissue;
      protected Set<AppResourceDefault> appResourceDefaults;
@@ -154,38 +151,6 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
         this.remarks = remarks;
     }
 
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
-    }
 
     /**
      *

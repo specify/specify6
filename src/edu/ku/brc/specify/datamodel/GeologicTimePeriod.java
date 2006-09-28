@@ -46,10 +46,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	protected Float							startUncertainty;
 	protected Float							end;
 	protected Float							endUncertainty;
-	protected Date							timestampModified;
-	protected Date							timestampCreated;
 	protected Date							timestampVersion;
-	protected String						lastEditedBy;
 	private GeologicTimePeriodTreeDef		definition;
 	private GeologicTimePeriodTreeDefItem	definitionItem;
 	private GeologicTimePeriod				parent;
@@ -258,32 +255,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-	public Date getTimestampModified()
-	{
-		return this.timestampModified;
-	}
-
-	public void setTimestampModified(Date timestampModified)
-	{
-		this.timestampModified = timestampModified;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getTimestampCreated()
-	{
-		return this.timestampCreated;
-	}
-
-	public void setTimestampCreated(Date timestampCreated)
-	{
-		this.timestampCreated = timestampCreated;
-	}
-
-	/**
-	 * 
-	 */
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -292,19 +263,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	public void setTimestampVersion(Date timestampVersion)
 	{
 		this.timestampVersion = timestampVersion;
-	}
-
-	/**
-	 * 
-	 */
-	public String getLastEditedBy()
-	{
-		return this.lastEditedBy;
-	}
-
-	public void setLastEditedBy(String lastEditedBy)
-	{
-		this.lastEditedBy = lastEditedBy;
 	}
 
 	/**

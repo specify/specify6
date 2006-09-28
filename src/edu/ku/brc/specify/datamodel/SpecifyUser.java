@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class SpecifyUser extends DataModelObjBase implements java.io.Serializable {
 
-    protected static SpecifyUser currentUser = null;;
+    protected static SpecifyUser currentUser = null;
     
     // Fields
 

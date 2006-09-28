@@ -36,9 +36,6 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
      protected String inComments;
      protected Short quantityResolved;
      protected Short quantityReturned;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Set<BorrowReturnMaterial> borrowReturnMaterials;
      protected Borrow borrow;
 
@@ -175,38 +172,6 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
         this.quantityReturned = quantityReturned;
     }
 
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
-    }
 
     /**
      * 

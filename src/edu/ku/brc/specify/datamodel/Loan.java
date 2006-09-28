@@ -41,9 +41,6 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Short closed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
@@ -235,39 +232,6 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     
     public void setNumber2(Float number2) {
         this.number2 = number2;
-    }
-
-    /**
-     *      * The date the record was created
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *      * The date the record was modified
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      * Login name of the user who last edited the record
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

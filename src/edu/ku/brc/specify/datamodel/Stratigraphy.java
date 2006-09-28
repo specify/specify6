@@ -39,9 +39,6 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected CollectingEvent collectingEvent;
@@ -218,39 +215,6 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
 
     public void setNumber2(Float number2) {
         this.number2 = number2;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

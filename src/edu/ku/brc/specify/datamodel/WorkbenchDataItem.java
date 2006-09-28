@@ -30,9 +30,6 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
      protected String cellData;
      protected String rowNumber;
      protected String columnNumber;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
      protected Workbench owner;
 
 
@@ -109,38 +106,6 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     
     public void setColumnNumber(String columnNumber) {
         this.columnNumber = columnNumber;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    public String getLastEditedBy()
-    {
-        return lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy)
-    {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

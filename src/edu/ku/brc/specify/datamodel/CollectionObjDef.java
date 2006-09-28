@@ -35,8 +35,6 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      protected String name;
      protected String discipline;
      protected DataType dataType;
-     protected Date timestampModified;
-     protected Date timestampCreated;
      protected Set<CatalogSeries> catalogSeries;
      protected SpecifyUser specifyUser;
      protected Set<AttributeDef> attributeDefs;
@@ -146,28 +144,6 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         this.dataType = dataType;
     }
 
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-    
     /**
      *
      */

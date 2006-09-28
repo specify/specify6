@@ -51,9 +51,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      protected String guid;
      protected String altCatalogNumber;
      protected Integer groupPermittedToView;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Boolean deaccessioned;
      protected Float catalogNumber;
      protected CollectingEvent collectingEvent;
@@ -352,39 +349,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
 
     public void setGroupPermittedToView(Integer groupPermittedToView) {
         this.groupPermittedToView = groupPermittedToView;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**

@@ -29,9 +29,6 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
      protected Long loanAgentsId;
      protected String role;
      protected String remarks;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
      protected Loan loan;
      protected Agent agent;
 
@@ -106,39 +103,6 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
     }
 
     /**
