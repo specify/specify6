@@ -3,7 +3,7 @@
 
 <class name="edu.ku.brc.specify.datamodel.DeterminationStatus" table="determinationstatus" lazy="true">
 
-    <id name="determinationStatusId" type="java.lang.Integer" column="DeterminationStatusID">
+    <id name="determinationStatusId" type="java.lang.Long" column="DeterminationStatusID">
         <generator class="native"/>
     </id>
     
