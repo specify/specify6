@@ -1,54 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping package="edu.ku.brc.specify.datamodel">
-
-<import class="RecordSetItem"/>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="edu.ku.brc.specify.datamodel">
     
-<class name="edu.ku.brc.specify.datamodel.RecordSet" table="recordset" lazy="false">
-
-    <!-- Common id property. -->
-    <id name="recordSetID" type="java.lang.Long" column="RecordSetID" unsaved-value="null">
-        <generator class="native"/>
-	</id>
-
-    <timestamp name="timestampModified" column="TimestampModified">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
-    </timestamp>
-
-    <property name="name" column="Name" update="true" type="java.lang.String" length="64">
-        <meta attribute="scope-field">protected</meta>
-    </property>
-
-    <property name="tableId" column="TableID" update="true" type="java.lang.Integer">
-        <meta attribute="scope-field">protected</meta>
-    </property>
+    <import class="RecordSetItem"/>
     
-    <property name="remarks" type="text" column="Remarks">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
-
-    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
-        <meta attribute="field-description"></meta>    
-    </property>
-
-
-    <!-- Associations -->
-
-    <!-- bi-directional one-to-many association to RecordSetItem -->
-    <set name="items" table="recordset_items" lazy="false">
-        <key column="RecordSetID"/>
-        <composite-element class="RecordSetItem">
-            <property name="recordId" not-null="true" unique="false"/>
-        </composite-element>
-    </set>
-    
-    <!-- many-to-one association to SpecifyUser -->
-    <many-to-one name="owner" class="edu.ku.brc.specify.datamodel.SpecifyUser" not-null="true" outer-join="true">
-    <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-        <column name="SpecifyUserID"/>
-    </many-to-one>   
-    
-</class>
+    <class name="edu.ku.brc.specify.datamodel.RecordSet" table="recordset" lazy="false">
+        
+        <!-- Common id property. -->
+        <id name="recordSetId" type="java.lang.Long" column="RecordSetID">
+            <generator class="native"/>
+        </id>
+        
+        <timestamp name="timestampModified" column="TimestampModified">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description">Versioning TimeStamp</meta>
+        </timestamp>
+        
+        <property name="name" column="Name" update="true" type="java.lang.String" length="64" not-null="true" >
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        
+        <property name="tableId" column="TableID" update="true" type="java.lang.Integer" not-null="true" >
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        
+        <property name="remarks" type="text" column="Remarks">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" not-null="true" length="50">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>
+        </property>
+        
+        <!-- Associations -->
+        
+        <!-- bi-directional one-to-many association to RecordSetItem -->
+        <set name="items" table="recordset_items" lazy="false">
+            <key column="RecordSetID"/>
+            <composite-element class="RecordSetItem">
+                <property name="RecordId" not-null="true" unique="false"/>
+            </composite-element>
+        </set>
+        
+        <!-- many-to-one association to User -->
+        <many-to-one name="owner" class="edu.ku.brc.specify.datamodel.SpecifyUser" not-null="true" outer-join="true">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>
+            <column name="SpecifyUserID"/>
+        </many-to-one>   
+        
+    </class>
 </hibernate-mapping>
