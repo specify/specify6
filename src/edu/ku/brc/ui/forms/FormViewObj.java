@@ -114,7 +114,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
     // Static Data Members
     protected static Object[]               formattedValues = new Object[2];
-    protected static SimpleDateFormat       scrDateFormat   = null;
     protected static ColorWrapper           viewFieldColor  = null;
     protected static CellConstraints        cc              = new CellConstraints();
 
@@ -139,6 +138,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected Object                        dataObj         = null;
     protected Set                           origDataSet     = null;
     protected Object[]                      singleItemArray = new Object[1];
+    protected SimpleDateFormat              scrDateFormat;
 
     protected JPanel                        mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
@@ -169,16 +169,13 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      * @param mvParent the mvParent mulitview
      * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param formValidator the form's formValidator
-     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
-     * @param isNewObject true means it is for creating a new object, false means it is editting one
+     * @param options the options needed for creating the form
      */
     public FormViewObj(final View          view,
                        final AltView       altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
-                       final boolean       createResultSetController,
-                       final boolean       createViewSwitcher,
-                       final boolean       isNewObject)
+                       final int           options)
     {
         this.view        = view;
         this.altView     = altView;
@@ -187,13 +184,18 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         businessRules = view.getBusinessRule();
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
+        
+        boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
+        boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
+        boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+        boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
+        
+        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
         setValidator(formValidator);
 
-        if (scrDateFormat == null)
-        {
-            scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
-        }
+        scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
@@ -341,7 +343,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
             } else if (altView.getMode() == AltView.CreationMode.Edit)
             {
-                if (mvParent.getMultiViewParent() == null)
+                if (mvParent.getMultiViewParent() == null && !hideSaveBtn)
                 {
                     addSaveBtn();
                     comps.add(saveBtn);
@@ -353,8 +355,11 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         // This here because the Seach mode shouldn't be combined with other modes
         if (altView.getMode() == AltView.CreationMode.Search)
         {
-            saveBtn = new JButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
-            comps.add(saveBtn);
+            if (!hideSaveBtn)
+            {
+                saveBtn = new JButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+                comps.add(saveBtn);
+            }
 
         }
 
@@ -919,17 +924,18 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 return;
             }
             
-            if (FormHelper.updateLastEdittedInfo(dataObj))
-            {
-                setDataIntoUI();
-            }
-
+            FormHelper.updateLastEdittedInfo(dataObj);
+            
             transaction = session.beginTransaction();
             session.saveOrUpdate(dataObj);
             transaction.commit();
             session.flush();
             log.debug("Session Saved[ and Flushed "+session.hashCode()+"]");
             
+
+            setDataIntoUI();
+
+
             formIsInNewDataMode = false;
             traverseToToSetAsNew(mvParent, false);
 
@@ -1285,6 +1291,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 if (rsController.getDelRecBtn() != null)
                 {
                     rsController.getDelRecBtn().setEnabled((businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0);
+                    rsController.getNewRecBtn().setEnabled(formIsInNewDataMode);
                 }
             }
 
@@ -1311,15 +1318,10 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 if (rsController.getDelRecBtn() != null)
                 {
                     rsController.getDelRecBtn().setEnabled(businessRules == null || businessRules.okToDelete(this.dataObj));
+                    rsController.getNewRecBtn().setEnabled(formIsInNewDataMode);
                 }
             }
         }
-        
-        // If we have a DraggableRecordIdentifier then see if we should set the Identity
-        /*if (draggableRecIdentifier != null && this.dataObj != null && businessRules != null)
-        {
-            businessRules.setObjectIdentity(this.dataObj, draggableRecIdentifier);
-        }*/
     }
 
     /* (non-Javadoc)
@@ -1380,7 +1382,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
-                    //System.out.println("Setting ["+fieldInfo.getName()+"] to enabled=false");
+                    //log.debug("Setting ["+fieldInfo.getName()+"] to enabled=false");
 
                 } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview)
                 {
@@ -1744,12 +1746,12 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         } else if (comp instanceof JTextArea)
         {
-            //System.out.println(name+" - "+comp.getPreferredSize()+comp.getSize());
+            //log.debug(name+" - "+comp.getPreferredSize()+comp.getSize());
             ((JTextArea)comp).setText(data == null ? "" : data.toString());
 
         } else if (comp instanceof JCheckBox)
         {
-            //System.out.println(name+" - "+comp.getPreferredSize()+comp.getSize());
+            //log.debug(name+" - "+comp.getPreferredSize()+comp.getSize());
             if (data != null)
             {
                 ((JCheckBox)comp).setSelected((data instanceof Boolean) ? ((Boolean)data).booleanValue() : data.toString().equalsIgnoreCase("true"));
@@ -1891,7 +1893,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public void setSession(final Session session)
     {
-        log.info(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
+        log.debug(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         this.session = session;
     }
 

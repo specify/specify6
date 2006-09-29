@@ -149,7 +149,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         {
             listener.loggedIn(databaseName, userName);
         }
-        this.setGlassPane(null);
+        //this.setGlassPane(null);
     }
 
     /* (non-Javadoc)

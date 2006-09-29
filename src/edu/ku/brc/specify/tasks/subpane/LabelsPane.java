@@ -219,30 +219,22 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         {
             try
             {
-                // 28594
                 String itemnum = "";
 
-                /* TEMPOARY
-                if ( recordSet == null)
-                {
-                    itemnum = JOptionPane.showInputDialog(this, getResourceString("AskCatalogNum"));
-                    if (itemnum == null)
-                    {
-                        itemnum = "28594";
-                    }
-                    itemnum = "= " + itemnum;
-                } else
+                if (recordSet != null)
                 {
                     itemnum = DBTableIdMgr.getInClause(recordSet);
                 }
-                */
-                itemnum = DBTableIdMgr.getInClause(recordSet);
+                
                 JasperReport jasperReport = (JasperReport)JRLoader.loadObject(compiledFile.getAbsoluteFile());
                 if (jasperReport != null)
                 {
 
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
-                    parameters.put("itemnum", itemnum);
+                    if (recordSet != null)
+                    {
+                        parameters.put("itemnum", itemnum);
+                    }
 
                     progressLabel.setText(getResourceString("JasperReportFilling"));
                     asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getConnection());

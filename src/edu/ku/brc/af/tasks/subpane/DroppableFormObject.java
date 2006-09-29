@@ -40,7 +40,6 @@ public class DroppableFormObject implements GhostDataAggregatable
     public DroppableFormObject(String viewSetName, int formId, Object data)
     {
         super();
-        // TODO Auto-generated constructor stub
         this.viewSetName = viewSetName;
         this.formId = formId;
         this.data = data;

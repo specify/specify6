@@ -109,8 +109,10 @@ public class LabelsTask extends BaseTask
     public LabelsTask()
     {
         super(LABELS, getResourceString(LABELS));
+        
         CommandDispatcher.register(LABELS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
+        CommandDispatcher.register("App", this);
     }
 
    /**
@@ -146,6 +148,10 @@ public class LabelsTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
+            
+            extendedNavBoxes.clear();
+            labelsList.clear();
+
 
             NavBox navBox = new NavBox(name);
             
@@ -162,12 +168,13 @@ public class LabelsTask extends BaseTask
                         if (pair.size() == 2)
                         {
                             params.put((String)pair.get(0), (String)pair.get(1));
-                            log.info("["+(String)pair.get(0)+"]["+(String)pair.get(1)+"]");
+                            //log.debug("["+(String)pair.get(0)+"]["+(String)pair.get(1)+"]");
                         }
                     }
                 }
                 params.put("title", ap.getDescription());
                 params.put("file", ap.getName());
+                //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
                 
                 commands.add(new TaskCommandDef(ap.getDescription(), name, params));
             }
@@ -282,7 +289,7 @@ public class LabelsTask extends BaseTask
 
     /**
      * Displays UI that asks the user to select a predefined label.
-     * @param tableId
+     * @param tableId the table id
      * @return returns the selected RecordSet or null
      */
     protected RecordSet askForRecordSet(final int tableId)
@@ -301,12 +308,12 @@ public class LabelsTask extends BaseTask
     }
 
     /**
-     * Single place to convert the data to a Map
+     * Single place to convert the data to a Map.
      * @param data the data in a nbi
      * @return a Map<String, String>
      */
     @SuppressWarnings("unchecked")
-    protected Map<String, String> convertDataToMap(Object data)
+    protected Map<String, String> convertDataToMap(final Object data)
     {
         if (data instanceof Map)
         {
@@ -319,9 +326,10 @@ public class LabelsTask extends BaseTask
      * Counts up how many labels match the same table id as the RecordSet and sets
      * oneNbi to the non-null match which means if there is only one then it points to it.
      * @param tableId the RecordSet's Table Id
+     * @param needsRecordSet indicates we should ONLY include those that require a RecordSet 
      * @return the count of matches
      */
-    protected int countLabelsWithSimilarTableIds(final int tableId)
+    protected int countLabelsWithSimilarTableIds(final int tableId, final boolean needsRecordSet)
     {
         oneNbi = null;
         int count = 0;
@@ -330,9 +338,11 @@ public class LabelsTask extends BaseTask
             Object data = nbi.getData();
             if (data != null)
             {
-                Map<String, String> attrs = convertDataToMap(data);
-                String tableIDStr = attrs.get("tableid");
-                if (StringUtils.isNumeric(tableIDStr))
+                Map<String, String> attrs      = convertDataToMap(data);
+                String              tableIDStr = attrs.get("tableid");
+                boolean             needsRS    = getNeedsRecordSet(attrs.get("reqrs"));
+                
+                if (StringUtils.isNumeric(tableIDStr) && (!needsRecordSet ||  needsRS))
                 {
                     if (Integer.parseInt(tableIDStr) == tableId)
                     {
@@ -362,7 +372,7 @@ public class LabelsTask extends BaseTask
             RecordSet rs = (RecordSet)data;
 
             String fileName = null;
-            if (countLabelsWithSimilarTableIds(rs.getTableId()) > 1)
+            if (countLabelsWithSimilarTableIds(rs.getTableId(), true) > 1) // only Count the ones that require data
             {
                 fileName = askForLabelName();
             } else
@@ -485,8 +495,28 @@ public class LabelsTask extends BaseTask
             log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
             
             createLabelFromSelectedRecordSet(srcObj);
+            
+        } else if (cmdAction.getType().equals("App") && cmdAction.getAction().equals("Restart"))
+        {
+            isInitialized = false;
+            this.initialize();
         }
 
+    }
+    
+    /**
+     * Returns the boolean value of "reqrs" from the metaData and true if it doesn't exist.
+     * @param needsRSStr the string value of the map
+     * @return true or false
+     */
+    protected boolean getNeedsRecordSet(final String needsRSStr)
+    {
+        boolean needsRS = true;
+        if (StringUtils.isNotEmpty(needsRSStr) && StringUtils.isAlpha(needsRSStr))
+        {
+            needsRS = Boolean.parseBoolean(needsRSStr);
+        } 
+        return needsRS;
     }
 
     //--------------------------------------------------------------
@@ -521,6 +551,8 @@ public class LabelsTask extends BaseTask
 
         public void actionPerformed(ActionEvent e)
         {
+            boolean needsRecordSets = true;
+            
             Object data = null;
             if (e instanceof DataActionEvent)
             {
@@ -535,12 +567,21 @@ public class LabelsTask extends BaseTask
                         return;
                     }
                 }
+                
+                if (data instanceof Map<?,?>)
+                {
+                    needsRecordSets = getNeedsRecordSet(convertDataToMap(data).get("reqrs"));
+                }
             }
 
-            if (data == null || data instanceof Map)
+            if (needsRecordSets && (data == null || data instanceof Map))
             {
                 ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
-                if (dlg.hasRecordSets())
+                if (dlg.getRecordSets().size() == 1)
+                {
+                    data = dlg.getRecordSets().get(0);
+                    
+                } else if (dlg.hasRecordSets() && dlg.getRecordSets().size() > 1)
                 {
                     dlg.setVisible(true); // modal (waits for answer here)
                     data = dlg.getSelectedRecordSet();
@@ -555,7 +596,11 @@ public class LabelsTask extends BaseTask
                 }
             }
 
-            if (data instanceof RecordSet)
+            if (!needsRecordSets)
+            {
+                doLabels(nameStr, titleStr, null);
+                
+            } else if (data instanceof RecordSet)
             {
                 doLabels(nameStr, titleStr, (RecordSet)data);
 

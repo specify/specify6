@@ -191,26 +191,32 @@ public class AccessionBusRule implements BusinessRulesIFace
         if (dataObj instanceof Accession)
         {
             Accession accession = (Accession)dataObj;
-            
-            // Doing "accession.getCollectionObjects().size() == 0"
-            // potentially is REALLY slow if a lot of CollectionObjects are attached 
-            // to an Accessions
-            // So instead we will use straight SQL
-            try
+            if (accession.getAccessionId() != null)
             {
-                Statement stmt = DBConnection.getConnection().createStatement();
-                ResultSet rs = stmt.executeQuery("select count(*) from collectionobject where AccessionID = "+accession.getAccessionId());
-                if (rs.first())
-                {
-                    return rs.getInt(1) == 0;
-                }
-                rs.close();
-                stmt.close();
                 
-            } catch (Exception ex)
+                // Doing "accession.getCollectionObjects().size() == 0"
+                // potentially is REALLY slow if a lot of CollectionObjects are attached 
+                // to an Accessions
+                // So instead we will use straight SQL
+                try
+                {
+                    Statement stmt = DBConnection.getConnection().createStatement();
+                    ResultSet rs = stmt.executeQuery("select count(*) from collectionobject where AccessionID = "+accession.getAccessionId());
+                    if (rs.first())
+                    {
+                        return rs.getInt(1) == 0;
+                    }
+                    rs.close();
+                    stmt.close();
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    throw new RuntimeException(ex);
+                }
+            } else
             {
-                log.error(ex);
-                throw new RuntimeException(ex);
+                return false;
             }
         }        
         throw new RuntimeException("DataObj is not an Accession ["+dataObj.getClass().getSimpleName()+"]");

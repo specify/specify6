@@ -61,7 +61,12 @@ import edu.ku.brc.ui.validation.ValidationListener;
 @SuppressWarnings("serial")
 public class MultiView extends JPanel implements ValidationListener, DataChangeListener
 {
-
+    // These are the configuration Options for a View
+    public static final int NO_OPTIONS           = 0;
+    public static final int RESULTSET_CONTROLLER = 1;
+    public static final int VIEW_SWITCHER        = 2;
+    public static final int IS_NEW_OBJECT        = 4;
+    public static final int HIDE_SAVE_BTN        = 8;
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -81,9 +86,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
     protected boolean                      dataHasChanged  = false;    
 
-    protected boolean                      createResultSetController;
-    protected boolean                      createViewSwitcher;
-    protected boolean                      isNewObject;
+    protected int                          createOptions   = 0;
 
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
 
@@ -99,25 +102,19 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param mvParent parent of this MultiView the root MultiView is null
      * @param view the view to create for
      * @param createWithMode how the form should be created (Noe, Edit or View mode)
-     * @param createResultSetController indicates that a ResultSet Controller should be created
-     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
-     * @param isNewObject true means it is for creating a new object, false means it is editting one
+     * @param options the options needed for creating the form
      */
     public MultiView(final MultiView mvParent,
-                     final View view,
+                     final View      view,
                      final AltView.CreationMode createWithMode,
-                     final boolean createResultSetController,
-                     final boolean createViewSwitcher,
-                     final boolean isNewObject)
+                     final int       options)
     {
         setLayout(cardLayout);
 
-        this.mvParent                  = mvParent;
-        this.view                      = view;
-        this.createWithMode            = createWithMode;
-        this.createResultSetController = createResultSetController;
-        this.createViewSwitcher        = createViewSwitcher;
-        this.isNewObject                = isNewObject;
+        this.mvParent       = mvParent;
+        this.view           = view;
+        this.createWithMode = createWithMode;
+        this.createOptions  = options;
 
         specialEditView = view.isSpecialViewEdit();
 
@@ -309,10 +306,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         if (!dataHasChanged)
         {
-            log.info("MV ---------- "+hashCode());
+            //log.info("MV ---------- "+hashCode());
             for (FormValidator validator : formValidators)
             {
-                log.info("FV1 ---------- "+validator.hashCode());
+                //log.info("FV1 ---------- "+validator.hashCode());
                 if (validator.hasChanged())
                 {
                     return true;
@@ -325,7 +322,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 FormValidator validator = viewable.getValidator();
                 if (validator != null)
                 {
-                    log.info("FV2 ---------- "+validator.hashCode());
+                    //log.info("FV2 ---------- "+validator.hashCode());
                     if (validator.hasChanged())
                     {
                         return true;
@@ -364,7 +361,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
         // this call parents the viewable to the multiview
-        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createResultSetController, createViewSwitcher, isNewObject);
+        //Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions | (editable ? MultiView.RESULTSET_CONTROLLER : 0));
+        //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
+        //MultiView.printCreateOptions("createOptions "+view.getName(), createOptions);
+        //MultiView.printCreateOptions("createDefaultViewable "+view.getName(), adjustedOptions);
+        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions);
         viewable.setParentDataObj(parentDataObj);
 
         // Add Viewable to the CardLayout
@@ -494,7 +495,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode = altView.getMode();
-                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createResultSetController, createViewSwitcher, isNewObject);
+                    
+                    //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
+                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions);
                     viewable.setSession(session);
                     if (add(viewable, altViewName))
                     {
@@ -758,6 +761,34 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         thisObj           = null;
         carryForwardSetup = null;
+    }
+    
+    /**
+     * Helper method to see if an option is turned on.
+     * @param options the range of options that can be turned on
+     * @param opt the actual option that may be turned on
+     * @return true if the opt bit is on
+     */
+    public static boolean isOptionOn(final int options, final int opt)
+    {
+
+        return (options & opt) == opt;
+    }
+    
+    /**
+     * Debug Helper method
+     * @param msg debug string
+     * @param options the options to be printed
+     */
+    public static void printCreateOptions(final String msg, final int options)
+    {
+        log.info(" ");
+        log.info(msg);
+        log.info("RESULTSET_CONTROLLER ["+((options & MultiView.RESULTSET_CONTROLLER) == MultiView.RESULTSET_CONTROLLER ? "true" : "false")+"]");
+        log.info("IS_NEW_OBJECT        ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
+        log.info("VIEW_SWITCHER        ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
+        log.info("HIDE_SAVE_BTN        ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
+        log.info(" ");        
     }
 
     //-----------------------------------------------------

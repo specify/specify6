@@ -618,20 +618,20 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 setupCurrentColObjDef(catalogSeries, startingOver);
             }
             
-            log.info("Adding AppResourceDefs from Catalog Series and ColObjDefs");
+            log.debug("Adding AppResourceDefs from Catalog Series and ColObjDefs");
             for (CatalogSeries cs : catalogSeries)
             {
-                log.info("CatSeries["+cs.getSeriesName()+"]");
+                log.debug("CatSeries["+cs.getSeriesName()+"]");
                 for (CollectionObjDef cod : cs.getCollectionObjDefItems())
                 {
-                    log.info("  ColObjDef["+cod.getName()+"]");
+                    log.debug("  ColObjDef["+cod.getName()+"]");
                     
                     disciplineHash.put(cod.getDiscipline(), cod.getDiscipline());
                     
                     AppResourceDefault appResource = find(appResDefList, user, cs, cod);
                     if (appResource != null)
                     {
-                        log.info("Adding1 "+getAppResDefAsString(appResource));
+                        log.debug("Adding1 "+getAppResDefAsString(appResource));
                         appResourceList.add(appResource);
                         
                     }
@@ -642,7 +642,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Add Backstop for Discipline and User Type
         for (String discipline : disciplineHash.keySet())
         {
-            log.info("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
+            log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
 
             File dir = XMLHelper.getConfigDir(discipline + File.separator + userType);
             if (dir.exists())
@@ -650,28 +650,28 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 AppResourceDefault appResource = createAppResourceDefFromDir(dir);
                 appResource.setDisciplineType(discipline);
                 appResource.setUserType(userType);
-                //log.info("Adding2 "+getAppResDefAsString(appResource));
+                //log.debug("Adding2 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
             } else
             {
-                log.info("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
+                log.debug("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
             }
         }
 
         // Add Backstop for just the Discipline
         for (String discipline : disciplineHash.keySet())
         {
-            log.info("***** Trying add Backstop for ["+discipline+"]");
+            log.debug("***** Trying add Backstop for ["+discipline+"]");
             File dir = XMLHelper.getConfigDir(discipline);
             if (dir.exists())
             {
                 AppResourceDefault appResource = createAppResourceDefFromDir(dir);
                 appResource.setDisciplineType(discipline);
-                //log.info("Adding3 "+getAppResDefAsString(appResource));
+                //log.debug("Adding3 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
             } else
             {
-                log.info("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
+                log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
             }
         }
 
@@ -690,7 +690,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected List<ViewSet> getViewSetList(final AppResourceDefault appResDef)
     {
-        log.info("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
+        log.debug("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
         
         List<ViewSet> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
         if (viewSetList == null)
@@ -728,7 +728,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         boolean fndColObjDef = false;
         for (AppResourceDefault appResDef : appResourceList)
         {
-            log.info("Looking["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
+            log.debug("Looking["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
             
             if (appResDef.getCollectionObjDef() != null && appResDef.getCollectionObjDef() == colObjDef)
             {
@@ -758,7 +758,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 String dType = appResDef.getDisciplineType();
                 String uType = appResDef.getUserType();
 
-                log.info("appResDef's DisciplineType["+dType+"] appResDef's UserType["+uType+"] User's userType["+userType+"]");
+                log.debug("appResDef's DisciplineType["+dType+"] appResDef's UserType["+uType+"] User's userType["+userType+"]");
                 
                 if ((dType != null && disciplineName != null && dType.equals(disciplineName) || 
                     (dType == null || disciplineName == null)) && (uType == null || uType.equals(userType)) ||
@@ -796,11 +796,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         for (AppResourceDefault appResDef : appResourceList)
         {
-            log.info("getView "+getAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
+            log.debug("getView "+getAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
 
             for (ViewSet vs : getViewSetList(appResDef))
             {
-                log.info("VS  ["+vs.getName()+"]["+viewSetName+"]");
+                log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
 
                 if (vs.getName().equals(viewSetName))
                 {
@@ -880,7 +880,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (AppResourceIFace appRes : appResDef.getAppResources())
             {
-                //log.info("["+appRes.getMimeType()+"]["+mimeType+"]");
+                //log.debug("["+appRes.getMimeType()+"]["+mimeType+"]");
                 if (appRes.getMimeType().equals(mimeType))
                 {
                     list.add(appRes);
@@ -977,7 +977,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
                                 appRes.setFileName(resFile.getAbsolutePath());
 
-
+                                log.debug("Adding ["+name+"] ["+resFile.getAbsolutePath()+"]");
+                                
                                 appResources.put(name, appRes);
 
                             } else

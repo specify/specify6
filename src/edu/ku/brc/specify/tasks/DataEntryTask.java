@@ -17,6 +17,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
@@ -35,6 +36,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
+import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -42,7 +44,6 @@ import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -51,9 +52,14 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.dnd.DataActionEvent;
+import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -68,7 +74,9 @@ public class DataEntryTask extends BaseTask
 {
     private static final Logger log = Logger.getLogger(DataEntryTask.class);
 
-    public static final String DATA_ENTRY = "Data_Entry";
+    public static final String     DATA_ENTRY   = "Data_Entry";
+    public static final DataFlavor DATAENTRY_FLAVOR = new DataFlavor(DataEntryTask.class, "Data_Entry");
+    
     protected static Hashtable<String, ImageIcon> iconForFormClass = new Hashtable<String, ImageIcon>();
 
     // Data Members
@@ -83,6 +91,7 @@ public class DataEntryTask extends BaseTask
     public DataEntryTask()
     {
         super(DATA_ENTRY, getResourceString(DATA_ENTRY));
+        
         CommandDispatcher.register(DATA_ENTRY, this);
         CommandDispatcher.register("App", this);
         
@@ -129,12 +138,12 @@ public class DataEntryTask extends BaseTask
      * @param data the data to fill in 
      * @param isNewForm indicates that it is a "new" form for entering in new data
      */
-    public void openView(final Taskable task, 
-                         final String   viewSetName, 
-                         final String   viewName, 
-                         final String   mode, 
+    public void openView(final Taskable         task, 
+                         final String           viewSetName, 
+                         final String           viewName, 
+                         final String           mode, 
                          final FormDataObjIFace data,
-                         final boolean  isNewForm)
+                         final boolean          isNewForm)
     {
         View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         
@@ -161,7 +170,9 @@ public class DataEntryTask extends BaseTask
         }
         
         FormPane formPane = new FormPane(HibernateUtil.getNewSession(), 
-                                         view.getName(), task, viewSetName, viewName, mode, dataObj, false, isNewForm);
+                                         view.getName(), task, viewSetName, viewName, mode, dataObj, 
+                                         isNewForm ? (MultiView.IS_NEW_OBJECT |  MultiView.RESULTSET_CONTROLLER): 0);
+        
         formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
         
         
@@ -193,7 +204,14 @@ public class DataEntryTask extends BaseTask
             List data = query.list();
             if (data != null && data.size() > 0)
             {
-                FormPane formPane = new FormPane(session, view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0), true, false);
+                FormPane formPane = new FormPane(session, 
+                                                 view.getName(), 
+                                                 task, 
+                                                 view.getViewSetName(), 
+                                                 view.getName(), 
+                                                 mode, 
+                                                 data.get(0), 
+                                                 MultiView.VIEW_SWITCHER);
                 formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
 
             } else
@@ -209,8 +227,11 @@ public class DataEntryTask extends BaseTask
     }
 
     /**
-     * Create a form for a recordset
+     * Create a form for a recordset.
+     * @param task the task it belongs to
+     * @param name the name
      * @param recordSet the record to create a form for
+     * @return the FormPane
      */
     protected static FormPane createFormFor(final Taskable task, final String name, final RecordSet recordSet)
     {
@@ -230,11 +251,10 @@ public class DataEntryTask extends BaseTask
         
         View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
         
-        FormPane formPane = new FormPane(session, name, task, view, null, query.list(), true, false);
+        FormPane formPane = new FormPane(session, name, task, view, null, query.list(), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
         formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
         
         return formPane;
-
     }
     
     /**
@@ -266,21 +286,25 @@ public class DataEntryTask extends BaseTask
                     
                     ShowViewAction sva = new ShowViewAction(this, viewset, view);
                     
-                    viewsNavBox.add(NavBox.createBtnWithTT(nameStr, iconname, toolTip, IconManager.IconSize.Std16, sva));
+                    NavBoxItemIFace nbi = NavBox.createBtnWithTT(nameStr, iconname, toolTip, IconManager.IconSize.Std16, sva);
+                    if (nbi instanceof RolloverCommand)
+                    {
+                        RolloverCommand roc = (RolloverCommand)nbi;
+                        // When Being Dragged
+                        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                        roc.addDragDataFlavor(DATAENTRY_FLAVOR);
+                
+                        // When something is dropped on it
+                        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+                    }
+
+                    viewsNavBox.add(nbi);
                 }
     
             } catch (Exception ex)
             {
                 log.error(ex);
             }
-    
-            //navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
-            /*navBox.add(NavBox.createBtn("Specimen", "ColObj", IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn("Locality", "Locality", IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
-            */
-
         }
     }
 
@@ -309,7 +333,7 @@ public class DataEntryTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        starterPane = new SimpleDescPane(title, this, "This is the Data Entry Pane");
+        starterPane = new DroppableFormRecordSetAccepter(title, this, "This is the Data Entry Pane");
         return starterPane;
     }
 
@@ -345,32 +369,6 @@ public class DataEntryTask extends BaseTask
         return list;
 
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#installPrefs()
-     */
-    public void installPrefs()
-    {
-       /*AppPreferences appPrefs = AppPreferences;
-
-       String sectionName = appendChildPrefName("UserInterface", "Formatting", "name");
-       String sectionName = appPrefs.get("", null);
-       if (sectionName == null)
-       {
-
-       }
-
-
-        */
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#removePrefs()
-     */
-    public void removePrefs()
-    {
-
-    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
@@ -384,6 +382,9 @@ public class DataEntryTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+     */
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.getAction().equals("Edit"))
@@ -451,7 +452,49 @@ public class DataEntryTask extends BaseTask
 
         public void actionPerformed(ActionEvent e)
         {
+            if (e instanceof DataActionEvent)
+            {
+                DataActionEvent dae = (DataActionEvent)e;
+                Object daeData = dae.getData();
+                if (daeData != null && daeData instanceof RecordSet)
+                {
+                    SubPaneMgr.getInstance().addPane(DataEntryTask.createFormFor(task, "ZZZZ", (RecordSet)daeData));
+                    return;
+                }
+            }
             ((DataEntryTask)task).openView(task, viewSetName, viewName, "edit", null, true);
+
         }
     }
+    
+    // Class for accepting RecordSet Drops
+    class DroppableFormRecordSetAccepter extends FormPane
+    {
+       
+        public DroppableFormRecordSetAccepter(final String   name, 
+                                              final Taskable task,
+                                              final String   desc)
+        {
+            super(null, name, task, desc);
+            
+            dropFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
+            this.createMouseInputAdapter();
+            this.icon = IconManager.getIcon(DATA_ENTRY, IconManager.IconSize.Std16);
+        }
+
+        public void doAction(GhostActionable src)
+        {
+            Object srcData = src.getData();
+            if (srcData instanceof RecordSet)
+            {
+                addSubPaneToMgr(createFormFor(task, "XXXX", (RecordSet)srcData));
+            }
+        }
+        
+        public void doCommand(CommandAction cmdAction)
+        {
+            // nothing going on for now (should probably be removed)
+        }
+    }
+    
 }

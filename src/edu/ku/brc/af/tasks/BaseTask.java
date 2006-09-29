@@ -54,6 +54,7 @@ import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * Abstract class to provide a base level of functionality for implementing a task.
@@ -349,7 +350,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
         if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
         {
-            recentFormPane.createForm(viewsetName, viewName, null, data, true, false);
+            recentFormPane.createForm(viewsetName, viewName, null, data, MultiView.VIEW_SWITCHER); // not new data object
             fp = recentFormPane;
 
         } else
@@ -362,7 +363,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
             } else
             {
                 recentFormPane = new FormPane(HibernateUtil.getNewSession(),
-                                              name, this, viewsetName, viewName, mode, data, true, false);
+                                              name, this, viewsetName, viewName, mode, data, MultiView.VIEW_SWITCHER); // not new data object
                 addSubPaneToMgr(recentFormPane);
                 fp = recentFormPane;
             }
@@ -452,7 +453,14 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public void initialize()
     {
-        isInitialized = true;
+        if (!isInitialized)
+        {
+            isInitialized = true;
+            
+            // IMportant for reinitializing
+            navBoxes.clear();
+            commands.clear();
+        }
     }
 
     /*
@@ -462,6 +470,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
+        
         return navBoxes;
     }
 

@@ -95,8 +95,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      * @param closeBtnTitle the title of close btn
      * @param className the name of the class to be created from the selected results
      * @param idFieldName the name of the field in the class that is the primary key which is filled in from the search table id
-     * @param isNewObject true means it is for creating a new object, false means it is editting one
-     * @param showSwitcher whether it should show the "Switch mode" UI combobox
+     * @param options the options needed for creating the form
      */
     public ViewBasedDisplayPanel(final Window  parent,
                                  final String  viewSetName,
@@ -106,15 +105,14 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                                  final String  className,
                                  final String  idFieldName,
                                  final boolean isEdit,
-                                 final boolean isNewObject,
-                                 final boolean showSwitcher)
+                                 final int     options)
     {
         this.parent      = parent;
         this.className   = className;
         this.idFieldName = idFieldName;
         this.displayName = displayName;
 
-        createUI(viewSetName, viewName, closeBtnTitle, isEdit, isNewObject, showSwitcher);
+        createUI(viewSetName, viewName, closeBtnTitle, isEdit, options);
     }
 
     /**
@@ -123,15 +121,13 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      * @param viewName the view name to use
      * @param closeBtnTitle the title of close btn
      * @param isEdit true is in edit mode, false is in view mode
-     * @param isNewObject true means it is for creating a new object, false means it is editting one
-     * @param showSwitcher whether it should show the "Switch mode" UI combobox
+     * @param options the options needed for creating the form
      */
     protected void createUI(final String viewSetName,
                             final String viewName,
                             final String  closeBtnTitle,
                             final boolean isEdit,
-                            final boolean isNewObject,
-                            final boolean showSwitcher)
+                            final int     options)
     {
 
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
@@ -140,9 +136,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             multiView = new MultiView(null, 
                                       formView, 
                                       isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View,
-                                      false, 
-                                      showSwitcher,
-                                      isNewObject);
+                                      options);
 
         } else
         {

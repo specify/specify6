@@ -53,17 +53,15 @@ public interface ViewBasedDialogFactoryIFace
      * @param frameTitle the title on the frame or dialog
      * @param closeBtnTitle the title of close btn
      * @param isEdit whether it is a view or edit form
-     * @param showSwitcher whether it should show the "Switch mode" UI combobox
+     * @param options the options needed for creating the form
      * @param type the type of frame (Frame or Dialog) model or non-model
-     * @param isNewObject true means it is for creating a new object, false means it is editting one
      * @return the object (Frame) displaying the form
      */
     public ViewBasedDisplayIFace createDisplay(String      name,
                                                String      frameTitle,
                                                String      closeBtnTitle,
                                                boolean     isEdit,
-                                               boolean     showSwitcher,
-                                               boolean     isNewObject,
+                                               int         options,
                                                FRAME_TYPE  type);
 
 }

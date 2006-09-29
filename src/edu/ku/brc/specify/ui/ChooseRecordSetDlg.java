@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -66,10 +67,10 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
 
     // Data Members
-    protected JButton        cancelBtn;
-    protected JButton        okBtn;
-    protected JList          list;
-    protected java.util.List recordSets;
+    protected JButton         cancelBtn;
+    protected JButton         okBtn;
+    protected JList           list;
+    protected List<RecordSet> recordSets;
 
     public ChooseRecordSetDlg(final int tableId) throws HeadlessException
     {
@@ -84,6 +85,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
      *
      *
      */
+    @SuppressWarnings("unchecked")
     protected void createUI(final int tableId)
     {
         JPanel panel = new JPanel(new BorderLayout());
@@ -96,18 +98,18 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
             if (tableId == -1)
             {
                 Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
-                recordSets = criteria.list();
+                recordSets = criteria.list(); // unchcked warning here
             } else
             {
                 Query query = HibernateUtil.getCurrentSession().createQuery("from recordset in class RecordSet where recordset.tableId = " + tableId);
-                recordSets = query.list();
+                recordSets = query.list(); // unchcked warning here
             }
             HibernateUtil.closeSession();
 
             ListModel listModel = new AbstractListModel()
             {
                 public int getSize() { return recordSets.size(); }
-                public Object getElementAt(int index) { return ((RecordSet)recordSets.get(index)).getName(); }
+                public Object getElementAt(int index) { return recordSets.get(index).getName(); }
             };
 
             list = new JList(listModel);
@@ -162,6 +164,14 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     public boolean hasRecordSets()
     {
         return list.getModel().getSize() > 0;
+    }
+
+    /**
+     * @return the List of RecordSets
+     */
+    public List<RecordSet> getRecordSets()
+    {
+        return recordSets;
     }
 
     /**

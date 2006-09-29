@@ -66,6 +66,7 @@ import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
@@ -226,7 +227,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, dataMap, false);
+            form = ViewFactory.createFormView(null, formView, null, dataMap, MultiView.NO_OPTIONS);
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else

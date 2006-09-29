@@ -168,7 +168,13 @@ public class JAutoCompTextField extends JTextField
                             setSelectionEnd(getText().length());
                         }
                         return;
+                    } else if(ev.getKeyCode() == KeyEvent.VK_DELETE)
+                    {
+                        foundMatch = false;
+                        hasChanged = true;
+                        return;
                     }
+                    System.out.println("["+ev.getKeyCode()+"]["+KeyEvent.VK_DELETE+"]");
                     
                     caretPos = getCaretPosition();
                     String text = "";

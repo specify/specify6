@@ -491,7 +491,7 @@ public class InfoRequestTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        recentFormPane = new FormPane(null, name, this);
+        recentFormPane = new FormPane(null, name, this, "");
         return recentFormPane;
     }
     

@@ -32,6 +32,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 
@@ -68,6 +69,8 @@ import edu.ku.brc.ui.forms.FormHelper;
  */
 public class RecordSetTask extends BaseTask
 {
+    private static final Logger log = Logger.getLogger(RecordSetTask.class);
+            
     // Static Data Members
     public static final String RECORD_SET = "Record_Set";
     public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, "RECORD_SET");
@@ -82,7 +85,9 @@ public class RecordSetTask extends BaseTask
     public RecordSetTask()
     {
         super(RECORD_SET, getResourceString(RECORD_SET));
+        
         CommandDispatcher.register(RECORD_SET, this);
+        CommandDispatcher.register("App", this);
     }
 
 
@@ -354,40 +359,56 @@ public class RecordSetTask extends BaseTask
             {
                 RecordSet srcRecordSet = (RecordSet)srcObj;
                 RecordSet dstRecordSet = (RecordSet)dstObj;
-                int oldSize = dstRecordSet.getItems().size();
-                Vector<RecordSetItem> dstList  = new Vector<RecordSetItem>(dstRecordSet.getItems());
-                System.err.println("Source:");
-                for (RecordSetItem rsi : srcRecordSet.getItems())
+                if (srcRecordSet.getTableId() == dstRecordSet.getTableId())
                 {
-                    System.err.print(" "+rsi.getRecordId());
-                }                
-                System.err.println("\nDest:");
-                for (RecordSetItem rsi : dstRecordSet.getItems())
-                {
-                    System.err.print(" "+rsi.getRecordId());
-                }    
-                System.err.println("");
-                for (RecordSetItem rsi : srcRecordSet.getItems())
-                {
-                    if (Collections.binarySearch(dstList, rsi) < 0)
+                    int oldSize = dstRecordSet.getItems().size();
+                    Vector<RecordSetItem> dstList  = new Vector<RecordSetItem>(dstRecordSet.getItems());
+                    log.debug("Source:");
+                    for (RecordSetItem rsi : srcRecordSet.getItems())
                     {
-                        RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
-                        dstRecordSet.getItems().add(newrsi);
+                        log.debug(" "+rsi.getRecordId());
+                    }                
+                    log.debug("\nDest:");
+                    for (RecordSetItem rsi : dstRecordSet.getItems())
+                    {
+                        log.debug(" "+rsi.getRecordId());
+                    }    
+                    log.debug("");
+                    for (RecordSetItem rsi : srcRecordSet.getItems())
+                    {
+                        if (Collections.binarySearch(dstList, rsi) < 0)
+                        {
+                            RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
+                            dstRecordSet.getItems().add(newrsi);
+                        }
                     }
-                }
-                System.err.println("");
-                System.err.println("New Dest:");
-                for (RecordSetItem rsi : dstRecordSet.getItems())
+                    log.debug("");
+                    log.debug("New Dest:");
+                    for (RecordSetItem rsi : dstRecordSet.getItems())
+                    {
+                        log.debug(" "+rsi.getRecordId());
+                    }                
+                    log.debug("");
+                    
+                    if (dstRecordSet.getItems().size() > oldSize)
+                    {
+                        persistRecordSet(dstRecordSet);
+                    }
+                } else
                 {
-                    System.err.print(" "+rsi.getRecordId());
-                }                
-                System.err.println("");
-                
-                if (dstRecordSet.getItems().size() > oldSize)
-                {
-                    persistRecordSet(dstRecordSet);
+                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.lookupInfoById(srcRecordSet.getTableId());
+                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.lookupInfoById(dstRecordSet.getTableId());
+                    JOptionPane.showMessageDialog(null, 
+                        String.format(getResourceString("RECORDSET_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
+                            getResourceString("Error"), 
+                            JOptionPane.ERROR_MESSAGE);
+
                 }
             }
+        } else if (cmdAction.getType().equals("App") && cmdAction.getAction().equals("Restart"))
+        {
+            isInitialized = false;
+            this.initialize();
         }
     }
     
@@ -415,7 +436,7 @@ public class RecordSetTask extends BaseTask
         {
             Object src = e.getSource();
             
-            System.err.println(src.hashCode()+"  "+ro.hashCode());
+            log.debug(src.hashCode()+"  "+ro.hashCode());
             
             if (e instanceof DataActionEvent)
             {
@@ -430,6 +451,10 @@ public class RecordSetTask extends BaseTask
 
     }
 
+    /**
+     * @author rods
+     *
+     */
     class DroppableNavBox extends NavBox implements GhostActionable
     {
         // DnD

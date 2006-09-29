@@ -50,6 +50,7 @@ import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsHitsCache;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
@@ -176,7 +177,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         formView = AppContextMgr.getInstance().getView(name, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, dataMap, false);
+            form = ViewFactory.createFormView(null, formView, null, dataMap, MultiView.NO_OPTIONS);
             add(form.getUIComponent(), BorderLayout.CENTER);
             //getter = new DataGetterForObj();
 

@@ -162,8 +162,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                                                                    frameTitle,
                                                                    getResourceString("Close"),
                                                                    false,  // false means View mode
-                                                                   false,  // false means don't show switcher
-                                                                   false,
+                                                                   MultiView.NO_OPTIONS,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
         frame.setCloseListener(this);
         frame.setData(dataObj);

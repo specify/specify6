@@ -46,8 +46,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
      * @param closeBtnTitle the title of close btn
      * @param className the name of the class to be created from the selected results
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
-     * @param isNewObject true means it is for creating a new object, false means it is editting one
-     * @param showSwitcher whether it should show the "Switch mode" UI combobox
+     * @param options the options needed for creating the form
      */
     public ViewBasedDisplayFrame(final String viewSetName,
                                  final String viewName,
@@ -57,8 +56,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
                                  final String className,
                                  final String idFieldName,
                                  final boolean isEdit,
-                                 final boolean isNewObject,
-                                 final boolean showSwitcher)
+                                 final int     options)
     {
         this.setTitle(title);
 
@@ -70,8 +68,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
                                               className, 
                                               idFieldName, 
                                               isEdit, 
-                                              isNewObject,
-                                              showSwitcher);
+                                              options);
 
         setContentPane(mainPanel);
         pack();

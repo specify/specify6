@@ -26,11 +26,15 @@ import java.util.List;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
- * A Task SubPane that can have forms (DroppableFormObject) dropped onto it so it can display a form. This also dislays a text string in the middle of the ane.
+ * A Task SubPane that can have forms (DroppableFormObject) dropped onto it so it can display a form. 
+ * This also dislays a text string in the middle of the ane.
  *
  * @code_status Complete
  * 
@@ -38,7 +42,7 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
  *
  */
 @SuppressWarnings("serial")
-public abstract class DroppableTaskPane extends BaseSubPane implements GhostActionable
+public abstract class DroppableTaskPane extends BaseSubPane implements GhostActionable, CommandListener
 {
     // Static Data Members
     public static final DataFlavor DROPPABLE_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "DroppablePane");
@@ -48,16 +52,19 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     
     // DnD
     protected List<DataFlavor>       dropFlavors         = new ArrayList<DataFlavor>(); 
+    protected GhostMouseInputAdapter  mouseDropAdapter = null;
 
     /**
      * Constructor.
      * @param name the name of the subpane
      * @param task the owning task
+     * @param desc string displayed in th center of the pane
      */
     public DroppableTaskPane(final String name, 
-                             final Taskable task)
+                             final Taskable task,
+                             final String   desc)
     {
-        this(null, name, task);
+        this(null, name, task, desc);
     }
     
     /**
@@ -65,12 +72,19 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      * @param session the DB session to use
      * @param name the name of the subpane
      * @param task the owning task
+     * @param desc string displayed in th center of the pane
      */
     public DroppableTaskPane(final Session session,
                              final String name, 
-                             final Taskable task)
+                             final Taskable task,
+                             final String   desc)
     {
         super(session, name, task);
+        this.desc = desc;
+        //this.progressLabel.setText(desc);
+        //this.progressBar.setIndeterminate(false);
+        //remove(this.progressBar);
+        removeAll();
     }
     
     /* (non-Javadoc)
@@ -90,6 +104,11 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
         }
 
     }
+    
+    //-----------------------------------------------
+    // GhostActionable Interface
+    //-----------------------------------------------
+    public abstract void doCommand(CommandAction cmdAction);
     
     //-----------------------------------------------
     // GhostActionable Interface
@@ -131,7 +150,9 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      */
     public void createMouseInputAdapter()
     {
-        // do nothing
+        mouseDropAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        addMouseListener(mouseDropAdapter);
+        addMouseMotionListener(mouseDropAdapter);
     }
     
     /* (non-Javadoc)

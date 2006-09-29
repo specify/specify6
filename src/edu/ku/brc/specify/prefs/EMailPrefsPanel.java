@@ -44,6 +44,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
@@ -110,7 +111,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), false);
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS);
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else

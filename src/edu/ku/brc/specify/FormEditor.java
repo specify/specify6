@@ -395,7 +395,7 @@ public class FormEditor implements DatabaseLoginListener
     protected Viewable createView(View view)
     {
         //multiView   = new MultiView(null, view, AltView.CreationMode.View, false, false);
-        multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true, false);
+        multiView   = new MultiView(null, view, AltView.CreationMode.Edit, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
 

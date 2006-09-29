@@ -128,7 +128,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     //----------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.ViewBasedDialogFactoryIFace#createSearchDialog(java.lang.String)
+     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createSearchDialog(java.lang.String)
      */
     public ViewBasedSearchDialogIFace createSearchDialog(final String name)
     {
@@ -149,14 +149,13 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, boolean, boolean, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
+     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
      */
     public ViewBasedDisplayIFace createDisplay(final String name,
                                                final String     frameTitle,
                                                final String     closeBtnTitle,
                                                final boolean    isEdit,
-                                               final boolean    showSwitcher,
-                                               boolean          isNewObjectForm,
+                                               final int        options,
                                                final FRAME_TYPE type)
     {
         DialogInfo info =  instance.dialogs.get(name);
@@ -172,8 +171,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                 info.getClassName(),
                                                 info.getIdFieldName(),
                                                 isEdit,
-                                                isNewObjectForm,
-                                                showSwitcher);
+                                                options);
             } else
             {
                 return new ViewBasedDisplayDialog(info.getViewSetName(),
@@ -184,8 +182,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                   info.getClassName(),
                                                   info.getIdFieldName(),
                                                   isEdit,
-                                                  isNewObjectForm,
-                                                  showSwitcher);
+                                                  options);
             }
         } else
         {
@@ -213,7 +210,6 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                           String idFieldName)
         {
             super();
-            // TODO Auto-generated constructor stub
             this.viewSetName = viewSetName;
             this.viewName    = viewName;
             this.dialogName  = dialogName;

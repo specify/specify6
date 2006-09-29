@@ -391,7 +391,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     * Creates a Dialog (non-modl) that will display detail information
+     * Creates a Dialog (non-modal) that will display detail information
      * for the object in the text field.
      */
     protected void createEditFrame(final boolean isNewObject)
@@ -401,8 +401,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    frameTitle,
                                                                    closeBtnTitle,
                                                                    true,   // false means View Mode
-                                                                   false,  // false means don't show switcher
-                                                                   isNewObject,
+                                                                   (isNewObject ? MultiView.IS_NEW_OBJECT : 0) | MultiView.HIDE_SAVE_BTN,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {

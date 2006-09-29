@@ -10,15 +10,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Vector;
 
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 public abstract class DataModelObjBase implements FormDataObjIFace
 {
-    protected Hashtable<String, Vector<PropertyChangeListener>> propListenersHash = null;
-    protected PropertyChangeSupport changes = new PropertyChangeSupport(this);
+    protected PropertyChangeSupport changes;
     
     protected Date timestampCreated;
     protected Date timestampModified;
@@ -69,7 +66,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     public Date getTimestampModified()
     {
-        return this.timestampModified;
+        return this.timestampModified != null ? this.timestampModified : timestampCreated;
     }
 
     /* (non-Javadoc)
@@ -110,41 +107,73 @@ public abstract class DataModelObjBase implements FormDataObjIFace
 
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
         changes.addPropertyChangeListener(listener);
     }
 
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
         changes.addPropertyChangeListener(propertyName, listener);
     }
 
     public void firePropertyChange(PropertyChangeEvent evt)
     {
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
         changes.firePropertyChange(evt);
     }
 
     public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue)
     {
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
         changes.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     public void firePropertyChange(String propertyName, int oldValue, int newValue)
     {
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
         changes.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     public void firePropertyChange(String propertyName, Object oldValue, Object newValue)
     {
-        changes.firePropertyChange(propertyName, oldValue, newValue);
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
+       changes.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
         changes.removePropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
+        if (changes == null)
+        {
+            changes = new PropertyChangeSupport(this);
+        }
         changes.removePropertyChangeListener(propertyName, listener);
     }
 }

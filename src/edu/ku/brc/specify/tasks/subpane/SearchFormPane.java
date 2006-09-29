@@ -42,7 +42,7 @@ public class SearchFormPane extends FormPane
                           final String   viewName)
     {
         super(HibernateUtil.getNewSession(),
-              name, task, viewSetName, viewName, AltView.CreationMode.Search.toString(), null, false, true);
+              name, task, viewSetName, viewName, AltView.CreationMode.Search.toString(), null, MultiView.IS_NEW_OBJECT);
 
         Viewable viewable = multiView.getCurrentView();
         if (viewable instanceof FormViewObj)
