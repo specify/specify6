@@ -34,8 +34,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
      */
     protected static final Logger log = Logger.getLogger(Location.class);
 
-	// Fields    
-
 	protected Long			    locationId;
 	protected String			name;
 	protected String			fullName;
@@ -56,8 +54,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	protected Set<Container>	containers;
 	protected Set<Location>		children;
 
-	// Constructors
-
 	/** default constructor */
 	public Location()
 	{
@@ -70,8 +66,8 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.locationId = locationId;
 	}
 
-	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		locationId = null;
 		name = null;
@@ -96,13 +92,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		children = new HashSet<Location>();
 	}
 
-	// End Initializer
-
-	// Property accessors
-
-	/**
-	 * 
-	 */
 	public Long getLocationId()
 	{
 		return this.locationId;
@@ -112,6 +101,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.locationId;
@@ -122,9 +112,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.locationId = locationId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -161,9 +148,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -174,9 +158,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.rankId = rankId;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -187,9 +168,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.nodeNumber = nodeNumber;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -200,9 +178,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-	/**
-	 * 
-	 */
 	public String getAbbrev()
 	{
 		return this.abbrev;
@@ -213,9 +188,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.abbrev = abbrev;
 	}
 
-	/**
-	 * 
-	 */
 	public String getText1()
 	{
 		return this.text1;
@@ -226,9 +198,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.text1 = text1;
 	}
 
-	/**
-	 * 
-	 */
 	public String getText2()
 	{
 		return this.text2;
@@ -239,9 +208,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.text2 = text2;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getNumber1()
 	{
 		return this.number1;
@@ -252,9 +218,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.number1 = number1;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getNumber2()
 	{
 		return this.number2;
@@ -265,9 +228,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.number2 = number2;
 	}
 
-	/**
-	 * 
-	 */
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -278,9 +238,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.timestampVersion = timestampVersion;
 	}
 
-	/**
-	 * 
-	 */
 	public LocationTreeDef getDefinition()
 	{
 		return this.definition;
@@ -291,9 +248,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.definition = definition;
 	}
 
-	/**
-	 *
-	 */
 	public LocationTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -308,9 +262,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		}
 	}
 
-	/**
-	 * 
-	 */
 	public Location getParent()
 	{
 		return this.parent;
@@ -321,9 +272,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Preparation> getPreparations()
 	{
 		return this.preparations;
@@ -334,9 +282,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.preparations = preparations;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Container> getContainers()
 	{
 		return this.containers;
@@ -347,9 +292,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.containers = containers;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Location> getChildren()
 	{
 		return this.children;
@@ -359,8 +301,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	{
 		this.children = children;
 	}
-
-	/* Code added in order to implement Treeable */
 
 	public Long getTreeId()
 	{
@@ -390,8 +330,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		child.setParent(null);
 	}
 
-	// Add Methods
-
 	public void addPreparations(final Preparation preparation)
 	{
 		this.preparations.add(preparation);
@@ -403,10 +341,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.containers.add(container);
 		container.setLocation(this);
 	}
-
-	// Done Add Methods
-
-	// Delete Methods
 
 	public void removePreparations(final Preparation preparation)
 	{
@@ -420,8 +354,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		container.setLocation(null);
 	}
 
-	// Delete Add Methods
-
 	@Override
 	public String toString()
 	{
@@ -429,8 +361,6 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		return "Location "+locationId+": "+name+", child of "+parentName+", "+rankId+", "
 				+nodeNumber+", "+highestChildNodeNumber;
 	}
-
-	// methods to complete implementation of AbstractTreeable
 
 	public int getFullNameDirection()
 	{

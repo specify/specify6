@@ -50,7 +50,8 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	}
 
 	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		geographyTreeDefItemId = null;
 		name = null;
@@ -80,6 +81,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.geographyTreeDefItemId;
@@ -218,14 +220,18 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 
 	public void setChild(GeographyTreeDefItem child)
 	{
-		if( child==null )
-		{
-			children = new HashSet<GeographyTreeDefItem>();
-			return;
-		}
-
-		children = new HashSet<GeographyTreeDefItem>();
-		children.add(child);
+        if (!children.isEmpty())
+        {
+            GeographyTreeDefItem currentChild = children.iterator().next();
+            currentChild.setParent(null);
+        }
+        
+		children.clear();
+        
+        if(child!=null)
+        {
+            children.add(child);
+        }
 	}
 	
 	public GeographyTreeDefItem getChild()

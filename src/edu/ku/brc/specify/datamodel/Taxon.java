@@ -69,8 +69,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     protected Set<Attachment>          attachments;
 	protected Set<Taxon>			children;
 
-	// Constructors
-
 	/** default constructor */
 	public Taxon()
 	{
@@ -97,7 +95,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
 	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		taxonId = null;
 		taxonomicSerialNumber = null;
@@ -137,13 +136,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		children = new HashSet<Taxon>();
 	}
 
-	// End Initializer   
-
-	// Property accessors
-
-	/**
-	 * 
-	 */
 	public Long getTaxonId()
 	{
 		return this.taxonId;
@@ -153,6 +145,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.taxonId;
@@ -163,9 +156,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonId = taxonId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getTaxonomicSerialNumber()
 	{
 		return this.taxonomicSerialNumber;
@@ -176,9 +166,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonomicSerialNumber = taxonomicSerialNumber;
 	}
 
-	/**
-	 * 
-	 */
 	public String getGuid()
 	{
 		return this.guid;
@@ -189,9 +176,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.guid = guid;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -202,9 +186,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.name = name;
 	}
 
-	/**
-	 * 
-	 */
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -215,9 +196,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitInd1()
 	{
 		return this.unitInd1;
@@ -228,9 +206,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd1 = unitInd1;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitName1()
 	{
 		return this.unitName1;
@@ -241,9 +216,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName1 = unitName1;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitInd2()
 	{
 		return this.unitInd2;
@@ -254,9 +226,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd2 = unitInd2;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitName2()
 	{
 		return this.unitName2;
@@ -267,9 +236,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName2 = unitName2;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitInd3()
 	{
 		return this.unitInd3;
@@ -280,9 +246,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd3 = unitInd3;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitName3()
 	{
 		return this.unitName3;
@@ -293,9 +256,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName3 = unitName3;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitInd4()
 	{
 		return this.unitInd4;
@@ -306,9 +266,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd4 = unitInd4;
 	}
 
-	/**
-	 * 
-	 */
 	public String getUnitName4()
 	{
 		return this.unitName4;
@@ -319,9 +276,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName4 = unitName4;
 	}
 
-	/**
-	 * 
-	 */
 	public String getFullName()
 	{
 		return this.fullName;
@@ -332,9 +286,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.fullName = fullName;
 	}
 
-	/**
-	 * 
-	 */
 	public String getCommonName()
 	{
 		return this.commonName;
@@ -345,9 +296,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.commonName = commonName;
 	}
 
-	/**
-	 * 
-	 */
 	public String getAuthor()
 	{
 		return this.author;
@@ -358,9 +306,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.author = author;
 	}
 
-	/**
-	 * 
-	 */
 	public String getSource()
 	{
 		return this.source;
@@ -371,9 +316,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.source = source;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getGroupPermittedToView()
 	{
 		return this.groupPermittedToView;
@@ -384,9 +326,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.groupPermittedToView = groupPermittedToView;
 	}
 
-	/**
-	 * 
-	 */
 	public String getEnvironmentalProtectionStatus()
 	{
 		return this.environmentalProtectionStatus;
@@ -397,9 +336,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.environmentalProtectionStatus = environmentalProtectionStatus;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -410,9 +346,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.nodeNumber = nodeNumber;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -423,9 +356,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-	/**
-	 * 
-	 */
 	public Short getAccepted()
 	{
 		return this.accepted;
@@ -436,9 +366,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.accepted = accepted;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -449,9 +376,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.rankId = rankId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getGroupNumber()
 	{
 		return this.groupNumber;
@@ -462,9 +386,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.groupNumber = groupNumber;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Taxon> getAcceptedChildren()
 	{
 		return this.acceptedChildren;
@@ -475,9 +396,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.acceptedChildren = acceptedChildren;
 	}
 
-	/**
-	 * 
-	 */
 	public Taxon getAcceptedTaxon()
 	{
 		return this.acceptedTaxon;
@@ -498,9 +416,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.determinations = determinations;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;
@@ -511,9 +426,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonCitations = taxonCitations;
 	}
 
-	/**
-	 * 
-	 */
 	public TaxonTreeDef getDefinition()
 	{
 		return this.definition;
@@ -524,9 +436,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.definition = definition;
 	}
 
-	/**
-	 * 
-	 */
 	public TaxonTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -541,9 +450,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		}
 	}
 
-	/**
-	 * 
-	 */
 	public Taxon getParent()
 	{
 		return this.parent;
@@ -555,9 +461,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
 
-	/**
-	 * 
-	 */
 	public Set<Taxon> getChildren()
 	{
 		return this.children;
@@ -568,23 +471,17 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.children = children;
 	}
 
-	/* Code added in order to implement Treeable */
-
 	public Long getTreeId()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.taxonId;
 	}
 
 	public void setTreeId(Long id)
 	{
-		// TODO Auto-generated method stub
-
+        this.taxonId = id;
 	}
-    
-    
 
-	public Set<Attachment> getAttachments()
+    public Set<Attachment> getAttachments()
     {
         return attachments;
     }
@@ -647,6 +544,18 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonCitations.remove(taxonCitation);
 		taxonCitation.setTaxon(null);
 	}
+    
+    public void addAttachment(Attachment attachment)
+    {
+        this.attachments.add(attachment);
+        attachment.setTaxon(this);
+    }
+    
+    public void removeAttachment(Attachment attachment)
+    {
+        this.attachments.remove(attachment);
+        attachment.setTaxon(null);
+    }
 
 	@Override
 	public String toString()
@@ -655,8 +564,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		return "Taxon "+taxonId+": "+name+", child of "+parentName+", "+rankId+", "+nodeNumber+", "
 				+highestChildNodeNumber;
 	}
-
-	// methods to complete implementation of AbstractTreeable
 
 	public int getFullNameDirection()
 	{

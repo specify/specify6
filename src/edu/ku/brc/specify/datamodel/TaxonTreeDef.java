@@ -27,8 +27,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	protected Set<Taxon>			treeEntries;
 	protected Set<TaxonTreeDefItem>	treeDefItems;
 
-	// Constructors
-
 	/** default constructor */
 	public TaxonTreeDef()
 	{
@@ -41,8 +39,8 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
 
-	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		taxonTreeDefId = null;
 		name = null;
@@ -52,14 +50,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		treeDefItems = new HashSet<TaxonTreeDefItem>();
 	}
 
-	// End Initializer
-
-	// Property accessors
-
-	/**
-	 * 
-	 */
-	public Long getTaxonTreeDefId()
+    public Long getTaxonTreeDefId()
 	{
 		return this.taxonTreeDefId;
 	}
@@ -68,6 +59,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.taxonTreeDefId;
@@ -78,9 +70,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -91,9 +80,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.name = name;
 	}
 
-	/**
-	 * 
-	 */
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -104,9 +90,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public CollectionObjDef getCollObjDef()
 	{
 		return this.collObjDef;
@@ -117,9 +100,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.collObjDef = collObjDef;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -130,9 +110,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.treeEntries = treeEntries;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<TaxonTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
@@ -142,10 +119,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	{
 		this.treeDefItems = treeDefItems;
 	}
-
-	//
-	// Methods added to implement TreeDefinitionIface
-	//
 
 	public Long getTreeDefId()
 	{
@@ -181,7 +154,6 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		item.setTreeDef(null);
 	}
 
-	// methods to "complete" the implementation of TreeDefinitionIface
 	public Class<Taxon> getNodeClass()
 	{
 		return Taxon.class;

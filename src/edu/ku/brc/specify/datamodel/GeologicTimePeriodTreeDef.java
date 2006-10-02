@@ -20,12 +20,12 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
-	protected Long   				geologicTimePeriodTreeDefId;
-	protected String				name;
-	protected String				remarks;
-	protected Set<CollectionObjDef>		collObjDefs;
-	protected Set<GeologicTimePeriod>			treeEntries;
-	protected Set<GeologicTimePeriodTreeDefItem>	treeDefItems;
+	protected Long                               geologicTimePeriodTreeDefId;
+    protected String                             name;
+    protected String                             remarks;
+    protected Set<CollectionObjDef>              collObjDefs;
+    protected Set<GeologicTimePeriod>            treeEntries;
+    protected Set<GeologicTimePeriodTreeDefItem> treeDefItems;
 
 	// Constructors
 
@@ -42,7 +42,8 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	}
 
 	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		geologicTimePeriodTreeDefId = null;
 		name = null;
@@ -68,6 +69,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.geologicTimePeriodTreeDefId;
@@ -116,6 +118,19 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	{
 		this.collObjDefs = collObjDefs;
 	}
+    
+    public void addCollObjDef( CollectionObjDef cod )
+    {
+        this.collObjDefs.add(cod);
+        cod.setGeologicTimePeriodTreeDef(this);
+    }
+    
+    public void removeCollObjDef( CollectionObjDef cod )
+    {
+        this.collObjDefs.remove(cod);
+        cod.setGeologicTimePeriodTreeDef(null);
+    }
+
 
 	/**
 	 * 

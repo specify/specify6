@@ -33,6 +33,8 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	protected GeologicTimePeriodTreeDef			treeDef;
 	protected GeologicTimePeriodTreeDefItem		parent;
 	protected Set<GeologicTimePeriod>			treeEntries;
+    
+    // this is a Set, but should only contain a single child item
 	protected Set<GeologicTimePeriodTreeDefItem>	children;
 
 	// Constructors
@@ -50,7 +52,8 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	}
 
 	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		geologicTimePeriodTreeDefItemId = null;
 		name = null;
@@ -80,6 +83,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.geologicTimePeriodTreeDefItemId;
@@ -218,14 +222,18 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 
 	public void setChild(GeologicTimePeriodTreeDefItem child)
 	{
-		if( child==null )
-		{
-			children = new HashSet<GeologicTimePeriodTreeDefItem>();
-			return;
-		}
-
-		children = new HashSet<GeologicTimePeriodTreeDefItem>();
-		children.add(child);
+        if (!children.isEmpty())
+        {
+            GeologicTimePeriodTreeDefItem currentChild = children.iterator().next();
+            currentChild.setParent(null);
+        }
+        
+        children.clear();
+        
+        if(child!=null)
+        {
+            children.add(child);
+        }
 	}
 	
 	public GeologicTimePeriodTreeDefItem getChild()

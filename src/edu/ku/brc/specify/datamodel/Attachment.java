@@ -47,6 +47,7 @@ public class Attachment extends DataModelObjBase implements java.io.Serializable
         this.attachmentID = attachmentID;
     }
 
+    @Override
     public void initialize()
     {
         attachmentID = null;
@@ -172,6 +173,18 @@ public class Attachment extends DataModelObjBase implements java.io.Serializable
     public void setMetadata(Set<AttachmentMetadata> metadata)
     {
         this.metadata = metadata;
+    }
+    
+    public void addAttachmentMetadata(AttachmentMetadata meta)
+    {
+        this.metadata.add(meta);
+        meta.setAttachment(this);
+    }
+    
+    public void removeAttachmentMetadata(AttachmentMetadata meta)
+    {
+        this.metadata.remove(meta);
+        meta.setAttachment(null);
     }
 
     public Agent getAgent()

@@ -29,10 +29,13 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
-        throw new RuntimeException("Josh need to implement me!");
-
+        attachmentMetadataID = null;
+        name = null;
+        value = null;
+        attachment = null;
     }
     // End Initializer
     

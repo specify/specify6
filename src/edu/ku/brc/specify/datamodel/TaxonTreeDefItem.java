@@ -21,9 +21,6 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
-
-	// Fields    
-
 	protected Long				    taxonTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
@@ -34,8 +31,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	protected TaxonTreeDefItem		parent;
 	protected Set<Taxon>			treeEntries;
 	protected Set<TaxonTreeDefItem>	children;
-
-	// Constructors
 
 	/** default constructor */
 	public TaxonTreeDefItem()
@@ -49,8 +44,8 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
 
-	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		taxonTreeDefItemId = null;
 		name = null;
@@ -64,13 +59,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		children = new HashSet<TaxonTreeDefItem>();
 	}
 
-	// End Initializer
-
-	// Property accessors
-
-	/**
-	 * 
-	 */
 	public Long getTaxonTreeDefItemId()
 	{
 		return this.taxonTreeDefItemId;
@@ -80,6 +68,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.taxonTreeDefItemId;
@@ -90,9 +79,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -103,9 +89,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.name = name;
 	}
 
-	/**
-	 * 
-	 */
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -116,9 +99,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -129,9 +109,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.rankId = rankId;
 	}
 
-	/**
-	 * 
-	 */
 	public Boolean getIsEnforced()
 	{
 		return this.isEnforced;
@@ -152,9 +129,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.isInFullName = isInFullName;
 	}
 
-	/**
-	 * 
-	 */
 	public TaxonTreeDef getTreeDef()
 	{
 		return this.treeDef;
@@ -165,9 +139,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.treeDef = treeDef;
 	}
 
-	/**
-	 * 
-	 */
 	public TaxonTreeDefItem getParent()
 	{
 		return this.parent;
@@ -178,9 +149,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -191,9 +159,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.treeEntries = treeEntries;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<TaxonTreeDefItem> getChildren()
 	{
 		return this.children;
@@ -203,8 +168,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	{
 		this.children = children;
 	}
-
-	// Code added to implement TreeDefinitionItemIface
 
 	public Long getTreeDefItemId()
 	{
@@ -218,14 +181,18 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 
 	public void setChild(TaxonTreeDefItem child)
 	{
-		if( child==null )
-		{
-			children = new HashSet<TaxonTreeDefItem>();
-			return;
-		}
-
-		children = new HashSet<TaxonTreeDefItem>();
-		children.add(child);
+        if (!children.isEmpty())
+        {
+            TaxonTreeDefItem currentChild = children.iterator().next();
+            currentChild.setParent(null);
+        }
+        
+        children.clear();
+        
+        if(child!=null)
+        {
+            children.add(child);
+        }
 	}
 	
 	public TaxonTreeDefItem getChild()

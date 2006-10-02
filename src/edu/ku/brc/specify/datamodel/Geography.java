@@ -71,7 +71,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	}
 
 	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		geographyId = null;
 		name = null;
@@ -114,6 +115,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.geographyId;
@@ -411,7 +413,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		children.add(child);
 		child.setParent(this);
 	}
-
+    
 	public void removeChild(Geography child)
 	{
 		children.remove(child);

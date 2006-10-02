@@ -22,8 +22,6 @@ import java.util.Set;
 public class LocationTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Location,LocationTreeDef,LocationTreeDefItem>
 {
 
-	// Fields    
-
 	protected Long   				locationTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
@@ -34,8 +32,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	protected LocationTreeDefItem		parent;
 	protected Set<Location>			treeEntries;
 	protected Set<LocationTreeDefItem>	children;
-
-	// Constructors
 
 	/** default constructor */
 	public LocationTreeDefItem()
@@ -49,8 +45,8 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.locationTreeDefItemId = locationTreeDefItemId;
 	}
 
-	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		locationTreeDefItemId = null;
 		name = null;
@@ -64,13 +60,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		children = new HashSet<LocationTreeDefItem>();
 	}
 
-	// End Initializer
-
-	// Property accessors
-
-	/**
-	 * 
-	 */
 	public Long getLocationTreeDefItemId()
 	{
 		return this.locationTreeDefItemId;
@@ -80,6 +69,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.locationTreeDefItemId;
@@ -90,9 +80,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.locationTreeDefItemId = locationTreeDefItemId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -103,9 +90,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.name = name;
 	}
 
-	/**
-	 * 
-	 */
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -116,9 +100,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -129,9 +110,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.rankId = rankId;
 	}
 
-	/**
-	 * 
-	 */
 	public Boolean getIsEnforced()
 	{
 		return this.isEnforced;
@@ -152,9 +130,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.isInFullName = isInFullName;
 	}
 
-	/**
-	 * 
-	 */
 	public LocationTreeDef getTreeDef()
 	{
 		return this.treeDef;
@@ -165,9 +140,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.treeDef = treeDef;
 	}
 
-	/**
-	 * 
-	 */
 	public LocationTreeDefItem getParent()
 	{
 		return this.parent;
@@ -178,9 +150,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Location> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -191,9 +160,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.treeEntries = treeEntries;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<LocationTreeDefItem> getChildren()
 	{
 		return this.children;
@@ -203,8 +169,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	{
 		this.children = children;
 	}
-
-	// Code added to implement TreeDefinitionItemIface
 
 	public Long getTreeDefItemId()
 	{
@@ -218,14 +182,18 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 
 	public void setChild(LocationTreeDefItem child)
 	{
-		if( child==null )
-		{
-			children = new HashSet<LocationTreeDefItem>();
-			return;
-		}
-
-		children = new HashSet<LocationTreeDefItem>();
-		children.add(child);
+        if (!children.isEmpty())
+        {
+            LocationTreeDefItem currentChild = children.iterator().next();
+            currentChild.setParent(null);
+        }
+        
+        children.clear();
+        
+        if(child!=null)
+        {
+            children.add(child);
+        }
 	}
 	
 	public LocationTreeDefItem getChild()

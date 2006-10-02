@@ -27,8 +27,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	protected Set<Geography>			treeEntries;
 	protected Set<GeographyTreeDefItem>	treeDefItems;
 
-	// Constructors
-
 	/** default constructor */
 	public GeographyTreeDef()
 	{
@@ -41,8 +39,8 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.geographyTreeDefId = geographyTreeDefId;
 	}
 
-	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		geographyTreeDefId = null;
 		name = null;
@@ -52,13 +50,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		treeDefItems = new HashSet<GeographyTreeDefItem>();
 	}
 
-	// End Initializer
-
-	// Property accessors
-
-	/**
-	 * 
-	 */
 	public Long getGeographyTreeDefId()
 	{
 		return this.geographyTreeDefId;
@@ -68,6 +59,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.geographyTreeDefId;
@@ -78,9 +70,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.geographyTreeDefId = geographyTreeDefId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -91,9 +80,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.name = name;
 	}
 
-	/**
-	 * 
-	 */
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -104,9 +90,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<CollectionObjDef> getCollObjDefs()
 	{
 		return this.collObjDefs;
@@ -116,10 +99,19 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	{
 		this.collObjDefs = collObjDefs;
 	}
+    
+    public void addCollObjDef( CollectionObjDef cod )
+    {
+        this.collObjDefs.add(cod);
+        cod.setGeographyTreeDef(this);
+    }
+    
+    public void removeCollObjDef( CollectionObjDef cod )
+    {
+        this.collObjDefs.remove(cod);
+        cod.setGeographyTreeDef(null);
+    }
 
-	/**
-	 * 
-	 */
 	public Set<Geography> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -130,9 +122,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.treeEntries = treeEntries;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<GeographyTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
@@ -142,10 +131,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	{
 		this.treeDefItems = treeDefItems;
 	}
-
-	//
-	// Methods added to implement TreeDefinitionIface
-	//
 
 	public Long getTreeDefId()
 	{
@@ -181,7 +166,6 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		item.setTreeDef(null);
 	}
 
-	// methods to "complete" the implementation of TreeDefinitionIface
 	public Class<Geography> getNodeClass()
 	{
 		return Geography.class;

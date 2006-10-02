@@ -27,8 +27,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	protected Set<Location>			treeEntries;
 	protected Set<LocationTreeDefItem>	treeDefItems;
 
-	// Constructors
-
 	/** default constructor */
 	public LocationTreeDef()
 	{
@@ -41,8 +39,8 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.locationTreeDefId = locationTreeDefId;
 	}
 
-	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		locationTreeDefId = null;
 		name = null;
@@ -51,10 +49,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		treeEntries = new HashSet<Location>();
 		treeDefItems = new HashSet<LocationTreeDefItem>();
 	}
-
-	// End Initializer
-
-	// Property accessors
 
 	/**
 	 * 
@@ -68,6 +62,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.locationTreeDefId;
@@ -78,9 +73,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.locationTreeDefId = locationTreeDefId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -91,9 +83,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.name = name;
 	}
 
-	/**
-	 * 
-	 */
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -104,9 +93,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<CollectionObjDef> getCollObjDefs()
 	{
 		return this.collObjDefs;
@@ -117,9 +103,18 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.collObjDefs = collObjDefs;
 	}
 
-	/**
-	 * 
-	 */
+    public void addCollObjDef( CollectionObjDef cod )
+    {
+        this.collObjDefs.add(cod);
+        cod.setLocationTreeDef(this);
+    }
+    
+    public void removeCollObjDef( CollectionObjDef cod )
+    {
+        this.collObjDefs.remove(cod);
+        cod.setLocationTreeDef(null);
+    }
+
 	public Set<Location> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -130,9 +125,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.treeEntries = treeEntries;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<LocationTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
@@ -142,10 +134,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	{
 		this.treeDefItems = treeDefItems;
 	}
-
-	//
-	// Methods added to implement TreeDefinitionIface
-	//
 
 	public Long getTreeDefId()
 	{
@@ -181,7 +169,6 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		item.setTreeDef(null);
 	}
 
-	// methods to "complete" the implementation of TreeDefinitionIface
 	public Class<Location> getNodeClass()
 	{
 		return Location.class;

@@ -68,7 +68,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	}
 
 	// Initializer
-	public void initialize()
+	@Override
+    public void initialize()
 	{
 		geologicTimePeriodId = null;
 		rankId = null;
@@ -108,6 +109,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.geologicTimePeriodId;
