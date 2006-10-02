@@ -49,7 +49,7 @@ import edu.ku.brc.util.FileCache;
  * the maximum sizes of the display area. The IMafeDisplay will resize the image approriately to fit within this size and it will
  * keep the image proportional.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

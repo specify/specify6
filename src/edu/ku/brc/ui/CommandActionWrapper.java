@@ -20,7 +20,7 @@ import java.awt.event.ActionListener;
 /**
  * Utility class for encapsulating an CommandAction into a ActionListener
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

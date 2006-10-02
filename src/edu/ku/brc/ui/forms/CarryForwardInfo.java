@@ -25,7 +25,7 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
  * This class holds all the carry forward information for a single form. It also knows how to "copy" or carry forward 
  * data from the field in one object to another.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

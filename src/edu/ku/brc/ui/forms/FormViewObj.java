@@ -103,12 +103,16 @@ import edu.ku.brc.ui.validation.ValidationListener;
  * Implmentation of the Viewable interface for the ui and this derived class is for handling Form's Only (not tables)
  *
 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *
  */
-public class FormViewObj implements Viewable, ValidationListener, ResultSetControllerListener, AppPrefsChangeListener
+public class FormViewObj implements Viewable, 
+                                    ViewBuilderIFace, 
+                                    ValidationListener, 
+                                    ResultSetControllerListener, 
+                                    AppPrefsChangeListener
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
 
@@ -132,6 +136,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected Hashtable<String, FieldInfo>  controlsById   = new Hashtable<String, FieldInfo>();
     protected Hashtable<String, FieldInfo>  controlsByName = new Hashtable<String, FieldInfo>();
     protected Hashtable<String, FieldInfo>  labels         = new Hashtable<String, FieldInfo>(); // ID is the Key
+    
+    protected FormLayout                    formLayout;
+    protected PanelBuilder                  builder;
 
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
@@ -184,6 +191,15 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         businessRules = view.getBusinessRule();
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
+        
+        // Figure columns
+        formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
+        builder    = new PanelBuilder(formLayout);
+
+        if (mvParent == null)
+        {
+            builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        }
         
         boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
@@ -594,9 +610,19 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             mainComp.remove(this.formComp);
         }
         this.formComp = formComp;
-
+        
         // add new component
         mainBuilder.add(formComp, cc.xy(1, mainCompRowInx));
+
+    }
+    
+    /**
+     * Returns the panel that contains all the controls.
+     * @return the panel that contains all the controls
+     */
+    public JPanel getPanel()
+    {
+        return builder.getPanel();
     }
 
     /**
@@ -606,68 +632,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     public void addChild(final MultiView child)
     {
         kids.add(child);
-    }
-
-    /**
-     * Adds a control by name so it can be looked up later.
-     * @param formCell the FormCell def that describe the cell
-     * @param control the control
-     */
-    public void addControl(final FormCell formCell, final Component control)
-    {
-        if (formCell != null)
-        {
-            if (controlsById.get(formCell.getId()) != null)
-            {
-                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
-            }
-
-            if (controlsByName.get(formCell.getName()) != null)
-            {
-                throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
-            }
-
-            JScrollPane scrollPane;
-            Component comp;
-            if (control instanceof JScrollPane)
-            {
-                scrollPane = (JScrollPane)control;
-                comp = scrollPane.getViewport().getView();
-            } else
-            {
-                scrollPane = null;
-                comp = control;
-            }
-            if (control instanceof MultiView)
-            {
-                int x = 0;
-                x++;
-            }
-            FieldInfo fieldInfo = new FieldInfo(formCell, comp, scrollPane, controlsById.size());
-            controlsById.put(formCell.getId(), fieldInfo);
-            controlsByName.put(formCell.getName(), fieldInfo);
-
-        }
-    }
-
-
-    /**
-     * Adds a control by name so it can be looked up later.
-     * @param formCell the FormCell def that describe the cell
-     * @param label the the label to be added
-     */
-
-    public void addLabel(final FormCellLabel formCell, final JLabel label)
-    {
-
-        if (formCell != null)
-        {
-            if (labels.get(formCell.getLabelFor()) != null)
-            {
-                throw new RuntimeException("Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName());
-            }
-            labels.put(formCell.getLabelFor(), new FieldInfo(formCell, label, null, labels.size()));
-        }
     }
 
     /**
@@ -695,25 +659,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (cbx != null)
         {
             cbx.addActionListener(new MVActionListener(mvParent));
-        }
-    }
-
-    /**
-     * Adds a control by name so it can be looked up later
-     * @param formCell the FormCell def that describe the cell
-     * @param subView the subView
-     */
-    public void addSubView(final FormCell formCell, final MultiView subView)
-    {
-        if (formCell != null)
-        {
-            if (controlsById.get(formCell.getId()) != null)
-            {
-                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
-            }
-
-            controlsById.put(formCell.getId(), new FieldInfo(formCell, subView, controlsById.size()));
-            kids.add(subView);
         }
     }
 
@@ -1120,15 +1065,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 });
             }
         }
-    }
-
-    /**
-     * Sets the DraggableRecordIdentifier.
-     * @param draggableRI the DraggableRecordIdentifier
-     */
-    public void setDataObjectRep(DraggableRecordIdentifier draggableRI)
-    {
-        this.draggableRecIdentifier = draggableRI;
     }
 
     /**
@@ -1920,7 +1856,134 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         formViewDef = null;
         formComp    = null;
     }
+    
+    //-------------------------------------------------
+    // ViewBuilderIFace
+    //-------------------------------------------------
 
+    /**
+     * Adds a control by name so it can be looked up later.
+     * @param formCell the FormCell def that describe the cell
+     * @param label the the label to be added
+     */
+    public void addLabel(final FormCellLabel formCell, final JLabel label)
+    {
+
+        if (formCell != null)
+        {
+            if (labels.get(formCell.getLabelFor()) != null)
+            {
+                throw new RuntimeException("Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName());
+            }
+            labels.put(formCell.getLabelFor(), new FieldInfo(formCell, label, null, labels.size()));
+        }
+    }
+
+    /**
+     * Adds a control by name so it can be looked up later.
+     * @param formCell the FormCell def that describe the cell
+     * @param control the control
+     */
+    public void registerControl(final FormCell formCell, final Component control)
+    {
+        if (formCell != null)
+        {
+            if (controlsById.get(formCell.getId()) != null)
+            {
+                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
+            }
+
+            if (controlsByName.get(formCell.getName()) != null)
+            {
+                throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
+            }
+
+            JScrollPane scrollPane;
+            Component comp;
+            if (control instanceof JScrollPane)
+            {
+                scrollPane = (JScrollPane)control;
+                comp = scrollPane.getViewport().getView();
+            } else
+            {
+                scrollPane = null;
+                comp = control;
+            }
+            
+            FieldInfo fieldInfo = new FieldInfo(formCell, comp, scrollPane, controlsById.size());
+            controlsById.put(formCell.getId(), fieldInfo);
+            controlsByName.put(formCell.getName(), fieldInfo);
+
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addControlToUI(java.awt.Component, int, int, int, int)
+     */
+    public void addControlToUI(Component control, int colInx, int rowInx, int colSpan, int rowSpan)
+    {
+        builder.add(control, cc.xywh(colInx, rowInx, colSpan, rowSpan));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSeparator(java.lang.String, int, int, int)
+     */
+    public Component createSeparator(String title, int colInx, int rowInx, int colSpan)
+    {
+        return builder.addSeparator(title, cc.xyw(colInx, rowInx, colSpan));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addRecordIndentifier(java.lang.String, javax.swing.ImageIcon)
+     */
+    public JComponent createRecordIndentifier(String title, ImageIcon icon)
+    {
+        PanelBuilder panelBldr = new PanelBuilder(new FormLayout("16px,1px,f:p:g", "p"));
+        draggableRecIdentifier = DraggableRecordIdentifierFactory.getInstance().createDraggableRecordIdentifier(icon);
+        
+        panelBldr.add(draggableRecIdentifier, cc.xy(1, 1));
+        panelBldr.addSeparator(title, cc.xy(3, 1));
+        return panelBldr.getPanel();
+    }
+
+    
+    /**
+     * Adds a control by name so it can be looked up later
+     * @param formCell the FormCell def that describe the cell
+     * @param subView the subView
+     */
+    public void addSubView(final FormCellSubView formCell, final MultiView subView, int colInx, int rowInx, int colSpan, int rowSpan)
+    {
+        if (formCell != null)
+        {
+            if (controlsById.get(formCell.getId()) != null)
+            {
+                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
+            }
+
+            builder.add(subView, cc.xywh(colInx, rowInx, colSpan, rowSpan, "fill,fill"));
+            
+            controlsById.put(formCell.getId(), new FieldInfo(formCell, subView, controlsById.size()));
+            kids.add(subView);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#closeSubView(edu.ku.brc.ui.forms.persist.FormCellSubView)
+     */
+    public void closeSubView(FormCellSubView formCell)
+    {
+        // not supported
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#shouldFlatten()
+     */
+    public boolean shouldFlatten()
+    {
+        return false;
+    }
+    
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------

@@ -13,7 +13,7 @@ import org.jdesktop.animation.timing.Envelope.RepeatBehavior;
 
 /**
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * @author jstewart
  */
 public abstract class AnimationComponent extends JComponent implements TimingTarget

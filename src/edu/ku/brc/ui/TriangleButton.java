@@ -23,7 +23,7 @@ import java.awt.event.MouseEvent;
 /**
  *  A simple vector button that draw a triangle on its face.
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

@@ -18,7 +18,7 @@ import java.awt.Component;
 /**
  * Interface for listening to whether a component's value has changed
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

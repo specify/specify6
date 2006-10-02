@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 /**
  * A JPanel that has built in Validation support, which hold Validatable objects
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

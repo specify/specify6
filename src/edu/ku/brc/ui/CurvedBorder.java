@@ -25,7 +25,7 @@ import javax.swing.border.AbstractBorder;
  * This Border class draws a curved border
  */
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

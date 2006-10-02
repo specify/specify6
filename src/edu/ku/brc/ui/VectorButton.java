@@ -35,7 +35,7 @@ import javax.swing.SwingConstants;
 *
  * (Adapted from the book SwingHacks)
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  * @author Chris Adamson

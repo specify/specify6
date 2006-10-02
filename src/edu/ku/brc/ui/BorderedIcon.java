@@ -7,7 +7,7 @@ import java.awt.Graphics;
 import javax.swing.Icon;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

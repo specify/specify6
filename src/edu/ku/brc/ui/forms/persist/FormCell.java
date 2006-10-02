@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * This represents all the information about a cell in the form
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  *.
  * @author rods
  *

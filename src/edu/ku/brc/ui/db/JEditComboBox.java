@@ -34,7 +34,7 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
  * An editable JComboBox that enables the user to edit the values in the list which actually creates a new value
  * in the picklist.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

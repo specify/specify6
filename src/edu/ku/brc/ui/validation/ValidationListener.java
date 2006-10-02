@@ -18,7 +18,7 @@ package edu.ku.brc.ui.validation;
 /**
  * A class to listen to whether a validator was validated.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

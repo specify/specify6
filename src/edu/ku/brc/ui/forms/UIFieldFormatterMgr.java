@@ -29,7 +29,7 @@ import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * The Format Manager; reads in all the formats from XM
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  *L
  * @author rods
  *

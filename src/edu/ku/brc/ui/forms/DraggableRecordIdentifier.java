@@ -85,7 +85,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
     }
     
     /**
-     * Constructor
+     * Constructor.
      */
     public DraggableRecordIdentifier(final ImageIcon icon)
     {

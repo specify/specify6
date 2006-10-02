@@ -15,58 +15,134 @@
 package edu.ku.brc.ui.forms;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.Vector;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DropDownButtonStateful;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.FormCellLabel;
+import edu.ku.brc.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.TableViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.validation.UIValidatable;
+import edu.ku.brc.ui.validation.UIValidator;
+import edu.ku.brc.ui.validation.ValidationListener;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  *
  */
-public class TableViewObj implements Viewable
+public class TableViewObj implements Viewable, 
+                                     ViewBuilderIFace, 
+                                     ValidationListener, 
+                                     ResultSetControllerListener, 
+                                     AppPrefsChangeListener
 {
-    //private static final Logger log = Logger.getLogger(TableViewObj.class);
+    private static final Logger log = Logger.getLogger(TableViewObj.class);
+    
+    // Data Members
     protected Session                       session        = null;
     protected boolean                       isEditting     = false;
-    protected MultiView                     multiView      = null;
-    protected FormViewObj                   parent;
+    protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
+    protected MultiView                     mvParent       = null;
+    protected View                          view;
+    protected AltView                       altView;
+    protected FormViewDef                   formViewDef;
+    protected Component                     formComp       = null;
+    protected List<MultiView>               kids           = new ArrayList<MultiView>();
+    protected Vector<AltView>               altViewsList   = null;
     protected TableViewDef                  tableViewDef;
+    
+    protected Stack<FormCellSubView>        subViewStack    = new Stack<FormCellSubView>();
+    protected StringBuilder                 fullObjPath     = new StringBuilder();
+    
+    
+    protected Hashtable<String, ColumnInfo> controlsByName  = new Hashtable<String, ColumnInfo>();
+    protected Hashtable<String, ColumnInfo> controlsById    = new Hashtable<String, ColumnInfo>();
+    protected Vector<ColumnInfo>            columnList      = new Vector<ColumnInfo>();
+    
+    protected FormValidator                 formValidator   = null;
+    protected Object                        parentDataObj   = null;
+    protected Object                        dataObj         = null;
+    protected Set                           origDataSet     = null;
+    protected Object[]                      singleItemArray = new Object[1];
+    protected SimpleDateFormat              scrDateFormat;
+
+    protected JPanel                        mainComp        = null;
+    protected ControlBarPanel               controlPanel    = null;
+    protected ResultSetController           rsController    = null;
+    protected List<Object>                  list            = null;
+    protected boolean                       ignoreSelection = false;
+    protected JButton                       saveBtn         = null;
+    protected JButton                       validationInfoBtn = null;
+    protected boolean                       wasNull         = false;
+    protected DropDownButtonStateful        switcherUI;
+    protected JComboBox                     selectorCBX     = null;
+    protected int                           mainCompRowInx  = 1;
+
+    protected PanelBuilder                  mainBuilder;
+    protected BusinessRulesIFace            businessRules   = null; 
+
+    protected DraggableRecordIdentifier     draggableRecIdentifier   = null;
+    
+    // Carry Forward
+    protected CarryForwardInfo              carryFwdInfo    = null;
+    protected boolean                       doCarryForward  = false;
+    protected Object                        carryFwdDataObj = null;
 
     // UI
+    protected ColTableModel                 model;
     protected JTable                        table;
     protected JScrollPane                   tableScroller;
-    protected JPanel                        mainComp;
 
     /**
      * Constructor with FormView definition
      * @param tableViewDef the definition of the form
      */
-    public TableViewObj(final FormViewObj  parent,
-                        final TableViewDef tableViewDef,
-                        final MultiView    multiView)
+    public TableViewObj(final TableViewDef tableViewDef,
+                        final MultiView    mvParent)
     {
-
-        this.parent       = parent;
         this.tableViewDef = tableViewDef;
-        this.multiView    = multiView;
+        this.mvParent    = mvParent;
 
         //if (scrDateFormat == null)
         //{
@@ -76,9 +152,54 @@ public class TableViewObj implements Viewable
         //AppPreferences appsNode = AppPreferences;
         //AppPreferences prefNode = appsNode.node("ui/formatting");
         //prefNode.addAppPrefsChangeListener(this);
+    }
+    
+    /**
+     * Constructor with FormView definition
+     * @param tableViewDef the definition of the form
+     */
+    public TableViewObj(final View          view,
+                        final AltView       altView,
+                        final MultiView     mvParent,
+                        final FormValidator formValidator,
+                        final int           options)
+    {
+        this.view        = view;
+        this.altView     = altView;
+        this.mvParent    = mvParent;
+        
+        businessRules = view.getBusinessRule();
 
+        this.formViewDef = (FormViewDef)altView.getViewDef();
+        
+        /*
+        boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
+        boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
+        boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+        boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
+        */
+        
+        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
+
+        // XXX setValidator(formValidator);
+
+        scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+
+
+        AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
+        
+    }
+    
+    /**
+     * Builds the main component as a table
+     */
+    protected void buildTable()
+    {
+        model = new ColTableModel();
+        
         mainComp = new JPanel(new BorderLayout());
-        table = new JTable();
+        table = new JTable(model);
+        
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -88,9 +209,9 @@ public class TableViewObj implements Viewable
         //}
 
         tableScroller = new JScrollPane(table);
-        mainComp.add(tableScroller, BorderLayout.CENTER);
-
+        mainComp.add(tableScroller, BorderLayout.CENTER);  
     }
+    
 
     //-------------------------------------------------
     // Viewable
@@ -123,7 +244,11 @@ public class TableViewObj implements Viewable
      */
     public Component getUIComponent()
     {
-        return null;
+        if (model == null)
+        {
+            buildTable();
+        }
+        return mainComp;
     }
 
 
@@ -173,7 +298,14 @@ public class TableViewObj implements Viewable
      */
     public void setDataObj(final Object dataObj)
     {
-        // do nothing
+        if (dataObj instanceof List<?>)
+        {
+            
+        } else if (dataObj instanceof Set<?>)
+        {
+            int x = 0;
+            x++;
+        }
     }
 
     /* (non-Javadoc)
@@ -242,13 +374,19 @@ public class TableViewObj implements Viewable
         return null;
     }
 
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.Viewable#getFieldNames(java.util.List)
+     * @see edu.ku.brc.ui.forms.Viewable#getFieldIds(java.util.List)
      */
     public void getFieldIds(final List<String> fieldIds)
     {
-        // do nothing
+        /*for (ColumnInfo fieldInfo : controlsById.values())
+        {
+            if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+            {
+                fieldIds.add(((FormCellField)fieldInfo.getFormCell()).getId());
+            }
+        }*/
+
     }
 
     /* (non-Javadoc)
@@ -264,7 +402,7 @@ public class TableViewObj implements Viewable
      */
     public View getView()
     {
-        return null;
+        return view;
     }
     
     /* (non-Javadoc)
@@ -272,7 +410,7 @@ public class TableViewObj implements Viewable
      */
     public FormViewDef getViewDef()
     {
-        return null;
+        return (FormViewDef)altView.getViewDef();
     }
     
     /* (non-Javadoc)
@@ -280,7 +418,7 @@ public class TableViewObj implements Viewable
      */
     public AltView getAltView()
     {
-        return null;
+        return altView;
     }
     
     /* (non
@@ -318,15 +456,449 @@ public class TableViewObj implements Viewable
      */
     public void shutdown()
     {
-        if (multiView != null)
-        {
-            multiView.shutdown();
-            multiView = null;
-        }
-        parent        = null;
+        //if (mvParent != null)
+        //{
+        //    mvParent.shutdown();
+        //    mvParent = null;
+        //}
+        mvParent      = null;
         tableViewDef  = null;
         table         = null;
         tableScroller = null;
         mainComp      = null;
+    }
+    
+    /**
+     * Concats a name onto the fullObjPath with a "." separator if necessary.
+     * @param cName the component's name
+     * @return the new name
+     */
+    protected String appendName(final String cName)
+    {
+        return fullObjPath.toString() + (fullObjPath.length() > 0 ? "." : "") + cName;
+    }
+    
+    //-------------------------------------------------
+    // ViewBuilderIFace
+    //-------------------------------------------------
+
+    /**
+     * Adds a control by name so it can be looked up later.
+     * @param formCell the FormCell def that describe the cell
+     * @param label the the label to be added
+     */
+
+    public void addLabel(final FormCellLabel formCell, final JLabel label)
+    {
+        if (formCell != null && StringUtils.isNotEmpty(formCell.getLabelFor()))
+        {
+            String fullCompName = appendName(formCell.getLabelFor());
+            //if (labels.get(fullCompName) != null)
+            //{
+            //    log.error("****** Two labels have the same id ["+fullCompName+"] "+formViewDef.getName());
+            //}
+            
+            ColumnInfo colInfo = controlsById.get(fullCompName);
+            if (colInfo == null)
+            {
+                colInfo = new ColumnInfo(formCell, fullCompName, null, null);
+                controlsById.put(fullCompName, colInfo);
+            }
+            colInfo.setLabel(formCell.getLabel());
+            
+        }
+        log.info("Label["+label.getText()+"]");
+    }
+
+    /**
+     * Adds a control by name so it can be looked up later.
+     * @param formCell the FormCell def that describe the cell
+     * @param control the control
+     */
+    public void registerControl(final FormCell formCell, final Component control)
+    {
+        if (formCell != null)
+        {
+            String fullCompName = appendName(formCell.getName());
+            
+            //if (controlsById.get(formCell.getId()) != null)
+            //{
+            //    log.error("**** Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
+            //}
+
+            //if (controlsByName.get(fullCompName) != null)
+            //{
+            //    log.error("**** Two controls have the same name ["+fullCompName+"] "+formViewDef.getName());
+            //}
+
+            JScrollPane scrollPane;
+            Component comp;
+            if (control instanceof JScrollPane)
+            {
+                scrollPane = (JScrollPane)control;
+                comp = scrollPane.getViewport().getView();
+                
+            } else
+            {
+                scrollPane = null;
+                comp = control;
+            }
+            
+            String     fullId  = appendName(formCell.getId());
+            ColumnInfo colInfo = controlsById.get(fullId);
+            if (colInfo == null)
+            {
+                colInfo = new ColumnInfo(formCell, fullCompName, comp, scrollPane);
+                controlsById.put(fullId, colInfo);
+            }
+            colInfo.setComp(comp);
+            colInfo.setScrollPane(scrollPane);
+            columnList.add(colInfo);
+            controlsByName.put(fullCompName, colInfo);
+        }
+        
+        log.info("RegControl["+formCell.getName()+"]");
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addControlToUI(java.awt.Component, int, int, int, int)
+     */
+    public void addControlToUI(Component control, int rowInx, int colInx, int colSpan, int rowSpan)
+    {
+        if (control == null)
+        {
+            int x = 0;
+            x++;
+        }
+        log.info("addControlToUI["+control+"]");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSeparator(java.lang.String, int, int, int)
+     */
+    public Component createSeparator(String title, int rowInx, int colInx, int colSpan)
+    {
+        return null;
+    }
+    
+    public JComponent createRecordIndentifier(String title, ImageIcon icon)
+    {
+        // not supported
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSubView(edu.ku.brc.ui.forms.persist.FormCell, edu.ku.brc.ui.forms.MultiView, int, int, int, int)
+     */
+    public void addSubView(FormCellSubView subFormCell, MultiView subView, int colInx, int rowInx, int colSpan, int rowSpan)
+    {
+        subViewStack.push(subFormCell);
+        if (fullObjPath.length() > 0)
+        {
+            fullObjPath.append(".");
+        }
+        fullObjPath.append(subFormCell.getName());
+        log.info("Add Name["+fullObjPath.toString()+"]");
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#closeSubView(edu.ku.brc.ui.forms.persist.FormCellSubView)
+     */
+    public void closeSubView(FormCellSubView subFormCell)
+    {
+        subViewStack.pop();
+        fullObjPath.setLength(fullObjPath.length()-subFormCell.getName().length());
+        if (fullObjPath.length() > 1)
+        {
+            fullObjPath.setLength(fullObjPath.length()-1);
+        }
+        log.info("Done Name["+fullObjPath.toString()+"]");
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#shouldFlatten()
+     */
+    public boolean shouldFlatten()
+    {
+        return true;
+    }
+    
+    //-----------------------------------------------------
+    // ValidationListener
+    //-----------------------------------------------------
+
+
+    /* (non-Javadoc)
+     * @see ValidationListener#wasValidated(UIValidator)
+     */
+    public void wasValidated(final UIValidator validator)
+    {
+        if (validationInfoBtn != null)
+        {
+            ImageIcon icon = IconManager.getImage("ValidationValid");
+            UIValidatable.ErrorType state = formValidator.getState();
+
+            if (state == UIValidatable.ErrorType.Incomplete)
+            {
+                icon = IconManager.getImage("ValidationWarning");
+
+            } else if (state == UIValidatable.ErrorType.Error)
+            {
+                icon = IconManager.getImage("ValidationError");
+            }
+
+            validationInfoBtn.setIcon(icon);
+        }
+    }
+
+    //-------------------------------------------------
+    // ResultSetControllerListener
+    //-------------------------------------------------
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexChanged(int)
+     */
+    public void indexChanged(int newIndex)
+    {
+        dataObj = list.get(newIndex);
+
+        setDataIntoUI();
+
+        if (saveBtn != null)
+        {
+            saveBtn.setEnabled(false);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
+     */
+    public boolean indexAboutToChange(int oldIndex, int newIndex)
+    {
+        return false;// XXX checkForChanges();
+
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#newRecordAdded()
+     */
+    public void newRecordAdded()
+    {
+        if (mvParent.getMultiViewParent() != null)
+        {
+            formValidator.setHasChanged(true);
+        }
+    }
+
+
+    //-------------------------------------------------
+    // AppPrefsChangeListener
+    //-------------------------------------------------
+
+    protected void setColorOnControls(final int colorType, final Color color)
+    {
+        /*
+        for (ColumnInfo fieldInfo : controlsById.values())
+        {
+            if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+            {
+                FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
+                String uiType = cellField.getUiType();
+                //log.debug("["+uiType+"]");
+
+                // XXX maybe check check to see if it is a JTextField component instead
+                if (uiType.equals("dsptextfield") || uiType.equals("dsptextarea"))
+                {
+                    Component comp = fieldInfo.getComp();
+                    switch (colorType)
+                    {
+                        case 0 : {
+
+                            if (comp instanceof JScrollPane)
+                            {
+                                ((JScrollPane)comp).getViewport().getView().setBackground(color);
+                            } else
+                            {
+                                fieldInfo.getComp().setBackground(color);
+                            }
+                        } break;
+
+                        //case 1 : {
+                        //    if (comp instanceof )
+                        //    //fieldInfo.getComp().setBackground(color);
+                        //} break;
+                    }
+                }
+            }
+        }*/
+
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.AppPrefsChangeListener#preferenceChange(edu.ku.brc.af.prefs.AppPrefsChangeEvent)
+     */
+    public void preferenceChange(AppPrefsChangeEvent evt)
+    {
+        if (evt.getKey().equals("viewfieldcolor"))
+        {
+            ColorWrapper viewFieldColorLocal = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
+            setColorOnControls(0, viewFieldColorLocal.getColor());
+        }
+        //log.debug("Pref: ["+evt.getKey()+"]["+pref.get(evt.getKey(), "XXX")+"]");
+    }
+
+
+    //-------------------------------------------------
+    // ColumnInfo
+    //-------------------------------------------------
+    class ColumnInfo
+    {
+        protected FormCell    formCell;
+        protected String      fullCompName;
+        protected String      label;
+        protected Component   comp;
+        protected JScrollPane scrollPane;
+
+        public ColumnInfo(FormCell     formCell, 
+                          String       fullCompName, 
+                          Component    comp, 
+                          JScrollPane  scrollPane)
+        {
+            this.formCell       = formCell;
+            this.fullCompName   = fullCompName;
+            this.comp           = comp;
+            this.scrollPane     = scrollPane;
+        }
+
+
+        public String getFullCompName()
+        {
+            return fullCompName;
+        }
+        
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public void setLabel(String label)
+        {
+            this.label = label;
+        }
+
+        public String getName()
+        {
+            return formCell.getName();
+        }
+
+        public String getId()
+        {
+            return formCell.getId();
+        }
+
+        public Component getComp()
+        {
+            return comp;
+        }
+        
+        public void setComp(Component comp)
+        {
+            this.comp = comp;
+        }
+
+        public void setScrollPane(JScrollPane scrollPane)
+        {
+            this.scrollPane = scrollPane;
+        }
+
+        public FormCell getFormCell()
+        {
+            return formCell;
+        }
+
+        public void setEnabled(boolean enabled)
+        {
+            //log.debug(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
+            comp.setEnabled(enabled);
+            if (scrollPane != null)
+            {
+                scrollPane.setEnabled(enabled);
+            }
+        }
+
+        /**
+         * Tells it to clean up
+         */
+        public void shutdown()
+        {
+            if (comp instanceof UIValidatable)
+            {
+                ((UIValidatable)comp).cleanUp();
+            }
+            formCell   = null;
+            comp       = null;
+            scrollPane = null;
+        }
+    }
+    
+    public class ColTableModel implements TableModel
+    {
+        protected Vector<TableModelListener> listeners = new Vector<TableModelListener>();
+        protected List<String[]> rowData;
+        protected Vector<String> methods;
+
+
+        /**
+         * @param rowData
+         */
+        public ColTableModel()
+        {
+        }
+
+        public int getColumnCount()
+        {
+            return columnList.size();
+        }
+
+        public String getColumnName(int column)
+        {
+            return columnList.get(column).getLabel();
+        }
+
+        public int getRowCount()
+        {
+            return 0;//rowData.size();
+        }
+
+        public Object getValueAt(int row, int column)
+        {
+            return "";//rowData.get(row)[column];
+        }
+
+        public boolean isCellEditable(int row, int column)
+        {
+            return false;
+        }
+
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            return String.class;
+        }
+
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex)
+        {
+            return;
+        }
+
+        public void addTableModelListener(TableModelListener l)
+        {
+            listeners.add(l);
+        }
+
+        public void removeTableModelListener(TableModelListener l)
+        {
+            listeners.remove(l);
+        }
     }
 }

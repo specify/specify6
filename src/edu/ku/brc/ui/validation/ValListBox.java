@@ -43,7 +43,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 /**
  * A JList that implements UIValidatable for participating in validation
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

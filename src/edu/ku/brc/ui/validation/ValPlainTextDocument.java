@@ -20,7 +20,7 @@ import javax.swing.text.PlainDocument;
 /**
  * Simple PlainDocument that enables the shutting off of notifications on document changes
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

@@ -21,7 +21,7 @@ import java.util.Map;
  * This knows how to get a field's value from a Hashtable or any object implementing the java.util.Map interface.<br><br>
  * Implementation idea: Doesn't support any field names with a "." in them, but will format Dates.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

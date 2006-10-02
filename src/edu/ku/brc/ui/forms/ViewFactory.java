@@ -49,11 +49,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.BrowserLauncher;
@@ -200,8 +195,9 @@ public class ViewFactory
 
         } else if (viewDef.getType() == FormViewDef.ViewType.table)
         {
+            Viewable viewable = buildTableViewable(view, altView, parentView, options);
             this.rootMultiView =  null;
-            return null;
+            return viewable;
 
         } else if (viewDef.getType() == FormViewDef.ViewType.field)
         {
@@ -503,7 +499,7 @@ public class ViewFactory
      * @param parent MultiView parent
      * @param formViewDef the FormViewDef (Viewdef)
      * @param validator optional validator
-     * @param formViewObj the FormViewObj this row belongs to
+     * @param viewBldObj the FormViewObj this row belongs to
      * @param mode the creation mode
      * @param builder the current JGoodies builder
      * @param labelsForHash the has table for label
@@ -511,16 +507,14 @@ public class ViewFactory
      * @param currDataObj the current data object
      * @param formRows the list of rows to be processed
      */
-    protected void processRows(final MultiView       parent,
-                               final FormViewDef     formViewDef,
-                               final FormValidator   validator,
-                               final FormViewObj     formViewObj,
+    protected void processRows(final MultiView         parent,
+                               final FormViewDef       formViewDef,
+                               final FormValidator     validator,
+                               final ViewBuilderIFace  viewBldObj,
                                final AltView.CreationMode mode,
-                               final PanelBuilder    builder,
                                final Hashtable<String, JLabel> labelsForHash,
-                               final CellConstraints cc,
-                               final Object          currDataObj,
-                               final List<FormRow>   formRows)
+                               final Object            currDataObj,
+                               final List<FormRow>     formRows)
     {
         int rowInx    = 1;
         int curMaxRow = 1;
@@ -551,11 +545,8 @@ public class ViewFactory
                     String lblStr = cellLabel.getLabel();
                     if (cellLabel.isRecordObj())
                     {
-                        DraggableRecordIdentifier dor = DraggableRecordIdentifierFactory.getInstance().createDraggableRecordIdentifier(cellLabel.getIcon());
-                        compToAdd = dor;
-                        //dor.createMouseInputAdapter(); // this makes it draggable
-                        //dor.setData(null);
-                        formViewObj.setDataObjectRep(dor);
+                        JComponent riComp = viewBldObj.createRecordIndentifier(lblStr, cellLabel.getIcon());
+                        compToAdd = riComp;
                         
                     } else
                     {
@@ -563,7 +554,7 @@ public class ViewFactory
                         //lbl.setFont(boldLabelFont);
                         labelsForHash.put(cellLabel.getLabelFor(), lbl);
                         compToAdd      =  lbl;
-                        formViewObj.addLabel(cellLabel, lbl);
+                        viewBldObj.addLabel(cellLabel, lbl);
                     }
 
                     addToValidator = false;
@@ -861,10 +852,10 @@ public class ViewFactory
                 } else if (cell.getType() == FormCell.CellType.separator)
                 {
                     // still have compToAdd = null;
-                    Component sep = builder.addSeparator(((FormCellSeparator)cell).getLabel(), cc.xyw(colInx, rowInx, cell.getColspan()));
+                    Component sep = viewBldObj.createSeparator(((FormCellSeparator)cell).getLabel(), colInx, rowInx, cell.getColspan());
                     if (cell.getName().length() > 0)
                     {
-                        formViewObj.addControl(cell, sep);
+                        viewBldObj.registerControl(cell, sep);
                     }
                     curMaxRow = rowInx;
                     colInx += 2;
@@ -878,28 +869,40 @@ public class ViewFactory
                     View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
                     if (subView != null)
                     {
-                        if (parent != null)
+                        if (!viewBldObj.shouldFlatten())
                         {
-                            int options = (cellSubView.isSingleValueFromSet() ? 0 : MultiView.RESULTSET_CONTROLLER) | MultiView.VIEW_SWITCHER;
-                                
-                            MultiView multiView = new MultiView(parent, 
-                                                                subView, 
-                                                                parent.getCreateWithMode(), 
-                                                                options);
-                            parent.addChild(multiView);
-                            
-                            
-                            builder.add(multiView, cc.xywh(colInx, rowInx, cellSubView.getColspan(), 1, "fill,fill"));
-                            //String classDesc = cellSubView.getClassDesc();
-                            //if (cell.isIgnoreSetGet() || (classDesc != null && classDesc.length() > 0))
-                            //{
-                                formViewObj.addSubView(cell, multiView);
-                                
-                            //}
-                            curMaxRow = rowInx;
+                            if (parent != null)
+                            {
+                                int options = (cellSubView.isSingleValueFromSet() ? 0 : MultiView.RESULTSET_CONTROLLER) | MultiView.VIEW_SWITCHER;
+                                    
+                                MultiView multiView = new MultiView(parent, 
+                                                                    subView, 
+                                                                    parent.getCreateWithMode(), 
+                                                                    options);
+                                parent.addChild(multiView);
+    
+                                viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);                               
+                                viewBldObj.closeSubView(cellSubView);
+                                curMaxRow = rowInx;
+                            } else
+                            {
+                                log.error("buildFormView - parent is NULL for subview ["+subViewName+"]");
+                            }
                         } else
                         {
-                            log.error("buildFormView - parent is NULL for subview ["+subViewName+"]");
+                            viewBldObj.addSubView(cellSubView, parent, colInx, rowInx, cellSubView.getColspan(), 1); 
+                            
+                            AltView  altView;
+                            //if (createWithMode != null)
+                            //{
+                            //    altView = subView.getDefaultAltViewWithMode(createWithMode);
+                            //} else
+                            //{
+                                altView = subView.getDefaultAltView();
+                            //}
+                            FormViewDef subFormViewDef = (FormViewDef)altView.getViewDef();
+                            processRows(parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
+                            viewBldObj.closeSubView(cellSubView);
                         }
 
                     } else
@@ -917,27 +920,25 @@ public class ViewFactory
                     
                 } else if (cell.getType() == FormCell.CellType.panel)
                 {
-                    FormCellPanel cellPanel = (FormCellPanel)cell;
-                    String panelType = cellPanel.getPanelType();
-
-                    if (isEmpty(panelType))
+                    FormCellPanel           cellPanel = (FormCellPanel)cell;
+                    PanelViewable.PanelType panelType = PanelViewable.getType(cellPanel.getPanelType());
+                    
+                    if (panelType == PanelViewable.PanelType.Panel)
                     {
-                        DefaultFormBuilder panelBuilder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()));
+                        PanelViewable panelViewable = new PanelViewable(cellPanel);
 
-                        //Color[] colors = new Color[] {Color.YELLOW, Color.GREEN, Color.BLUE, Color.ORANGE, Color.MAGENTA};
-                        //panelBuilder.getPanel().setBackground(colors[cnt % colors.length]);
-                        //cnt++;
+                        processRows(parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
 
-                        processRows(parent, formViewDef, validator, formViewObj, mode, panelBuilder, labelsForHash, new CellConstraints(), currDataObj, cellPanel.getRows());
+                        compToAdd = panelViewable;
 
-                        compToAdd = panelBuilder.getPanel();
-
-                    } else if (panelType.equalsIgnoreCase("buttonbar"))
+                    } else if (panelType == PanelViewable.PanelType.ButtonBar)
                     {
-
-                        JButton[] btns = processRows(formViewObj, cellPanel.getRows());
-                        compToAdd      = com.jgoodies.forms.factories.ButtonBarFactory.buildCenteredBar(btns);
-                   }
+                        compToAdd = PanelViewable.buildButtonBar(processRows(viewBldObj, cellPanel.getRows()));
+                        
+                    } else
+                    {
+                        throw new RuntimeException("Panel Type is not implemented.");
+                    }
 
                     addControl     = false;
                     addToValidator = false;
@@ -947,14 +948,15 @@ public class ViewFactory
                 if (compToAdd != null)
                 {
                     //System.out.println(colInx+"  "+rowInx+"  "+colspan+"  "+rowspan+"  "+compToAdd.getClass().toString());
-                    builder.add(compToAdd, cc.xywh(colInx, rowInx, colspan, rowspan));
-
-                    curMaxRow = Math.max(curMaxRow, rowspan+rowInx);
+                    viewBldObj.addControlToUI(compToAdd, colInx, rowInx, colspan, rowspan);
 
                     if (addControl)
                     {
-                        formViewObj.addControl(cell, compToReg == null ? compToAdd : compToReg);
+                        viewBldObj.registerControl(cell, compToReg == null ? compToAdd : compToReg);
                     }
+                    
+                    curMaxRow = Math.max(curMaxRow, rowspan+rowInx);
+
 
                     if (validator != null && addToValidator)
                     {
@@ -973,12 +975,12 @@ public class ViewFactory
 
     /**
      * Processes the rows for a button bar.
-     * @param formViewObj formViewObj
+     * @param viewBldObj formViewObj
      * @param formRows formRows
      * @return the array of buttons
      */
-    protected JButton[] processRows(final FormViewObj    formViewObj,
-                                    final List<FormRow>  formRows)
+    protected JButton[] processRows(final ViewBuilderIFace viewBldObj,
+                                    final List<FormRow>    formRows)
     {
         List<JButton> btns = new ArrayList<JButton>();
 
@@ -994,7 +996,7 @@ public class ViewFactory
                     {
                         btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));
                     }
-                    formViewObj.addControl(cell, btn);
+                    viewBldObj.registerControl(cell, btn);
                     btns.add(btn);
                 }
             }
@@ -1045,22 +1047,12 @@ public class ViewFactory
 
             Object currDataObj = formViewObj.getCurrentDataObj();
 
-            // Figure columns
-            FormLayout      formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
-            PanelBuilder    builder    = new PanelBuilder(formLayout);
-            CellConstraints cc         = new CellConstraints();
+            processRows(parentView, formViewDef, validator, formViewObj, altView.getMode(), labelsForHash, currDataObj, formViewDef.getRows());
 
-            processRows(parentView, formViewDef, validator, formViewObj, altView.getMode(), builder, labelsForHash, cc, currDataObj, formViewDef.getRows());
-
-
-            if (parentView == null)
-            {
-                builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-            }
 
             if (validatedPanel != null)
             {
-                validatedPanel.addPanel(builder.getPanel());
+                validatedPanel.addPanel(formViewObj.getPanel());
 
                 // Here we add all the components whether they are used or not
                 // XXX possible optimization is to only load the ones being used (although I am not sure how we will know that)
@@ -1092,7 +1084,7 @@ public class ViewFactory
                 
             } else
             {
-                formViewObj.setFormComp(builder.getPanel());
+                formViewObj.setFormComp(formViewObj.getPanel());
             }
 
             return formViewObj;
@@ -1106,24 +1098,89 @@ public class ViewFactory
     }
     
     /**
-     * Creates a FormViewObj.
-     * @param multiView the parent multiView
-     * @param view the definition of the form view to be created
-     * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
-     * @param data the data to be set into the form
-     * @param isNewObject true means it is for creating a new object, false means it is editting one
-     * @return a new FormViewObj
+     * Creates a Table View.
+     * @param view view the view definition
+     * @param altView the altView to use (if null, then it uses the default ViewDef)
+     * @param parentView the MultiView parent (this may be null)
+     * @param options the options needed for creating the form
+     * @return the form
      */
-    /*public static FormViewObj createFormView(final MultiView multiView, 
-                                             final View view, 
-                                             final String altName, 
-                                             final Object data,
-                                             final int    options)
+    public TableViewObj buildTableViewable(final View        view,
+                                           final AltView     altView,
+                                           final MultiView   parentView,
+                                           final int         options)
     {
-        
-        return createFormView(multiView, view, altName, data, options);
-    }*/
-    
+        try
+        {
+            FormViewDef formViewDef = (FormViewDef)altView.getViewDef();
+
+            Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+            
+            /*
+            ValidatedJPanel validatedPanel = null;
+            FormValidator   validator      = null;
+            if (altView.isValidated())
+            {
+                validatedPanel = new ValidatedJPanel();
+                validator      = validatedPanel.getFormValidator();
+                validator.setDataChangeNotification(true);
+            }
+            */
+            
+            TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options);
+
+            //Object currDataObj = tableViewObj.getCurrentDataObj();
+
+            processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
+
+            /*
+            if (validatedPanel != null)
+            {
+                validatedPanel.addPanel(formViewObj.getPanel());
+
+                // Here we add all the components whether they are used or not
+                // XXX possible optimization is to only load the ones being used (although I am not sure how we will know that)
+                Map<String, Component> mapping = formViewObj.getControlMapping();
+                for (String id : mapping.keySet())
+                {
+                    validatedPanel.addValidationComp(id, mapping.get(id));
+                }
+                Map<String, String> enableRules = formViewDef.getEnableRules();
+
+                // Load up validation Rules
+                FormValidator fv = validatedPanel.getFormValidator();
+                formViewObj.setValidator(fv);
+                
+                fv.setName(formViewDef.getName()); // For Debugging
+
+                for (String id : enableRules.keySet())
+                {
+                    fv.addEnableRule(id, enableRules.get(id));
+                }
+
+                // Load up labels and associate them with there component
+                for (String idFor : labelsForHash.keySet())
+                {
+                    fv.addUILabel(idFor, labelsForHash.get(idFor));
+                }
+
+                formViewObj.setFormComp(validatedPanel);
+                
+            } else
+            {
+                formViewObj.setFormComp(formViewObj.getPanel());
+            }
+*/
+            return tableViewObj;
+
+        } catch (Exception e)
+        {
+            log.error("buildPanel - Outer Name["+altView.getName()+"]");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /**
      * Creates a FormViewObj.

@@ -22,7 +22,7 @@ import java.util.Set;
  * A pickList of items. A pcikList can be readonly or have a set number of items where the oldest items "falls off" the queue
  * and it reaches it's limit.
  *    
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

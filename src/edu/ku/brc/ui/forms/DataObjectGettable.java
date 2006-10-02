@@ -22,7 +22,7 @@ package edu.ku.brc.ui.forms;
  * <li>The data object may be a XML document and the field name may be a XPath to the data.</li></ul>
  * <br>
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

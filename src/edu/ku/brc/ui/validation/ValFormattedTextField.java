@@ -51,7 +51,7 @@ import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
  * via the UIFieldFormatterMgr class. This is idea for text fields that have a standard size and a specific format (i.e. Dates)
  * The mask enables the "fields" and separators to be specifically defined.
 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

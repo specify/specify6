@@ -52,7 +52,7 @@ import javax.swing.JComponent;
  * font can be done using <code>setFont()</code> and
  * <code>setForeground()</code>.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author Romain Guy
  * @version 1.0

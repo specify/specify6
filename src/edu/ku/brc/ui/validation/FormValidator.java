@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
  * Both UI Controls and thier labels are registered by name. When a component is disabledits
  * label can also be disabled.
 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

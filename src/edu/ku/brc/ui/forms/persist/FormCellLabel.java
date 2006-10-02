@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.ui.IconManager;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

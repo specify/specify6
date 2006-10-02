@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Definition of an Alternate View which can be an "Edit", "View", "None"
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  *
  * @author rods
  *

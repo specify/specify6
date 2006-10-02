@@ -18,7 +18,7 @@ package edu.ku.brc.ui.dnd;
  * Interface that enables data objects to be an aggregation. 
  * This way consumers can ask for a specific class of a data object to be returned.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

@@ -18,7 +18,7 @@ package edu.ku.brc.ui;
  * Listeners are notified by the dispatcher through this interface that a command has been generated. 
  * Each listener is then notified in no particular order. Any consumer can "consuke" the command at 
  * any time
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  *.
  * @author rods
  *

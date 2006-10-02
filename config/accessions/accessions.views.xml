@@ -99,14 +99,7 @@
 
             <rows>
                 <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
-                        <rows>
-                            <row>
-                                <cell type="label" icon="Accession" recordobj="true"/>
-                                <cell type="separator" label="KU Accessions"/>
-                            </row>
-                        </rows>
-                    </cell>
+                	<cell type="label" label="KU Accessions" icon="Accession" recordobj="true" colspan="12"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>

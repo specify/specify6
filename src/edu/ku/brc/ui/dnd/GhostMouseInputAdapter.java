@@ -33,7 +33,7 @@ import edu.ku.brc.ui.UICacheManager;
 /**
  * Class responsible for doing all the work for the Drag portion of Drag and Drop.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

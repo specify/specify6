@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * This knows how to set a field's value into a Hashtable or any object implementing the java.util.Map interface.<br><br>
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

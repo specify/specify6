@@ -53,7 +53,7 @@ import edu.ku.brc.ui.db.PickListItem;
 /**
  * A JComboBox that implements UIValidatable for participating in validation
 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

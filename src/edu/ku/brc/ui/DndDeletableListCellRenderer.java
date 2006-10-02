@@ -25,7 +25,7 @@ import edu.ku.brc.ui.dnd.DndDeletable;
 /**
  * Renders a list of DndDeletable Items
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

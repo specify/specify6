@@ -24,7 +24,7 @@ import javax.swing.table.AbstractTableModel;
  * JTables. Classes are derived from this class so they can show more or less information for the
  * items that are being displayed.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

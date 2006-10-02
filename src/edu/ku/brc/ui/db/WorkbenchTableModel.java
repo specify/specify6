@@ -4,7 +4,7 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author meg
  *

@@ -25,7 +25,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

@@ -7,7 +7,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

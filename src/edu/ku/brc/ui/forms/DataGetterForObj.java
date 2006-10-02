@@ -31,7 +31,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
  * Implementation idea: We may need to cache the method objects,
  * and then the factory will want to create a different object per class that will be using this)
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

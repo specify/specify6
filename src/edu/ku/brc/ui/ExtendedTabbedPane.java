@@ -12,7 +12,7 @@ import javax.swing.event.MouseInputAdapter;
 /**
  * Temporary Class until Mustang ships, it places an "X" in the bottom right of the TabbedPane for closing tabs.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

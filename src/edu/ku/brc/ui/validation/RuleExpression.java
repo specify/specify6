@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
  * and it is passed in a context to which it evaludates the rule. The conttext comes from the form so all the
  * ui controls are available by name in the context.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

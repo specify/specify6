@@ -21,7 +21,7 @@ import javax.swing.SwingUtilities;
 
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

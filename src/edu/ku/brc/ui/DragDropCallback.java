@@ -3,7 +3,7 @@ package edu.ku.brc.ui;
 /**
  * Provides callbacks for drop events on JLists.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author jstewart
  * @version %I% %G%

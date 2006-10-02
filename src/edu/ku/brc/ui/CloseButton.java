@@ -22,7 +22,7 @@ import java.awt.Rectangle;
 /**
  *  A simple vector button that draw a close on its face.
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

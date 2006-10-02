@@ -22,7 +22,7 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
  * Class to get values from a DOM Document.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  */

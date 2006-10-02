@@ -20,7 +20,7 @@ import java.awt.Component;
 /**
  * Interface for validatable components.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  *
  * @author rods
  *

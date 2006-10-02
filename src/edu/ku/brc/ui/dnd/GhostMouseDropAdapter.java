@@ -14,7 +14,7 @@ import edu.ku.brc.ui.UICacheManager;
  * Implements the mousePressed and release methods to start and stop the drag
  * (Adpated from Romain Guy's Glass Pane Drag Photo Demo)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  * @author Romain Guy

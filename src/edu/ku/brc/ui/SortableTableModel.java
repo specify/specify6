@@ -33,7 +33,7 @@ import javax.swing.table.TableModel;
  * A generic tableModel that does the sorting and is aggregated with the actual model. The Sorted model keeps an array 
  * for mapping the sorted indexes into the actual model.
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

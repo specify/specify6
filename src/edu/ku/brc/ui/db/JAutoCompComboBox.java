@@ -29,7 +29,7 @@ import javax.swing.text.BadLocationException;
  * The searches in the list can be case-sensitive or insensitive. 
  * You can also set it to ask if new items should be added.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

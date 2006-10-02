@@ -36,7 +36,7 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
  * Caches icon in three sizes (32, 24, 16)
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

@@ -15,7 +15,7 @@
 package edu.ku.brc.ui.forms;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
  * 
  * (Adpated from Romain Guy's Glass Pane Drag Photo Demo)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  * @author Romain Guy

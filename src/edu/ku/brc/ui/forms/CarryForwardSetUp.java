@@ -52,7 +52,7 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
  * all the CF info from the FormViewObj so it can tell it whether a field has been added or removed form the 
  * Carry Forward info.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

@@ -38,7 +38,7 @@ import javax.swing.border.EmptyBorder;
  * A renderer need to be created so GradiantLabel and GradiantButton can share all the code.
  *
  * When the icon is set into the JButton constructor it changes the font size
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

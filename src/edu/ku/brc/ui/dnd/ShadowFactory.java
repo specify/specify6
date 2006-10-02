@@ -91,7 +91,7 @@ import java.util.HashMap;
  * <h2>Threading Issues</h2>
  * <p><code>ShadowFactory</code> is not guaranteed to be thread-safe.</p>
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author Romain Guy
  * @author Sebastien Petrucci <sebastien_petrucci@yahoo.fr>

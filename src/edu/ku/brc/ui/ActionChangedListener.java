@@ -24,7 +24,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

@@ -26,7 +26,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.helpers.XMLHelper;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

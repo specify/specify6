@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
  * 
  * An DataAction Event that knows the source and destination and can carry a data object with it.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

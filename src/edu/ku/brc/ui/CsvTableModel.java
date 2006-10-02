@@ -12,7 +12,7 @@ import javax.swing.table.TableModel;
 import org.apache.commons.lang.StringUtils;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *

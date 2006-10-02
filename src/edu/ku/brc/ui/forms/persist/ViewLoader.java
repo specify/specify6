@@ -44,7 +44,7 @@ import edu.ku.brc.ui.validation.ComboBoxFromQueryFactory;
  * If it is not unique than it throws an exception.<br> In this case a "form" is really the definition of a form. The form's object hierarchy
  * is used to creates the forms using Swing UI objects. The classes will also be used by the forms editor.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  */
