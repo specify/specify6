@@ -125,4 +125,14 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     // Delete Methods
 
     // Delete Add Methods
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 57;
+    }
+
 }

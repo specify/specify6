@@ -96,10 +96,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
-    public Integer getTableId()
-    {
-        throw new RuntimeException("You must implement this for all the classes! (Or certainly this class)");
-    }
+    public abstract Integer getTableId();
 
     //---------------------------------------------------------------------------
     // Property Change Support

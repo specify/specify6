@@ -147,4 +147,14 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable {
     }
 
     // Delete Add Methods
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 65;
+    }
+
 }

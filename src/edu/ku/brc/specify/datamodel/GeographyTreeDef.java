@@ -266,4 +266,14 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		
 		return null;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 44;
+    }
+
 }

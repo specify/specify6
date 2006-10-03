@@ -269,4 +269,14 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		
 		return null;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 59;
+    }
+
 }

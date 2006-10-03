@@ -299,8 +299,17 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     {
         this.localities.remove(localitiesArg);
         localitiesArg.getCollectionObjDefs().remove(this);
-       ;
     }
 
     // Delete Add Methods
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 26;
+    }
+
 }

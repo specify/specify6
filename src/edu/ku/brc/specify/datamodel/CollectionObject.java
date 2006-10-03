@@ -652,6 +652,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
+    @Override
     public Integer getTableId()
     {
         return 1;

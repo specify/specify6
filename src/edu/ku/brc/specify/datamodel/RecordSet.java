@@ -33,7 +33,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable 
 
      protected Long recordSetId;
      protected String name;
-     protected Integer tableId;
+     protected Integer dbTableId;
      protected String remarks;
      protected Set<RecordSetItem> items;
      protected SpecifyUser owner;
@@ -56,10 +56,10 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable 
     }
 
     /** constructor with id */
-    public RecordSet(final String name, final int tableId) 
+    public RecordSet(final String name, final int dbTableId) 
     {
         this.name = name;
-        this.tableId = tableId;
+        this.dbTableId = dbTableId;
     }
 
     // Initializer
@@ -105,14 +105,14 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable 
         this.name = name;
     }
 
-    public Integer getTableId()
+    public Integer getDbTableId()
     {
-        return this.tableId;
+        return this.dbTableId;
     }
 
-    public void setTableId(Integer tableId)
+    public void setDbTableId(Integer tableId)
     {
-        this.tableId = tableId;
+        this.dbTableId = tableId;
     }
 
     public Set<RecordSetItem> getItems() {
@@ -183,5 +183,14 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable 
     public void setDataSpecificIcon(ImageIcon dataSpecificIcon)
     {
         this.dataSpecificIcon = dataSpecificIcon;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 68;
     }
 }

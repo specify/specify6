@@ -102,9 +102,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         return this.accessionId;
     }
 
-    /**
-     * Generic Getter for the ID Property.
-     * @returns ID Property.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
     @Override
     public Long getId()

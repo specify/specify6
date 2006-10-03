@@ -113,7 +113,7 @@ public class RecordSetTask extends BaseTask
                 HibernateUtil.getCurrentSession().evict(recordSet);
                 
                 NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), RECORD_SET, "Delete", recordSet);
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getTableId());
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
                 if (tblInfo != null)
                 {
                     ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -150,7 +150,7 @@ public class RecordSetTask extends BaseTask
     {
         NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
         
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getTableId());
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
         if (tblInfo != null)
         {
             ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -259,7 +259,7 @@ public class RecordSetTask extends BaseTask
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
             RecordSet rs = (RecordSet)nbi.getData();
-            if (tableId == -1 || tableId == rs.getTableId())
+            if (tableId == -1 || tableId == rs.getDbTableId())
             {
                 list.add(rs);
             }
@@ -359,7 +359,7 @@ public class RecordSetTask extends BaseTask
             {
                 RecordSet srcRecordSet = (RecordSet)srcObj;
                 RecordSet dstRecordSet = (RecordSet)dstObj;
-                if (srcRecordSet.getTableId() == dstRecordSet.getTableId())
+                if (srcRecordSet.getDbTableId() == dstRecordSet.getDbTableId())
                 {
                     int oldSize = dstRecordSet.getItems().size();
                     Vector<RecordSetItem> dstList  = new Vector<RecordSetItem>(dstRecordSet.getItems());
@@ -396,8 +396,8 @@ public class RecordSetTask extends BaseTask
                     }
                 } else
                 {
-                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.lookupInfoById(srcRecordSet.getTableId());
-                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.lookupInfoById(dstRecordSet.getTableId());
+                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.lookupInfoById(srcRecordSet.getDbTableId());
+                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.lookupInfoById(dstRecordSet.getDbTableId());
                     JOptionPane.showMessageDialog(null, 
                         String.format(getResourceString("RECORDSET_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
                             getResourceString("Error"), 

@@ -119,6 +119,14 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     }
 
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 80;
+    }
 
 
 }

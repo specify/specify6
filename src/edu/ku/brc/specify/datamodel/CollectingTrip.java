@@ -167,4 +167,14 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     public void setCollectingEvents(Set<CollectingEvent> collectingEvents) {
         this.collectingEvents = collectingEvents;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 87;
+    }
+
 }

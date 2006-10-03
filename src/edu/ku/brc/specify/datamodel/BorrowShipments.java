@@ -126,4 +126,14 @@ public class BorrowShipments extends DataModelObjBase implements java.io.Seriali
     // Delete Methods
 
     // Delete Add Methods
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 22;
+    }
+
 }

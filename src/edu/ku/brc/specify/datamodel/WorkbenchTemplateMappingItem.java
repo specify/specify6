@@ -154,6 +154,14 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
 
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 82;
+    }
 
 
 }

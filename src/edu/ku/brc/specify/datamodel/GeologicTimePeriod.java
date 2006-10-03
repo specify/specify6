@@ -623,4 +623,14 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	{
 		return new GeologicTimePeriodComparator();
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 46;
+    }
+
 }

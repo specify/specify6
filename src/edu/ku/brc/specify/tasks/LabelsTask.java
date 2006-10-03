@@ -372,7 +372,7 @@ public class LabelsTask extends BaseTask
             RecordSet rs = (RecordSet)data;
 
             String fileName = null;
-            if (countLabelsWithSimilarTableIds(rs.getTableId(), true) > 1) // only Count the ones that require data
+            if (countLabelsWithSimilarTableIds(rs.getDbTableId(), true) > 1) // only Count the ones that require data
             {
                 fileName = askForLabelName();
             } else
@@ -561,7 +561,7 @@ public class LabelsTask extends BaseTask
                 if (data instanceof RecordSet)
                 {
                     RecordSet rs = (RecordSet)data;
-                    if (rs.getTableId() != tableId)
+                    if (rs.getDbTableId() != tableId)
                     {
                         JOptionPane.showMessageDialog(null, getResourceString("ERROR_LABELS_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
                         return;

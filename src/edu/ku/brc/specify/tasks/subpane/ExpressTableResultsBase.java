@@ -367,7 +367,7 @@ public abstract class ExpressTableResultsBase extends JPanel
             table.clearSelection();
         }
 
-        rs.setTableId(Integer.parseInt(tableInfo.getTableId()));
+        rs.setDbTableId(Integer.parseInt(tableInfo.getTableId()));
         return rs;
     }
     

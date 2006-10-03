@@ -269,4 +269,14 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		}
 		return false;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 45;
+    }
+
 }

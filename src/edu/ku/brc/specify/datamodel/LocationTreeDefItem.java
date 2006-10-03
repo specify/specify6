@@ -231,4 +231,14 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		}
 		return false;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 60;
+    }
+
 }

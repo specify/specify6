@@ -20,7 +20,7 @@
             <meta attribute="scope-field">protected</meta>
         </property>
         
-        <property name="tableId" column="TableID" update="true" type="java.lang.Integer" not-null="true" >
+        <property name="dbTableId" column="TableID" update="true" type="java.lang.Integer" not-null="true" >
             <meta attribute="scope-field">protected</meta>
         </property>
         

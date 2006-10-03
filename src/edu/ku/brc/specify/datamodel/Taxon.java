@@ -800,4 +800,13 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		return new TreeOrderSiblingComparator();
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 4;
+    }
+
 }

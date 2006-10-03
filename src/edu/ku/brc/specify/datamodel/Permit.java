@@ -320,6 +320,4 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     {
         return 6;
     }
-
-
 }

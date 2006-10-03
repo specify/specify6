@@ -254,4 +254,14 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		
 		return null;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 76;
+    }
+
 }

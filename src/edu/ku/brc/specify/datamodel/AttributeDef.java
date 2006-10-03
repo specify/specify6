@@ -219,4 +219,14 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     }
 
     // Delete Add Methods
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 16;
+    }
+
 }

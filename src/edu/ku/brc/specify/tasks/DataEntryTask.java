@@ -237,9 +237,9 @@ public class DataEntryTask extends BaseTask
     {
         DBTableIdMgr.getInClause(recordSet);
 
-        String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getTableId());
+        String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getDbTableId());
         
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getTableId());
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
         HibernateUtil.getSessionFactory().evict(tableInfo.getClassObj());
         
         Session session = HibernateUtil.getNewSession();

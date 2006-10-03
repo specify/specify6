@@ -251,4 +251,13 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         this.isPrimary = isPrimary;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 8;
+    }
+
 }

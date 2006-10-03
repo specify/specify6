@@ -297,4 +297,14 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 		
 		return null;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 47;
+    }
+
 }

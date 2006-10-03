@@ -138,4 +138,14 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     // Delete Methods
 
     // Delete Add Methods
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 35;
+    }
+
 }

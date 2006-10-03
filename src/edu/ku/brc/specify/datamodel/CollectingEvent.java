@@ -413,4 +413,14 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         
         return date1.compareTo(date2);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 10;
+    }
+
 }

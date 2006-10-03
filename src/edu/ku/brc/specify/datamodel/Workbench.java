@@ -30,7 +30,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
 
      protected Long workbenchId;
      protected String name;
-     protected Integer tableId;
+     protected Integer dbTableId;
      protected String remarks;
      protected Integer formId;
      protected String exportInstitutionName;
@@ -54,7 +54,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     {
         workbenchId = null;
         name = null;
-        tableId = null;
+        dbTableId = null;
         remarks = null;
         formId = null;
         exportInstitutionName = null;
@@ -104,12 +104,12 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     /**
      * 
      */
-    public Integer getTableId() {
-        return this.tableId;
+    public Integer getDbTableId() {
+        return this.dbTableId;
     }
     
-    public void setTableId(Integer tableId) {
-        this.tableId = tableId;
+    public void setDbTableId(Integer tableId) {
+        this.dbTableId = tableId;
     }
 
     /**
@@ -167,7 +167,12 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         this.workbenchItems = workbenchItems;
     }
 
-
-
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 79;
+    }
 }
