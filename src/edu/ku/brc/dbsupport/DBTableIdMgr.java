@@ -255,7 +255,7 @@ public class DBTableIdMgr
 	public static Query getQueryForTable(final Session session, final RecordSet recordSet)
 	{
 		Query query = null;
-		TableInfo tableInfo = instance.hash.get(recordSet.getTableId());
+		TableInfo tableInfo = instance.hash.get(recordSet.getDbTableId());
 		if (tableInfo != null)
 		{
 			StringBuffer strBuf = new StringBuffer("from ");
