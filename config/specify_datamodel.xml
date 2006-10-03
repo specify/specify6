@@ -887,7 +887,7 @@
       <field column="Name" name="name" type="java.lang.String" length="64"/>
       <field column="TableID" name="tableId" type="java.lang.Integer"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
-      <id column="RecordSetID" name="recordSetID" type="java.lang.Long"/>
+      <id column="RecordSetID" name="recordSetId" type="java.lang.Long"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="owner" columnname="SpecifyUserID"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true">
