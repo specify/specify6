@@ -162,8 +162,8 @@ public class ViewFactory
 
         if (viewDef.getType() == ViewDef.ViewType.form)
         {
-            //Viewable viewable = buildFormViewable(view, altView, parentView, options);
-            Viewable viewable = buildTableViewable(view, altView, parentView, options);
+            Viewable viewable = buildFormViewable(view, altView, parentView, options);
+            //Viewable viewable = buildTableViewable(view, altView, parentView, options);
             this.rootMultiView =  null;
             return viewable;
 
