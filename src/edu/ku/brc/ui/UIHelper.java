@@ -172,6 +172,10 @@ public final class UIHelper
      */
     public static Date convertIntToDate(final int iDate)
     {
+        if (iDate == 0)
+        {
+            return null;
+        }
         calendar.clear();
 
         int year  = iDate / 10000;
@@ -557,7 +561,7 @@ public final class UIHelper
 
 
     /**
-     * Returna an array of values given a FormCell definition. Note: The returned array is owned by the utility and
+     * Return an array of values given a FormCell definition. Note: The returned array is owned by the utility and
      * may be longer than the number of fields defined in the CellForm object. Any additional "slots" in the array that are used
      * are set to null;
      * @param fieldNames the array of field name to be filled ( the array is really the path to the object)
