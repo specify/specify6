@@ -17,6 +17,7 @@ package edu.ku.brc.dbsupport;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
@@ -45,6 +46,8 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class DBTableIdMgr
 {
+    public enum RelationshipType { OneToOne, OneToMany, ManyToOne, ManyToMany}
+    
     // Static Data Members
 	private static final Logger log = Logger.getLogger(DBTableIdMgr.class);
     private static final DBTableIdMgr instance;
@@ -102,7 +105,8 @@ public class DBTableIdMgr
 						Element idNode = (Element) i2.next();
 						primaryKeyField = idNode.attributeValue("name");
 					}
-                    
+
+
 					if (classname == null)
                     {
 						log.error("populating DBTableMgr - classname is null; check input file");
@@ -120,7 +124,20 @@ public class DBTableIdMgr
 						log.error("populating DBTableMgr - primary key is null; check input file");
                     }
 					//log.debug("Populating hashtable for class: " + classname);
-					instance.hash.put(tableId, new TableInfo(tableId, classname, tablename, primaryKeyField, defaultView));
+                    
+                    TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField, defaultView);
+					instance.hash.put(tableId, tblInfo);              
+                    
+                    for (Iterator ir = tableNode.elementIterator("relationship"); ir.hasNext();)
+                    {
+                        Element irNode = (Element) ir.next();
+                        TableRelationship tblRel = new TableRelationship(
+                                irNode.attributeValue("relationshipname"),
+                                getRelationshipType(irNode.attributeValue("type")),
+                                irNode.attributeValue("classname"),
+                                irNode.attributeValue("columnname"));
+                        tblInfo.getRelationships().add(tblRel);
+                    }
 				}
 			} else
 			{
@@ -195,6 +212,25 @@ public class DBTableIdMgr
             if (tableInfo.getClassName().equalsIgnoreCase(className))
             {
                 return tableInfo.getTableId();
+            }
+        }
+        throw new RuntimeException("Couldn't find table id for table name[" + className + "]");
+    }
+
+    /**
+     * This looks it up by fully specified class name the look up is case
+     * sensitive.
+     * 
+     * @param className the full class name
+     * @return the id of the table
+     */
+    public static TableInfo lookupByClassName(final String className)
+    {
+        for (TableInfo tableInfo : instance.hash.values())
+        {
+            if (tableInfo.getClassName().equalsIgnoreCase(className))
+            {
+                return tableInfo;
             }
         }
         throw new RuntimeException("Couldn't find table id for table name[" + className + "]");
@@ -306,6 +342,32 @@ public class DBTableIdMgr
 			return "";
 		}
 	}
+    
+    /**
+     * Converts a String to an Enum for Realtionship Type
+     * @param relTypeStr the string
+     * @return the relationship type
+     */
+    public static RelationshipType getRelationshipType(final String relTypeStr)
+    {
+        if (relTypeStr.equals("one-to-many"))
+        {
+            return RelationshipType.OneToMany;
+            
+        } else if (relTypeStr.equals("many-to-one"))
+        {
+            return RelationshipType.ManyToOne;
+            
+        } else if (relTypeStr.equals("many-to-many"))
+        {
+            return RelationshipType.ManyToMany;
+            
+        } else if (relTypeStr.equals("one-to-one"))
+        {
+            return RelationshipType.OneToOne;
+        }
+        return null;
+    }
 
 	// ------------------------------------------------------
 	// Inner Classes
@@ -318,6 +380,8 @@ public class DBTableIdMgr
 		protected String primaryKeyName;
 		protected Class  classObj;
 		protected String defaultFormName;
+        
+        protected Set<TableRelationship> relationships;
 
 		public TableInfo(int tableId, 
                          String className, 
@@ -339,6 +403,7 @@ public class DBTableIdMgr
 				log.error("Trying to find class: " + className + " but class was not found");
 				e.printStackTrace();
 			}
+            relationships = new HashSet<TableRelationship>();
 		}
 
 		public String getShortClassName()
@@ -378,12 +443,70 @@ public class DBTableIdMgr
 			return defaultFormName;
 		}
         
+        public Set<TableRelationship> getRelationships()
+        {
+            return relationships;
+        }
+
         public ImageIcon getIcon(IconManager.IconSize size)
         {
             return IconManager.getIcon(getShortClassName(), size);
         }
+        
+        public RelationshipType getRelType(final String fieldName)
+        {
+            System.err.println(fieldName);
+            System.err.println(fieldName);
+            for (Iterator<TableRelationship> iter = relationships.iterator();iter.hasNext();)
+            {
+                TableRelationship tblRel = iter.next();
+                if (tblRel.getName().equals(fieldName))
+                {
+                    return tblRel.getType();
+                }
+            }
+            return null;
+        }
 
 	}
+    
+    public class TableRelationship
+    {
+        protected String           name;
+        protected RelationshipType type;
+        protected String           className;
+        protected String           colName;
+        
+        public TableRelationship(String name, RelationshipType type, String className, String colName)
+        {
+            super();
+            this.name = name;
+            this.type = type;
+            this.className = className;
+            this.colName = colName;
+        }
+
+        public String getClassName()
+        {
+            return className;
+        }
+
+        public String getColName()
+        {
+            return colName;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public RelationshipType getType()
+        {
+            return type;
+        }
+        
+    }
 
 	/**
 	 * @param args

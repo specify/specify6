@@ -328,7 +328,8 @@ public class BasicSQLUtils
             {
                 if (newFieldType.indexOf("date") ==  0)
                 {
-                    return '"'+dateFormatter.format(UIHelper.convertIntToDate((Integer)obj)) + '"';
+                    Date dateObj = UIHelper.convertIntToDate((Integer)obj);                   
+                    return dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"';
 
                 } else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
                 {
@@ -345,7 +346,7 @@ public class BasicSQLUtils
 
         } else if (obj instanceof Date)
         {
-            return '"'+dateTimeFormatter.format((Date)obj) + '"';
+            return obj == null ? "NULL" :  '"'+dateTimeFormatter.format((Date)obj) + '"';
 
         } else if (obj instanceof Float)
         {

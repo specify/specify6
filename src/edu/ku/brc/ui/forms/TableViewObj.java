@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static org.apache.commons.lang.StringUtils.split;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -49,9 +51,11 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
@@ -91,9 +95,11 @@ public class TableViewObj implements Viewable,
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
     protected Vector<AltView>               altViewsList   = null;
     protected TableViewDef                  tableViewDef;
+    protected DataObjectGettable            dataGetter      = null;
     
     protected Stack<FormCellSubView>        subViewStack    = new Stack<FormCellSubView>();
     protected StringBuilder                 fullObjPath     = new StringBuilder();
+    protected int                           skipControls    = 0;
     
     
     protected Hashtable<String, ColumnInfo> controlsByName  = new Hashtable<String, ColumnInfo>();
@@ -103,7 +109,8 @@ public class TableViewObj implements Viewable,
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
     protected Object                        dataObj         = null;
-    protected Set                           origDataSet     = null;
+    protected Set<Object>                   origDataSet     = null;
+    protected List<Object>                  dataObjList     = null;
     protected Object[]                      singleItemArray = new Object[1];
     protected SimpleDateFormat              scrDateFormat;
 
@@ -138,26 +145,6 @@ public class TableViewObj implements Viewable,
      * Constructor with FormView definition
      * @param tableViewDef the definition of the form
      */
-    public TableViewObj(final TableViewDef tableViewDef,
-                        final MultiView    mvParent)
-    {
-        this.tableViewDef = tableViewDef;
-        this.mvParent    = mvParent;
-
-        //if (scrDateFormat == null)
-        //{
-        //    scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
-        //}
-
-        //AppPreferences appsNode = AppPreferences;
-        //AppPreferences prefNode = appsNode.node("ui/formatting");
-        //prefNode.addAppPrefsChangeListener(this);
-    }
-    
-    /**
-     * Constructor with FormView definition
-     * @param tableViewDef the definition of the form
-     */
     public TableViewObj(final View          view,
                         final AltView       altView,
                         final MultiView     mvParent,
@@ -168,8 +155,8 @@ public class TableViewObj implements Viewable,
         this.altView     = altView;
         this.mvParent    = mvParent;
         
-        businessRules = view.getBusinessRule();
-
+        businessRules    = view.getBusinessRule();
+        dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
         /*
@@ -296,16 +283,21 @@ public class TableViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataObj(java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     public void setDataObj(final Object dataObj)
     {
-        if (dataObj instanceof List<?>)
+        if (dataObj instanceof List)
         {
+            origDataSet = null;
+            dataObjList = (List<Object>)dataObj;  
             
-        } else if (dataObj instanceof Set<?>)
+        } else if (dataObj instanceof Set)
         {
-            int x = 0;
-            x++;
+            origDataSet = (Set<Object>)dataObj;
+            dataObjList.clear();
+            dataObjList.addAll(origDataSet);
         }
+
     }
 
     /* (non-Javadoc)
@@ -313,7 +305,7 @@ public class TableViewObj implements Viewable,
      */
     public Object getDataObj()
     {
-        return null;
+        return dataObj;
     }
 
     /* (non-Javadoc)
@@ -490,6 +482,10 @@ public class TableViewObj implements Viewable,
 
     public void addLabel(final FormCellLabel formCell, final JLabel label)
     {
+        if (skipControls > 0)
+        {
+            return;
+        }
         if (formCell != null && StringUtils.isNotEmpty(formCell.getLabelFor()))
         {
             String fullCompName = appendName(formCell.getLabelFor());
@@ -501,13 +497,33 @@ public class TableViewObj implements Viewable,
             ColumnInfo colInfo = controlsById.get(fullCompName);
             if (colInfo == null)
             {
-                colInfo = new ColumnInfo(formCell, fullCompName, null, null);
+                colInfo = new ColumnInfo(getParentClassName(), formCell, fullCompName, null, null);
                 controlsById.put(fullCompName, colInfo);
             }
             colInfo.setLabel(formCell.getLabel());
             
         }
         log.info("Label["+label.getText()+"]");
+    }
+    
+    /**
+     * Gets the current class name for the stack contexxt.
+     * @return the parent object class name
+     */
+    protected String getParentClassName()
+    {
+        String className = null;
+        FormCellSubView formSubView = subViewStack.size() > 0 ? subViewStack.peek() : null;
+        if (formSubView != null)
+        {
+            className = formSubView.getClassDesc();
+        } 
+        
+        if (StringUtils.isEmpty(className))
+        {
+            className = view.getClassName();
+        }
+        return className;
     }
 
     /**
@@ -517,6 +533,10 @@ public class TableViewObj implements Viewable,
      */
     public void registerControl(final FormCell formCell, final Component control)
     {
+        if (skipControls > 0)
+        {
+            return;
+        }
         if (formCell != null)
         {
             String fullCompName = appendName(formCell.getName());
@@ -548,8 +568,13 @@ public class TableViewObj implements Viewable,
             ColumnInfo colInfo = controlsById.get(fullId);
             if (colInfo == null)
             {
-                colInfo = new ColumnInfo(formCell, fullCompName, comp, scrollPane);
+                colInfo = new ColumnInfo(getParentClassName(), formCell, fullCompName, comp, scrollPane);
                 controlsById.put(fullId, colInfo);
+                
+            } else
+            {
+                colInfo.setFullCompName(fullCompName);
+                colInfo.setFormCell(formCell);
             }
             colInfo.setComp(comp);
             colInfo.setScrollPane(scrollPane);
@@ -598,6 +623,33 @@ public class TableViewObj implements Viewable,
             fullObjPath.append(".");
         }
         fullObjPath.append(subFormCell.getName());
+        String clsName   = getParentClassName();
+        String fieldName = subFormCell.getName();
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupByClassName(clsName);
+        if (tblInfo != null)
+        {
+            DBTableIdMgr.RelationshipType type = tblInfo.getRelType(subFormCell.getName());
+            log.info(type+"  "+fieldName+" "+clsName);
+            
+            boolean isSet = type == DBTableIdMgr.RelationshipType.OneToMany || type == DBTableIdMgr.RelationshipType.ManyToMany;
+            if (isSet)
+            {
+                skipControls++;
+                
+                String fullCompName = subFormCell.getName();//appendName(subFormCell.getName());
+                String     fullId  = appendName(subFormCell.getId());
+                ColumnInfo colInfo = controlsById.get(fullId);
+                if (colInfo == null)
+                {
+                    colInfo = new ColumnInfo(getParentClassName(), subFormCell, fullCompName, null, null);
+                    colInfo.setLabel(subFormCell.getDescription());
+                    controlsById.put(fullId, colInfo); 
+                }
+                columnList.add(colInfo);
+                controlsByName.put(fullCompName, colInfo);
+            }
+            log.info(isSet);
+        }
         log.info("Add Name["+fullObjPath.toString()+"]");
     }
     
@@ -613,6 +665,7 @@ public class TableViewObj implements Viewable,
             fullObjPath.setLength(fullObjPath.length()-1);
         }
         log.info("Done Name["+fullObjPath.toString()+"]");
+        skipControls--;
     }
     
     /* (non-Javadoc)
@@ -755,20 +808,52 @@ public class TableViewObj implements Viewable,
     class ColumnInfo
     {
         protected FormCell    formCell;
+        protected String      parentClassName;
         protected String      fullCompName;
         protected String      label;
         protected Component   comp;
         protected JScrollPane scrollPane;
+        protected String[]    fieldNames;
+        protected boolean     isSet;
 
-        public ColumnInfo(FormCell     formCell, 
+        public ColumnInfo(String       parentClassName,
+                          FormCell     formCell, 
                           String       fullCompName, 
                           Component    comp, 
                           JScrollPane  scrollPane)
         {
+            if (parentClassName == null)
+            {
+                int x = 0;
+                x++;
+            }
             this.formCell       = formCell;
+            this.parentClassName = parentClassName;
             this.fullCompName   = fullCompName;
             this.comp           = comp;
             this.scrollPane     = scrollPane;
+            this.fieldNames     = split(StringUtils.deleteWhitespace(fullCompName), ".");
+            this.isSet          = false;
+            
+            checkForSet();
+        }
+
+        protected void checkForSet()
+        {
+            if (StringUtils.isNotEmpty(formCell.getName()))
+            {
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupByClassName(parentClassName);
+                if (tblInfo != null)
+                {
+                    DBTableIdMgr.RelationshipType type = tblInfo.getRelType(formCell.getName());
+                    isSet = type == DBTableIdMgr.RelationshipType.ManyToMany || type == DBTableIdMgr.RelationshipType.ManyToOne;
+                }
+            }
+        }
+
+        public String[] getFieldNames()
+        {
+            return fieldNames;
         }
 
 
@@ -777,6 +862,17 @@ public class TableViewObj implements Viewable,
             return fullCompName;
         }
         
+        public void setFullCompName(String fullCompName)
+        {
+            if (getFullCompName().startsWith("accessionAuthorizations"))
+            {
+                int x = 0;
+                x++;
+            }
+            this.fullCompName = fullCompName;
+            fieldNames = split(StringUtils.deleteWhitespace(fullCompName), ".");
+        }
+
         public String getLabel()
         {
             return label;
@@ -817,6 +913,13 @@ public class TableViewObj implements Viewable,
             return formCell;
         }
 
+        public void setFormCell(FormCell formCell)
+        {
+            this.formCell = formCell;
+            checkForSet();
+        }
+
+
         public void setEnabled(boolean enabled)
         {
             //log.debug(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
@@ -842,6 +945,9 @@ public class TableViewObj implements Viewable,
         }
     }
     
+    //------------------------------------------------------------------
+    //-- Table Model
+    //------------------------------------------------------------------
     public class ColTableModel implements TableModel
     {
         protected Vector<TableModelListener> listeners = new Vector<TableModelListener>();
@@ -863,17 +969,46 @@ public class TableViewObj implements Viewable,
 
         public String getColumnName(int column)
         {
-            return columnList.get(column).getLabel();
+            String label = columnList.get(column).getLabel();
+            return label != null ? label : "";
         }
 
         public int getRowCount()
         {
-            return 0;//rowData.size();
+            return dataObjList.size();
         }
 
         public Object getValueAt(int row, int column)
         {
-            return "";//rowData.get(row)[column];
+            ColumnInfo colInfo = columnList.get(column);
+            Object     rowObj  = dataObjList.get(row);
+            log.info("["+colInfo.getFullCompName()+"]");
+            if (colInfo.getFullCompName().equals("accessionAuthorizations.permit"))
+            {
+                int x = 0;
+                x++;
+            }
+            if (colInfo.getFullCompName().equals("accessionAuthorizations"))
+            {
+                int x = 0;
+                x++;
+            }
+            String[] fName = new String[1];
+            String[] fieldNames = colInfo.getFieldNames();
+            for (String fldName : fieldNames)
+            {
+                fName[0] = fldName;
+                Object[] dataValues = UIHelper.getFieldValues(fName, rowObj, dataGetter);
+                if (dataValues != null && dataValues[0] instanceof Set)
+                {
+                   int x = 0;
+                   x++;
+                }
+            }
+            Object[] dataValues = UIHelper.getFieldValues(new String[] {colInfo.getFullCompName()}, rowObj, dataGetter);
+            return dataValues != null ? dataValues[0] : null;
+            
+            //return dataGetter.getFieldValue(rowObj, colInfo.getFullCompName());
         }
 
         public boolean isCellEditable(int row, int column)

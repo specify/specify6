@@ -25,7 +25,6 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -45,7 +44,6 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -139,31 +137,6 @@ public class ViewFactory
     }
 
     /**
-     * Returns the data object for this field in the "main" data object
-     * @param dataObj the main data object
-     * @param fieldName the field name to be gotten
-     * @return return the field data frm the POJO
-     */
-    public Object getFieldValue(final Object dataObj, final String fieldName)
-    {
-        Object value = null;
-        if (dataObj != null)
-        {
-            try
-            {
-                Method getter = PropertyUtils.getReadMethod(PropertyUtils.getPropertyDescriptor(dataObj, fieldName));
-                value = getter.invoke(dataObj, (Object[])null);
-
-            } catch (Exception ex)
-            {
-                // XXX FIXME
-                ex.printStackTrace();
-            }
-        }
-        return value == null ? "" : value;
-    }
-
-    /**
      * Returns a ViewDef Obj with the form UI built.
      * @param view the view definition
      * @param altView which AltView to build
@@ -189,7 +162,8 @@ public class ViewFactory
 
         if (viewDef.getType() == ViewDef.ViewType.form)
         {
-            Viewable viewable = buildFormViewable(view, altView, parentView, options);
+            //Viewable viewable = buildFormViewable(view, altView, parentView, options);
+            Viewable viewable = buildTableViewable(view, altView, parentView, options);
             this.rootMultiView =  null;
             return viewable;
 
