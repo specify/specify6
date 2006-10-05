@@ -35,6 +35,7 @@ import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 
 /**
@@ -117,9 +118,14 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
             handler = null;
         }
 
+        /*
         validate();
         doLayout();
         repaint();
+        getParent().getParent().validate();
+        getParent().getParent().repaint();
+        */
+        UICacheManager.forceTopFrameRepaint();
     }
 
     /*
@@ -172,6 +178,9 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         validate();
         doLayout();
         repaint();
+        
+        // TODO This is a kludge for now to get the BarChart to Paint Correctly
+        UICacheManager.forceTopFrameRepaint();
 
     }
 
