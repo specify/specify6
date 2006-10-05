@@ -368,6 +368,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     if (!dlg.isCancelled())
                     {
                         setValue(dlg.getSelectedObject(), null);
+                        valueHasChanged();
                     }
                 }
             });
@@ -388,6 +389,30 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 createEditFrame(true);
             }});
 
+    }
+    
+    protected void valueHasChanged()
+    {
+        if (frame != null)
+        {
+            MultiView mv = frame.getMultiView();
+            if (mv != null)
+            {           
+               if (mv.hasChanged())
+               {
+                   this.setChanged(true);
+                   // TODO: Change this, this is SOOOO lame
+                   // I set and reset it to make the change data listener get activated.
+                   // There has to be a better way!
+                   int inx = comboBox.getSelectedIndex();
+                   comboBox.setSelectedIndex(-1);
+                   comboBox.setSelectedIndex(inx);
+               }
+            }
+            
+            frame.getMultiView().getDataFromUI();
+            refreshUIFromData();
+        }
     }
 
     /**
@@ -806,24 +831,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     newDataObj = null;
                  }
             }
-            
-            MultiView mv = frame.getMultiView();
-            if (mv != null)
-            {           
-               if (mv.hasChanged())
-               {
-                   this.setChanged(true);
-                   // TODO: Change this, this is SOOOO lame
-                   // I set and reset it to make the change data listener get activated.
-                   // There has to be a better way!
-                   int inx = comboBox.getSelectedIndex();
-                   comboBox.setSelectedIndex(-1);
-                   comboBox.setSelectedIndex(inx);
-               }
-            }
-            
-            frame.getMultiView().getDataFromUI();
-            refreshUIFromData();
+            valueHasChanged();
         }
 
         currentMode = MODE.Unknown;

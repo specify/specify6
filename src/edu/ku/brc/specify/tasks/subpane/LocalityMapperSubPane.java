@@ -34,7 +34,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Formatter;
@@ -73,6 +72,7 @@ import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.UICacheManager;
@@ -96,7 +96,7 @@ import edu.ku.brc.ui.forms.persist.View;
 public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper.MapperListener, ResultSetControllerListener, TimingTarget
 {
     //private static final Logger log = Logger.getLogger(SimpleDescPane.class);
-    protected SimpleDateFormat scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+    protected DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
     protected static final Cursor handCursor   = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor    = new Cursor(Cursor.DEFAULT_CURSOR);
 

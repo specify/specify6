@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.ui.forms;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.DateWrapper;
 
 /**
  * The Format Manager; reads in all the formats from XM
@@ -141,9 +141,9 @@ public class UIFieldFormatterMgr
      */
     protected void addFieldsForDate(UIFieldFormatterMgr.Formatter formatter)
     {
-        SimpleDateFormat scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
-        String formatStr = scrDateFormat.toPattern();
+        String formatStr = scrDateFormat.getSimpleDateFormat().toPattern();
         char currChar = ' ';
         for (int i=0;i<formatStr.length();i++)
         {

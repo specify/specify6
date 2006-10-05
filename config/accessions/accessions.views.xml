@@ -8,8 +8,8 @@
               resourcelabels="false">
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
-                <altview name="Accession View" viewdef="Accession" label="View" mode="view" validated="false"/>
-                <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Accession View" viewdef="Accession" label="View" mode="view"  validated="false" default="true"/>
+                <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"  validated="true"/>
             </altviews>
         </view>
 
@@ -23,19 +23,6 @@
                 <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
-
-        <!--
-        <view name="Agent"
-             class="edu.ku.brc.specify.datamodel.Agent"
-             resourcelabels="false">
-            <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
-            <altviews>
-                <altview name="Agent View" viewdef="Agent" label="View" mode="view" validated="false" default="true"/>
-                <altview name="Agent Edit" viewdef="Agent" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        -->
-        
 
         <view name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
@@ -94,8 +81,8 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
                 <row>
@@ -125,7 +112,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Description"/>
-                    <cell type="field" id="7" name="text2" uitype="textarea" cols="60" rows="6" colspan="10" valtype="Changed"/>
+                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10" valtype="Changed"/>
                 </row>
                 
                 <row>
@@ -164,8 +151,8 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p:g</columnDef>
+            <rowDef>p:g,2dlu,p:g,2dlu,p,2dlu,p:g</rowDef>
 
             <rows>
                 <row>
@@ -178,7 +165,7 @@
 
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="9" cols="50" valtype="Changed"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>
@@ -269,7 +256,7 @@
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
             <rows>
@@ -316,7 +303,7 @@
 
                 <row>
                     <cell type="label" labelfor="9" label="Remarks"/>
-                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="9" cols="50" valtype="Changed"/>
+                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="9" cols="40" valtype="Changed"/>
                 </row>
 
             </rows>

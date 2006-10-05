@@ -16,7 +16,6 @@ package edu.ku.brc.ui.forms.persist;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
@@ -24,17 +23,19 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.ui.DateWrapper;
 
 /**
- * This represents all the information about a cell in the form
+ * This represents all the information about a cell in the form. This implements "clone".
+ * 
  * @code_status Beta
  *.
  * @author rods
  *
  */
-public class FormCellField extends FormCell
+public final class FormCellField extends FormCell
 {
-    protected static SimpleDateFormat scrDateFormat = null;
+    protected static DateWrapper scrDateFormat = null;
     
     protected String   uiType;
     protected String   dspUIType;
@@ -259,7 +260,7 @@ public class FormCellField extends FormCell
             Date date = new Date();
             if (scrDateFormat == null)
             {
-                scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+                scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
             }
             return scrDateFormat.format(date);
         }

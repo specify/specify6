@@ -16,6 +16,7 @@ package edu.ku.brc.ui.forms;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -116,7 +117,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createWithMode = createWithMode;
         this.createOptions  = options;
 
-        specialEditView = view.isSpecialViewEdit();
+        specialEditView = view.isSpecialViewAndEdit();
 
         createDefaultViewable();
 
@@ -490,6 +491,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
                     String altViewName = altView.getName();
                     
+                    Dimension size = currentViewable.getUIComponent().getSize();
+                    
                     currentViewable.aboutToShow(false);
                     removeFormValidator(currentViewable.getValidator());
                     
@@ -501,6 +504,13 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     viewable.setSession(session);
                     if (add(viewable, altViewName))
                     {
+                        if (mvParent != null)
+                        {
+                            viewable.getUIComponent().setSize(size);
+                            viewable.getUIComponent().setPreferredSize(size);
+                            viewable.getUIComponent().validate();
+                            viewable.getUIComponent().doLayout();
+                        }
                         viewable.aboutToShow(true);
                         cardLayout.show(this, altViewName);
                         log.debug("Added Viewable["+altViewName+"]");
@@ -782,13 +792,13 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public static void printCreateOptions(final String msg, final int options)
     {
-        log.info(" ");
-        log.info(msg);
-        log.info("RESULTSET_CONTROLLER ["+((options & MultiView.RESULTSET_CONTROLLER) == MultiView.RESULTSET_CONTROLLER ? "true" : "false")+"]");
-        log.info("IS_NEW_OBJECT        ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
-        log.info("VIEW_SWITCHER        ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
-        log.info("HIDE_SAVE_BTN        ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
-        log.info(" ");        
+        log.debug(" ");
+        log.debug(msg);
+        log.debug("RESULTSET_CONTROLLER ["+((options & MultiView.RESULTSET_CONTROLLER) == MultiView.RESULTSET_CONTROLLER ? "true" : "false")+"]");
+        log.debug("IS_NEW_OBJECT        ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
+        log.debug("VIEW_SWITCHER        ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
+        log.debug("HIDE_SAVE_BTN        ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
+        log.debug(" ");        
     }
 
     //-----------------------------------------------------

@@ -16,7 +16,6 @@ package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 /**
  *  
@@ -71,7 +69,7 @@ public class DropDownButtonStateful extends DropDownButton
     {
        super(labels[0], imgIcons[0], toolTips != null ? toolTips[0] : null, SwingConstants.CENTER);
        
-        setBorder(new EmptyBorder(new Insets(1,1,1,1)));
+        setBorder(null);//new EmptyBorder(new Insets(1,1,1,1)));
         setLayout(new BorderLayout());
        
         this.imgIcons = imgIcons;
@@ -111,6 +109,7 @@ public class DropDownButtonStateful extends DropDownButton
             }
         });
         setCurrentIndex(0);
+
     }
     
     /**
@@ -191,6 +190,5 @@ public class DropDownButtonStateful extends DropDownButton
                 }
             }
         }
-    }
-   
+    }  
 }

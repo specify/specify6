@@ -31,13 +31,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import javax.swing.AbstractListModel;
+
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
-import javax.swing.event.EventListenerList;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import java.text.Collator;
 /**
  * 
  * @code_status Alpha
@@ -222,6 +220,7 @@ public class SortedListModel extends DefaultListModel {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public void setComparator(Comparator comp) {
         if (comp == null) {
             sortOrder = SortOrder.UNORDERED;
@@ -229,7 +228,7 @@ public class SortedListModel extends DefaultListModel {
             resetModelData();
         } else {
             comparator = comp;
-            Collections.sort(sortedModel);
+            Collections.sort(sortedModel); // SuppressWarnings("unchecked")
         }
         fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, sortedModel.size()-1);
     }
@@ -238,13 +237,14 @@ public class SortedListModel extends DefaultListModel {
      * Change the sort order of the model at runtime
      * @param sortOrder
      */
+    @SuppressWarnings("unchecked")
     public void setSortOrder(SortOrder sortOrder) {
         if (this.sortOrder != sortOrder) {
             this.sortOrder = sortOrder;
             if (sortOrder == SortOrder.UNORDERED) {
                 resetModelData();
             } else {
-                Collections.sort(sortedModel);
+                Collections.sort(sortedModel); // SuppressWarnings("unchecked")
             }
             fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, sortedModel.size()-1);
         }
@@ -326,8 +326,10 @@ public class SortedListModel extends DefaultListModel {
      * unsorted model. Let any listeners know about changes. Since I don't
      * track specific changes, sort everywhere and redisplay all items.
      */
-    private void unsortedContentsChanged(ListDataEvent e) {
-        Collections.sort(sortedModel);
+    @SuppressWarnings("unchecked")
+    private void unsortedContentsChanged(ListDataEvent e) 
+    {
+        Collections.sort(sortedModel);// SuppressWarnings("unchecked")
         fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, sortedModel.size()-1);
     }
     
@@ -335,10 +337,12 @@ public class SortedListModel extends DefaultListModel {
      * Internal helper method to find the insertion point for a new 
      * entry in the sorted model.
      */
-    private int findInsertionPoint(SortedListEntry entry) {
+    @SuppressWarnings({ "unchecked", "cast" })
+    private int findInsertionPoint(SortedListEntry entry) 
+    {
         int insertionPoint = sortedModel.size();
         if (sortOrder != SortOrder.UNORDERED)  {
-            insertionPoint = Collections.binarySearch((List)sortedModel, entry);
+            insertionPoint = Collections.binarySearch((List)sortedModel, entry); // SuppressWarnings({ "unchecked", "cast" })
             if (insertionPoint < 0) {
                 insertionPoint = -(insertionPoint +1);
             }
@@ -374,6 +378,7 @@ public class SortedListModel extends DefaultListModel {
             this.index = index;
         }
         
+        @SuppressWarnings("unchecked")
         public int compareTo(Object o) {
             // retrieve the element that this entry points to
             // in the original model
@@ -387,7 +392,7 @@ public class SortedListModel extends DefaultListModel {
                 thatElement = thatElement.toString();
             }
             // compare the base model's elements using the provided comparator
-            int comparison = comparator.compare(thisElement, thatElement);
+            int comparison = comparator.compare(thisElement, thatElement); // SuppressWarnings("unchecked")
             // convert to descending order as necessary
             if (sortOrder == SortOrder.DESCENDING) {
                 comparison = -comparison;

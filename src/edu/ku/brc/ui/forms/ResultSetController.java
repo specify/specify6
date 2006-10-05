@@ -313,20 +313,18 @@ public class ResultSetController implements ValidationListener
         nextBtn.setEnabled(currentInx < lastInx);
         lastBtn.setEnabled(currentInx < lastInx);
         
-        boolean enabled = numRecords > 0;
+        boolean enabled = numRecords > 1;
         
         recDisp.setEnabled(enabled);
         recDisp.setBorder(enabled ? enabledBorder : disabledBorder);
         recDisp.setBackground(enabled ? enabledTxtBG : disabledTxtBG);
-        
-        
+        recDisp.setText(enabled ? ((currentInx+1) + " of " + numRecords) : " "); // XXX Move to I18N properties file formatted
         
         if (delRecBtn != null)
         {
-            delRecBtn.setEnabled(enabled);
+            delRecBtn.setEnabled(numRecords > 0);
         }
         
-        recDisp.setText(enabled ? ((currentInx+1) + " of " + numRecords) : " "); // XXX Move to I18N properties file formatted
         panel.validate();
     }
     

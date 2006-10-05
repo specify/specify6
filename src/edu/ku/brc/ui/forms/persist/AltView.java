@@ -83,9 +83,19 @@ public class AltView
         return label;
     }
 
+    public void setLabel(String label)
+    {
+        this.label = label;
+    }
+
     public String getName()
     {
         return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     public boolean isValidated()
@@ -124,7 +134,10 @@ public class AltView
         return label;
     }
     
-    
+    public AltView clone()
+    {
+        return new AltView(view, name, label, mode, validated, isDefault, viewDef.clone());
+    }
     
     public String getSelectorName()
     {

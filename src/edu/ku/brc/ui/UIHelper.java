@@ -23,7 +23,6 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -74,8 +73,8 @@ public final class UIHelper
     protected static Calendar calendar = new GregorianCalendar();
     protected static OSTYPE   oSType;
 
-    protected static Object[]          values   = new Object[2];
-    protected static SimpleDateFormat  scrDateFormat = null;
+    protected static Object[]    values   = new Object[2];
+    protected static DateWrapper scrDateFormat = null;
 
     static {
 
@@ -575,7 +574,7 @@ public final class UIHelper
     {
         if (scrDateFormat == null)
         {
-            scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+            scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
         }
 
         if (fieldNames.length > values.length)

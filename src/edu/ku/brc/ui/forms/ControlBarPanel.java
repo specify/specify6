@@ -16,6 +16,8 @@ package edu.ku.brc.ui.forms;
 
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -74,12 +76,38 @@ public class ControlBarPanel extends JPanel
         JPanel panel = ButtonBarFactory.buildGrowingBar(btns);
         if (onLeftSide)
         {
+            if (leftSidePanel != null)
+            {
+                remove(leftSidePanel);
+            }
             leftSidePanel = panel;
             builder.add(leftSidePanel, cc.xy(1,1));
+            
+            if (rightSidePanel == null)
+            {
+                rightSidePanel = new JPanel();
+                rightSidePanel. setLayout(new BoxLayout(rightSidePanel, BoxLayout.X_AXIS));
+                rightSidePanel.add(Box.createRigidArea(leftSidePanel.getPreferredSize()));
+                builder.add(rightSidePanel, cc.xy(5,1));
+            }
+            
         } else
         {
+            if (rightSidePanel != null)
+            {
+                remove(rightSidePanel);
+            }
             rightSidePanel = panel;
             builder.add(rightSidePanel, cc.xy(5,1));
+            
+            if (leftSidePanel == null)
+            {
+                leftSidePanel = new JPanel();
+                leftSidePanel. setLayout(new BoxLayout(leftSidePanel, BoxLayout.X_AXIS));
+                leftSidePanel.add(Box.createRigidArea(rightSidePanel.getPreferredSize()));
+                builder.add(leftSidePanel, cc.xy(1,1));
+            }
+
         }
     }
 
@@ -100,14 +128,41 @@ public class ControlBarPanel extends JPanel
             {
                 pBuilder.add(compsList.get(i), cc.xy((i*2)+1, 1));
             }
+            
             if (onLeftSide)
             {
+                if (leftSidePanel != null)
+                {
+                    remove(leftSidePanel);
+                }
+                
                 leftSidePanel = pBuilder.getPanel();
                 builder.add(leftSidePanel, cc.xy(1,1));
+                
+                if (rightSidePanel == null)
+                {
+                    rightSidePanel = new JPanel();
+                    rightSidePanel. setLayout(new BoxLayout(rightSidePanel, BoxLayout.X_AXIS));
+                    rightSidePanel.add(Box.createRigidArea(leftSidePanel.getPreferredSize()));  
+                    builder.add(rightSidePanel, cc.xy(5,1));
+                }
             } else
             {
+                if (rightSidePanel != null)
+                {
+                    remove(rightSidePanel);
+                }
+                
                 rightSidePanel = pBuilder.getPanel();
                 builder.add(rightSidePanel, cc.xy(5,1));
+                
+                if (leftSidePanel == null)
+                {
+                    leftSidePanel = new JPanel();
+                    leftSidePanel. setLayout(new BoxLayout(leftSidePanel, BoxLayout.X_AXIS));
+                    leftSidePanel.add(Box.createRigidArea(rightSidePanel.getPreferredSize()));
+                    builder.add(leftSidePanel, cc.xy(1,1));
+                }
             }
         }
     }

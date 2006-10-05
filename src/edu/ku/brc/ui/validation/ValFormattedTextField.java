@@ -27,7 +27,6 @@ import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
 
@@ -65,6 +65,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
     protected static ColorWrapper     valtextcolor       = null;
     protected static ColorWrapper     requiredfieldcolor = null;
+    protected static DateWrapper      scrDateFormat      = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");                
 
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean                 isRequired = false;
@@ -367,14 +368,11 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
             } else if (value instanceof Date)
             {
-                SimpleDateFormat simpleDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");                
-                data = simpleDateFormat.format((Date)value);
+                data = scrDateFormat.format((Date)value);
                 
             } else if (value instanceof Calendar)
             {
-                SimpleDateFormat simpleDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
-
-                data = simpleDateFormat.format(((Calendar)value).getTime());
+                data = scrDateFormat.format(((Calendar)value).getTime());
                 
             } else
             {
@@ -403,11 +401,10 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             String value = getText();
             if (StringUtils.isNotEmpty(value))
             {
-                SimpleDateFormat simpleDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
                 try
                 {
                     Calendar cal = Calendar.getInstance();
-                    cal.setTime(simpleDateFormat.parse(value));
+                    cal.setTime(scrDateFormat.getSimpleDateFormat().parse(value));
                     return cal;
 
                 } catch (ParseException ex)

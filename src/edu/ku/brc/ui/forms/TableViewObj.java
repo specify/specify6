@@ -19,8 +19,8 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
+import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,15 +39,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -53,11 +59,14 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.DropDownButtonStateful;
+import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
@@ -81,8 +90,10 @@ public class TableViewObj implements Viewable,
                                      ResultSetControllerListener, 
                                      AppPrefsChangeListener
 {
-    private static final Logger log = Logger.getLogger(TableViewObj.class);
+    protected static final Logger log = Logger.getLogger(TableViewObj.class);
     
+    protected static CellConstraints        cc              = new CellConstraints();
+
     // Data Members
     protected Session                       session        = null;
     protected boolean                       isEditting     = false;
@@ -106,13 +117,16 @@ public class TableViewObj implements Viewable,
     protected Hashtable<String, ColumnInfo> controlsById    = new Hashtable<String, ColumnInfo>();
     protected Vector<ColumnInfo>            columnList      = new Vector<ColumnInfo>();
     
+    //protected FormLayout                    formLayout;
+    //protected PanelBuilder                  builder;
+    
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
     protected Object                        dataObj         = null;
     protected Set<Object>                   origDataSet     = null;
     protected List<Object>                  dataObjList     = null;
     protected Object[]                      singleItemArray = new Object[1];
-    protected SimpleDateFormat              scrDateFormat;
+    protected DateWrapper                   scrDateFormat;
 
     protected JPanel                        mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
@@ -126,7 +140,7 @@ public class TableViewObj implements Viewable,
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
 
-    protected PanelBuilder                  mainBuilder;
+    //protected PanelBuilder                  mainBuilder;
     protected BusinessRulesIFace            businessRules   = null; 
 
     protected DraggableRecordIdentifier     draggableRecIdentifier   = null;
@@ -170,36 +184,186 @@ public class TableViewObj implements Viewable,
 
         // XXX setValidator(formValidator);
 
-        scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
+
+        // Figure columns
+        //formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
+        //builder    = new PanelBuilder(formLayout);
+
+        //boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
+        boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
+        //boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+        boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         
+        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
+
+        //setValidator(formValidator);
+
+        scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+
+
+        AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
+
+        boolean addController = mvParent != null && view.getAltViews().size() > 1;
+
+
+        //String rowDefs = (mvParent == null ? "p" : "p") + (addController ? ",2px,p" : "");
+
+        //mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
+        //mainComp    = mainBuilder.getPanel();
+        mainComp = new JPanel(new BorderLayout());
+        
+        if (mvParent == null)
+        {
+            mainComp.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        }
+        
+        List<JComponent> comps = new ArrayList<JComponent>();
+
+        // We will add the switchable UI if we are mvParented to a MultiView and have multiple AltViews
+        if (addController)
+        {
+            boolean saveWasAdded = false;
+            
+            if (createViewSwitcher)
+            {
+                // Now we have a Special case that when when there are only two AltViews and
+                // they differ only by Edit & View we hide the switching UI unless
+                // we are the root MultiView. This way when switching the Root View all the other views switch
+                // (This is because they were created that way. It also makes no sense that while in "View" mode
+                // you would want to switch an individual subview to a differe "mode" view than the root).
+
+                altViewsList = new Vector<AltView>();
+                switcherUI   = FormViewObj.createSwitcher(mvParent, view, altView, altViewsList);
+                
+                if (altViewsList.size() > 0)
+                {
+                    if (altView.getMode() == AltView.CreationMode.Edit)
+                    {
+                        // We want it on the left side of other buttons
+                        // so wee need to add it before the Save button
+                        //addValidationIndicator(comps);
+    
+                        //addSaveBtn();
+                        comps.add(saveBtn);
+                        saveWasAdded = true;
+    
+                    }
+                    comps.add(switcherUI);
+                }
+            }
+            
+            if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
+            {
+                if (mvParent.getMultiViewParent() == null && !hideSaveBtn)
+                {
+                    //addSaveBtn();
+                    comps.add(saveBtn);
+                }
+                //addValidationIndicator(comps);
+            }
+        }
+
+        if (comps.size() > 0 || addController)
+        {
+            controlPanel = new ControlBarPanel();
+            controlPanel.addComponents(comps, false); // false -> right side
+            //mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
+            mainComp.add(controlPanel, BorderLayout.SOUTH);
+        }
     }
     
     /**
-     * Builds the main component as a table
+     * 
      */
-    protected void buildTable()
+    public void buildTable()
     {
-        model = new ColTableModel();
-        
-        mainComp = new JPanel(new BorderLayout());
-        table = new JTable(model);
+        // Now Build the JTable
+        model    = new ColTableModel();
+        table    = new JTable(model);
         
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        //for (int i=0;i<_model.getColumnCount();i++) {
-        //    TableColumn column = _table.getColumn(_model.getColumnName(i));
-        //    column.setCellRenderer(renderer);
-        //}
+        /*
+         
+        // This is BROKEN!
+        table.setCellSelectionEnabled(true);
+        
+        for (int i=0;i<model.getColumnCount();i++) 
+        {
+            TableColumn column = table.getColumn(model.getColumnName(i));
+            
+            //log.info(model.getColumnName(i));
+            //column.setCellRenderer(renderer);
+            
+            ColumnInfo columnInfo = columnList.get(i);
+            Component  comp       = columnInfo.getComp();
+            
+            //column.setCellEditor(new DefaultCellEditor(new JTextField()));
+            if (comp instanceof GetSetValueIFace)
+            {
+                column.setCellEditor(new MyTableCellEditor(columnInfo));
+                
+            } else if (comp instanceof JTextField)
+            {
+                column.setCellEditor(new DefaultCellEditor((JTextField)comp));
+                
+            } else
+            {
+                log.error("Couldn't figure out DefaultCellEditor for comp ["+comp.getClass().getSimpleName()+"]");
+            }
+        }
+        */
 
-        tableScroller = new JScrollPane(table);
-        mainComp.add(tableScroller, BorderLayout.CENTER);  
+        tableScroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        //mainBuilder.add(tableScroller, cc.xy(1, mainCompRowInx));
+        mainComp.add(tableScroller, BorderLayout.CENTER);
+        
+        initColumnSizes(table);
+
     }
     
+    private void initColumnSizes(final JTable tableArg) 
+    {
+        ColTableModel     tblModel    = (ColTableModel)tableArg.getModel();
+        TableColumn       column      = null;
+        Component         comp        = null;
+        int               headerWidth = 0;
+        int               cellWidth   = 0;
+        //Object[]          longValues  = model.longValues;
+        
+        TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
+        for (int i = 0; i < tblModel.getColumnCount(); i++) {
+            column = tableArg.getColumnModel().getColumn(i);
+
+            comp = headerRenderer.getTableCellRendererComponent(
+                                 null, column.getHeaderValue(),
+                                 false, false, 0, 0);
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = tableArg.getDefaultRenderer(tblModel.getColumnClass(i)).
+                getTableCellRendererComponent(tableArg, tblModel.getValueAt(0, i), false, false, 0, i);
+            
+            cellWidth = comp.getPreferredSize().width;
+
+            /*
+            if (DEBUG) {
+                System.out.println("Initializing width of column "
+                                   + i + ". "
+                                   + "headerWidth = " + headerWidth
+                                   + "; cellWidth = " + cellWidth);
+            }*/
+
+            //XXX: Before Swing 1.1 Beta 2, use setMinWidth instead.
+            column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
+    }
+    
     //-------------------------------------------------
     // Viewable
     //-------------------------------------------------
@@ -289,15 +453,28 @@ public class TableViewObj implements Viewable,
         if (dataObj instanceof List)
         {
             origDataSet = null;
-            dataObjList = (List<Object>)dataObj;  
+            dataObjList = (List<Object>)dataObj; 
             
         } else if (dataObj instanceof Set)
         {
             origDataSet = (Set<Object>)dataObj;
-            dataObjList.clear();
+            if (dataObjList == null)
+            {
+                dataObjList = new Vector<Object>();
+                
+            } else
+            {
+                dataObjList.clear();                
+            }
             dataObjList.addAll(origDataSet);
         }
-
+        
+        
+        if (table != null)
+        {
+            table.tableChanged(new TableModelEvent(model));
+            //table.repaint();
+        }
     }
 
     /* (non-Javadoc)
@@ -386,7 +563,12 @@ public class TableViewObj implements Viewable,
      */
     public void aboutToShow(boolean show)
     {
-        // do nothing
+        if (switcherUI != null)
+        {
+            ignoreSelection = true;
+            switcherUI.setCurrentIndex(0);
+            ignoreSelection = false;
+        }
     }
 
     /* (non-Javadoc)
@@ -503,7 +685,7 @@ public class TableViewObj implements Viewable,
             colInfo.setLabel(formCell.getLabel());
             
         }
-        log.info("Label["+label.getText()+"]");
+        //log.info("Label["+label.getText()+"]");
     }
     
     /**
@@ -582,7 +764,7 @@ public class TableViewObj implements Viewable,
             controlsByName.put(fullCompName, colInfo);
         }
         
-        log.info("RegControl["+formCell.getName()+"]");
+        //log.info("RegControl["+formCell.getName()+"]");
     }
     
     /* (non-Javadoc)
@@ -595,7 +777,7 @@ public class TableViewObj implements Viewable,
             int x = 0;
             x++;
         }
-        log.info("addControlToUI["+control+"]");
+        //log.info("addControlToUI["+control+"]");
     }
 
     /* (non-Javadoc)
@@ -623,22 +805,24 @@ public class TableViewObj implements Viewable,
             fullObjPath.append(".");
         }
         fullObjPath.append(subFormCell.getName());
-        String clsName   = getParentClassName();
-        String fieldName = subFormCell.getName();
+        
+        String                 clsName = getParentClassName();
         DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupByClassName(clsName);
+        
         if (tblInfo != null)
         {
             DBTableIdMgr.RelationshipType type = tblInfo.getRelType(subFormCell.getName());
-            log.info(type+"  "+fieldName+" "+clsName);
+            //String fieldName = subFormCell.getName();
+            //log.info(type+"  "+fieldName+" "+clsName);
             
             boolean isSet = type == DBTableIdMgr.RelationshipType.OneToMany || type == DBTableIdMgr.RelationshipType.ManyToMany;
             if (isSet)
             {
                 skipControls++;
                 
-                String fullCompName = subFormCell.getName();//appendName(subFormCell.getName());
-                String     fullId  = appendName(subFormCell.getId());
-                ColumnInfo colInfo = controlsById.get(fullId);
+                String     fullCompName = subFormCell.getName();//appendName(subFormCell.getName());
+                String     fullId       = appendName(subFormCell.getId());
+                ColumnInfo colInfo      = controlsById.get(fullId);
                 if (colInfo == null)
                 {
                     colInfo = new ColumnInfo(getParentClassName(), subFormCell, fullCompName, null, null);
@@ -648,9 +832,9 @@ public class TableViewObj implements Viewable,
                 columnList.add(colInfo);
                 controlsByName.put(fullCompName, colInfo);
             }
-            log.info(isSet);
+            //log.info(isSet);
         }
-        log.info("Add Name["+fullObjPath.toString()+"]");
+        //log.info("Add Name["+fullObjPath.toString()+"]");
     }
     
     /* (non-Javadoc)
@@ -664,7 +848,7 @@ public class TableViewObj implements Viewable,
         {
             fullObjPath.setLength(fullObjPath.length()-1);
         }
-        log.info("Done Name["+fullObjPath.toString()+"]");
+        //log.info("Done Name["+fullObjPath.toString()+"]");
         skipControls--;
     }
     
@@ -815,6 +999,7 @@ public class TableViewObj implements Viewable,
         protected JScrollPane scrollPane;
         protected String[]    fieldNames;
         protected boolean     isSet;
+        protected String      dataObjFormatName = null;
 
         public ColumnInfo(String       parentClassName,
                           FormCell     formCell, 
@@ -835,7 +1020,22 @@ public class TableViewObj implements Viewable,
             this.fieldNames     = split(StringUtils.deleteWhitespace(fullCompName), ".");
             this.isSet          = false;
             
+
+            checkForDataObjFormatter();
             checkForSet();
+        }
+        
+        protected void checkForDataObjFormatter()
+        {
+            // Check to see if we have a DataObjFormatter for the Column's Object
+            if (formCell instanceof FormCellField)
+            {
+                FormCellField fcf = (FormCellField)formCell;
+                if (fcf.getDspUIType().equals("querycbx") || fcf.getDspUIType().equals("textfieldinfo"))
+                {
+                    dataObjFormatName = fcf.getProperty("name");
+                }
+            }
         }
 
         protected void checkForSet()
@@ -916,9 +1116,14 @@ public class TableViewObj implements Viewable,
         public void setFormCell(FormCell formCell)
         {
             this.formCell = formCell;
+            checkForDataObjFormatter();
             checkForSet();
         }
 
+        public String getDataObjFormatName()
+        {
+            return dataObjFormatName;
+        }
 
         public void setEnabled(boolean enabled)
         {
@@ -951,9 +1156,6 @@ public class TableViewObj implements Viewable,
     public class ColTableModel implements TableModel
     {
         protected Vector<TableModelListener> listeners = new Vector<TableModelListener>();
-        protected List<String[]> rowData;
-        protected Vector<String> methods;
-
 
         /**
          * @param rowData
@@ -980,35 +1182,62 @@ public class TableViewObj implements Viewable,
 
         public Object getValueAt(int row, int column)
         {
-            ColumnInfo colInfo = columnList.get(column);
-            Object     rowObj  = dataObjList.get(row);
-            log.info("["+colInfo.getFullCompName()+"]");
-            if (colInfo.getFullCompName().equals("accessionAuthorizations.permit"))
+            if (columnList != null && dataObjList != null)
             {
-                int x = 0;
-                x++;
-            }
-            if (colInfo.getFullCompName().equals("accessionAuthorizations"))
-            {
-                int x = 0;
-                x++;
-            }
-            String[] fName = new String[1];
-            String[] fieldNames = colInfo.getFieldNames();
-            for (String fldName : fieldNames)
-            {
-                fName[0] = fldName;
-                Object[] dataValues = UIHelper.getFieldValues(fName, rowObj, dataGetter);
-                if (dataValues != null && dataValues[0] instanceof Set)
+                ColumnInfo colInfo = columnList.get(column);
+                Object     rowObj  = dataObjList.get(row);
+                //log.info("["+colInfo.getFullCompName()+"]");
+
+                /*
+                String[] fName      = new String[1];
+                String[] fieldNames = colInfo.getFieldNames();
+                for (String fldName : fieldNames)
                 {
-                   int x = 0;
-                   x++;
+                    fName[0] = fldName;
+                    Object[] dataValues = UIHelper.getFieldValues(fName, rowObj, dataGetter);
+                    if (dataValues != null && dataValues[0] instanceof Set)
+                    {
+                       int x = 0;
+                       x++;
+                    }
+                }*/
+                String dataObjFormatName = colInfo.getDataObjFormatName();
+                
+                Object[] dataValues = UIHelper.getFieldValues(new String[] {colInfo.getFullCompName()}, rowObj, dataGetter);
+                
+                if (colInfo.getFullCompName().equals("accessionAuthorizations"))
+                {
+                    return DataObjFieldFormatMgr.aggregate((Set)dataValues[0], "AccessionAuthorizations");
                 }
+                if (colInfo.getFullCompName().equals("accessionAgents"))
+                {
+                    return DataObjFieldFormatMgr.aggregate((Set)dataValues[0], "AccessionAgents");
+                }
+                if (colInfo.getFullCompName().equals("permit"))
+                {
+                    int x = 0;
+                    x++;
+                }
+                
+                if (dataValues != null && dataValues[0] != null)
+                {
+                    Object data = dataValues[0];
+                    if (StringUtils.isNotEmpty(dataObjFormatName))
+                    {
+                        return DataObjFieldFormatMgr.format(data, dataObjFormatName);
+                        
+                    } else if (data instanceof Set)
+                    {
+                        
+                    }
+                    return data;
+                }
+                
+                return null;
+                
+                //return dataGetter.getFieldValue(rowObj, colInfo.getFullCompName());
             }
-            Object[] dataValues = UIHelper.getFieldValues(new String[] {colInfo.getFullCompName()}, rowObj, dataGetter);
-            return dataValues != null ? dataValues[0] : null;
-            
-            //return dataGetter.getFieldValue(rowObj, colInfo.getFullCompName());
+            return null;
         }
 
         public boolean isCellEditable(int row, int column)
@@ -1018,7 +1247,15 @@ public class TableViewObj implements Viewable,
 
         public Class<?> getColumnClass(int columnIndex)
         {
-            return String.class;
+            Object obj = getValueAt(0, columnIndex);
+            if (obj != null)
+            {
+                return obj.getClass();
+                
+            } else
+            {
+                return String.class;
+            }
         }
 
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
@@ -1036,4 +1273,56 @@ public class TableViewObj implements Viewable,
             listeners.remove(l);
         }
     }
+    
+    
+    class MyTableCellEditor  extends AbstractCellEditor  implements TableCellEditor
+    {
+        protected Component        comp;
+        protected GetSetValueIFace compGetSet;
+        
+        public MyTableCellEditor(final ColumnInfo colInfo)
+        {
+            this.comp       = colInfo.getComp();
+            this.compGetSet = (GetSetValueIFace)comp;
+        }
+
+        //
+        //          Override the implementations of the superclass, forwarding all methods 
+        //          from the CellEditor interface to our delegate. 
+        //
+
+        /**
+         * Forwards the message from the <code>CellEditor</code> to
+         * the <code>delegate</code>.
+         */
+        public Object getCellEditorValue() 
+        {
+            return compGetSet.getValue();
+        }
+
+        /**
+         * Forwards the message from the <code>CellEditor</code> to
+         * the <code>delegate</code>.
+         */
+        public boolean isCellEditable(EventObject anEvent) 
+        { 
+            return true; 
+        }
+        
+        //
+        //          Implementing the CellEditor Interface
+        //
+        /** Implements the <code>TableCellEditor</code> interface. */
+        public Component getTableCellEditorComponent(JTable tbl, 
+                                                     Object value,
+                                                     boolean isSelected,
+                                                     int row, 
+                                                     int column)
+        {
+            compGetSet.setValue(value, null);
+            return comp;
+        }
+
+
+     }
 }

@@ -163,11 +163,11 @@ public class ViewFactory
         if (viewDef.getType() == ViewDef.ViewType.form)
         {
             Viewable viewable = buildFormViewable(view, altView, parentView, options);
-            //Viewable viewable = buildTableViewable(view, altView, parentView, options);
             this.rootMultiView =  null;
             return viewable;
 
-        } else if (viewDef.getType() == FormViewDef.ViewType.table)
+        } else if (viewDef.getType() == FormViewDef.ViewType.table ||
+                   viewDef.getType() == FormViewDef.ViewType.formTable)
         {
             Viewable viewable = buildTableViewable(view, altView, parentView, options);
             this.rootMultiView =  null;
@@ -672,6 +672,11 @@ public class ViewFactory
                     } else if (uiType.equals("combobox"))
                     {
                         compToAdd = createComboBox(validator, cellField);
+                        /*JPanel p = new JPanel(new BorderLayout());
+                        JAutoCompComboBox cbx = new JAutoCompComboBox(new String[] {"One", "Two", "Three"});
+                        cbx.init(true);
+                        compToAdd = cbx;
+                        p.add(cbx, BorderLayout.CENTER);*/
                         addToValidator = validator != null; // might already added to validator
 
 
@@ -1086,26 +1091,40 @@ public class ViewFactory
     {
         try
         {
-            FormViewDef formViewDef = (FormViewDef)altView.getViewDef();
-
-            Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+            ViewDef viewDef = altView.getViewDef();
             
-            /*
-            ValidatedJPanel validatedPanel = null;
-            FormValidator   validator      = null;
-            if (altView.isValidated())
+            // Special situation where we create a table from a Form Definition
+            if (viewDef instanceof FormViewDef)
             {
-                validatedPanel = new ValidatedJPanel();
-                validator      = validatedPanel.getFormValidator();
-                validator.setDataChangeNotification(true);
-            }
-            */
-            
-            TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options);
+                FormViewDef               formViewDef   = (FormViewDef)viewDef;  
+                Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+                TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, null, options);
 
-            //Object currDataObj = tableViewObj.getCurrentDataObj();
-
-            processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
+                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
+                return tableViewObj;
+                
+            } else
+            {
+                FormViewDef formViewDef = (FormViewDef)altView.getViewDef();
+                
+                Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+                
+                /*
+                ValidatedJPanel validatedPanel = null;
+                FormValidator   validator      = null;
+                if (altView.isValidated())
+                {
+                    validatedPanel = new ValidatedJPanel();
+                    validator      = validatedPanel.getFormValidator();
+                    validator.setDataChangeNotification(true);
+                }
+                */
+                
+                TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options);
+    
+                //Object currDataObj = tableViewObj.getCurrentDataObj();
+    
+                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
 
             /*
             if (validatedPanel != null)
@@ -1147,6 +1166,8 @@ public class ViewFactory
 */
             return tableViewObj;
 
+            }
+
         } catch (Exception e)
         {
             log.error("buildPanel - Outer Name["+altView.getName()+"]");
@@ -1165,11 +1186,11 @@ public class ViewFactory
      * @param options the options needed for creating the form
      * @return a new FormViewObj
      */
-    public static FormViewObj createFormView(final MultiView multiView, 
-                                             final View      view, 
-                                             final String    altName, 
-                                             final Object    data,
-                                             final int       options)
+    public static Viewable createFormView(final MultiView multiView, 
+                                          final View      view, 
+                                          final String    altName, 
+                                          final Object    data,
+                                          final int       options)
     {
         if (viewFieldColor == null)
         {
@@ -1178,29 +1199,22 @@ public class ViewFactory
 
         AltView altView = view.getAltView(altName);
 
-        if (altView != null && altView.getViewDef().getType() == ViewDef.ViewType.form)
+        if (altView != null)
         {
-            if (altView.getViewDef().getType() == ViewDef.ViewType.form)
+            Viewable viewable = instance.buildViewable(view, altView, multiView, options);
+            if (viewable != null)
             {
-                FormViewObj form = (FormViewObj)instance.buildViewable(view, 
-                                                                       altView,
-                                                                       multiView,
-                                                                       options);
-                if (form != null)
+                if (data != null)
                 {
-                    if (data != null)
-                    {
-                        form.setDataObj(data);
-                        form.setDataIntoUI();
-                    }
+                    viewable.setDataObj(data);
+                    viewable.setDataIntoUI();
                 } else
                 {
                     throw new RuntimeException("Form could be created! ["+view.getName()+"]["+altView.getName()+"]");
                 }
-                return form;
+                return viewable;
             }
         }
-
         return null;
     }
 

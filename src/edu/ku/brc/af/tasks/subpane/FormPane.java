@@ -228,13 +228,13 @@ public class FormPane extends DroppableTaskPane
             name = view.getName(); // names the Tab
 
             // Clear the MultiView.RESULTSET_CONTROLLER bit and then reset it if it needs to be set
-            MultiView.printCreateOptions("Before", options);
+            //MultiView.printCreateOptions("Before", options);
             int opts = options;
             opts &= ~MultiView.RESULTSET_CONTROLLER; // Clear Bit first
             opts |= (dataArg != null && (dataArg instanceof List || dataArg instanceof Set)) ? MultiView.RESULTSET_CONTROLLER : 0;
                        
-            System.err.println("Is List: ["+(dataArg != null && (dataArg instanceof List || dataArg instanceof Set))+"] "+dataArg);
-            MultiView.printCreateOptions("After", opts);
+            //System.err.println("Is List: ["+(dataArg != null && (dataArg instanceof List || dataArg instanceof Set))+"] "+dataArg);
+            //MultiView.printCreateOptions("After", opts);
             
             multiView = new MultiView(null, view, mode, options);
             if (multiView != null)

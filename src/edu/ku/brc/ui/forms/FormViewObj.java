@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -76,6 +75,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -145,7 +145,7 @@ public class FormViewObj implements Viewable,
     protected Object                        dataObj         = null;
     protected Set                           origDataSet     = null;
     protected Object[]                      singleItemArray = new Object[1];
-    protected SimpleDateFormat              scrDateFormat;
+    protected DateWrapper                   scrDateFormat;
 
     protected JPanel                        mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
@@ -210,7 +210,7 @@ public class FormViewObj implements Viewable,
 
         setValidator(formValidator);
 
-        scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
@@ -228,8 +228,8 @@ public class FormViewObj implements Viewable,
 
         String rowDefs = (addSelectorCBX ? "p," : "") + (mvParent == null ? "p" : "p:g") + (addExtraRow ? ",2px,p" : "");
 
-        mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
-        mainComp = mainBuilder.getPanel();
+        mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
+        mainComp    = mainBuilder.getPanel();
         
         List<JComponent> comps = new ArrayList<JComponent>();
 
@@ -267,97 +267,37 @@ public class FormViewObj implements Viewable,
         // We will add the switchable UI if we are mvParented to a MultiView and have multiple AltViews
         if (addController)
         {
-            // Now we have a Special case that when when there are only two AltViews and
-            // they differ only by Edit & View we hide the switching UI unless
-            // we are the root MultiView. This way when switching the Root View all the other views switch
-            // (This is because they were created that way. It also makes no sense that while in "View" mode
-            // you would want to switch an individual subview to a differe "mode" view than the root).
-
-            if (createViewSwitcher && (!view.isSpecialViewEdit() || mvParent.getMultiViewParent() == null))
+            boolean saveWasAdded = false;
+            
+            if (createViewSwitcher)
             {
+                // Now we have a Special case that when when there are only two AltViews and
+                // they differ only by Edit & View we hide the switching UI unless
+                // we are the root MultiView. This way when switching the Root View all the other views switch
+                // (This is because they were created that way. It also makes no sense that while in "View" mode
+                // you would want to switch an individual subview to a differe "mode" view than the root).
 
-                ImageIcon[] iconsArray    = new ImageIcon[view.getAltViews().size()];
-                String[]    labelsArray   = new String[view.getAltViews().size()];
-                String[]    toolTipsArray = new String[view.getAltViews().size()];
-
-                // loop thru and add the AltViews to the comboxbox and make sure that the
-                // this form is always at the top of the list.
                 altViewsList = new Vector<AltView>();
-                int inx = 0;
-                for (AltView av : view.getAltViews())
+                switcherUI   = createSwitcher(mvParent, view, altView, altViewsList);
+                
+                if (altViewsList.size() > 0)
                 {
-                    if (av == altView)
+                    if (altView.getMode() == AltView.CreationMode.Edit && mvParent.getMultiViewParent() == null)
                     {
-                        altViewsList.insertElementAt(av, 0);
-                    } else
-                    {
-                        altViewsList.add(av);
+                        // We want it on the left side of other buttons
+                        // so wee need to add it before the Save button
+                        addValidationIndicator(comps);
+    
+                        addSaveBtn();
+                        comps.add(saveBtn);
+                        saveWasAdded = true;
+    
                     }
+                    comps.add(switcherUI);
                 }
-
-                Hashtable<String, Boolean> useLabels = new Hashtable<String, Boolean>();
-                for (AltView av : altViewsList)
-                {
-                    String selectorName = av.getSelectorName();
-                    if (StringUtils.isNotEmpty(selectorName))
-                    {
-                        String combinedName = av.getMode().toString() + "_" + selectorName;
-                        if (useLabels.get(combinedName) == null)
-                        {
-                            useLabels.put(combinedName, true);
-                            
-                        } else
-                        {
-                            continue;
-                        }
-                    }
-                    
-                    labelsArray[inx] = av.getLabel();
-
-                    // TODO This is Sort of Temporary until I get it all figured out
-                    // But somehow we need to externalize this, possible have the AltView Definition
-                    // define its own icon
-                    if (av.getMode() == AltView.CreationMode.Edit)
-                    {
-                        iconsArray[inx]    = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
-                        toolTipsArray[inx] = getResourceString("ShowEditViewTT");
-
-                    } else if (av.getViewDef().getType() == ViewDef.ViewType.table)
-                    {
-                        iconsArray[inx]    = IconManager.getImage("Speadsheet", IconManager.IconSize.Std16);
-                        toolTipsArray[inx] = getResourceString("ShowSpeadsheetTT");
-
-                    } else
-                    {
-                        iconsArray[inx]    = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
-                        toolTipsArray[inx] = getResourceString("ShowViewTT");
-                    }
-                    inx++;
-                }
-
-
-                switcherUI = new DropDownButtonStateful(labelsArray, iconsArray, toolTipsArray);
-                switcherUI.setToolTipText(getResourceString("SwitchViewsTT"));
-                switcherUI.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        mvParent.showView(altViewsList.get(switcherUI.getCurrentIndex()));
-                    }
-                });
-
-                if (altView.getMode() == AltView.CreationMode.Edit)
-                {
-                    // We want it on the left side of other buttons
-                    // so wee need to add it before the Save button
-                    addValidationIndicator(comps);
-
-                    addSaveBtn();
-                    comps.add(saveBtn);
-
-                }
-                comps.add(switcherUI);
-
-            } else if (altView.getMode() == AltView.CreationMode.Edit)
+            }
+            
+            if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
             {
                 if (mvParent.getMultiViewParent() == null && !hideSaveBtn)
                 {
@@ -390,6 +330,122 @@ public class FormViewObj implements Viewable,
         {
             addRSController();
         }
+    }
+    
+    
+    /**
+     * Creates a special drop "switcher UI" component for switching between the Viewables in the MultiView.
+     * @param mvParentArg the MultiView Parent
+     * @param viewArg the View
+     * @param altViewArg the AltView
+     * @param altViewsListArg the Vector of AltView that will contains the ones in the Drop Down
+     * @return the special combobox
+     */
+    public static DropDownButtonStateful createSwitcher(final MultiView mvParentArg, View viewArg, AltView altViewArg, final Vector<AltView> altViewsListArg)
+    {
+        DropDownButtonStateful switcher = null;
+        
+        Vector<AltView> altViews = new Vector<AltView>();
+        if (mvParentArg.getMultiViewParent() == null)
+        {
+            altViews.addAll(viewArg.getAltViews());
+            
+        } else
+        {
+            AltView.CreationMode mode = altViewArg.getMode();
+            for (AltView av : viewArg.getAltViews())
+            {
+                ViewDef.ViewType type = av.getViewDef().getType();
+                if (av.getMode() == mode || type == ViewDef.ViewType.table || type == ViewDef.ViewType.formTable)
+                {
+                    altViews.add(av);
+                }
+            }
+
+            
+        }
+        
+        if (altViews.size() > 0)
+        {
+            ImageIcon[] iconsArray    = new ImageIcon[altViews.size()];
+            String[]    labelsArray   = new String[altViews.size()];
+            String[]    toolTipsArray = new String[altViews.size()];
+
+            // loop thru and add the AltViews to the comboxbox and make sure that the
+            // this form is always at the top of the list.
+            
+            int inx = 0;
+            for (AltView av : altViews)
+            {
+                if (av == altViewArg)
+                {
+                    altViewsListArg.insertElementAt(av, 0);
+                } else
+                {
+                    altViewsListArg.add(av);
+                }
+            }
+            
+            Hashtable<String, Boolean> useLabels = new Hashtable<String, Boolean>();
+            for (AltView av : altViewsListArg)
+            {
+                String selectorName = av.getSelectorName();
+                if (StringUtils.isNotEmpty(selectorName))
+                {
+                    String combinedName = av.getMode().toString() + "_" + selectorName;
+                    if (useLabels.get(combinedName) == null)
+                    {
+                        useLabels.put(combinedName, true);
+                        
+                    } else
+                    {
+                        continue;
+                    }
+                }
+                
+                labelsArray[inx] = av.getLabel();
+
+                // TODO This is Sort of Temporary until I get it all figured out
+                // But somehow we need to externalize this, possible have the AltView Definition
+                // define its own icon
+                if (av.getMode() == AltView.CreationMode.Edit)
+                {
+                    iconsArray[inx]    = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
+                    toolTipsArray[inx] = getResourceString("ShowEditViewTT");
+
+                } else if (av.getViewDef().getType() == ViewDef.ViewType.table ||
+                           av.getViewDef().getType() == ViewDef.ViewType.formTable)
+                {
+                    iconsArray[inx]    = IconManager.getImage("Spreadsheet", IconManager.IconSize.Std16);
+                    toolTipsArray[inx] = getResourceString("ShowSpreadsheetTT");
+
+                } else
+                {
+                    iconsArray[inx]    = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
+                    toolTipsArray[inx] = getResourceString("ShowViewTT");
+                }
+                inx++;
+            }
+            
+            class SwitcherAL implements ActionListener
+            {
+                protected DropDownButtonStateful switcherComp;
+                public SwitcherAL(final DropDownButtonStateful switcherComp)
+                {
+                    this.switcherComp = switcherComp;
+                }
+                public void actionPerformed(ActionEvent ae)
+                {
+                    mvParentArg.showView(altViewsListArg.get(switcherComp.getCurrentIndex()));
+                }
+            }
+
+            switcher = new DropDownButtonStateful(labelsArray, iconsArray, toolTipsArray);
+            switcher.setToolTipText(getResourceString("SwitchViewsTT"));
+            switcher.addActionListener(new SwitcherAL(switcher));
+        }
+        
+        return switcher;
     }
     
     /**
@@ -757,7 +813,7 @@ public class FormViewObj implements Viewable,
      */
     public boolean checkForChanges()
     {
-        if (formValidator != null && formValidator.hasChanged())
+        if (formValidator != null && formValidator.hasChanged() && mvParent != null && mvParent.getMultiViewParent() == null)
         {
             int rv = JOptionPane.showConfirmDialog(null,
                         getResourceString("SaveChanges"),
@@ -1845,6 +1901,11 @@ public class FormViewObj implements Viewable,
         controlsById.clear();
         controlsByName.clear();
         labels.clear();
+        
+        if (altViewsList != null)
+        {
+            altViewsList.clear();
+        }
 
         // XXX FIXME for (MultiView fvo : kids)
         //{
@@ -2022,6 +2083,11 @@ public class FormViewObj implements Viewable,
      */
     public void indexChanged(int newIndex)
     {
+        if (formValidator != null && formValidator.hasChanged())
+        {
+            getDataFromUI();
+        }
+        
         dataObj = list.get(newIndex);
 
         setDataIntoUI();

@@ -5,29 +5,68 @@
         name="Agent"
         class="edu.ku.brc.specify.datamodel.Agent"
         >
-        <fields>
-            <field>lastName</field>
-            <field sep=", " >firstName</field>
-            <field>name</field>
-        </fields>
+        <switch single="false" field="agentType">
+            <fields value="0">
+                <field>name</field>
+            </fields>
+            <fields value="1">
+                <field>lastName</field>
+                <field sep=", " >firstName</field>
+                <field>name</field>
+            </fields>
+        </switch>
     </format>
-
+    
     <format
         name="CollectionObject"
         class="edu.ku.brc.specify.datamodel.CollectionObject"
         >
-        <fields>
-            <field format="%.0f" type="float">catalogNumber</field>
-        </fields>
+        <switch single="true">
+            <fields>
+                <field format="%.0f" type="float">catalogNumber</field>
+            </fields>
+        </switch>
     </format>
 
     <format
         name="Permit"
         class="edu.ku.brc.specify.datamodel.Permit"
         >
-        <fields>
-            <field>permitNumber</field>
-        </fields>
+        <switch single="true">
+            <fields>
+                <field>permitNumber</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="AccessionAuthorizations"
+        class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
+        >
+        <switch single="true">
+            <fields>
+                <field>permit.permitNumber</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="AccessionAgents"
+        class="edu.ku.brc.specify.datamodel.AccessionAgents"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="Agent">agent</field>
+                <field sep=" - ">role</field>
+            </fields>
+        </switch>
     </format>
 
+    <aggregators>
+        <aggregator name="AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations"/>
+        <aggregator name="AccessionAgents"         separator="; " count="" ending="" format="AccessionAgents"/>   
+    </aggregators>
+        
 </formatters>
+
+

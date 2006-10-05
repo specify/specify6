@@ -20,7 +20,6 @@ import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -58,6 +57,7 @@ import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
@@ -77,11 +77,10 @@ public class InfoRequestTask extends BaseTask
     
     public static final String     INFOREQUEST        = "InfoRequest";
     public static final DataFlavor INFOREQUEST_FLAVOR = new DataFlavor(RecordSetTask.class, INFOREQUEST);
-    
     public static final String INFO_REQ_MESSAGE = "Specify Info Request";
     
-    // Data Members
-    protected SimpleDateFormat scrDateFormat;
+    protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+
 
     // Data Members
     protected NavBox navBox = null;
@@ -94,8 +93,6 @@ public class InfoRequestTask extends BaseTask
     {
         super(INFOREQUEST, getResourceString(INFOREQUEST));
         CommandDispatcher.register(INFOREQUEST, this);
-        
-        scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
     }
     
     /**

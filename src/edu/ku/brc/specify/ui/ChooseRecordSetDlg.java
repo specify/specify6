@@ -183,7 +183,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
         int inx = list.getSelectedIndex();
         if (inx != -1)
         {
-            return (RecordSet)recordSets.get(inx);
+            return recordSets.get(inx);
         }
         return null;
     }

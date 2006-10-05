@@ -46,6 +46,7 @@ public class View implements Comparable<View>
     
     // transient data members
     protected BusinessRulesIFace   businessRule = null;
+    protected Boolean              isSpecial    = null;
     
    
     /**
@@ -157,19 +158,24 @@ public class View implements Comparable<View>
      * Returns whether it is a special view, meaning a view with just to AltViews where one is edit and the other is view.
      * @return whether it is a special view, meaning a view with just to AltViews where one is edit and the other is view.
      */
-    public boolean isSpecialViewEdit()
+    public boolean isSpecialViewAndEdit()
     {
-        if (altViews.size() == 2)
+        // Note: it may still be special even if altView == 3, but then it was agumented with the Grid View
+        if (isSpecial == null)
         {
-            AltView av0 = altViews.get(0);
-            AltView av1 = altViews.get(1);
-            
-            if (av0.getViewDefName().equals(av1.getViewDefName()))
+            if (altViews.size() == 2)
             {
-                return true;
+                AltView av0 = altViews.get(0);
+                AltView av1 = altViews.get(1);
+                
+                isSpecial = av0.getViewDefName().equals(av1.getViewDefName());
+                
+            } else
+            {
+                isSpecial = false;
             }
         }
-        return false;
+        return isSpecial;
     }
     
     /**

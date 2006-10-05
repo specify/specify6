@@ -42,13 +42,13 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
             
     // Fields    
 
-     protected Long viewSetObjId;
-     protected Short level;
-     protected String name;
-     protected String description;
-     protected String metaData;
-     protected Set<AppResourceData> appResourceDatas;
-     private Set<AppResourceDefault> appResourceDefaults;
+     protected Long                    viewSetObjId;
+     protected Short                   level;
+     protected String                  name;
+     protected String                  description;
+     protected String                  metaData;
+     protected Set<AppResourceData>    appResourceDatas;
+     protected Set<AppResourceDefault> appResourceDefaults;
 
      // Non Persisted Fields
      protected String fileName = null;
@@ -237,7 +237,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      */
     public String getDataAsString()
     {
-        log.info("********* "+getFileName()+" size:"+appResourceDatas.size());
+        log.debug("********* "+getFileName()+" size:"+appResourceDatas.size());
         
         getAppResourceDatas(); // Must call this before accessing it as a local data member
         

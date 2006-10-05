@@ -141,13 +141,10 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         {
             defaultTextBGColor = (new JTextField()).getBackground();
         }
-
-        //setLayout(new BorderLayout());
-        //add(comboBox, BorderLayout.CENTER);
-
+        
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g", "p:g"), this);
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "p:g:f"), this);
         CellConstraints cc         = new CellConstraints();
         builder.add(comboBox, cc.xy(1,1));
 
@@ -219,7 +216,6 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         super.paint(g);
 
-        //System.err.println(this.getLocation().x+","+this.getLocation().y+" "+comboBox.getSelectedIndex()+" ["+isNew+"]["+valState()+"]["+isEnabled()+"]");
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
@@ -326,13 +322,10 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void setRequired(boolean isRequired)
     {
-        Color newBGColor = isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor;
-        comboBox.setBackground(newBGColor);
         if (comboBox.getTextField() != null)
         {
-            comboBox.getTextField().setBackground(newBGColor);
+            comboBox.getTextField().setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
         }
-        //setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
         this.isRequired = isRequired;
     }
 
@@ -528,8 +521,10 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         if (evt.getKey().equals("ui.formatting.requiredfieldcolor"))
         {
-            comboBox.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
+            if (comboBox.getTextField() != null)
+            {
+                comboBox.getTextField().setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
+            }
         }
     }
 }

@@ -76,7 +76,16 @@ public class TableViewDef extends ViewDef
     {
         this.columns = columns;
     }
-
+    
+    @Override
+    public ViewDef clone()
+    {
+        TableViewDef tvd =  new TableViewDef(name, className, dataGettableName, dataSettableName, desc);
+        tvd.columns      = new Vector<FormColumn>();
+        tvd.columns.addAll(columns);
+        return tvd;
+    }
+    
     //-------------------------------------------------------------------
     // Helpers
     //-------------------------------------------------------------------

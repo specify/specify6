@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.DateWrapper;
 
 /**
  * Creates and maintains a cache of preference entries that listen for changes to the preferences so they can always be up-to-date
@@ -312,33 +313,74 @@ public class AppPrefsCache
     {
         getInstance().registerInternal(simpleFormat, section, pref, attrName);
     }
+    
+    /**
+     * Returns a SimpleDateFormat for date with two month and day digits and 4 year digits.
+     * @return a SimpleDateFormat for date with two month and day digits and 4 year digits.
+     */
+    public static SimpleDateFormat getDefaultDatePattern()
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        
+        String[] pieces = sdf.toPattern().split(" ");
+        if (pieces == null)
+        {
+            String pattern = pieces[0];
+            //System.out.println(pattern);
+            
+            //System.out.println("Months: "+ StringUtils.countMatches(pattern, "M"));
+            //System.out.println("Days:   "+ StringUtils.countMatches(pattern, "d"));
+            //System.out.println("Years:  "+ StringUtils.countMatches(pattern, "y"));
+            
+            int months = StringUtils.countMatches(pattern, "M");
+            int days   = StringUtils.countMatches(pattern, "d");
+            int years  = StringUtils.countMatches(pattern, "y");
+            
+            if (months == 1 && days == 1 && years == 2)
+            {
+                pattern = pattern.replace("M", "MM");
+                pattern = pattern.replace("d", "dd");
+                pattern = pattern.replace("yy", "yyyy");
+            }
+            //System.out.println(pattern);
+            //System.out.println("Months: "+ StringUtils.countMatches(pattern, "M"));
+            //System.out.println("Days:   "+ StringUtils.countMatches(pattern, "d"));
+            //System.out.println("Years:  "+ StringUtils.countMatches(pattern, "y"));
+            return new SimpleDateFormat(pattern);
+            
+        }
+        
+        return new SimpleDateFormat("MM/dd/yyyy");
+    }
 
     /**
-     * Gets a SimpleDateFormat Object
+     * Gets a DateWrapper Object.
      * @param section the section or category of the pref
      * @param pref the pref's name
      * @param attrName the actual attribute
      * @return the object
      */
-    public static SimpleDateFormat getSimpleDateFormat(final String section, 
-                                                       final String pref, 
-                                                       final String attrName)
+    public static DateWrapper getDateWrapper(final String section, 
+                                             final String pref, 
+                                             final String attrName)
     {
         checkName(section, pref, attrName);
         
         DateFormatCacheEntry dateEntry = (DateFormatCacheEntry)getInstance().hash.get(makeKey(section, pref, attrName));
         if (dateEntry != null)
         {
-            return dateEntry.getSimpleDateFormat();
+            return dateEntry.getDateWrapper();
             
+        } else
+        {
+            dateEntry = instance.new DateFormatCacheEntry(getDefaultDatePattern(), section, pref, attrName);
+            getInstance().hash.put(makeKey(section, pref, attrName), dateEntry);
         }
-        // else
-        //throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
-        return new SimpleDateFormat("mm/dd/yy");
+        return dateEntry.getDateWrapper();
     }
 
     /**
-     * Simple class to wrap color changes
+     * Simple class to wrap color changes and get the notification of changes.
      *
      */
     public class ColorCacheEntry extends AppPrefsCacheEntry
@@ -365,29 +407,31 @@ public class AppPrefsCache
     }
 
     /**
-     * Simple class to wrap Data format changes
+     * Simple class to wrap Data format changes and get the notification of changes.
      *
      */
     public class DateFormatCacheEntry extends AppPrefsCacheEntry
     {
-        protected SimpleDateFormat simpleDateFormat;
+        protected DateWrapper dateWrapper;
         
         public DateFormatCacheEntry(final SimpleDateFormat simpleDateFormat, String attrName, String value, String defValue)
         {
             super(attrName, value, defValue);
-            this.simpleDateFormat = simpleDateFormat;
+            
+            dateWrapper = new DateWrapper(simpleDateFormat);
         }
         
         @Override
         public void preferenceChange(AppPrefsChangeEvent evt)
         {
             super.preferenceChange(evt);
-            simpleDateFormat.applyPattern(getValue());
+            
+            dateWrapper.getSimpleDateFormat().applyPattern(getValue());
         }
 
-        public SimpleDateFormat getSimpleDateFormat()
+        public DateWrapper getDateWrapper()
         {
-            return simpleDateFormat;
+            return dateWrapper;
         }
     }
 }

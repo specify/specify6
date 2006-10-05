@@ -41,31 +41,34 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     
     // Fields    
 
-     protected Long appResourceId;
-     protected Short level;
-     protected String name;
-     protected String description;
-     protected String mimeType;
-     protected String metaData;
-     protected Set<AppResourceData> appResourceDatas;
+     protected Long                    appResourceId;
+     protected Short                   level;
+     protected String                  name;
+     protected String                  description;
+     protected String                  mimeType;
+     protected String                  metaData;
+     protected Set<AppResourceData>    appResourceDatas;
      protected Set<AppResourceDefault> appResourceDefaults;
      
      // Non Persisted Fields
-     protected String fileName = null;
+     protected String                  fileName = null;
 
     // Constructors
 
     /** default constructor */
-    public AppResource() {
+    public AppResource() 
+    {
     }
     
     /** constructor with id */
-    public AppResource(Long appResourceId) {
+    public AppResource(Long appResourceId) 
+    {
         this.appResourceId = appResourceId;
     }
    
     
     // Initializer
+    @Override
     public void initialize()
     {
         appResourceId = null;
@@ -263,7 +266,6 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
                     blobData = ard.getData();
                 }
             }
-            
             
             if ((blobData != null && blobData.length() > 0) || 
                 StringUtils.isNotEmpty(fileName))

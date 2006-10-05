@@ -17,6 +17,7 @@ package edu.ku.brc.ui.db;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -30,6 +31,8 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+
+import edu.ku.brc.ui.UIHelper;
 /**
  * An editable JComboBox that enables the user to edit the values in the list which actually creates a new value
  * in the picklist.
@@ -369,6 +372,24 @@ public class JEditComboBox extends JComboBox
         
         return new JEditComboBox(adaptor);
     }
-  
 
+
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#getPreferredSize()
+     */
+    @Override
+    public Dimension getPreferredSize()
+    {
+        // TODO Cross Platform MAC ONLY
+        if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
+        {
+            Dimension d = super.getPreferredSize();
+            if (this.getEditor() != null)
+            {
+                d.height += 6;
+            }
+           return d;
+        }
+        return super.getPreferredSize();
+    }
 }

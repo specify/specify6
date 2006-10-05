@@ -146,7 +146,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         mainBtn   = new JButton(label, icon);
         arrowBtn  = new JButton(dropDownArrow);
         
-        mainBtn.setBorder(new EmptyBorder(4,4,4, getPopMenuSize() > 0 ? 2 : 4));
+        mainBtn.setBorder(new EmptyBorder(1,4,1,4));
         mainBtn.setIconTextGap(1); 
         mainBtn.setMargin(new Insets(0,0,0,0));
         mainBtn.getModel().addChangeListener(this);
@@ -156,7 +156,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
             mainBtn.setToolTipText(toolTip);
         }
 
-        arrowBtn.setBorder(new EmptyBorder(4,4,4,4));
+        arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);
         arrowBtn.setMargin(new Insets(3, 3, 3, 3));
@@ -165,7 +165,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         arrowBtn.setVisible(getPopMenuSize() > 0);
         
         
-        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g"), this);
+        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "c:p:g"), this);
         CellConstraints cc  = new CellConstraints();
         
         builder.add(mainBtn, cc.xy(1,1));
@@ -383,7 +383,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     @Override
     public void paint(Graphics g) 
     {
-        mainBtn.setMargin(new Insets(0,0,0,0));
+        //mainBtn.setMargin(new Insets(0,0,0,0));
         
         super.paint(g);
         

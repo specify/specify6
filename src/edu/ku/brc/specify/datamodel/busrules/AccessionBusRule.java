@@ -219,7 +219,7 @@ public class AccessionBusRule implements BusinessRulesIFace
                 return false;
             }
         }        
-        throw new RuntimeException("DataObj is not an Accession ["+dataObj.getClass().getSimpleName()+"]");
+        throw new RuntimeException("Data Obj is not an Accession ["+dataObj.getClass().getSimpleName()+"]");
     }
     
     

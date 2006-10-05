@@ -158,6 +158,19 @@ public class ViewLoader
 
                 view.addAltView(altView);
             }
+            
+            // Very Special Case
+            // Add a grid view if we have an Edit and a View
+            if (view.isSpecialViewAndEdit())
+            {
+                // Clones Alt view and ViewDef (Deep Clone)
+                AltView gridAltView = view.getAltViews().get(0).clone();
+                gridAltView.getViewDef().setType(ViewDef.ViewType.formTable);
+                gridAltView.getViewDef().setName("Grid");
+                gridAltView.setName("Grid");
+                gridAltView.setLabel(getResourceString("Grid"));
+                view.addAltView(gridAltView);
+            }
 
             /*
             // iterate through child elements of root with element name "foo"
@@ -274,6 +287,7 @@ public class ViewLoader
 
         switch (type)
         {
+            case formTable :
             case form :
                 viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
                 break;
@@ -287,6 +301,9 @@ public class ViewLoader
                 //view = createFormView(FormView.ViewType.field, element, id, name, gettableClassName, settableClassName,
                 //                      className, desc, instance.doingResourceLabels, isValidated);
                break;
+               
+            case iconViewer:
+                throw new RuntimeException("Unhandled Switch iconViewer");
         }
         return viewDef;
     }

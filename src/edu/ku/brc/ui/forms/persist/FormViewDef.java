@@ -156,5 +156,18 @@ public class FormViewDef extends ViewDef
         this.enableRules = enableRules;
     }
 
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDef#clone()
+     */
+    @Override
+    public ViewDef clone()
+    {
+        FormViewDef fvd =  new FormViewDef(type, name, className, dataGettableName, dataSettableName, desc);
+        
+        fvd.columnDef = columnDef;
+        fvd.rowDef    = rowDef;
+        fvd.rows      = new Vector<FormRow>();
+        fvd.rows.addAll(rows);
+        return fvd;
+    }
 }

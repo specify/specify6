@@ -174,7 +174,7 @@ public class JAutoCompTextField extends JTextField
                         hasChanged = true;
                         return;
                     }
-                    System.out.println("["+ev.getKeyCode()+"]["+KeyEvent.VK_DELETE+"]");
+                    //System.out.println("["+ev.getKeyCode()+"]["+KeyEvent.VK_DELETE+"]");
                     
                     caretPos = getCaretPosition();
                     String text = "";

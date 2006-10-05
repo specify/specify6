@@ -34,7 +34,7 @@ public class ViewDef
 {
     private static final Logger log = Logger.getLogger(ViewDef.class);
     
-    public enum ViewType {form, table, field}
+    public enum ViewType {form, table, field, formTable, iconViewer}
     
     protected ViewType             type;
     protected String               name;
@@ -171,9 +171,21 @@ public class ViewDef
         return dataSettable;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
         return this.name;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public ViewDef clone()
+    {
+        return new ViewDef(type, name, className, dataGettableName, dataSettableName, desc);
     }
 }

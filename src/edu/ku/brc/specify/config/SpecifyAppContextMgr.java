@@ -692,6 +692,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         log.debug("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
         
+        Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false);
+        if (reloadViews)
+        {
+            viewSetHash.clear();
+        }
+        
         List<ViewSet> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
         if (viewSetList == null)
         {

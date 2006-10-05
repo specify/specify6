@@ -455,8 +455,6 @@ public class DBTableIdMgr
         
         public RelationshipType getRelType(final String fieldName)
         {
-            System.err.println(fieldName);
-            System.err.println(fieldName);
             for (Iterator<TableRelationship> iter = relationships.iterator();iter.hasNext();)
             {
                 TableRelationship tblRel = iter.next();

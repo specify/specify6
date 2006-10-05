@@ -13,6 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */package edu.ku.brc.ui.db;
 
+import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -35,6 +36,7 @@ import javax.swing.text.BadLocationException;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Auto Complete ComboxBox filled from a query, the setValue and getValue should use Hibernate Objects from that table
@@ -522,5 +524,25 @@ public class JComboBoxFromQuery extends JComboBox
             }
         }
     }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#getPreferredSize()
+     */
+    @Override
+    public Dimension getPreferredSize()
+    {
+        // TODO Cross Platform MAC ONLY
+        if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
+        {
+            Dimension d = super.getPreferredSize();
+            if (this.getEditor() != null)
+            {
+                d.height += 6;
+            }
+           return d;
+        }
+        return super.getPreferredSize();
+    }
 
 }
+

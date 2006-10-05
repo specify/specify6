@@ -30,6 +30,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -581,7 +582,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     }
                 });
 
-
+        menu.addSeparator();
+        JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Reload Views");
+        menu.add(cbMenuItem);
+        //mi = UIHelper.createMenuItem(menu, "Reload Views", "V", "Reload Views", false, null);
+        cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean("reload_views", false));
+        cbMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        boolean isReload = !AppPreferences.getLocalPrefs().getBoolean("reload_views", false);                       
+                        AppPreferences.getLocalPrefs().putBoolean("reload_views", isReload);
+                        ((JMenuItem)ae.getSource()).setSelected(isReload);
+                    }});
 
          return mb;
     }
