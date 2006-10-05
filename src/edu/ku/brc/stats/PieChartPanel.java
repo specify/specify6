@@ -31,6 +31,7 @@ import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Creates a pane that can listener for Query Results and then create a Pie Chart
@@ -149,7 +150,9 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
         validate();
         doLayout();
         repaint();
-
+        
+        // TODO This is a kludge for now to get the BarChart to Paint Correctly
+        UICacheManager.forceTopFrameRepaint();
     }
 
     /* (non-Javadoc)
