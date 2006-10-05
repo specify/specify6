@@ -47,6 +47,19 @@ public class NameBasedComparator implements Comparator<Nameable>
 		{
 			return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
 		}
+        
+        // to make sure the names are not null
+        String name1 = o2.getName();
+        String name2 = o2.getName();
+        if (name1==null)
+        {
+            name1="";
+        }
+        if (name2==null)
+        {
+            name2="";
+        }
+        
 		return o1.getName().compareTo(o2.getName());
 	}
 }

@@ -4,7 +4,7 @@
 <class name="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="stratigraphyId" type="java.lang.Integer" column="StratigraphyID">
+    <id name="stratigraphyId" type="java.lang.Long" column="StratigraphyID">
         <meta attribute="field-description">CollectingEventID of related collecting event</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
