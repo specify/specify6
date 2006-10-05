@@ -57,8 +57,10 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.OrderedIconTray;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.db.PickListDBAdapter;
 import edu.ku.brc.ui.db.TextFieldWithInfo;
@@ -773,6 +775,28 @@ public class ViewFactory
                     {
                         JProgressBar progressBar = new JProgressBar(0, 100);
                         compToAdd = progressBar;
+                        
+                    } else if (uiType.equals("tray"))
+                    {
+                        boolean ordered = cellField.getPropertyAsBoolean("ordered", false);
+                        boolean viewMode = (mode == AltView.CreationMode.View);
+                        IconTray tray = null;
+                        if(ordered && !viewMode)
+                        {
+                            tray = new OrderedIconTray();
+                        }
+                        else
+                        {
+                            tray = new IconTray();
+                        }
+                        
+                        //tray.setFixedCellHeight(64);
+                        
+                        compToAdd = tray;
+                        compToReg = tray;
+                     
+                        addToValidator = false;
+                        //addControl     = true;
                         
                     } else if (uiType.equals("plugin"))
                     {

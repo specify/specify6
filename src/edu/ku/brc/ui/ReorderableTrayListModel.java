@@ -17,7 +17,7 @@ import javax.swing.AbstractListModel;
  * @author jstewart
  * @code_status Complete
  */
-public class ReorderableListModel<T> extends AbstractListModel implements ModifiableListModel<T>
+public class ReorderableTrayListModel<T> extends AbstractListModel implements ModifiableListModel<T>
 {
     /** The collection of elements. */
     protected Vector<T> data;
@@ -25,7 +25,7 @@ public class ReorderableListModel<T> extends AbstractListModel implements Modifi
     /**
      * Creates a new instance containing zero elements.
      */
-    public ReorderableListModel()
+    public ReorderableTrayListModel()
     {
         data = new Vector<T>();
     }
@@ -84,7 +84,7 @@ public class ReorderableListModel<T> extends AbstractListModel implements Modifi
      * 
      * @param index the index of the element to shift.
      */
-    public void shiftLeft(int index)
+    public synchronized void shiftLeft(int index)
     {
         T moving = data.get(index);
         int newIndex = (index-1<0) ? 0 : index-1;
@@ -98,7 +98,7 @@ public class ReorderableListModel<T> extends AbstractListModel implements Modifi
      * 
      * @param index the index of the element to shift.
      */
-    public void shiftRight(int index)
+    public synchronized void shiftRight(int index)
     {
         T moving = data.get(index);
         int newIndex = (index+1>data.size()-1) ? data.size()-1 : index+1;
@@ -112,7 +112,7 @@ public class ReorderableListModel<T> extends AbstractListModel implements Modifi
      * 
      * @param index the index of the element to shift.
      */
-    public void moveToStart(int index)
+    public synchronized void moveToStart(int index)
     {
         T moving = data.get(index);
         data.remove(index);
@@ -125,7 +125,7 @@ public class ReorderableListModel<T> extends AbstractListModel implements Modifi
      * 
      * @param index the index of the element to shift.
      */
-    public void moveToEnd(int index)
+    public synchronized void moveToEnd(int index)
     {
         T moving = data.get(index);
         data.remove(index);
@@ -136,8 +136,13 @@ public class ReorderableListModel<T> extends AbstractListModel implements Modifi
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.ModifiableListModel#clear()
      */
-    public void clear()
+    public synchronized void clear()
     {
+        if(data.isEmpty())
+        {
+            return;
+        }
+        
         int index1 = data.size()-1;
         data.clear();
         this.fireIntervalRemoved(this, 0, index1);

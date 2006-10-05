@@ -629,7 +629,8 @@ public class ViewLoader
                                 dspUIType = getAttr(cellElement, "dspuitype", uitype);
                                 
                             } else if (uitype.equals("plugin") ||
-                                       uitype.equals("button"))
+                                       uitype.equals("button") ||
+                                       uitype.equals("tray"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", uitype);
                                 properties = processInitializeString(initialize);

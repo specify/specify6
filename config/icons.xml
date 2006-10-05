@@ -18,6 +18,8 @@
     <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
     <icon name="Record_Set" file="recordset.gif" sizes="all"/>
     <icon name="Agent"      file="agent.gif" sizes="all"/>
+    <icon name="Determination"      file="agent.gif" sizes="all"/>
+    <icon name="AccessionAgent"      file="agent.gif" sizes="all"/>
     <icon name="Series"     file="series.gif" sizes="all"/>
     <icon name="Taxon"      file="taxon.gif" sizes="all"/>
     <icon name="Form"       file="form.gif" sizes="all"/>

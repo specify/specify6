@@ -16,13 +16,15 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
 
+import edu.ku.brc.util.Orderable;
+
 
 
 
 /**
 
  */
-public class Collectors extends DataModelObjBase implements java.io.Serializable {
+public class Collectors extends DataModelObjBase implements java.io.Serializable, Orderable {
 
     // Fields    
 
@@ -147,5 +149,22 @@ public class Collectors extends DataModelObjBase implements java.io.Serializable
     {
         return 30;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#getOrderIndex()
+     */
+    public int getOrderIndex()
+    {
+        return getOrderNumber();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#setOrderIndex(int)
+     */
+    public void setOrderIndex(int order)
+    {
+        setOrderNumber(order);
+    }
+
 
 }
