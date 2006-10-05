@@ -167,8 +167,6 @@ public class StatsPane extends BaseSubPane
                             validate();
                             doLayout();
                             repaint();
-
-
                         }
 
                     } else // The default is "Box"
@@ -289,7 +287,8 @@ public class StatsPane extends BaseSubPane
 
             add(centerPanel, BorderLayout.CENTER);
 
-            centerPanel.invalidate();
+            centerPanel.validate();
+            validate();
             doLayout();
 
         } catch (Exception ex)
