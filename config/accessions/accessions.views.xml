@@ -118,8 +118,15 @@
                 <row>
                     <cell type="separator" label="Accession Agents" colspan="12"/>
                 </row>
+
+
+<!--
                 <row>
                     <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
+                </row>
+-->
+                <row>
+                    <cell type="field" id="8" name="accessionAgents" uitype="tray" initialize="ordered=true" colspan="12"/>
                 </row>
 
                 <row>

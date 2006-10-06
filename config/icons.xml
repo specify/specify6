@@ -18,8 +18,11 @@
     <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
     <icon name="Record_Set" file="recordset.gif" sizes="all"/>
     <icon name="Agent"      file="agent.gif" sizes="all"/>
-    <icon name="Determination"      file="agent.gif" sizes="all"/>
+    <icon name="Person"		file="emblem-personal.png" sizes="all"/>
+    <icon name="People"		file="emblem-people.png" sizes="all"/>
+    <icon name="Determination"       file="agent.gif" sizes="all"/>
     <icon name="AccessionAgent"      file="agent.gif" sizes="all"/>
+    <icon name="CollectionObject"    file="bug.png" sizes="all"/>
     <icon name="Series"     file="series.gif" sizes="all"/>
     <icon name="Taxon"      file="taxon.gif" sizes="all"/>
     <icon name="Form"       file="form.gif" sizes="all"/>
@@ -122,4 +125,17 @@
     <icon name="Taxon_Tree"         file="taxon.gif"    sizes="all"/>
 
 	<icon name="TreeDefEditor"		file="taxon.gif"	sizes="all"/>
+	
+	<!-- MIME type icons -->
+	<icon name="audio"				file="audio.png"	sizes="all"/>
+	<icon name="video"				file="video.png"	sizes="all"/>
+	<icon name="image"				file="image.png"	sizes="all"/>
+	<icon name="unknown"			file="unknown.png"	sizes="all"/>
+	
+	<!-- sorting button icons -->
+	<icon name="move_to_start"		file="start.png"		sizes="all"/>
+	<icon name="move_left"			file="1leftarrow.png"	sizes="all"/>
+	<icon name="move_right"			file="1rightarrow.png"	sizes="all"/>
+	<icon name="move_to_end"		file="finish.png"		sizes="all"/>
+	
 </icons>

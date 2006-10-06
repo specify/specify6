@@ -31,6 +31,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
@@ -80,6 +81,7 @@ public class IconTray extends JPanel implements GetSetValueIFace
         iconListWidget.setCellRenderer(renderer);
         iconListWidget.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         iconListWidget.setVisibleRowCount(1);
+        iconListWidget.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         JPanel listPanel = new JPanel();
         listPanel.setBackground(iconListWidget.getBackground());

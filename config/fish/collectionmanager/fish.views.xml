@@ -8,8 +8,8 @@
             >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view" validated="false"/>
                 <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view" validated="false"/>
             </altviews>
             
         </view>
@@ -256,8 +256,13 @@
     				<cell type="separator" label="Determination" colspan="12"/>
     			</row>
 
+<!--
     			<row>
     				<cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
+    			</row>
+-->    			
+    			<row>
+    				<cell type="field" id="6" name="determinations" uitype="tray" initialize="ordered=true" colspan="12"/>
     			</row>
 
     			<row>
@@ -274,8 +279,13 @@
     			<row>
     				<cell type="separator" label="Preparations" colspan="12"/>
     			</row>
+<!--
     			<row>
     			    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
+    			</row>
+-->
+    			<row>
+    			    <cell type="field" id="9" name="preparations" uitype="tray" colspan="12"/>
     			</row>
 
     			<row>

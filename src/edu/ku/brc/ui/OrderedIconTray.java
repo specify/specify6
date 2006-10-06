@@ -7,6 +7,7 @@
 package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.FormDataObjComparator;
 import edu.ku.brc.util.Orderable;
@@ -66,16 +68,16 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         southPanel.removeAll();
         southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
     
-        toStartButton = new JButton(new ImageIcon("C:\\Documents and Settings\\jstewart\\Desktop\\start.png"));
+        toStartButton = new JButton(IconManager.getIcon("move_to_start", IconSize.Std16));
         toStartButton.setSize(20,20);
         toStartButton.setToolTipText("Move selection to first position");
-        moveLeftButton = new JButton(new ImageIcon("C:\\Documents and Settings\\jstewart\\Desktop\\1leftarrow.png"));
+        moveLeftButton = new JButton(IconManager.getIcon("move_left", IconSize.Std16));
         moveLeftButton.setSize(20,20);
         moveLeftButton.setToolTipText("Move selection left one position");
-        moveRightButton = new JButton(new ImageIcon("C:\\Documents and Settings\\jstewart\\Desktop\\1rightarrow.png"));
+        moveRightButton = new JButton(IconManager.getIcon("move_right", IconSize.Std16));
         moveRightButton.setSize(20,20);
         moveRightButton.setToolTipText("Move selection right one position");
-        toEndButton = new JButton(new ImageIcon("C:\\Documents and Settings\\jstewart\\Desktop\\finish.png"));
+        toEndButton = new JButton(IconManager.getIcon("move_to_end", IconSize.Std16));
         toEndButton.setSize(20,20);
         toEndButton.setToolTipText("Move selection to last position");
         
@@ -123,6 +125,8 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             }
             model.moveToStart(selection);
             iconListWidget.setSelectedIndex(0);
+            Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, selection-1, selection-1);
+            listScrollPane.scrollRectToVisible(selRect);
             setOrderIndices();
             return;
         }
@@ -137,6 +141,8 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             if(selection != 0)
             {
                 iconListWidget.setSelectedIndex(selection-1);
+                Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, 0, 0);
+                listScrollPane.scrollRectToVisible(selRect);
             }
             setOrderIndices();
             return;
@@ -152,6 +158,8 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             if(selection != model.getSize()-1)
             {
                 iconListWidget.setSelectedIndex(selection+1);
+                Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, selection+1, selection+1);
+                listScrollPane.scrollRectToVisible(selRect);
             }
             setOrderIndices();
             return;
@@ -165,6 +173,8 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             }
             model.moveToEnd(selection);
             iconListWidget.setSelectedIndex(model.getSize()-1);
+            Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, model.getSize()-1, model.getSize()-1);
+            listScrollPane.scrollRectToVisible(selRect);
             setOrderIndices();
             return;
         }
@@ -203,18 +213,6 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             button.setEnabled(enable);
         }
     }
-
-    
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.ui.IconTray#getPreferredSize()
-//     */
-//    @Override
-//    public Dimension getPreferredSize()
-//    {
-//        Dimension superSize = super.getPreferredSize();
-//        superSize.height += toStartButton.getHeight();
-//        return superSize;
-//    }
 
     /**
      * Sorts the set of {@link FormDataObjIFace} objects passed in during a call
