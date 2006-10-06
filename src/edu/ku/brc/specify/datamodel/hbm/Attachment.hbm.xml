@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-<class name="edu.ku.brc.specify.datamodel.Attachment" table="attachments" lazy="true">
+<hibernate-mapping>
+<class name="edu.ku.brc.specify.datamodel.Attachment" table="attachments" lazy="true"> 
 
     <id name="attachmentID" type="java.lang.Long" column="AttachmentID">
       <generator class="native"/>
@@ -13,7 +14,7 @@
     
     <property name="fileCreatedDate" type="calendar_date" column="FileCreatedDate"/>
 
-	<property name="order" type="java.lang.Integer" column="Order" not-null="true"/>
+	<property name="ordinal" type="java.lang.Integer" column="Ordinal" not-null="true"/>
     
     <property name="remarks" type="java.lang.String" length="255" column="Remarks"/>
     
@@ -49,5 +50,5 @@
 
     <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" column="TaxonID" cascade="none"/>
     
-    </class>
+</class>
 </hibernate-mapping>

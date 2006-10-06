@@ -74,6 +74,16 @@ public interface FormDataObjIFace
     public void setLastEditedBy(String lastEditedBy);
     
     /**
+     * Add a new foreign key reference to this object.  This method provides
+     * a generic way to call other methods such as addAgent(Agent a) or
+     * addLocality(Locality l).
+     * 
+     * @param ref the new foreign key record
+     * @param type a String indicating which relationship to add the reference to
+     */
+    public void addReference(FormDataObjIFace ref, String type);
+    
+    /**
      * Returns the internal Table Id.
      * @return the internal Table Id
      */

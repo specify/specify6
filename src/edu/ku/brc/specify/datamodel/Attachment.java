@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.Orderable;
 
 public class Attachment extends DataModelObjBase implements Serializable, Orderable
@@ -13,7 +14,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     private String                  mimeType;
     private String                  origFilename;
     private Calendar                fileCreatedDate;
-    private Integer                 order;
+    private Integer                 ordinal;
     private String                  remarks;
     private String                  attachmentLocation;
     private Set<AttachmentMetadata> metadata;
@@ -48,7 +49,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         mimeType = null;
         origFilename = null;
         fileCreatedDate = null;
-        order = null;
+        ordinal = null;
         remarks = null;
         attachmentLocation = null;
         timestampCreated = null;
@@ -105,14 +106,14 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.fileCreatedDate = fileCreatedDate;
     }
 
-    public Integer getOrder()
+    public Integer getOrdinal()
     {
-        return order;
+        return ordinal;
     }
 
-    public void setOrder(Integer order)
+    public void setOrdinal(Integer ordinal)
     {
-        this.order = order;
+        this.ordinal = ordinal;
     }
 
     public String getRemarks()
@@ -236,22 +237,31 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     {
         this.taxon = taxon;
     }
+    
+    @Override
+    public void addReference(FormDataObjIFace ref, String type)
+    {
+        if (ref instanceof AttachmentMetadata)
+        {
+            addAttachmentMetadata((AttachmentMetadata)ref);
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()
      */
     public int getOrderIndex()
     {
-        if (order != null) { return this.order; }
+        if (ordinal != null) { return this.ordinal; }
         return 0;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#setOrderIndex(int)
      */
-    public void setOrderIndex(int order)
+    public void setOrderIndex(int ordinal)
     {
-        this.order = order;
+        this.ordinal = ordinal;
     }
     
     /* (non-Javadoc)

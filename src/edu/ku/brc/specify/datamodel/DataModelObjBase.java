@@ -92,6 +92,14 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     {
         this.lastEditedBy = lastEditedBy;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    public void addReference(FormDataObjIFace ref, String type)
+    {
+        // do nothing
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

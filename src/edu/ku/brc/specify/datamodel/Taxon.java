@@ -25,6 +25,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 @SuppressWarnings("serial")
 public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
@@ -579,7 +580,35 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		return " ";
 	}
 
-	/**
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+	 */
+	@Override
+    public void addReference(FormDataObjIFace ref, String type)
+    {
+        if (type.equals("child") && ref instanceof Taxon)
+        {
+            addChild((Taxon)ref);
+            return;
+        }
+        
+        if (type.equals("accepted child") && ref instanceof Taxon)
+        {
+            addAcceptedChild((Taxon)ref);
+            return;
+        }
+        
+        if (ref instanceof Determination)
+        {
+            addDetermination((Determination)ref);
+            return;
+        }
+        
+        log.error("Unfinished implementation");
+        //TODO: finish this impl
+    }
+
+    /**
 	 * Determines if the Taxon can be deleted.  This method checks whether or not
 	 * the given Taxon is referenced by any foreign key contraints.  If no FKs are
 	 * currently referring to this node, <code>true</code> is returned.
