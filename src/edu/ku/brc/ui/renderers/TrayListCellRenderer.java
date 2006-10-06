@@ -47,7 +47,25 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
         if(value instanceof FormDataObjIFace)
         {
             FormDataObjIFace dataObj = (FormDataObjIFace)value;
-            l.setText(dataObj.getIdentityTitle());
+            String text = dataObj.getIdentityTitle();
+//            if (text.indexOf('\n') != -1)
+//            {
+//                StringBuilder sb = new StringBuilder();
+//                StringTokenizer st = new StringTokenizer(text,"\n");
+//                sb.append("<html>");
+//                while (st.hasMoreTokens())
+//                {
+//                    String tok = st.nextToken();
+//                    sb.append(tok);
+//                    if (st.hasMoreTokens())
+//                    {
+//                        sb.append("<br/>");
+//                    }
+//                }
+//                sb.append("</html>");
+//                text = sb.toString();
+//            }
+            l.setText(text);
             ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value);
             l.setIcon(icon);
         }
