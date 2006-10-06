@@ -170,4 +170,9 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
         return 12;
     }
 
+    @Override
+    public String getIdentityTitle()
+    {
+        return role + ": " + agent.getIdentityTitle();
+    }
 }

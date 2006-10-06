@@ -713,4 +713,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         return 5;
     }
 
+    @Override
+    public String getIdentityTitle()
+    {
+        if (lastName != null)
+        {
+            if (firstName != null)
+            {
+                return lastName + ", " + firstName;
+            }
+            return lastName;
+        }
+        if (name!=null)
+        {
+            return name;
+        }
+        
+        return super.getIdentityTitle();
+    }
+
 }
