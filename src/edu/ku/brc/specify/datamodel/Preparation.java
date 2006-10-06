@@ -292,4 +292,11 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         return 63;
     }
 
+    @Override
+    public String getIdentityTitle()
+    {
+        String prepTypeStr = this.getPrepType().getName();
+        return prepTypeStr + ": " + super.getIdentityTitle();
+    }
+
 }
