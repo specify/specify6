@@ -304,11 +304,11 @@ public class IconTray extends JPanel implements GetSetValueIFace
         }
         FontMetrics fontMetrics = graphics.getFontMetrics();
         int fontHeight = fontMetrics.getHeight();
-        int minIconHeight = 24;
+        int minIconHeight = 32;
         int scrollbarHeight = listScrollPane.getHorizontalScrollBar().getHeight();
         int southPanelHeight = southPanel.getPreferredSize().height;
         int minHeight = fontHeight + minIconHeight + scrollbarHeight + southPanelHeight;
-        return new Dimension(iconListWidget.getWidth(),minHeight);
+        return new Dimension(listScrollPane.getWidth(),minHeight);
     }
     
     /**
