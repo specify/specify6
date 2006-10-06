@@ -27,8 +27,14 @@ import java.util.Set;
 public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
+    
+    public static final byte                ORG    = 0;
+    public static final byte                PERSON = 1;
+    public static final byte                OTHER  = 2;
+    public static final byte                GROUP  = 3;
 
     protected Long                       agentId;
+    /** Organization (0), Person (1), Other (2) or Group (3) */
     protected Byte                          agentType;
     protected String                        firstName;
     protected String                        lastName;
