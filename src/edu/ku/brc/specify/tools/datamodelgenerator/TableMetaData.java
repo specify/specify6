@@ -1,55 +1,48 @@
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
 
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ */
 public class TableMetaData
 {
 	private String id;
-	private String view;
+    private String className;
+    private Display display;
 
 	/**
 	 * @param id
-	 * @param view
+	 * @param className
+	 * @param display
 	 */
-	public TableMetaData(String id, String view)
+	public TableMetaData(final String id, final String className, final Display display)
 	{
 		this.id = id;
-		this.view = view;
+        this.className = className;
+        this.display = display;
 	}
 
-	/**
-	 * @return
-	 * String
-	 */
-	public String getDefaultView()
-	{
-		return view;
-	}
-
-	/**
-	 * @param view
-	 * void
-	 */
-	public void setDefaultView(String view)
-	{
-		this.view = view;
-	}
-
-	/**
-	 * @return
-	 * String
-	 */
 	public String getId()
 	{
 		return id;
 	}
 
-	/**
-	 * @param id
-	 * void
-	 */
+	public String getClassName()
+    {
+        return className;
+    }
+
 	public void setId(String id)
 	{
 		this.id = id;
 	}
+
+    public Display getDisplay()
+    {
+        return display;
+    }
 
 }

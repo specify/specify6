@@ -20,8 +20,11 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
@@ -45,65 +48,97 @@ public class DatamodelGenerator
 {
 	private static final Logger log = Logger.getLogger(DatamodelGenerator.class);
 
-	Hashtable<String, TableMetaData> hash = new Hashtable<String, TableMetaData>();
+	Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
 
 	/**
 	 * Given and XML node, returns a Field object by grabbing the appropriate
-	 * attribute values
+	 * attribute values.
 	 * 
 	 * @param element the XML node
 	 * @return Field object
 	 */
 	private Field createField(final Element element)
 	{
-		return new Field(element.attributeValue("name"), element.attributeValue("type"), element
-				.attributeValue("column"), element.attributeValue("length"));
+		return new Field(element.attributeValue("name"), 
+                element.attributeValue("type"), 
+                element.attributeValue("column"), 
+                element.attributeValue("length"));
 	}
+    
+    /**
+     * Looks for a child node "display" and creates the appropriate object or returns null.
+     * @param element the "table".
+     * @return null or a Display object
+     */
+    private Display createDisplay(final Element element)
+    {
+        if (element != null)
+        {
+            Element fdElement = (Element)element.selectSingleNode("display");
+            if (fdElement != null)
+            {
+                return new Display(fdElement.attributeValue("objtitle"), 
+                                        fdElement.attributeValue("view"), 
+                                        fdElement.attributeValue("dataobjformatter"), 
+                                        fdElement.attributeValue("uiformatter"));
+            }
+        }
+        return null;
+    }
 
 	/**
 	 * Given and XML node, returns a Id object by grabbing the appropriate
-	 * attribute values
+	 * attribute values.
 	 * 
-	 * @param aElement
-	 *            the XML node
+	 * @param element the XML node
 	 * @return Field object
 	 */
-	private Id createId(Element aElement)
+	private Id createId(final Element element)
 	{
-		return new Id(aElement.attributeValue("name"), aElement.attributeValue("type"), aElement
-				.attributeValue("column"), aElement.attributeValue("length"));
+		return new Id(element.attributeValue("name"), 
+                        element.attributeValue("type"), 
+                        element.attributeValue("column"), 
+                        element.attributeValue("length"));
 	}
 
 	/**
 	 * Given and XML node, returns a Table object by grabbing the appropriate
-	 * attribute values
+	 * attribute values.
 	 * 
-	 * @param aElement
-	 *            the XML node
+	 * @param element the XML node
 	 * @return Table object
 	 */
-	private Table createTable(Element aElement)
+	private Table createTable(final Element element)
 	{
-		String tableName = aElement.attributeValue("name");
-		log.info("attempting to pull TableMetaData out of hashtbale for table: " + tableName);
-		TableMetaData tableData = hash.get(tableName);
-		if (tableData == null)
-			log.error("Could not retrieve TableMetaData from hashtable for table: " + tableName);
-		String id = tableData.getId();
-		String view = tableData.getDefaultView();
-		return new Table(tableName, aElement.attributeValue("table"), aElement.attributeValue("lazy"), id, view);
+        // get Class Name (or name) from HBM file
+		String className = element.attributeValue("name");
+		log.info("attempting to pull TableMetaData out of tblMetaDataHashtbale for table: " + className);
+        
+        // Get Meta Data for HBM
+		TableMetaData tableMetaData = tblMetaDataHash.get(className);
+		if (tableMetaData == null)
+        {
+            // Throw exception if there is an HBM we don't have meta data for
+			log.error("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className);
+            throw new RuntimeException("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className);
+        }
+        
+		return new Table(className, 
+                         element.attributeValue("table"), 
+                         element.attributeValue("lazy"), 
+                         tableMetaData.getId(), 
+                         tableMetaData.getDisplay());
 
 	}
 
 	/**
 	 * Given and XML node, returns the value associated with the "class"
-	 * attribute
+	 * attribute.
 	 * 
-	 * @param element
-	 *            The XML node
+	 * @param element  The XML node
 	 * @return the class name
 	 */
-	private String getRelatedClassName(Element element)
+	private String getRelatedClassName(final Element element)
 	{
 		if (element != null)
 		{
@@ -114,13 +149,12 @@ public class DatamodelGenerator
 
 	/**
 	 * Given and XML node, returns the value associated with the "name"
-	 * attribute
+	 * attribute.
 	 * 
-	 * @param element
-	 *            The XML node
+	 * @param element The XML node
 	 * @return the name
 	 */
-	private String getName(Element element)
+	private String getName(final Element element)
 	{
 		if (element != null)
 		{
@@ -131,15 +165,12 @@ public class DatamodelGenerator
 
 	/**
 	 * Returns the last String token from a string that has the package name
-	 * pre-appended to the class name i.e. edu.ku.brc.specify.datamodel.Locality ->
-	 * Locality
+	 * pre-appended to the class name i.e. edu.ku.brc.specify.datamodel.Locality -> Locality.
 	 * 
-	 * @param element
-	 *            The node from the XML document that containst the fully
-	 *            qualified name
+	 * @param element The node from the XML document that containst the fully qualified name
 	 * @return returns the simple class name
 	 */
-	private String getRelatedClassShortName(Element element)
+	private String getRelatedClassShortName(final Element element)
 	{
 		if (element != null)
 		{
@@ -154,12 +185,10 @@ public class DatamodelGenerator
 	}
 
 	/**
-	 * Reads in hbm files and generates datamodel tree
-	 * @return
-	 * java.util.List 
-	 *    datamodel tree
+	 * Reads in hbm files and generates datamodel tree.
+	 * @return List datamodel tree
 	 */
-	public java.util.List<Table> generateDatamodelTree(java.util.List<Table> tableList, String hbmPath)
+	public List<Table> generateDatamodelTree(final List<Table> tableList, final String hbmPath)
 	{
 		try
 		{
@@ -196,6 +225,7 @@ public class DatamodelGenerator
 							{
 								FileInputStream ino = new FileInputStream(filer);// getClass().getResourceAsStream();
 								return new InputSource(ino);
+                                
 							} catch (Exception eer)
 							{
 								log.error("Trying to load Hibernate DTD from local file system, File not found");
@@ -286,21 +316,18 @@ public class DatamodelGenerator
 	}
 
 	/**
-	 * Creates a Relationship Object
+	 * Creates a Relationship Object.
 	 * 
-	 * @param type
-	 *            The relationship type i.e. one-to-many
-	 * @param subNode
-	 *            Node from XML document (hbm file) that contains the
-	 *            relationship information
+	 * @param type The relationship type i.e. one-to-many.
+	 * @param subNode Node from XML document (hbm file) that contains the relationship information
 	 * @return relationship object
 	 */
 	public Relationship processSetRelationship(String type, Element subNode)
 	{
 		String relationshipType = "";
-		String relShortName = "";
-		String relClassName = "";
-		String columnName = "";
+		String relShortName     = "";
+		String relClassName     = "";
+		String columnName       = "";
 		String relationshipName = subNode.attributeValue("name");
 
 		for (Iterator i2 = subNode.elementIterator("key"); i2.hasNext();)
@@ -324,10 +351,11 @@ public class DatamodelGenerator
 	}
 
 	/**
-	 * @param element
+     * Gets column name.
+	 * @param element the element
 	 * @return the name of the column
 	 */
-	public String getColumnName(Element element)
+	public String getColumnName(final Element element)
 	{
 		String columnName = null;
 		for (Iterator i2 = element.elementIterator("column"); i2.hasNext();)
@@ -340,34 +368,47 @@ public class DatamodelGenerator
 
 	/**
 	 * Takes a list and prints out datamodel file using betwixt.
-	 * @param aClassesList
+	 * @param classesList the class list
 	 */
-	public boolean writeTree(java.util.List aClassesList)
+	public boolean writeTree(final List classesList)
 	{
 
 		try
 		{
-			if (aClassesList == null)
+			if (classesList == null)
 			{
 				log.error("Datamodel information is null - datamodel file will not be written!!");
 				return false;
 			}
 			log.info("writing data model tree to file: " + DatamodelHelper.getDatamodelFilePath());
+            
 			//Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath(datamodelOutputFileName)));
 			File file = new File(DatamodelHelper.getDatamodelFilePath());
 			FileWriter fw = new FileWriter(file);
-			fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            fw.write("<!-- \n");
+            fw.write("    Do Not Edit this file!\n");
+            fw.write("    Run DatamodelGenerator \n");
+            Date date = new Date();
+            fw.write("    Generated: "+date.toString()+"\n");
+            fw.write("-->\n");
+            
 			//using betwixt for writing out datamodel file.  associated .betwixt files allow you to map and define 
 			//output format of attributes in xml file.
-			BeanWriter beanWriter = new BeanWriter(fw);
+			BeanWriter      beanWriter    = new BeanWriter(fw);
 			XMLIntrospector introspector = beanWriter.getXMLIntrospector();
+            
 			introspector.getConfiguration().setWrapCollectionsInElement(false);
+            
 			beanWriter.getBindingConfiguration().setMapIDs(false);
 			beanWriter.setWriteEmptyElements(false);
 			beanWriter.enablePrettyPrint();
-			beanWriter.write("database", aClassesList);
+			beanWriter.write("database", classesList);
+            
 			fw.close();
+            
 			return true;
+            
 		} catch (Exception ex)
 		{
 			log.error("error writing writeTree", ex);
@@ -376,11 +417,10 @@ public class DatamodelGenerator
 	}
 
 	/**
-	 * Reads in file that provides listing of tables with their respective Id's and default views
-	 * @return
-	 * boolean true if reading of tableId file was successful.
+	 * Reads in file that provides listing of tables with their respective Id's and default views.
+	 * @return boolean true if reading of tableId file was successful.
 	 */
-	private boolean readTableMetadataFromFile(String tableIdListingFilePath)
+	private boolean readTableMetadataFromFile(final String tableIdListingFilePath)
 	{
 		log.info("Preparing to read in Table and TableID listing from file: " + tableIdListingFilePath);
 		try
@@ -396,14 +436,17 @@ public class DatamodelGenerator
 			{
 				for (Iterator i = dbNode.elementIterator("table"); i.hasNext();)
 				{
-					Element element = (Element) i.next();
-					String tablename = element.attributeValue("name");
+					Element element    = (Element)i.next();
+					String tablename   = element.attributeValue("name");
 					String defaultView = element.attributeValue("view");
-					String id = element.attributeValue("id");
-					log.debug("Creating TableMetaData and putting in hashtable for name: " + tablename + " id: " + id
-							+ " defaultview: " + defaultView);
-					hash.put(tablename, new TableMetaData(id, defaultView));
+					String id          = element.attributeValue("id");
+                    
+					log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
+                    
+ 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element)));
+                    
 				}
+                
 			} else
 			{
 				log.debug("Ill-formatted file for reading in Table and TableID listing.  Filename:"
@@ -425,15 +468,18 @@ public class DatamodelGenerator
 	 */
 	public static void main(String[] args)
 	{
-		java.util.List<Table> tableList = new ArrayList<Table>();
-		DatamodelGenerator datamodelWriter = new DatamodelGenerator();
-		String tableIdListingFilePath = DatamodelHelper.getTableIdFilePath();
+		List<Table>        tableList              = new ArrayList<Table>(100);
+		DatamodelGenerator datamodelWriter        = new DatamodelGenerator();
+		String             tableIdListingFilePath = DatamodelHelper.getTableIdFilePath();
+        
 		if (datamodelWriter.readTableMetadataFromFile(tableIdListingFilePath))
 		{
 			String hbmPath = DatamodelHelper.getHbmDirPath();
-			tableList = datamodelWriter.generateDatamodelTree(tableList, hbmPath);
-			hbmPath = DatamodelHelper.getUiHbmDirPath();
-			tableList = datamodelWriter.generateDatamodelTree(tableList, hbmPath);
+			tableList      = datamodelWriter.generateDatamodelTree(tableList, hbmPath);
+            
+            // Sort all the elements by class name
+            Collections.sort(tableList);
+
 			boolean didWrite = datamodelWriter.writeTree(tableList);
 			if (!didWrite)
 			{

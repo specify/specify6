@@ -11,16 +11,16 @@ import java.util.Collection;
  * @author megkumin
  *
  */
-public class Table
+public class Table implements Comparable<Table>
 {
-	private String name;
-	private String table;
-	private String defaultView;
-	private String lazy;
-	private String tableId;
-	private Collection<Field> fields = new ArrayList<Field>();
-	private Collection<Id> ids = new ArrayList<Id>();
+	private String                   name;
+	private String                   table;
+	private String                   lazy;
+	private String                   tableId;
+	private Collection<Field>        fields        = new ArrayList<Field>();
+	private Collection<Id>           ids           = new ArrayList<Id>();
 	private Collection<Relationship> relationships = new ArrayList<Relationship>();
+    private Display                  display;
 
 	/**
 	 * @param aName
@@ -28,14 +28,17 @@ public class Table
 	 * @param aLazy
 	 * @param hash
 	 */
-	public Table(String name, String table, String lazy,
-			String tableId, String defaultView)
+	public Table(String name, 
+                 String table, 
+                 String lazy,
+                 String tableId, 
+                 Display display)
 	{
 		this.name = name;
 		this.table = table;
 		this.lazy = lazy;
 		this.tableId = tableId;
-		this.defaultView = defaultView;
+        this.display = display;
 	}
 
 	/**
@@ -183,23 +186,22 @@ public class Table
 	{
 		return relationships;
 	}
+    
+    
 
-	/**
-	 * @return
-	 * String
-	 */
-	public String getDefaultView()
-	{
-		return defaultView;
-	}
+    public Display getDisplay()
+    {
+        return display;
+    }
 
-	/**
-	 * @param defaultView
-	 * void
-	 */
-	public void setDefaultView(String defaultView)
-	{
-		this.defaultView = defaultView;
-	}
-
+    // Comparable
+    public int compareTo(Table obj)
+    {
+        if (obj == null)
+        {
+            return 0;
+        }
+       
+        return name.compareTo(obj.name);
+    }
 }

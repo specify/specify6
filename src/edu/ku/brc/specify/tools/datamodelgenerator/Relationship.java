@@ -2,7 +2,9 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 
 /**
  * Create relationship data.
+ * 
  * @code_status Alpha
+ * 
  * @author megkumin
  *
  */
