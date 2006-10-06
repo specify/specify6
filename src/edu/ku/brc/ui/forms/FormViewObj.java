@@ -206,6 +206,9 @@ public class FormViewObj implements Viewable,
         boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         
+        formIsInNewDataMode = isNewObject;
+        System.err.println(view.getName()+"  "+formIsInNewDataMode+"  "+options);
+        
         MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
         setValidator(formValidator);
@@ -1230,11 +1233,11 @@ public class FormViewObj implements Viewable,
         // We really shouldn't get here.
         // This condition is true only if a new Object (record) was being entered and some how the user was
         // able to go to a previous or next record before saving or discarding the new info
-        if (formIsInNewDataMode)
-        {
-            setAsNewForm(false);
-            throw new RuntimeException("Shouldn't have gotten here! Why wasn't the object saved or discarded?");
-        }
+        //if (formIsInNewDataMode)
+        //{
+        //    setAsNewForm(false);
+        //    throw new RuntimeException("Shouldn't have gotten here! Why wasn't the object saved or discarded?");
+        //}
 
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
@@ -1282,8 +1285,8 @@ public class FormViewObj implements Viewable,
                 rsController.setLength(list.size());
                 if (rsController.getDelRecBtn() != null)
                 {
-                    rsController.getDelRecBtn().setEnabled((businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0);
-                    rsController.getNewRecBtn().setEnabled(formIsInNewDataMode);
+                    rsController.getDelRecBtn().setEnabled(!formIsInNewDataMode && (businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0);
+                    rsController.getNewRecBtn().setEnabled(mvParent.getMultiViewParent() != null && formIsInNewDataMode);
                 }
             }
 
@@ -1309,8 +1312,8 @@ public class FormViewObj implements Viewable,
                 controlPanel.setRSCVisibility(!isEditting);
                 if (rsController.getDelRecBtn() != null)
                 {
-                    rsController.getDelRecBtn().setEnabled(businessRules == null || businessRules.okToDelete(this.dataObj));
-                    rsController.getNewRecBtn().setEnabled(formIsInNewDataMode);
+                    rsController.getDelRecBtn().setEnabled(!formIsInNewDataMode && (businessRules == null || businessRules.okToDelete(this.dataObj)));
+                    rsController.getNewRecBtn().setEnabled(mvParent.getMultiViewParent() != null && formIsInNewDataMode);
                 }
             }
         }

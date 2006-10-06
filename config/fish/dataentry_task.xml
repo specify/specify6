@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views>
+    <view name="Collection Object" title="Collection Object" viewset="Fish Views" view="CollectionObject" iconname="FishColObj" tooltip="Create a New Collection Object"/>    
+    <view name="Accession" title="Accession" viewset="Fish Views" view="Accession" iconname="Accession" tooltip="Create a New Accession"/>    
+    <view name="Agent" title="Agent" viewset="Fish Views" view="Agent" iconname="Agent" tooltip="Create a New Agent"/>    
+    <view name="Permit" title="Permit" viewset="Fish Views" view="Permit" iconname="Permit" tooltip="Create a New Permit"/>    
+</views>

@@ -360,7 +360,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
 
         editable = altView.getMode() == AltView.CreationMode.Edit;
-
+System.err.println("***************************");
         // this call parents the viewable to the multiview
         //Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions | (editable ? MultiView.RESULTSET_CONTROLLER : 0));
         //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
@@ -729,6 +729,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public Viewable getCurrentView()
     {
         return currentViewable;
+    }
+
+    /**
+     * Returns the options that it was created with.
+     * @return the options that it was created with.
+     */
+    public int getCreateOptions()
+    {
+        return createOptions;
     }
 
     /**

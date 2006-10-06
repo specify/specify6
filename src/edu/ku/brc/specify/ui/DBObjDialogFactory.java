@@ -151,7 +151,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
      */
-    public ViewBasedDisplayIFace createDisplay(final String name,
+    public ViewBasedDisplayIFace createDisplay(final String     name,
                                                final String     frameTitle,
                                                final String     closeBtnTitle,
                                                final boolean    isEdit,

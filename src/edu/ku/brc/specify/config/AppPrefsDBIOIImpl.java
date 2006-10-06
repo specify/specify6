@@ -218,7 +218,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                             
                         } catch (SQLException ex)
                         {
-                            log.error(ex);
+                            log.error("App Id["+apData.getId()+"] TableId["+apData.getTableId()+"]"+ex);
                             throw new RuntimeException(ex);
                         }
                         

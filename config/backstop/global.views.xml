@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewset name="Global" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <views>
+        <view name="Accession"
+              class="edu.ku.brc.specify.datamodel.Accession"
+              busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRule"
+              resourcelabels="false">
+            <desc><![CDATA[The Accession form.]]></desc>
+            <altviews>
+                <altview name="Accession View" viewdef="Accession" label="View" mode="view"  validated="false" default="true"/>
+                <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"  validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="AccessionAgent"
+              objtitle="Accession Agent"
+              class="edu.ku.brc.specify.datamodel.AccessionAgents"
+              resourcelabels="false">
+            <desc><![CDATA[Subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view" validated="false"/>
+                <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="Agent"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            resourcelabels="false">
+            <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
+            <altviews defaultmode="view" selector="agentType">
+                <altview name="Organization View" viewdef="Organization" label="View" mode="view" validated="false" selector_value="0"/>
+                <altview name="Agent View"        viewdef="Agent"        label="View" mode="view" validated="false" selector_value="1"/>
+                <altview name="Organization Edit" viewdef="Organization" label="Edit" mode="edit" validated="true" selector_value="0"/>
+                <altview name="Agent Edit"        viewdef="Agent"        label="Edit" mode="edit" validated="true" selector_value="1"/>
+            </altviews>
+        </view>
+        
+        
+        <view name="Permit"
+            class="edu.ku.brc.specify.datamodel.Permit"
+            busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRule"
+            resourcelabels="false">
+            <desc><![CDATA[Permit subform within the Accession form.]]></desc>
+            <altviews  defaultmode="view">
+                <altview name="Permit View" viewdef="Permit" label="View" mode="view" validated="false"/>
+                <altview name="Permit Edit" viewdef="Permit" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="AccessionAuthorizations"
+            objtitle="Accession Authorization"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
+            resourcelabels="false">
+            <desc><![CDATA[Permit subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="AccessionAuthorizations View" viewdef="AccessionAuthorizations" label="View" mode="view" validated="false" default="true"/>
+                <altview name="AccessionAuthorizations Edit" viewdef="AccessionAuthorizations" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="Address"
+            class="edu.ku.brc.specify.datamodel.Address"
+            resourcelabels="false">
+            <desc><![CDATA[Address subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="Address View" viewdef="Address" label="View" mode="view" validated="false" default="true"/>
+                <altview name="Address Edit" viewdef="Address" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+    </views>
+
+    <viewdefs>
+        <viewdef
+            type="form"
+            name="Accession"
+            class="edu.ku.brc.specify.datamodel.Accession"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+
+            <rows>
+                <row>
+                	<cell type="label" label="KU Accessions" icon="Accession" recordobj="true" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="field" id="1" name="number" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber" valtype="Focus"/>
+
+                    <cell type="label" labelfor="2" label="Status"/>
+                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Type"/>
+                    <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true" valtype="Changed"/>
+
+                    <cell type="label" labelfor="4" label="Division"/>
+                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Changed"/>
+
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Accessioned"/>
+                    <cell type="field" id="5" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
+
+                    <cell type="label" labelfor="6" label="Received"/>
+                    <cell type="field" id="6" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Description"/>
+                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10" valtype="Changed"/>
+                </row>
+                
+                <row>
+                    <cell type="separator" label="Accession Agents" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
+                </row>
+
+                <row>
+                    <cell type="separator" label="Authorizations" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="AccessionAuthorizations" id="9" desc="Authorizations" name="accessionAuthorizations" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="separator" label="" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="10" label="Edited By"/>
+                    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
+
+                    <cell type="label" labelfor="11" label="Last Edited"/>
+                    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="AccessionAgent"
+            class="edu.ku.brc.specify.datamodel.AccessionAgents"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p:g</columnDef>
+            <rowDef>p:g,2dlu,p:g,2dlu,p,2dlu,p:g</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Agent"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+
+                    <cell type="label" labelfor="2" label="Role"/>
+                    <cell type="field" id="2" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true" valtype="Changed"/>
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" valtype="Changed"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Agent"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Agent subform for Acessions.]]></desc>
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="Agent Info" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Title"/>
+                    <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
+                    <cell type="label" labelfor="2" label="Title"/>
+                    <cell type="field" id="2" name="jobTitle" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Last Name"/>
+                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Middle Initial"/>
+                    <cell type="field" id="4" name="middleInitial" uitype="text" cols="3" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="First Name"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Abbreviation"/>
+                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Organization"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Agent subform for Acessions.]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="Organization Info" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Organization"/>
+                    <cell type="field" id="6" name="name" uitype="text" cols="30" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Contact Name"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Abbreviation"/>
+                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="4" valtype="Changed"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Permit"
+            class="edu.ku.brc.specify.datamodel.Permit"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Permit subform for Acessions.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" icon="Permit" recordobj="true"/>
+                                <cell type="separator" label="Permit"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>
+
+                    <cell type="label" labelfor="2" label="Type"/>
+                    <cell type="field" id="2" name="type" uitype="combobox" picklist="PermitType" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Issued By"/>
+                    <cell type="field" id="3" name="agentByIssuer" uitype="querycbx" initialize="name=Agent;title=Issuer Agent" isrequired="true"/>
+
+                    <cell type="label" labelfor="4" label="Issued To"/>
+                    <cell type="field" id="4" name="agentByIssuee" uitype="querycbx" initialize="name=Agent;title=Issuee Agent" isrequired="true"/>
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="5" label="Date Issued"/>
+                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+
+                    <cell type="label" labelfor="6" label="Date Renewed"/>
+                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="7" label="Start Date"/>
+                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+
+                    <cell type="label" labelfor="8" label="End Date"/>
+                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="9" label="Remarks"/>
+                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="9" cols="40" valtype="Changed"/>
+                </row>
+
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="AccessionAuthorizations"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Permit subform for AccessionAuthorizations.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,2px,p,2px,p:g</columnDef>
+            <rowDef>p,2px,p</rowDef>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Permit"/>
+                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true" valtype="Focus"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3"  valtype="Changed"/>
+                </row>
+
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Address"
+            class="edu.ku.brc.specify.datamodel.Address"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Address subform for Acessions.]]></desc>
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="Address Information" colspan="11"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label=""/>
+                    <cell type="field" id="1" name="isPrimary" uitype="checkbox" label="Is Primary Address"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Address"/>
+                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="9" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Address"/>
+                    <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="City" isrequired="true"/>
+                    <cell type="field" id="4" name="city" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="5" label="State" isrequired="true"/>
+                    <cell type="field" id="5" name="state" uitype="text" cols="15"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Postal Code"/>
+                    <cell type="field" id="6" name="postalCode" uitype="text" cols="11" isrequired="true"/>
+                    <cell type="label" labelfor="7" label="Country"/>
+                    <cell type="field" id="7" name="country" uitype="text" cols="20" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Phone (Work)"/>
+                    <cell type="field" id="8" name="phone1" uitype="text" cols="15"/>
+                    <cell type="label" labelfor="9" label="Phone (Cell)"/>
+                    <cell type="field" id="9" name="phone2" uitype="text" cols="15"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10" label="FAX"/>
+                    <cell type="field" id="10" name="fax" uitype="text" cols="15"/>
+                    <cell type="label" labelfor="11" label="Room/Building"/>
+                    <cell type="field" id="11" name="roomOrBuilding" uitype="text" cols="30"/>
+                </row>
+            </rows>
+        </viewdef>
+
+    </viewdefs>
+</viewset>

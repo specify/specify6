@@ -46,66 +46,6 @@
 
     	</view>
 
-        <view name="Accession"
-              class="edu.ku.brc.specify.datamodel.Accession"
-              resourcelabels="false">
-            <desc><![CDATA[The Accession form.]]></desc>
-            <altviews>
-                <altview name="Accession View" viewdef="Accession" label="View" mode="view" validated="false"/>
-                <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-
-        <view name="AccessionAgent"
-              class="edu.ku.brc.specify.datamodel.AccessionAgents"
-              resourcelabels="false">
-            <desc><![CDATA[Subform within the Accession form.]]></desc>
-            <altviews>
-                <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view" validated="false"/>
-                <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-
-        <view name="AgentForAccessions"
-             class="edu.ku.brc.specify.datamodel.Agent"
-             resourcelabels="false">
-            <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
-            <altviews>
-                <altview name="AgentForAccessions View" viewdef="AgentForAccessions" label="View" mode="view" validated="false" default="true"/>
-                <altview name="AgentForAccessions Edit" viewdef="AgentForAccessions" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view name="PermitForAccessions"
-            class="edu.ku.brc.specify.datamodel.Permit"
-            resourcelabels="false">
-            <desc><![CDATA[Permit subform within the Accession form.]]></desc>
-            <altviews>
-                <altview name="PermitForAccessions View" viewdef="PermitForAccessions" label="View" mode="view" validated="false" default="true"/>
-                <altview name="PermitForAccessions Edit" viewdef="PermitForAccessions" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view name="AccessionAuthorizations"
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-            resourcelabels="false">
-            <desc><![CDATA[Permit subform within the Accession form.]]></desc>
-            <altviews>
-                <altview name="AccessionAuthorizations View" viewdef="AccessionAuthorizations" label="View" mode="view" validated="false" default="true"/>
-                <altview name="AccessionAuthorizations Edit" viewdef="AccessionAuthorizations" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view name="Address"
-            class="edu.ku.brc.specify.datamodel.Address"
-            resourcelabels="false">
-            <desc><![CDATA[Address subform within the Accession form.]]></desc>
-            <altviews>
-                <altview name="Address View" viewdef="Address" label="View" mode="view" validated="false" default="true"/>
-                <altview name="Address Edit" viewdef="Address" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
         <view name="LocalityMapper"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             resourcelabels="false">
@@ -243,9 +183,9 @@
     			    <cell type="field" uitype="text" id="2" name="catalogSeries.seriesName"/>
     			</row>
     			<row>
-                 <cell type="label" labelfor="3" label="Accession #"/>
-    			    <cell type="field" id="3" name="accession.number"  uitype="formattedtext" uifieldformatter="AccessionNumber"/>
-
+                    <cell type="label" labelfor="3" label="Accession #"/>
+    			    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="true" valtype="Changed"/>
+    			    
                  <cell type="label" labelfor="4" label="Cataloger"/>
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 

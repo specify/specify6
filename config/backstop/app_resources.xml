@@ -6,4 +6,5 @@
     <file level="0" mimetype="text/xml" name="Statistics"    description="Statistics" file="statistics.xml"/>    
     <file level="0" mimetype="text/xml" name="UIFormatters"  description="UIFormatters" file="uiformatters.xml"/>    
     <file level="0" mimetype="text/xml" name="PrefsPanelDef" description="PrefsPanelDef" file="prefs_panel_def.xml"/>    
+    <file level="0" mimetype="text/xml" name="TypeSearches"  description="TypeSearches" file="typesearch_def.xml"/>    
 </files>

@@ -140,42 +140,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
     protected List<FocusListener> focusListeners = new ArrayList<FocusListener>();
 
-
-    /**
-     * Construct.
-     * @param sql the fully specified SQL statement with a "%s" in the string for the substitution for what the user entered
-     * @param className the Class name of the java object that represents the table
-     * @param idName the POJO field name of the ID column
-     * @param keyName the POJO field name of the key column
-     * @param format the format specification (null is OK if displayNames is null)
-     * @param searchDialogName the name to look up to display the search dialog (from the search dialog factory)
-     * @param objTitle the title of a single object
-     */
-    public ValComboBoxFromQuery(final String sql,
-                                final String className,
-                                final String idName,
-                                final String keyName,
-                                final String format,
-                                final String formatName,
-                                final String searchDialogName,
-                                final String displayInfoDialogName,
-                                final String objTitle)
-    {
-        this.className        = className;
-        this.idName           = idName;
-        this.keyName          = keyName;
-        this.format           = format;
-        this.formatName       = formatName;
-
-        this.searchDialogName = searchDialogName;
-        this.displayInfoDialogName = displayInfoDialogName;
-
-        comboBox = new JComboBoxFromQuery(sql, format);
-        comboBox.setAllowNewValues(true);
-
-        init(objTitle);
-    }
-
     /**
      *  Constructor.
      * @param tableName name of the table to be searched
@@ -204,10 +168,21 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String displayInfoDialogName,
                                 final String objTitle)
     {
-        if (displayColumn != null && format == null && formatName == null)
+        System.err.println("ValComboBoxFromQuery "+Thread.currentThread().getName()+ " "+Thread.currentThread().hashCode());
+        if (StringUtils.isEmpty(displayColumn))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] display is not null and the format is null.");
+            throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] displayColumn null.");
         }
+        if (StringUtils.isEmpty(format) && StringUtils.isEmpty(formatName))
+        {
+            throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] both format and formatName are null.");
+        }
+        if (StringUtils.isEmpty(displayInfoDialogName))
+        {
+            System.err.println("Thread: "+Thread.currentThread().getName());
+            throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] displayInfoDialogName is null.");
+        }
+        
         this.className  = className;
         this.idName     = idName;
         this.keyName    = keyName;
@@ -231,7 +206,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox.requestFocus();
     }
 
-    /* (non-Javadoc)
+    /* (non-Javadoc)ValComboBoxFromQuery
      * @see java.awt.Component#setEnabled(boolean)
      */
     @Override
@@ -461,7 +436,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     * Sets the string that is preappended to the title
+     * Sets the string that is preappended to the title.
      * @param frameTitle the string arg
      */
     public void setFrameTitle(final String frameTitle)
@@ -470,7 +445,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     * Sets the MultiView parent into the control
+     * Sets the MultiView parent into the control.
      * @param multiView parent multiview
      */
     public void setMultiView(final MultiView multiView)
@@ -479,7 +454,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     * Return the JComboBox for this control
+     * Return the JComboBox for this control.
      * @return the JComboBox for this control
      */
     public JComboBox getComboBox()
@@ -488,8 +463,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     * Returns the model for the combo box
-     * @return the model for the combo box
+     * Returns the model for the combobox.
+     * @return the model for the combobox
      */
     public ComboBoxModel getModel()
     {
@@ -546,7 +521,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     * Updates the UI from the data value (assume the data has changed but OK if it hasn't)
+     * Updates the UI from the data value (assume the data has changed but OK if it hasn't).
      */
     public void refreshUIFromData()
     {

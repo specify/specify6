@@ -268,37 +268,42 @@ public class DataEntryTask extends BaseTask
             {
     
                 Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("DataEntryTaskInit"); // Describes the definitions of the full text search
-    
-                List tables = esDOM.selectNodes("/views/view");
-                for ( Iterator iter = tables.iterator(); iter.hasNext(); )
+                if (esDOM != null)
                 {
-                    Element element = (Element)iter.next();
-                    String nameStr  = getAttr(element, "name", "N/A");
-                    String iconname = getAttr(element, "iconname", null);
-                    
-                    String viewset  = getAttr(element, "viewset", null);
-                    String view     = getAttr(element, "view", null);
-                    
-                    String toolTip  = getAttr(element, "tooltip", null);
-                    
-                    ImageIcon iconImage = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
-                    iconForFormClass.put(createFullName(viewset, view), iconImage);
-                    
-                    ShowViewAction sva = new ShowViewAction(this, viewset, view);
-                    
-                    NavBoxItemIFace nbi = NavBox.createBtnWithTT(nameStr, iconname, toolTip, IconManager.IconSize.Std16, sva);
-                    if (nbi instanceof RolloverCommand)
+                    List tables = esDOM.selectNodes("/views/view");
+                    for ( Iterator iter = tables.iterator(); iter.hasNext(); )
                     {
-                        RolloverCommand roc = (RolloverCommand)nbi;
-                        // When Being Dragged
-                        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                        roc.addDragDataFlavor(DATAENTRY_FLAVOR);
-                
-                        // When something is dropped on it
-                        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+                        Element element = (Element)iter.next();
+                        String nameStr  = getAttr(element, "name", "N/A");
+                        String iconname = getAttr(element, "iconname", null);
+                        
+                        String viewset  = getAttr(element, "viewset", null);
+                        String view     = getAttr(element, "view", null);
+                        
+                        String toolTip  = getAttr(element, "tooltip", null);
+                        
+                        ImageIcon iconImage = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
+                        iconForFormClass.put(createFullName(viewset, view), iconImage);
+                        
+                        ShowViewAction sva = new ShowViewAction(this, viewset, view);
+                        
+                        NavBoxItemIFace nbi = NavBox.createBtnWithTT(nameStr, iconname, toolTip, IconManager.IconSize.Std16, sva);
+                        if (nbi instanceof RolloverCommand)
+                        {
+                            RolloverCommand roc = (RolloverCommand)nbi;
+                            // When Being Dragged
+                            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                            roc.addDragDataFlavor(DATAENTRY_FLAVOR);
+                    
+                            // When something is dropped on it
+                            roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+                        }
+    
+                        viewsNavBox.add(nbi);
                     }
-
-                    viewsNavBox.add(nbi);
+                } else
+                {
+                    log.debug("Was unable to load resource [DataEntryTaskInit]");
                 }
     
             } catch (Exception ex)

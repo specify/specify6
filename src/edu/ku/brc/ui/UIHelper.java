@@ -17,10 +17,18 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,14 +43,27 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -70,12 +91,14 @@ public final class UIHelper
 
     // Static Data Members
     protected static final Logger   log      = Logger.getLogger(UIHelper.class);
-    protected static Calendar calendar = new GregorianCalendar();
-    protected static OSTYPE   oSType;
+    protected static Calendar       calendar = new GregorianCalendar();
+    protected static OSTYPE         oSType;
 
-    protected static Object[]    values   = new Object[2];
-    protected static DateWrapper scrDateFormat = null;
+    protected static Object[]       values   = new Object[2];
+    protected static DateWrapper    scrDateFormat = null;
 
+    protected static UIHelper       instance = new UIHelper();
+    
     static {
 
         String osStr = System.getProperty("os.name");
@@ -856,7 +879,192 @@ public final class UIHelper
         UIHelper.centerAndShow(frame);
 
         return panel;
-
+    }
+    
+    /**
+     * Creates an UnhandledException dialog.
+     * @param message the string
+     */
+    /*public static void showUnhandledException(final String message)
+    {
+        UnhandledExceptionDialog dlg = instance.new UnhandledExceptionDialog(message);
+        dlg.setVisible(true);
+        throw new RuntimeException(message);
+    }*/
+    
+    /**
+     * Creates and attaches the UnhandledException handler for piping them to the dialog
+     */
+    public static void attachUnhandledException()
+    {
+        log.debug("attachUnhandledException "+Thread.currentThread().getName()+ " "+Thread.currentThread().hashCode());
+        
+        Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+        {
+            public void uncaughtException(Thread t, Throwable e)
+            {
+                UIHelper.showUnhandledException(e);
+            }
+        });
+        
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler()
+        {
+            public void uncaughtException(Thread t, Throwable e)
+            {
+                UIHelper.showUnhandledException(e);
+            }
+        });
     }
 
+    /**
+     * Creates an UnhandledException dialog.
+     * @param throwable the throwable
+     */
+    public static void showUnhandledException(final Throwable throwable)
+    {              
+        log.debug("showUnhandledException "+Thread.currentThread().getName()+ " "+Thread.currentThread().hashCode());
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                UnhandledExceptionDialog dlg = instance.new UnhandledExceptionDialog(throwable);
+                dlg.setVisible(true);
+
+                attachUnhandledException();
+            }
+        });
+        
+    }
+
+    /**
+     * Creates an UnhandledException dialog.
+     * @param ex the exception
+     */
+    /*public static void showUnhandledException(final Exception ex)
+    {
+        UnhandledExceptionDialog dlg = instance.new UnhandledExceptionDialog(ex);
+        dlg.setVisible(true);
+        
+        log.error(ex);
+        ex.printStackTrace();
+        
+        throw new RuntimeException(ex);
+    }*/
+    
+    
+    //-------------------------------------------------------------------------
+    // Inner Classes
+    //-------------------------------------------------------------------------
+    
+    class UnhandledExceptionDialog extends JDialog
+    {
+        /**
+         * @param message
+         * @param exception
+         */
+        public UnhandledExceptionDialog(final String message, final Exception exception)
+        {
+            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+            
+            createUI(message, exception);
+            
+            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+            this.setAlwaysOnTop(true);
+        }
+
+        /**
+         * @param message
+         */
+        public UnhandledExceptionDialog(final String message)
+        {
+            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+            
+            createUI(message, null);
+            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+            this.setAlwaysOnTop(true);
+        }
+
+        /**
+         * @param throwable
+         */
+        public UnhandledExceptionDialog(final Throwable throwable)
+        {
+            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+            
+            createUI(throwable.getMessage(), throwable);
+            
+            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+            this.setAlwaysOnTop(true);
+        }
+
+        /**
+         * Creates the Default UI for Lable task
+         * @param message the message
+         * @param throwable the exception that caused it (might be null)
+         */
+        protected void createUI(final String message, final Throwable throwable)
+        {
+            setDefaultCloseOperation(EXIT_ON_CLOSE);
+            this.setModal(false);
+
+            int          height  = 100;
+            PanelBuilder builder = new PanelBuilder(new FormLayout("p:g,1dlu,r:p:g", 
+                                      "p,"+(throwable != null ? "10px,p,2px,f:p:g," : "")+"5px,p"));
+            CellConstraints cc   = new CellConstraints();
+
+            int rowIndex = 1;
+            
+            JTextArea   messageTA            = new JTextArea(message);
+            messageTA.setEditable(false);
+            builder.add(new JScrollPane(messageTA, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xyw(1, 1, 3));
+            rowIndex += 2;
+            
+            JTextArea   stackTraceTA         = null;
+            JScrollPane stackTraceScrollPane = null;
+            if (throwable != null)
+            {
+                StringWriter strWriter = new StringWriter();
+                PrintWriter  pw        = new PrintWriter(strWriter);
+
+                throwable.printStackTrace(pw);
+                if (throwable.getCause() != null)
+                {
+                    throwable.getCause().printStackTrace(pw);    
+                }
+                stackTraceTA         = new JTextArea(strWriter.getBuffer().toString().replace("\t", "    "));
+                stackTraceTA.setEditable(false);
+                stackTraceScrollPane = new JScrollPane(stackTraceTA, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                stackTraceTA.setRows(15);
+                builder.add(new JLabel("Stack Trace", SwingConstants.CENTER), cc.xyw(1, rowIndex, 3));
+                rowIndex += 2;
+                builder.add(stackTraceScrollPane, cc.xyw(1, rowIndex, 3));
+                rowIndex += 2;
+                height += 300;
+            }
+            
+
+            // Bottom Button UI
+            JButton okBtn = new JButton(getResourceString("OK"));
+            builder.add(okBtn, cc.xyw(3, rowIndex, 1));
+
+            okBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    setVisible(false);
+                }
+            });
+            getRootPane().setDefaultButton(okBtn);
+            
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+            panel.add(builder.getPanel(), BorderLayout.CENTER);
+            setContentPane(panel);
+
+            setSize(new Dimension(500, height));
+
+        }
+    }
 }

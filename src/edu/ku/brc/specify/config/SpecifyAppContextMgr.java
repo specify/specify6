@@ -871,9 +871,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            throw new RuntimeException("Couldn't find ["+name+"]");
+            log.debug("Couldn't find ["+name+"]");
         }
-        //return null;
+        return null;
     }
 
     /* (non-Javadoc)

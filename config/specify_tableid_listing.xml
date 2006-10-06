@@ -11,7 +11,7 @@
 <tableIdMapping>
     <database>
         <table name="edu.ku.brc.specify.datamodel.Accession" id="7">
-            <display objtitle="Accession" view="Accession" dataobjformatter="" uiformatter="AccessionNumber" />        
+            <display objtitle="Accession" view="Accession" dataobjformatter="" uiformatter="AccessionNumber"  searchdlg="AccessionSearch" newobjdlg="AccessionDisplay"/>        
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAgents" id="12">
             <display objtitle="Accession Agent" dataobjformatter="AccessionAgents"/>

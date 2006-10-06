@@ -396,6 +396,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
 
     // Delete Add Methods
     
+    // Comparable
     public int compareTo(CollectingEvent obj)
     {
         if (obj == null)

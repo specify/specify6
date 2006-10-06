@@ -73,7 +73,7 @@ public class UIFieldFormatterMgr
     }
 
     /**
-     * Loads the formats from the config file
+     * Loads the formats from the config file.
      *
      */
     public void load()

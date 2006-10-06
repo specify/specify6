@@ -162,7 +162,8 @@
     			</row>
     			<row>
                  <cell type="label" labelfor="3" label="Accession #"/>
-    			    <cell type="field" id="3" name="accession.number"  uitype="formattedtext" uifieldformatter="AccessionNumber"/>
+    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="true" valtype="Changed"/>
+    			    
 
                  <cell type="label" labelfor="4" label="Cataloger"/>
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>

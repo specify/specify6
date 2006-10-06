@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typesearches>
+    <typesearch tableid="5" name="Agent"     searchcol="LastName"     searchfield="lastName" displaycols="LastName,FirstName" format="%s, %s" dataobjformatter="Agent"/>
+    <typesearch tableid="6" name="Permit"    searchcol="PermitNumber" searchfield="permitNumber" displaycols="PermitNumber" format="%s" dataobjformatter=""/>
+    <typesearch tableid="7" name="Accession" searchcol="Number"       searchfield="number" displaycols="Number" format="%s" dataobjformatter=""/>
+</typesearches>

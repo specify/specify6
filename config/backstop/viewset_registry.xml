@@ -3,4 +3,7 @@
     <file type="system" name="Preferences" title="Preferences"  file="preferences.views.xml"/>
     <file type="system" name="SystemSetup" title="System Setup" file="system.views.xml"/>
     <file type="system" name="Search"      title="Search"       file="search.views.xml"/>
+    
+    <file type="system" name="Global"      title="Global"       file="global.views.xml"/>
+    
 </files>

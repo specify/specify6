@@ -21,6 +21,16 @@
                 <altview name="PermitSearch" viewdef="PermitSearch" label="Edit" mode="edit" validated="false" default="true"/>
             </altviews>
         </view>
+        
+        <view 
+            name="AccessionSearch"
+            class="edu.ku.brc.specify.datamodel.Accession"
+            resourcelabels="false">
+            <desc><![CDATA[The Accession Search Form]]></desc>
+            <altviews>
+                <altview name="AccessiontSearch" viewdef="AccessionSearch" label="Edit" mode="edit" validated="false" default="true"/>
+            </altviews>
+        </view>
     </views>
     
     <viewdefs>
@@ -114,6 +124,44 @@
                     <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="AccessionSearch"
+            class="edu.ku.brc.specify.datamodel.Accession"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Accession Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="field" id="1" name="Number" uitype="formattedtext" uifieldformatter="AccessionNumber" valtype="Focus"/>
+                    
+                    <cell type="label" labelfor="2" label="Status"/>
+                    <cell type="field" id="2" name="Status"  uitype="combobox" picklist="AccessionStatus" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Type"/>
+                    <cell type="field" id="3" name="Type" uitype="combobox" picklist="AccessionType" valtype="Changed"/>
+                    
+                    <cell type="label" labelfor="4" label="Division"/>
+                    <cell type="field" id="4" name="Text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" valtype="Changed"/>
+                    
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Accessioned"/>
+                    <cell type="field" id="5" name="DateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
+                    
+                    <cell type="label" labelfor="6" label="Received"/>
+                    <cell type="field" id="6" name="DateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
+                </row>
             </rows>
         </viewdef>        
         

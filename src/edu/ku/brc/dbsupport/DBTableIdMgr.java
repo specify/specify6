@@ -15,6 +15,8 @@
 
 package edu.ku.brc.dbsupport;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashSet;
@@ -96,7 +98,6 @@ public class DBTableIdMgr
                     
 					String tablename       = tableNode.attributeValue("table");
 					int    tableId         = Integer.parseInt(tableNode.attributeValue("tableid"));
-					String defaultView     = tableNode.attributeValue("view");
 					String primaryKeyField = null;
                     
 					// iterate through child elements of id nodes, there should only be 1
@@ -104,8 +105,7 @@ public class DBTableIdMgr
 					{
 						Element idNode = (Element) i2.next();
 						primaryKeyField = idNode.attributeValue("name");
-					}
-
+					}  
 
 					if (classname == null)
                     {
@@ -115,18 +115,33 @@ public class DBTableIdMgr
                     {
 						log.error("populating DBTableMgr - tablename is null; check input file");
                     }
-					if (defaultView == null)
-                    {
-						log.debug("populating DBTableMgr - no default view provided for table: " + tablename + "; check input file");
-                    }
 					if (primaryKeyField == null)
                     {
 						log.error("populating DBTableMgr - primary key is null; check input file");
                     }
 					//log.debug("Populating hashtable for class: " + classname);
                     
-                    TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField, defaultView);
-					instance.hash.put(tableId, tblInfo);              
+                    TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
+					instance.hash.put(tableId, tblInfo); 
+                    
+                    Element idElement = (Element)tableNode.selectSingleNode("id");
+                    if (idElement != null)
+                    {
+                        tblInfo.setIdColumnName(getAttr(idElement, "column", null));
+                        tblInfo.setIdFieldName(getAttr(idElement,  "name", null));
+                        tblInfo.setIdType(getAttr(idElement,       "type", null));
+                    }
+                    
+                    Element displayElement = (Element)tableNode.selectSingleNode("display");
+                    if (displayElement != null)
+                    {
+                        tblInfo.setDefaultFormName(getAttr(displayElement,  "view", null));
+                        tblInfo.setUiFormatter(getAttr(displayElement,      "uiformatter", null));
+                        tblInfo.setDataObjFormatter(getAttr(displayElement, "dataobjformatter", null));
+                        tblInfo.setSearchDialog(getAttr(displayElement, "searchdlg", null));
+                        tblInfo.setNewObjDialog(getAttr(displayElement, "newobjdlg", null));
+                        tblInfo.setObjTitle(getAttr(displayElement, "objtitle", null));
+                    }
                     
                     for (Iterator ir = tableNode.elementIterator("relationship"); ir.hasNext();)
                     {
@@ -234,6 +249,24 @@ public class DBTableIdMgr
             }
         }
         throw new RuntimeException("Couldn't find table id for table name[" + className + "]");
+    }
+
+    /**
+     * This looks it up by specified class (no path) name the look up is case sensitive.
+     * 
+     * @param className the full class name
+     * @return the id of the table
+     */
+    public static TableInfo lookupByShortClassName(final String shortClassName)
+    {
+        for (TableInfo tableInfo : instance.hash.values())
+        {
+            if (tableInfo.getShortClassName().equalsIgnoreCase(shortClassName))
+            {
+                return tableInfo;
+            }
+        }
+        throw new RuntimeException("Couldn't find table id for table name[" + shortClassName + "]");
     }
 
     /**
@@ -379,21 +412,31 @@ public class DBTableIdMgr
 		protected String tableName;
 		protected String primaryKeyName;
 		protected Class  classObj;
+        
+        // ID Fields
+        protected String idColumnName;
+        protected String idFieldName;
+        protected String idType;
+        
+        // Display Items
 		protected String defaultFormName;
+        protected String uiFormatter;
+        protected String dataObjFormatter;
+        protected String searchDialog;
+        protected String newObjDialog;
+        protected String objTitle;      // Human readable name
         
         protected Set<TableRelationship> relationships;
 
-		public TableInfo(int tableId, 
-                         String className, 
-                         String tableName, 
-                         String primaryKeyName,
-				         String defaultFormName)
+		public TableInfo(final int    tableId, 
+                         final String className, 
+                         final String tableName, 
+                         final String primaryKeyName)
 		{
 			this.tableId = tableId;
 			this.className = className;
 			this.tableName = tableName;
 			this.primaryKeyName = primaryKeyName;
-			this.defaultFormName = defaultFormName;
 			try
 			{
 				this.classObj = Class.forName(className);
@@ -443,6 +486,11 @@ public class DBTableIdMgr
 			return defaultFormName;
 		}
         
+        public void setDefaultFormName(String defaultFormName)
+        {
+            this.defaultFormName = defaultFormName;
+        }
+
         public Set<TableRelationship> getRelationships()
         {
             return relationships;
@@ -453,6 +501,86 @@ public class DBTableIdMgr
             return IconManager.getIcon(getShortClassName(), size);
         }
         
+        public String getDataObjFormatter()
+        {
+            return dataObjFormatter;
+        }
+
+        public void setDataObjFormatter(String dataObjFormatter)
+        {
+            this.dataObjFormatter = dataObjFormatter;
+        }
+
+        public String getUiFormatter()
+        {
+            return uiFormatter;
+        }
+
+        public void setUiFormatter(String uiFormatter)
+        {
+            this.uiFormatter = uiFormatter;
+        }
+
+        public String getNewObjDialog()
+        {
+            return newObjDialog;
+        }
+
+        public void setNewObjDialog(String newObjDialog)
+        {
+            this.newObjDialog = newObjDialog;
+        }
+
+        public String getObjTitle()
+        {
+            return objTitle;
+        }
+
+        public void setObjTitle(String objTitle)
+        {
+            this.objTitle = objTitle;
+        }
+
+        public String getSearchDialog()
+        {
+            return searchDialog;
+        }
+
+        public void setSearchDialog(String searchDialog)
+        {
+            this.searchDialog = searchDialog;
+        }
+
+        public String getIdColumnName()
+        {
+            return idColumnName;
+        }
+
+        public void setIdColumnName(String idColumnName)
+        {
+            this.idColumnName = idColumnName;
+        }
+
+        public String getIdFieldName()
+        {
+            return idFieldName;
+        }
+
+        public void setIdFieldName(String idFieldName)
+        {
+            this.idFieldName = idFieldName;
+        }
+
+        public String getIdType()
+        {
+            return idType;
+        }
+
+        public void setIdType(String idType)
+        {
+            this.idType = idType;
+        }
+
         public RelationshipType getRelType(final String fieldName)
         {
             for (Iterator<TableRelationship> iter = relationships.iterator();iter.hasNext();)

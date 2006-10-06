@@ -95,6 +95,9 @@
     <icon name="Forward" file="forward.png" sizes="NonStd"/>
     
     <icon name="Checkmark" file="stock-apply.png" sizes="all"/>
+    
+    <!-- Discipline Icons -->
+    <icon name="FishColObj"  file="catobj_fish.gif" sizes="all"/>    
 
     <!--  Plugins -->
     <icon name="FishBase" file="fblogootw32.png" sizes="all"/>

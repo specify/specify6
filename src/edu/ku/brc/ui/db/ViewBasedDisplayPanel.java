@@ -141,6 +141,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         } else
         {
             log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
+            return;
         }
 
         setLayout(new BorderLayout());
@@ -244,7 +245,10 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      */
     public void setData(final Object dataObj)
     {
-        multiView.setData(dataObj);
+        if (multiView != null)
+        {
+            multiView.setData(dataObj);
+        }
     }
 
     /**
@@ -252,10 +256,18 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      */
     public void shutdown()
     {
-        multiView.shutdown();
-        formView = null;
+        if (multiView != null)
+        {
+            multiView.shutdown();
+        }
+        
+        formView               = null;
         propertyChangeListener = null;
-        fieldNames.clear();
+        
+        if (fieldNames != null)
+        {
+            fieldNames.clear();
+        }
     }
 
 }

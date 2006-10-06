@@ -12,7 +12,6 @@
             <fields value="1">
                 <field>lastName</field>
                 <field sep=", " >firstName</field>
-                <field>name</field>
             </fields>
         </switch>
     </format>

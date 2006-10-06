@@ -155,6 +155,11 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                 sqlStr = tableInfo.getViewSql();
             }
         }
+        
+        if (tableInfo == null)
+        {
+            throw new RuntimeException("Couldn't find search name["+searchName+"] in the search_config.xml");
+        }
 
         createUI(viewSetName, viewName, title);
         
@@ -189,6 +194,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                 for (String colName : columnNames)
                 {
                     Object value  = dataMap.get(colName);
+                    log.debug("Column Name["+colName+"] Value["+value+"]");
                     if (value != null)
                     {
                         String valStr = value.toString();
@@ -201,6 +207,9 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                             strBuf.append(" lower("+colName+") like '%"+valStr+"%'");
                             cnt++;
                         }
+                    } else
+                    {
+                        log.debug("DataMap was null for Column Name["+colName+"] make sure there is a field of this name in the form.");
                     }
                 }
                 String fullSQL = sqlStr.replace("%s", strBuf.toString());

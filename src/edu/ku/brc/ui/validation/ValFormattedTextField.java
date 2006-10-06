@@ -123,6 +123,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         document = new JFormattedDoc(this, formatter, requiredLength);
         setDocument(document);
+        document.addDocumentListener(this);
+        
         addFocusListener(new FocusAdapter()
                 {
                     @Override

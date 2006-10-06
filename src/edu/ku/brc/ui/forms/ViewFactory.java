@@ -76,7 +76,7 @@ import edu.ku.brc.ui.forms.persist.FormRow;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.validation.ComboBoxFromQueryFactory;
+import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.UIValidator;
@@ -387,7 +387,7 @@ public class ViewFactory
         String cbxName = cellField.getProperty("name");
         if (isNotEmpty(cbxName))
         {
-            ValComboBoxFromQuery cbx = ComboBoxFromQueryFactory.createValComboBoxFromQuery(cbxName);
+            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName);
             cbx.setRequired(cellField.isRequired());
             if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
@@ -582,7 +582,7 @@ public class ViewFactory
                         String            txtName = cellField.getProperty("name");
                         if (isNotEmpty(txtName))
                         {
-                            textFieldInfo = ComboBoxFromQueryFactory.getTextFieldWithInfo(txtName);
+                            textFieldInfo = TypeSearchForQueryFactory.getTextFieldWithInfo(txtName);
                             textFieldInfo.setMultiView(parent);
                             textFieldInfo.setFrameTitle(cellField.getProperty("title"));
                             
@@ -876,7 +876,8 @@ public class ViewFactory
                         {
                             if (parent != null)
                             {
-                                int options = (cellSubView.isSingleValueFromSet() ? 0 : MultiView.RESULTSET_CONTROLLER) | MultiView.VIEW_SWITCHER;
+                                int options = (cellSubView.isSingleValueFromSet() ? 0 : MultiView.RESULTSET_CONTROLLER) | MultiView.VIEW_SWITCHER |
+                                              (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
                                     
                                 MultiView multiView = new MultiView(parent, 
                                                                     subView, 
