@@ -80,7 +80,9 @@ public class DatamodelGenerator
                 return new Display(fdElement.attributeValue("objtitle"), 
                                         fdElement.attributeValue("view"), 
                                         fdElement.attributeValue("dataobjformatter"), 
-                                        fdElement.attributeValue("uiformatter"));
+                                        fdElement.attributeValue("uiformatter"), 
+                                        fdElement.attributeValue("searchdlg"), 
+                                        fdElement.attributeValue("newobjdlg"));
             }
         }
         return null;
@@ -112,7 +114,7 @@ public class DatamodelGenerator
 	{
         // get Class Name (or name) from HBM file
 		String className = element.attributeValue("name");
-		log.info("attempting to pull TableMetaData out of tblMetaDataHashtbale for table: " + className);
+		log.info("Processing: " + className);
         
         // Get Meta Data for HBM
 		TableMetaData tableMetaData = tblMetaDataHash.get(className);

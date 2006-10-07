@@ -5,6 +5,8 @@
 		<attribute name="view" property="view"/>
 		<attribute name="dataobjformatter" property="dataobjformatter"/>
 		<attribute name="uiformatter" property="uiformatter"/>
+		<attribute name="searchdlg" property="searchdlg"/>
+		<attribute name="newobjdlg" property="newobjdlg"/>
 	</element>
 </info>
    

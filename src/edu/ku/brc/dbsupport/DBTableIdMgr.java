@@ -109,15 +109,15 @@ public class DBTableIdMgr
 
 					if (classname == null)
                     {
-						log.error("populating DBTableMgr - classname is null; check input file");
+						log.error("classname is null; check input file");
                     }
 					if (tablename == null)
                     {
-						log.error("populating DBTableMgr - tablename is null; check input file");
+						log.error("tablename is null; check input file");
                     }
 					if (primaryKeyField == null)
                     {
-						log.error("populating DBTableMgr - primary key is null; check input file");
+						log.error("primaryKeyField is null; check input file");
                     }
 					//log.debug("Populating hashtable for class: " + classname);
                     
@@ -138,9 +138,9 @@ public class DBTableIdMgr
                         tblInfo.setDefaultFormName(getAttr(displayElement,  "view", null));
                         tblInfo.setUiFormatter(getAttr(displayElement,      "uiformatter", null));
                         tblInfo.setDataObjFormatter(getAttr(displayElement, "dataobjformatter", null));
-                        tblInfo.setSearchDialog(getAttr(displayElement, "searchdlg", null));
-                        tblInfo.setNewObjDialog(getAttr(displayElement, "newobjdlg", null));
-                        tblInfo.setObjTitle(getAttr(displayElement, "objtitle", null));
+                        tblInfo.setSearchDialog(getAttr(displayElement,     "searchdlg", null));
+                        tblInfo.setNewObjDialog(getAttr(displayElement,     "newobjdlg", null));
+                        tblInfo.setObjTitle(getAttr(displayElement,         "objtitle", null));
                     }
                     
                     for (Iterator ir = tableNode.elementIterator("relationship"); ir.hasNext();)
