@@ -51,7 +51,7 @@ public class DBTableIdMgr
     public enum RelationshipType { OneToOne, OneToMany, ManyToOne, ManyToMany}
     
     // Static Data Members
-	private static final Logger log = Logger.getLogger(DBTableIdMgr.class);
+	protected static final Logger log = Logger.getLogger(DBTableIdMgr.class);
     private static final DBTableIdMgr instance;
 	//private static String datamodelFilename = XMLHelper.getConfigDirPath("specify_datamodel.xml");
     
@@ -69,6 +69,7 @@ public class DBTableIdMgr
 	 */
 	protected DBTableIdMgr()
 	{
+        // do nothing
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class DBTableIdMgr
 
 			if (databaseNode != null)
 			{
-				for (Iterator i = databaseNode.elementIterator("table"); i.hasNext();)
+				for (Iterator<?> i = databaseNode.elementIterator("table"); i.hasNext();)
 				{
 					Element tableNode = (Element) i.next();
 					classname = tableNode.attributeValue("classname");
@@ -101,7 +102,7 @@ public class DBTableIdMgr
 					String primaryKeyField = null;
                     
 					// iterate through child elements of id nodes, there should only be 1
-					for (Iterator i2 = tableNode.elementIterator("id"); i2.hasNext();)
+					for (Iterator<?> i2 = tableNode.elementIterator("id"); i2.hasNext();)
 					{
 						Element idNode = (Element) i2.next();
 						primaryKeyField = idNode.attributeValue("name");
@@ -143,7 +144,7 @@ public class DBTableIdMgr
                         tblInfo.setObjTitle(getAttr(displayElement,         "objtitle", null));
                     }
                     
-                    for (Iterator ir = tableNode.elementIterator("relationship"); ir.hasNext();)
+                    for (Iterator<?> ir = tableNode.elementIterator("relationship"); ir.hasNext();)
                     {
                         Element irNode = (Element) ir.next();
                         TableRelationship tblRel = new TableRelationship(
@@ -352,15 +353,15 @@ public class DBTableIdMgr
 		if (recordSet != null)
 		{
 			StringBuffer strBuf = new StringBuffer(" in (");
-			Set set = recordSet.getItems();
+			Set<RecordSetItem> set = recordSet.getItems();
 			if (set == null)
 			{
 				throw new RuntimeException("RecordSet items is null!");
 			}
 			int i = 0;
-			for (Iterator iter = set.iterator(); iter.hasNext();)
+			for (Iterator<RecordSetItem> iter = set.iterator(); iter.hasNext();)
 			{
-				RecordSetItem rsi = (RecordSetItem) iter.next();
+				RecordSetItem rsi = iter.next();
 				if (i > 0)
 				{
 					strBuf.append(",");
@@ -370,10 +371,9 @@ public class DBTableIdMgr
 			}
 			strBuf.append(")");
 			return strBuf.toString();
-		} else
-		{
-			return "";
 		}
+        // else
+        return "";
 	}
     
     /**
@@ -411,7 +411,7 @@ public class DBTableIdMgr
 		protected String className;
 		protected String tableName;
 		protected String primaryKeyName;
-		protected Class  classObj;
+		protected Class<?>  classObj;
         
         // ID Fields
         protected String idColumnName;
@@ -476,7 +476,7 @@ public class DBTableIdMgr
 			return primaryKeyName;
 		}
 
-		public Class getClassObj()
+		public Class<?> getClassObj()
 		{
 			return classObj;
 		}
@@ -579,6 +579,19 @@ public class DBTableIdMgr
         public void setIdType(String idType)
         {
             this.idType = idType;
+        }
+
+        public TableRelationship getRelationshipByName(String name)
+        {
+            for (TableRelationship tr: relationships)
+            {
+                String relName = tr.getName();
+                if (relName != null && relName.equals(name))
+                {
+                    return tr;
+                }
+            }
+            return null;
         }
 
         public RelationshipType getRelType(final String fieldName)
