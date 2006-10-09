@@ -605,6 +605,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         }
         
         log.error("Unfinished implementation");
+        super.addReference(ref, type);
         //TODO: finish this impl
     }
 
