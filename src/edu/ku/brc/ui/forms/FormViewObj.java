@@ -129,6 +129,7 @@ public class FormViewObj implements Viewable,
     protected View                          view;
     protected AltView                       altView;
     protected FormViewDef                   formViewDef;
+    protected String                        cellName;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
     protected Vector<AltView>               altViewsList   = null;
@@ -184,9 +185,29 @@ public class FormViewObj implements Viewable,
                        final FormValidator formValidator,
                        final int           options)
     {
+        this(view, altView, mvParent, formValidator, options, null);
+    }
+    
+    /**
+     * Constructor with FormView definition
+     * @param view the definition of the view
+     * @param altView indicates which AltView we will be using
+     * @param mvParent the mvParent mulitview
+     * @param createResultSetController indicates that a ResultSet Controller should be created
+     * @param formValidator the form's formValidator
+     * @param options the options needed for creating the form
+     */
+    public FormViewObj(final View          view,
+                       final AltView       altView,
+                       final MultiView     mvParent,
+                       final FormValidator formValidator,
+                       final int           options,
+                       final String        cellName)
+    {
         this.view        = view;
         this.altView     = altView;
         this.mvParent    = mvParent;
+        this.cellName    = cellName;
         
         businessRules = view.getBusinessRule();
 
@@ -862,9 +883,9 @@ public class FormViewObj implements Viewable,
     /**
      * Creates a new Record and adds it to the List and dataSet if necessary
      */
-    protected void createNewRecord()
+    protected void createNewDataObject()
     {
-        log.debug("createNewRecord " + this.getView().getName());
+        log.debug("createNewDataObject " + this.getView().getName());
 
         if (!checkForChanges())
         {
@@ -872,7 +893,15 @@ public class FormViewObj implements Viewable,
         }
 
         FormDataObjIFace obj = FormHelper.createAndNewDataObj(view.getClassName());
-        FormHelper.initAndAddToParent(parentDataObj, obj);
+        if (parentDataObj instanceof FormDataObjIFace)
+        {
+            obj.initialize();
+            ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
+            
+        } else
+        {
+            FormHelper.initAndAddToParent(parentDataObj, obj);
+        }
 
         if (carryFwdDataObj == null && dataObj != null)
         {
@@ -1108,7 +1137,7 @@ public class FormViewObj implements Viewable,
                 rsController.getNewRecBtn().addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        createNewRecord();
+                        createNewDataObject();
                         focusFirstFormControl();
                     }
                 });
@@ -1890,6 +1919,14 @@ public class FormViewObj implements Viewable,
     {
         log.debug(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         this.session = session;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setCellName(java.lang.String)
+     */
+    public void setCellName(String cellName)
+    {
+        this.cellName = cellName;
     }
 
     /* (non-Javadoc)

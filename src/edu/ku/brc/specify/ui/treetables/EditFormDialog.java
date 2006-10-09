@@ -103,7 +103,7 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
     	if (formView != null)
         {
             // TODO The last arg is set to false, but it should really be passed in from the constructor
-        	multiView = new MultiView(null, formView, AltView.CreationMode.Edit, MultiView.NO_OPTIONS);
+        	multiView = new MultiView(null, null, formView, AltView.CreationMode.Edit, MultiView.NO_OPTIONS);
             form = multiView.getCurrentView();
 
         } else

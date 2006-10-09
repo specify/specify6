@@ -323,7 +323,7 @@ public class AppPrefsCache
         SimpleDateFormat sdf = new SimpleDateFormat();
         
         String[] pieces = sdf.toPattern().split(" ");
-        if (pieces == null)
+        if (pieces != null)
         {
             String pattern = pieces[0];
             //System.out.println(pattern);

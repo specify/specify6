@@ -43,7 +43,7 @@
     </many-to-one>
     
     <!-- bi-directional many-to-one association to RepositoryAgreement -->
-    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="false" outer-join="true" cascade="none">
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="false" outer-join="true" cascade="none" index="IX_RepAccessionAuthorizationsAccessionID" unique-key="IX_RepAccessionAuthorizations">
         <meta attribute="field-description"></meta>
         <column name="RepositoryAgreementID"/>
     </many-to-one>

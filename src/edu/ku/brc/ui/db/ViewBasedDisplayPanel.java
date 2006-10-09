@@ -133,7 +133,8 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {
-            multiView = new MultiView(null, 
+            multiView = new MultiView(null,
+                                      null, 
                                       formView, 
                                       isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View,
                                       options);

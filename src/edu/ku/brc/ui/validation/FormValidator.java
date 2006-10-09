@@ -123,7 +123,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public boolean hasChanged()
     {
-        log.debug(this.hashCode()+"  "+hasChanged);
         return hasChanged;
     }
 

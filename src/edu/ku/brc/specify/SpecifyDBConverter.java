@@ -306,7 +306,7 @@ public class SpecifyDBConverter
                 }
 
                 boolean doGeography = false;
-                if (doGeography || doAll)
+                if ((doGeography || doAll) && !databaseName.startsWith("accessions"))
                 {
                 	GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                 	conversion.convertGeography(treeDef);

@@ -43,10 +43,10 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      protected String remarks;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<CollectionObject> collectionObjects;
-     protected Set<RepositoryAgreement> repositoryAgreementAuthorizations;
-     protected Set<RepositoryAgreement> repositoryAgreementAgents;
-     protected Set<Accession> accessions;
+     protected Set<CollectionObject>        collectionObjects;
+     protected Set<AccessionAuthorizations> repositoryAgreementAuthorizations;
+     protected Set<AccessionAgents>         repositoryAgreementAgents;
+     protected Set<Accession>               accessions;
 
      protected Agent originator;
 
@@ -85,10 +85,10 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        collectionObjects = new HashSet<CollectionObject>();
-        repositoryAgreementAuthorizations = new HashSet<RepositoryAgreement>();
-        repositoryAgreementAgents = new HashSet<RepositoryAgreement>();
-        accessions = new HashSet<Accession>();
+        collectionObjects                 = new HashSet<CollectionObject>();
+        repositoryAgreementAuthorizations = new HashSet<AccessionAuthorizations>();
+        repositoryAgreementAgents         = new HashSet<AccessionAgents>();
+        accessions                        = new HashSet<Accession>();
         originator = null;
     }
     // End Initializer
@@ -272,22 +272,22 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
-    public Set<RepositoryAgreement> getRepositoryAgreementAuthorizations() {
+    public Set<AccessionAuthorizations> getRepositoryAgreementAuthorizations() {
         return this.repositoryAgreementAuthorizations;
     }
 
-    public void setRepositoryAgreementAuthorizations(Set<RepositoryAgreement> repositoryAgreementAuthorizations) {
+    public void setRepositoryAgreementAuthorizations(Set<AccessionAuthorizations> repositoryAgreementAuthorizations) {
         this.repositoryAgreementAuthorizations = repositoryAgreementAuthorizations;
     }
 
     /**
      *
      */
-    public Set<RepositoryAgreement> getRepositoryAgreementAgents() {
+    public Set<AccessionAgents> getRepositoryAgreementAgents() {
         return this.repositoryAgreementAgents;
     }
 
-    public void setRepositoryAgreementAgents(Set<RepositoryAgreement> repositoryAgreementAgents) {
+    public void setRepositoryAgreementAgents(Set<AccessionAgents> repositoryAgreementAgents) {
         this.repositoryAgreementAgents = repositoryAgreementAgents;
     }
 

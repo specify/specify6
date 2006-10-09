@@ -19,6 +19,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+
 
 
 
@@ -318,50 +322,131 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
 
 
 
-    // Add Methods
-
-    public void addCollectionObjects(final CollectionObject collectionObject)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    public void addReference(FormDataObjIFace ref, String refType)
     {
-        this.collectionObjects.add(collectionObject);
-        collectionObject.setAccession(this);
+        System.err.println(ref+" "+ refType);
+        if (StringUtils.isNotEmpty(refType))
+        {
+            if (refType.equals("collectionObjects"))
+            {
+                if (ref instanceof CollectionObject)
+                {
+                    collectionObjects.add((CollectionObject)ref);
+                    ((CollectionObject)ref).setAccession(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of CollectionObject");
+                }
+                
+            } else if (refType.equals("accessionAuthorizations"))
+            {
+                if (ref instanceof AccessionAuthorizations)
+                {
+                    accessionAuthorizations.add((AccessionAuthorizations)ref);
+                    ((AccessionAuthorizations)ref).setAccession(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of AccessionAuthorizations");
+                }
+                
+            } else if (refType.equals("accessionAgents"))
+            {
+                if (ref instanceof AccessionAgents)
+                {
+                    accessionAgents.add((AccessionAgents)ref);
+                    ((AccessionAgents)ref).setAccession(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of AccessionAgents");
+                }
+                
+            } else if (refType.equals("repositoryAgreement"))
+            {
+                if (ref instanceof RepositoryAgreement)
+                {
+                    repositoryAgreement = (RepositoryAgreement)ref;
+                    ((RepositoryAgreement)ref).getAccessions().add(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of RepositoryAgreement");
+                }
+            }
+        } else
+        {
+            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
     }
-
-    public void addAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizationsArg)
-    {
-        this.accessionAuthorizations.add(accessionAuthorizationsArg);
-        accessionAuthorizationsArg.setAccession(this);
-    }
-
-    public void addAccessionAgents(final AccessionAgents accessionAgent)
-    {
-        this.accessionAgents.add(accessionAgent);
-        accessionAgent.setAccession(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeCollectionObjects(final CollectionObject collectionObject)
-    {
-        this.collectionObjects.remove(collectionObject);
-        collectionObject.setAccession(null);
-    }
-
-    public void removeAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizationsArg)
-    {
-        this.accessionAuthorizations.remove(accessionAuthorizationsArg);
-        accessionAuthorizationsArg.setAccession(null);
-    }
-
-    public void removeAccessionAgents(final AccessionAgents accessionAgent)
-    {
-        this.accessionAgents.remove(accessionAgent);
-        accessionAgent.setAccession(null);
-    }
-
-    // Delete Add Methods
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    public void removeReference(FormDataObjIFace ref, String refType)
+    {
+        System.err.println(ref+" "+ refType);
+        
+        if (StringUtils.isNotEmpty(refType))
+        {
+            if (refType.equals("collectionObjects"))
+            {
+                if (ref instanceof CollectionObject)
+                {
+                    collectionObjects.remove(ref);
+                    ((CollectionObject)ref).setAccession(null);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of CollectionObject");
+                }
+                
+            } else if (refType.equals("accessionAuthorizations"))
+            {
+                if (ref instanceof AccessionAuthorizations)
+                {
+                    accessionAuthorizations.remove(ref);
+                    ((AccessionAuthorizations)ref).setAccession(null);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of AccessionAuthorizations");
+                }
+                
+            } else if (refType.equals("accessionAgents"))
+            {
+                if (ref instanceof AccessionAgents)
+                {
+                    accessionAgents.remove(ref);
+                    ((AccessionAgents)ref).setAccession(null);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of AccessionAgents");
+                }
+                
+            } else if (refType.equals("repositoryAgreement"))
+            {
+                if (ref instanceof RepositoryAgreement)
+                {
+                    repositoryAgreement = null;
+                    ((RepositoryAgreement)ref).getAccessions().remove(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of RepositoryAgreement");
+                }
+            }
+        } else
+        {
+            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
+    }
+
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------

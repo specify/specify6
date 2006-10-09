@@ -236,7 +236,7 @@ public class FormPane extends DroppableTaskPane
             //System.err.println("Is List: ["+(dataArg != null && (dataArg instanceof List || dataArg instanceof Set))+"] "+dataArg);
             //MultiView.printCreateOptions("After", opts);
             
-            multiView = new MultiView(null, view, mode, options);
+            multiView = new MultiView(null, null, view, mode, options);
             if (multiView != null)
             {
                 this.data = dataArg;

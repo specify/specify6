@@ -188,6 +188,14 @@ public interface Viewable
      */
     public void validationWasOK(boolean wasOK);
     
+
+    /**
+     * Sets the "cell" name of this subview which is the name of this control in the form, this doesn't
+     * need to be called ("set") when it is a top-level form.
+     * @param cellName the cell name
+     */
+    public void setCellName(String cellName);
+    
     /**
      * Sets the current serssion into the Viewable.
      * @param session the current session

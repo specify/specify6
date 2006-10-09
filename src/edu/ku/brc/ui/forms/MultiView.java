@@ -73,6 +73,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     private static final Logger log = Logger.getLogger(MultiView.class);
 
     protected MultiView                    mvParent          = null;
+    protected String                       cellName          = null;
     protected View                         view;
     protected Hashtable<String, Viewable>  viewMapByName   = new Hashtable<String, Viewable>();
     protected Object                       data            = null;
@@ -106,6 +107,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param options the options needed for creating the form
      */
     public MultiView(final MultiView mvParent,
+                     final String    cellName,
                      final View      view,
                      final AltView.CreationMode createWithMode,
                      final int       options)
@@ -113,6 +115,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         setLayout(cardLayout);
 
         this.mvParent       = mvParent;
+        this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
         this.createOptions  = options;
@@ -360,7 +363,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
 
         editable = altView.getMode() == AltView.CreationMode.Edit;
-System.err.println("***************************");
+
         // this call parents the viewable to the multiview
         //Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions | (editable ? MultiView.RESULTSET_CONTROLLER : 0));
         //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
@@ -404,6 +407,7 @@ System.err.println("***************************");
 
         }
         // else
+        viewable.setCellName(cellName);
         viewMapByName.put(name, viewable);
         add(viewable.getUIComponent(), name);
         return true;

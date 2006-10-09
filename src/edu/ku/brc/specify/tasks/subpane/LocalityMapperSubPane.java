@@ -298,8 +298,8 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         // "null" ViewSet name means it should use the default
         View view = AppContextMgr.getInstance().getView(null, "LocalityMapper");
         
-        // WHERE's the ERROR checking !
-        multiView = new MultiView(null, view, AltView.CreationMode.View, MultiView.NO_OPTIONS);
+        // TODO WHERE's the ERROR checking !
+        multiView = new MultiView(null, null, view, AltView.CreationMode.View, MultiView.NO_OPTIONS);
         multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 

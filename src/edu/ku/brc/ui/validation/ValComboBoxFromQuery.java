@@ -109,6 +109,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
 
+    protected String             cellName   = null;
     protected boolean            isRequired = false;
     protected boolean            isChanged  = false;
     protected boolean            isNew      = false;
@@ -123,7 +124,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected String             keyName;
     protected String             format;
     protected String             formatName;
-    protected Class<?>              classObj = null;
+    protected Class<?>           classObj = null;
     protected DataGetterForObj   getter   = null;
     protected String             searchDialogName;
     protected String[]           fieldNames;
@@ -197,6 +198,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         init(objTitle);
     }
 
+    /**
+     * Sets the "cell" name of this control, this is the name of this control in the form.
+     * @param cellName the cell name
+     */
+    public void setCellName(String cellName)
+    {
+        this.cellName = cellName;
+    }
+
     /* (non-Javadoc)
      * @see java.awt.Component#requestFocus()
      */
@@ -228,7 +238,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
     
     /**
-     * Helper to create a buuton.
+     * Helper to create a button.
      * @param iconName the name of the icon (not localized)
      * @param tooltipKey the name of the tooltip (not localized)
      * @param objTitle the title of one object needed for the Info Button
@@ -801,7 +811,17 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 if (currentMode == MODE.NewAndEmpty)
                 {
-                    FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
+                    if (multiView != null)
+                    {
+                        Object parentDataObj = multiView.getData();
+                        if (parentDataObj instanceof FormDataObjIFace)
+                        {
+                            ((FormDataObjIFace)parentDataObj).addReference(newDataObj, "XXX");
+                        } else
+                        {
+                            FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
+                        }
+                    }
                     setValue(newDataObj, null);
                     newDataObj = null;
                  }

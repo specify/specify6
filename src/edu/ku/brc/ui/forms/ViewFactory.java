@@ -399,6 +399,7 @@ public class ViewFactory
                     cbx.addFocusListener(dcn);
                 }
             }
+            cbx.setCellName(cellField.getName());
             return cbx;
 
         }
@@ -880,7 +881,8 @@ public class ViewFactory
                                               (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
                                     
                                 MultiView multiView = new MultiView(parent, 
-                                                                    subView, 
+                                                                    cellSubView.getName(),
+                                                                    subView,
                                                                     parent.getCreateWithMode(), 
                                                                     options);
                                 parent.addChild(multiView);
@@ -888,6 +890,7 @@ public class ViewFactory
                                 viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);                               
                                 viewBldObj.closeSubView(cellSubView);
                                 curMaxRow = rowInx;
+                                
                             } else
                             {
                                 log.error("buildFormView - parent is NULL for subview ["+subViewName+"]");

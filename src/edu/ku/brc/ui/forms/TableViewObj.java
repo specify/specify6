@@ -102,6 +102,7 @@ public class TableViewObj implements Viewable,
     protected View                          view;
     protected AltView                       altView;
     protected FormViewDef                   formViewDef;
+    protected String                        cellName       = null;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
     protected Vector<AltView>               altViewsList   = null;
@@ -625,6 +626,14 @@ public class TableViewObj implements Viewable,
         this.session = session;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setCellName(java.lang.String)
+     */
+    public void setCellName(String cellName)
+    {
+        this.cellName = cellName;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()
      */

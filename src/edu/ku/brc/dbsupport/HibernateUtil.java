@@ -188,6 +188,11 @@ public class HibernateUtil {
         try 
         {
             configuration = new Configuration();
+            AuditInterceptor auditInter = AuditInterceptor.getInstance();
+            if (auditInter != null)
+            {
+                configuration.setInterceptor(auditInter);
+            }
             setHibernateLogonConfig(configuration);
             
             sessionFactory = configuration.configure().buildSessionFactory();

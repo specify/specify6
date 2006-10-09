@@ -79,19 +79,19 @@ public interface FormDataObjIFace
      * addLocality(Locality l).
      * 
      * @param ref the new foreign key record
-     * @param type a String indicating which relationship to add the reference to
+     * @param refType a String indicating which relationship to add the reference to
      */
-    public void addReference(FormDataObjIFace ref, String type);
+    public void addReference(FormDataObjIFace ref, String refType);
     
     /**
      * Remvoes a foreign key reference to this object.  This method provides
      * a generic way to call other methods such as removeAgent(Agent a) or
      * removeLocality(Locality l).
      * 
-     * @param ref the foreign key record to detach from this object
-     * @param type a String indicating which relationship to remove the reference from
+     * @param refObj the foreign key record to detach from this object
+     * @param refType a String indicating which relationship to remove the reference from
      */
-    public void removeReference(FormDataObjIFace ref, String type);
+    public void removeReference(FormDataObjIFace refObj, String refType);
     
     /**
      * Returns the internal Table Id.

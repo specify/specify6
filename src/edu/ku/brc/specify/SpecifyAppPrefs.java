@@ -54,8 +54,7 @@ public class SpecifyAppPrefs
         AppPreferences.getRemote().load(); // Loads prefs from the database
         
         FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
-        SimpleDateFormat screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());
-        AppPrefsCache.register(screenDateFormat, "ui", "formatting", "scrdateformat");
+        AppPrefsCache.register(AppPrefsCache.getDefaultDatePattern(), "ui", "formatting", "scrdateformat");
         
         ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
         AppPrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");

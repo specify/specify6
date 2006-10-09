@@ -16,6 +16,10 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+
 
 
 
@@ -140,26 +144,117 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
         return this.repositoryAgreement;
     }
     
-    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
+    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) 
+    {
         this.repositoryAgreement = repositoryAgreement;
     }
-
-
-
-
-
-    // Add Methods
-    public void addAgent(Agent agentArg) {
-        this.agent = agentArg;
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    public void addReference(FormDataObjIFace ref, String refType)
+    {
+        super.addReference(ref, refType);
+        
+        /*
+        if (StringUtils.isNotEmpty(refType))
+        {
+            if (refType.equals("agent"))
+            {
+                if (ref instanceof Agent)
+                {
+                    agent = (Agent)ref;
+                    ((Agent)ref).getAccessionAgents().add(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Agent");
+                }
+                
+            } else if (refType.equals("accession"))
+            {
+                if (ref instanceof Accession)
+                {
+                    accession = (Accession)ref;
+                    ((Accession)ref).getAccessionAgents().add(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Accession");
+                }
+                
+            } else if (refType.equals("repositoryAgreement"))
+            {
+                if (ref instanceof RepositoryAgreement)
+                {
+                    repositoryAgreement = (RepositoryAgreement)ref;
+                    ((RepositoryAgreement)ref).getRepositoryAgreementAgents().add(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of RepositoryAgreement");
+                }
+                
+            }
+        } else
+        {
+            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
+        */
     }
-    // Done Add Methods
-
-    // Delete Methods
-    public void removeAgent(Agent agentArg) {
-        this.agent = null;
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    public void removeReference(FormDataObjIFace ref, String refType)
+    {
+        super.removeReference(ref, refType);
+        /*
+        if (StringUtils.isNotEmpty(refType))
+        {
+            if (refType.equals("agent"))
+            {
+                if (ref instanceof Agent)
+                {
+                    agent = null;
+                    ((Agent)ref).getAccessionAgents().remove(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Agent");
+                }
+                
+            } else if (refType.equals("accession"))
+            {
+                if (ref instanceof Accession)
+                {
+                    accession = null;
+                    ((Accession)ref).getAccessionAgents().remove(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Accession");
+                }
+                
+            } else if (refType.equals("repositoryAgreement"))
+            {
+                if (ref instanceof RepositoryAgreement)
+                {
+                    repositoryAgreement = null;
+                    ((RepositoryAgreement)ref).getRepositoryAgreementAgents().remove(this);
+                    
+                } else
+                {
+                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of RepositoryAgreement");
+                }
+                
+            }
+        } else
+        {
+            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
+        */
     }
-
-    // Delete Add Methods
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
