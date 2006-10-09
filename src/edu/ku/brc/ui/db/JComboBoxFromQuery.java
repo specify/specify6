@@ -167,7 +167,7 @@ public class JComboBoxFromQuery extends JComboBox
         {
 	        tf.setText((String)getItemAt(index));
 	        tf.setSelectionEnd(caretPos + tf.getText().length());
-	        tf.moveCaretPosition(caretPos);
+	        tf.moveCaretPosition(Math.min(caretPos, 0));
         }
     }
 

@@ -109,8 +109,8 @@ public class TypeSearchForQueryFactory
             {
     
                 return new TextFieldWithInfo(tblInfo.getClassName(),
-                                             tblInfo.getIdColumnName(),
-                                             typeSearchInfo.getSearchColumn(),
+                                             tblInfo.getIdFieldName(),
+                                             typeSearchInfo.getDisplayColumns(),
                                              typeSearchInfo.getFormat(),
                                              typeSearchInfo.getFormatName(),
                                              tblInfo.getNewObjDialog(),
@@ -164,7 +164,7 @@ public class TypeSearchForQueryFactory
                                                 typeSearchInfo.getSearchColumn(),
                                                 typeSearchInfo.getDisplayColumns(),
                                                 tblInfo.getClassName(),
-                                                tblInfo.getIdColumnName(),
+                                                tblInfo.getIdFieldName(),
                                                 typeSearchInfo.getSearchFieldName(),
                                                 typeSearchInfo.getFormat(),
                                                 typeSearchInfo.getFormatName(),
