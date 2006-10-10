@@ -145,7 +145,8 @@ public class ExpressResultsTableInfo
             }
             
             buildSql = buildSql.replaceFirst("ColFieldsDef", strBuf.toString());
-            System.err.println("["+buildSql+"]");
+            
+            //System.err.println("["+buildSql+"]");
         }
 
         if (loadType == LOAD_TYPE.Viewing || loadType == LOAD_TYPE.Both)

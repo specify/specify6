@@ -228,7 +228,7 @@ public class FormViewObj implements Viewable,
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         
         formIsInNewDataMode = isNewObject;
-        System.err.println(view.getName()+"  "+formIsInNewDataMode+"  "+options);
+        //System.err.println(view.getName()+"  "+formIsInNewDataMode+"  "+options);
         
         MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
