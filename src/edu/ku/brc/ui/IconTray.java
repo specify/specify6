@@ -15,6 +15,8 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,8 +38,14 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.renderers.TrayListCellRenderer;
 import edu.ku.brc.util.FormDataObjComparator;
 
@@ -69,12 +77,18 @@ public class IconTray extends JPanel implements GetSetValueIFace
     protected JButton editButton;
     /** A JButton used to create a new record. */
     protected JButton newButton;
+    /** The object containing the Set being displayed. */
+    protected String parentClassName;
+    /** The name of the Set being displayed. */
+    protected String setName;
     
     /**
      * Creates a new IconTray containing zero items.
      */
-    public IconTray()
+    public IconTray(String parentClass, String name)
     {
+        this.parentClassName = parentClass;
+        this.setName = name;
         listModel = new DefaultModifiableListModel<FormDataObjIFace>();
         ListCellRenderer renderer = new TrayListCellRenderer();
         iconListWidget = new JList(listModel);
@@ -119,6 +133,30 @@ public class IconTray extends JPanel implements GetSetValueIFace
                 
                 //TODO: display an edit dialog for the selected object
                 log.warn("Display edit dialog for " + formObj.getIdentityTitle());
+                TableInfo parentTI = DBTableIdMgr.lookupByClassName(parentClassName);
+                TableRelationship rel = parentTI.getRelationshipByName(setName);
+                String className = rel.getClassName();
+                TableInfo setTI = DBTableIdMgr.lookupByClassName(className);
+                String defFormName = setTI.getEditObjDialog();
+                
+                ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(defFormName, "Edit", "OK", true, MultiView.HIDE_SAVE_BTN, FRAME_TYPE.DIALOG);
+                dialog.setCloseListener(new PropertyChangeListener()
+                {
+                    public void propertyChange(PropertyChangeEvent evt)
+                    {
+                        String action = evt.getPropertyName();
+                        if (action.equals("OK"))
+                        {
+                            log.warn("User clicked OK");
+                        }
+                        else if (action.equals("Cancel"))
+                        {
+                            log.warn("User clicked Cancel");
+                        }
+                    }
+                });
+                dialog.setData(formObj);
+                dialog.showDisplay(true);
             }
         });
 

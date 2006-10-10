@@ -531,6 +531,16 @@ public class DBTableIdMgr
             this.newObjDialog = newObjDialog;
         }
 
+        public String getEditObjDialog()
+        {
+            return getNewObjDialog();
+        }
+
+        public void setEditObjDialog(String editObjDialog)
+        {
+            setNewObjDialog(editObjDialog);
+        }
+
         public String getObjTitle()
         {
             return objTitle;

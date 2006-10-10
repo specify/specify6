@@ -13,7 +13,7 @@
             </altviews>
         </view>
 
-        <view name="AccessionAgent"
+        <view name="AccessionAgents"
               objtitle="Accession Agent"
               class="edu.ku.brc.specify.datamodel.AccessionAgents"
               resourcelabels="false">

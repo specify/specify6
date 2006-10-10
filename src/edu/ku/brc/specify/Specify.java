@@ -128,7 +128,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public Specify()
     {
-        UIHelper.attachUnhandledException();
+        //UIHelper.attachUnhandledException();
         
         //log.info("CURRENT THREAD: "+Thread.currentThread().hashCode()+"  "+SwingUtilities.isEventDispatchThread());
         

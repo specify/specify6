@@ -784,11 +784,11 @@ public class ViewFactory
                         IconTray tray = null;
                         if(ordered && !viewMode)
                         {
-                            tray = new OrderedIconTray();
+                            tray = new OrderedIconTray(formViewDef.getClassName(),cellField.getName());
                         }
                         else
                         {
-                            tray = new IconTray();
+                            tray = new IconTray(formViewDef.getClassName(),cellField.getName());
                         }
                         
                         //tray.setFixedCellHeight(64);

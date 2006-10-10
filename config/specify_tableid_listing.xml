@@ -14,7 +14,7 @@
             <display objtitle="Accession" view="Accession" dataobjformatter="" uiformatter="AccessionNumber" searchdlg="AccessionSearch" newobjdlg="AccessionDisplay"/>        
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAgents" id="12">
-            <display objtitle="Accession Agent" dataobjformatter="AccessionAgents"/>
+            <display objtitle="Accession Agent" view="AccessionAgents" dataobjformatter="AccessionAgents" searchdlg="AccessionAgentsSearch" newobjdlg="AccessionAgentsDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" id="13">
             <display objtitle="Accession Authorization" dataobjformatter="AccessionAuthorizations"/>

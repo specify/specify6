@@ -7,6 +7,7 @@
     <dialog type="display" viewset="Global" view="Agent" name="AgentDisplay" title="AgentTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" viewset="Global" view="Permit" name="PermitDisplay" title="PermitTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" viewset="Global" view="Accession" name="AccessionDisplay" title="AccessionTitle" class="edu.ku.brc.specify.datamodel.Accession"/>
+    <dialog type="display" viewset="Global" view="AccessionAgents" name="AccessionAgentsDisplay" title="AccessionAgentsTitle" class="edu.ku.brc.specify.datamodel.AccessionAgents"/>
     
     <dialog type="display" viewset="Fish Views" view="FishBase" name="FishBase" title="FishBase" class="org.dom4j.Element"/>
     

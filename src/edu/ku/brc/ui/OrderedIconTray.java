@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -38,7 +37,7 @@ import edu.ku.brc.util.OrderableComparator;
 public class OrderedIconTray extends IconTray implements ActionListener, ListSelectionListener
 {
     /** A logger for emitting errors, warnings, etc. */
-    private static final Logger log = Logger.getLogger(OrderedIconTray.class);
+    private static final Logger oitLogger = Logger.getLogger(OrderedIconTray.class);
     
     /** A button that moves the selection to the start of the order. */
     protected JButton toStartButton;
@@ -55,9 +54,9 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
      * Creates a new instance containing zero items.
      * 
      */
-    public OrderedIconTray()
+    public OrderedIconTray(String parentClass, String setName)
     {
-        super();
+        super(parentClass,setName);
         
         listModel = new ReorderableTrayListModel<FormDataObjIFace>();
         iconListWidget.setModel(listModel);
@@ -238,7 +237,7 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             {
                 // if we get here, somebody tried to use an OrderedIconTray for a Set of items
                 // that didn't all implement the Orderable interface
-                log.warn("OrderedIconTray being used for non-Orderable data set");
+                oitLogger.warn("OrderedIconTray being used for non-Orderable data set");
                 return super.sortSet(values);
             }
         }
