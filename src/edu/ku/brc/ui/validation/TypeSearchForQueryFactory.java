@@ -73,8 +73,8 @@ public class TypeSearchForQueryFactory
                     {
                         hash.put(name, new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
                                                           tsElement.attributeValue("searchcol"),
-                                                          tsElement.attributeValue("searchfield"),
                                                           tsElement.attributeValue("displaycols"),
+                                                          tsElement.attributeValue("searchfield"),
                                                           tsElement.attributeValue("format"),
                                                           tsElement.attributeValue("dataobjformatter")));
                     } else
@@ -110,7 +110,7 @@ public class TypeSearchForQueryFactory
     
                 return new TextFieldWithInfo(tblInfo.getClassName(),
                                              tblInfo.getIdFieldName(),
-                                             typeSearchInfo.getDisplayColumns(),
+                                             typeSearchInfo.getSearchFieldName(),
                                              typeSearchInfo.getFormat(),
                                              typeSearchInfo.getFormatName(),
                                              tblInfo.getNewObjDialog(),
@@ -199,11 +199,11 @@ public class TypeSearchForQueryFactory
         protected String formatName;
 
         public TypeSearchInfo(int    tableId,
-                               String searchColumn,
-                               String displayColumns,
-                               String searchFieldName,
-                               String format,
-                               String formatName)
+                              String searchColumn,
+                              String displayColumns,
+                              String searchFieldName,
+                              String format,
+                              String formatName)
         {
             this.tableId         = tableId;
             this.searchColumn    = searchColumn;
