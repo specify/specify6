@@ -57,10 +57,8 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.OrderedIconTray;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.db.PickListDBAdapter;
 import edu.ku.brc.ui.db.TextFieldWithInfo;
@@ -180,6 +178,11 @@ public class ViewFactory
             this.rootMultiView =  null;
             return null;
 
+        }
+        else if (viewDef.getType() == FormViewDef.ViewType.iconview)
+        {
+            return new IconViewObj(view, altView, parentView, options);
+            
         } else
         {
             this.rootMultiView =  null;
@@ -777,28 +780,6 @@ public class ViewFactory
                         JProgressBar progressBar = new JProgressBar(0, 100);
                         compToAdd = progressBar;
                         
-                    } else if (uiType.equals("tray"))
-                    {
-                        boolean ordered = cellField.getPropertyAsBoolean("ordered", false);
-                        boolean viewMode = (mode == AltView.CreationMode.View);
-                        IconTray tray = null;
-                        if(ordered && !viewMode)
-                        {
-                            tray = new OrderedIconTray(formViewDef.getClassName(),cellField.getName());
-                        }
-                        else
-                        {
-                            tray = new IconTray(formViewDef.getClassName(),cellField.getName());
-                        }
-                        
-                        //tray.setFixedCellHeight(64);
-                        
-                        compToAdd = tray;
-                        compToReg = tray;
-                     
-                        addToValidator = false;
-                        //addControl     = true;
-                        
                     } else if (uiType.equals("plugin"))
                     {
                         String classNameStr = cellField.getProperty("class");
@@ -864,6 +845,45 @@ public class ViewFactory
                     curMaxRow = rowInx;
                     colInx += 2;
 
+                }
+                else if (cell.getType() == FormCell.CellType.iconview)
+                {
+                    FormCellSubView cellSubView = (FormCellSubView) cell;
+
+                    String subViewName = cellSubView.getViewName();
+
+                    View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
+                    if (subView != null)
+                    {
+                        if (parent != null)
+                        {
+                            int options = MultiView.VIEW_SWITCHER
+                                    | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT
+                                            : 0);
+
+                            MultiView multiView = new MultiView(parent, cellSubView.getName(), subView, parent
+                                    .getCreateWithMode(), options);
+                            parent.addChild(multiView);
+
+                            viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);
+                            viewBldObj.closeSubView(cellSubView);
+                            curMaxRow = rowInx;
+
+                        }
+                        else
+                        {
+                            log.error("buildFormView - parent is NULL for subview [" + subViewName + "]");
+                        }
+
+                    }
+                    else
+                    {
+                        log.error("buildFormView - Could find subview's with ViewSet[" + cellSubView.getViewSetName()
+                                + "] ViewName[" + subViewName + "]");
+                    }
+                    // still have compToAdd = null;
+                    colInx += 2;
+                    
                 } else if (cell.getType() == FormCell.CellType.subview)
                 {
                     FormCellSubView cellSubView = (FormCellSubView)cell;
@@ -1081,7 +1101,7 @@ public class ViewFactory
                     fv.addEnableRule(id, enableRules.get(id));
                 }
 
-                // Load up labels and associate them with there component
+                // Load up labels and associate them with their component
                 for (String idFor : labelsForHash.keySet())
                 {
                     fv.addUILabel(idFor, labelsForHash.get(idFor));
@@ -1204,14 +1224,20 @@ public class ViewFactory
         return null;
     }
 
-
     /**
      * Creates a FormViewObj.
-     * @param multiView the parent multiView
-     * @param view the definition of the form view to be created
-     * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
-     * @param data the data to be set into the form
-     * @param options the options needed for creating the form
+     * 
+     * @param multiView
+     *            the parent multiView
+     * @param view
+     *            the definition of the form view to be created
+     * @param altName
+     *            the name of the altView to be used (can be null - then it defaults to the default
+     *            AltView)
+     * @param data
+     *            the data to be set into the form
+     * @param options
+     *            the options needed for creating the form
      * @return a new FormViewObj
      */
     public static Viewable createFormView(final MultiView multiView, 

@@ -6,28 +6,16 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -38,63 +26,49 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.renderers.TrayListCellRenderer;
 import edu.ku.brc.util.FormDataObjComparator;
 
 /**
  * A GUI component for use in displaying a collection of associated objects.  The related
- * objects have to implement the {@link DataModelObjBase} interface.
+ * objects have to implement the {@link FormDataObjIFace} interface.
  *
  * @author jstewart
  * @code_status Complete
  */
-public class IconTray extends JPanel implements GetSetValueIFace
+public class IconTray extends JPanel
 {
     /** A logger for emitting errors, warnings, etc. */
     protected static final Logger log = Logger.getLogger(IconTray.class);
+    
+    public static final int SINGLE_ROW = 1;
+    public static final int MULTIPLE_ROWS = 2;
 
     /** A JList used to display the icons representing the items. */
     protected JList iconListWidget;
-    /** A button to trigger the creation and addition of a new item. */
-    protected JButton addButton;
     /** The model holding the included items. */
     protected ModifiableListModel<FormDataObjIFace> listModel;
     /** A JScrollPane containing the iconListWidget. */
     protected JScrollPane listScrollPane;
-    /** The set of datamodel objects to be displayed. */
-    protected Set<Object> dataSet;
-    /** A JPanel to hold the 'new' and 'edit' buttons. */
-    protected JPanel southPanel;
-    /** A JButton used to edit the selected record. */
-    protected JButton editButton;
-    /** A JButton used to create a new record. */
-    protected JButton newButton;
-    /** The object containing the Set being displayed. */
-    protected String parentClassName;
-    /** The name of the Set being displayed. */
-    protected String setName;
     
+    protected int style;
+
     /**
      * Creates a new IconTray containing zero items.
      */
-    public IconTray(String parentClass, String name)
+    public IconTray(int layoutStyle)
     {
-        this.parentClassName = parentClass;
-        this.setName = name;
+        style = layoutStyle;
         listModel = new DefaultModifiableListModel<FormDataObjIFace>();
         ListCellRenderer renderer = new TrayListCellRenderer();
         iconListWidget = new JList(listModel);
         iconListWidget.setCellRenderer(renderer);
         iconListWidget.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        iconListWidget.setVisibleRowCount(1);
+        if (style == SINGLE_ROW)
+        {
+            iconListWidget.setVisibleRowCount(1);
+        }
         iconListWidget.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         JPanel listPanel = new JPanel();
@@ -104,98 +78,12 @@ public class IconTray extends JPanel implements GetSetValueIFace
         listPanel.add(iconListWidget);
         listPanel.add(Box.createHorizontalGlue());
         
-        // this layout stretches, but doesn't center
-        //listPanel.setLayout(new GridLayout(1,1));
-        //listPanel.add(iconListWidget);
-        
-        // this layout stretches, but doesn't center
-        //listPanel.setLayout(new BorderLayout());
-        //listPanel.add(iconListWidget,BorderLayout.CENTER);
-        
         listScrollPane = new JScrollPane(listPanel,ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        
-        southPanel = new JPanel();
-        southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
-        editButton = createButton("EditForm", getResourceString("EditRecord"));
-        newButton = createButton("CreateObj", getResourceString("NewRecord"));
-        
-        editButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                Object selection = iconListWidget.getSelectedValue();
-                if (selection==null)
-                {
-                    return;
-                }
-                
-                FormDataObjIFace formObj = (FormDataObjIFace)selection;
-                
-                //TODO: display an edit dialog for the selected object
-                log.warn("Display edit dialog for " + formObj.getIdentityTitle());
-                TableInfo parentTI = DBTableIdMgr.lookupByClassName(parentClassName);
-                TableRelationship rel = parentTI.getRelationshipByName(setName);
-                String className = rel.getClassName();
-                TableInfo setTI = DBTableIdMgr.lookupByClassName(className);
-                String defFormName = setTI.getEditObjDialog();
-                
-                ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(defFormName, "Edit", "OK", true, MultiView.HIDE_SAVE_BTN, FRAME_TYPE.DIALOG);
-                dialog.setCloseListener(new PropertyChangeListener()
-                {
-                    public void propertyChange(PropertyChangeEvent evt)
-                    {
-                        String action = evt.getPropertyName();
-                        if (action.equals("OK"))
-                        {
-                            log.warn("User clicked OK");
-                        }
-                        else if (action.equals("Cancel"))
-                        {
-                            log.warn("User clicked Cancel");
-                        }
-                    }
-                });
-                dialog.setData(formObj);
-                dialog.showDisplay(true);
-            }
-        });
-
-        newButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                //TODO: create a new object
-                //FormHelper.createAndNewDataObj(classObj);
-                //TODO: display an edit dialog for a new object
-                log.warn("Display edit dialog for a new object");
-            }
-        });
-
-        southPanel.add(Box.createHorizontalGlue());
-        southPanel.add(editButton);
-        southPanel.add(newButton);
         
         this.setLayout(new BorderLayout());
         this.add(listScrollPane,BorderLayout.CENTER);
-        this.add(southPanel,BorderLayout.SOUTH);
     }
-    
-    /**
-     * A utility method used to create the 'edit' and 'new' buttons.
-     * 
-     * @param iconName the name of the icon to use for the button
-     * @param toolTip the tooltip text for the button
-     * @return a button
-     */
-    protected JButton createButton(String iconName, String toolTip)
-    {
-        JButton btn = new JButton(IconManager.getIcon(iconName, IconManager.IconSize.Std16));
-        btn.setToolTipText(toolTip);
-        btn.setFocusable(false);
-        btn.setMargin(new Insets(1,1,1,1));
-        btn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        return btn;
-    }
+        
     
     /**
      * Sets the cell renderer used by the tray to render the individual objects listed.
@@ -253,18 +141,6 @@ public class IconTray extends JPanel implements GetSetValueIFace
     }
     
     /**
-     * Removes the index-th item from the tray.
-     * 
-     * @param index the index of the item to remove
-     * @return the item that was removed
-     */
-    public synchronized FormDataObjIFace removeItem(int index)
-    {
-        FormDataObjIFace removedObj = listModel.remove(index);
-        return removedObj;
-    }
-    
-    /**
      * Returns a Set containing all items in the tray.
      * 
      * @return a Set containing all items in the tray
@@ -278,58 +154,43 @@ public class IconTray extends JPanel implements GetSetValueIFace
         }
         return set;
     }
-    
-    /**
-     * Clears the contents of the tray.
-     */
-    public synchronized void clear()
-    {
-        listModel.clear();
-    }
-    
-    /**
-     * Adds all of the objects in the given collection to the tray.
-     * 
-     * @param items a collection of FormDataObjIFace objects
-     */
-    public synchronized void addAll(Collection<? extends FormDataObjIFace> items)
-    {
-        for (FormDataObjIFace item: items)
-        {
-            listModel.add(item);
-        }
-    }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
-     */
-    public Object getValue()
-    {
-        dataSet.clear();
-        dataSet.addAll(getItems());
-        return dataSet;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
-     */
-    @SuppressWarnings("unchecked")
-    public void setValue(Object value, String defaultValue)
-    {
-        listModel.clear();
-        if (!(value instanceof Set))
-        {
-            throw new IllegalArgumentException("value must be an instance of java.util.Set");
-        }
-        
-        dataSet = (Set)value;
-
-        Vector<FormDataObjIFace> tmpList = sortSet(dataSet);
-        for (FormDataObjIFace dataObj: tmpList)
-        {
-            listModel.add(dataObj);
-        }
-    }
+//    /* (non-Javadoc)
+//     * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
+//     */
+//    public Object getValue()
+//    {
+//        dataSet.clear();
+//        dataSet.addAll(getItems());
+//        return dataSet;
+//    }
+//
+//    /* (non-Javadoc)
+//     * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
+//     */
+//    @SuppressWarnings("unchecked")
+//    public void setValue(Object value, String defaultValue)
+//    {
+//        if (value==null)
+//        {
+//            return;
+//        }
+//        
+//        if (!(value instanceof Set))
+//        {
+//            log.error("Incoming data of unexpected class: " + value);
+//            throw new IllegalArgumentException("value must be an instance of java.util.Set");
+//        }
+//        
+//        listModel.clear();
+//        dataSet = (Set)value;
+//
+//        Vector<FormDataObjIFace> tmpList = sortSet(dataSet);
+//        for (FormDataObjIFace dataObj: tmpList)
+//        {
+//            listModel.add(dataObj);
+//        }
+//    }
     
     /* (non-Javadoc)
      * @see javax.swing.JComponent#getPreferredSize()
@@ -337,18 +198,21 @@ public class IconTray extends JPanel implements GetSetValueIFace
     @Override
     public Dimension getPreferredSize()
     {
-        Graphics graphics = getGraphics();
-        if (graphics == null)
-        {
-            return new Dimension(100,100);
-        }
-        FontMetrics fontMetrics = graphics.getFontMetrics();
-        int fontHeight = fontMetrics.getHeight();
-        int minIconHeight = 32;
         int scrollbarHeight = listScrollPane.getHorizontalScrollBar().getHeight();
-        int southPanelHeight = southPanel.getPreferredSize().height;
-        int minHeight = fontHeight + minIconHeight + scrollbarHeight + southPanelHeight;
-        return new Dimension(listScrollPane.getWidth(),minHeight);
+        int minRowsVis = (style == SINGLE_ROW) ? 1 : 3;
+        int minHeight = minRowsVis*48 + scrollbarHeight;
+        return new Dimension(this.getWidth(),minHeight);
+    }
+    
+    public FormDataObjIFace getSelection()
+    {
+        Object selection = iconListWidget.getSelectedValue();
+        if (selection==null)
+        {
+            return null;
+        }
+        
+        return (FormDataObjIFace)selection;
     }
     
     /**

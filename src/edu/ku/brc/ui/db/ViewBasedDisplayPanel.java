@@ -220,7 +220,12 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         parent.setVisible(false);
         if (propertyChangeListener != null)
         {
-            propertyChangeListener.propertyChange(new PropertyChangeEvent(this, e.getSource() == okBtn ? "OK" : "Cancel", null, null));
+            boolean isOkButton = (e.getSource() == okBtn);
+            if (isOkButton)
+            {
+                multiView.getDataFromUI();
+            }
+            propertyChangeListener.propertyChange(new PropertyChangeEvent(this, isOkButton ? "OK" : "Cancel", null, null));
         }
         propertyChangeListener = null;
     }

@@ -17,6 +17,7 @@ import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -39,6 +40,8 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
     /** A logger for emitting errors, warnings, etc. */
     private static final Logger oitLogger = Logger.getLogger(OrderedIconTray.class);
     
+    /** A panel to hold the order manipulation controls. */
+    protected JPanel southPanel;
     /** A button that moves the selection to the start of the order. */
     protected JButton toStartButton;
     /** A button that moves the selection to the left in the order. */
@@ -54,9 +57,9 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
      * Creates a new instance containing zero items.
      * 
      */
-    public OrderedIconTray(String parentClass, String setName)
+    public OrderedIconTray(int layoutStyle)
     {
-        super(parentClass,setName);
+        super(layoutStyle);
         
         listModel = new ReorderableTrayListModel<FormDataObjIFace>();
         iconListWidget.setModel(listModel);
@@ -64,7 +67,7 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         iconListWidget.addListSelectionListener(this);
         
         // rebuild the south panel to include the order manipulation buttons
-        southPanel.removeAll();
+        southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
     
         toStartButton = new JButton(IconManager.getIcon("move_to_start", IconSize.Std16));
@@ -94,16 +97,12 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         moveRightButton.addActionListener(this);
         toEndButton.addActionListener(this);
         
-        southPanel.add(Box.createRigidArea(newButton.getSize()));
-        southPanel.add(Box.createRigidArea(editButton.getSize()));
         southPanel.add(Box.createHorizontalGlue());
         southPanel.add(toStartButton);
         southPanel.add(moveLeftButton);
         southPanel.add(moveRightButton);
         southPanel.add(toEndButton);
         southPanel.add(Box.createHorizontalGlue());
-        southPanel.add(editButton);
-        southPanel.add(newButton);
         
         this.add(southPanel,BorderLayout.SOUTH);
     }

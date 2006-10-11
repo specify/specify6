@@ -19,6 +19,8 @@
               resourcelabels="false">
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
+                <altview name="AccessionAgent IconView" viewdef="AccessionAgentIconView" label="IconView " mode="view" validated="false"/>
+                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit" validated="false"/>
                 <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view" validated="false"/>
                 <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
@@ -72,6 +74,15 @@
     </views>
 
     <viewdefs>
+    	<viewdef
+    		type="iconview"
+            name="AccessionAgentIconView"
+            class="edu.ku.brc.specify.datamodel.AccessionAgents"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession Agents Icon Viewer]]></desc>
+        </viewdef>
+    
         <viewdef
             type="form"
             name="Accession"
@@ -126,7 +137,7 @@
                 </row>
 -->
                 <row>
-                    <cell type="field" id="8" name="accessionAgents" uitype="tray" initialize="ordered=true" colspan="12"/>
+                    <cell type="iconview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
                 </row>
 
                 <row>

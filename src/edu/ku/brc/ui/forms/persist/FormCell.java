@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FormCell implements Comparable<FormCell>
 {
-    public enum CellType {separator, field, label, subview, command, panel, statusbar}
+    public enum CellType {separator, field, label, subview, command, panel, statusbar, iconview}
 
     // Required fields
     protected CellType type;

@@ -302,8 +302,9 @@ public class ViewLoader
                 //                      className, desc, instance.doingResourceLabels, isValidated);
                break;
                
-            case iconViewer:
-                throw new RuntimeException("Unhandled Switch iconViewer");
+            case iconview:
+                viewDef = createIconViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
+                break;
         }
         return viewDef;
     }
@@ -708,7 +709,24 @@ public class ViewLoader
 
                             break;
                         }
-                        
+                        case iconview:
+                        {
+                            String vsName = cellElement.attributeValue("viewsetname");
+                            if (StringUtils.isEmpty(vsName))
+                            {
+                                vsName = instance.viewSetName;
+                            }
+
+                            cell = formRow.addCell(new FormCellSubView(cellId, cellName,
+                                                   vsName,
+                                                   cellElement.attributeValue("viewname"),
+                                                   cellElement.attributeValue("class"),
+                                                   getAttr(cellElement, "desc", ""),
+                                                   colspan,
+                                                   rowspan));
+
+                            break;
+                        }
                         case statusbar:
                         {
                             cell = formRow.addCell(new FormCell(FormCell.CellType.statusbar, cellId, cellName, colspan, rowspan));
@@ -760,8 +778,22 @@ public class ViewLoader
 
         return formView;
     }
+    
+    
+    protected static ViewDef createIconViewDef(final Element element,
+                                                   final ViewDef.ViewType type,
+                                                   final String  name,
+                                                   final String  className,
+                                                   final String  gettableClassName,
+                                                   final String  settableClassName,
+                                                   final String  desc)
+    {
+        ViewDef formView = new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
+        //formView.setEnableRules(getEnableRules(element));
 
+        return formView;
+    }
 
     /**
      * Creates a Table Form View
