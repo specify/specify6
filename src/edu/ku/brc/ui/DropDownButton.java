@@ -15,6 +15,7 @@
 package edu.ku.brc.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -26,6 +27,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -170,6 +173,11 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
         
         builder.add(mainBtn, cc.xy(1,1));
         builder.add(arrowBtn, cc.xy(3,1));
+        
+//        this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
+//        this.add(mainBtn);
+//        this.add(Box.createRigidArea(new Dimension(2,2)));
+//        this.add(arrowBtn);
         
         raisedBorder = new SoftBevelBorder(BevelBorder.RAISED);
         emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
