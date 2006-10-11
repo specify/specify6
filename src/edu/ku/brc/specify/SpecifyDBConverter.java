@@ -157,7 +157,7 @@ public class SpecifyDBConverter
         boolean restartFromScratch = true;
         if (restartFromScratch)
         {
-            Connection connection = DBConnection.getConnection();
+            Connection connection = DBConnection.getInstance().createConnection();
             Statement stmt = connection.createStatement();
             try
             {

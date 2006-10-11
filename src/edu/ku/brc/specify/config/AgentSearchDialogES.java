@@ -40,7 +40,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -91,7 +91,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected ExpressTableResultsBase  etrb;
 
     protected int            tableId        = -1;
-    protected RecordSet      recordSet      = null;
+    protected RecordSetIFace      recordSet      = null;
 
     // Form Stuff
     protected View           formView = null;

@@ -55,13 +55,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
 import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -131,7 +131,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
      * @param task the owning task
      * @param colEvents sorted list of collecting events
      */
-    public LocalityMapperSubPane(final Session session,
+    public LocalityMapperSubPane(final DataProviderSessionIFace session,
                                  final String name,
                                  final Taskable task,
                                  final List<CollectingEvent> colEvents)

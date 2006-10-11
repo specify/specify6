@@ -37,12 +37,12 @@ import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.ui.IconListCellRenderer;
@@ -95,16 +95,15 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
 
         try
         {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             if (tableId == -1)
             {
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
-                recordSets = criteria.list(); // unchcked warning here
+               recordSets = session.getDataList(RecordSet.class);
             } else
             {
-                Query query = HibernateUtil.getCurrentSession().createQuery("from recordset in class RecordSet where recordset.tableId = " + tableId);
-                recordSets = query.list(); // unchcked warning here
+                recordSets = session.getDataList("from recordset in class RecordSet where recordset.tableId = " + tableId);
             }
-            HibernateUtil.closeSession();
+            session.close();
 
             ListModel listModel = new AbstractListModel()
             {
@@ -178,7 +177,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
      * Returns the selected recordset
      * @return the selected recordset
      */
-    public RecordSet getSelectedRecordSet()
+    public RecordSetIFace getSelectedRecordSet()
     {
         int inx = list.getSelectedIndex();
         if (inx != -1)

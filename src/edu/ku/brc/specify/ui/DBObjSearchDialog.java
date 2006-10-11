@@ -46,10 +46,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Hits;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -58,7 +54,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -428,12 +425,9 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                 log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
                 
                 Class classObj = Class.forName(className);
-                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-                Session session = sessionFactory.openSession();
-               
-                Criteria criteria = session.createCriteria(classObj);
-                criteria.add(Expression.eq(idFieldName, id));
-                java.util.List list = criteria.list();
+                
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                List list = session.getDataList(classObj, idFieldName, id);
                 session.close();
                 
                 if (list.size() == 1)

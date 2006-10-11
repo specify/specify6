@@ -512,7 +512,7 @@ public class PickListTestApp
             writer.maxMergeDocs  = 9999999;
             writer.minMergeDocs  = 1000;
             
-            Connection dbConnection = DBConnection.getConnection();
+            Connection dbConnection = DBConnection.getInstance().createConnection();
             Statement  dbStatement  = dbConnection.createStatement();
 
             ResultSet rs = dbStatement.executeQuery("SELECT DISTINCT tx.taxonName FROM taxonname AS tx where tx.taxonName is not null;");
@@ -544,7 +544,7 @@ public class PickListTestApp
     {
         try
         {
-            Connection dbConnection = DBConnection.getConnection();
+            Connection dbConnection = DBConnection.getInstance().createConnection();
             Statement  dbStatement  = dbConnection.createStatement();
     
             Vector<String> list = new Vector<String>();

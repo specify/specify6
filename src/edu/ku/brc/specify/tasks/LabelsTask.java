@@ -58,6 +58,7 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
@@ -207,7 +208,7 @@ public class LabelsTask extends BaseTask
      * @param labelTitle the localized title to be displayed as the tab title
      * @param recordSet the recordSet to be turned into labels
      */
-    public void doLabels(final String labelName, final String labelTitle, final RecordSet recordSet)
+    public void doLabels(final String labelName, final String labelTitle, final RecordSetIFace recordSet)
     {
         LabelsPane labelsPane;
         if (starterPane == null)
@@ -228,7 +229,7 @@ public class LabelsTask extends BaseTask
     /**
      * @return Return true if there is a small number of labels or whether the user wishes to continue.
      */
-    protected boolean checkForALotOfLabels(final RecordSet recordSet)
+    protected boolean checkForALotOfLabels(final RecordSetIFace recordSet)
     {
         //
         if (recordSet.getItems().size() > 200) // XXX Pref
@@ -292,7 +293,7 @@ public class LabelsTask extends BaseTask
      * @param tableId the table id
      * @return returns the selected RecordSet or null
      */
-    protected RecordSet askForRecordSet(final int tableId)
+    protected RecordSetIFace askForRecordSet(final int tableId)
     {
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
         if (dlg.hasRecordSets())
@@ -369,7 +370,7 @@ public class LabelsTask extends BaseTask
     {
         if (data instanceof RecordSet && ContextMgr.getCurrentContext() == this)
         {
-            RecordSet rs = (RecordSet)data;
+            RecordSetIFace rs = (RecordSetIFace)data;
 
             String fileName = null;
             if (countLabelsWithSimilarTableIds(rs.getDbTableId(), true) > 1) // only Count the ones that require data
@@ -382,7 +383,7 @@ public class LabelsTask extends BaseTask
 
             if (fileName != null)
             {
-                doLabels(fileName, "Labels", (RecordSet)data);
+                doLabels(fileName, "Labels", (RecordSetIFace)data);
             }
         }
     }
@@ -459,7 +460,7 @@ public class LabelsTask extends BaseTask
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
-                RecordSet recordSet = (RecordSet)cmdAction.getData();
+                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
 
                 if (checkForALotOfLabels(recordSet))
                 {
@@ -533,7 +534,7 @@ public class LabelsTask extends BaseTask
         private String    nameStr;
         private String    titleStr;
         private int       tableId;
-        private RecordSet recordSet = null;
+        private RecordSetIFace recordSet = null;
 
 
         public DisplayAction(final TaskCommandDef tcd)
@@ -560,7 +561,7 @@ public class LabelsTask extends BaseTask
                 data = dae.getData();
                 if (data instanceof RecordSet)
                 {
-                    RecordSet rs = (RecordSet)data;
+                    RecordSetIFace rs = (RecordSetIFace)data;
                     if (rs.getDbTableId() != tableId)
                     {
                         JOptionPane.showMessageDialog(null, getResourceString("ERROR_LABELS_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
@@ -602,7 +603,7 @@ public class LabelsTask extends BaseTask
                 
             } else if (data instanceof RecordSet)
             {
-                doLabels(nameStr, titleStr, (RecordSet)data);
+                doLabels(nameStr, titleStr, (RecordSetIFace)data);
 
             } else
             {
@@ -611,12 +612,12 @@ public class LabelsTask extends BaseTask
 
         }
 
-        public void setRecordSet(final RecordSet recordSet)
+        public void setRecordSet(final RecordSetIFace recordSet)
         {
             this.recordSet = recordSet;
         }
 
-        public RecordSet getRecordSet()
+        public RecordSetIFace getRecordSet()
         {
             return recordSet;
         }

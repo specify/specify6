@@ -17,9 +17,9 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.ui.UICacheManager;
@@ -126,7 +126,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase#getRecordSet(int[], int, boolean)
      */
-    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
+    public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
         log.debug("Row Selection Count["+table.getSelectedRowCount()+"]");

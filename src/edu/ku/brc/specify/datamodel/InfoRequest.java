@@ -17,6 +17,8 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.Date;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
+
 
 
 
@@ -35,7 +37,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      protected Calendar requestDate;
      protected Calendar replyDate;
      protected String remarks;
-     protected RecordSet recordSet;
+     protected RecordSetIFace recordSet;
      protected Agent agent;
 
 
@@ -164,11 +166,11 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    public RecordSet getRecordSet() {
+    public RecordSetIFace getRecordSet() {
         return this.recordSet;
     }
     
-    public void setRecordSet(RecordSet recordSet) {
+    public void setRecordSet(RecordSetIFace recordSet) {
         this.recordSet = recordSet;
     }
 

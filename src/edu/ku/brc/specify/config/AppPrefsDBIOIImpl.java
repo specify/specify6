@@ -24,15 +24,12 @@ import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AppResource;
 import edu.ku.brc.specify.datamodel.AppResourceData;
 
@@ -112,13 +109,11 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             Properties properties = new Properties(); // must be done fist thing
             appPrefsMgr.setProperties(properties);
 
-            Session session = null;
+            DataProviderSessionIFace session = null;
             try
             {
-                session = HibernateUtil.getSessionFactory().openSession();
-                Criteria criteria = session.createCriteria(AppResource.class);
-                criteria.add(Expression.eq("name", PREF_NAME));
-                List list = criteria.list();
+                session = DataProviderFactory.getInstance().createSession();
+                List list = session.getDataList(AppResource.class, "name", PREF_NAME);
                 if (list.size() == 0)
                 {
                     appResource = new AppResource();
@@ -229,21 +224,19 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 }
                 byteOut.close();
                 
-                Session     session = null;
-                Transaction trans   = null;
-                
+                DataProviderSessionIFace session = null;
                 try 
                 {
-                    session = HibernateUtil.getSessionFactory().openSession();
-                    trans = session.beginTransaction();
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.beginTransaction();
                     
                     session.saveOrUpdate(appResource);
                     
-                    trans.commit();
+                    session.commit();
 
                 } catch (Exception ex) 
                 {
-                    trans.rollback();
+                    session.rollback();
                     
                     log.error(ex);
                     

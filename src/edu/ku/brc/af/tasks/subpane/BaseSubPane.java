@@ -33,6 +33,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
@@ -56,7 +57,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     
     protected JPanel			progressBarPanel;
     
-    protected Session           session;
+    protected DataProviderSessionIFace session;
 
     /**
      * Constructs a base class that implements the SubPanelIFace interface
@@ -66,7 +67,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
      * @param name the name of the subpane
      * @param task the owning task
      */
-    public BaseSubPane(final Session session,
+    public BaseSubPane(final DataProviderSessionIFace session,
                        final String name,
                        final Taskable task)
     {
@@ -126,12 +127,12 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     
 
 
-    public Session getSession()
+    public DataProviderSessionIFace getSession()
     {
         return session;
     }
 
-    public void setSession(Session session)
+    public void setSession(DataProviderSessionIFace session)
     {
         this.session = session;
     }

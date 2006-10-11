@@ -162,7 +162,20 @@ public class GenericDBConversion
         this.oldDB        = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
 
         oldDBConn = oldDB.createConnection();
-        newDBConn = DBConnection.getConnection();
+        newDBConn = DBConnection.getInstance().createConnection();
+    }
+    
+    public void shutdown()
+    {
+        try
+        {
+            oldDBConn.close();
+            newDBConn.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     /**

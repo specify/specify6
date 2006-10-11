@@ -13,6 +13,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package edu.ku.brc.specify.datamodel;
+
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
+
 /**
  * @author rods
  *
@@ -20,7 +23,7 @@ package edu.ku.brc.specify.datamodel;
  *
  */
 @SuppressWarnings("serial")
-public class RecordSetItem implements java.io.Serializable, Comparable<RecordSetItem> {
+public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
 
     // Fields    
 
@@ -30,7 +33,9 @@ public class RecordSetItem implements java.io.Serializable, Comparable<RecordSet
     // Constructors
 
     /** default constructor */
-     public RecordSetItem() {
+     public RecordSetItem() 
+     {
+         
      }
      
      public RecordSetItem(final Long recordId) 
@@ -53,20 +58,25 @@ public class RecordSetItem implements java.io.Serializable, Comparable<RecordSet
     // Property accessors
 
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#getRecordId()
+     */
     public Long getRecordId() {
         return this.recordId;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#setRecordId(java.lang.Long)
+     */
     public void setRecordId(final Long recordId) {
         this.recordId = recordId;
     }
     
-    public int compareTo(RecordSetItem obj)
+    public int compareTo(RecordSetItemIFace obj)
     {
-        return recordId.compareTo(obj.recordId);
+        return recordId.compareTo(obj.getRecordId());
     }
-
-
+    
     // Add Methods
 
     // Done Add Methods

@@ -399,7 +399,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     {
         DateFormat formatter    = new SimpleDateFormat("yyyyMMdd");
 
-        Connection dbConnection = DBConnection.getConnection();
+        Connection dbConnection = DBConnection.getInstance().createConnection();
         Statement  dbStatement  = null;
 
         int      tableId        = Integer.parseInt(tableInfo.getTableId());

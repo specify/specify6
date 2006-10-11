@@ -384,7 +384,7 @@ public class JComboBoxFromQuery extends JComboBox
                             // do nothing
                         }
                     }
-                    dbConnection = DBConnection.getConnection();
+                    dbConnection = DBConnection.getInstance().createConnection();
                 }
 
                 @Override

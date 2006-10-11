@@ -41,8 +41,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.ui.CloseButton;
@@ -343,7 +343,7 @@ public abstract class ExpressTableResultsBase extends JPanel
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return a recordset for the selected items
      */
-    public RecordSet getRecordSet(final boolean returnAll)
+    public RecordSetIFace getRecordSet(final boolean returnAll)
     {
         log.debug("Indexes: "+table.getSelectedRows().length+" Index["+tableInfo.getTableId()+"]");
         for (int v : table.getSelectedRows())
@@ -360,7 +360,7 @@ public abstract class ExpressTableResultsBase extends JPanel
             table.clearSelection();
             doReturnAll = true;
         }
-        RecordSet rs = getRecordSet(rows, tableInfo.getRecordSetColumnInx(), doReturnAll);
+        RecordSetIFace rs = getRecordSet(rows, tableInfo.getRecordSetColumnInx(), doReturnAll);
 
         if (doReturnAll)
         {
@@ -379,10 +379,10 @@ public abstract class ExpressTableResultsBase extends JPanel
     public List<Long> getListOfIds(final boolean returnAll)
     {
         List<Long> list = new ArrayList<Long>();
-        RecordSet rs = getRecordSet(returnAll);
+        RecordSetIFace rs = getRecordSet(returnAll);
         if (rs != null)
         {
-            for (RecordSetItem rsi : rs.getItems())
+            for (RecordSetItemIFace rsi : rs.getItems())
             {
                 list.add(rsi.getRecordId());
             }
@@ -397,7 +397,7 @@ public abstract class ExpressTableResultsBase extends JPanel
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public abstract RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll);
+    public abstract RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll);
 
     //--------------------------------------------------------------
     // Inner Classes
@@ -411,7 +411,7 @@ public abstract class ExpressTableResultsBase extends JPanel
     class ESTableAction implements ActionListener
     {
         protected CommandAction cmd;
-        protected RecordSet     recordSet;
+        protected RecordSetIFace     recordSet;
         protected JTable        estTable;
         protected ExpressResultsTableInfo estTableInfo;
 

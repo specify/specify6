@@ -76,7 +76,7 @@ public class CreateTestWorkbenches {
     {	log.info("cleanWorkbenchTables");
         try
         {
-            Connection connection = DBConnection.getConnection();
+            Connection connection = DBConnection.getInstance().createConnection();
 
             BasicSQLUtils.deleteAllRecordsFromTable(connection, "Workbench");
             BasicSQLUtils.deleteAllRecordsFromTable(connection, "WorkbenchDataItem");

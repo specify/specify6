@@ -26,6 +26,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
@@ -268,11 +270,11 @@ public class ResultSetTableModel extends AbstractTableModel
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
+    public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
-        RecordSet rs = new RecordSet();
+        RecordSetIFace rs = new RecordSet();
 
-        Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+        Set<RecordSetItemIFace> items = new HashSet<RecordSetItemIFace>();
         rs.setItems(items);
 
         // return if now rows are selected

@@ -26,8 +26,6 @@ import java.util.Vector;
 
 import javax.swing.JMenuItem;
 
-import org.hibernate.Criteria;
-
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
@@ -39,7 +37,8 @@ import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
@@ -103,8 +102,8 @@ public class SystemSetupTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
 
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(PickList.class);
-            List pickLists = criteria.list();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            List pickLists = session.getDataList(PickList.class);
 
             navBox = new NavBox(getResourceString("picklists"));
 
@@ -127,7 +126,8 @@ public class SystemSetupTask extends BaseTask
             }
 
             navBoxes.addElement(navBox);
-            HibernateUtil.closeSession();
+            
+            session.close();
         }
     }
 
@@ -190,10 +190,19 @@ public class SystemSetupTask extends BaseTask
         //pickList.setTimestampModified(Calendar.getInstance().getTime());
 
         // save to database
-        HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().saveOrUpdate(pickList);
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            session.beginTransaction();
+            session.attach(pickList);
+            session.saveOrUpdate(pickList);
+            session.commit();
+            
+        } catch (Exception ex)
+        {
+            System.err.println(ex);
+        }
+        session.close();
 
     }
 
@@ -203,11 +212,19 @@ public class SystemSetupTask extends BaseTask
      */
     protected void deletePickList(final PickList pickList)
     {
-        // delete from database
-        HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().delete(pickList);
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            session.beginTransaction();
+            session.attach(pickList);
+            session.delete(pickList);
+            session.commit();
+            
+        } catch (Exception ex)
+        {
+            System.err.println(ex);
+        }
+        session.close();
 
     }
 

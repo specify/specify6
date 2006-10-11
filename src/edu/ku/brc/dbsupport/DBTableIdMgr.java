@@ -30,11 +30,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.util.DatamodelHelper;
 
@@ -286,9 +282,8 @@ public class DBTableIdMgr
      * @param recordSet the recordset containing the record ids
 	 * @return a query object
 	 */
-	public static Query getQueryForTable(final Session session, final RecordSet recordSet)
+	public static String getQueryForTable(final RecordSetIFace recordSet)
 	{
-		Query query = null;
 		TableInfo tableInfo = instance.hash.get(recordSet.getDbTableId());
 		if (tableInfo != null)
 		{
@@ -302,13 +297,9 @@ public class DBTableIdMgr
 			strBuf.append(tableInfo.getPrimaryKeyName());
 			strBuf.append(getInClause(recordSet));
 			log.debug(strBuf.toString());
-			// query = session.createQuery("from
-			// catalogobj in class CollectionObj where
-			// catalogobj.collectionObjectId in
-			// ('30972.0','30080.0','27794.0','30582.0')");
-			query = session.createQuery(strBuf.toString());
+            return strBuf.toString();
 		}
-		return query;
+		return null;
 	}
 
 	/**
@@ -317,13 +308,12 @@ public class DBTableIdMgr
 	 * @param recordId a single Record Id
 	 * @return a query object
 	 */
-	public static Query getQueryForTable(final Session session, final int tableId, final int recordId)
+	public static String getQueryForTable(final int tableId, final int recordId)
 	{
-		Query query = null;
 		TableInfo tableInfo = instance.hash.get(tableId);
 		if (tableInfo != null)
 		{
-			StringBuffer strBuf = new StringBuffer("from ");
+            StringBuffer strBuf = new StringBuffer("from ");
 			strBuf.append(tableInfo.getTableName());
 			strBuf.append(" in class ");
 			strBuf.append(tableInfo.getShortClassName());
@@ -333,13 +323,9 @@ public class DBTableIdMgr
 			strBuf.append(tableInfo.getPrimaryKeyName());
 			strBuf.append(" = " + recordId);
 			log.debug(strBuf.toString());
-			// query = session.createQuery("from
-			// catalogobj in class CollectionObj where
-			// catalogobj.collectionObjectId in
-			// ('30972.0','30080.0','27794.0','30582.0')");
-			query = session.createQuery(strBuf.toString());
-		}
-		return query;
+            return strBuf.toString();
+        }
+        return null;
 	}
 
 	/**
@@ -348,20 +334,20 @@ public class DBTableIdMgr
 	 * @param recordSet the recordset of ids
 	 * @return a string "in" clause
 	 */
-	public static String getInClause(final RecordSet recordSet)
+	public static String getInClause(final RecordSetIFace recordSet)
 	{
 		if (recordSet != null)
 		{
 			StringBuffer strBuf = new StringBuffer(" in (");
-			Set<RecordSetItem> set = recordSet.getItems();
+			Set<RecordSetItemIFace> set = recordSet.getItems();
 			if (set == null)
 			{
 				throw new RuntimeException("RecordSet items is null!");
 			}
 			int i = 0;
-			for (Iterator<RecordSetItem> iter = set.iterator(); iter.hasNext();)
+			for (Iterator<RecordSetItemIFace> iter = set.iterator(); iter.hasNext();)
 			{
-				RecordSetItem rsi = iter.next();
+				RecordSetItemIFace rsi = iter.next();
 				if (i > 0)
 				{
 					strBuf.append(",");

@@ -29,6 +29,7 @@ import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
@@ -151,7 +152,7 @@ public class InteractionsTask extends BaseTask
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
-                addSubPaneToMgr(DataEntryTask.createFormFor(this, name, (RecordSet)cmdAction.getData()));
+                addSubPaneToMgr(DataEntryTask.createFormFor(this, name, (RecordSetIFace)cmdAction.getData()));
 
             } else if (cmdAction.getData() instanceof Object[])
             {

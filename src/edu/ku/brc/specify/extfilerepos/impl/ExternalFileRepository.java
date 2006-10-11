@@ -157,31 +157,6 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
                        final String remarks,
                        final Agent  agent)
     {
-        /*
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            HibernateUtil.beginTransaction();
-            
-            ExternalFile entry = new ExternalFile();
-            entry.setFileName(fileName);
-            entry.setRemarks(remarks);
-            entry.setMimeType(mimeType);
-            entry.setExternalLocation(externalLocation);
-            entry.setCreatedByAgent(agent);
-            entry.setTimestampCreated(new Date());
-            entry.setTimestampModified(new Date());
-        
-            session.save(entry);
-        
-            HibernateUtil.commitTransaction();
-            
-        } catch (Exception ex)
-        {
-            log.error("Error saving ExternalFileEntry to database.", ex);
-            return false;
-        }
-        */
         return true;
     }
     
@@ -190,24 +165,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
      */
     public boolean remove(final Integer id)
     {
-        /*
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            HibernateUtil.beginTransaction();
-            
-            ExternalFile entry = new ExternalFile();
-            entry.setExternalFileId(id);
-        
-            session.delete(entry);
-        
-            HibernateUtil.commitTransaction();
-            
-        } catch (Exception ex)
-        {
-            log.error("Error saving ExternalFileEntry to database.", ex);
-            return false;
-        }*/
+
         return true;
     }
     

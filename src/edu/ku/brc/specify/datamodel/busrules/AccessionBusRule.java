@@ -14,12 +14,11 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
@@ -81,9 +80,8 @@ public class AccessionBusRule implements BusinessRulesIFace
             Long id = accession.getAccessionId();
             if (id != null)
             {
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
-                criteria.add(Expression.eq("accessionId", id));
-                List accessions = criteria.list();
+                DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
+                List                     accessions = session.getDataList(Accession.class, "accessionId", id);
                 if (accessions.size() == 1)
                 {
                     Accession oldAccession       = (Accession)accessions.get(0);
@@ -93,6 +91,7 @@ public class AccessionBusRule implements BusinessRulesIFace
                         checkAccessionNumberForDuplicates = false;
                     }
                 }
+                session.close();
             }
             
             // If the Id is null then it is a new permit, if not then we are editting the accession
@@ -100,9 +99,8 @@ public class AccessionBusRule implements BusinessRulesIFace
             // If the accession has not changed then we shouldn't check for duplicates
             if (checkAccessionNumberForDuplicates)
             {
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
-                criteria.add(Expression.eq("number", accessionNumber));
-                List accessionNumbers = criteria.list();
+                DataProviderSessionIFace session          = DataProviderFactory.getInstance().createSession();
+                List                     accessionNumbers = session.getDataList(Accession.class, "number", accessionNumber);
                 if (accessionNumbers.size() > 0)
                 {
                     errorList.add("Accession Number is already in use."); // I18N
@@ -110,6 +108,7 @@ public class AccessionBusRule implements BusinessRulesIFace
                 {
                     return STATUS.OK;
                 }
+                session.close();
                 
             } else
             {
@@ -163,10 +162,10 @@ public class AccessionBusRule implements BusinessRulesIFace
             return;
         }
         
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            HibernateUtil.beginTransaction();
-            Session session = HibernateUtil.getCurrentSession();
+            session.beginTransaction();
             
             for (BusinessRulesDataItem item : list)
             {
@@ -175,12 +174,13 @@ public class AccessionBusRule implements BusinessRulesIFace
                     session.save(item.getData());
                 }
             }
-            HibernateUtil.commitTransaction();
+            session.commit();
             
         } catch (Exception ex)
         {
             log.error(ex);
         }
+        session.close();
     }
     
     /* (non-Javadoc)
@@ -200,8 +200,8 @@ public class AccessionBusRule implements BusinessRulesIFace
                 // So instead we will use straight SQL
                 try
                 {
-                    Statement stmt = DBConnection.getConnection().createStatement();
-                    ResultSet rs = stmt.executeQuery("select count(*) from collectionobject where AccessionID = "+accession.getAccessionId());
+                    Statement stmt = DBConnection.getInstance().getConnection().createStatement();
+                    ResultSet rs   = stmt.executeQuery("select count(*) from collectionobject where AccessionID = "+accession.getAccessionId());
                     if (rs.first())
                     {
                         return rs.getInt(1) == 0;
@@ -260,9 +260,9 @@ public class AccessionBusRule implements BusinessRulesIFace
                 data = rs;
                 draggableIcon.setData(data);
                 
-            } else
+            } else if (data instanceof RecordSetIFace)
             {
-                RecordSet rs = (RecordSet)data;
+                RecordSetIFace rs = (RecordSetIFace)data;
                 rs.getItems().clear();
                 rs.addItem(accession.getAccessionId());
             }

@@ -20,8 +20,7 @@ import java.util.Map;
 
 import javax.swing.JLabel;
 
-import org.hibernate.Session;
-
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
@@ -200,7 +199,7 @@ public interface Viewable
      * Sets the current serssion into the Viewable.
      * @param session the current session
      */
-    public void setSession(Session session);
+    public void setSession(DataProviderSessionIFace session);
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.

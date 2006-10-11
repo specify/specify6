@@ -32,6 +32,7 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -49,7 +50,6 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
@@ -58,6 +58,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.DropDownButtonStateful;
@@ -79,8 +80,20 @@ import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValidationListener;
 
 /*
- * @code_status Alpha
- **
+ * The Whole idea of the class is that it converts or translates a form/sybform definition into a series of columns.
+ * We refer to this as "flatten" the form structure, because a form and subforms are really a hierarchical tree.
+ * And the prcessRows method in the ViewFactory will traverse the rows and when it hits a subform it "goes into" 
+ * the subform and processes its rows.<br>
+ * <br>
+ * So we handle this by creating a "stack" that we puch the subforms onto (which represent our context) and then keep processing
+ * the subforms. Most of the time an entire subform will be represented by a single column and the information in the subform
+ * will be formatted and aggregated into a single to be represented by that single column.<br>
+ * <br>
+ * Also, sometimes form refer to a field in a "sub object" meaning the form walks the object hierarchy to get the data. We need to also
+ * keep track of subform for this same reason.<br>
+ * 
+ * @code_status Beta
+ *
  * @author rods
  *
  */
@@ -95,7 +108,7 @@ public class TableViewObj implements Viewable,
     protected static CellConstraints        cc              = new CellConstraints();
 
     // Data Members
-    protected Session                       session        = null;
+    protected DataProviderSessionIFace      session        = null;
     protected boolean                       isEditting     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
@@ -118,9 +131,6 @@ public class TableViewObj implements Viewable,
     protected Hashtable<String, ColumnInfo> controlsById    = new Hashtable<String, ColumnInfo>();
     protected Vector<ColumnInfo>            columnList      = new Vector<ColumnInfo>();
     
-    //protected FormLayout                    formLayout;
-    //protected PanelBuilder                  builder;
-    
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
     protected Object                        dataObj         = null;
@@ -141,7 +151,6 @@ public class TableViewObj implements Viewable,
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
 
-    //protected PanelBuilder                  mainBuilder;
     protected BusinessRulesIFace            businessRules   = null; 
 
     protected DraggableRecordIdentifier     draggableRecIdentifier   = null;
@@ -157,7 +166,9 @@ public class TableViewObj implements Viewable,
     protected JScrollPane                   tableScroller;
 
     /**
-     * Constructor with FormView definition
+     * Constructor with FormView definition.<NOTE: We cannot build the table here because we need all the column
+     * information.
+     * 
      * @param tableViewDef the definition of the form
      */
     public TableViewObj(final View          view,
@@ -174,13 +185,6 @@ public class TableViewObj implements Viewable,
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
-        /*
-        boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
-        boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
-        boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
-        boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
-        */
-        
         MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
         // XXX setValidator(formValidator);
@@ -190,13 +194,7 @@ public class TableViewObj implements Viewable,
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
-        // Figure columns
-        //formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
-        //builder    = new PanelBuilder(formLayout);
-
-        //boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
-        //boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         
         MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
@@ -211,10 +209,6 @@ public class TableViewObj implements Viewable,
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
 
-        //String rowDefs = (mvParent == null ? "p" : "p") + (addController ? ",2px,p" : "");
-
-        //mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
-        //mainComp    = mainBuilder.getPanel();
         mainComp = new JPanel(new BorderLayout());
         
         if (mvParent == null)
@@ -278,7 +272,7 @@ public class TableViewObj implements Viewable,
     }
     
     /**
-     * 
+     * Build tyhe table now that we have all the information we need for the columns.
      */
     public void buildTable()
     {
@@ -328,6 +322,10 @@ public class TableViewObj implements Viewable,
 
     }
     
+    /**
+     * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
+     * @param tableArg the table that should have it's columns adjusted
+     */
     private void initColumnSizes(final JTable tableArg) 
     {
         ColTableModel     tblModel    = (ColTableModel)tableArg.getModel();
@@ -335,7 +333,6 @@ public class TableViewObj implements Viewable,
         Component         comp        = null;
         int               headerWidth = 0;
         int               cellWidth   = 0;
-        //Object[]          longValues  = model.longValues;
         
         TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
@@ -369,9 +366,12 @@ public class TableViewObj implements Viewable,
     // Viewable
     //-------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getName()
+     */
     public String getName()
     {
-        return "XXX";
+        return "Table Viewer for Forms"; // this is not retrieved
     }
 
     /* (non-Javadoc)
@@ -379,7 +379,7 @@ public class TableViewObj implements Viewable,
      */
     public int getId()
     {
-        return -1;//tableViewDef.getId();
+        return -1; // I think is needed for DnD of the current row, which will be implemented later.
     }
 
     /* (non-Javadoc)
@@ -396,6 +396,7 @@ public class TableViewObj implements Viewable,
      */
     public Component getUIComponent()
     {
+        // At this point we should have amodel and everything we need for building the table
         if (model == null)
         {
             buildTable();
@@ -417,7 +418,7 @@ public class TableViewObj implements Viewable,
      */
     public Component getCompById(final String id)
     {
-        return null;
+        return null; //  Not applicable
     }
 
     /* (non-Javadoc)
@@ -425,7 +426,7 @@ public class TableViewObj implements Viewable,
      */
     public JLabel getLabelFor(final String id)
     {
-        return null;
+        return null; //  Not applicable
     }
 
     /* (non-Javadoc)
@@ -433,7 +434,7 @@ public class TableViewObj implements Viewable,
      */
     public Map<String, Component> getControlMapping()
     {
-        return null;
+        return null; //  Not applicable
     }
 
 
@@ -470,11 +471,9 @@ public class TableViewObj implements Viewable,
             dataObjList.addAll(origDataSet);
         }
         
-        
         if (table != null)
         {
             table.tableChanged(new TableModelEvent(model));
-            //table.repaint();
         }
     }
 
@@ -491,7 +490,7 @@ public class TableViewObj implements Viewable,
      */
     public void setParentDataObj(Object parentDataObj)
     {
-        // do nothing
+        this.parentDataObj = parentDataObj;
     }
 
     /* (non-Javadoc)
@@ -499,7 +498,7 @@ public class TableViewObj implements Viewable,
      */
     public Object getParentDataObj()
     {
-        return null;
+        return parentDataObj;
 
     }
 
@@ -508,7 +507,7 @@ public class TableViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
-        // do nothing
+        // Not applicable
     }
 
     /* (non-Javadoc)
@@ -516,7 +515,7 @@ public class TableViewObj implements Viewable,
      */
     public void getDataFromUI()
     {
-        // do nothing
+        // Not applicable
     }
 
     /* (non-Javadoc)
@@ -524,7 +523,7 @@ public class TableViewObj implements Viewable,
      */
     public Object getDataFromUIComp(final String name)
     {
-        return null;
+        return null; // Not applicable
     }
 
     /* (non-Javadoc)
@@ -532,7 +531,7 @@ public class TableViewObj implements Viewable,
      */
     public void setDataIntoUIComp(final String name, Object data)
     {
-        // do nothing
+        // Not applicable
     }
 
 
@@ -541,7 +540,7 @@ public class TableViewObj implements Viewable,
      */
     public MultiView getSubView(final String name)
     {
-        return null;
+        return null; // Not applicable
     }
 
     /* (non-Javadoc)
@@ -549,14 +548,7 @@ public class TableViewObj implements Viewable,
      */
     public void getFieldIds(final List<String> fieldIds)
     {
-        /*for (ColumnInfo fieldInfo : controlsById.values())
-        {
-            if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
-            {
-                fieldIds.add(((FormCellField)fieldInfo.getFormCell()).getId());
-            }
-        }*/
-
+        // Not applicable
     }
 
     /* (non-Javadoc)
@@ -621,7 +613,7 @@ public class TableViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
      */
-    public void setSession(final Session session)
+    public void setSession(final DataProviderSessionIFace session)
     {
         this.session = session;
     }
@@ -680,11 +672,6 @@ public class TableViewObj implements Viewable,
         if (formCell != null && StringUtils.isNotEmpty(formCell.getLabelFor()))
         {
             String fullCompName = appendName(formCell.getLabelFor());
-            //if (labels.get(fullCompName) != null)
-            //{
-            //    log.error("****** Two labels have the same id ["+fullCompName+"] "+formViewDef.getName());
-            //}
-            
             ColumnInfo colInfo = controlsById.get(fullCompName);
             if (colInfo == null)
             {
@@ -694,11 +681,10 @@ public class TableViewObj implements Viewable,
             colInfo.setLabel(formCell.getLabel());
             
         }
-        //log.info("Label["+label.getText()+"]");
-    }
+     }
     
     /**
-     * Gets the current class name for the stack contexxt.
+     * Gets the current class name for the stack context.
      * @return the parent object class name
      */
     protected String getParentClassName()
@@ -728,20 +714,11 @@ public class TableViewObj implements Viewable,
         {
             return;
         }
+        
         if (formCell != null)
         {
             String fullCompName = appendName(formCell.getName());
             
-            //if (controlsById.get(formCell.getId()) != null)
-            //{
-            //    log.error("**** Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
-            //}
-
-            //if (controlsByName.get(fullCompName) != null)
-            //{
-            //    log.error("**** Two controls have the same name ["+fullCompName+"] "+formViewDef.getName());
-            //}
-
             JScrollPane scrollPane;
             Component comp;
             if (control instanceof JScrollPane)
@@ -766,6 +743,23 @@ public class TableViewObj implements Viewable,
             {
                 colInfo.setFullCompName(fullCompName);
                 colInfo.setFormCell(formCell);
+            }
+            
+            if (StringUtils.isEmpty(colInfo.getLabel()))
+            {
+                if (control instanceof JCheckBox)
+                {
+                    String cbxLabel = ((JCheckBox)control).getText();
+                    if (StringUtils.isEmpty(cbxLabel))
+                    {
+                        cbxLabel = " ";
+                    }
+                    colInfo.setLabel(cbxLabel);
+                    
+                } else
+                {
+                    colInfo.setLabel(" ");
+                }
             }
             colInfo.setComp(comp);
             colInfo.setScrollPane(scrollPane);
@@ -808,6 +802,8 @@ public class TableViewObj implements Viewable,
      */
     public void addSubView(FormCellSubView subFormCell, MultiView subView, int colInx, int rowInx, int colSpan, int rowSpan)
     {
+        // When we are "flattening" the subforms and creating columns we need to be in the "context of" a subform.
+        // so push the current subform onto a stack for our current context.
         subViewStack.push(subFormCell);
         if (fullObjPath.length() > 0)
         {
@@ -998,6 +994,12 @@ public class TableViewObj implements Viewable,
     //-------------------------------------------------
     // ColumnInfo
     //-------------------------------------------------
+    
+    
+    /**
+     * This clas has all the info needed for what defines a column in the table.
+     * 
+     */
     class ColumnInfo
     {
         protected FormCell    formCell;

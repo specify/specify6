@@ -45,7 +45,7 @@ import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -362,7 +362,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
             } else
             {
-                recentFormPane = new FormPane(HibernateUtil.getNewSession(),
+                recentFormPane = new FormPane(DataProviderFactory.getInstance().createSession(),
                                               name, this, viewsetName, viewName, mode, data, MultiView.VIEW_SWITCHER); // not new data object
                 addSubPaneToMgr(recentFormPane);
                 fp = recentFormPane;

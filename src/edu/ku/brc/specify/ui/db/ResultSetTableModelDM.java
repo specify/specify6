@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
@@ -220,13 +222,13 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
+    public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         try
         {
-            RecordSet rs = new RecordSet();
+            RecordSetIFace rs = new RecordSet();
             
-            Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+            Set<RecordSetItemIFace> items = new HashSet<RecordSetItemIFace>();
             rs.setItems(items);
             
             if (rows == null || rows.length == 0)

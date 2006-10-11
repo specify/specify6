@@ -21,12 +21,9 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
 
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 
 /**
  * This is an adaptor class that supports all the necessary functions for supporting a PickList.
@@ -78,7 +75,7 @@ public class PickListDBAdapter
             
          } else if (createWhenNotFound) 
          {
-             Session session = HibernateUtil.getSessionFactory().openSession();
+             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
              try
              {
                  pickList = new PickList();
@@ -89,12 +86,12 @@ public class PickListDBAdapter
                  
                  session.beginTransaction();
                  session.save(pickList);
-                 session.getTransaction().commit();
+                 session.commit();
                  
              } catch (Exception ex)
              {
                  log.error(ex);
-                 session.getTransaction().rollback();
+                 session.rollback();
                  
              } finally 
              {
@@ -119,15 +116,14 @@ public class PickListDBAdapter
     @SuppressWarnings("unchecked")
     protected PickList getPickList(final String name)
     {
-        PickList pkList  = null;
-        Session  session = null;
+        PickList                 pkList  = null;
+        DataProviderSessionIFace session = null;
         try
         {
-            session = HibernateUtil.getSessionFactory().openSession();
-	        Criteria criteria = session.createCriteria(PickList.class).add(Restrictions.eq("name", name));
-            
+            session = DataProviderFactory.getInstance().createSession();
+
             // unchecked warning: Criteria results are always the requested class
-	        List<PickList> itemsList = criteria.list();
+	        List<PickList> itemsList = session.getDataList(PickList.class, "name", name, DataProviderSessionIFace.CompareType.Restriction);
 	        if (itemsList != null && itemsList.size() > 0)
 	        {
                 pkList = itemsList.get(0);
@@ -242,23 +238,21 @@ public class PickListDBAdapter
     @SuppressWarnings("null")
     public void save()
     {
-        Session     session = null;
-        Transaction trans   = null;
-        
-        try 
+        DataProviderSessionIFace session = null;
+        try
         {
-            session = HibernateUtil.getSessionFactory().openSession();
-            trans = session.beginTransaction();
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
             
             session.saveOrUpdate(pickList);
             
-            trans.commit();
+            session.commit();
             
 
         } catch (Exception e) 
         {
             // ignoring warning about 'null'
-            trans.rollback();
+            session.rollback();
             
             e.printStackTrace();
             

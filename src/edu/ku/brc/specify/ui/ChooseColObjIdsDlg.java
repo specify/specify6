@@ -38,11 +38,12 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.ui.IconManager;
@@ -93,14 +94,14 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
 
         try
         {
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
-            recordSets = criteria.list();
-            HibernateUtil.closeSession();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            recordSets = session.getDataList(RecordSet.class);
+            session.close();
             
             ListModel listModel = new AbstractListModel() 
             {
                 public int getSize() { return recordSets.size(); }
-                public Object getElementAt(int index) { return ((RecordSet)recordSets.get(index)).getName(); }
+                public Object getElementAt(int index) { return ((RecordSetIFace)recordSets.get(index)).getName(); }
             };
             
             @SuppressWarnings("serial") 
@@ -196,12 +197,12 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
         setVisible(false);
     }
     
-    public RecordSet getSelectedRecordSet()
+    public RecordSetIFace getSelectedRecordSet()
     {
         int inx = list.getSelectedIndex();
         if (inx != -1)
         {
-            return (RecordSet)recordSets.get(inx);
+            return (RecordSetIFace)recordSets.get(inx);
         }
         return null;
     }

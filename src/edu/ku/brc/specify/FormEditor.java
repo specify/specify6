@@ -341,7 +341,7 @@ public class FormEditor implements DatabaseLoginListener
     public DataType createDataTypes(final String returnName)
     {
         DataType retDataType = null;
-        int numDataTypes = BasicSQLUtils.getNumRecords(DBConnection.getConnection(), "datatype");
+        int numDataTypes = BasicSQLUtils.getNumRecords(DBConnection.getInstance().getConnection(), "datatype");
         if (numDataTypes == 0)
         {
             String[] dataTypeNames = {"Animal", "Plant", "Fungi", "Mineral", "Other"};

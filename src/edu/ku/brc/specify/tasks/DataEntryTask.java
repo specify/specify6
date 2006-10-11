@@ -27,10 +27,9 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -45,7 +44,9 @@ import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -166,10 +167,10 @@ public class DataEntryTask extends BaseTask
             
         } else
         {
-            HibernateUtil.getSessionFactory().evict(data.getClass());    
+            DataProviderFactory.getInstance().evict(data.getClass());    
         }
         
-        FormPane formPane = new FormPane(HibernateUtil.getNewSession(), 
+        FormPane formPane = new FormPane(DataProviderFactory.getInstance().createSession(), 
                                          view.getName(), task, viewSetName, viewName, mode, dataObj, 
                                          isNewForm ? (MultiView.IS_NEW_OBJECT |  MultiView.RESULTSET_CONTROLLER): 0);
         
@@ -196,33 +197,39 @@ public class DataEntryTask extends BaseTask
     {
         int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
 
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
-        Query query = DBTableIdMgr.getQueryForTable(session, tableId, Integer.parseInt(idStr));
-        try
+        String sqlStr = DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
+        if (StringUtils.isNotEmpty(sqlStr))
         {
-            List data = query.list();
-            if (data != null && data.size() > 0)
+            try
             {
-                FormPane formPane = new FormPane(session, 
-                                                 view.getName(), 
-                                                 task, 
-                                                 view.getViewSetName(), 
-                                                 view.getName(), 
-                                                 mode, 
-                                                 data.get(0), 
-                                                 MultiView.VIEW_SWITCHER);
-                formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
-
-            } else
+                List data = session.getDataList(sqlStr);
+                if (data != null && data.size() > 0)
+                {
+                    FormPane formPane = new FormPane(session, 
+                                                     view.getName(), 
+                                                     task, 
+                                                     view.getViewSetName(), 
+                                                     view.getName(), 
+                                                     mode, 
+                                                     data.get(0), 
+                                                     MultiView.VIEW_SWITCHER);
+                    formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+    
+                } else
+                {
+                    // No Data Error
+                }
+    
+            } catch (Exception ex)
             {
-                // No Data Error
+                log.error(ex);
+                ex.printStackTrace();
             }
-
-        } catch (Exception ex)
+        } else
         {
-            log.error(ex);
-            ex.printStackTrace();
+            log.error("Query String is empty for tableId["+tableId+"] idStr["+idStr+"]");
         }
     }
 
@@ -233,26 +240,36 @@ public class DataEntryTask extends BaseTask
      * @param recordSet the record to create a form for
      * @return the FormPane
      */
-    protected static FormPane createFormFor(final Taskable task, final String name, final RecordSet recordSet)
+    protected static FormPane createFormFor(final Taskable task, final String name, final RecordSetIFace recordSet)
     {
         DBTableIdMgr.getInClause(recordSet);
 
         String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getDbTableId());
         
         DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
-        HibernateUtil.getSessionFactory().evict(tableInfo.getClassObj());
         
-        Session session = HibernateUtil.getNewSession();
-        Query query = DBTableIdMgr.getQueryForTable(session, recordSet);
+        DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
         
-        // "null" ViewSet name means it should use the default
+        FormPane formPane = null;
         
-        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
-        View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
-        
-        FormPane formPane = new FormPane(session, name, task, view, null, query.list(), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
-        formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+        String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+        if (StringUtils.isNotBlank(sqlStr))
+        {
+            // "null" ViewSet name means it should use the default
+            
+            SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            
+            View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
+            
+            formPane = new FormPane(session, name, task, view, null, session.getData(sqlStr), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+            formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+            
+        } else
+        {
+            log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
+        }
         
         return formPane;
     }
@@ -396,7 +413,7 @@ public class DataEntryTask extends BaseTask
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
-                addSubPaneToMgr(createFormFor(this, name, (RecordSet)cmdAction.getData()));
+                addSubPaneToMgr(createFormFor(this, name, (RecordSetIFace)cmdAction.getData()));
                 
             } else if (cmdAction.getData() instanceof Object[])
             {
@@ -463,7 +480,7 @@ public class DataEntryTask extends BaseTask
                 Object daeData = dae.getData();
                 if (daeData != null && daeData instanceof RecordSet)
                 {
-                    SubPaneMgr.getInstance().addPane(DataEntryTask.createFormFor(task, "ZZZZ", (RecordSet)daeData));
+                    SubPaneMgr.getInstance().addPane(DataEntryTask.createFormFor(task, "ZZZZ", (RecordSetIFace)daeData));
                     return;
                 }
             }
@@ -492,7 +509,7 @@ public class DataEntryTask extends BaseTask
             Object srcData = src.getData();
             if (srcData instanceof RecordSet)
             {
-                addSubPaneToMgr(createFormFor(task, "XXXX", (RecordSet)srcData));
+                addSubPaneToMgr(createFormFor(task, "XXXX", (RecordSetIFace)srcData));
             }
         }
         

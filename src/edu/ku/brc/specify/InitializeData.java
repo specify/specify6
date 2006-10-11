@@ -67,8 +67,8 @@ public class InitializeData
             prefGroupDAO.makePersistent(prefGroup);
             */
             
-            HibernateUtil.commitTransaction();
-            HibernateUtil.closeSession();
+            //HibernateUtil.commitTransaction();
+            //HibernateUtil.closeSession();
               
             // Clean up after ourselves
             //sessionFactory.close();

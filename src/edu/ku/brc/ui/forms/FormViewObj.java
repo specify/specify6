@@ -58,9 +58,6 @@ import javax.swing.ListModel;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -71,8 +68,10 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.ui.CheckboxChooserDlg;
+import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
@@ -122,7 +121,7 @@ public class FormViewObj implements Viewable,
     protected static CellConstraints        cc              = new CellConstraints();
 
     // Data Members
-    protected Session                       session        = null;
+    protected DataProviderSessionIFace      session        = null;
     protected boolean                       isEditting     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
@@ -857,6 +856,8 @@ public class FormViewObj implements Viewable,
                 // Check to see if we are cancelling a new object or a previously saved object
                 // if the object is part of this Session then anychanges were already saved.
                 // If it is NOT part of this session then some of the object may not have been save.
+                
+                /* XYZ THIS NEEDS TO BE REWORKED
                 if (!session.contains(dataObj))
                 {
                     if (businessRules != null)
@@ -874,7 +875,7 @@ public class FormViewObj implements Viewable,
                             businessRules.saveStandAloneData(dataObj, dataToSaveList);
                         }
                     }
-                }
+                }*/
             }
         }
         return true;
@@ -938,8 +939,7 @@ public class FormViewObj implements Viewable,
     protected void saveObject()
     {
         log.debug(hashCode() + "Session ["+(session != null ? session.hashCode() : "null")+"]");
-        Transaction transaction = null;
-        try
+         try
         {
             this.getDataFromUI();
 
@@ -959,10 +959,11 @@ public class FormViewObj implements Viewable,
             
             FormHelper.updateLastEdittedInfo(dataObj);
             
-            transaction = session.beginTransaction();
+            session.beginTransaction();
             session.saveOrUpdate(dataObj);
-            transaction.commit();
+            session.commit();
             session.flush();
+            
             log.debug("Session Saved[ and Flushed "+session.hashCode()+"]");
             
 
@@ -978,13 +979,13 @@ public class FormViewObj implements Viewable,
             }
 
 
-        } catch (StaleObjectStateException e)
+        } catch (StaleObjectException e) // was StaleObjectStateException
         {
             JOptionPane.showMessageDialog(null, getResourceString("DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
             
             session.close();
             
-            session = HibernateUtil.getSessionFactory().openSession();
+            session = DataProviderFactory.getInstance().createSession();
             dataObj = session.load(dataObj.getClass(), FormHelper.getId(dataObj));
             
             if (mvParent != null)
@@ -1002,10 +1003,7 @@ public class FormViewObj implements Viewable,
         {
             log.error("******* " + e);
             e.printStackTrace();
-            if (transaction != null)
-            {
-                transaction.rollback();
-            }
+            session.rollback();
         }
         saveBtn.setEnabled(false);
     }
@@ -1015,17 +1013,17 @@ public class FormViewObj implements Viewable,
      */
     protected void removeObject()
     {
-        Transaction transaction = null;
         try
         {
             removeFromParent(dataObj);
             
             String delMsg = businessRules.getDeleteMsg(dataObj);
 
-            transaction = session.beginTransaction();
+            session.beginTransaction();
             session.delete(dataObj);
-            transaction.commit();
+            session.commit();
             session.flush();
+            
             log.debug("Session Flushed["+session.hashCode()+"]");
 
             if (rsController != null)
@@ -1056,10 +1054,7 @@ public class FormViewObj implements Viewable,
         {
             log.error("******* " + e);
             e.printStackTrace();
-            if (transaction != null)
-            {
-                transaction.rollback();
-            }
+            session.rollback();
         }
     }
 
@@ -1585,12 +1580,14 @@ public class FormViewObj implements Viewable,
                     {
                         PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, selectorName);
                         Object selectorValObj = UIHelper.convertDataFromString(altView.getSelectorValue(), descr.getPropertyType());
+                        
+                        // FIXME This needs to be moved out of HibernateUtil!
                         HibernateUtil.setFieldValue(selectorName, dataObj, selectorValObj, dg, ds);
                         
                     } catch (Exception ex)
                     {
                         log.error(ex);
-                        // XXX TOFO Show error dialog here
+                        // XXX TODO Show error dialog here
                     }
                 }
             }
@@ -1915,7 +1912,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
      */
-    public void setSession(final Session session)
+    public void setSession(final DataProviderSessionIFace session)
     {
         log.debug(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         this.session = session;

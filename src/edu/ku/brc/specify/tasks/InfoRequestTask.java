@@ -37,7 +37,6 @@ import javax.mail.Session;
 import javax.mail.Store;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
@@ -51,7 +50,9 @@ import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -116,18 +117,18 @@ public class InfoRequestTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
             
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(InfoRequest.class);
-            List infoRequests = criteria.list();
-              
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            
             navBox = new NavBox(title);
             
+            List infoRequests = session.getDataList(InfoRequest.class);
             for (Iterator iter=infoRequests.iterator();iter.hasNext();)
             {
                 addInfoRequest((InfoRequest)iter.next());
                 
             }          
             navBoxes.addElement(navBox);
-            HibernateUtil.closeSession();
+            session.close();
         }
     }
     
@@ -171,7 +172,7 @@ public class InfoRequestTask extends BaseTask
      * @param infoRequest the ir to be saved
      * @param recordSet the recordSet to be saved with it
      */
-    public void saveInfoRequest(final InfoRequest infoRequest, final RecordSet recordSet)
+    public void saveInfoRequest(final InfoRequest infoRequest, final RecordSetIFace recordSet)
     {
         addInfoRequest(infoRequest);
 
@@ -179,11 +180,19 @@ public class InfoRequestTask extends BaseTask
         infoRequest.setTimestampModified(Calendar.getInstance().getTime());
         
         // save to database
-        HibernateUtil.getCurrentSession();
-        HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().saveOrUpdate(infoRequest);
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            session.beginTransaction();
+            session.saveOrUpdate(infoRequest);
+            session.commit();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+        session.close();
         
         NavBoxMgr.getInstance().addBox(navBox);
         
@@ -204,12 +213,20 @@ public class InfoRequestTask extends BaseTask
     protected void deleteInfoRequest(final InfoRequest infoRequest)
     {
         // delete from database
-        HibernateUtil.getCurrentSession();
-        HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().delete(infoRequest);
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();
-         
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            session.beginTransaction();
+            session.delete(infoRequest);
+            session.commit();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+        session.close();
+
     }
     
     /**
@@ -472,7 +489,7 @@ public class InfoRequestTask extends BaseTask
      * @param toEMail
      * @return true or false
      */
-    public boolean sendRecordSetToResearcher(final RecordSet recordSet, final String toEMail)
+    public boolean sendRecordSetToResearcher(final RecordSetIFace recordSet, final String toEMail)
     {
         /*
         Set setOfRecords = recordSet.getItems();
@@ -552,7 +569,7 @@ public class InfoRequestTask extends BaseTask
                 
                 // Get Info Request Information
                 
-                saveInfoRequest(infoRequest, (RecordSet)data);
+                saveInfoRequest(infoRequest, (RecordSetIFace)data);
             }
         } else if (cmdAction.getAction().equals("Delete") && cmdAction.getData() instanceof RecordSet)
         {

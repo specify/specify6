@@ -47,9 +47,6 @@ import javax.swing.event.ListDataListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -59,7 +56,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -758,14 +756,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public Object getValue()
     {
         Object value = null;
-        Long id = comboBox.getSelectedId();
+        Long  id     = comboBox.getSelectedId();
         if (id != null)
         {
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            Criteria criteria = session.createCriteria(classObj);
-            criteria.add(Restrictions.eq(idName, id));
-            List<?> list = criteria.list();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 
+            List<?> list = session.getDataList(classObj, idName, id, DataProviderSessionIFace.CompareType.Restriction);
             if (list.size() != 0)
             {
                 value = list.get(0);

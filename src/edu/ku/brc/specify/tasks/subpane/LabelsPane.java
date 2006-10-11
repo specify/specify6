@@ -44,8 +44,8 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UICacheManager;
 
 
@@ -69,7 +69,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected JLabel                 label            = null;
     protected JasperCompilerRunnable compiler         = null;
 
-    protected RecordSet              recordSet        = null;
+    protected RecordSetIFace              recordSet        = null;
     protected File                   cachePath        = null;
 
     /**
@@ -170,7 +170,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * @param fileName the XML file name of the report definition
      * @param recrdSet the recordset to use to fill the labels
      */
-    public void createReport(final String fileName, final RecordSet recrdSet)
+    public void createReport(final String fileName, final RecordSetIFace recrdSet)
     {
         this.recordSet = recrdSet;
      
@@ -237,7 +237,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     }
 
                     progressLabel.setText(getResourceString("JasperReportFilling"));
-                    asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getConnection());
+                    asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getInstance().getConnection());
                     asyncFillHandler.addListener(this);
                     asyncFillHandler.startFill();
                 } else

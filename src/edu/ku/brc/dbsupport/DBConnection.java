@@ -41,8 +41,10 @@ public class DBConnection
     protected String dbDriver;
     protected String dbDialect; // needed for Hibernate
     protected String dbName;
+    
+    protected Connection connection = null;
      
-    protected String errMsg = "";
+    protected String     errMsg = "";
     
     // Static Data Members
     protected static final DBConnection instance = new DBConnection();
@@ -226,9 +228,14 @@ public class DBConnection
      * Returns a new connection to the database. 
      * @return the JDBC connection to the database
      */
-    public static Connection getConnection()
+    public Connection getConnection()
     {
-        return instance.createConnection();
+        if (connection == null)
+        {
+            connection = createConnection();
+        }
+        
+        return connection;
     }
     
     /**

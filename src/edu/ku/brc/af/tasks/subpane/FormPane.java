@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -49,7 +50,7 @@ public class FormPane extends DroppableTaskPane
      * @param task the owning task
      * @param desc string displayed in the center of the pane
      */
-    public FormPane(final Session  session,
+    public FormPane(final DataProviderSessionIFace  session,
                     final String   name,
                     final Taskable task,
                     final String   desc)
@@ -67,7 +68,7 @@ public class FormPane extends DroppableTaskPane
      * @param data the data to fill the form
      * @param options the options needed for creating the form
      */
-    public FormPane(final Session session,
+    public FormPane(final DataProviderSessionIFace session,
                     final String   name,
                     final Taskable task,
                     final String   viewSetName,
@@ -94,7 +95,7 @@ public class FormPane extends DroppableTaskPane
      * @param data the data to fill the form
      * @param options the options needed for creating the form
      */
-    public FormPane(final Session session,
+    public FormPane(final DataProviderSessionIFace session,
                     final String   name,
                     final Taskable task,
                     final View     view,

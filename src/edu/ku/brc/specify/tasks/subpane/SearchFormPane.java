@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -41,7 +41,7 @@ public class SearchFormPane extends FormPane
                           final String   viewSetName,
                           final String   viewName)
     {
-        super(HibernateUtil.getNewSession(),
+        super(DataProviderFactory.getInstance().createSession(),
               name, task, viewSetName, viewName, AltView.CreationMode.Search.toString(), null, MultiView.IS_NEW_OBJECT);
 
         Viewable viewable = multiView.getCurrentView();

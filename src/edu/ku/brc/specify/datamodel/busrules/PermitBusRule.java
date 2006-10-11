@@ -16,7 +16,10 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.ui.forms.BusinessRulesDataItem;
@@ -75,9 +78,8 @@ public class PermitBusRule implements BusinessRulesIFace
             Long id = permit.getPermitId();
             if (id != null)
             {
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Permit.class);
-                criteria.add(Expression.eq("permitId", id));
-                List permits = criteria.list();
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                List                     permits = session.getDataList(Permit.class, "permitId", id);
                 if (permits.size() == 1)
                 {
                     Permit oldPermit = (Permit)permits.get(0);
@@ -94,9 +96,8 @@ public class PermitBusRule implements BusinessRulesIFace
             // If the permit has not changed then we shouldn't check for duplicates
             if (checkPermitNumberForDuplicates)
             {
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Permit.class);
-                criteria.add(Expression.eq("permitNumber", permitNum));
-                List permitNumbers = criteria.list();
+                DataProviderSessionIFace session       = DataProviderFactory.getInstance().createSession();
+                List                     permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
                 if (permitNumbers.size() > 0)
                 {
                     errorList.add("Permit Number is already in use."); // I18N
@@ -157,17 +158,20 @@ public class PermitBusRule implements BusinessRulesIFace
         
         try
         {
-            HibernateUtil.beginTransaction();
-            Session session = HibernateUtil.getCurrentSession();
-            
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+
+            session.beginTransaction();
+             
             for (BusinessRulesDataItem item : list)
             {
                 if (item.isChecked())
                 {
+                    session.attach(item.getData());
                     session.save(item.getData());
                 }
             }
-            HibernateUtil.commitTransaction();
+            session.commit();
+            session.close();
             
         } catch (Exception ex)
         {

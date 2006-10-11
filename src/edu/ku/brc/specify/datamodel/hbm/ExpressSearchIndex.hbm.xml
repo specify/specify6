@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="edu.ku.brc.specify.datamodel">
+    
+    <import class="ExpressSearchIndexItem"/>
+    
+    <class name="edu.ku.brc.specify.datamodelExpressSearchIndex" table="sp_expresssearchindex" lazy="false">
+        
+        <id name="expressSearchIndexId" type="java.lang.Long" column="ExpressSearchIndexID">
+            <generator class="native"/>
+        </id>
+        
+        <property name="dbTableId" column="DBTableID" update="true" type="java.lang.Short" not-null="true" >
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        
+       <property name="recordId" column="RecordId" update="true" type="java.lang.Long" not-null="true" >
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        
+        <!-- Associations -->
+        
+        <!-- bi-directional one-to-many association to ExpressSearchIndexItem -->
+        <set name="items" table="sp_expresssearchindex_items" lazy="false">
+            <key column="ExpressSearchIndexID"/>
+            <composite-element class="ExpressSearchIndexItem">
+                <property name="dbTableId" column="DBTableID" type="java.lang.Short" not-null="true" unique="false"/>
+                <property name="recordId" column="RecordId" type="java.lang.Long" not-null="true" unique="false"/>
+            </composite-element>
+        </set>
+        
+        <!-- many-to-one association to User -->
+        <many-to-one name="collection" class="edu.ku.brc.specify.datamodel.CatalogSeries" not-null="true" outer-join="true">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>
+            <column name="CatalogSeriesID"/>
+        </many-to-one>   
+        
+    </class>
+</hibernate-mapping>

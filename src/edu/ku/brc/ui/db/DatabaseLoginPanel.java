@@ -56,8 +56,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.ui.IconManager;
@@ -671,8 +672,11 @@ public class DatabaseLoginPanel extends JPanel
                                                getConnectionStr(), getUserName(), getPassword());
 
                 // Note: this doesn't happen on the GUI thread
-                HibernateUtil.shutdown();
-                HibernateUtil.getCurrentSession();
+                DataProviderFactory.getInstance().shutdown();
+                
+                // This restarts the System
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                session.close();
                 
                 /*if( !SwingUtilities.isEventDispatchThread() )
                 {
@@ -709,10 +713,12 @@ public class DatabaseLoginPanel extends JPanel
                     setMessage(getResourceString("LoadingSchema"), false);
                     statusBar.repaint();
                     
-                    // Note: this DOES happen on the GUI thread
-                    //log.info("Creating New Session "+SwingUtilities.isEventDispatchThread()+"  "+Thread.currentThread().hashCode());
-                    HibernateUtil.shutdown();
-                    HibernateUtil.getCurrentSession();
+                    // Note: this doesn't happen on the GUI thread
+                    DataProviderFactory.getInstance().shutdown();
+                    
+                    // This restarts the System
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    session.close();
                 }
                 long endTime = System.currentTimeMillis();
                 eTime = (endTime - eTime) / 1000;

@@ -34,9 +34,9 @@ import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -80,7 +80,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Object                       parentDataObj   = null;
     protected CardLayout                   cardLayout      = new CardLayout();
     protected Viewable                     currentViewable = null;
-    protected Session                      session         = null;
+    protected DataProviderSessionIFace     session         = null;
 
     protected boolean                      specialEditView = false;
     protected boolean                      editable        = false;
@@ -236,7 +236,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
      * the DB object.
      */
-    public void setSession(final Session session)
+    public void setSession(final DataProviderSessionIFace session)
     {
         this.session = session;
         

@@ -29,14 +29,12 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.AppResource;
@@ -210,10 +208,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCatalogSeriesForUser()
     {
-        String queryStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
-        Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
-        List list = query.list();
-        return list.size() > 0 ? (Integer)list.get(0) : 0;
+        String sqlStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        Object                   result  = session.getData(sqlStr);
+        int                      count   =  result != null ? (Integer)result : 0;
+        session.close();
+        return count;
+        
     }
 
     /**
@@ -226,6 +228,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     @SuppressWarnings("unchecked")
     public List<CatalogSeries> setupCurrentCatalogSeries(final SpecifyUser user, final boolean alwaysAsk)
     {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+
         final String prefName = mkUserDBPrefName("recent_catalogseries_id");
 
         List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries(); // always return a List Object (might be empty)
@@ -239,8 +243,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 String recentIds = appPrefs.get(prefName, null);
                 if (StringUtils.isNotEmpty(recentIds))
                 {
-                    Query query = HibernateUtil.getCurrentSession().createQuery( "From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
-                    List list = query.list();
+                    List list = session.getDataList("From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
                     for (Object obj : list)
                     {
                         catSeries.add((CatalogSeries)obj);
@@ -252,9 +255,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (askToSelect)
             {
                 String queryStr = "select distinct cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
-                Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
-                List list = query.list();
-
+                List list = session.getDataList(queryStr);
                 if (list.size() == 1)
                 {
                     catSeries.add((CatalogSeries)list.get(0));
@@ -277,6 +278,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         catSeries.addAll(dlg.getSelectedObjects());
                     } else
                     {
+                        session.close();
                         return null;
                     }
                     
@@ -302,6 +304,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
+        session.close();
+        
         return catSeries;
     }
 
@@ -538,10 +542,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // We need to search for User, CatalogSeries, CollectionObjDef and UserType
         // Then
 
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
-        criteria.add(Expression.eq("name", userName));
-        List list = criteria.list();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 
+        List list = session.getDataList(SpecifyUser.class, "name", userName);
         if (list.size() == 1)
         {
             user = (SpecifyUser)list.get(0);
@@ -579,9 +582,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         appResourceList.clear();
         viewSetHash.clear();
 
-
-        Query query = HibernateUtil.getCurrentSession().createQuery( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
-        List appResDefList = query.list();
+       List appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
 
 
         if (catalogSeries.size() == 0)
@@ -679,6 +680,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
 
         currentStatus = CONTEXT_STATUS.OK;
+        
+        session.close();
         
         return currentStatus;
     }

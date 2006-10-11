@@ -7,6 +7,8 @@ import java.util.HashSet;
 import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
@@ -1541,7 +1543,7 @@ public class ObjCreatorHelper
                                                 final String email,
                                                 final Calendar requestDate,
                                                 final Calendar replyDate,
-                                                final RecordSet recordSet,
+                                                final RecordSetIFace recordSet,
                                                 final Agent agent)
     {
         InfoRequest inforequest = new InfoRequest();
@@ -1890,7 +1892,7 @@ public class ObjCreatorHelper
         return projectcollectionobject;
     }
 
-    public static RecordSet createRecordSet(final Long recordSetID,
+    public static RecordSetIFace createRecordSet(final Long recordSetID,
                                                  final String name,
                                                  final SpecifyUser owner)
     {
@@ -1908,7 +1910,7 @@ public class ObjCreatorHelper
         return recordset;
     }
 
-    public static RecordSetItem createRecordSetItem()
+    public static RecordSetItemIFace createRecordSetItem()
     {
         RecordSetItem recordsetitem = new RecordSetItem();
         recordsetitem.initialize();

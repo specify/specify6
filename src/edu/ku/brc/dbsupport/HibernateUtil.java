@@ -509,7 +509,7 @@ public class HibernateUtil {
         if (useThreadLocal)
         {
             log.debug("Reconnecting Session to this thread.");
-            session.reconnect(DBConnection.getConnection());
+            session.reconnect(DBConnection.getInstance().getConnection());
             threadSession.set(session);
         } else
         {

@@ -285,7 +285,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     {
         DateFormat formatter    = new SimpleDateFormat("yyyyMMdd");
 
-        Connection dbConnection = DBConnection.getConnection();
+        Connection dbConnection = DBConnection.getInstance().createConnection();
         Statement  dbStatement  = null;
 
         int      tableId        = Integer.parseInt(tableInfo.getTableId());

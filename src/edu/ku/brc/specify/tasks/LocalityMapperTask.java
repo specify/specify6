@@ -19,8 +19,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.util.List;
 import java.util.Vector;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.plugins.MenuItemDesc;
@@ -28,7 +27,9 @@ import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.ui.CommandAction;
@@ -73,20 +74,22 @@ public class LocalityMapperTask extends BaseTask
      * @param recordSet
      */
     @SuppressWarnings("unchecked")
-    public void createMappingInfoFromRecordSet(final RecordSet recordSet)
+    public void createMappingInfoFromRecordSet(final RecordSetIFace recordSet)
     {
         
-        Session session = HibernateUtil.getNewSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
-        Query query = DBTableIdMgr.getQueryForTable(session, recordSet);
-
-        List list = query.list();
-
-        LocalityMapperSubPane panel = new LocalityMapperSubPane(session, name, this, list);
-        addSubPaneToMgr(panel);
-
+        String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+        if (StringUtils.isNotEmpty(sqlStr))
+        {
+            LocalityMapperSubPane panel = new LocalityMapperSubPane(session, name, this, session.getDataList(sqlStr));
+            addSubPaneToMgr(panel);
+            
+        } else
+        {
+            System.err.println("Query String was empty.");
+        }
     }
-
 
     //-------------------------------------------------------
     // Plugin Interface
@@ -134,7 +137,7 @@ public class LocalityMapperTask extends BaseTask
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
-                RecordSet recordSet = (RecordSet)cmdAction.getData();
+                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
                 createMappingInfoFromRecordSet(recordSet);
             }
         }

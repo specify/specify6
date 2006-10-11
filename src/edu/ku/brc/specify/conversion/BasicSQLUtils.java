@@ -181,7 +181,7 @@ public class BasicSQLUtils
 
         try
         {
-            Connection connection = dbConn != null ? dbConn : DBConnection.getConnection();
+            Connection connection = dbConn != null ? dbConn : DBConnection.getInstance().createConnection();
 
             count = deleteAllRecordsFromTable(connection, tableName);
 
@@ -244,7 +244,7 @@ public class BasicSQLUtils
     {
         try
         {
-            Connection connection = dbConn != null ? dbConn : DBConnection.getConnection();
+            Connection connection = dbConn != null ? dbConn : DBConnection.getInstance().createConnection();
 
             cleanAllTables(connection);
 

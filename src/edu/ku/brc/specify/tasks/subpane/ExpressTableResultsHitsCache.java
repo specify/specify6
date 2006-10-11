@@ -24,6 +24,8 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
@@ -127,7 +129,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return  a RecordSet object from the table
      */
-    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
+    public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         HitsTableModel hitsModel = (HitsTableModel)table.getModel();
         return hitsModel.getRecordSet(table.getSelectedRows(), column, returnAll);
@@ -247,11 +249,11 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          * @param returnAll indicates whether all the records should be returned if nothing was selected
          * @return Returns a RecordSet object from the table
          */
-        public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
+        public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
         {
-            RecordSet rs = new RecordSet();
+            RecordSetIFace rs = new RecordSet();
 
-            Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+            Set<RecordSetItemIFace> items = new HashSet<RecordSetItemIFace>();
             rs.setItems(items);
 
             try

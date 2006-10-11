@@ -23,9 +23,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Session;
-
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.UICacheManager;
@@ -74,7 +73,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      * @param task the owning task
      * @param desc string displayed in th center of the pane
      */
-    public DroppableTaskPane(final Session session,
+    public DroppableTaskPane(final DataProviderSessionIFace session,
                              final String name, 
                              final Taskable task,
                              final String   desc)
