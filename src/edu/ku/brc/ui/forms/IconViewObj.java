@@ -28,9 +28,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
 import edu.ku.brc.ui.DropDownButtonStateful;
@@ -58,7 +58,7 @@ public class IconViewObj implements Viewable
     protected static final Logger log = Logger.getLogger(IconViewObj.class);
     
     // Data Members
-    protected Session                       session;
+    protected DataProviderSessionIFace      session;
     protected MultiView                     mvParent;
     protected View                          view;
     protected AltView                       altView;
@@ -548,7 +548,7 @@ public class IconViewObj implements Viewable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
      */
-    public void setSession(final Session session)
+    public void setSession(final DataProviderSessionIFace session)
     {
         this.session = session;
     }
