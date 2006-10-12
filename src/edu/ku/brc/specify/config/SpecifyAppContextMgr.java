@@ -226,10 +226,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return the current Catalog Series or null
      */
     @SuppressWarnings("unchecked")
-    public List<CatalogSeries> setupCurrentCatalogSeries(final SpecifyUser user, final boolean alwaysAsk)
+    protected List<CatalogSeries> setupCurrentCatalogSeries(final DataProviderSessionIFace session, final SpecifyUser user, final boolean alwaysAsk)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-
         final String prefName = mkUserDBPrefName("recent_catalogseries_id");
 
         List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries(); // always return a List Object (might be empty)
@@ -278,7 +276,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         catSeries.addAll(dlg.getSelectedObjects());
                     } else
                     {
-                        session.close();
                         return null;
                     }
                     
@@ -303,8 +300,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
         }
-
-        session.close();
         
         return catSeries;
     }
@@ -562,7 +557,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Ask the User to choose which CatalogSeries they will be working with
         CatalogSeries.getCurrentCatalogSeries().clear();
         
-        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(user, startingOver);
+        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(session, user, startingOver);
         if (catalogSeries == null)
         {
             //catalogSeries = new ArrayList<CatalogSeries>();

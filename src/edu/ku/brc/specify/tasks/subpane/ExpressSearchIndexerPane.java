@@ -895,7 +895,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         IndexWriter writer = new IndexWriter(dir, analyzer, true);
         //writer.setMaxBufferedDocs(arg0);
         writer.setMaxMergeDocs(9999999);
-        writer.setMergeFactor(1000);
+        writer.setMergeFactor(100);
         //writer.mergeFactor   = 1000;
         //writer.maxMergeDocs  = 9999999;
         //writer.minMergeDocs  = 1000;
