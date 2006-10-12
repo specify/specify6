@@ -503,6 +503,7 @@ public class PickListTestApp
     
     protected static void buildTaxaSearch()
     {
+        /*
         File lucenePath = getIndexDirPath(); // must be initialized here
         try
         {
@@ -537,7 +538,7 @@ public class PickListTestApp
         {
             ex.printStackTrace();
         }
-        
+        */
     }
     
     protected static void testLookUpDB()
