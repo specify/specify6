@@ -32,7 +32,7 @@ jdom                 -> Version unknown (Mail)
 mstor                -> 0.9.7           (Mail)
 
 hibernate            -> 3.1 Beta 3
-lucene               -> 1.4.2
+lucene               -> 2.0.0
 jasperreports        -> 1.0.2
 
 mysql-connector-java -> 3.1.12

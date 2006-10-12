@@ -74,7 +74,6 @@ import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
-import edu.ku.brc.helpers.DiskFileFilter;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
@@ -340,10 +339,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     value = formatter.format(date);
                     if (fieldName == null)
                     {
-                        doc.add(Field.Keyword(fieldName, value));
+                        doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                        //doc.add(Field.Keyword(fieldName, value));
                     } else
                     {
-                        doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
+                        //doc.add(Field.UnStored("contents", value));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -354,7 +355,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 if (isNotEmpty(str))
                 {
                     value = str;
-                    doc.add(Field.UnStored("contents", str));
+                    doc.add(new Field("contents", str, Field.Store.NO, Field.Index.TOKENIZED));
+                    //doc.add(Field.UnStored("contents", str));
                 }
             }
 
@@ -368,10 +370,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     value = formatter.format(date);
                     if (fieldName == null)
                     {
-                        doc.add(Field.Keyword(fieldName, value));
+                        doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                        //doc.add(Field.Keyword(fieldName, value));
                     } else
                     {
-                        doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
+                        //doc.add(Field.UnStored("contents", value));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -382,7 +386,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 if (isNotEmpty(str))
                 {
                     value = str;
-                    doc.add(Field.Keyword(secondaryKey, str));
+                    doc.add(new Field(secondaryKey, str, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                    //doc.add(Field.Keyword(secondaryKey, str));
                 }
             }
         }
@@ -476,8 +481,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         rowCnt++;
                         
                         Document doc = new Document();
-                        doc.add(Field.Keyword("id", rs.getString(tableInfo.getIdColIndex())));
-                        doc.add(Field.Keyword("table", tableIdStr));
+                        doc.add(new Field("id", rs.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.NO));
+                        doc.add(new Field("table", tableIdStr, Field.Store.YES, Field.Index.NO));
+                        //doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
+
+                        //doc.add(Field.Keyword("id", rs.getString(tableInfo.getIdColIndex())));
+                        //doc.add(Field.Keyword("table", tableIdStr));
 
                         int cnt = 0;
                         if (useHitsCache)
@@ -518,7 +527,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                 }
                             }
 
-                            doc.add(Field.UnIndexed("data", strBuf.toString()));
+                            doc.add(new Field("data", strBuf.toString(), Field.Store.YES, Field.Index.NO));
+                            //doc.add(Field.UnIndexed("data", strBuf.toString()));
 
                         } else
                         {
@@ -791,6 +801,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     protected long indexLabels(final IndexWriter writer)
     {
+        /*
         // TODO FIX ME! Indexing labels
         
         File resourceDir = null;//AppContextMgr.getInstance().getCurrentContext();
@@ -817,11 +828,11 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                 indvLabel.setText(labelName);
 
-                /*List textFields = root.selectNodes("/jasperReport/detail/band/textField");
-                for ( Iterator iter = textFields.iterator(); iter.hasNext(); )
-                {
-                    Element textField = (Element)iter.next();
-                }*/
+                //List textFields = root.selectNodes("/jasperReport/detail/band/textField");
+                //for ( Iterator iter = textFields.iterator(); iter.hasNext(); )
+                //{
+                //    Element textField = (Element)iter.next();
+                //}
 
                 StringBuilder strBuf = new StringBuilder(128);
                 List staticTexts = root.selectNodes("/jasperReport/detail/band/staticText/text");
@@ -868,6 +879,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         indvLabel.setText("");
 
         return delta;
+        */
+        return 0;
     }
 
     /**
@@ -880,9 +893,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         Directory dir = FSDirectory.getDirectory(lucenePath, true);
         IndexWriter writer = new IndexWriter(dir, analyzer, true);
-        writer.mergeFactor   = 1000;
-        writer.maxMergeDocs  = 9999999;
-        writer.minMergeDocs  = 1000;
+        //writer.setMaxBufferedDocs(arg0);
+        writer.setMaxMergeDocs(9999999);
+        writer.setMergeFactor(1000);
+        //writer.mergeFactor   = 1000;
+        //writer.maxMergeDocs  = 9999999;
+        //writer.minMergeDocs  = 1000;
 
         long deltaTime = 0;
         try

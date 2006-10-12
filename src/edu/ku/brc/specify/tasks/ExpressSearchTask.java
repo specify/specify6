@@ -335,20 +335,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
             IndexSearcher searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
 
             Query query;
-            boolean implicitOR = false;  // XXX Pref
-            // Implicit OR
-            if (implicitOR)
-            {
-                query = QueryParser.parse(searchTerm, "contents", analyzer);
 
-            } else
-            {
-                // Implicit AND
-                QueryParser parser = new QueryParser("contents", analyzer);
-                parser.setOperator(QueryParser.DEFAULT_OPERATOR_AND);
-                query = parser.parse(searchTerm);
-                //System.out.println(query.toString());
-            }
+            // Implicit AND
+            QueryParser parser = new QueryParser("contents", analyzer);
+            //parser.setOperator(QueryParser.DEFAULT_OPERATOR_AND);
+            query = parser.parse(searchTerm);
+            System.out.println(query.toString());
 
             Hits hits = searcher.search(query);
 

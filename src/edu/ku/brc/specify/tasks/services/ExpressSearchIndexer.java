@@ -204,12 +204,12 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      * @param secondaryKey
      * @param objClass
      */
-    public String indexValue(final Document doc,
-                              final ResultSet rs,
-                              final int index,
-                              final String fieldName,
-                              final String secondaryKey,
-                              final Class objClass,
+    public String indexValue(final Document   doc,
+                              final ResultSet  rs,
+                              final int        index,
+                              final String     fieldName,
+                              final String     secondaryKey,
+                              final Class      objClass,
                               final DateFormat formatter) throws SQLException
     {
         String value = null;
@@ -226,10 +226,12 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     value = formatter.format(date);
                     if (fieldName == null)
                     {
-                        doc.add(Field.Keyword(fieldName, value));
+                        doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                        //doc.add(Field.Keyword(fieldName, value));
                     } else
                     {
-                        doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
+                        //doc.add(Field.UnStored("contents", value));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -240,7 +242,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 if (isNotEmpty(str))
                 {
                     value = str;
-                    doc.add(Field.UnStored("contents", str));
+                    doc.add(new Field("contents", str, Field.Store.NO, Field.Index.TOKENIZED));
+                    //doc.add(Field.UnStored("contents", str));
                 }
             }
 
@@ -254,10 +257,12 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     value = formatter.format(date);
                     if (fieldName == null)
                     {
-                        doc.add(Field.Keyword(fieldName, value));
+                        doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                        //doc.add(Field.Keyword(fieldName, value));
                     } else
                     {
-                        doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
+                        //doc.add(Field.UnStored("contents", value));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -268,7 +273,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 if (isNotEmpty(str))
                 {
                     value = str;
-                    doc.add(Field.Keyword(secondaryKey, str));
+                    doc.add(new Field("contents", str, Field.Store.NO, Field.Index.TOKENIZED));
+                    //doc.add(Field.UnStored("contents", str));
                 }
             }
         }
@@ -336,8 +342,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 if (rs.first())
                 {
                     // First we create an array of Class so we know what each column's Object class is
-                    ResultSetMetaData rsmd = rs.getMetaData();
-                    Class[]  classes = new Class[rsmd.getColumnCount()+1];
+                    ResultSetMetaData rsmd    = rs.getMetaData();
+                    Class[]           classes = new Class[rsmd.getColumnCount()+1];
                     classes[0] = null; // we do this so the "1" based columns match up with the list
                     for (int i=1;i<rsmd.getColumnCount();i++)
                     {
@@ -365,8 +371,12 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                         step++;
                         rowCnt++;
                         Document doc = new Document();
-                        doc.add(Field.UnIndexed("id", rs.getString(tableInfo.getIdColIndex())));
-                        doc.add(Field.UnIndexed("table", tableIdStr));
+                        doc.add(new Field("id", rs.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.NO));
+                        doc.add(new Field("table", tableIdStr, Field.Store.YES, Field.Index.NO));
+                        doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
+                        
+                        //doc.add(Field.Keyword("id", rs.getString(tableInfo.getIdColIndex())));
+                        //doc.add(Field.Keyword("table", tableIdStr));
 
                         int cnt = 0;
                         if (useHitsCache)
@@ -407,7 +417,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                                 }
                             }
 
-                            doc.add(Field.UnIndexed("data", strBuf.toString()));
+                            doc.add(new Field("data", strBuf.toString(), Field.Store.YES, Field.Index.NO));
+                            //doc.add(Field.UnIndexed("data", strBuf.toString()));
 
                         } else
                         {
@@ -719,9 +730,12 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
         Directory dir = FSDirectory.getDirectory(lucenePath, true);
         IndexWriter writer = new IndexWriter(dir, analyzer, true);
-        writer.mergeFactor   = 1000;
-        writer.maxMergeDocs  = 9999999;
-        writer.minMergeDocs  = 1000;
+        //writer.setMaxBufferedDocs(arg0);
+        writer.setMaxMergeDocs(9999999);
+        writer.setMergeFactor(1000);
+        //writer.mergeFactor   = 1000;
+        //writer.maxMergeDocs  = 9999999;
+        //writer.minMergeDocs  = 1000;
 
         long deltaTime = 0;
         try
