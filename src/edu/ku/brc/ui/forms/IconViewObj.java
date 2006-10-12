@@ -21,13 +21,15 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -150,15 +152,15 @@ public class IconViewObj implements Viewable
             mainComp.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
         
-        southPanel = new JPanel();
-        southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.X_AXIS));
-
-        southPanel.add(Box.createHorizontalGlue());
-        southPanel.add(editButton);
-        southPanel.add(newButton);
-        southPanel.add(deleteButton);
-        southPanel.add(switcherUI);
-        southPanel.add(validationInfoBtn);
+        PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,1px,p,1px,p,1px,p,1px,p", "p"));
+        CellConstraints cc  = new CellConstraints();
+        
+        builder.add(editButton, cc.xy(2,1));
+        builder.add(newButton, cc.xy(4,1));
+        builder.add(deleteButton, cc.xy(6,1));
+        builder.add(validationInfoBtn, cc.xy(8,1));
+        builder.add(switcherUI, cc.xy(10,1));
+        southPanel = builder.getPanel();
 
         mainComp.add(iconTray,BorderLayout.CENTER);
         mainComp.add(southPanel,BorderLayout.SOUTH);
@@ -501,7 +503,7 @@ public class IconViewObj implements Viewable
     {
         if (switcherUI != null)
         {
-            switcherUI.setCurrentIndex(0);
+            switcherUI.setCurrentIndex(altViewsList.indexOf(altView));
         }
     }
 

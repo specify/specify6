@@ -253,7 +253,7 @@ public class TableViewObj implements Viewable,
             
             if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
             {
-                if (mvParent.getMultiViewParent() == null && !hideSaveBtn)
+                if (mvParent.isTopLevel() && !hideSaveBtn)
                 {
                     //addSaveBtn();
                     comps.add(saveBtn);
@@ -457,18 +457,26 @@ public class TableViewObj implements Viewable,
             origDataSet = null;
             dataObjList = (List<Object>)dataObj; 
             
-        } else if (dataObj instanceof Set)
+        } else
         {
-            origDataSet = (Set<Object>)dataObj;
             if (dataObjList == null)
             {
                 dataObjList = new Vector<Object>();
+            } else
+            {
+                dataObjList.clear(); 
+            }
+            
+            if (dataObj instanceof Set)
+            {
+                origDataSet = (Set<Object>)dataObj;
+                dataObjList.addAll(origDataSet);
                 
             } else
             {
-                dataObjList.clear();                
+                // single object
+                dataObjList.add(dataObj);
             }
-            dataObjList.addAll(origDataSet);
         }
         
         if (table != null)
@@ -559,7 +567,7 @@ public class TableViewObj implements Viewable,
         if (switcherUI != null)
         {
             ignoreSelection = true;
-            switcherUI.setCurrentIndex(0);
+            switcherUI.setCurrentIndex(altViewsList.indexOf(altView));
             ignoreSelection = false;
         }
     }
@@ -1182,13 +1190,18 @@ public class TableViewObj implements Viewable,
 
         public String getColumnName(int column)
         {
-            String label = columnList.get(column).getLabel();
-            return label != null ? label : "";
+            if (columnList != null)
+            {
+                String label = columnList.get(column).getLabel();
+                return label != null ? label : "";
+            }
+            log.error("columnList should not be null!");
+            return "N/A";
         }
 
         public int getRowCount()
         {
-            return dataObjList.size();
+            return dataObjList == null ? 0 : dataObjList.size();
         }
 
         public Object getValueAt(int row, int column)

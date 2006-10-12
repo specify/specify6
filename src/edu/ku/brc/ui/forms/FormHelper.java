@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -27,7 +28,7 @@ public final class FormHelper
 {
     private static final Logger log = Logger.getLogger(FormHelper.class);
     
-    private static String       currentUserEditStr = "";
+    private static String currentUserEditStr = "";
 
     /**
      * Sets the "timestampModified" and the "lastEditedBy" by fields if the exist, if they don't then 
@@ -240,5 +241,89 @@ public final class FormHelper
     public static void setCurrentUserEditStr(String currentUserEditStr)
     {
         FormHelper.currentUserEditStr = currentUserEditStr;
+    }
+
+    /**
+     * Helper for setting a value into a data object using reflection
+     * @param fieldNames the field name(s)
+     * @param dataObj the data object that will get the new value
+     * @param newData the new data object
+     * @param getter the getter to use
+     * @param setter the setter to use
+     */
+    public static void setFieldValue(final String fieldNames,
+                                     final Object dataObj,
+                                     final Object newData,
+                                     final DataObjectGettable getter,
+                                     final DataObjectSettable setter)
+    {
+        if( StringUtils.isNotEmpty(fieldNames) )
+        {
+            if (setter.usesDotNotation())
+            {
+                int inx = fieldNames.indexOf(".");
+                if (inx > -1)
+                {
+                    String[] fileNameArray = StringUtils.split(fieldNames, '.');
+                    Object data = dataObj;
+                    for (int i=0;i<fileNameArray.length;i++)
+                    {
+                        String fieldName = fileNameArray[i];
+                       if (i < fileNameArray.length-1)
+                        {
+                             data = getter.getFieldValue(dataObj, fieldName);
+                            if (data == null)
+                            {
+                                try
+                                {
+                                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
+                                    Class  classObj = descr.getPropertyType();
+                                    Object newObj = classObj.newInstance();
+                                    log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
+                                    if (newObj != null)
+                                    {
+    
+                                        Method method = newObj.getClass().getMethod("initialize", new Class[] {});
+                                        method.invoke(newObj, new Object[] {});
+                                        setter.setFieldValue(dataObj, fieldName, newObj);
+                                        data = newObj;
+    
+                                        log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
+    
+                                    }
+                                } catch (NoSuchMethodException ex)
+                                {
+                                    ex.printStackTrace();
+    
+                                } catch (IllegalAccessException ex)
+                                {
+                                    ex.printStackTrace();
+    
+                                } catch (InvocationTargetException ex)
+                                {
+                                    ex.printStackTrace();
+    
+                                } catch (InstantiationException ex)
+                                {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        } else
+                        {
+                            log.info("Data Obj ["+newData+" being added to ["+data+"]");
+                            setter.setFieldValue(data, fieldName, newData);
+                        }
+                    }
+                } else
+                {
+                    log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
+                    setter.setFieldValue(dataObj, fieldNames, newData);
+                }
+            } else
+            {
+                log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
+                setter.setFieldValue(dataObj, fieldNames, newData);
+            }
+        }
     }
 }

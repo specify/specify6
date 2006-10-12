@@ -110,6 +110,8 @@ public class ViewLoader
             view.setDefaultMode(defaultMode);
             view.setSelectorName(selectorName);
             
+            Hashtable<String, Boolean> nameCheckHash = new Hashtable<String, Boolean>();
+            
             // iterate through child elements
             for ( Iterator<?> i = altviews.elementIterator( "altview" ); i.hasNext(); )
             {
@@ -134,29 +136,40 @@ public class ViewLoader
                 {
                     isDefault = false;
                 }
-
-                AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
-                if (StringUtils.isNotEmpty(selectorName))
-                {
-                    altView.setSelectorName(selectorName);
-                    
-                    String selectorValue = altElement.attributeValue("selector_value");
-                    if (StringUtils.isNotEmpty(selectorValue))
-                    {
-                        altView.setSelectorValue(selectorValue);
-                        
-                    } else
-                    {
-                        throw new RuntimeException("Selector Value is missing for viewDefName["+viewDefName+"] altName["+altName+"]");
-                    }
-                }
                 
-                if (defaultAltView == null && isDefault)
+                // Check to make sure all the AlViews have different names.
+                Boolean nameExists = nameCheckHash.get(altName);
+                if (nameExists == null) // no need to check the boolean
                 {
-                    defaultAltView = altView;
+                    AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
+                    if (StringUtils.isNotEmpty(selectorName))
+                    {
+                        altView.setSelectorName(selectorName);
+                        
+                        String selectorValue = altElement.attributeValue("selector_value");
+                        if (StringUtils.isNotEmpty(selectorValue))
+                        {
+                            altView.setSelectorValue(selectorValue);
+                            
+                        } else
+                        {
+                            throw new RuntimeException("Selector Value is missing for viewDefName["+viewDefName+"] altName["+altName+"]");
+                        }
+                    }
+                    
+                    if (defaultAltView == null && isDefault)
+                    {
+                        defaultAltView = altView;
+                    }
+    
+                    view.addAltView(altView);
+                    nameCheckHash.put(altName, true);
+                    
+                } else
+                {
+                    log.error("The altView name["+altName+"] already exists!");
                 }
-
-                view.addAltView(altView);
+                nameCheckHash.clear(); // why not?
             }
             
             // Very Special Case

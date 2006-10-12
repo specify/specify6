@@ -1,14 +1,9 @@
 package edu.ku.brc.dbsupport;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
@@ -19,8 +14,6 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
-import edu.ku.brc.ui.forms.DataObjectGettable;
-import edu.ku.brc.ui.forms.DataObjectSettable;
 
 /**
  * Basic Hibernate helper class, handles SessionFactory, Session and Transaction.
@@ -57,7 +50,7 @@ import edu.ku.brc.ui.forms.DataObjectSettable;
  */
 public class HibernateUtil {
 
-    private static final Logger log = Logger.getLogger(HibernateUtil.class);
+    protected static final Logger log = Logger.getLogger(HibernateUtil.class);
 
     //private static final String INTERCEPTOR_CLASS = "hibernate.util.interceptor_class";
 
@@ -578,95 +571,6 @@ public class HibernateUtil {
     	{
     		log.warn("Exception thrown in attach()", he);
     	}
-    }
-    
-    //--------------------------------------------------------------------------------------
-    //-- Generic Helper methods for Database Object's
-    //--------------------------------------------------------------------------------------
-    
-
-    /**
-     * Helper for setting a value into a data object using reflection
-     * @param fieldNames the field name(s)
-     * @param dataObj the data object that will get the new value
-     * @param newData the new data object
-     * @param getter the getter to use
-     * @param setter the setter to use
-     */
-    public static void setFieldValue(final String fieldNames,
-                                     final Object dataObj,
-                                     final Object newData,
-                                     final DataObjectGettable getter,
-                                     final DataObjectSettable setter)
-    {
-        if( StringUtils.isNotEmpty(fieldNames) )
-        {
-            if (setter.usesDotNotation())
-            {
-                int inx = fieldNames.indexOf(".");
-                if (inx > -1)
-                {
-                    String[] fileNameArray = StringUtils.split(fieldNames, '.');
-                    Object data = dataObj;
-                    for (int i=0;i<fileNameArray.length;i++)
-                    {
-                        String fieldName = fileNameArray[i];
-                       if (i < fileNameArray.length-1)
-                        {
-                             data = getter.getFieldValue(dataObj, fieldName);
-                            if (data == null)
-                            {
-                                try
-                                {
-                                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
-                                    Class  classObj = descr.getPropertyType();
-                                    Object newObj = classObj.newInstance();
-                                    log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
-                                    if (newObj != null)
-                                    {
-
-                                        Method method = newObj.getClass().getMethod("initialize", new Class[] {});
-                                        method.invoke(newObj, new Object[] {});
-                                        setter.setFieldValue(dataObj, fieldName, newObj);
-                                        data = newObj;
-
-                                        log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
-
-                                    }
-                                } catch (NoSuchMethodException ex)
-                                {
-                                    ex.printStackTrace();
-
-                                } catch (IllegalAccessException ex)
-                                {
-                                    ex.printStackTrace();
-
-                                } catch (InvocationTargetException ex)
-                                {
-                                    ex.printStackTrace();
-
-                                } catch (InstantiationException ex)
-                                {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        } else
-                        {
-                            log.info("Data Obj ["+newData+" being added to ["+data+"]");
-                            setter.setFieldValue(data, fieldName, newData);
-                        }
-                    }
-                } else
-                {
-                    log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
-                    setter.setFieldValue(dataObj, fieldNames, newData);
-                }
-            } else
-            {
-                log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
-                setter.setFieldValue(dataObj, fieldNames, newData);
-            }
-        }
     }
 
 }

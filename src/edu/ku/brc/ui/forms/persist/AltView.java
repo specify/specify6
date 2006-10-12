@@ -25,7 +25,7 @@ import java.util.List;
  * @author rods
  *
  */
-public class AltView
+public class AltView implements Comparable<AltView>
 {
     public enum CreationMode {None, Edit, View, Search}
     
@@ -188,4 +188,19 @@ public class AltView
         }
         return defaultMode;
     }
+    
+    //-------------------------------------
+    // Comparable
+    //-------------------------------------
+    public int compareTo(AltView obj)
+    {
+        if (name.equals(obj.name))
+        {
+            return 0;
+
+        }
+        // else
+        return name.compareTo(obj.name);
+    }
+
 }

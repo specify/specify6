@@ -345,6 +345,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         return dataHasChanged;
     }
+    
+    /**
+     * Returns whether this is the top level MultiView, which usually means this is the most outer form.
+     * @return whether this is the top level MultiView, which usually means this is the most outer form.
+     */
+    public boolean isTopLevel()
+    {
+        return mvParent == null;
+    }
 
     /**
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef.
@@ -399,7 +408,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     protected boolean add(final Viewable viewable, final String name)
     {
-        //System.out.println("******** ["+name+"]");
         if (viewMapByName.get(name) != null)
         {
             log.error("Adding a Viewable by a name that is already used["+name+"]");
@@ -505,19 +513,25 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     
                     //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
                     viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions);
-                    viewable.setSession(session);
-                    if (add(viewable, altViewName))
+                    if (viewable != null)
                     {
-                        if (mvParent != null)
+                        viewable.setSession(session);
+                        if (add(viewable, altViewName))
                         {
-                            viewable.getUIComponent().setSize(size);
-                            viewable.getUIComponent().setPreferredSize(size);
-                            viewable.getUIComponent().validate();
-                            viewable.getUIComponent().doLayout();
+                            if (mvParent != null)
+                            {
+                                viewable.getUIComponent().setSize(size);
+                                viewable.getUIComponent().setPreferredSize(size);
+                                viewable.getUIComponent().validate();
+                                viewable.getUIComponent().doLayout();
+                            }
+                            viewable.aboutToShow(true);
+                            cardLayout.show(this, altViewName);
+                            log.debug("Added Viewable["+altViewName+"]");
                         }
-                        viewable.aboutToShow(true);
-                        cardLayout.show(this, altViewName);
-                        log.debug("Added Viewable["+altViewName+"]");
+                    } else
+                    {
+                        log.error("The Viewable could not be created for some reason View["+newView+"] AltView["+altViewName+"] Options["+createOptions+"]");
                     }
 
                 } else

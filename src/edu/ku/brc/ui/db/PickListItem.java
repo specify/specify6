@@ -78,17 +78,6 @@ public class PickListItem implements java.io.Serializable, Comparable<PickListIt
         this.value = value;
     }
 
-    public int compareTo(PickListItem obj)
-    {
-        if (title.equals(obj.title))
-        {
-            return 0;
-
-        }
-        // else
-        return title.compareTo(obj.title);
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -110,5 +99,20 @@ public class PickListItem implements java.io.Serializable, Comparable<PickListIt
     {
         this.createdDate = createdDate;
     }
+    
+    //-------------------------------------
+    // Comparable
+    //-------------------------------------
+    public int compareTo(PickListItem obj)
+    {
+        if (title.equals(obj.title))
+        {
+            return 0;
+
+        }
+        // else
+        return title.compareTo(obj.title);
+    }
+
 
 }

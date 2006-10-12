@@ -70,7 +70,6 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
@@ -99,11 +98,22 @@ import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValidationListener;
 
 /**
- * Implmentation of the Viewable interface for the ui and this derived class is for handling Form's Only (not tables)
- *
-
+ * This implements a Form and is "owed" by a MultiView.<br>
+ * <br>
+ * Implmentation of the Viewable interface for the ui and this derived class is for handling Form's Only (not tables).<br>
+ * <br>
+ * Implements ViewBuilderIFace which the ViewFactory uses while processing the rows, it calls methods in this interface
+ * to add labels, controls and subforms to the form.<br>
+ * <br>
+ * Implements ValidationListener so it can listen to any and all validations so it knows how to show and activate the icon button
+ * that enables the user to see what the errors are in a form.<br>
+ * <br>
+ * Implements ResultSetControllerListener to react to the record control bar for moving forward or backward in a resulset.<br>
+ * <br>
+ * Implements AppPrefsChangeListener to be notified of changes to the BG Required Field color or the date formatting.
+ * 
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
@@ -305,7 +315,7 @@ public class FormViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (altView.getMode() == AltView.CreationMode.Edit && mvParent.getMultiViewParent() == null)
+                    if (altView.getMode() == AltView.CreationMode.Edit && mvParent.isTopLevel())
                     {
                         // We want it on the left side of other buttons
                         // so wee need to add it before the Save button
@@ -322,7 +332,7 @@ public class FormViewObj implements Viewable,
             
             if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
             {
-                if (mvParent.getMultiViewParent() == null && !hideSaveBtn)
+                if (mvParent.isTopLevel() && !hideSaveBtn)
                 {
                     addSaveBtn();
                     comps.add(saveBtn);
@@ -364,14 +374,18 @@ public class FormViewObj implements Viewable,
      * @param altViewsListArg the Vector of AltView that will contains the ones in the Drop Down
      * @return the special combobox
      */
-    public static DropDownButtonStateful createSwitcher(final MultiView mvParentArg, View viewArg, AltView altViewArg, final Vector<AltView> altViewsListArg)
+    public static DropDownButtonStateful createSwitcher(final MultiView       mvParentArg, 
+                                                        final View            viewArg, 
+                                                        final AltView         altViewArg, 
+                                                        final Vector<AltView> altViewsListArg)
     {
         DropDownButtonStateful switcher = null;
         
-        Vector<AltView> altViews = new Vector<AltView>();
-        if (mvParentArg.getMultiViewParent() == null)
+        // Add all the View if we are at the top level
+        // If not, then we are a subform and we should only add the view that belong to our same creation mode.
+        if (mvParentArg.isTopLevel())
         {
-            altViews.addAll(viewArg.getAltViews());
+            altViewsListArg.addAll(viewArg.getAltViews());
             
         } else
         {
@@ -381,34 +395,18 @@ public class FormViewObj implements Viewable,
                 ViewDef.ViewType type = av.getViewDef().getType();
                 if (av.getMode() == mode || type == ViewDef.ViewType.table || type == ViewDef.ViewType.formTable)
                 {
-                    altViews.add(av);
-                }
-            }
-
-            
-        }
-        
-        if (altViews.size() > 0)
-        {
-            ImageIcon[] iconsArray    = new ImageIcon[altViews.size()];
-            String[]    labelsArray   = new String[altViews.size()];
-            String[]    toolTipsArray = new String[altViews.size()];
-
-            // loop thru and add the AltViews to the comboxbox and make sure that the
-            // this form is always at the top of the list.
-            
-            int inx = 0;
-            for (AltView av : altViews)
-            {
-                if (av == altViewArg)
-                {
-                    altViewsListArg.insertElementAt(av, 0);
-                } else
-                {
                     altViewsListArg.add(av);
                 }
             }
-            
+        }
+        // If we have AltView then we need to build information for the Switcher Control
+        if (altViewsListArg.size() > 0)
+        {
+            ImageIcon[] iconsArray    = new ImageIcon[altViewsListArg.size()];
+            String[]    labelsArray   = new String[altViewsListArg.size()];
+            String[]    toolTipsArray = new String[altViewsListArg.size()];
+
+            int inx = 0;
             Hashtable<String, Boolean> useLabels = new Hashtable<String, Boolean>();
             for (AltView av : altViewsListArg)
             {
@@ -459,6 +457,8 @@ public class FormViewObj implements Viewable,
                 }
                 public void actionPerformed(ActionEvent ae)
                 {
+                    //log.info("Index: "+switcherComp.getCurrentIndex());
+                    
                     mvParentArg.showView(altViewsListArg.get(switcherComp.getCurrentIndex()));
                 }
             }
@@ -466,6 +466,9 @@ public class FormViewObj implements Viewable,
             switcher = new DropDownButtonStateful(labelsArray, iconsArray, toolTipsArray);
             switcher.setToolTipText(getResourceString("SwitchViewsTT"));
             switcher.addActionListener(new SwitcherAL(switcher));
+            switcher.validate();
+            switcher.doLayout();
+
         }
         
         return switcher;
@@ -614,7 +617,7 @@ public class FormViewObj implements Viewable,
         if (switcherUI != null)
         {
             ignoreSelection = true;
-            switcherUI.setCurrentIndex(0);
+            switcherUI.setCurrentIndex(altViewsList.indexOf(altView));
             ignoreSelection = false;
         }
         
@@ -836,7 +839,7 @@ public class FormViewObj implements Viewable,
      */
     public boolean checkForChanges()
     {
-        if (formValidator != null && formValidator.hasChanged() && mvParent != null && mvParent.getMultiViewParent() == null)
+        if (formValidator != null && formValidator.hasChanged() && mvParent != null && mvParent.isTopLevel())
         {
             int rv = JOptionPane.showConfirmDialog(null,
                         getResourceString("SaveChanges"),
@@ -1582,7 +1585,7 @@ public class FormViewObj implements Viewable,
                         Object selectorValObj = UIHelper.convertDataFromString(altView.getSelectorValue(), descr.getPropertyType());
                         
                         // FIXME This needs to be moved out of HibernateUtil!
-                        HibernateUtil.setFieldValue(selectorName, dataObj, selectorValObj, dg, ds);
+                        FormHelper.setFieldValue(selectorName, dataObj, selectorValObj, dg, ds);
                         
                     } catch (Exception ex)
                     {
@@ -1613,7 +1616,7 @@ public class FormViewObj implements Viewable,
                     if (uiData != null)
                     {
                         //log.debug(fieldInfo.getFormCell().getName());
-                        HibernateUtil.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
+                        FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
                     }
                 }
             }
@@ -2094,8 +2097,9 @@ public class FormViewObj implements Viewable,
     {
         if (validationInfoBtn != null)
         {
-            ImageIcon icon = IconManager.getImage("ValidationValid");
-            UIValidatable.ErrorType state = formValidator.getState();
+            boolean                 enable = true;
+            ImageIcon               icon   = IconManager.getImage("ValidationValid");
+            UIValidatable.ErrorType state  = formValidator.getState();
 
             if (state == UIValidatable.ErrorType.Incomplete)
             {
@@ -2104,8 +2108,11 @@ public class FormViewObj implements Viewable,
             } else if (state == UIValidatable.ErrorType.Error)
             {
                 icon = IconManager.getImage("ValidationError");
+            } else
+            {
+                enable = false;
             }
-
+            validationInfoBtn.setEnabled(enable);
             validationInfoBtn.setIcon(icon);
         }
     }
@@ -2179,28 +2186,19 @@ public class FormViewObj implements Viewable,
                 if (uiType.equals("dsptextfield") || uiType.equals("dsptextarea"))
                 {
                     Component comp = fieldInfo.getComp();
-                    switch (colorType)
+                    if (colorType == 0)
                     {
-                        case 0 : {
-
-                            if (comp instanceof JScrollPane)
-                            {
-                                ((JScrollPane)comp).getViewport().getView().setBackground(color);
-                            } else
-                            {
-                                fieldInfo.getComp().setBackground(color);
-                            }
-                        } break;
-
-                        /*case 1 : {
-                            if (comp instanceof )
-                            //fieldInfo.getComp().setBackground(color);
-                        } break;*/
+                        if (comp instanceof JScrollPane)
+                        {
+                            ((JScrollPane)comp).getViewport().getView().setBackground(color);
+                        } else
+                        {
+                            fieldInfo.getComp().setBackground(color);
+                        }
                     }
                 }
             }
         }
-
     }
 
     /* (non-Javadoc)

@@ -154,6 +154,9 @@ public class ControlBarPanel extends JPanel
                 }
                 
                 rightSidePanel = pBuilder.getPanel();
+                rightSidePanel.validate();
+                rightSidePanel.doLayout();
+                
                 builder.add(rightSidePanel, cc.xy(5,1));
                 
                 if (leftSidePanel == null)
