@@ -8,7 +8,7 @@ package edu.ku.brc.dbsupport;
 
 /**
  * Simple wrapper for Hibernate's StaleObjectStateException.
- * s
+ * 
  * @author rods
  *
  * @code_status Complete
