@@ -1,4 +1,5 @@
 <IconFactoryMapping>
+	<ClassIcon class="edu.ku.brc.specify.datamodel.Accession" iconname="Accession" />
 	<ClassIcon class="edu.ku.brc.specify.datamodel.Determination" iconname="Determination" />
 	<ClassIcon class="edu.ku.brc.specify.datamodel.CollectionObject" iconname="CollectionObject" />
 	<SubMapper class="edu.ku.brc.specify.ui.AttachmentIconMapper" />

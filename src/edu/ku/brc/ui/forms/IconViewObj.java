@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -388,7 +389,28 @@ public class IconViewObj implements Viewable
         if (dataObj instanceof Set)
         {
             dataSet = (Set)dataObj;
+            
+        } else
+        {
+            if (dataSet == null)
+            {
+                dataSet = new HashSet<Object>();
+            } else
+            {
+                dataSet.clear();
+            }
+            
+            if (dataObj instanceof List)
+            {
+                dataSet.addAll((List)dataObj);
+                
+            } else
+            {
+                // single object
+                dataSet.add(dataObj);
+            }
         }
+
     }
 
     /* (non-Javadoc)

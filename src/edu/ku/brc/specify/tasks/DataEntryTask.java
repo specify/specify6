@@ -263,7 +263,7 @@ public class DataEntryTask extends BaseTask
             
             View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
             
-            formPane = new FormPane(session, name, task, view, null, session.getData(sqlStr), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+            formPane = new FormPane(session, name, task, view, null, session.getDataList(sqlStr), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
             formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
             
         } else

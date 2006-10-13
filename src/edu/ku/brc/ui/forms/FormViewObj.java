@@ -315,7 +315,7 @@ public class FormViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (altView.getMode() == AltView.CreationMode.Edit && mvParent.isTopLevel())
+                    if (altView.getMode() == AltView.CreationMode.Edit && mvParent != null && mvParent.isTopLevel())
                     {
                         // We want it on the left side of other buttons
                         // so wee need to add it before the Save button
@@ -332,7 +332,7 @@ public class FormViewObj implements Viewable,
             
             if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
             {
-                if (mvParent.isTopLevel() && !hideSaveBtn)
+                if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn)
                 {
                     addSaveBtn();
                     comps.add(saveBtn);
@@ -457,7 +457,7 @@ public class FormViewObj implements Viewable,
                 }
                 public void actionPerformed(ActionEvent ae)
                 {
-                    //log.info("Index: "+switcherComp.getCurrentIndex());
+                    log.info("Index: "+switcherComp.getCurrentIndex());
                     
                     mvParentArg.showView(altViewsListArg.get(switcherComp.getCurrentIndex()));
                 }
@@ -1503,7 +1503,7 @@ public class FormViewObj implements Viewable,
                                     throw new RuntimeException("No Format but mulitple fields were specified for["+cellField.getName()+"]");
                                 }
 
-                                if (values == null || values[0] == null)
+                                if (values[0] == null)
                                 {
                                     setDataIntoUIComp(comp, isTextFieldPerMode ? "" : null, defaultValue);
                                     

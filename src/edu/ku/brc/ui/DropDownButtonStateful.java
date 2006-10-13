@@ -183,7 +183,7 @@ public class DropDownButtonStateful extends DropDownButton
             JMenuItem mi = (JMenuItem)obj;
             for (int i=0;i<imgIcons.length;i++)
             {
-                if (imgIcons[i] == mi.getIcon())
+                if (labels[i] != null && labels[i].equals(mi.getText()))
                 {
                     setCurrentIndex(i);
                     return;
