@@ -16,8 +16,6 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
-
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 

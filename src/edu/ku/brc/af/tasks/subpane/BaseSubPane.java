@@ -25,7 +25,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;

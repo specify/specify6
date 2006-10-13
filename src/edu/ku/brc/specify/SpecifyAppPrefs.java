@@ -16,7 +16,6 @@
 package edu.ku.brc.specify;
 
 import java.awt.Color;
-import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.time.FastDateFormat;
 

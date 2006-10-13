@@ -6,8 +6,6 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 
-import org.hibernate.Session;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
