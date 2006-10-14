@@ -54,11 +54,11 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -471,12 +471,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
         return extendedNavBoxes;
     }
 
-    //-------------------------------------------------------
-    // Plugin Interface
-    //-------------------------------------------------------
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.core.Taskable#getToolBarItems()
      */
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
@@ -552,7 +548,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.af.core.Taskable#getMenuItems()
      */
     @Override
     public List<MenuItemDesc> getMenuItems()
@@ -561,7 +557,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.core.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
     {

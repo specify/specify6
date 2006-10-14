@@ -25,11 +25,11 @@ import javax.swing.JComponent;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.IconManager;
@@ -116,13 +116,9 @@ public class QueryTask extends BaseTask
         return new SQLQueryPane(name, this, false, false);
     }
 
-    //-------------------------------------------------------
-    // Plugin Interface
-    //-------------------------------------------------------
-
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.core.Taskable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
@@ -144,7 +140,7 @@ public class QueryTask extends BaseTask
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.af.core.Taskable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
@@ -155,7 +151,7 @@ public class QueryTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.core.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
     {

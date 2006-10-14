@@ -19,10 +19,10 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -34,6 +34,12 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
  * @code_status Complete
  **
  * @author rods
+ *
+ */
+/**
+ * @author rods
+ *
+ * @code_status Alpha
  *
  */
 public class StartUpTask extends BaseTask
@@ -88,12 +94,11 @@ public class StartUpTask extends BaseTask
     }
 
     //-------------------------------------------------------
-    // Plugin Interface
+    // BaseTask (Taskable Interface)
     //-------------------------------------------------------
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getToolBarItems()
      */
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
@@ -111,9 +116,8 @@ public class StartUpTask extends BaseTask
 
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
      */
     @Override
     public List<MenuItemDesc> getMenuItems()
@@ -125,7 +129,7 @@ public class StartUpTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.tasks.BaseTask#getTaskClass()
      */
     @Override
     public Class<? extends StartUpTask> getTaskClass()

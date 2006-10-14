@@ -69,7 +69,7 @@ public class IdMapperMgr
     {
         if (oldConn == null || newConn == null)
         {
-            throw new RuntimeException("setDBs MUST be called on IdMapperMgr before using it!");
+            throw new RuntimeException("setDBs MUST be called on IdMapperMgr before using it! oldConn["+oldConn+"]  newConn["+newConn+"]");
             
         }
         String name = tableName.toLowerCase();

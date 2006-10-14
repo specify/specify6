@@ -38,12 +38,12 @@ import javax.mail.Store;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
@@ -509,13 +509,9 @@ public class InfoRequestTask extends BaseTask
         return recentFormPane;
     }
     
-    //-------------------------------------------------------
-    // Plugin Interface
-    //-------------------------------------------------------
-    
      /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
@@ -529,7 +525,7 @@ public class InfoRequestTask extends BaseTask
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
@@ -539,7 +535,7 @@ public class InfoRequestTask extends BaseTask
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
     {

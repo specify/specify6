@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -192,7 +192,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	}
 	
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
 	@SuppressWarnings("unchecked")
     @Override

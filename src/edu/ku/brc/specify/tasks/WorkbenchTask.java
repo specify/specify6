@@ -32,11 +32,11 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -160,10 +160,6 @@ public class WorkbenchTask extends BaseTask
 		}
     }
 
-    //-------------------------------------------------------
-    // Plugin Interface
-    //-------------------------------------------------------
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.BaseTask#getStarterPane()
      */
@@ -173,7 +169,7 @@ public class WorkbenchTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
@@ -193,7 +189,7 @@ public class WorkbenchTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
@@ -204,7 +200,7 @@ public class WorkbenchTask extends BaseTask
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
     {

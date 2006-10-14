@@ -42,6 +42,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
+import edu.ku.brc.specify.conversion.TableStats;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -143,6 +144,41 @@ public class SpecifyDBConverter
         System.out.println("From "+oldDatabaseName+" to "+databaseName);
         System.out.println("************************************************************");
       
+        
+        if (false)
+        {
+            // This will log us in and return true/false
+            if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, "rods", "rods"))
+            {
+                throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
+            }
+            DBConnection oldDB = DBConnection.createInstance("com.mysql.jdbc.Driver", null,
+                                                            oldDatabaseName,
+                                                            "jdbc:mysql://localhost/"+oldDatabaseName,
+                                                            "rods",
+                                                            "rods");
+            Connection oldConnection = oldDB.createConnection();
+            List<String> oldNames = BasicSQLUtils.getTableNames(oldConnection);
+            Hashtable<String, String> oldNameHash = new Hashtable<String, String>();
+            for (String name : oldNames)
+            {
+                oldNameHash.put(name, name);
+            }
+            Connection connection = DBConnection.getInstance().createConnection();
+            List<String> newNames = BasicSQLUtils.getTableNames(connection);
+            for (String tableName : newNames)
+            {
+                if (oldNameHash.get(tableName) != null)
+                {
+                    TableStats ts = new TableStats(oldConnection, tableName, connection, tableName);
+                    ts.collectStats();
+                    ts.compareStats();
+                    break;
+                }
+            }
+            connection.close();
+            return;
+        }
 
         HibernateUtil.shutdown();
         
@@ -151,6 +187,8 @@ public class SpecifyDBConverter
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
+        
+        
 
         // NOTE: You must have already created the database to use this
         // but the database can be empty
@@ -398,6 +436,7 @@ public class SpecifyDBConverter
 
                         conversion.convertBiologicalAttrs(colObjDef, null, null);
                 }
+                conversion.showStats();
             }
 
             if (GenericDBConversion.shouldDeleteMapTables())
@@ -405,6 +444,7 @@ public class SpecifyDBConverter
                 idMapperMgr.cleanup();
             }
 
+            
 
             log.info("Done.");
 

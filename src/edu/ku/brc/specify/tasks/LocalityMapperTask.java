@@ -21,9 +21,9 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -91,13 +91,9 @@ public class LocalityMapperTask extends BaseTask
         }
     }
 
-    //-------------------------------------------------------
-    // Plugin Interface
-    //-------------------------------------------------------
-
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
@@ -109,7 +105,7 @@ public class LocalityMapperTask extends BaseTask
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
@@ -120,7 +116,7 @@ public class LocalityMapperTask extends BaseTask
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
     {

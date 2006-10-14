@@ -31,6 +31,7 @@ import javax.swing.SwingConstants;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
@@ -39,9 +40,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.SubPaneMgrListener;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.TaskPluginable;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -58,14 +57,14 @@ import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * Abstract class to provide a base level of functionality for implementing a task.
- * It fully implements Taskable and partially implements TaskPluginable.
+ * It fully implements Taskable.
  
  * @code_status Code Freeze
  **
  * @author rods
  *
  */
-public abstract class BaseTask implements Taskable, TaskPluginable, CommandListener, SubPaneMgrListener
+public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(BaseTask.class);
@@ -294,7 +293,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.core.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
     {
@@ -448,8 +447,8 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     // Taskable
     //-------------------------------------------------------
 
-    /**
-     * Sets initialization to true.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#initialize()
      */
     public void initialize()
     {
@@ -493,19 +492,13 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         SubPaneMgr.getInstance().addPane(getStarterPane());
     }
 
-    //-------------------------------------------------------
-    // Plugin Interface
-    //-------------------------------------------------------
-
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#getName()
      */
     public String getName()
     {
         return name;
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getTitle()
@@ -515,37 +508,18 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         return title;
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#getToolBarItems()
      */
     public abstract List<ToolBarItemDesc> getToolBarItems();
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#getMenuItems()
      */
     public abstract List<MenuItemDesc> getMenuItems();
 
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#installPrefs()
-     */
-    public void installPrefs()
-    {
-        // do nothing
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#removePrefs()
-     */
-    public void removePrefs()
-    {
-        // do nothing
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#initialize(java.util.List)
+     * @see edu.ku.brc.af.core.Taskable#initialize(java.util.List)
      */
     public void initialize(List<TaskCommandDef> cmds)
     {

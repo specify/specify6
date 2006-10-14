@@ -15,7 +15,7 @@ import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.ku.brc.af.plugins.MenuItemDesc;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;

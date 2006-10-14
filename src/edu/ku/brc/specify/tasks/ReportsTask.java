@@ -19,10 +19,10 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.IconManager;
@@ -63,13 +63,9 @@ public class ReportsTask extends BaseTask
         return new SimpleDescPane(title, this, "This is the Reports Pane");
     }
 
-    //-------------------------------------------------------
-    // Plugin Interface
-    //-------------------------------------------------------
-
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
@@ -86,7 +82,7 @@ public class ReportsTask extends BaseTask
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
@@ -96,7 +92,7 @@ public class ReportsTask extends BaseTask
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
     {

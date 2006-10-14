@@ -57,9 +57,9 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.plugins.PluginMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
@@ -204,9 +204,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         
  
-        PluginMgr.readRegistry();
+        TaskMgr.readRegistry();
         
-        PluginMgr.initializePlugins();
+        TaskMgr.initializePlugins();
 
         validate();
 

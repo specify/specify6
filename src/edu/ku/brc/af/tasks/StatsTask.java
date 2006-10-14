@@ -28,10 +28,10 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.plugins.MenuItemDesc;
-import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.stats.StatsMgr;
@@ -138,19 +138,15 @@ public class StatsTask extends BaseTask
             SimpleDescPane pane = new SimpleDescPane(name, this, panel);
             addSubPaneToMgr(pane);
         }
-
-
-
     }
 
 
     //-------------------------------------------------------
-    // Plugin Interface
+    // BaseTask Taskable Interface
     //-------------------------------------------------------
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getToolBarItems()
      */
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
@@ -166,9 +162,8 @@ public class StatsTask extends BaseTask
         return list;
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
      */
     @Override
     public List<MenuItemDesc> getMenuItems()
@@ -178,7 +173,7 @@ public class StatsTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.tasks.BaseTask#getTaskClass()
      */
     @Override
     public Class<? extends StatsTask> getTaskClass()

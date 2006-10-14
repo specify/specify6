@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.Icon;
 
 
+
 /**
  * Interface for any task in the system, most of the methods are "getters" that
  * enable the Task to play nice within the system.
@@ -66,5 +67,31 @@ public interface Taskable
      *
      */
     public void requestContext();
+    
+    /**
+     * Returns the toolbar items (usually only one item).
+     * @return the toolbar items (usually only one item)
+     */
+    public List<ToolBarItemDesc> getToolBarItems();
+
+    /**
+     * Returns the menu item to be registered.
+     * @return the menu item to be registered
+     */
+    public List<MenuItemDesc> getMenuItems();
+    
+    /**
+     * Initializes the task. The Taskable is responsible for making sure this method
+     * can be called mulitple times with no ill effects.
+     *
+     * @param cmds the list of commands for the task
+     */
+    public void initialize(List<TaskCommandDef> cmds);
+
+    /**
+     * Returns the implementing Class type.
+     * @return the implementing Class type
+     */
+    public abstract Class<?> getTaskClass();
 
 }

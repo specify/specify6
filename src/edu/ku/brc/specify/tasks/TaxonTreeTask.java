@@ -16,7 +16,7 @@ import java.util.Vector;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.ku.brc.af.plugins.MenuItemDesc;
+import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Taxon;

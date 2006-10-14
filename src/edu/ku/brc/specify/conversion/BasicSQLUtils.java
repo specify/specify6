@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -258,6 +259,37 @@ public class BasicSQLUtils
             //e.printStackTrace();
             log.error(ex);
         }
+    }
+
+    /**
+     * Removes all the records from all the tables
+     */
+    public static List<String> getTableNames(final Connection connection)
+    {
+        List<String> names = new Vector<String>();
+        try
+        {
+            Statement  stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("show tables");
+            if (rs.first())
+            {
+                do
+                {
+                    names.add(rs.getString(1));
+                } while (rs.next());
+            }
+            rs.close();
+
+            stmt.clearBatch();
+            stmt.close();
+
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+        }
+        return names;
     }
 
     /**
@@ -727,6 +759,11 @@ public class BasicSQLUtils
                             	{
                             		dataObj = idMapper.get(oldPrimaryKeyId);
                             	}
+                                
+                                if (dataObj == null)
+                                {
+                                    log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"]");
+                                }
 
                                 /*if (rs.getObject(columnIndex) != null)
                                 {

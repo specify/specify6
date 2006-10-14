@@ -132,7 +132,8 @@ public class GenericDBConversion
 
     protected Hashtable<String, Long> dataTypeNameToIds = new Hashtable<String, Long>(); // name to Record ID
 
-
+    protected Hashtable<String, TableStats> tableStatHash = new Hashtable<String, TableStats>();
+    
     // Helps during debuggin
     protected static boolean shouldCreateMapTables = true;
     protected static boolean shouldDeleteMapTables = false;
@@ -200,9 +201,17 @@ public class GenericDBConversion
      * Return the SQL Connection to the New Database
      * @return the SQL Connection to the New Database
      */
-   public Connection getNewDBConnection()
+    public Connection getNewDBConnection()
     {
         return newDBConn;
+    }
+   
+    public void showStats()
+    {
+        for (Enumeration<TableStats> ts=tableStatHash.elements();ts.hasMoreElements();)
+        {
+            ts.nextElement().compareStats();
+        }
     }
 
     /**
@@ -640,15 +649,21 @@ public class GenericDBConversion
        BasicSQLUtils.setShowMappingError(false);
        for (String tableName : tablesToMoveOver)
        {
-
            String lowerCaseName = tableName.toLowerCase();
 
            deleteAllRecordsFromTable(lowerCaseName);
 
+           TableStats tblStats = new TableStats(oldDBConn, lowerCaseName, newDBConn, lowerCaseName);
+           tableStatHash.put(lowerCaseName, tblStats);
+           
            if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
            {
                log.error("Table ["+tableName+"] didn't copy correctly.");
                break;
+               
+           } else
+           {
+               tblStats.collectStats();
            }
        }
        BasicSQLUtils.setShowMappingError(true);

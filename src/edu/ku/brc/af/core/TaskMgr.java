@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.af.plugins;
+package edu.ku.brc.af.core;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
@@ -38,9 +38,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.ServiceInfo;
-import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
@@ -48,30 +45,30 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
- * Manages all the plugins as described in the plugin registry. 
- * The plugins are read in and then created. Their toolbar items and menu items areinserted into the UI.
+ * Manages all the tasks as described in the plugin registry. 
+ * The Tasks (Plugins) are read in and then created. Their toolbar items and menu items areinserted into the UI.
  * 
  * @code_status Beta
  * 
  * @author rods
  *
  */
-public class PluginMgr
+public class TaskMgr
 {
 
     // Static Data Members
-    private static final Logger    log      = Logger.getLogger(PluginMgr.class);
-    private static final PluginMgr instance = new PluginMgr();
+    private static final Logger  log      = Logger.getLogger(TaskMgr.class);
+    private static final TaskMgr instance = new TaskMgr();
 
     // Data Members
-    protected Hashtable<String, TaskPluginable> plugins        = new Hashtable<String, TaskPluginable>();
-    protected Element                           commandDOMRoot = null;
+    protected Hashtable<String, Taskable> plugins        = new Hashtable<String, Taskable>();
+    protected Element                     commandDOMRoot = null;
 
     /**
      * Protected Default Constructor for Singleton
      *
      */
-    protected PluginMgr()
+    protected TaskMgr()
     {
         // do nothing
     }
@@ -80,7 +77,7 @@ public class PluginMgr
      * Returns a singleton of the plugin manager
      * @return a singleton of the plugin manager
      */
-    public static PluginMgr getInstance()
+    public static TaskMgr getInstance()
     {
         return instance;
     }
@@ -89,7 +86,7 @@ public class PluginMgr
      * Registers a plugin into the applications
      * @param plugin the plugin to be registered
      */
-    public static void register(final TaskPluginable plugin)
+    public static void register(final Taskable plugin)
     {
         if (plugin != null)
         {
@@ -113,7 +110,7 @@ public class PluginMgr
      * Unregisters a plugin from the application
      * @param plugin the plugin to be installed
      */
-    public static void unregister(final TaskPluginable plugin)
+    public static void unregister(final Taskable plugin)
     {
         if (plugin != null)
         {
@@ -134,7 +131,7 @@ public class PluginMgr
      * Registers the plugin's UI compontents with the various parts of the UI
      * @param plugin the plugin that will register it's UI
      */
-    protected static void registerWithUI(final TaskPluginable plugin)
+    protected static void registerWithUI(final Taskable plugin)
     {
         JToolBar toolBar = (JToolBar)UICacheManager.get(UICacheManager.TOOLBAR);
         if (toolBar != null)
@@ -251,7 +248,7 @@ public class PluginMgr
 //     * Unregisters the plugin's UI components from the various different pasts of the application
 //     * @param plugin the plugin that is being unregistered
 //     */
-//    protected static void unregisterWithUI(final TaskPluginable plugin)
+//    protected static void unregisterWithUI(final Taskable plugin)
 //    {
 //    }
 
@@ -261,9 +258,9 @@ public class PluginMgr
      */
     public static void initializePlugins()
     {
-        for (Enumeration<TaskPluginable> e=instance.plugins.elements();e.hasMoreElements();)
+        for (Enumeration<Taskable> e=instance.plugins.elements();e.hasMoreElements();)
         {
-            TaskPluginable taskablePlugin = e.nextElement();
+            Taskable taskablePlugin = e.nextElement();
             taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()));
         }
     }
@@ -303,8 +300,7 @@ public class PluginMgr
                     try
                     {
     
-                        Class<?> cls = Class.forName(name);
-                        newObj = cls.newInstance();
+                        newObj = Class.forName(name).asSubclass(Taskable.class).newInstance();
     
                     } catch (Exception ex)
                     {
@@ -316,9 +312,9 @@ public class PluginMgr
                         // XXX Do we need a dialog here ???
                     }
     
-                    if (newObj instanceof TaskPluginable)
+                    if (newObj instanceof Taskable)
                     {
-                        TaskPluginable tp = (TaskPluginable)newObj;
+                        Taskable tp = (Taskable)newObj;
                         register(tp);
     
                         List<?> servicesList = pluginElement.selectNodes("service");
@@ -332,7 +328,7 @@ public class PluginMgr
                         }
                     } else
                     {
-                        log.error("Oops, the plugin is not instance of TaskPluginable ["+newObj+"]");
+                        log.error("Oops, the plugin is not instance of Taskable ["+newObj+"]");
                         // XXX Need to display an error
                     }
                 }
