@@ -328,7 +328,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
         boolean hasResults = false;
         if (searchTerm != null && searchTerm.length() > 0)
         {
-            if (false)
+            if (true)
             {
                 hasResults = exeQueryLocal(lucenePath, analyzer, searchTerm, tables, esrPane);
             } else
@@ -412,6 +412,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
                 for (long i=0;i<numTables;i++)
                 {
                     long tableId  = getLong();
+                    @SuppressWarnings("unused")
                     long useFloat = getLong();
                     long numIds   = getLong();
                     //System.out.println("Table ["+tableId+"] useFloat["+useFloat+"] Num Ids["+numIds+"]");
