@@ -31,9 +31,9 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
-/*
- * @code_status Unknown (auto-generated)
- **
+/**
+ * @code_status Alpha
+ *
  * @author rods
  *
  */
@@ -44,17 +44,19 @@ public class ResultSetTableModel extends AbstractTableModel
     private static final Logger log = Logger.getLogger(ResultSetTableModel.class);
 
     // Data Members
-    protected ResultSet         resultSet  = null;
-    protected ResultSetMetaData metaData   = null;
-    protected Vector<Class>     classNames = new Vector<Class>();
-    protected int               currentRow = 0;
-    protected int               numRows    = 0;
+    protected ResultSet         resultSet   = null;
+    protected ResultSetMetaData metaData    = null;
+    protected Vector<Class>     classNames  = new Vector<Class>();
+    protected int               currentRow  = 0;
+    protected int               numRows     = 0;
+    protected String[]          columnNames = null; 
+
 
     /**
-     * Construct with a ResultSet
+     * Construct with a ResultSet.
      * @param resultSet the recordset
      */
-    public ResultSetTableModel(ResultSet resultSet)
+    public ResultSetTableModel(final ResultSet resultSet)
     {
         if (this.resultSet != null)
         {
@@ -123,9 +125,15 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public int getColumnCount()
     {
+        if (columnNames != null)
+        {
+            return columnNames.length;
+        }
+        
         try
         {
             return metaData == null ? 0 : metaData.getColumnCount();
+            
         } catch (SQLException ex)
         {
             log.error("In getColumnCount", ex);
@@ -149,6 +157,11 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public String getColumnName(int column)
     {
+        if (columnNames != null)
+        {
+            return columnNames[column];
+            
+        }
         if (metaData == null)
         {
             return "N/A";
@@ -318,6 +331,25 @@ public class ResultSetTableModel extends AbstractTableModel
             log.error(ex);
         }
         return null;
+    }
+
+
+    /**
+     * Returns the column names.
+     * @return the array of Column names
+     */
+    public String[] getColumnNames()
+    {
+        return columnNames;
+    }
+
+    /**
+     * Sets the column names.
+     * @param columnNames the array of column names
+     */
+    public void setColumnNames(String[] columnNames)
+    {
+        this.columnNames = columnNames;
     }
 
 }

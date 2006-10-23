@@ -53,8 +53,9 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
     protected NavBox      navBox = null;
 
     /**
-     * Default Constructor
-     *
+     * Default Constructor.
+     * @param name the name of the pane
+     * @param task the owning task
      */
     public ExpressSearchResultsPane(final String name,
                                     final Taskable task)

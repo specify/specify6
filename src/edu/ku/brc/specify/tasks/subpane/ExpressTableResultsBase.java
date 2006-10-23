@@ -59,7 +59,7 @@ import edu.ku.brc.ui.UIHelper;
  * supplied as an "in" clause.
  *
  * 
- * @code_status Code Freeze
+ * @code_status Beta
  * 
  * @author rods
  *
@@ -227,34 +227,23 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
 
     /**
-     *
+     * Sets all the Columns to be center justified this COULD be set up in the table info.
      *
      */
-    protected void configColumnNames()
+    protected void configColumns()
     {
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(JLabel.CENTER);
-
-        int[] colMappings = null;//tableInfo.getDisplayColIndexes();
-        colLabels = tableInfo.getColLabels();
 
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++)
         {
             tableColModel.getColumn(i).setCellRenderer(renderer);
-            if (colLabels != null)
-            {
-                String label = (String)tableColModel.getColumn(i).getHeaderValue();
-                if (label != null )
-                {
-                    tableColModel.getColumn(i).setHeaderValue(colMappings != null ? colLabels[colMappings[i]] : colLabels[i]);
-                }
-            }
         }
     }
 
     /**
-     *
+     * Builds the "more" panel.
      *
      */
     protected void buildMorePanel()
@@ -294,7 +283,7 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
 
     /**
-     * Asks parent to remove this table
+     * Asks parent to remove this table.
      */
     protected void removeMe()
     {
@@ -317,9 +306,10 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
 
     /**
-     * Display the 'n' number of rows up to topNumEntries
+     * Display the 'n' number of rows up to topNumEntries.
      *
      * @param numRows the desired number of rows
+     * @param maxNum the maximum number of rows
      */
     protected void setDisplayRows(final int numRows, final int maxNum)
     {
@@ -330,7 +320,7 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
 
     /**
-     * Returns the JTable that holds the results
+     * Returns the JTable that holds the results.
      * @return the JTable that holds the results
      */
     public JTable getTable()
@@ -339,7 +329,7 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
 
     /**
-     * Return a recordset for the selected items
+     * Return a recordset for the selected items.
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return a recordset for the selected items
      */
@@ -372,7 +362,7 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
     
     /**
-     * Returns a list of recordIds
+     * Returns a list of recordIds.
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return a list of recordIds
      */
@@ -391,7 +381,7 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
 
     /**
-     * Returns a RecordSet object from the table
+     * Returns a RecordSet object from the table.
      * @param rows selected row indexes
      * @param column the column to get the indexes from
      * @param returnAll indicates whether all the records should be returned if nothing was selected
@@ -403,11 +393,9 @@ public abstract class ExpressTableResultsBase extends JPanel
     // Inner Classes
     //--------------------------------------------------------------
 
-     /**
+    /**
      *
-     * @author rods
-     *
-     */
+.    */
     class ESTableAction implements ActionListener
     {
         protected CommandAction cmd;

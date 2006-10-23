@@ -163,7 +163,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         {
             listener.cancelled();
         }
-        this.setGlassPane(null);
+        //this.setGlassPane(null);
     }
 
 

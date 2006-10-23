@@ -101,10 +101,10 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
         }
 
         colLabels = tableInfo.getColLabels();
-
+        
         table.setModel(hitsModel);
 
-        configColumnNames();
+        configColumns();
 
         numCols  = table.getModel().getColumnCount();
 
@@ -142,9 +142,12 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     @SuppressWarnings("serial")
     class HitsTableModel extends AbstractTableModel
     {
-        private int[] displayIndexes = null;
-        private int[] cols           = null;
+        private int[]    displayIndexes = null;
+        private int[]    cols           = null;
 
+        /**
+         * 
+         */
         public HitsTableModel()
         {
 
@@ -161,10 +164,10 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
         }
 
         /**
-         * Get the column name
+         * Get the column name.
          * @param column the column of the cell to be gotten
          */
-        public String getColumnLabel(int column)
+        public String getColumnName(int column)
         {
             return colLabels[column];
         }

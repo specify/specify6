@@ -47,7 +47,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      * Construct with a ResultSet
      * @param resultSet the recordset
      */
-    public ResultSetTableModelDM(ResultSet resultSet)
+    public ResultSetTableModelDM(final ResultSet resultSet)
     {
         super(resultSet);
         
@@ -59,14 +59,20 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      */
     public int getColumnCount()
     {
+        if (columnNames != null)
+        {
+            return columnNames.length;
+        }
         try
         {
             return metaData == null ? 0 : (displayColIndexes != null ? displayColIndexes.length : metaData.getColumnCount());
+            
         } catch (SQLException ex)
         {
             log.error("In getColumnCount", ex);
         }
         return 0;
+
     }
 
     /**
@@ -87,6 +93,14 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      */
     public String getColumnName(int column)
     {
+        if (columnNames != null)
+        {
+            return columnNames[column];
+            
+            //return displayColIndexes != null ? columnNames[displayColIndexes[column]] : 
+            //                                   columnNames[column];
+        }
+        
         if (metaData == null)
         {
             return "N/A";

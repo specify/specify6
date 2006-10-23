@@ -10,6 +10,7 @@
             <altviews>
                 <altview name="Accession View" viewdef="Accession" label="View" mode="view"  validated="false" default="true"/>
                 <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"  validated="true"/>
+                <altview name="Accession Icon" viewdef="AccessionIconView" label="IconView " mode="view" validated="false"/>                
             </altviews>
         </view>
 
@@ -74,15 +75,24 @@
     </views>
 
     <viewdefs>
-    	<viewdef
-    		type="iconview"
+        <viewdef
+            type="iconview"
+            name="AccessionIconView"
+            class="edu.ku.brc.specify.datamodel.Accession"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession Agents Icon Viewer]]></desc>
+        </viewdef>
+        
+        <viewdef
+            type="iconview"
             name="AccessionAgentIconView"
             class="edu.ku.brc.specify.datamodel.AccessionAgents"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession Agents Icon Viewer]]></desc>
         </viewdef>
-    
+        
         <viewdef
             type="form"
             name="Accession"

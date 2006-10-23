@@ -3510,7 +3510,7 @@ public class GenericDBConversion
                 modT = new Date(creT.getTime());
             } else
             {
-                creT = new Date(modT.getTime());
+                creT = new Date(modT != null ? modT.getTime() : (new Date()).getTime());
             }
 
     		

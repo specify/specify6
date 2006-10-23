@@ -439,13 +439,10 @@ public class SpecifyDBConverter
                 conversion.showStats();
             }
 
-            if (GenericDBConversion.shouldDeleteMapTables())
+            if (idMapperMgr != null && GenericDBConversion.shouldDeleteMapTables())
             {
                 idMapperMgr.cleanup();
             }
-
-            
-
             log.info("Done.");
 
         } catch (Exception ex)

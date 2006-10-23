@@ -95,11 +95,11 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
         {
              rsm.addDisplayColIndexes(visCols);
         }
+        rsm.setColumnNames(tableInfo.getColLabels());
 
         table.setModel(rsm);
-        //colNames = tableInfo.getColNames();
 
-        configColumnNames();
+        configColumns();
 
         rowCount = rsm.getRowCount();
         if (rowCount > topNumEntries)

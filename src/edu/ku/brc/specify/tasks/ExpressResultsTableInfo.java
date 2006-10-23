@@ -247,7 +247,7 @@ public class ExpressResultsTableInfo
     public String[] getColNames()
     {
         String[] mappedColNames = null;
-        if (getVisColCount() < colNames.length)
+        if (visColCount < colNames.length)
         {
             mappedColNames = new String[visColCount];
             int j = 0;
@@ -271,7 +271,7 @@ public class ExpressResultsTableInfo
     public String[] getColLabels()
     {
         String[] mappedColLabels = null;
-        if (getVisColCount() < colLabels.length)
+        if (visColCount < colLabels.length)
         {
             mappedColLabels = new String[visColCount];
             int j = 0;
@@ -279,7 +279,7 @@ public class ExpressResultsTableInfo
             {
                 if (visCols[i])
                 {
-                    mappedColLabels[j++] = colNames[i];
+                    mappedColLabels[j++] = colLabels[i];
                 }
             }
             return mappedColLabels;
@@ -295,7 +295,7 @@ public class ExpressResultsTableInfo
     public int[] getDisplayColIndexes()
     {
         int[] colsArray = null;
-        if (visCols != null && getVisColCount() < visCols.length)
+        if (visCols != null && visColCount < visCols.length)
         {
             colsArray = new int[visColCount];
             int j = 0;
