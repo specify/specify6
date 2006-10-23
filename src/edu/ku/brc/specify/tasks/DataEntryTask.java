@@ -53,7 +53,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.dnd.DataActionEvent;
@@ -305,9 +305,9 @@ public class DataEntryTask extends BaseTask
                         ShowViewAction sva = new ShowViewAction(this, viewset, view);
                         
                         NavBoxItemIFace nbi = NavBox.createBtnWithTT(nameStr, iconname, toolTip, IconManager.IconSize.Std16, sva);
-                        if (nbi instanceof RolloverCommand)
+                        if (nbi instanceof NavBoxButton)
                         {
-                            RolloverCommand roc = (RolloverCommand)nbi;
+                            NavBoxButton roc = (NavBoxButton)nbi;
                             // When Being Dragged
                             roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
                             roc.addDragDataFlavor(DATAENTRY_FLAVOR);

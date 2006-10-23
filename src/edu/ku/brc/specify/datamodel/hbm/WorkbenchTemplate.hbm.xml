@@ -47,7 +47,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to WorkbenchTemplateMappingItem -->
-    <set name="workbenchtemplatemappingitems" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <set name="workbenchTemplateMappingItems" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>

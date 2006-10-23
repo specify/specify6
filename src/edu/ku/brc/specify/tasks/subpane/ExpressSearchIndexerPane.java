@@ -79,7 +79,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
@@ -255,8 +255,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         removeAll();
 
-        RolloverCommand configureBtn = new RolloverCommand(getResourceString("Configure"), IconManager.getImage("Configure", IconManager.IconSize.Std32));
-        RolloverCommand buildBtn     = new RolloverCommand(getResourceString("Build"), new ImageIcon(IconManager.getImagePath("build.gif")));
+        NavBoxButton configureBtn = new NavBoxButton(getResourceString("Configure"), IconManager.getImage("Configure", IconManager.IconSize.Std32));
+        NavBoxButton buildBtn     = new NavBoxButton(getResourceString("Build"), new ImageIcon(IconManager.getImagePath("build.gif")));
 
         configureBtn.setVerticalLayout(true);
         buildBtn.setVerticalLayout(true);

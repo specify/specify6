@@ -27,6 +27,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -40,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -50,6 +52,8 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.poi.util.LittleEndian;
+import org.apache.poi.util.LittleEndianConsts;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -61,6 +65,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
@@ -320,10 +325,144 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
             searchTerm = searchTextStr;
         }
 
-        if (searchTerm == null)
+        boolean hasResults = false;
+        if (searchTerm != null && searchTerm.length() > 0)
         {
-            searchTerm = "";
+            if (false)
+            {
+                hasResults = exeQueryLocal(lucenePath, analyzer, searchTerm, tables, esrPane);
+            } else
+            {
+                hasResults = exeQueryRemote(lucenePath, analyzer, searchTerm, tables, esrPane);
+            }
         }
+        
+        if (!hasResults)
+        {
+            if (searchText != null)
+            {
+                if (badSearchColor != null)
+                {
+                    searchText.setBackground(badSearchColor);
+                }
+                searchText.setSelectionStart(0);
+                searchText.setSelectionEnd(searchText.getText().length());
+                searchText.getToolkit().beep();
+            }
+        }
+        
+        return hasResults;
+    }
+    
+    
+    protected static byte[]      bytes   = new byte[LittleEndianConsts.LONG_SIZE];
+    protected static int         offset  = -1;
+    protected static InputStream iStream = null;
+    
+    protected static long getLong() throws IOException
+    {
+        iStream.read(bytes);
+        return LittleEndian.getLong(bytes, 0);
+    }
+
+    /**
+     * @param lucenePath
+     * @param analyzer
+     * @param searchTextStr
+     * @param tables
+     * @param esrPane
+     * @return
+     */
+    public static boolean exeQueryRemote(final File      lucenePath,
+                                        final Analyzer   analyzer,
+                                        final String     searchTextStr,
+                                        final Hashtable<String, ExpressResultsTableInfo> tables,
+                                        final ExpressSearchResultsPaneIFace esrPane)
+    {
+        
+        HTTPGetter getter = new HTTPGetter();
+        //System.out.println(new String(getter.doHTTPRequest("http://localhost:8080/sample/hello")));
+        
+        try
+        {
+            String encoded = StringEscapeUtils.escapeHtml(searchTextStr);
+            iStream = getter.beginHTTPRequest("http://localhost:8080/sample/hello?q="+encoded+"&db="+SpecifyAppContextMgr.getInstance().getDatabaseName());
+            
+            long hits = getLong();
+            //System.out.println("Hits: "+hits);
+            
+            if (hits > 0)
+            {
+                
+                // "tables" maps by name so create a hash for mapping by ID
+                Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = new Hashtable<String, ExpressResultsTableInfo>();
+
+                for (Enumeration<ExpressResultsTableInfo> e=tables.elements();e.hasMoreElements();)
+                {
+                    ExpressResultsTableInfo ti = e.nextElement();
+                    if (ti.isExpressSearch())
+                    {
+                        idToTableInfoMap.put(ti.getTableId(), ti);
+                    }
+                }
+                
+                long numTables = getLong();
+                //System.out.println("Num of Tables: "+numTables);
+                
+                for (long i=0;i<numTables;i++)
+                {
+                    long tableId  = getLong();
+                    long useFloat = getLong();
+                    long numIds   = getLong();
+                    //System.out.println("Table ["+tableId+"] useFloat["+useFloat+"] Num Ids["+numIds+"]");
+                    
+                    ExpressResultsTableInfo tableInfo = idToTableInfoMap.get(Long.toString(tableId));
+                    Vector<Integer> recIds = tableInfo.getRecIds();
+                    
+                    for (long inx=0;inx<numIds;inx++)
+                    {
+                        long recId = getLong();
+                        recIds.add((int)recId);
+                        //System.out.print(recId + ", ");
+                    }
+                    //System.out.println();
+                }
+                
+                for (Enumeration<ExpressResultsTableInfo> e=tables.elements();e.hasMoreElements();)
+                {
+                    ExpressResultsTableInfo tableInfo = e.nextElement();
+                    if (tableInfo.getRecIds().size() > 0 || tableInfo.getNumIndexes() > 0)
+                    {
+                        esrPane.addSearchResults(tableInfo, null);
+                        tableInfo.getRecIds().clear();
+                    }
+                }
+                return true;
+            }
+
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    
+    
+    /**
+     * @param lucenePath
+     * @param analyzer
+     * @param searchTextStr
+     * @param tables
+     * @param esrPane
+     * @return
+     */
+    public static boolean exeQueryLocal(final File      lucenePath,
+                                        final Analyzer   analyzer,
+                                        final String     searchTextStr,
+                                        final Hashtable<String, ExpressResultsTableInfo> tables,
+                                        final ExpressSearchResultsPaneIFace esrPane)
+    {
 
         try
         {
@@ -339,24 +478,14 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
             // Implicit AND
             QueryParser parser = new QueryParser("contents", analyzer);
             //parser.setOperator(QueryParser.DEFAULT_OPERATOR_AND);
-            query = parser.parse(searchTerm);
-            System.out.println(query.toString());
+            query = parser.parse(searchTextStr);
+            //System.out.println(query.toString());
 
             Hits hits = searcher.search(query);
 
             if (hits.length() == 0)
             {
-                log.debug("No Hits for ["+searchTerm+"]["+query.toString()+"]");
-                if (searchText != null)
-                {
-                    if (badSearchColor != null)
-                    {
-                        searchText.setBackground(badSearchColor);
-                    }
-                    searchText.setSelectionStart(0);
-                    searchText.setSelectionEnd(searchText.getText().length());
-                    searchText.getToolkit().beep();
-                }
+                log.debug("No Hits for ["+searchTextStr+"]["+query.toString()+"]");
                 return false;
             }
 
@@ -372,7 +501,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
                 }
             }
 
-            log.debug(hits.length()+" Hits for ["+searchTerm+"]["+query.toString()+"]");
+            log.debug(hits.length()+" Hits for ["+searchTextStr+"]["+query.toString()+"]");
 
             boolean useFloat = false;
 

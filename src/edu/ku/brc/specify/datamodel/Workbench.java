@@ -62,6 +62,10 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         timestampModified = null;
         workbenchTemplates = null;
         workbenchItems = new HashSet<WorkbenchDataItem>();
+        
+        timestampCreated = new Date();
+        timestampModified = new Date();
+        lastEditedBy = null;
 
     }
     // End Initializer

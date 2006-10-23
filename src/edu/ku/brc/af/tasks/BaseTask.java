@@ -50,7 +50,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MemoryDropDownButton;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.MultiView;
@@ -209,7 +209,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final int    position)
     {
         NavBoxItemIFace nb = NavBox.createBtn(labelText, name, IconManager.IconSize.Std16);
-        RolloverCommand rb = (RolloverCommand)nb;
+        NavBoxButton rb = (NavBoxButton)nb;
 
         // This is part of the "DndDeletable" Interface,
         // the object is responsible for knowing how to delete itself.
@@ -333,9 +333,9 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Looks to see if a form already exists for this request and shows it
      * otherwise it creates a form and add it to the SubPaneMgr.
      */
-    protected FormPane createFormPanel(RolloverCommand roc)
+    protected FormPane createFormPanel(NavBoxButton nbb)
     {
-        DroppableFormObject dfo = (DroppableFormObject)roc.getData();
+        DroppableFormObject dfo = (DroppableFormObject)nbb.getData();
         return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), null, dfo.getData());
     }
 

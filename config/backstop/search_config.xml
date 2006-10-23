@@ -5,7 +5,7 @@
     <!--      These are for Express Search      -->
     <!-- ************************************** -->
 
-  <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255" expresssearch="true">
+  <table id="1" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
         <table name="determination" title="Determination"/>
@@ -26,13 +26,13 @@
 	</index>
     <detailView icon="ColObj">
 	    <sql>
-	        <![CDATA[Select CollectionObjectID from collectionobject where CollectionObjectID in (%s)]]>
+	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="CollectionObjectID" text="CollectionObjectID" visible="false"/>
-            <caption col="CatalogNumber" text="Catalog Number"/>
-            <caption col="CatalogedDate" text="Cataloged Date"/>
-            <caption col="FullName" text="Taxon Name"/>
+            <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
+            <caption col="collectionobject.CatalogNumber" text="Catalog Number"/>
+            <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
+            <caption col="taxon.FullName" text="Taxon Name"/>
         </captions>
         <recordset tabletype="1" col="1"/>
 	</detailView>

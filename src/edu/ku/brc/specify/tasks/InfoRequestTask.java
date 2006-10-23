@@ -59,7 +59,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 
@@ -142,12 +142,12 @@ public class InfoRequestTask extends BaseTask
         int tableId = DBTableIdMgr.lookupIdByShortName("inforequest");
         DroppableFormObject dfo = new DroppableFormObject("view valid", tableId, infoRequest);
         NavBoxItemIFace     nbi = addNavBoxItem(navBox, getTitle(infoRequest), INFOREQUEST, "Delete", dfo);
-        RolloverCommand     roc = (RolloverCommand)nbi;
+        NavBoxButton     roc = (NavBoxButton)nbi;
         roc.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                createFormPanel((RolloverCommand)ae.getSource());
+                createFormPanel((NavBoxButton)ae.getSource());
             }
         });
         addDraggableDataFlavors(roc);
@@ -157,7 +157,7 @@ public class InfoRequestTask extends BaseTask
      * Adds the appropriate flavors to make it draggable
      * @param nbi the item to be made draggable
      */
-    protected void addDraggableDataFlavors(RolloverCommand roc)
+    protected void addDraggableDataFlavors(NavBoxButton roc)
     {
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(DroppableTaskPane.DROPPABLE_PANE_FLAVOR);
@@ -238,7 +238,7 @@ public class InfoRequestTask extends BaseTask
     {
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
-            if (((RolloverCommand)nbi).getLabelText().equals(boxName))
+            if (((NavBoxButton)nbi).getLabelText().equals(boxName))
             {
                 return nbi;
             }

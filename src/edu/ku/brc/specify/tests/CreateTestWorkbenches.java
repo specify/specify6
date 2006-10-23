@@ -36,10 +36,13 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  * @author megkumin
  *
  */
-public class CreateTestWorkbenches {
+public class CreateTestWorkbenches 
+{
     private static final Logger log = Logger.getLogger(CreateTestWorkbenches.class);
     protected static Calendar calendar = Calendar.getInstance();
-	public CreateTestWorkbenches() {
+    
+	public CreateTestWorkbenches() 
+    {
 		calendar.clear();
 		// TODO Auto-generated constructor stub
 	}

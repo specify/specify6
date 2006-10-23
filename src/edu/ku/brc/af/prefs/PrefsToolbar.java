@@ -34,7 +34,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 
 /**
@@ -149,7 +149,7 @@ public class PrefsToolbar extends JPanel
                         log.error("Icon was created - path["+iconPath+"]");
                     }
 
-                    RolloverCommand btn = new RolloverCommand(getResourceString(prefTitle), icon);
+                    NavBoxButton btn = new NavBoxButton(getResourceString(prefTitle), icon);
                     btn.setOpaque(false);
                     btn.setVerticalLayout(true);
 

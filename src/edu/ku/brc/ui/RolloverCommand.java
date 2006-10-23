@@ -55,7 +55,6 @@ import javax.swing.event.MouseInputAdapter;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
-import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.DndDeletable;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -74,7 +73,7 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
  *
  */
 @SuppressWarnings("serial")
-public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostActionable, DndDeletable
+public class RolloverCommand extends JPanel implements GhostActionable, DndDeletable
 {
     protected JTextField             txtFld     = null;
     protected JLabel                 iconLabel;

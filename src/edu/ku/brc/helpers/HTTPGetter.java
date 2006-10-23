@@ -15,7 +15,9 @@
 
 package edu.ku.brc.helpers;
 
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -39,11 +41,18 @@ public class HTTPGetter implements Runnable
         NoError, Error, HttpError, NotDoneError, IOError, URLError
     }
 
-    protected ErrorCode status = ErrorCode.NoError;
-    protected Thread    thread = null;
-    protected String    urlStr;
+    protected ErrorCode    status     = ErrorCode.NoError;
+    protected Thread       thread     = null;
+    protected String       urlStr     = null;
+    
+    protected HttpClient   httpClient = null;
+    protected GetMethod    method     = null;
+    protected InputStream  iStream    = null;
 
 
+    /**
+     * 
+     */
     public HTTPGetter()
     {
         this.urlStr = null;
@@ -74,6 +83,42 @@ public class HTTPGetter implements Runnable
      * use "getDigirResultsetStr" to get the results as a String
      *
      * @param url URL to be executaed
+     * @return returns the input stream for the body
+     */
+    public InputStream beginHTTPRequest(final String url) throws Exception
+    {
+        status = ErrorCode.NoError;
+
+        // Create an HttpClient with the MultiThreadedHttpConnectionManager.
+        // This connection manager must be used if more than one thread will
+        // be using the HttpClient.
+        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+
+        GetMethod method = new GetMethod(url);
+        //method.setQueryString("q=xxx");
+
+        log.debug("getting " + method.getURI());
+        // execute the method
+        httpClient.executeMethod(method);
+        
+        System.err.println("Len: "+method.getResponseContentLength());
+        return iStream = method.getResponseBodyAsStream();
+    }
+    
+    /**
+     * @return
+     * @throws IOException
+     */
+    public int getLong() throws IOException
+    {
+        return iStream.read();
+    }
+
+    /**
+     * Performs a "generic" HTTP request and fill member variable with results
+     * use "getDigirResultsetStr" to get the results as a String
+     *
+     * @param url URL to be executaed
      * @return returns an error code
      */
     public byte[] doHTTPRequest(final String url)
@@ -84,7 +129,7 @@ public class HTTPGetter implements Runnable
         // Create an HttpClient with the MultiThreadedHttpConnectionManager.
         // This connection manager must be used if more than one thread will
         // be using the HttpClient.
-        HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
 
         GetMethod method = new GetMethod(url);
         try

@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -23,15 +24,16 @@ import java.util.Set;
 /**
 
  */
-public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable {
+public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable 
+{
 
     // Fields    
 
-     protected Long workbenchTemplateId;
-     protected String name;
-     protected String remarks;
-     protected Set workbenches;
-     protected Set workbenchtemplatemappingitems;
+     protected Long                              workbenchTemplateId;
+     protected String                            name;
+     protected String                            remarks;
+     protected Set<Workbench>                    workbenches;
+     protected Set<WorkbenchTemplateMappingItem> workbenchTemplateMappingItems;
 
 
     // Constructors
@@ -41,7 +43,8 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     }
     
     /** constructor with id */
-    public WorkbenchTemplate(Long workbenchTemplateId) {
+    public WorkbenchTemplate(Long workbenchTemplateId) 
+    {
         this.workbenchTemplateId = workbenchTemplateId;
     }
    
@@ -49,9 +52,17 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     // Initializer
     public void initialize()
     {
-        throw new RuntimeException("Meg need to implement me!");
-
+        workbenchTemplateId = null;
+        name = null;
+        remarks = null;
+        workbenches = new HashSet<Workbench>();
+        workbenchTemplateMappingItems = new HashSet<WorkbenchTemplateMappingItem>();   
+        
+        timestampCreated = new Date();
+        timestampModified = new Date();
+        lastEditedBy = null;
     }
+    
     // End Initializer
 
     // Property accessors
@@ -133,23 +144,25 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    public Set getWorkbenches() {
+    public Set<Workbench> getWorkbenches() {
         return this.workbenches;
     }
     
-    public void setWorkbenches(Set workbenches) {
+    public void setWorkbenches(Set<Workbench> workbenches) {
         this.workbenches = workbenches;
     }
 
     /**
      * 
      */
-    public Set getWorkbenchtemplatemappingitems() {
-        return this.workbenchtemplatemappingitems;
+    public Set<WorkbenchTemplateMappingItem> getWorkbenchTemplateMappingItems() 
+    {
+        return this.workbenchTemplateMappingItems;
     }
     
-    public void setWorkbenchtemplatemappingitems(Set workbenchtemplatemappingitems) {
-        this.workbenchtemplatemappingitems = workbenchtemplatemappingitems;
+    public void setWorkbenchTemplateMappingItems(Set<WorkbenchTemplateMappingItem> workbenchTemplateMappingItems) 
+    {
+        this.workbenchTemplateMappingItems = workbenchTemplateMappingItems;
     }
 
 

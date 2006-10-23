@@ -52,7 +52,7 @@ import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -139,10 +139,10 @@ public class RecordSetTask extends BaseTask
      */
     protected void addDraggableDataFlavors(final NavBoxItemIFace nbi)
     {
-        RolloverCommand roc = (RolloverCommand)nbi;
+        NavBoxButton roc = (NavBoxButton)nbi;
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        roc.addActionListener(new RecordSetSelectedAction((RolloverCommand)nbi, (RecordSetIFace)roc.getData()));
+        roc.addActionListener(new RecordSetSelectedAction((NavBoxButton)nbi, (RecordSetIFace)roc.getData()));
     }
 
     /**
@@ -435,10 +435,10 @@ public class RecordSetTask extends BaseTask
      */
     class RecordSetSelectedAction implements ActionListener
     {
-        private RolloverCommand ro;
+        private NavBoxButton ro;
         private RecordSetIFace rs;
 
-        public RecordSetSelectedAction(final RolloverCommand ro, final RecordSetIFace rs)
+        public RecordSetSelectedAction(final NavBoxButton ro, final RecordSetIFace rs)
         {
             this.ro = ro;
             this.rs = rs;

@@ -32,7 +32,6 @@ import javax.swing.JPanel;
 
 import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
 
 /**
  * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)<br>
@@ -261,11 +260,11 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
 
     /**
-     * Returns a NavBoxItemIFace item built from a RolloverCommand.
+     * Returns a NavBoxItemIFace item built from a NavBoxButton.
      * @param label the text label
      * @param iconName the icon name, not the image filename, but the IconManager name for the icon
      * @param iconSize the size  to use
-     * @return a NavBoxItemIFace item built from a RolloverCommand
+     * @return a NavBoxItemIFace item built from a NavBoxButton
      */
     public static NavBoxItemIFace createBtn(final String label, 
                                             final String iconName, 
@@ -279,7 +278,7 @@ public class NavBox extends JPanel implements NavBoxIFace
             icon = IconManager.getImage(iconName, iconSize);
         }
         
-        RolloverCommand btn = new RolloverCommand(label, icon);
+        NavBoxButton btn = new NavBoxButton(label, icon);
         if (al != null)
         {
             btn.addActionListener(al);
@@ -289,11 +288,11 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
     
     /**
-     * Returns a NavBoxItemIFace item built from a RolloverCommand.
+     * Returns a NavBoxItemIFace item built from a NavBoxButton.
      * @param label the text label
      * @param iconName the icon name, not the image filename, but the IconManager name for the icon
      * @param iconSize the size  to use
-     * @return a NavBoxItemIFace item built from a RolloverCommand
+     * @return a NavBoxItemIFace item built from a NavBoxButton
      */
     public static NavBoxItemIFace createBtn(final String label, 
                                             final String iconName, 
@@ -303,13 +302,13 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
     
     /**
-     * Returns a NavBoxItemIFace item built from a RolloverCommand.
+     * Returns a NavBoxItemIFace item built from a NavBoxButton.
      * @param label the text label
      * @param iconName the icon name, not the image filename, but the IconManager name for the icon
      * @param iconSize the size  to use
      * @param iconSize the size  to use
      * @param al the action listener that will be added the item 
-     * @return a NavBoxItemIFace item built from a RolloverCommand
+     * @return a NavBoxItemIFace item built from a NavBoxButton
      */
     public static NavBoxItemIFace createBtnWithTT(final String label,
                                                   final String iconName, 

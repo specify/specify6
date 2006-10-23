@@ -41,7 +41,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -141,12 +141,12 @@ public class SystemSetupTask extends BaseTask
         int                 pickListTableId = DBTableIdMgr.lookupIdByShortName("picklist");
         DroppableFormObject dfo = new DroppableFormObject(SYSTEMSETUPTASK, pickListTableId, pickList);
         NavBoxItemIFace     nbi = addNavBoxItem(navBox, titleArg, SYSTEMSETUPTASK, delCmd, dfo, position);
-        RolloverCommand     roc = (RolloverCommand)nbi;
+        NavBoxButton     roc = (NavBoxButton)nbi;
         roc.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                RolloverCommand     roc = (RolloverCommand)ae.getSource();
+                NavBoxButton     roc = (NavBoxButton)ae.getSource();
                 DroppableFormObject dfo = (DroppableFormObject)roc.getData();
 
                 FormPane formPane;
@@ -174,7 +174,7 @@ public class SystemSetupTask extends BaseTask
      * Adds the appropriate flavors to make it draggable
      * @param nbi the item to be made draggable
      */
-    protected void addDraggableDataFlavors(RolloverCommand roc)
+    protected void addDraggableDataFlavors(NavBoxButton roc)
     {
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(DroppableTaskPane.DROPPABLE_PANE_FLAVOR);
@@ -237,7 +237,7 @@ public class SystemSetupTask extends BaseTask
     {
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
-            if (((RolloverCommand)nbi).getLabelText().equals(boxName))
+            if (((NavBoxButton)nbi).getLabelText().equals(boxName))
             {
                 return nbi;
             }

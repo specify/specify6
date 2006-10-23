@@ -66,7 +66,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconListCellRenderer;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
@@ -126,7 +126,7 @@ public class LabelsTask extends BaseTask
                                                                 final NavBoxItemIFace     nbi,
                                                                 final Map<String, String> params)
     {
-        RolloverCommand roc = (RolloverCommand)nbi;
+        NavBoxButton roc = (NavBoxButton)nbi;
         roc.setData(params);
 
         // When Being Dragged
@@ -659,7 +659,7 @@ public class LabelsTask extends BaseTask
                     public int getSize() { return labelsList.size(); }
                     public Object getElementAt(int index)
                     {
-                        return ((RolloverCommand)labelsList.get(index)).getLabelText();
+                        return ((NavBoxButton)labelsList.get(index)).getLabelText();
                     }
                 };
 

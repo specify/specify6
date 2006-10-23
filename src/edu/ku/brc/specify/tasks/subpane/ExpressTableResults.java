@@ -56,6 +56,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
     {
         super(esrPane, tableInfo, installServices);
 
+        System.err.println("["+tableInfo.getViewSql()+"]");
         sqlExecutor = new SQLExecutionProcessor(this, tableInfo.getViewSql());
         sqlExecutor.setAutoCloseConnection(false);
         sqlExecutor.start();

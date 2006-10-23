@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
+
 
 
 
@@ -47,9 +49,17 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     // Initializer
     public void initialize()
     {
-        throw new RuntimeException("Meg need to implement me!");
-
+        workbenchDataItemId = null;
+        cellData = null;
+        rowNumber = null;
+        columnNumber = null;
+        owner = null;
+        
+        timestampCreated = new Date();
+        timestampModified = new Date();
+        lastEditedBy = null;
     }
+    
     // End Initializer
 
     // Property accessors

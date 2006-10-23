@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
+
 
 
 
@@ -38,19 +40,31 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     // Constructors
 
     /** default constructor */
-    public WorkbenchTemplateMappingItem() {
+    public WorkbenchTemplateMappingItem() 
+    {
     }
     
     /** constructor with id */
-    public WorkbenchTemplateMappingItem(Long workbenchTemplateMappingItemId) {
+    public WorkbenchTemplateMappingItem(Long workbenchTemplateMappingItemId) 
+    {
         this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
    
     // Initializer
     public void initialize()
     {
-        throw new RuntimeException("Meg need to implement me!");
-
+        workbenchTemplateMappingItemId = null;
+        tablename = null;
+        tableid = null;
+        fieldname = null;
+        caption = null;
+        vieworder = null;
+        datatype = null;
+        workbenchTemplates = null;
+        
+        timestampCreated = new Date();
+        timestampModified = new Date();
+        lastEditedBy = null;
     }
     // End Initializer
 
@@ -59,7 +73,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    public Long getWorkbenchTemplateMappingItemId() {
+    public Long getWorkbenchTemplateMappingItemId() 
+    {
         return this.workbenchTemplateMappingItemId;
     }
 
@@ -72,7 +87,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         return this.workbenchTemplateMappingItemId;
     }
     
-    public void setWorkbenchTemplateMappingItemId(Long workbenchTemplateMappingItemId) {
+    public void setWorkbenchTemplateMappingItemId(Long workbenchTemplateMappingItemId) 
+    {
         this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
 

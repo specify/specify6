@@ -2081,22 +2081,14 @@ public class ObjCreatorHelper
         return usergroup;
     }
 
-    public static void saveOrUpdate(Object transientObject)
-    {
-    	if( session != null )
-    	{
-    		session.saveOrUpdate(transientObject);
-    	}
-    }
-    
-    public static Workbench createWorkbench(
-    		final String name,
-    		final String remarks,
-    		final String exportInstName,
-    		final Integer formId,
-    		final WorkbenchTemplate workbenchTemplate)
+    public static Workbench createWorkbench(final String name,
+    		                                final String remarks,
+                                            final String exportInstName,
+                                            final Integer formId,
+                                            final WorkbenchTemplate workbenchTemplate)
     {
     	Workbench workbench = new Workbench();
+        workbench.initialize();
     	workbench.setName(name);
     	workbench.setRemarks(remarks);
     	workbench.setExportInstitutionName(exportInstName);
@@ -2106,74 +2098,80 @@ public class ObjCreatorHelper
     	workbench.setWorkbenchItems(new HashSet<WorkbenchDataItem>());
     	workbench.setWorkbenchTemplates(workbenchTemplate);
     	
-        if (session != null)
-        {
-          session.saveOrUpdate(workbench);
-        }
+        saveOrUpdate(workbench);
+
         return workbench;
     }    
     
-    public static WorkbenchDataItem createWorkbenchDataItem(
-    		final String rowNumber, final String columnNumber, final String cellData, final Workbench workbench)
+    public static WorkbenchDataItem createWorkbenchDataItem(final String rowNumber, 
+                                                            final String columnNumber, 
+                                                            final String cellData, 
+                                                            final Workbench workbench)
     {
-    	WorkbenchDataItem workbenchdataitem = new WorkbenchDataItem();
-    	workbenchdataitem.setRowNumber(rowNumber);
-    	workbenchdataitem.setColumnNumber(columnNumber);
-    	//workbenchdataitem.setRowOfData(rowData);
-    	workbenchdataitem.setCellData(cellData);
-    	workbenchdataitem.setOwner(workbench);
-    	workbenchdataitem.setTimestampModified(new Date());
-    	workbenchdataitem.setTimestampCreated(new Date());    	
-        if (session != null)
-        {
-          session.saveOrUpdate(workbenchdataitem);
-        }
-        return workbenchdataitem;
+    	WorkbenchDataItem wbdi = new WorkbenchDataItem();
+        wbdi.initialize();
+        
+    	wbdi.setRowNumber(rowNumber);
+    	wbdi.setColumnNumber(columnNumber);
+    	//wbdi.setRowOfData(rowData);
+    	wbdi.setCellData(cellData);
+    	wbdi.setOwner(workbench);
+        
+        saveOrUpdate(wbdi);
+        
+        return wbdi;
     }
     
-    public static WorkbenchTemplate createWorkbenchTemplate(
-    		final String name,
-    		final String remarks)
+    public static WorkbenchTemplate createWorkbenchTemplate(final String name,
+                                        		            final String remarks)
     {
-    	WorkbenchTemplate workbenchtemplate = new WorkbenchTemplate();
-    	workbenchtemplate.setName(name);
-    	workbenchtemplate.setRemarks(remarks);
-    	workbenchtemplate.setWorkbenches(new HashSet<Object>());
-    	workbenchtemplate.setWorkbenchtemplatemappingitems(new HashSet<Object>());
-    	workbenchtemplate.setTimestampModified(new Date());
-    	workbenchtemplate.setTimestampCreated(new Date());
+    	WorkbenchTemplate wbt = new WorkbenchTemplate();
+        wbt.initialize();
+        
+        wbt.setName(name);
+        wbt.setRemarks(remarks);
 
-        if (session != null)
-        {
-          session.saveOrUpdate(workbenchtemplate);
-        }
-        return workbenchtemplate;
+        saveOrUpdate(wbt);
+
+        return wbt;
     }
     
-    public static WorkbenchTemplateMappingItem createMappingItem(
-			final String tableName,
-			final Integer tableId,
-			final String fieldName,
-			final String caption, 
-			final String dataType,
-			final Integer viewOrder, 
-			final WorkbenchTemplate template) {
-		WorkbenchTemplateMappingItem workbenchtemplatemappingitem = new WorkbenchTemplateMappingItem();
-		workbenchtemplatemappingitem.setTimestampModified(new Date());
-		workbenchtemplatemappingitem.setCaption(caption);
-		workbenchtemplatemappingitem.setDatatype(dataType);
-		workbenchtemplatemappingitem.setFieldname(fieldName);
-		workbenchtemplatemappingitem.setTablename(tableName);
-		workbenchtemplatemappingitem.setTimestampCreated(new Date());
-		workbenchtemplatemappingitem.setTimestampModified(new Date());
-		workbenchtemplatemappingitem.setVieworder(viewOrder);
-		workbenchtemplatemappingitem.setWorkbenchTemplates(template);
-		//workbenchtemplatemappingitem.setTableid(tableId);
-		workbenchtemplatemappingitem.setTableid(tableId);
+    public static WorkbenchTemplateMappingItem createMappingItem(final String tableName,
+			                                                     final Integer tableId,
+                                                                 final String fieldName,
+                                                                 final String caption, 
+                                                                 final String dataType,
+                                                                 final Integer viewOrder, 
+                                                                 final WorkbenchTemplate template) 
+    {
+		WorkbenchTemplateMappingItem wtmi = new WorkbenchTemplateMappingItem();
+        wtmi.initialize();
+        
+        wtmi.setCaption(caption);
+        wtmi.setDatatype(dataType);
+        wtmi.setFieldname(fieldName);
+        wtmi.setTablename(tableName);
+        wtmi.setVieworder(viewOrder);
+        wtmi.setWorkbenchTemplates(template);
+        wtmi.setTableid(tableId);
 		
-		if (session != null) {
-			session.saveOrUpdate(workbenchtemplatemappingitem);
-		}
-		return workbenchtemplatemappingitem;
+        saveOrUpdate(wtmi);
+        
+		return wtmi;
 	}  
+    
+    /**
+     * Helper method for saving when there is a session.
+     * @param transientObject the object to be saved.
+     * 
+     */
+    public static void saveOrUpdate(Object transientObject)
+    {
+        if( session != null )
+        {
+            session.saveOrUpdate(transientObject);
+        }
+    }
+    
+
 }
