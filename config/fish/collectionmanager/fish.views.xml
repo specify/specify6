@@ -195,16 +195,9 @@
      			<row>
     				<cell type="separator" label="Determination" colspan="12"/>
     			</row>
-
-<!--
     			<row>
     				<cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
     			</row>
--->    			
-    			<row>
-    				<cell type="field" id="6" name="determinations" uitype="tray" initialize="ordered=true" colspan="12"/>
-    			</row>
-
     			<row>
     				<cell type="separator" label="Locality" colspan="12"/>
     			</row>
@@ -219,15 +212,9 @@
     			<row>
     				<cell type="separator" label="Preparations" colspan="12"/>
     			</row>
-<!--
     			<row>
     			    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
     			</row>
--->
-    			<row>
-    			    <cell type="field" id="9" name="preparations" uitype="tray" colspan="12"/>
-    			</row>
-
     			<row>
     				<cell type="separator" label="" colspan="12"/>
     			</row>
