@@ -128,6 +128,42 @@
 	</detailView>
   </table>
 
+  <table id="52" name="Loan" title="Loans" priority="1" color="30, 144, 255" expresssearch="true">
+    <outofdate>
+        <table name="loan" title="Loans"/>
+    </outofdate>
+    <index>
+	    <sql>
+	        <![CDATA[select ColFieldsDef from loan;]]>
+	    </sql>
+	    <cols>
+            <col pos="1" id="true">LoanID</col>
+            <col pos="2">LoanNumber</col>
+            <col pos="3">LoanDate</col>
+            <col pos="4">CurrentDueDate</col>
+            <col pos="5">OriginalDueDate</col>
+            <col pos="6">DateClosed</col>
+            <col pos="7">Category</col>
+	    </cols>
+	</index>
+    <detailView icon="">
+        <sql>
+            <![CDATA[select LoanID,LoanNumber,LoanDate,CurrentDueDate,OriginalDueDate,DateClosed,Category FROM loan where (%s)]]>
+        </sql>
+        <captions>
+            <caption col="LoanID" text="ID"  visible="false"/>
+            <caption col="LoanNumber" text="Number"/>
+            <caption col="LoanDate" text="Loan Date"/>
+            <caption col="CurrentDueDate" text="Current Due Date"/>
+            <caption col="OriginalDueDate" text="Original Due Date"/>
+            <caption col="DateClosed" text="Date Closed"/>
+            <caption col="Category" text="Category"/>
+        </captions>
+        <recordset tabletype="52" col="1"/>
+    </detailView>
+  </table>
+    
+
     <!-- ************************************************* -->
     <!--  These are for Other Non-Express Search Searches  -->
     <!-- ************************************************* -->
