@@ -28,7 +28,9 @@
         <table name="edu.ku.brc.specify.datamodel.AppResource" id="83"/>
         <table name="edu.ku.brc.specify.datamodel.AppResourceData" id="84"/>
         <table name="edu.ku.brc.specify.datamodel.AppResourceDefault" id="85"/>    
-        <table name="edu.ku.brc.specify.datamodel.Attachment" id="41"/>
+        <table name="edu.ku.brc.specify.datamodel.Attachment" id="41">
+        	<display view="AttachmentsForm"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.AttachmentMetadata" id="42"/>
         <table name="edu.ku.brc.specify.datamodel.AttributeDef" id="16"/>
         <table name="edu.ku.brc.specify.datamodel.Authors" id="17"/>
@@ -74,7 +76,9 @@
             <display view="InfoRequest"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Journal" id="51"/>
-        <table name="edu.ku.brc.specify.datamodel.Loan" id="52"/>
+        <table name="edu.ku.brc.specify.datamodel.Loan" id="52">
+        	<display view="Loan"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.LoanAgents" id="53"/>
         <table name="edu.ku.brc.specify.datamodel.LoanPhysicalObject" id="54"/>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" id="55"/>

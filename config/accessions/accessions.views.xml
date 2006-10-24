@@ -72,6 +72,36 @@
             </altviews>
         </view>
 
+        <view name="Loan"
+        	class="edu.ku.brc.specify.datamodel.Loan"
+        	resourcelabels="false">
+        	<desc><![CDATA[Loan display form]]></desc>
+        	<altviews>
+        		<altview name="Loan View" viewdef="Loan" label="View" mode="view" validated="false" default="true"/>
+        		<altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit" validated="false"/>
+			</altviews>
+		</view>
+		
+        <view name="AttachmentsIconView"
+              class="edu.ku.brc.specify.datamodel.Attachment"
+              resourcelabels="false">
+            <desc><![CDATA[The Attachments Icon View.]]></desc>
+            <altviews>
+                <altview name="Attachments Icon View" viewdef="AttachmentsIconView" label="IconView" mode="view" validated="false" default="true"/>                
+                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit" validated="false"/>                
+            </altviews>
+        </view>
+
+        <view name="AttachmentsForm"
+              class="edu.ku.brc.specify.datamodel.Attachment"
+              resourcelabels="false">
+            <desc><![CDATA[The Attachments Form.]]></desc>
+            <altviews>
+                <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="false"/>                
+            </altviews>
+        </view>
+
     </views>
 
     <viewdefs>
@@ -412,6 +442,93 @@
                     <cell type="field" id="10" name="fax" uitype="text" cols="15"/>
                     <cell type="label" labelfor="11" label="Room/Building"/>
                     <cell type="field" id="11" name="roomOrBuilding" uitype="text" cols="30"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Loan"
+            class="edu.ku.brc.specify.datamodel.Loan"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Loan viewing form.]]></desc>
+            <columnDef>p,6dlu,p,15dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="field" id="1" name="loanNumber" uitype="text" cols="50" colspan="1" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Date"/>
+                    <cell type="field" id="2" name="loanDate" uitype="text" cols="50" colspan="1" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Curr Due Date"/>
+                    <cell type="field" id="3" name="currentDueDate" uitype="text" cols="50" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Orig Due Date"/>
+                    <cell type="field" id="4" name="originalDueDate" uitype="text" cols="50" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Date Closed"/>
+                    <cell type="field" id="5" name="dateClosed" uitype="text" cols="50" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Category"/>
+                    <cell type="field" id="6" name="category" uitype="text" cols="50" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Closed"/>
+                    <cell type="field" id="7" name="closed" uitype="text" cols="50" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Remarks"/>
+                    <cell type="field" id="8" name="remarks" uitype="textarea" colspan="1"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="9" label="Attachments"/>
+                    <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="1"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="iconview"
+            name="AttachmentsIconView"
+            class="edu.ku.brc.specify.datamodel.Attachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Attachments Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+        	type="form"
+        	name="Attachment"
+        	class="edu.ku.brc.specify.datamodel.Attachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[The Attachments Icon Viewer]]></desc>
+            <columnDef>p,3dlu,p,15dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,5dlu,p</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Original Filename"/>
+                    <cell type="field" id="1" name="origFilename" uitype="text" cols="50" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="MIME Type"/>
+                    <cell type="field" id="2" name="mimeType" uitype="text" cols="50" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks" uitype="text" cols="50" colspan="9"/>
                 </row>
             </rows>
         </viewdef>
