@@ -267,27 +267,25 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
                 }
             }
             
-            if ((blobData != null && blobData.length() > 0) || 
-                StringUtils.isNotEmpty(fileName))
+            String str = null;
+            if (StringUtils.isNotEmpty(fileName))
             {
-                String str;
-                if (StringUtils.isNotEmpty(fileName))
-                {
-                    File file = new File(fileName);
-                    str = XMLHelper.getContents(file);
-                    timestampCreated  = new Date(file.lastModified());
-                    timestampModified = timestampCreated;
-                    
-                } else
-                {
-                    str = new String(blobData.getBytes(1L, (int)blobData.length()));
-                }
-                
-                if (str.length() > 0)
-                {
-                   return StringEscapeUtils.unescapeXml(str);
-                }
+                File file = new File(fileName);
+                str = XMLHelper.getContents(file);
+                timestampCreated  = new Date(file.lastModified());
+                timestampModified = timestampCreated;
             }
+            
+            if (str == null && blobData != null && blobData.length() > 0)
+            {
+                str = new String(blobData.getBytes(1L, (int)blobData.length()));
+            }
+            
+            if (str != null && str.length() > 0)
+            {
+               return StringEscapeUtils.unescapeXml(str);
+            }
+
         } catch (SQLException ex)
         {
             log.error(ex);
