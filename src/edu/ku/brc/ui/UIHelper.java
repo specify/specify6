@@ -868,7 +868,7 @@ public final class UIHelper
         panel.setWindow(frame);
         frame.setContentPane(panel);
         frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         frame.pack();
 
