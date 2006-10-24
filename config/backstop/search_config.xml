@@ -1,486 +1,482 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tables>
-
+<searches>
     <!-- ************************************** -->
     <!--      These are for Express Search      -->
     <!-- ************************************** -->
-
-  <table id="1" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255" expresssearch="true">
-    <outofdate>
-        <table name="collectionobject" title="Collection Object"/>
-        <table name="determination" title="Determination"/>
-        <table name="taxon" title="Taxon"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[Select ColFieldsDef From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
-	    </sql>
-	    <cols>
-	       <col pos="1" id="true">collectionobject.CollectionObjectID</col>
-	       <col pos="2">collectionobject.CatalogNumber</col>
-	       <col pos="3">collectionobject.CatalogedDate</col>
-	       <col pos="4">taxon.FullName</col>
-	       <join>determination.CollectionObjectID</join>
-	       <join>determination.TaxonID</join>
-	    </cols>
-	</index>
-    <detailView icon="ColObj">
-	    <sql>
-	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
-            <caption col="collectionobject.CatalogNumber" text="Catalog Number"/>
-            <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
-            <caption col="taxon.FullName" text="Taxon Name"/>
-        </captions>
-        <recordset tabletype="1" col="1"/>
-	</detailView>
-  </table>
-
-  <table id="2" name="locality" title="Locality" priority="1" color="30, 144, 255" expresssearch="true">
-    <outofdate>
-        <table name="locality" title="Locality"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[select ColFieldsDef from locality;]]>
-	    </sql>
-	    <cols>
-	        <col pos="1" id="true">LocalityID</col>
-	        <col pos="2">localityname</col>
-	    </cols>
-	</index>
-    <detailView icon="Locality">
-	    <sql>
-	        <![CDATA[select localityname,Latitude1,Longitude1, LocalityID from locality where LocalityID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="localityname" text="Locality Name"/>
-            <caption col="Latitude1" text="Latitude"/>
-            <caption col="Longitude1" text="Longitude"/>
-            <caption col="LocalityID" text="ID" visible="false"/>
-        </captions>
-        <recordset tabletype="2" col="4"/>
-	</detailView>
-  </table>
-
-
-  <table id="3" name="geography" title="Geography" priority="1" color="30, 144, 255" expresssearch="true">
-    <outofdate>
-        <table name="geography" title="Geography"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[select ColFieldsDef from geography;]]>
-	    </sql>
-	    <cols>
-	        <col pos="1" id="true">GeographyID</col>
-	        <col pos="2">Name</col>
-	        <col pos="3">FullName</col>
-	        <col pos="4">CommonName</col>
-	    </cols>
-	</index>
-    <detailView icon="Geography">
-	    <sql>
-	        <![CDATA[select FullName, GeographyID from geography where GeographyID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="FullName" text="Full Name"/>
-            <caption col="GeographyID" text="ID" visible="false"/>
-        </captions>
-        <recordset tabletype="3" col="4"/>
-	</detailView>
-  </table>
-  -->
-
-  <table id="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
-         expresssearch="true">
-    <outofdate>
-        <table name="taxon" title="Taxon"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[select ColFieldsDef from taxon;]]>
-	    </sql>
-	    <cols>
-	        <col pos="1" id="true">TaxonID</col>
-	        <col pos="2">Name</col>
-	        <col pos="3">CommonName</col>
-	    </cols>
-	</index>
-    <detailView icon="Taxon">
-	    <sql>
-	        <![CDATA[select Name,CommonName,TaxonID from taxon where TaxonID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="Name" text="Taxon Name"/>
-            <caption col="CommonName" text="Common Name"/>
-            <caption col="TaxonID" text="Taxon ID" visible="false"/>
-        </captions>
-        <recordset tabletype="4" col="3"/>
-	</detailView>
-  </table>
-
-    <table id="5" name="Agent" title="Agent" priority="1" color="30, 144, 255" expresssearch="true">
+    <express>
+        <table id="1" tableid="1" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255">
         <outofdate>
-            <table name="agent" title="Agent"/>
+            <table name="collectionobject" title="Collection Object"/>
+            <table name="determination" title="Determination"/>
+            <table name="taxon" title="Taxon"/>
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select ColFieldsDef from agent]]>
+                <![CDATA[Select ColFieldsDef From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
             </sql>
             <cols>
-                <col pos="1" id="true">AgentID</col>
-                <col pos="2">FirstName</col>
-                <col pos="3">LastName</col>
+               <col pos="1" id="true">collectionobject.CollectionObjectID</col>
+               <col pos="2">collectionobject.CatalogNumber</col>
+               <col pos="3">collectionobject.CatalogedDate</col>
+               <col pos="4">taxon.FullName</col>
+               <join>determination.CollectionObjectID</join>
+               <join>determination.TaxonID</join>
             </cols>
         </index>
-        <detailView icon="Agent">
+        <detailView icon="ColObj">
             <sql>
-                <![CDATA[select FirstName,LastName,AgentID from agent where AgentID in (%s)]]>
+                <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
             </sql>
             <captions>
-                <caption col="FirstName" text="First Name"/>
-                <caption col="LastName" text="Last Name"/>
-                <caption col="AgentID" text="AgentID" visible="false"/>
+                <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
+                <caption col="collectionobject.CatalogNumber" text="Catalog Number"/>
+                <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
+                <caption col="taxon.FullName" text="Taxon Name"/>
             </captions>
-            <recordset tabletype="5" col="3"/>
+            <recordset tabletype="1" col="1"/>
         </detailView>
-    </table>
-
-    <table id="6" name="Permit" title="Permits" priority="1" color="30, 144, 255" expresssearch="true">
+      </table>
+    
+        <table id="2" tableid="2" name="locality" title="Locality" priority="1" color="30, 144, 255">
         <outofdate>
-            <table name="permit" title="Permits"/>
+            <table name="locality" title="Locality"/>
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select  ColFieldsDef from permit]]>
+                <![CDATA[select ColFieldsDef from locality;]]>
             </sql>
             <cols>
-                <col pos="1" id="true">PermitID</col>
-                <col pos="2">PermitNumber</col>
-                <col pos="3">Type</col>
-                <col pos="4">IssuedDate</col>
-                <col pos="5">StartDate</col>
+                <col pos="1" id="true">LocalityID</col>
+                <col pos="2">localityname</col>
             </cols>
         </index>
-        <detailView icon="Permit">
+        <detailView icon="Locality">
             <sql>
-                <![CDATA[select PermitNumber,Type,IssuedDate,StartDate,PermitID from permit where PermitID in (%s)]]>
+                <![CDATA[select localityname,Latitude1,Longitude1, LocalityID from locality where LocalityID in (%s)]]>
             </sql>
             <captions>
-                <caption col="PermitNumber" text="Permit Number"/>
-                <caption col="Type" text="Type"/>
-                <caption col="IssuedDate" text="Issued Date"/>
-                <caption col="StartDate" text="StartDate"/>
-                <caption col="PermitID" text="PermitID" visible="false"/>
+                <caption col="localityname" text="Locality Name"/>
+                <caption col="Latitude1" text="Latitude"/>
+                <caption col="Longitude1" text="Longitude"/>
+                <caption col="LocalityID" text="ID" visible="false"/>
             </captions>
-            <recordset tabletype="6" col="5"/>
+            <recordset tabletype="2" col="4"/>
         </detailView>
-    </table>
-
-    <table id="7" name="Accession" title="Accession" priority="1" color="30, 144, 255" expresssearch="true">
+      </table>
+    
+    
+        <table id="3" tableid="3" name="geography" title="Geography" priority="1" color="30, 144, 255">
         <outofdate>
-            <table name="accession" title="Accessions"/>
+            <table name="geography" title="Geography"/>
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select ColFieldsDef from accession]]>
+                <![CDATA[select ColFieldsDef from geography;]]>
             </sql>
             <cols>
-                <col pos="1" id="true">AccessionID</col>
-                <col pos="2">Number</col>
-                <col pos="3" key="Accessioned">DateAccessioned</col>
-                <col pos="4">Status</col>
-                <col pos="5">Type</col>
-                <col pos="6">Text1</col>
+                <col pos="1" id="true">GeographyID</col>
+                <col pos="2">Name</col>
+                <col pos="3">FullName</col>
+                <col pos="4">CommonName</col>
             </cols>
         </index>
-        <detailView icon="Accession">
+        <detailView icon="Geography">
             <sql>
-                <![CDATA[select AccessionID,Number,DateAccessioned,Status,Type,Text1 from accession where AccessionID in (%s)]]>
+                <![CDATA[select FullName, GeographyID from geography where GeographyID in (%s)]]>
             </sql>
             <captions>
-                <caption col="AccessionID" text="AccessionID" visible="false"/>
-                <caption col="Number" text="Number"/>
-                <caption col="DateAccessioned" text="Date Accessioned"/>
-                <caption col="Status" text="Status"/>
-                <caption col="Type" text="Type"/>
-                <caption col="Text1" text="Division"/>
+                <caption col="FullName" text="Full Name"/>
+                <caption col="GeographyID" text="ID" visible="false"/>
             </captions>
-            <recordset tabletype="7" col="1"/>
+            <recordset tabletype="3" col="4"/>
         </detailView>
-    </table>
-
-    <table id="8" name="Address" title="Address" priority="1" color="30, 144, 255" expresssearch="true">
-    <outofdate>
-        <table name="address" title="Address"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[select ColFieldsDef from address;]]>
-	    </sql>
-	    <cols>
-	        <col pos="1" id="true">AddressID</col>
-	        <col pos="2" key="address">Address</col>
-	        <col pos="3" key="address">Address2</col>
-	        <col pos="4" key="city">City</col>
-	        <col pos="5" key="state">State</col>
-	        <col pos="6" key="country">Country</col>
-	        <col pos="7" key="postalcode">PostalCode</col>
-	    </cols>
-	</index>
-    <detailView icon="Address">
-	    <sql>
-	        <![CDATA[select address,city,state,AddressID from address where AddressID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="address" text="Address"/>
-            <caption col="city" text="City"/>
-            <caption col="state" text="State"/>
-            <caption col="AddressID" text="ID" visible="false"/>
-        </captions>
-        <recordset tabletype="6" col="4"/>
-	</detailView>
-  </table>
-
-  <table id="9" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255" expresssearch="true">
-    <outofdate>
-        <table name="determination" title="Determination"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[Select ColFieldsDef From
- collectionobject
- Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
- Inner Join agent ON determination.DeterminerID = agent.AgentID
- Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
- Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
- where determinationstatus.DeterminationStatusID = 2]]>
-	    </sql>
-	    <cols>
-	        <col pos="1" id="true">collectionobject.CollectionObjectID</col>
-	        <col pos="2">taxon.FullName</col>
-	        <col pos="3">taxon.CommonName</col>
-	        <col pos="4">agent.LastName</col>
-	        <col pos="5">agent.FirstName</col>
-	    </cols>
-	</index>
-    <detailView icon="Agent">
-	    <sql>
-	        <![CDATA[select * from (Select
- taxon.FullName,
- taxon.CommonName,
- agent.LastName,
- agent.FirstName,
- collectionobject.CollectionObjectID,
- From
- collectionobject
- Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
- Inner Join agent ON determination.DeterminerID = agent.AgentID
- Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
- Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
- where determinationstatus.DeterminationStatusID = 2) as tx
- where tx.CollectionObjectID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
-            <caption col="TaxonName" text="Taxon Name"/>
-            <caption col="CommonName" text="Common Name"/>
-            <caption col="LastName" text="Last Name"/>
-            <caption col="FirstName" text="First Name"/>
-       </captions>
-       <recordset tabletype="7" col="1"/>
-	</detailView>
-  </table>
-
-  <table id="10" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255" expresssearch="true">
-    <outofdate>
-        <table name="collectingevent" title="Collecting Event"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[Select ColFieldsDef From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
-	    </sql>
-	    <cols>
-	        <col pos="1" id="true">collectingevent.CollectingEventID</col>
-	        <col pos="2" key="startdate">StartDate</col>
-	        <col pos="3" key="enddate">EndDate</col>
-	        <col pos="4">locality.NamedPlace</col>
-	        <col pos="5">locality.LocalityName</col>
-	        <col pos="6">locality.Township</col>
-	        <col pos="7">locality.Section</col>
-	    </cols>
-	</index>
-    <detailView icon="ColEvent">
-	    <sql>
-	        <![CDATA[Select locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, locality.Longitude1, collectingevent.CollectingEventID  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s) order by StartDate]]>
-	    </sql>
-        <captions>
-            <caption col="LocalityName" text="Locality Name"/>
-            <caption col="StartDate" text="Start Date"/>
-            <caption col="EndDate" text="End Date"/>
-            <caption col="Latitude1" text="Latitude1"/>
-            <caption col="Longitude1" text="Longitude1"/>
-            <caption col="CollectingEventID" text="CollectingEventID" visible="false"/>
-        </captions>
-       <recordset tabletype="8" col="6"/>
-	</detailView>
-  </table>
-
-
-  <table id="11" name="Collecting Event" title="Collecting Events" priority="1" color="30, 144, 255"
-         expresssearch="true">
-    <outofdate>
-        <table name="collectingevent" title="Collecting Event"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[Select ColFieldsDef From collectingevent]]>
-	    </sql>
-	    <cols>
-	        <col pos="1" id="true">CollectingEventID</col>
-	        <col pos="2" key="startdate">StartDate</col>
-	        <col pos="3" key="enddate">EndDate</col>
-	        <col pos="4">Method</col>
-	        <col pos="5">StationFieldNumber</col>
-	    </cols>
-	</index>
-    <detailView icon="ColEvent">
-	    <sql>
-	        <![CDATA[Select CollectingEventID, StartDate, EndDate, Method, StationFieldNumber From collectingevent where collectingevent.CollectingEventID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="CollectingEventID" text="CollectingEventID"   visible="false"/>
-            <caption col="StartDate" text="Start Date"/>
-            <caption col="EndDate" text="End Date"/>
-            <caption col="Method" text="Method"/>
-            <caption col="StationFieldNumber" text="Station Field Number"/>
-        </captions>
-       <recordset tabletype="8" col="1"/>
-	</detailView>
-  </table>
-
+      </table>
+      -->
+    
+        <table id="4" tableid="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
+            >
+        <outofdate>
+            <table name="taxon" title="Taxon"/>
+        </outofdate>
+        <index>
+            <sql>
+                <![CDATA[select ColFieldsDef from taxon;]]>
+            </sql>
+            <cols>
+                <col pos="1" id="true">TaxonID</col>
+                <col pos="2">Name</col>
+                <col pos="3">CommonName</col>
+            </cols>
+        </index>
+        <detailView icon="Taxon">
+            <sql>
+                <![CDATA[select Name,CommonName,TaxonID from taxon where TaxonID in (%s)]]>
+            </sql>
+            <captions>
+                <caption col="Name" text="Taxon Name"/>
+                <caption col="CommonName" text="Common Name"/>
+                <caption col="TaxonID" text="Taxon ID" visible="false"/>
+            </captions>
+            <recordset tabletype="4" col="3"/>
+        </detailView>
+      </table>
+    
+        <table id="5" tableid="5" name="Agent" title="Agent" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="agent" title="Agent"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[select ColFieldsDef from agent]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">AgentID</col>
+                    <col pos="2">FirstName</col>
+                    <col pos="3">LastName</col>
+                </cols>
+            </index>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[select FirstName,LastName,AgentID from agent where AgentID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="FirstName" text="First Name"/>
+                    <caption col="LastName" text="Last Name"/>
+                    <caption col="AgentID" text="AgentID" visible="false"/>
+                </captions>
+                <recordset tabletype="5" col="3"/>
+            </detailView>
+        </table>
+    
+        <table id="6" tableid="6" name="Permit" title="Permits" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="permit" title="Permits"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[select  ColFieldsDef from permit]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">PermitID</col>
+                    <col pos="2">PermitNumber</col>
+                    <col pos="3">Type</col>
+                    <col pos="4">IssuedDate</col>
+                    <col pos="5">StartDate</col>
+                </cols>
+            </index>
+            <detailView icon="Permit">
+                <sql>
+                    <![CDATA[select PermitNumber,Type,IssuedDate,StartDate,PermitID from permit where PermitID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="PermitNumber" text="Permit Number"/>
+                    <caption col="Type" text="Type"/>
+                    <caption col="IssuedDate" text="Issued Date"/>
+                    <caption col="StartDate" text="StartDate"/>
+                    <caption col="PermitID" text="PermitID" visible="false"/>
+                </captions>
+                <recordset tabletype="6" col="5"/>
+            </detailView>
+        </table>
+    
+        <table id="7" tableid="7" name="Accession" title="Accession" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="accession" title="Accessions"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[select ColFieldsDef from accession]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">AccessionID</col>
+                    <col pos="2">Number</col>
+                    <col pos="3" key="Accessioned">DateAccessioned</col>
+                    <col pos="4">Status</col>
+                    <col pos="5">Type</col>
+                    <col pos="6">Text1</col>
+                </cols>
+            </index>
+            <detailView icon="Accession">
+                <sql>
+                    <![CDATA[select AccessionID,Number,DateAccessioned,Status,Type,Text1 from accession where AccessionID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="AccessionID" text="AccessionID" visible="false"/>
+                    <caption col="Number" text="Number"/>
+                    <caption col="DateAccessioned" text="Date Accessioned"/>
+                    <caption col="Status" text="Status"/>
+                    <caption col="Type" text="Type"/>
+                    <caption col="Text1" text="Division"/>
+                </captions>
+                <recordset tabletype="7" col="1"/>
+            </detailView>
+        </table>
+    
+        <table id="8" tableid="8" name="Address" title="Address" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="address" title="Address"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[select ColFieldsDef from address;]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">AddressID</col>
+                    <col pos="2" key="address">Address</col>
+                    <col pos="3" key="address">Address2</col>
+                    <col pos="4" key="city">City</col>
+                    <col pos="5" key="state">State</col>
+                    <col pos="6" key="country">Country</col>
+                    <col pos="7" key="postalcode">PostalCode</col>
+                </cols>
+            </index>
+            <detailView icon="Address">
+                <sql>
+                    <![CDATA[select address,city,state,AddressID from address where AddressID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="address" text="Address"/>
+                    <caption col="city" text="City"/>
+                    <caption col="state" text="State"/>
+                    <caption col="AddressID" text="ID" visible="false"/>
+                </captions>
+                <recordset tabletype="6" col="4"/>
+            </detailView>
+        </table>
+    
+        <table id="9" tableid="9" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="determination" title="Determination"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[Select ColFieldsDef From
+    collectionobject
+    Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+    Inner Join agent ON determination.DeterminerID = agent.AgentID
+    Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
+    Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
+    where determinationstatus.DeterminationStatusID = 2]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">collectionobject.CollectionObjectID</col>
+                    <col pos="2">taxon.FullName</col>
+                    <col pos="3">taxon.CommonName</col>
+                    <col pos="4">agent.LastName</col>
+                    <col pos="5">agent.FirstName</col>
+                </cols>
+            </index>
+            <detailView icon="Agent">
+                <sql>
+                    <![CDATA[select * from (Select
+taxon.FullName,
+taxon.CommonName,
+agent.LastName,
+agent.FirstName,
+collectionobject.CollectionObjectID,
+From
+collectionobject
+Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+Inner Join agent ON determination.DeterminerID = agent.AgentID
+Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
+Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
+where determinationstatus.DeterminationStatusID = 2) as tx
+where tx.CollectionObjectID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
+                    <caption col="TaxonName" text="Taxon Name"/>
+                    <caption col="CommonName" text="Common Name"/>
+                    <caption col="LastName" text="Last Name"/>
+                    <caption col="FirstName" text="First Name"/>
+               </captions>
+               <recordset tabletype="7" col="1"/>
+            </detailView>
+        </table>
+    
+        <table id="10" tableid="10" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="collectingevent" title="Collecting Event"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[Select ColFieldsDef From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">collectingevent.CollectingEventID</col>
+                    <col pos="2" key="startdate">StartDate</col>
+                    <col pos="3" key="enddate">EndDate</col>
+                    <col pos="4">locality.NamedPlace</col>
+                    <col pos="5">locality.LocalityName</col>
+                    <col pos="6">locality.Township</col>
+                    <col pos="7">locality.Section</col>
+                </cols>
+            </index>
+            <detailView icon="ColEvent">
+                <sql>
+                    <![CDATA[Select locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, locality.Longitude1, collectingevent.CollectingEventID  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s) order by StartDate]]>
+                </sql>
+                <captions>
+                    <caption col="LocalityName" text="Locality Name"/>
+                    <caption col="StartDate" text="Start Date"/>
+                    <caption col="EndDate" text="End Date"/>
+                    <caption col="Latitude1" text="Latitude1"/>
+                    <caption col="Longitude1" text="Longitude1"/>
+                    <caption col="CollectingEventID" text="CollectingEventID" visible="false"/>
+                </captions>
+               <recordset tabletype="8" col="6"/>
+            </detailView>
+        </table>
+    
+    
+        <table id="11" tableid="10" name="Collecting Event" title="Collecting Events" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="collectingevent" title="Collecting Event"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[Select ColFieldsDef From collectingevent]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">CollectingEventID</col>
+                    <col pos="2" key="startdate">StartDate</col>
+                    <col pos="3" key="enddate">EndDate</col>
+                    <col pos="4">Method</col>
+                    <col pos="5">StationFieldNumber</col>
+                </cols>
+            </index>
+            <detailView icon="ColEvent">
+                <sql>
+                    <![CDATA[Select CollectingEventID, StartDate, EndDate, Method, StationFieldNumber From collectingevent where collectingevent.CollectingEventID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="CollectingEventID" text="CollectingEventID"   visible="false"/>
+                    <caption col="StartDate" text="Start Date"/>
+                    <caption col="EndDate" text="End Date"/>
+                    <caption col="Method" text="Method"/>
+                    <caption col="StationFieldNumber" text="Station Field Number"/>
+                </captions>
+               <recordset tabletype="8" col="1"/>
+            </detailView>
+        </table>
+      
+        
+        <table id="12" tableid="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="Form">
+                <sql/>
+                <captions>
+                    <caption col="form" text="Form Name"/>
+                    <caption col="type" text="Type" visible="false"/>
+                    <caption col="field" text="Label Name"/>
+                    <caption col="desc" text="Where Used"/>
+                </captions>
+                <recordset tabletype="10000" col="2"/>
+            </detailView>
+        </table>
+        
+        <table id="13" tableid="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="Form">
+                <sql/>
+                <captions>
+                    <caption col="file" text="File Name"/>
+                    <caption col="labelName" text="Label Name"/>
+                    <caption col="type" text="Type"/>
+                    <caption col="label" text="Label"/>
+                </captions>
+                <recordset tabletype="20000" col="2"/>
+            </detailView>
+        </table>
+    </express>
+    
     <!-- ************************************************* -->
     <!--  These are for Other Non-Express Search Searches  -->
     <!-- ************************************************* -->
-
-
-    <table id="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255" expresssearch="false">
-        <outofdate/>
-        <index>
-            <sql/>
-            <cols/>
-        </index>
-        <detailView icon="">
-            <sql>
-                <![CDATA[select * from (select agent.AgentID,
+    <generic>
+        <table id="14" tableid="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[select * from (select agent.AgentID,
 agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
 address.State, address.PostalCode, address.Country From agent  Left Join address ON agent.AgentID = address.AgentID) as newTable where (%s)]]>
-            </sql>
-            <captions>
-                <caption col="AgentID" text="AgentID"  visible="false"/>
-                <caption col="FirstName" text="First Name"/>
-                <caption col="LastName" text="Last Name"/>
-                <caption col="Name" text="Organization"/>
-                <caption col="EMail" text="EMail"/>
-                <caption col="Address" text="Address"/>
-                <caption col="City" text="City"/>
-                <caption col="State" text="State"/>
-                <caption col="Postalcode" text="Zip"/>
-                <caption col="Country" text="Country"/>
-            </captions>
-            <recordset tabletype="5" col="1"/>
-        </detailView>
-    </table>
-
-    <table id="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255" expresssearch="false">
-        <outofdate/>
-        <index>
-            <sql/>
-            <cols/>
-        </index>
-        <detailView icon="">
-            <sql>
-                <![CDATA[Select * from (select permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
+                </sql>
+                <captions>
+                    <caption col="AgentID" text="AgentID"  visible="false"/>
+                    <caption col="FirstName" text="First Name"/>
+                    <caption col="LastName" text="Last Name"/>
+                    <caption col="Name" text="Organization"/>
+                    <caption col="EMail" text="EMail"/>
+                    <caption col="Address" text="Address"/>
+                    <caption col="City" text="City"/>
+                    <caption col="State" text="State"/>
+                    <caption col="Postalcode" text="Zip"/>
+                    <caption col="Country" text="Country"/>
+                </captions>
+                <recordset tabletype="5" col="1"/>
+            </detailView>
+        </table>
+    
+        <table id="15" tableid="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[Select * from (select permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
 permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON permit.IssuerID = agent.AgentID) as newTable where (%s)]]>
-            </sql>
-            <captions>
-                <caption col="PermitID" text="PermitID"  visible="false"/>
-                <caption col="PermitNumber" text="Permit Number"/>
-                <caption col="LastName" text="Issuer LastName"/>
-                <caption col="IssuedDate" text="Issued Date"/>
-                <caption col="StartDate" text="Start Date"/>
-                <caption col="EndDate" text="End Date"/>
-                <caption col="RenewalDate" text="Renewal Date"/>
-                <caption col="Type" text="Type"/>
-            </captions>
-            <recordset tabletype="6" col="1"/>
-        </detailView>
-    </table>
-    
-    <table id="7" name="AccessionSearch" title="Accessions" priority="1" color="30, 144, 255" expresssearch="false">
-        <outofdate/>
-        <index>
-            <sql/>
-            <cols/>
-        </index>
-        <detailView icon="">
-            <sql>
-                <![CDATA[select accession.AccessionID, accession.Number, accession.Status, accession.Type, accession.Text1, 
-accession.DateAccessioned, accession.DateReceived 
-From accession where (%s)]]>
-            </sql>
-            <captions>
-                <caption col="AccessionID" text="AccessionID"  visible="false"/>
-                <caption col="Number" text="Number"/>
-                <caption col="Status" text="Status"/>
-                <caption col="Type" text="Type"/>
-                <caption col="Text1" text="Division"/>
-                <caption col="DateAccessioned" text="Date Accessioned"/>
-                <caption col="DateReceived" text="Date Received"/>
-            </captions>
-            <recordset tabletype="6" col="1"/>
-        </detailView>
-    </table>
-    
-    <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160"
-         expresssearch="true">
-    <outofdate/>
-    <index>
-	    <sql/>
-	    <cols/>
-    </index>
-	<detailView icon="Form">
-	    <sql/>
-        <captions>
-            <caption col="form" text="Form Name"/>
-            <caption col="type" text="Type" visible="false"/>
-            <caption col="field" text="Label Name"/>
-            <caption col="desc" text="Where Used"/>
-        </captions>
-       <recordset tabletype="10000" col="2"/>
-	</detailView>
-  </table>
-
-  <table id="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107"
-         expresssearch="true">
-    <outofdate/>
-    <index>
-	    <sql/>
-	    <cols/>
-    </index>
-	<detailView icon="Form">
-	    <sql/>
-        <captions>
-            <caption col="file" text="File Name"/>
-            <caption col="labelName" text="Label Name"/>
-            <caption col="type" text="Type"/>
-            <caption col="label" text="Label"/>
-        </captions>
-       <recordset tabletype="20000" col="2"/>
-	</detailView>
-  </table>
-
-</tables>
+                </sql>
+                <captions>
+                    <caption col="PermitID" text="PermitID"  visible="false"/>
+                    <caption col="PermitNumber" text="Permit Number"/>
+                    <caption col="LastName" text="Issuer LastName"/>
+                    <caption col="IssuedDate" text="Issued Date"/>
+                    <caption col="StartDate" text="Start Date"/>
+                    <caption col="EndDate" text="End Date"/>
+                    <caption col="RenewalDate" text="Renewal Date"/>
+                    <caption col="Type" text="Type"/>
+                </captions>
+                <recordset tabletype="6" col="1"/>
+            </detailView>
+        </table>
+        
+        <table id="16" tableid="7" name="AccessionSearch" title="Accessions" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[select accession.AccessionID, accession.Number, accession.Status, accession.Type, accession.Text1, 
+accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="AccessionID" text="AccessionID"  visible="false"/>
+                    <caption col="Number" text="Number"/>
+                    <caption col="Status" text="Status"/>
+                    <caption col="Type" text="Type"/>
+                    <caption col="Text1" text="Division"/>
+                    <caption col="DateAccessioned" text="Date Accessioned"/>
+                    <caption col="DateReceived" text="Date Received"/>
+                </captions>
+                <recordset tabletype="6" col="1"/>
+            </detailView>
+        </table>
+    </generic>
+</searches>

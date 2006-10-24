@@ -180,21 +180,23 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     }
 
     /**
-     * Collects information about all the tables that will be processed for the express search.
-     * @return hash of named ExpressResultsTableInfo
+     * Collects information about all the tables that will be processed for any search.
+     * @param tableItems the list of Elements to be processed
+     * @param tables the table info hash
      */
-    protected static Hashtable<String, ExpressResultsTableInfo> intializeTableInfo()
+    protected static void intializeTableInfo(final List tableItems, 
+                                             final Hashtable<String, ExpressResultsTableInfo> tables,
+                                             final Hashtable<String, ExpressResultsTableInfo> byIdHash,
+                                             final boolean isExpressSearch)
     {
-        Hashtable<String, ExpressResultsTableInfo> tables = null;
-        try
+        for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
         {
-            tables = new Hashtable<String, ExpressResultsTableInfo>();
-            Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
-            List tableItems = esDOM.selectNodes("/tables/table");
-            for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
+            Element   tableElement = (Element)iter.next();
+            ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Viewing, isExpressSearch);
+            if (byIdHash.get(tableInfo.getId()) == null)
             {
-                Element   tableElement = (Element)iter.next();
-                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Viewing);
+                byIdHash.put(tableInfo.getId(), tableInfo);
+                
                 if (tables.get(tableInfo.getName()) == null)
                 {
                     tables.put(tableInfo.getName(), tableInfo);
@@ -203,12 +205,36 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 {
                     log.error("Duplicate express Search name["+tableInfo.getName()+"]");
                 }
-            }
 
+            } else
+            {
+                log.error("Duplicate Search Id["+tableInfo.getId()+"]");
+            }
+        } 
+    }
+
+    /**
+     * Collects information about all the tables that will be processed for any search.
+     * @return hash of named ExpressResultsTableInfo
+     */
+    protected static Hashtable<String, ExpressResultsTableInfo> intializeTableInfo()
+    {
+        Hashtable<String, ExpressResultsTableInfo> tables   = new Hashtable<String, ExpressResultsTableInfo>();
+        Hashtable<String, ExpressResultsTableInfo> byIdHash = new Hashtable<String, ExpressResultsTableInfo>();
+        try
+        {
+            Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
+            
+            intializeTableInfo(esDOM.selectNodes("/searches/express/table"), tables, byIdHash, true);
+            
+            intializeTableInfo(esDOM.selectNodes("/searches/generic/table"), tables, byIdHash, false);
+                
         } catch (Exception ex)
         {
             log.error(ex);
         }
+        byIdHash.clear();
+        
         return tables;
     }
 
@@ -403,7 +429,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                     ExpressResultsTableInfo ti = e.nextElement();
                     if (ti.isExpressSearch())
                     {
-                        idToTableInfoMap.put(ti.getTableId(), ti);
+                        idToTableInfoMap.put(ti.getId(), ti);
                     }
                 }
                 
@@ -499,8 +525,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 ExpressResultsTableInfo ti = e.nextElement();
                 if (ti.isExpressSearch())
                 {
-                	idToTableInfoMap.put(ti.getTableId(), ti);
-                }
+                	idToTableInfoMap.put(ti.getId(), ti);
+                }                   
             }
 
             log.debug(hits.length()+" Hits for ["+searchTextStr+"]["+query.toString()+"]");
@@ -511,12 +537,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             // can be sped up if I figure out how to sort it
             for (int i=0;i<hits.length();i++)
             {
-                Document  doc       = hits.doc(i);
-                String    idStr     = doc.get("table");
-                ExpressResultsTableInfo tableInfo = idToTableInfoMap.get(idStr);
+                Document                doc         = hits.doc(i);
+                String                  searchIdStr = doc.get("sid");
+                ExpressResultsTableInfo tableInfo   = idToTableInfoMap.get(searchIdStr);
                 if (tableInfo == null)
                 {
-                    throw new RuntimeException("Bad id from search["+idStr+"]");
+                    throw new RuntimeException("Bad id from search["+searchIdStr+"]");
                 }
 
                 if (tableInfo.isUseHitsCache())

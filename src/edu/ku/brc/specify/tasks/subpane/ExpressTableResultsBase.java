@@ -357,7 +357,10 @@ public abstract class ExpressTableResultsBase extends JPanel
             table.clearSelection();
         }
 
+        // Now we use the actual Table Id from the table info
+        // to set it correctly in the RecordSet
         rs.setDbTableId(Integer.parseInt(tableInfo.getTableId()));
+        
         return rs;
     }
     

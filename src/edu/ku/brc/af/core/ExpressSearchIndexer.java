@@ -142,7 +142,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
             }
 
-            List tables = esDOM.selectNodes("/tables/table/outofdate/table");
+            List tables = esDOM.selectNodes("/searches/express/table/outofdate/table");
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
             List<String>              sectionNames = new ArrayList<String>(tables.size()+2);
             for ( Iterator iter = tables.iterator(); iter.hasNext(); )
@@ -293,7 +293,6 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
         Connection dbConnection = DBConnection.getInstance().createConnection();
         Statement  dbStatement  = null;
 
-        int      tableId        = Integer.parseInt(tableInfo.getTableId());
         boolean  useHitsCache   = tableInfo.isUseHitsCache();
         
         ExpressResultsTableInfo.ColInfo colInfo[] = tableInfo.getCols();
@@ -353,7 +352,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                         } catch (Exception ex) {  }
                     }
 
-                    String tableIdStr = Integer.toString(tableId);
+                    String idStr = tableInfo.getId();
 
                     double rowCnt = 1.0;
                     do
@@ -371,12 +370,9 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                         rowCnt++;
                         Document doc = new Document();
                         doc.add(new Field("id", rs.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.NO));
-                        doc.add(new Field("table", tableIdStr, Field.Store.YES, Field.Index.NO));
+                        doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
                         doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
-                        
-                        //doc.add(Field.Keyword("id", rs.getString(tableInfo.getIdColIndex())));
-                        //doc.add(Field.Keyword("table", tableIdStr));
-
+ 
                         int cnt = 0;
                         if (useHitsCache)
                         {
@@ -507,7 +503,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     termsIndexed++;
                     Document doc = new Document();
                     doc.add(Field.Keyword("id", Integer.toString(form.getId())));
-                    doc.add(Field.Keyword("table", "10000"));
+                    doc.add(Field.Keyword("sid", "10000")); // XXX this is not right, look it up!
 
                     String formName = form.getName();
                     String label    = ((FormCellLabel)cell).getLabel();
@@ -681,7 +677,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
                     Document doc = new Document();
                     doc.add(Field.Keyword("id", labelName));
-                    doc.add(Field.Keyword("table", "20000"));
+                    doc.add(Field.Keyword("sid", "20000")); // XXX this is not right, look it up!
 
                     strBuf.append(fileName);
                     strBuf.append('\t');
@@ -744,12 +740,12 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
             }
 
-            List tables = esDOM.selectNodes("/tables/table");
+            List tables = esDOM.selectNodes("/searches/express/table");
             List<ExpressResultsTableInfo> tableInfoList = new ArrayList<ExpressResultsTableInfo>(tables.size());
-            for (Iterator iter = tables.iterator(); iter.hasNext(); )
+            for (Object obj : tables)
             {
-                Element tableElement = (Element)iter.next();
-                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building);
+                Element tableElement = (Element)obj;
+                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
                 if (isNotEmpty(tableInfo.getBuildSql()))
                 {
                     tableInfoList.add(tableInfo);

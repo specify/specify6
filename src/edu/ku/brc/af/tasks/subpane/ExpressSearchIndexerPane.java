@@ -71,8 +71,6 @@ import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.ExpressResultsTableInfo.ColInfo;
-import edu.ku.brc.af.core.ExpressResultsTableInfo.LOAD_TYPE;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
@@ -190,7 +188,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
 
-            List tables = esDOM.selectNodes("/tables/table/outofdate/table");
+            List tables = esDOM.selectNodes("/searches/express/table/outofdate/table");
             for ( Iterator iter = tables.iterator(); iter.hasNext(); )
             {
                 Element tableElement = (Element)iter.next();
@@ -412,9 +410,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         Connection dbConnection = DBConnection.getInstance().createConnection();
         Statement  dbStatement  = null;
-
-        int      tableId        = Integer.parseInt(tableInfo.getTableId());
-        boolean  useHitsCache   = tableInfo.isUseHitsCache();
+        boolean    useHitsCache = tableInfo.isUseHitsCache();
         
         ExpressResultsTableInfo.ColInfo colInfo[] = tableInfo.getCols();
 
@@ -471,7 +467,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         } catch (Exception ex) {  }
                     }
 
-                    String tableIdStr = Integer.toString(tableId);
+                    String idStr = tableInfo.getId();
 
                     int rowCnt = 1;
                     do
@@ -488,11 +484,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         
                         Document doc = new Document();
                         doc.add(new Field("id", rs.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.NO));
-                        doc.add(new Field("table", tableIdStr, Field.Store.YES, Field.Index.NO));
+                        doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
                         //doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
 
-                        //doc.add(Field.Keyword("id", rs.getString(tableInfo.getIdColIndex())));
-                        //doc.add(Field.Keyword("table", tableIdStr));
 
                         int cnt = 0;
                         if (useHitsCache)
@@ -677,7 +671,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     termsIndexed++;
                     Document doc = new Document();
                     doc.add(Field.Keyword("id", Integer.toString(form.getId())));
-                    doc.add(Field.Keyword("table", "10000"));
+                    doc.add(Field.Keyword("sid", "10000")); // XXX this is not right, look it up!
 
                     String formName = form.getName();
                     String label    = ((FormCellLabel)cell).getLabel();
@@ -718,7 +712,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
             Document doc = new Document();
             doc.add(Field.Keyword("id", Integer.toString(form.getId())));
-            doc.add(Field.Keyword("table", "10000"));
+            doc.add(Field.Keyword("sid", "10000")); // XXX this is not right, look it up!
 
             String formName = form.getName();
             String label    = formCol.getLabel();
@@ -851,7 +845,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                     Document doc = new Document();
                     doc.add(Field.Keyword("id", labelName));
-                    doc.add(Field.Keyword("table", "20000"));
+                    doc.add(Field.Keyword("sid", "20000")); // XXX this is not right, look it up!
 
                     strBuf.append(fileName);
                     strBuf.append('\t');
@@ -914,7 +908,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
             }
 
-            List tables = esDOM.selectNodes("/tables/table");
+            List tables = esDOM.selectNodes("/searches/express/table");
 
             int numOfCategories = tables.size() + (doIndexForms ? 1 : 0) + (doIndexLabels ? 1 : 0);
 
@@ -923,10 +917,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             globalProgressBar.setValue(0);
             globalProgressBar.setString("0%");
             int indexerCnt = 0;
-            for ( Iterator iter = tables.iterator(); iter.hasNext(); )
+            for (Object obj : tables)
             {
-                Element tableElement = (Element)iter.next();
-                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building);
+                Element tableElement = (Element)obj;
+                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
 
                 if (isNotEmpty(tableInfo.getBuildSql()))
                 {

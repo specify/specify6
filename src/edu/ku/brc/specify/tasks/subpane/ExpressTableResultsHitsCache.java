@@ -279,7 +279,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     for (int i=0;i<rows.length;i++)
                     {
                         Document doc  = hits.doc(indexes[rows[i]]);
-                        //log.debug("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
+                        //log.debug("["+doc.get("id")+"]["+doc.get("sid")+"]["+doc.get("data")+"]");
                         RecordSetItem rsi = new RecordSetItem(Long.parseLong(doc.get("id")));
                         items.add(rsi);
                     }

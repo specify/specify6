@@ -45,6 +45,7 @@ public class ExpressResultsTableInfo
 
     protected LOAD_TYPE                 loadType;
 
+    protected String                    id;
     protected String                    tableId;
     protected String                    title;
     protected String                    name;
@@ -78,10 +79,14 @@ public class ExpressResultsTableInfo
      * Constructs a table info object
      * @param tableElement the DOM4J element representing the information
      * @param loadType what type of info to load from the DOM
+     * @param isExpressSearch true/false
      */
-    public ExpressResultsTableInfo(final Element tableElement, final LOAD_TYPE loadType)
+    public ExpressResultsTableInfo(final Element   tableElement, 
+                                   final LOAD_TYPE loadType,
+                                   final boolean   isExpressSearch)
     {
-        this.loadType = loadType;
+        this.loadType        = loadType;
+        this.isExpressSearch = isExpressSearch;
 
         fill(tableElement);
     }
@@ -110,11 +115,11 @@ public class ExpressResultsTableInfo
      */
     public void fill(final Element tableElement)
     {
-        tableId         = tableElement.attributeValue("id");
+        id              = tableElement.attributeValue("id");
+        tableId         = tableElement.attributeValue("tableid");
         title           = tableElement.attributeValue("title");
         name            = tableElement.attributeValue("name");
-        isExpressSearch = getAttr(tableElement, "expresssearch", true);
-        priority        = Integer.parseInt(tableElement.attributeValue("priority"));
+        priority        = getAttr(tableElement, "priority", 1);
         color           = parseRGB(tableElement.attributeValue("color"));
 
         String uhcStr = tableElement.attributeValue("usehitscache");
@@ -378,6 +383,11 @@ public class ExpressResultsTableInfo
     public void setRecIds(Vector<Integer> recIds)
     {
         this.recIds = recIds;
+    }
+
+    public String getId()
+    {
+        return id;
     }
 
     public String getTableId()
