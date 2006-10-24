@@ -42,6 +42,8 @@ poi                  -> 2.5.1-final (2004/08/04)
 xalan                -> 2.7.0
 xerces               -> 2.7.1 (resolver.jar, xercesImpl.jar, xml-apis.jar)
 
+servlet-api          -> Apache Tomcat 5.2.2
+
 --------------------------------------------------
 Notes:
 commons-pool depends on commons-collections

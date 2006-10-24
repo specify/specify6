@@ -40,10 +40,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;

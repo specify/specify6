@@ -16,7 +16,7 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import org.apache.lucene.search.Hits;
 
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
 
 
 /**

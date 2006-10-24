@@ -17,10 +17,10 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.ui.UICacheManager;
 

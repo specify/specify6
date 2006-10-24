@@ -24,11 +24,11 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.UICacheManager;
 
 /**

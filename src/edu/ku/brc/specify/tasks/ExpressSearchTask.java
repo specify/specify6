@@ -58,17 +58,18 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
-import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.ui.CommandAction;
@@ -86,7 +87,7 @@ import edu.ku.brc.ui.db.PickListDBAdapter;
  * @author rods
  *
  */
-public class ExpressSearchTask extends BaseTask implements CommandListener
+public class ExpressSearchTask extends BaseTask implements CommandListener, ExpressSearchIndexerPane.ExpressSearchIndexerListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
@@ -231,7 +232,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
      */
     public void showIndexerPane()
     {
-        ExpressSearchIndexerPane expressSearchIndexerPane = new ExpressSearchIndexerPane(this);
+        ExpressSearchIndexerPane expressSearchIndexerPane = new ExpressSearchIndexerPane(this, this, ExpressSearchTask.getIndexDirPath());
         SubPaneMgr.getInstance().addPane(expressSearchIndexerPane);
     }
 
@@ -707,4 +708,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener
         }
 
     }
+    
+    //------------------------------------------------
+    //-- ExpressSearchIndexerListener
+    //------------------------------------------------
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane.ExpressSearchIndexerListener#doneIndexing()
+     */
+    public void doneIndexing()
+    {
+        checkForIndexer();
+    }
+
 }

@@ -42,6 +42,8 @@ import edu.ku.brc.ui.forms.persist.View;
  */
 public abstract class AppContextMgr
 {
+    public static final String factoryName = "edu.ku.brc.af.core.AppContextMgrFactory";
+    
     public enum CONTEXT_STATUS {OK, Error, Ignore, Initial}
     
     protected static AppContextMgr instance = null;

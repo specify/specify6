@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.tasks.subpane;
 
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
@@ -67,8 +67,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.ExpressResultsTableInfo.ColInfo;
+import edu.ku.brc.af.core.ExpressResultsTableInfo.LOAD_TYPE;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
@@ -76,10 +80,7 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
@@ -124,27 +125,32 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
     protected PairsMultipleQueryResultsHandler handler = null;
 
-    protected Hashtable<String, JLabel> resultsLabels = new Hashtable<String, JLabel>();
-    protected JPanel                    resultsPanel;
-    protected Font                      captionFont   = null;
-    protected JLabel                    explainLabel;
-    protected boolean                   noIndexFile   = false;
+    protected Hashtable<String, JLabel>    resultsLabels = new Hashtable<String, JLabel>();
+    protected JPanel                       resultsPanel;
+    protected Font                         captionFont   = null;
+    protected JLabel                       explainLabel;
+    protected boolean                      noIndexFile   = false;
 
-    protected boolean                   doIndexForms  = false; // XXX Pref
-    protected boolean                   doIndexLabels = false; // XXX Pref
+    protected boolean                      doIndexForms  = false; // XXX Pref
+    protected boolean                      doIndexLabels = false; // XXX Pref
     
-    protected IndexWriter               optWriter     = null;
+    protected IndexWriter                  optWriter     = null;
+    protected ExpressSearchIndexerListener esipListener = null;
 
     /**
-     * Default Constructor
+     * Default Constructor.
      *
+     * @param task the owning task
+     * @param esipListener the ExpressSearchIndexerPaneListener
+     * @param lucenePath the path to the Lucene index
      */
-    public ExpressSearchIndexerPane(final ExpressSearchTask task)
+    public ExpressSearchIndexerPane(final Taskable task, final ExpressSearchIndexerListener esipListener, final File lucenePath)
     {
         super(getResourceString("IndexerPane"), task);
 
-        lucenePath = ExpressSearchTask.getIndexDirPath();
-
+        this.lucenePath   = lucenePath;
+        this.esipListener = esipListener;
+        
         startCheckOutOfDateProcess(); // must be done before openingScreenInit
 
         openingScreenInit();
@@ -1018,14 +1024,19 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 {
                     globalLabel.setText(getResourceString("doneIndexing"));
                     optWriter = null;
+                    
+                    closeBtn.setVisible(true);
+
+                    if (esipListener != null)
+                    {
+                        esipListener.doneIndexing();
+                    }
+
                 }
             };
             worker.start();
 
         }
-        closeBtn.setVisible(true);
-
-        ((ExpressSearchTask)task).checkForIndexer();
 
     }
 
@@ -1068,13 +1079,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         }
 
     }
+    
     //--------------------------------------
     // QueryResultsListener
     //--------------------------------------
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#allResultsBack()
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack()
      */
     public synchronized void allResultsBack()
     {
@@ -1110,7 +1122,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
@@ -1118,5 +1130,17 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         //addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
     }
+    
+    //------------------------------------------------
+    //-- ExpressSearchIndexerListener
+    //------------------------------------------------
 
+    public interface ExpressSearchIndexerListener
+    {
+        /**
+         * Indicates the ExpressSearchIndex has completed.
+         */
+        public void doneIndexing();
+        
+    }
 }

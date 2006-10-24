@@ -27,12 +27,12 @@ import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Hits;
 
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.IconManager;
 
 /**

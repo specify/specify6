@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.tasks.services;
+package edu.ku.brc.af.core;
 
 
 import static edu.ku.brc.ui.UIHelper.getInt;
@@ -45,7 +45,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.dom4j.Element;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
@@ -53,8 +52,6 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
@@ -68,7 +65,7 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
  * That way we could run it on a server. The idea is that the UI would be accessed via a proxy
  * and the headless could be a "do nothing stub".
  
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  **
  * @author rods
  *
@@ -80,33 +77,35 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     private static final Logger log = Logger.getLogger(ExpressSearchIndexer.class);
 
     // Data Members
-    protected Thread       thread;
-    protected File         lucenePath        = null;
-    protected Analyzer     analyzer          = new StandardAnalyzer();//WhitespaceAnalyzer();
-    protected Element      esDOM             = null;
-    protected ExpressSearchIndexerListener listener = null;
-    protected double      numRows            = 0;
-    protected IndexWriter optWriter          = null;
+    protected Thread                    thread;
+    protected File                      lucenePath        = null;
+    protected Analyzer                  analyzer          = new StandardAnalyzer();//WhitespaceAnalyzer();
+    protected Element                   esDOM             = null;
+    protected double                   numRows            = 0;
+    protected IndexWriter              optWriter          = null;
     
-    protected long         termsIndexed      = 0;
-    protected boolean      isCancelled       = false;
+    protected long                      termsIndexed      = 0;
+    protected boolean                   isCancelled       = false;
 
-    protected PairsMultipleQueryResultsHandler handler = null;
+    protected PairsMultipleQueryResultsHandler handler    = null;
 
-    protected boolean                   noIndexFile   = false;
+    protected boolean                   noIndexFile       = false;
 
-    protected boolean                   doIndexForms  = false; // XXX Pref
-    protected boolean                   doIndexLabels = false; // XXX Pref
+    protected boolean                   doIndexForms      = false; // XXX Pref
+    protected boolean                   doIndexLabels     = false; // XXX Pref
+    
+    protected ExpressSearchIndexerListener listener       = null;
 
     /**
-     * Default Constructor
-     *
+     * Constructor.
+     * @param lucenePath the path to the lucene index
+     * @param listener the listener for when it is done (can be null)
      */
-    public ExpressSearchIndexer(final ExpressSearchTask task, final ExpressSearchIndexerListener listener)
+    public ExpressSearchIndexer(final File lucenePath, final ExpressSearchIndexerListener listener)
     {
         this.listener = listener;
         
-        lucenePath = ExpressSearchTask.getIndexDirPath();
+        this.lucenePath = lucenePath;
 
         startCheckOutOfDateProcess(); // must be done before openingScreenInit
 
@@ -914,7 +913,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#allResultsBack()
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack()
      */
     public synchronized void allResultsBack()
     {
@@ -940,7 +939,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
