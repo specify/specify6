@@ -29,7 +29,7 @@
         <table name="edu.ku.brc.specify.datamodel.AppResourceData" id="84"/>
         <table name="edu.ku.brc.specify.datamodel.AppResourceDefault" id="85"/>    
         <table name="edu.ku.brc.specify.datamodel.Attachment" id="41">
-        	<display view="AttachmentsForm"/>
+        	<display objtitle="Attachment" view="AttachmentsForm" newobjdlg="AttachmentsForm"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AttachmentMetadata" id="42"/>
         <table name="edu.ku.brc.specify.datamodel.AttributeDef" id="16"/>
