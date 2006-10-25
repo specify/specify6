@@ -105,7 +105,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
-    public void removeReference(FormDataObjIFace refObj, String refType)
+    public void removeReference(FormDataObjIFace ref, String refType)
     {
         throw new RuntimeException(this.getClass() + " MUST override removeReference()");
     }
