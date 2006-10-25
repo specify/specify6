@@ -40,6 +40,11 @@ public class AttachmentIconMapper implements ObjectIconMapper
     public ImageIcon getIcon(Object o)
     {
         Attachment a = (Attachment)o;
+        if (a.getMimeType() == null)
+        {
+            return IconManager.getIcon("unknown", IconSize.Std24);
+        }
+        
         if(a.getMimeType().startsWith("image"))
         {
             return IconManager.getIcon("image", IconSize.Std24);
