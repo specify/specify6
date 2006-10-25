@@ -154,7 +154,6 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     @Override
     public void addReference(FormDataObjIFace ref, String refType)
     {
-        //TODO: remove this code later
         if (ref instanceof Agent)
         {
             Agent a = (Agent)ref;
@@ -162,7 +161,6 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
             a.getAccessionAgents().add(this);
             return;
         }
-        // end of removable code section
         
         super.addReference(ref, refType);
         
