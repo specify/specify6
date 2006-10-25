@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+
 
 
 
@@ -93,6 +95,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         agentId = null;
@@ -163,6 +166,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.agentId;
@@ -730,6 +734,28 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         }
         
         return super.getIdentityTitle();
+    }
+
+    @Override
+    public void addReference(FormDataObjIFace ref, String refType)
+    {
+        if (ref instanceof Address)
+        {
+            addresses.add((Address)ref);
+            return;
+        }
+        super.addReference(ref, refType);
+    }
+
+    @Override
+    public void removeReference(FormDataObjIFace ref, String refType)
+    {
+        if (ref instanceof Address)
+        {
+            addresses.remove(ref);
+            return;
+        }
+        super.removeReference(ref, refType);
     }
 
 }
