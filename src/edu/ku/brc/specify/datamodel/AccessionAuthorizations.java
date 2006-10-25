@@ -39,6 +39,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /** default constructor */
     public AccessionAuthorizations()
     {
+        // do nothing
     }
 
     /** constructor with id */
@@ -156,6 +157,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
+    @Override
     public void addReference(FormDataObjIFace ref, String refType)
     {
         if (StringUtils.isNotEmpty(refType))
@@ -206,6 +208,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
+    @Override
     public void removeReference(FormDataObjIFace ref, String refType)
     {
         if (StringUtils.isNotEmpty(refType))

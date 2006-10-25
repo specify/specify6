@@ -41,6 +41,7 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     /** default constructor */
     public AccessionAgents()
     {
+        // do nothing
     }
     
     /** constructor with id */
@@ -150,6 +151,7 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
+    @Override
     public void addReference(FormDataObjIFace ref, String refType)
     {
         super.addReference(ref, refType);
@@ -204,6 +206,7 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
+    @Override
     public void removeReference(FormDataObjIFace ref, String refType)
     {
         super.removeReference(ref, refType);

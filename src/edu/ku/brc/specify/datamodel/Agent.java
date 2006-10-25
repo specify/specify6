@@ -741,7 +741,16 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     {
         if (ref instanceof Address)
         {
-            addresses.add((Address)ref);
+            Address addr = (Address)ref;
+            addresses.add(addr);
+            addr.setAgent(this);
+            return;
+        }
+        if (ref instanceof AccessionAgents)
+        {
+            AccessionAgents aa = (AccessionAgents)ref;
+            accessionAgents.add(aa);
+            aa.setAgent(this);
             return;
         }
         super.addReference(ref, refType);

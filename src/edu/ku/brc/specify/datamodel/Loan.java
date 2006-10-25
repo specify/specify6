@@ -360,7 +360,9 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     {
         if( ref instanceof Attachment )
         {
-            attachments.add((Attachment)ref);
+            Attachment a = (Attachment)ref;
+            attachments.add(a);
+            a.setLoan(this);
             return;
         }
         super.addReference(ref, refType);

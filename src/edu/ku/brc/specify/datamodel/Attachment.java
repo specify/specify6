@@ -239,12 +239,14 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     }
     
     @Override
-    public void addReference(FormDataObjIFace ref, String type)
+    public void addReference(FormDataObjIFace ref, String refType)
     {
         if (ref instanceof AttachmentMetadata)
         {
             addAttachmentMetadata((AttachmentMetadata)ref);
+            return;
         }
+        super.addReference(ref, refType);
     }
 
     /* (non-Javadoc)
