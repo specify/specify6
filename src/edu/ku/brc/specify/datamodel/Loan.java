@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+
 
 
 
@@ -64,6 +66,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         loanId = null;
@@ -104,6 +107,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
     public Long getId()
     {
         return this.loanId;
@@ -349,6 +353,28 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public Integer getTableId()
     {
         return 52;
+    }
+
+    @Override
+    public void addReference(FormDataObjIFace ref, String refType)
+    {
+        if( ref instanceof Attachment )
+        {
+            attachments.add((Attachment)ref);
+            return;
+        }
+        super.addReference(ref, refType);
+    }
+
+    @Override
+    public void removeReference(FormDataObjIFace refObj, String refType)
+    {
+        if( refObj instanceof Attachment )
+        {
+            attachments.remove(refObj);
+            return;
+        }
+        super.removeReference(refObj, refType);
     }
 
 }
