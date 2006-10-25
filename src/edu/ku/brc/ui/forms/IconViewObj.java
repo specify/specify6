@@ -87,6 +87,8 @@ public class IconViewObj implements Viewable
     protected JButton                       validationInfoBtn;
     
     protected boolean dataTypeError;
+    
+    protected FormValidator validator;
 
     protected BusinessRulesIFace            businessRules; 
 
@@ -107,6 +109,16 @@ public class IconViewObj implements Viewable
         this.viewDef = altView.getViewDef();
         this.dataTypeError = false;
         this.businessRules = view.getBusinessRule();
+        
+        validator = new FormValidator();
+        MultiView root = mvParent;
+        while (root.getMultiViewParent() != null)
+        {
+            root = root.getMultiViewParent();
+        }
+        validator.addValidationListener(root);
+        validator.setName("IconViewObj validator");
+        root.addFormValidator(validator);
     }
     
     protected void initMainComp()
@@ -189,6 +201,18 @@ public class IconViewObj implements Viewable
                         {
                             log.warn("User clicked OK");
                             log.error("Do I need to do a Hibernate update?");
+                            if (mvParent != null)
+                            {
+                                MultiView root = mvParent;
+                                while (root.getMultiViewParent() != null)
+                                {
+                                    root = root.getMultiViewParent();
+                                }
+                                validator.setHasChanged(true);
+                                validator.validateFormForOK();
+                                root.dataChanged(null, null, null);
+                            }
+
                         }
                         else if (action.equals("Cancel"))
                         {
@@ -227,8 +251,17 @@ public class IconViewObj implements Viewable
                             log.warn("User clicked OK.  Adding " + newObject.getIdentityTitle() + " into " + dataSetFieldName + ".");
                             parentDataObj.addReference(newObject, dataSetFieldName);
                             iconTray.addItem(newObject);
-                            log.error("Do I need to do a Hibernate save?");
-                            // TODO: what to do?
+                            if (mvParent != null)
+                            {
+                                MultiView root = mvParent;
+                                while (root.getMultiViewParent() != null)
+                                {
+                                    root = root.getMultiViewParent();
+                                }
+                                validator.setHasChanged(true);
+                                validator.validateFormForOK();
+                                root.dataChanged(null, null, null);
+                            }
                         }
                         else if (action.equals("Cancel"))
                         {
@@ -257,8 +290,17 @@ public class IconViewObj implements Viewable
                 
                 iconTray.removeItem(selection);
                 log.warn("Delete " + selection.getIdentityTitle());
-                log.warn("How should this be implemented?");
-                // TODO: what to do?
+                if (mvParent != null)
+                {
+                    MultiView root = mvParent;
+                    while (root.getMultiViewParent() != null)
+                    {
+                        root = root.getMultiViewParent();
+                    }
+                    validator.setHasChanged(true);
+                    validator.validateFormForOK();
+                    root.dataChanged(null, null, null);
+                }
             }
         });
     }
@@ -410,7 +452,6 @@ public class IconViewObj implements Viewable
                 dataSet.add(dataObj);
             }
         }
-
     }
 
     /* (non-Javadoc)
@@ -583,6 +624,7 @@ public class IconViewObj implements Viewable
     public void setCellName(String cellName)
     {
         this.cellName = cellName;
+        this.dataSetFieldName = cellName;
         
         if (parentDataObj == null)
         {
