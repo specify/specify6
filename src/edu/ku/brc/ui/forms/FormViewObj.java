@@ -24,8 +24,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -168,6 +166,7 @@ public class FormViewObj implements Viewable,
     protected DropDownButtonStateful        switcherUI;
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
+    protected List<UIValidatable>           defaultValueList = new ArrayList<UIValidatable>();
 
     protected PanelBuilder                  mainBuilder;
     protected BusinessRulesIFace            businessRules   = null; 
@@ -218,7 +217,8 @@ public class FormViewObj implements Viewable,
         this.mvParent    = mvParent;
         this.cellName    = cellName;
         
-        businessRules = view.getBusinessRule();
+        businessRules    = view.getBusinessRule();
+        isEditting       = altView.getMode() == AltView.CreationMode.Edit;
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
@@ -782,26 +782,23 @@ public class FormViewObj implements Viewable,
      */
     protected void removeFromParent(final Object oldDataObj)
     {
-        if (parentDataObj != null)
+        if (oldDataObj != null)
         {
-            String methodName = "remove" + oldDataObj.getClass().getSimpleName();
-            try
+            if (parentDataObj != null)
             {
-                Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {oldDataObj.getClass()});
-                method.invoke(parentDataObj, new Object[] {oldDataObj});
-
-            } catch (NoSuchMethodException ex)
-            {
-                ex.printStackTrace();
-
-            } catch (IllegalAccessException ex)
-            {
-                ex.printStackTrace();
-
-            } catch (InvocationTargetException ex)
-            {
-                ex.printStackTrace();
+                if (parentDataObj instanceof FormDataObjIFace &&
+                    oldDataObj instanceof FormDataObjIFace)
+                {
+                    ((FormDataObjIFace)parentDataObj).removeReference((FormDataObjIFace)oldDataObj, cellName);
+                    
+                } else
+                {
+                    throw new RuntimeException("Hmmm, I don't think we soud be here.");
+                }
             }
+        } else
+        {
+            throw new RuntimeException("Hmmm,Why are we trying to delete a NULL object?");
         }
     }
 
@@ -819,17 +816,29 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Walks the MultiView hierarchy and ctells all the Viewables in each MultiView
+     * Sets the parent MultiView and all of its children. The last argument indicates whether
+     * it should have the children walk there children (a deep recurse).
      * that the form is new
      * @param parentMV the parent MultiView
      * @param isNewForm wheather the form is now in "new data input" mode
+     * @param traverseKids whether the MultiView should traverse into the children MultiViews (deep recurse)
      */
-    protected void traverseToToSetAsNew(final MultiView parentMV, final boolean isNewForm)
+    protected void traverseToToSetAsNew(final MultiView parentMV, 
+                                        final boolean isNewForm,
+                                        final boolean traverseKids)
     {
-        parentMV.setIsNewForm(isNewForm);
-        for (MultiView mv : parentMV.getKids())
+        // This call just sets all the Viewable for the MV, unless traverseKids is to true
+        // then it walks the children MVs
+        parentMV.setIsNewForm(isNewForm, traverseKids);
+        
+        // if traverseKids is true then the kids have already been walked
+        // but if it is false then we need to walk the immediate kids
+        if (!traverseKids)
         {
-            mv.setIsNewForm(isNewForm);
+            for (MultiView mv : parentMV.getKids())
+            {
+                mv.setIsNewForm(isNewForm, false);
+            }
         }
     }
 
@@ -896,6 +905,7 @@ public class FormViewObj implements Viewable,
             return;
         }
 
+        //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         FormDataObjIFace obj = FormHelper.createAndNewDataObj(view.getClassName());
         if (parentDataObj instanceof FormDataObjIFace)
         {
@@ -925,7 +935,11 @@ public class FormViewObj implements Viewable,
             rsController.setLength(list.size());
             rsController.setIndex(list.size()-1);
         }
-        setAsNewForm(true);
+        
+        // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
+        formIsInNewDataMode = true;
+        traverseToToSetAsNew(mvParent, formIsInNewDataMode, false); // don't traverse deeper than our immediate children
+        updateControllerUI();
 
         this.setDataIntoUI();
 
@@ -941,8 +955,8 @@ public class FormViewObj implements Viewable,
      */
     protected void saveObject()
     {
-        log.debug(hashCode() + "Session ["+(session != null ? session.hashCode() : "null")+"]");
-         try
+        //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
+        try
         {
             this.getDataFromUI();
 
@@ -967,14 +981,14 @@ public class FormViewObj implements Viewable,
             session.commit();
             session.flush();
             
-            log.debug("Session Saved[ and Flushed "+session.hashCode()+"]");
+            log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
             
-
-            setDataIntoUI();
-
-
+            // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
             formIsInNewDataMode = false;
-            traverseToToSetAsNew(mvParent, false);
+            traverseToToSetAsNew(mvParent, false, true); // last arg means it should traverse
+            updateControllerUI();
+            
+            setDataIntoUI();
 
             if (doCarryForward)
             {
@@ -1018,24 +1032,44 @@ public class FormViewObj implements Viewable,
     {
         try
         {
+            //log.info(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
+            if (session == null)
+            {
+                int x = 0;
+                x++;
+                return;
+            }
+            
             removeFromParent(dataObj);
             
-            String delMsg = businessRules.getDeleteMsg(dataObj);
+            String delMsg = businessRules != null ? businessRules.getDeleteMsg(dataObj) : "";
 
-            session.beginTransaction();
-            session.delete(dataObj);
-            session.commit();
-            session.flush();
+            if (mvParent.isTopLevel())
+            {
+                session.beginTransaction();
+                session.delete(dataObj);
+                session.commit();
+                session.flush();
+                
+            } else
+            {
+                session.deleteOnSaveOrUpdate(dataObj);
+            }
+            
+            //mvParent.clearData(true);
             
             log.debug("Session Flushed["+session.hashCode()+"]");
 
             if (rsController != null)
             {
                 int currInx = rsController.getCurrentIndex();
-                list.remove(dataObj);
-                rsController.setLength(rsController.getLength()-1);
+                int newLen  = rsController.getLength() - 1;
+                int newInx  = Math.min(currInx, newLen-1);
+                
+                list.remove(dataObj); // remove from list
+                
+                rsController.setLength(newLen); // set new len for controller
 
-                int newInx = Math.min(currInx, rsController.getLength());
                 if (newInx > -1 && list.size() > 0)
                 {
                     rsController.setIndex(newInx);
@@ -1065,10 +1099,10 @@ public class FormViewObj implements Viewable,
      * Tells this form and all of it's children that it is a "new" form for data entry
      * @param isNewForm true is new, false is not
      */
-    public void setAsNewForm(final boolean isNewForm)
+    public void setHasNewData(final boolean isNewForm)
     {
         formIsInNewDataMode = isNewForm;
-        traverseToToSetAsNew(mvParent, isNewForm);
+        updateControllerUI();
     }
 
     /**
@@ -1248,6 +1282,33 @@ public class FormViewObj implements Viewable,
     {
         setDataObj(dataObj, false);
     }
+    
+    /**
+     * Updates the enabled state of the New and delete buttons in the controller
+     */
+    protected void updateControllerUI()
+    {
+        if (rsController.getDelRecBtn() != null)
+        {
+            //if (isEditting)
+            //{
+           //     log.info("*"+formViewDef.getName()+" ["+(parentDataObj != null) + "] ["+(!formIsInNewDataMode)+"]["+((businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0)+"] ");
+           // }
+            rsController.getDelRecBtn().setEnabled(
+                                                   (businessRules == null || businessRules.okToDelete(this.dataObj)) && 
+                                                   list != null && list.size() > 0);
+        }
+        
+        if (rsController.getNewRecBtn() != null)
+        {
+            boolean enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
+            if (isEditting)
+            {
+                log.info(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
+            }
+            rsController.getNewRecBtn().setEnabled(enableNewBtn);
+        }
+    }
 
     /**
      * Set the datObj into the form but controls 
@@ -1293,6 +1354,15 @@ public class FormViewObj implements Viewable,
         {
             formValidator.addRuleObjectMapping("dataObj", dataObj);
         }
+        
+        for (FieldInfo fieldInfo : controlsById.values())
+        {
+            if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview ||
+                fieldInfo.getFormCell().getType() == FormCell.CellType.iconview)
+            {
+                fieldInfo.getSubView().setParentDataObj(null);
+            }
+        }
 
         // if we do have a list then get the first object or null
         if (data instanceof List)
@@ -1310,11 +1380,7 @@ public class FormViewObj implements Viewable,
             if (rsController != null)
             {
                 rsController.setLength(list.size());
-                if (rsController.getDelRecBtn() != null)
-                {
-                    rsController.getDelRecBtn().setEnabled(!formIsInNewDataMode && (businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0);
-                    rsController.getNewRecBtn().setEnabled(mvParent.getMultiViewParent() != null && formIsInNewDataMode);
-                }
+                updateControllerUI();
             }
 
             // Set the data from the into the form
@@ -1334,14 +1400,18 @@ public class FormViewObj implements Viewable,
 
             // Don't remove the rsController if the data is NULL because the next non-null one may be a list
             // mostly likely it will be
-            if (this.dataObj != null && rsController != null)
+            if (rsController != null)
             {
-                controlPanel.setRSCVisibility(!isEditting);
-                if (rsController.getDelRecBtn() != null)
+                if (this.dataObj != null)
                 {
-                    rsController.getDelRecBtn().setEnabled(!formIsInNewDataMode && (businessRules == null || businessRules.okToDelete(this.dataObj)));
-                    rsController.getNewRecBtn().setEnabled(mvParent.getMultiViewParent() != null && formIsInNewDataMode);
+                    controlPanel.setRSCVisibility(!isEditting);
+                    rsController.setEnabled(true);
+                    
+                } else
+                {
+                    rsController.setEnabled(false);
                 }
+                updateControllerUI();
             }
         }
     }
@@ -1448,6 +1518,12 @@ public class FormViewObj implements Viewable,
             draggableRecIdentifier.setFormDataObj(formDataObj);
         }
         
+        // This is used to keep track of all the Controls that have had there default value set
+        // when there is a validator all the fields get reset back to false to we can't call "setChanged"
+        // when we set the data into the control, we wait until after the fact.
+        // this clear right here should need to be called but is for insurance
+        defaultValueList.clear();
+        
         if (weHaveData)
         {
             // Now we know the we have data, so loop through all the controls
@@ -1474,7 +1550,7 @@ public class FormViewObj implements Viewable,
                     boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
 
                     boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
-                    log.debug("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
+                    log.info("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
 
                     if (useFormatName)
                     {
@@ -1516,6 +1592,10 @@ public class FormViewObj implements Viewable,
                         } else
                         {
                             setDataIntoUIComp(comp, null, defaultValue);
+                            if (isEditting && comp instanceof UIValidatable && StringUtils.isNotEmpty(defaultValue))
+                            {
+                                defaultValueList.add((UIValidatable)comp);
+                            }
                         }
                     }
 
@@ -1555,12 +1635,23 @@ public class FormViewObj implements Viewable,
             //formValidator.resetFields();
 
             this.listFieldChanges();
+            
         }
+
+        // Now set all the controls with default values as having been changed
+        // this is done because "resetFields" has just set them all to false
+        for (UIValidatable uiv : defaultValueList)
+        {
+            uiv.setChanged(true);
+        }
+        defaultValueList.clear();
 
         if (mvParent != null && mvParent.isRoot() && saveBtn != null)
         {
             saveBtn.setEnabled(false);
         }
+        
+        updateControllerUI();
     }
 
     /* (non-Javadoc)
@@ -1609,6 +1700,7 @@ public class FormViewObj implements Viewable,
                 {
                     continue;
                 }
+                System.out.println(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
                 String id = fieldInfo.getFormCell().getId();
                 if (hasFormControlChanged(id))
                 {
@@ -1917,7 +2009,7 @@ public class FormViewObj implements Viewable,
      */
     public void setSession(final DataProviderSessionIFace session)
     {
-        log.debug(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
+        log.debug("setSession "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         this.session = session;
     }
 

@@ -255,7 +255,7 @@ public class FormPane extends DroppableTaskPane
                 // on required fields until the user inputs something
                 if (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT))
                 {
-                    multiView.setIsNewForm(true);
+                    multiView.setIsNewForm(true, false); // traverse immediate children only
                 }
 
                 if (multiView.getCurrentView().getValidator() != null)

@@ -253,7 +253,7 @@ public class TableViewObj implements Viewable,
             
             if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
             {
-                if (mvParent.isTopLevel() && !hideSaveBtn)
+                if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn)
                 {
                     //addSaveBtn();
                     comps.add(saveBtn);
@@ -632,6 +632,14 @@ public class TableViewObj implements Viewable,
     public void setCellName(String cellName)
     {
         this.cellName = cellName;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setHasNewData(boolean)
+     */
+    public void setHasNewData(final boolean isNewForm)
+    {
+        // this gives you the opportunity to adjust your UI
     }
     
     /* (non-Javadoc)

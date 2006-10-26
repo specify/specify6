@@ -836,12 +836,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         // Notify anyone else who is listening to the form for changes
 
+        hasChanged = true;
+        
         for (DataChangeListener dcl : dcListeners)
         {
             dcl.dataChanged(dcName, comp, dcn);
         }
-
-        hasChanged = true;
 
         turnOnOKButton(formValidationState == UIValidatable.ErrorType.Valid);
     }

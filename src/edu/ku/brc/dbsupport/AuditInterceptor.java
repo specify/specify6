@@ -25,14 +25,14 @@ import org.hibernate.type.Type;
 
 
 /**
-
+ *
  *
  * @code_status Alpha
  *
  * @author rods
  *
  */
-public abstract class AuditInterceptor  extends EmptyInterceptor 
+public abstract class AuditInterceptor extends EmptyInterceptor 
 {
     protected static AuditInterceptor instance = null;
     

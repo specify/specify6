@@ -191,8 +191,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     {
         for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
         {
-            Element   tableElement = (Element)iter.next();
-            ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Viewing, isExpressSearch);
+            Element                 tableElement = (Element)iter.next();
+            ExpressResultsTableInfo tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Both, isExpressSearch);
             if (byIdHash.get(tableInfo.getId()) == null)
             {
                 byIdHash.put(tableInfo.getId(), tableInfo);

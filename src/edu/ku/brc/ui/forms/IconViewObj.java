@@ -617,6 +617,15 @@ public class IconViewObj implements Viewable
     {
         this.session = session;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setHasNewData(boolean)
+     */
+    public void setHasNewData(final boolean isNewForm)
+    {
+        // this gives you the opportunity to adjust your UI
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setCellName(java.lang.String)

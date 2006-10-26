@@ -102,12 +102,12 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
 public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, QueryResultsListener
 {
     // Static Data Members
-    private static final Logger log = Logger.getLogger(ExpressSearchIndexerPane.class);
+    private static final Logger   log      = Logger.getLogger(ExpressSearchIndexerPane.class);
+    private static final Analyzer analyzer = new StandardAnalyzer();//WhitespaceAnalyzer();
 
     // Data Members
     protected Thread       thread;
     protected File         lucenePath    = null;
-    protected Analyzer     analyzer      = new StandardAnalyzer();//WhitespaceAnalyzer();
     protected Element      esDOM         = null;
     protected JLabel       indvLabel;
     protected JLabel       globalLabel;
@@ -315,7 +315,36 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         }
 
     }
-
+    
+    /**
+     * Returns the analyzer.
+     * @return the analyzer.
+     */
+    public static Analyzer getAnalyzer()
+    {
+        return analyzer;
+    }
+    
+    /**
+     * Create the Lucene directory if it doesn't exist. Then create a new index if the dir didn't exist or "create" is true.
+     * @param create indicates whether the index should be created, this also can be used to delete and start over.
+     * @return creates and returns a new IndexWriter.
+     * @throws IOException
+     */
+    public static IndexWriter createIndexWriter(final File path, final boolean create) throws IOException
+    {
+        boolean     shouldBeCreated = path.exists();
+        Directory   dir             = FSDirectory.getDirectory(path, true);
+        IndexWriter writer          = new IndexWriter(dir, analyzer, create || shouldBeCreated);
+        //writer.setMaxBufferedDocs(arg0);
+        writer.setMaxMergeDocs(9999999);
+        writer.setMergeFactor(100);
+        //writer.mergeFactor   = 1000;
+        //writer.maxMergeDocs  = 9999999;
+        //writer.minMergeDocs  = 1000;
+        return writer;
+    }
+    
     /**
      * @param rs
      * @param secondaryKey
@@ -483,7 +512,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         rowCnt++;
                         
                         Document doc = new Document();
-                        doc.add(new Field("id", rs.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.NO));
+                        doc.add(new Field("id", rs.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.UN_TOKENIZED));
                         doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
                         //doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
 
@@ -890,19 +919,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     public void index() throws IOException
     {
-
-        Directory dir = FSDirectory.getDirectory(lucenePath, true);
-        IndexWriter writer = new IndexWriter(dir, analyzer, true);
-        //writer.setMaxBufferedDocs(arg0);
-        writer.setMaxMergeDocs(9999999);
-        writer.setMergeFactor(100);
-        //writer.mergeFactor   = 1000;
-        //writer.maxMergeDocs  = 9999999;
-        //writer.minMergeDocs  = 1000;
-
-        long deltaTime = 0;
+        IndexWriter writer    = null;
+        long        deltaTime = 0;
         try
         {
+            writer = createIndexWriter(lucenePath, true);
+            
             if (esDOM == null)
             {
                 esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
@@ -974,7 +996,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             indvLabel.setVisible(false);
             globalLabel.setText(getResourceString("indexingWasCancelled"));
 
-            writer.close();
+            if (writer != null)
+            {
+                writer.close();
+            }
 
             // Create a new one and then close it
             String[] fileNames = lucenePath.list();

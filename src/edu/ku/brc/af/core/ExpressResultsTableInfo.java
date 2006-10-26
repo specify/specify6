@@ -61,6 +61,7 @@ public class ExpressResultsTableInfo
     // These data members are use for indexing
     protected boolean                   useHitsCache = false;
     protected String                    buildSql;
+    protected String                    updateSql;
     protected String[]                  colNames     = null;
     protected String[]                  colLabels    = null;
     protected boolean[]                 visCols      = null;
@@ -138,18 +139,33 @@ public class ExpressResultsTableInfo
             Element indexElement = (Element)tableElement.selectSingleNode("index");
 
             buildSql  = indexElement.selectSingleNode("sql").getText();
-
-            StringBuilder strBuf = new StringBuilder();
-            List colItems = indexElement.selectNodes("cols/col");
+ 
+            StringBuilder strBuf    = new StringBuilder();
+            List          colItems  = indexElement.selectNodes("cols/col");
+            String        idColName = null;
+            
             cols = new ColInfo[colItems.size()];
             for (int i=0;i<colItems.size();i++)
             {
-                cols[i] = new ColInfo((Element)colItems.get(i));
+                ColInfo colInfo = new ColInfo((Element)colItems.get(i));
                 if (i > 0) strBuf.append(',');
-                strBuf.append(cols[i].getColName());
+                strBuf.append(colInfo.getColName());
+                if (colInfo.isIdColumn())
+                {
+                    idColName = colInfo.getColName();
+                }
+                cols[i] = colInfo;
             }
             
-            buildSql = buildSql.replaceFirst("ColFieldsDef", strBuf.toString());
+            buildSql  = buildSql.replaceFirst("ColFieldsDef", strBuf.toString());
+            updateSql = idColName != null ? buildSql + " where " + idColName + " = %d" : null;
+            
+            if (buildSql.indexOf("accession") > -1)
+            {
+                int x = 0;
+                x++;
+            }
+
             
             //System.err.println("["+buildSql+"]");
         }
@@ -414,6 +430,11 @@ public class ExpressResultsTableInfo
     public String getBuildSql()
     {
         return buildSql;
+    }
+
+    public String getUpdateSql()
+    {
+        return updateSql;
     }
 
     public boolean isUseHitsCache()

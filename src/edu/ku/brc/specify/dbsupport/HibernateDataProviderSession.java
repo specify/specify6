@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.dbsupport;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -43,6 +44,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     protected Exception   recentException = null;
     protected Transaction transaction     = null;
     
+    protected List<Object> deleteList     = new Vector<Object>();
+    
     /**
      * Creates a new Hibernate Session
      */
@@ -68,6 +71,15 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
 
         return false;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
+     */
+    public void deleteOnSaveOrUpdate(Object dataObj) throws Exception
+    {
+        deleteList.add(dataObj);
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.String)
@@ -223,6 +235,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
+            deleteObjectFromList();
             session.save(dataObj);
             return true;
         }
@@ -239,6 +252,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
+            deleteObjectFromList();
             session.saveOrUpdate(dataObj);
             return true;
         }
@@ -255,6 +269,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
+            deleteObjectFromList();
             session.update(dataObj);
             return true;
         }
@@ -358,4 +373,19 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             log.error("Session was null.");
         }
      }
+    
+    /**
+     * Deletes all the object that were marked for delayed deletion.
+     */
+    protected void deleteObjectFromList()
+    {
+        for (Object obj : deleteList)
+        {
+            if (session.contains(obj))
+            {
+                session.delete(obj);
+            }
+        }
+        deleteList.clear();
+    }
 }

@@ -200,6 +200,13 @@ public interface Viewable
      * @param session the current session
      */
     public void setSession(DataProviderSessionIFace session);
+    
+    
+    /**
+     * Set whether the viewable has new data and should any UI accordingly.
+     * @param hasNewData true- has new data, false - doesn't
+     */
+    public void setHasNewData(boolean hasNewData);
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.

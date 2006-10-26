@@ -74,15 +74,15 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
 public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 {
     // Static Data Members
-    private static final Logger log = Logger.getLogger(ExpressSearchIndexer.class);
+    private static final Logger   log      = Logger.getLogger(ExpressSearchIndexer.class);
+    private static final Analyzer analyzer = new StandardAnalyzer();//WhitespaceAnalyzer();
 
     // Data Members
     protected Thread                    thread;
     protected File                      lucenePath        = null;
-    protected Analyzer                  analyzer          = new StandardAnalyzer();//WhitespaceAnalyzer();
     protected Element                   esDOM             = null;
-    protected double                   numRows            = 0;
-    protected IndexWriter              optWriter          = null;
+    protected double                    numRows            = 0;
+    protected IndexWriter               optWriter          = null;
     
     protected long                      termsIndexed      = 0;
     protected boolean                   isCancelled       = false;
@@ -197,6 +197,35 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
             handler.startUp();
         }
     }
+    
+    /**
+     * Returns the analyzer.
+     * @return the analyzer.
+     */
+    public static Analyzer getAnalyzer()
+    {
+        return analyzer;
+    }
+    
+    /**
+     * Create the Lucene directory if it doesn't exist. Then create a new index if the dir didn't exist or "create" is true.
+     * @param create indicates whether the index should be created, this also can be used to delete and start over.
+     * @return creates and returns a new IndexWriter.
+     * @throws IOException
+     */
+    public static IndexWriter createIndexWriter(final File path, final boolean create) throws IOException
+    {
+        boolean     shouldBeCreated = path.exists();
+        Directory   dir             = FSDirectory.getDirectory(path, true);
+        IndexWriter writer          = new IndexWriter(dir, analyzer, create || shouldBeCreated);
+        //writer.setMaxBufferedDocs(arg0);
+        writer.setMaxMergeDocs(9999999);
+        writer.setMergeFactor(100);
+        //writer.mergeFactor   = 1000;
+        //writer.maxMergeDocs  = 9999999;
+        //writer.minMergeDocs  = 1000;
+        return writer;
+    }
 
     /**
      * @param rs
@@ -283,21 +312,152 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
     /**
      * Performs a query and then indexes all the results for each orw and column
+     * @param sectionIndex the section that is currently being processed
      * @param writer the lucene writer
      * @param tableInfo info describing the table (hold the table ID)
+     * @param trigger the value that trips the notification of the listener
+     * @param resultset the resultset
+     * @return
+     * @throws SQLException
+     * @throws IOException
      */
-    public long indexQuery(final int sectionIndex, final IndexWriter writer, ExpressResultsTableInfo tableInfo)
+    public boolean indexQuery(final int                     sectionIndex,
+                              final IndexWriter             writer, 
+                              final ExpressResultsTableInfo tableInfo, 
+                              final int                     trigger,
+                              final ResultSet               resultset) throws SQLException, IOException
     {
         DateFormat formatter    = new SimpleDateFormat("yyyyMMdd");
-
-        Connection dbConnection = DBConnection.getInstance().createConnection();
-        Statement  dbStatement  = null;
-
-        boolean  useHitsCache   = tableInfo.isUseHitsCache();
+        boolean    useHitsCache = tableInfo.isUseHitsCache();
         
         ExpressResultsTableInfo.ColInfo colInfo[] = tableInfo.getCols();
 
         StringBuilder strBuf = new StringBuilder(128);
+
+        if (resultset.first())
+        {
+            // First we create an array of Class so we know what each column's Object class is
+            ResultSetMetaData rsmd    = resultset.getMetaData();
+            Class[]           classes = new Class[rsmd.getColumnCount()+1];
+            classes[0] = null; // we do this so the "1" based columns match up with the list
+            for (int i=1;i<rsmd.getColumnCount();i++)
+            {
+                try
+                {
+                    classes[i] = Class.forName(rsmd.getColumnClassName(i));
+                    //log.debug(rsmd.getColumnName(i)+"  "+classes[i].getSimpleName());
+                } catch (Exception ex) {  }
+            }
+
+            String idStr = tableInfo.getId();
+
+            int step = 0;
+            double rowCnt = 1.0;
+            do
+            {
+                if (step == trigger)
+                {
+                    if (listener != null)
+                    {
+                        listener.processingSection(sectionIndex, rowCnt / numRows);
+                    }
+                    step = 0;
+                }
+
+                step++;
+                rowCnt++;
+                Document doc = new Document();
+                doc.add(new Field("id", resultset.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.UN_TOKENIZED));
+                doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
+                doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
+
+                int cnt = 0;
+                if (useHitsCache)
+                {
+                    strBuf.setLength(0);
+                    for (int i=0;i<colInfo.length;i++)
+                    {
+                        ExpressResultsTableInfo.ColInfo ci = colInfo[i];
+                        if (i > 0)
+                        {
+                            int inx = ci.getPosition();
+                            String value = indexValue(doc, resultset, inx,
+                                                      rsmd.getColumnName(inx),
+                                                      ci.getSecondaryKey(),
+                                                      classes[inx],
+                                                      formatter);
+                            if (value != null)
+                            {
+                                cnt++;
+                                termsIndexed++;
+                                strBuf.append(value);
+                                strBuf.append('\t');
+
+                            } else
+                            {
+                                strBuf.append(" \t");
+                            }
+
+                            if (isCancelled)
+                            {
+                                return false;
+                            }
+                        } else
+                        {
+                            strBuf.append(" \t");
+                        }
+                    }
+
+                    doc.add(new Field("data", strBuf.toString(), Field.Store.YES, Field.Index.NO));
+                    //doc.add(Field.UnIndexed("data", strBuf.toString()));
+
+                } else
+                {
+                    for (int i=0;i<colInfo.length;i++)
+                    {
+                        ExpressResultsTableInfo.ColInfo ci = colInfo[i];
+                        int inx = ci.getPosition();
+
+                        if (indexValue(doc, resultset, inx, rsmd.getColumnName(inx), ci.getSecondaryKey(),
+                                       classes[inx], formatter) != null)
+                        {
+                            cnt++;
+                            termsIndexed++;
+                        }
+
+                        if (isCancelled)
+                        {
+                            return false;
+                        }
+
+                    }
+                }
+                
+                if (cnt > 0)
+                {
+                    writer.addDocument(doc);
+                }
+                
+            } while(resultset.next());
+            log.debug("done indexing");
+        }
+        return true;
+    }
+
+    /**
+     * Performs a query and then indexes all the results for each orw and column
+     * @param sectionIndex the section that is currently being processed
+     * @param writer the lucene writer
+     * @param tableInfo info describing the table (hold the table ID)
+     * @param sqlStr the SQL string for building the index
+     */
+    public long indexQuery(final int                     sectionIndex, 
+                           final IndexWriter             writer, 
+                           final ExpressResultsTableInfo tableInfo, 
+                           final String                  sqlStr)
+    {
+        Connection dbConnection = DBConnection.getInstance().createConnection();
+        Statement  dbStatement  = null;
 
         long begin = 0;
 
@@ -312,15 +472,14 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
             {
                 dbStatement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
-                log.debug("SQL ["+tableInfo.getBuildSql()+"]");
+                log.debug("SQL ["+sqlStr+"]");
 
-                ResultSet rs = dbStatement.executeQuery(tableInfo.getBuildSql());
+                ResultSet rs = dbStatement.executeQuery(sqlStr);
 
                 begin = new Date().getTime();
-
+                
                 numRows = 0;
                 int    trigger = -1;
-                int    step    = 0;
                 if (rs.last())
                 {
                     numRows = rs.getRow();
@@ -337,121 +496,16 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 }
                 log.debug("Row ["+numRows+"] to index in ["+tableInfo.getTitle()+"].");
 
-                if (rs.first())
-                {
-                    // First we create an array of Class so we know what each column's Object class is
-                    ResultSetMetaData rsmd    = rs.getMetaData();
-                    Class[]           classes = new Class[rsmd.getColumnCount()+1];
-                    classes[0] = null; // we do this so the "1" based columns match up with the list
-                    for (int i=1;i<rsmd.getColumnCount();i++)
-                    {
-                        try
-                        {
-                            classes[i] = Class.forName(rsmd.getColumnClassName(i));
-                            //log.debug(rsmd.getColumnName(i)+"  "+classes[i].getSimpleName());
-                        } catch (Exception ex) {  }
-                    }
-
-                    String idStr = tableInfo.getId();
-
-                    double rowCnt = 1.0;
-                    do
-                    {
-                        if (step == trigger)
-                        {
-                            if (listener != null)
-                            {
-                                listener.processingSection(sectionIndex, rowCnt / numRows);
-                            }
-                            step = 0;
-                        }
-
-                        step++;
-                        rowCnt++;
-                        Document doc = new Document();
-                        doc.add(new Field("id", rs.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.NO));
-                        doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
-                        doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
- 
-                        int cnt = 0;
-                        if (useHitsCache)
-                        {
-                            strBuf.setLength(0);
-                            for (int i=0;i<colInfo.length;i++)
-                            {
-                                ExpressResultsTableInfo.ColInfo ci = colInfo[i];
-                                if (i > 0)
-                                {
-                                    int inx = ci.getPosition();
-                                    String value = indexValue(doc, rs, inx,
-                                                              rsmd.getColumnName(inx),
-                                                              ci.getSecondaryKey(),
-                                                              classes[inx],
-                                                              formatter);
-                                    if (value != null)
-                                    {
-                                        cnt++;
-                                        termsIndexed++;
-                                        strBuf.append(value);
-                                        strBuf.append('\t');
-
-                                    } else
-                                    {
-                                        strBuf.append(" \t");
-                                    }
-
-                                    if (isCancelled)
-                                    {
-                                        dbStatement.close();
-                                        dbConnection.close();
-                                        return 0;
-                                    }
-                                } else
-                                {
-                                    strBuf.append(" \t");
-                                }
-                            }
-
-                            doc.add(new Field("data", strBuf.toString(), Field.Store.YES, Field.Index.NO));
-                            //doc.add(Field.UnIndexed("data", strBuf.toString()));
-
-                        } else
-                        {
-                            for (int i=0;i<colInfo.length;i++)
-                            {
-                                ExpressResultsTableInfo.ColInfo ci = colInfo[i];
-                                int inx = ci.getPosition();
-
-                                if (indexValue(doc, rs, inx, rsmd.getColumnName(inx), ci.getSecondaryKey(),
-                                               classes[inx], formatter) != null)
-                                {
-                                    cnt++;
-                                    termsIndexed++;
-                                }
-
-                                if (isCancelled)
-                                {
-                                    dbStatement.close();
-                                    dbConnection.close();
-                                    return 0;
-                                }
-
-                            }
-                        }
-                        if (cnt > 0)
-                        {
-                            writer.addDocument(doc);
-                        }
-                    } while(rs.next());
-                    log.debug("done indexing");
-                }
+                indexQuery(sectionIndex, writer, tableInfo,trigger, rs);
 
                 rs.close();
+
                 dbStatement.close();
                 dbConnection.close();
+                
             } else
             {
-                throw new RuntimeException("WHy are new Here?");
+                throw new RuntimeException("Exception in indexQuery - Why are new Here?");
             }
 
         } catch (java.sql.SQLException ex)
@@ -475,6 +529,17 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
         long delta = begin > 0 ? end - begin : 0;
         log.debug("Time to index (" + delta + " ms)");
         return delta;
+    }
+
+    /**
+     * Performs a query for the entire table (or relationship) and then indexes all the results for each row and column.
+     * @param sectionIndex the section that is currently being processed
+     * @param writer the lucene writer
+     * @param tableInfo info describing the table (hold the table ID)
+     */
+    public long indexQuery(final int sectionIndex, final IndexWriter writer, final ExpressResultsTableInfo tableInfo)
+    {
+        return indexQuery(sectionIndex, writer, tableInfo, tableInfo.getBuildSql());
     }
 
     /**
@@ -722,19 +787,11 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      */
     public void index() throws IOException
     {
-
-        Directory dir = FSDirectory.getDirectory(lucenePath, true);
-        IndexWriter writer = new IndexWriter(dir, analyzer, true);
-        //writer.setMaxBufferedDocs(arg0);
-        writer.setMaxMergeDocs(9999999);
-        writer.setMergeFactor(1000);
-        //writer.mergeFactor   = 1000;
-        //writer.maxMergeDocs  = 9999999;
-        //writer.minMergeDocs  = 1000;
-
-        long deltaTime = 0;
+        IndexWriter writer    = null;
+        long        deltaTime = 0;
         try
         {
+            writer = createIndexWriter(lucenePath, true);
             if (esDOM == null)
             {
                 esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
@@ -802,8 +859,10 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
         if (isCancelled)
         {
-
-            writer.close();
+            if (writer != null)
+            {
+                writer.close();
+            }
             
             //listener.endedIndexing(allOK, minutes, seconds)
 

@@ -46,7 +46,9 @@ public interface DataProviderSessionIFace
     
     public boolean saveOrUpdate(Object dataObj) throws Exception;
     
-    public boolean delete(Object dataObj) throws Exception;  
+    public boolean delete(Object dataObj) throws Exception; 
+    
+    public void deleteOnSaveOrUpdate(Object dataObj) throws Exception; 
     
     //---------------------------
     // Transaction Methods

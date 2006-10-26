@@ -285,19 +285,31 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     /**
      * Tells all the Viewables that have validators that the form is new or old.
-     * NOTE New Forms means that it is an empty form and that the controls should
+     * NOTE: New Forms means that it is an empty form and that the controls should
      * not show validation errors until they have had focus if they are a validator that changes on input
      * and not by the OK button or by focus.
+     * @param isNewForm whether the form is handling a new obj
+     * @param traverseKids whether the MultiView should traverse into the children MultiViews
      */
-    public void setIsNewForm(final boolean isNewForm)
+    public void setIsNewForm(final boolean isNewForm, final boolean traverseKids)
     {
         dataHasChanged = false;
+        
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
             Viewable viewable = e.nextElement();
             if (viewable.getValidator() != null)
             {
                 viewable.getValidator().setAllUIValidatorsToNew(isNewForm);
+                viewable.setHasNewData(isNewForm);
+            }
+        }
+        
+        if (traverseKids)
+        {
+            for (MultiView mv : kids)
+            {
+                mv.setIsNewForm(isNewForm, traverseKids);
             }
         }
     }
@@ -515,7 +527,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions);
                     if (viewable != null)
                     {
-                        viewable.setSession(session);
+                        //viewable.setSession(session);
                         if (add(viewable, altViewName))
                         {
                             if (mvParent != null)
@@ -529,6 +541,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                             cardLayout.show(this, altViewName);
                             log.debug("Added Viewable["+altViewName+"]");
                         }
+                        setSession(session);
                     } else
                     {
                         log.error("The Viewable could not be created for some reason View["+newView+"] AltView["+altViewName+"] Options["+createOptions+"]");
@@ -672,12 +685,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public void setParentDataObj(Object parentDataObj)
     {
         this.parentDataObj = parentDataObj;
+        
         if (currentViewable != null)
         {
             currentViewable.setParentDataObj(parentDataObj);
         }
     }
-
 
     /**
      * Returns the dataObj of of the parent.
