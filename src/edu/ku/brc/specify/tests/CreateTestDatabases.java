@@ -63,7 +63,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -111,6 +111,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
+import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -130,7 +131,7 @@ public class CreateTestDatabases
      * @param classObj the class of the item to get
      * @return null if no items in table
      */
-    public static Object getDBObject(Class classObj)
+    public static Object getDBObject(Class<?> classObj)
     {
         return getDBObject(classObj, 0);
     }
@@ -140,10 +141,10 @@ public class CreateTestDatabases
      * @param classObj the class of the item to get
      * @return null if no items in table
      */
-    public static Object getDBObject(Class classObj, final int index)
+    public static Object getDBObject(Class<?> classObj, final int index)
     {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(classObj);
-        java.util.List list = criteria.list();
+        List<?> list = criteria.list();
         if (list.size() == 0) return null;
 
         return list.get(index);
@@ -331,9 +332,13 @@ public class CreateTestDatabases
             session.saveOrUpdate(locTreeDef);
 
             LocationTreeDefItem building = createLocationTreeDefItem(null, locTreeDef, "building", 0);
-            LocationTreeDefItem room = createLocationTreeDefItem(building, locTreeDef, "building", 100);
+            building.setIsEnforced(true);
+            LocationTreeDefItem room = createLocationTreeDefItem(building, locTreeDef, "room", 100);
+            room.setIsInFullName(true);
             LocationTreeDefItem freezer = createLocationTreeDefItem(room, locTreeDef, "freezer", 200);
+            freezer.setIsInFullName(true);
             LocationTreeDefItem shelf = createLocationTreeDefItem(freezer, locTreeDef, "shelf", 300);
+            shelf.setIsInFullName(true);
 
             // Create the building
             Location dyche = createLocation(locTreeDef, null, "Dyche Hall", building.getRankId());
@@ -425,9 +430,14 @@ public class CreateTestDatabases
 
             // Create a Taxon tree definition
             TaxonTreeDefItem defItemLevel0 = createTaxonTreeDefItem(null, taxonTreeDef, "order", 0);
+            defItemLevel0.setIsEnforced(true);
             TaxonTreeDefItem defItemLevel1 = createTaxonTreeDefItem(defItemLevel0, taxonTreeDef, "family", 100);
             TaxonTreeDefItem defItemLevel2 = createTaxonTreeDefItem(defItemLevel1, taxonTreeDef, "genus", 200);
+            defItemLevel2.setIsEnforced(true);
+            defItemLevel2.setIsInFullName(true);
             TaxonTreeDefItem defItemLevel3 = createTaxonTreeDefItem(defItemLevel2, taxonTreeDef, "species", 300);
+            defItemLevel3.setIsEnforced(true);
+            defItemLevel3.setIsInFullName(true);
 
             // Create the defItemLevel0
             Taxon order  = createTaxon(taxonTreeDef, null, "Percidae", defItemLevel0.getRankId());
@@ -571,7 +581,7 @@ public class CreateTestDatabases
             String[] values = {"Mr.",  "Charles","A", "Darwin","CD",
                                "Mr.",  "Louis","", "Agassiz","AL",
                                "Mr.",  "Andrew", "", "Bentley", "AB",
-                               "Mr.",  "Josh", "", "Stewart", "JS",
+                               "Mr.",  "Joshua", "", "Stewart", "jds",
                                "Mrs.", "Meg", "", "Kumin", "MK",
                                "Mr.",  "Jim", "", "Beach", "JB",
                                "Mr.",  "Rod", "", "Spears", "RS",
@@ -1114,8 +1124,8 @@ public class CreateTestDatabases
     public static Taxon getTaxonByName(final String name)
     {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Taxon.class);
-        criteria.add(Expression.eq("name", name));
-        java.util.List list = criteria.list();
+        criteria.add(Restrictions.eq("name", name));
+        List<?> list = criteria.list();
         if (list.size() == 0)
         {
             log.error("Couldn't find taxon name ["+name+"]");
@@ -1133,8 +1143,8 @@ public class CreateTestDatabases
     public static Agent getAgentByLastName(final String lastName)
     {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Agent.class);
-        criteria.add(Expression.eq("lastName", lastName));
-        java.util.List list = criteria.list();
+        criteria.add(Restrictions.eq("lastName", lastName));
+        List<?> list = criteria.list();
         if (list.size() == 0)
         {
             log.error("Couldn't find Agent name ["+lastName+"]");
@@ -1505,21 +1515,28 @@ public class CreateTestDatabases
     }
 
 
-    public static void copyAppResources(final String databaseName,
-                                        final String userName,
+    public static void copyAppResources(final String userName,
                                         final String catSeriesName)
     {
         SpecifyUser user = null;
         if (userName != null)
         {
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
-            criteria.add(Expression.eq("name", userName));
-            List list = criteria.list();
+            criteria.add(Restrictions.eq("name", userName));
+            List<?> list = criteria.list();
 
-            if (list.size() == 1)
+            if (list.size() >= 1)
             {
                 user = (SpecifyUser)list.get(0);
             }
+            else
+            {
+                throw new RuntimeException("No SpecifyUser records found in DB");
+            }
+        }
+        else
+        {
+            throw new NullPointerException();
         }
 
         String userType = user.getUserType();
@@ -1530,8 +1547,8 @@ public class CreateTestDatabases
 
         CatalogSeries catalogSeries;
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
-        criteria.add(Expression.eq("seriesName", catSeriesName));
-        List list = criteria.list();
+        criteria.add(Restrictions.eq("seriesName", catSeriesName));
+        List<?> list = criteria.list();
         if (list.size() == 1)
         {
             catalogSeries = (CatalogSeries)list.get(0);
@@ -1603,13 +1620,16 @@ public class CreateTestDatabases
 
     public static void main(String args[]) throws Exception
     {
-        String databaseName = "fish";
+        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
+        schemaGen.generateSchema("localhost", "testfish");
+        
+        String databaseName = "testfish";
         String userName = "rods";
         String password = "rods";
 
         if (UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, userName, password))
         {
-            //createSingleDiscipline("Fish");
+            createSingleDiscipline("Fish","fish");
 
             boolean build = false;
             if (build)
@@ -1630,13 +1650,14 @@ public class CreateTestDatabases
                 BasicSQLUtils.deleteAllRecordsFromTable("appresourcedefault");
                 BasicSQLUtils.deleteAllRecordsFromTable("appresourcedata");
 
-                //                DB      User   CatSeries
-                copyAppResources("fish", userName, "Birds");
-                copyAppResources("fish", userName, "Bees");
+                //                User   CatSeries
+                copyAppResources(userName, "Birds");
+                copyAppResources(userName, "Bees");
             }
 
             // Test Setting the Context
-            if (!build)
+            boolean test = false;
+            if (test)
             {
 
                 // Name factories
@@ -1657,8 +1678,8 @@ public class CreateTestDatabases
                 // First get the Specify Object
 
                 Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
-                criteria.add(Expression.eq("name", userName));
-                List list = criteria.list();
+                criteria.add(Restrictions.eq("name", userName));
+                List<?> list = criteria.list();
                 SpecifyUser user = (SpecifyUser)list.get(0); // assumes user is already there
 
                 // Now get the List of CatalogSeries owned by this user
@@ -1686,8 +1707,8 @@ public class CreateTestDatabases
 
                 // Now find the CollectionObjDef for Bees (which should be owned by the user in question)
                 Criteria criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionObjDef.class);
-                criteria2.add(Expression.eq("name", "Bees"));
-                List list2 = criteria2.list();
+                criteria2.add(Restrictions.eq("name", "Bees"));
+                List<?> list2 = criteria2.list();
 
                 // Search by CollectionObjDef
                 log.info(contextMgr.getView("CollectionObject", (CollectionObjDef)list2.get(0)) != null ? "Found View OK" : "NOT FOUND");
@@ -1701,7 +1722,7 @@ public class CreateTestDatabases
 
                 // First get the Specify Object
                 criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
-                criteria.add(Expression.eq("name", userName));
+                criteria.add(Restrictions.eq("name", userName));
                 list = criteria.list();
                 user = (SpecifyUser)list.get(0); // assumes user is already there
 
@@ -1732,14 +1753,14 @@ public class CreateTestDatabases
 
                 // Now find the CollectionObjDef for Bees (which should be owned by the user in question)
                 criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionObjDef.class);
-                criteria2.add(Expression.eq("name", "fish"));
+                criteria2.add(Restrictions.eq("name", "fish"));
                 list2 = criteria2.list();
 
                 // Search by CollectionObjDef
                 log.info(contextMgr.getView("CollectionObject", (CollectionObjDef)list2.get(0)) != null ? "Found View OK" : "NOT FOUND");
                 
                 log.info("Looking up StartUpPanel for user");
-                log.info(contextMgr.getResource("StartUpPanel") != null ? "Found View OK" : "NOT FOUND");;
+                log.info(contextMgr.getResource("StartUpPanel") != null ? "Found View OK" : "NOT FOUND");
 
                 log.info("************* System Views *********************");
                 log.info(contextMgr.getView("Preferences", "Formatting") != null ? "Found View OK" : "NOT FOUND");
