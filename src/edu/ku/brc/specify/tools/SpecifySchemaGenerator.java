@@ -28,81 +28,58 @@ public class SpecifySchemaGenerator
 {
     protected static final Logger log = Logger.getLogger(SpecifySchemaGenerator.class);
             
-    protected String dbName;
+    protected DBConnection dbConn;
     
-    public SpecifySchemaGenerator(String dbName)
+    public SpecifySchemaGenerator()
     {
-        this.dbName = dbName;
-
-        String dbDriver = "com.mysql.jdbc.Driver";
-        String dbDialect = "org.hibernate.dialect.MySQLDialect";
-        String connStr = "jdbc:mysql://localhost/"+dbName;
-        String user = "rods";
-        String passwd = "rods";
-        
-        DBConnection dbConn = DBConnection.getInstance();
-
-        dbConn.setDriver(dbDriver);
-        dbConn.setDialect(dbDialect);
-        dbConn.setDatabaseName(dbName);
-        dbConn.setConnectionStr(connStr);
-        dbConn.setUsernamePassword(user, passwd);
-
-        Connection connection = dbConn.createConnection();
-        if (connection != null)
-        {
-            try
-            {
-                connection.close();
-            }
-            catch (SQLException ex)
-            {
-                // do nothing
-            }
-        }
+        // do nothing
     }
     
-    public void buildSample(boolean create) throws Exception
+    public synchronized void generateSchema(String hostname, String databaseName) throws Exception
     {
-        // do nothing for now
-        if(create)
-        {
-            createDB(dbName);
-        }
-        writeHibPropFile(dbName);
+        String dbDriver = "com.mysql.jdbc.Driver";
+        String dbDialect = "org.hibernate.dialect.MySQLDialect";
+        String connStr = "jdbc:mysql://" + hostname + "/";
+        String user = "rods";
+        String passwd = "rods";
+
+        dbConn = DBConnection.createInstance(dbDriver, dbDialect, databaseName, connStr, user, passwd);
+
+        dropAndCreateDB(databaseName);
+        writeHibPropFile(databaseName);
         doGenSchema();
     }
     
-    public void createDB(String databaseName) throws Exception
+    protected void dropAndCreateDB(final String dbName) throws Exception
     {
-        Connection connection = DBConnection.getInstance().createConnection();
+        Connection connection = dbConn.createConnection();
         Statement stmt = connection.createStatement();
         try
         {
-            log.info("Dropping database "+databaseName);
-            stmt.execute("drop database "+ databaseName);
-            log.info("Dropped database "+databaseName);
+            log.info("Dropping database "+dbName);
+            stmt.execute("drop database "+ dbName);
+            log.info("Dropped database "+dbName);
             
         } catch (SQLException ex)
         {
-            log.info("Database ["+databaseName+"] didn't exist.");
+            log.info("Database ["+dbName+"] didn't exist.");
         }
 
         stmt = connection.createStatement();
-        log.info("Creating database "+databaseName);
-        stmt.execute("create database "+ databaseName);
-        log.info("Created database "+databaseName);
+        log.info("Creating database "+dbName);
+        stmt.execute("create database "+ dbName);
+        log.info("Created database "+dbName);
         
         stmt.close();
         connection.close();
     }
     
-    protected void writeHibPropFile(final String databaseName)
+    protected void writeHibPropFile(final String dbName)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("hibernate.dialect=org.hibernate.dialect.MySQLDialect\n");
         sb.append("hibernate.connection.driver_class=com.mysql.jdbc.Driver\n");
-        sb.append("hibernate.connection.url=jdbc:mysql://localhost/"+databaseName+"\n");
+        sb.append("hibernate.connection.url=jdbc:mysql://localhost/"+dbName+"\n");
         sb.append("hibernate.connection.username=rods\n");
         sb.append("hibernate.connection.password=rods\n");
         sb.append("hibernate.max_fetch_depth=3\n");
@@ -136,5 +113,11 @@ public class SpecifySchemaGenerator
         {
             throw new Exception(e);
         }
+    }
+    
+    public static void main(String[] args) throws Exception
+    {
+        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
+        schemaGen.generateSchema("localhost", "junkorama");
     }
 }
