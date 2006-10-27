@@ -183,15 +183,12 @@ public class SpecifyDBConverter
         HibernateUtil.shutdown();
         
         // This will log us in and return true/false
+        // This will connect without specifying a DB, which allows us to create the DB
         if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/", "rods", "rods"))
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
         
-        
-
-        // NOTE: You must have already created the database to use this
-        // but the database can be empty
         boolean restartFromScratch = true;
         if (restartFromScratch)
         {
