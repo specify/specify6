@@ -144,6 +144,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         for (Enumeration<ExpressResultsTableInfo> e=tmpTables.elements();e.hasMoreElements();)
         {
             ExpressResultsTableInfo tblInfo = e.nextElement();
+            log.info(tblInfo.getId()+" ["+tblInfo.getName()+"]["+searchName+"]");
             if (tblInfo.getName().equals(searchName))
             {
                 tableInfo = tblInfo;

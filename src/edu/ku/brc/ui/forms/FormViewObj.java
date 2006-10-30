@@ -1288,25 +1288,28 @@ public class FormViewObj implements Viewable,
      */
     protected void updateControllerUI()
     {
-        if (rsController.getDelRecBtn() != null)
+        if (rsController != null)
         {
-            //if (isEditting)
-            //{
-           //     log.info("*"+formViewDef.getName()+" ["+(parentDataObj != null) + "] ["+(!formIsInNewDataMode)+"]["+((businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0)+"] ");
-           // }
-            rsController.getDelRecBtn().setEnabled(
-                                                   (businessRules == null || businessRules.okToDelete(this.dataObj)) && 
-                                                   list != null && list.size() > 0);
-        }
-        
-        if (rsController.getNewRecBtn() != null)
-        {
-            boolean enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
-            if (isEditting)
+            if (rsController.getDelRecBtn() != null)
             {
-                log.info(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
+                //if (isEditting)
+                //{
+               //     log.info("*"+formViewDef.getName()+" ["+(parentDataObj != null) + "] ["+(!formIsInNewDataMode)+"]["+((businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0)+"] ");
+               // }
+                rsController.getDelRecBtn().setEnabled(
+                                                       (businessRules == null || businessRules.okToDelete(this.dataObj)) && 
+                                                       list != null && list.size() > 0);
             }
-            rsController.getNewRecBtn().setEnabled(enableNewBtn);
+            
+            if (rsController.getNewRecBtn() != null)
+            {
+                boolean enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
+                if (isEditting)
+                {
+                    log.info(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
+                }
+                rsController.getNewRecBtn().setEnabled(enableNewBtn);
+            }
         }
     }
 

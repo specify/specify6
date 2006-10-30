@@ -28,7 +28,17 @@
             resourcelabels="false">
             <desc><![CDATA[The Accession Search Form]]></desc>
             <altviews>
-                <altview name="AccessiontSearch" viewdef="AccessionSearch" label="Edit" mode="edit" validated="false" default="true"/>
+                <altview name="AccessionSearch" viewdef="AccessionSearch" label="Edit" mode="edit" validated="false" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="GeographySearch"
+            class="edu.ku.brc.specify.datamodel.Geographyn"
+            resourcelabels="false">
+            <desc><![CDATA[The Geography Search Form]]></desc>
+            <altviews>
+                <altview name="GeographySearch" viewdef="GeographySearch" label="Edit" mode="edit" validated="false" default="true"/>
             </altviews>
         </view>
     </views>
@@ -127,7 +137,7 @@
             </rows>
         </viewdef>
         
-        <viewdef type="form"
+         <viewdef type="form"
             name="AccessionSearch"
             class="edu.ku.brc.specify.datamodel.Accession"
             gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
@@ -163,7 +173,28 @@
                     <cell type="field" id="6" name="DateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
                 </row>
             </rows>
-        </viewdef>        
+        </viewdef>   
+             
+        <viewdef type="form"
+            name="GeographySearch"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Accession Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="5" label="Name"/>
+                    <cell type="field" id="5" name="geography.Name" isrequired="true" uitype="text" valtype="Focus"/>
+                </row>
+            </rows>
+        </viewdef>
+        
         
     </viewdefs>
 </viewset>

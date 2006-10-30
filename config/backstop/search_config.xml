@@ -479,7 +479,7 @@ accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
             </detailView>
         </table>
         
-        <table id="15" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255" expresssearch="false">
+        <table id="18" tableid="3" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255" expresssearch="false">
             <outofdate/>
             <index>
                 <sql/>
@@ -487,12 +487,12 @@ accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
             </index>
             <detailView icon="">
                 <sql>
-                    <![CDATA[select GeographyID, Name where (%s)]]>
+                    <![CDATA[Select geography.GeographyID, geography.Name, geographytreedefitem.Name From geography Inner Join geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID where (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="GeographyID" text="GeographyID"  visible="false"/>
-                    <caption col="Name" text="Name"/>
-                    
+                    <caption col="geography.GeographyID" text="GeographyID"  visible="false"/>
+                    <caption col="geography.Name" text="Name"/>
+                    <caption col="geographytreedefitem.Name" text="Category"/>                    
                 </captions>
                 <recordset tabletype="3" col="1"/>
             </detailView>
