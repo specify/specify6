@@ -83,7 +83,6 @@ public class IconViewObj implements Viewable
     protected JButton newButton;
     protected JButton deleteButton;
     protected DropDownButtonStateful        switcherUI;
-    protected List<Object>                  list;
     protected JButton                       validationInfoBtn;
     
     protected boolean dataTypeError;
@@ -419,7 +418,7 @@ public class IconViewObj implements Viewable
      */
     public FormValidator getValidator()
     {
-        return null;
+        return validator;
     }
 
     /* (non-Javadoc)
