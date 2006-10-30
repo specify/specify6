@@ -229,6 +229,14 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             infoBtn.setMargin(new Insets(1,1,1,1));
             infoBtn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
             builder.add(infoBtn, cc.xy(3,1));
+            
+            infoBtn.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    createInfoFrame();
+                }
+            });
         }
 
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -240,16 +248,6 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
-
-
-        infoBtn.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                createInfoFrame();
-            }
-        });
-
     }
 
     /* (non-Javadoc)

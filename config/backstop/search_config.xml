@@ -478,5 +478,24 @@ accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
                 <recordset tabletype="6" col="1"/>
             </detailView>
         </table>
+        
+        <table id="15" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255" expresssearch="false">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[select GeographyID, Name where (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="GeographyID" text="GeographyID"  visible="false"/>
+                    <caption col="Name" text="Name"/>
+                    
+                </captions>
+                <recordset tabletype="3" col="1"/>
+            </detailView>
+        </table> 
     </generic>
 </searches>

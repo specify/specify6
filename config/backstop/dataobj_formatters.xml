@@ -60,12 +60,25 @@
             </fields>
         </switch>
     </format>
-
+    
+    <format
+        name="Geography"
+        class="edu.ku.brc.specify.datamodel.Geography"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+    
+    
     <aggregators>
         <aggregator name="AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations"/>
         <aggregator name="AccessionAgents"         separator="; " count="" ending="" format="AccessionAgents"/>   
     </aggregators>
-        
+    
+     
 </formatters>
 
 

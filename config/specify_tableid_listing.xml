@@ -65,7 +65,9 @@
         <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" id="501"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" id="39"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" id="40"/>
-        <table name="edu.ku.brc.specify.datamodel.Geography" id="3"/>
+        <table name="edu.ku.brc.specify.datamodel.Geography" id="3">
+            <display objtitle="Geography" view="Geography" dataobjformatter="Geography" searchdlg="GeographySearch" newobjdlg="GeographyDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.GeographyTreeDef" id="44"/>
         <table name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" id="45"/>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" id="46"/>
@@ -82,7 +84,9 @@
         <table name="edu.ku.brc.specify.datamodel.LoanAgents" id="53"/>
         <table name="edu.ku.brc.specify.datamodel.LoanPhysicalObject" id="54"/>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" id="55"/>
-        <table name="edu.ku.brc.specify.datamodel.Locality" id="2"/>
+        <table name="edu.ku.brc.specify.datamodel.Locality" id="2">
+            <display view="Locality"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" id="57"/>
         <table name="edu.ku.brc.specify.datamodel.Location" id="58"/>
         <table name="edu.ku.brc.specify.datamodel.LocationTreeDef" id="59"/>
