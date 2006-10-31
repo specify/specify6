@@ -184,7 +184,7 @@ public class HibernateUtil {
             AuditInterceptor auditInter = AuditInterceptor.getInstance();
             if (auditInter != null)
             {
-                configuration.setInterceptor(auditInter);
+                //configuration.setInterceptor(auditInter);
             }
             setHibernateLogonConfig(configuration);
             
