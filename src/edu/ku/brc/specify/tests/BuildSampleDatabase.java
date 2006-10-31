@@ -6,14 +6,43 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.DataBuilder.*;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgent;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEventAttr;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjectAttr;
+import static edu.ku.brc.specify.tests.DataBuilder.createAccession;
+import static edu.ku.brc.specify.tests.DataBuilder.createAccessionAgent;
+import static edu.ku.brc.specify.tests.DataBuilder.createAddress;
+import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
+import static edu.ku.brc.specify.tests.DataBuilder.createAttributeDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createCatalogSeries;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEvent;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEventAttr;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectingTrip;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObject;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjectAttr;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollector;
+import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
+import static edu.ku.brc.specify.tests.DataBuilder.createDetermination;
+import static edu.ku.brc.specify.tests.DataBuilder.createDeterminationStatus;
+import static edu.ku.brc.specify.tests.DataBuilder.createGeography;
+import static edu.ku.brc.specify.tests.DataBuilder.createGeographyChildren;
+import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDefItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDefItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createLocality;
+import static edu.ku.brc.specify.tests.DataBuilder.createLocation;
+import static edu.ku.brc.specify.tests.DataBuilder.createLocationTreeDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createLocationTreeDefItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createPermit;
+import static edu.ku.brc.specify.tests.DataBuilder.createPrepType;
+import static edu.ku.brc.specify.tests.DataBuilder.createPreparation;
+import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.tests.DataBuilder.createTaxon;
+import static edu.ku.brc.specify.tests.DataBuilder.createTaxonChildren;
+import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
@@ -24,6 +53,8 @@ import org.hibernate.Session;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -36,6 +67,8 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -47,6 +80,8 @@ import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -226,11 +261,97 @@ public class BuildSampleDatabase
         dataObjects.add(colObjAttr);
         
         // determinations (determination status)
+        DeterminationStatus current = createDeterminationStatus("Current","Test Status");
+        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
+        DeterminationStatus incorrect = createDeterminationStatus("Incorrect","Test Status");
+
+        List<Determination> determs = new Vector<Determination>();
+        Calendar recent = Calendar.getInstance();
+        recent.set(2006, 10, 27, 13, 44, 00);
+        Calendar longAgo = Calendar.getInstance();
+        longAgo.set(1976, 01, 29, 8, 12, 00);
+        Calendar whileBack = Calendar.getInstance();
+        whileBack.set(2002, 7, 4, 9, 33, 12);
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get( 8), current, recent));
+        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get( 9), current, recent));
+        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(10), current, recent));
+        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(11), current, recent));
+        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(12), current, recent));
+        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(13), current, recent));
+        determs.add(createDetermination(collObjs.get(6), agents.get(0), (Taxon)taxa.get(14), current, recent));
+        determs.add(createDetermination(collObjs.get(7), agents.get(0), (Taxon)taxa.get(15), current, recent));
         
-        // preparations
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(8), notCurrent, longAgo));
+        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(15), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(16), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(17), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(17), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(20), incorrect, longAgo));
+        determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
+        
+        dataObjects.add(current);
+        dataObjects.add(notCurrent);
+        dataObjects.add(incorrect);
+        dataObjects.addAll(determs);
+        
+        // preparations (prep types)
+        PrepType skel = createPrepType("Skeleton");
+        PrepType cs = createPrepType("C&S");
+        PrepType etoh = createPrepType("EtOH");
+
+        List<Preparation> preps = new Vector<Preparation>();
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), 1));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), 1));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), 1));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), 1));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), 1));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), 1));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), 1));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), 1));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), 1));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), 1));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), 1));
+        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), 1));
+        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), 1));
+        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), 1));
+        preps.add(createPreparation(cs, agents.get(1), collObjs.get(6), (Location)locs.get(10), 1));
+        preps.add(createPreparation(cs, agents.get(1), collObjs.get(7), (Location)locs.get(10), 1));
+        preps.add(createPreparation(cs, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
+
+        dataObjects.add(skel);
+        dataObjects.add(cs);
+        dataObjects.add(etoh);
+        dataObjects.addAll(preps);
         
         // accessions (accession agents, accession authorizations)
+        calendar.set(2006, 10, 27, 23, 59, 59);
+        Accession acc1 = createAccession("Gift", "Complete", "2006-EN-0001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
+        Agent donor =    agents.get(0);
+        Agent receiver = agents.get(1);
+        Agent reviewer = agents.get(2);
+        
+        List<AccessionAgents> accAgents = new Vector<AccessionAgents>();
+        
+        accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
+        accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
+        accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
+
+        Accession acc2 = createAccession("Field Work", "In Process", "2006-IC-0001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        
+        Agent donor2 =    agents.get(2);
+        Agent receiver2 = agents.get(3);
+        Agent reviewer2 = agents.get(1);
+        
+        accAgents.add(createAccessionAgent("Donor", donor2, acc2, null));
+        accAgents.add(createAccessionAgent("Receiver", receiver2, acc2, null));
+        accAgents.add(createAccessionAgent("Reviewer", reviewer2, acc2, null));
+
+        dataObjects.add(acc1);
+        dataObjects.add(acc2);
+        dataObjects.addAll(accAgents);
+        
+        // done
         log.info("Done creating single discipline database: " + disciplineName);
         return dataObjects;
     }
@@ -379,18 +500,31 @@ public class BuildSampleDatabase
         Location shelf2 = createLocation(locTreeDef, freezerA, "Shelf 2", shelf.getRankId());
         Location shelf1 = createLocation(locTreeDef, freezerA, "Shelf 1", shelf.getRankId());
 
+        // 0
         newObjs.add(locTreeDef);
+        // 1
         newObjs.add(building);
+        // 2
         newObjs.add(room);
+        // 3
         newObjs.add(freezer);
+        // 4
         newObjs.add(shelf);
+        // 5
         newObjs.add(dyche);
+        // 6
         newObjs.add(rm606);
+        // 7
         newObjs.add(freezerA);
+        // 8
         newObjs.add(shelf5);
+        // 9
         newObjs.add(shelf4);
+        // 10
         newObjs.add(shelf3);
+        // 11
         newObjs.add(shelf2);
+        // 12
         newObjs.add(shelf1);
         
         return newObjs;
@@ -413,27 +547,37 @@ public class BuildSampleDatabase
         defItemLevel3.setIsEnforced(true);
         defItemLevel3.setIsInFullName(true);
 
+        // 0
         newObjs.add(defItemLevel0);
+        // 1
         newObjs.add(defItemLevel1);
+        // 2
         newObjs.add(defItemLevel2);
+        // 3
         newObjs.add(defItemLevel3);
 
         // Create the defItemLevel0
         Taxon order = createTaxon(taxonTreeDef, null, "Percidae", defItemLevel0.getRankId());
         Taxon family = createTaxon(taxonTreeDef, order, "Perciformes", defItemLevel1.getRankId());
         Taxon genus = createTaxon(taxonTreeDef, family, "Ammocrypta", defItemLevel2.getRankId());
+        // 4
         newObjs.add(order);
+        // 5
         newObjs.add(family);
+        // 6
         newObjs.add(genus);
 
         String[] speciesNames = { "asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "vivax" };
         List<Object> kids = createTaxonChildren(taxonTreeDef, genus, speciesNames, defItemLevel3.getRankId());
+        // 7, 8, 9, 10, 11, 12, 13
         newObjs.addAll(kids);
 
         genus = createTaxon(taxonTreeDef, order, "Caranx", defItemLevel2.getRankId());
+        // 14
         newObjs.add(genus);
         String[] speciesNames2 = { "bartholomaei", "caballus", "caninus", "crysos", "dentex", "hippos", "latus" };
         kids = createTaxonChildren(taxonTreeDef, genus, speciesNames2, defItemLevel3.getRankId());
+        // 15, 16, 17, 18, 19, 20, 21
         newObjs.addAll(kids);
         
         return newObjs;

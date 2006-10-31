@@ -218,6 +218,9 @@ public class DataBuilder
         CollectingTrip trip = new CollectingTrip();
         trip.initialize();
         trip.setRemarks(remarks);
+        Date now = new Date();
+        trip.setTimestampCreated(now);
+        trip.setTimestampModified(now);
 
         Calendar startDate = Calendar.getInstance();
         startDate.set(9999, 12, 31);

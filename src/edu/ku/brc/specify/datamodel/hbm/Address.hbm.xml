@@ -15,7 +15,7 @@
         <meta attribute="field-description">Versioning TimeStamp</meta>
     </timestamp>
 
-    <property name="address" type="java.lang.String" column="Address" not-null="true" length="255">
+    <property name="address" type="java.lang.String" column="Address" not-null="false" length="255">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Address as it should appear on mailing labels</meta>
     </property>
