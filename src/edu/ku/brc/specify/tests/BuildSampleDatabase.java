@@ -26,6 +26,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createGeography;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeographyChildren;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDefItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriod;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocality;
@@ -448,17 +449,17 @@ public class BuildSampleDatabase
         newObjs.add(defItemLevel3);
 
         // Create the defItemLevel0
-        GeologicTimePeriod level0 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, null,
+        GeologicTimePeriod level0 = createGeologicTimePeriod(treeDef, null,
                 "Time As We Know It", 10.0f, 0.0f, defItemLevel0.getRankId());
-        GeologicTimePeriod level1 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level0,
+        GeologicTimePeriod level1 = createGeologicTimePeriod(treeDef, level0,
                 "Some Really Big Time Period", 5.0f, 0.0f, defItemLevel0.getRankId());
-        GeologicTimePeriod level2 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level1,
+        GeologicTimePeriod level2 = createGeologicTimePeriod(treeDef, level1,
                 "A Slightly Smaller Time Period", 1.74f, 0.0f, defItemLevel0.getRankId());
-        GeologicTimePeriod level3_1 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level2,
+        GeologicTimePeriod level3_1 = createGeologicTimePeriod(treeDef, level2,
                 "Yesterday", 0.1f, 0.0f, defItemLevel0.getRankId());
-        GeologicTimePeriod level3_2 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level2,
+        GeologicTimePeriod level3_2 = createGeologicTimePeriod(treeDef, level2,
                 "A couple of days ago", 0.2f, 0.1f, defItemLevel0.getRankId());
-        GeologicTimePeriod level3_3 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level2,
+        GeologicTimePeriod level3_3 = createGeologicTimePeriod(treeDef, level2,
                 "Last week", 0.7f, 1.4f, defItemLevel0.getRankId());
         newObjs.add(level0);
         newObjs.add(level1);
