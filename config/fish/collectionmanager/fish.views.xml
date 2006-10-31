@@ -562,7 +562,7 @@
 
             <desc><![CDATA[Locality Mapper]]></desc>
             <columnDef>p,3dlu,p,3dlu</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
                 <row>
@@ -584,6 +584,7 @@
                     <cell type="label" labelfor="4" label="Locality Description"/>
                     <cell type="field" id="4" name="locality.localityName"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="5" label="Country"/>
                     <cell type="field" id="5" name="locality.geography.@getCountry"/>
@@ -596,6 +597,7 @@
                     <cell type="label" labelfor="7" label="County"/>
                     <cell type="field" id="7" name="locality.geography.@getCounty"/>
                 </row>
+                -->
                 <row>
                     <cell type="label" labelfor="8" label="Method"/>
                     <cell type="field" id="8" name="method"/>
