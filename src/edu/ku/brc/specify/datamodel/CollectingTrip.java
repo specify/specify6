@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -38,11 +39,22 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
    
     
     // Initializer
+    @Override
     public void initialize()
     {
-        throw new RuntimeException("Josh need to implement me!");
-
+        collectingTripId = null;
+        remarks = null;
+        startDate = null;
+        startDatePrecision = null;
+        startDateVerbatim = null;
+        endDate = null;
+        endDatePrecision = null;
+        endDateVerbatim = null;
+        startTime = null;
+        endTime = null;
+        collectingEvents = new HashSet<CollectingEvent>();
     }
+
     // End Initializer
 
     // Property accessors
