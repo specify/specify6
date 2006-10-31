@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Accession Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<viewset name="All Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
         <view name="Accession"
@@ -152,6 +152,16 @@
 			</altviews>
 		</view>
 		
+        <view name="Locality"
+            class="edu.ku.brc.specify.datamodel.Locality"
+            resourcelabels="false">
+            <desc><![CDATA[Locality form.]]></desc>
+            <altviews>
+                <altview name="Locality View" viewdef="Locality" label="View" mode="view" validated="false"/>
+                <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
         <view name="LocalityMapper"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             resourcelabels="false">
@@ -619,8 +629,7 @@
     			</row>
     			<row>
                  <cell type="label" labelfor="3" label="Accession #"/>
-    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="true" valtype="Changed"/>
-    			    
+    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false" valtype="Changed"/>
 
                  <cell type="label" labelfor="4" label="Cataloger"/>
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
@@ -911,6 +920,48 @@
                 	<cell type="label" labelfor="9" label="Attachments"/>
                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="1"/>
                 </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Locality"
+            class="edu.ku.brc.specify.datamodel.Locality"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Locality]]></desc>
+            <columnDef>p,3dlu,p,10px,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Locality Information" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Type"/>
+                    <cell type="field" id="3" name="latLongType" uitype="text" cols="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Latitude"/>
+                    <cell type="field" id="4" name="latitude1" uitype="text" cols="20" format="%8.4f"/>
+                    <cell type="label" labelfor="5" label="Longitude"/>
+                    <cell type="field" id="5" name="longitude1" uitype="text" cols="20" format="%8.4f"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Name"/>
+                    <cell type="field" id="6" name="localityName" uitype="text" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Datum"/>
+                    <cell type="field" id="1" name="datum" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="2" label="Elevation Method"/>
+                    <cell type="field" id="2" name="elevationMethod" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Geography"/>
+                    <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
+                 </row>
             </rows>
         </viewdef>
 
