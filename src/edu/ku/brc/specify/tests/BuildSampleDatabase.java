@@ -629,7 +629,53 @@ public class BuildSampleDatabase
         HibernateUtil.rollbackTransaction();
     }
     
-
+    public static Object getFirstObjectByClass( List<Object> objects, Class<?> clazz)
+    {
+        Object ret = null;
+        for (Object o: objects)
+        {
+            if (o.getClass() == clazz)
+            {
+                ret = o;
+                break;
+            }
+        }
+        return ret;
+    }
+    
+    public static Object getObjectByClass( List<Object> objects, Class<?> clazz, int index)
+    {
+        Object ret = null;
+        int i = -1;
+        for (Object o: objects)
+        {
+            if (o.getClass() == clazz)
+            {
+                ++i;
+            }
+            if (i==index)
+            {
+                ret = o;
+                break;
+            }
+        }
+        return ret;
+    }
+    
+    public static List<Object> getObjectsByClass( List<Object> objects, Class<Object> clazz)
+    {
+        Vector<Object> rightClass = new Vector<Object>();
+        for (Object o: objects)
+        {
+            if (o.getClass() == clazz)
+            {
+                rightClass.add(o);
+            }
+        }
+        return rightClass;
+        
+    }
+    
     public static void main(String[] args) throws Exception
     {
         SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
