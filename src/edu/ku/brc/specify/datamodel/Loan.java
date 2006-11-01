@@ -29,6 +29,10 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 public class Loan extends DataModelObjBase implements java.io.Serializable {
 
+    // options for the 'category' field
+    public static final Byte LOAN = 0;
+    public static final Byte GIFT = 1;
+    
     // Fields    
 
      protected Long loanId;
