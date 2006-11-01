@@ -57,7 +57,7 @@ public class PickList implements java.io.Serializable
     // Initializer
     public void initialize()
     {
-        pickListId = -1;
+        pickListId = null;
         readOnly   = false;
         sizeLimit  = 50;
         items      = new HashSet<PickListItem>();
