@@ -42,6 +42,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createTaxonChildren;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.tests.DataBuilder.*;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -77,6 +78,8 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanAgents;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
@@ -84,6 +87,7 @@ import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -107,7 +111,7 @@ public class BuildSampleDatabase
     {
         return session;
     }
-
+    
     public static void setSession(Session s)
     {
         session = s;
@@ -119,7 +123,9 @@ public class BuildSampleDatabase
 
         Vector<Object> dataObjects = new Vector<Object>();
 
+        ////////////////////////////////
         // Create the really high-level stuff
+        ////////////////////////////////
         UserGroup userGroup = createUserGroup(disciplineName);
         SpecifyUser user = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
         DataType dataType = createDataType(disciplineName);
@@ -133,7 +139,9 @@ public class BuildSampleDatabase
         dataObjects.add(dataType);
         dataObjects.add(taxonTreeDef);
         
+        ////////////////////////////////
         // build the trees
+        ////////////////////////////////
         List<Object> taxa = createSimpleTaxon(collectionObjDef.getTaxonTreeDef());
         List<Object> geos = createSimpleGeography(collectionObjDef, "Geography");
         List<Object> locs = createSimpleLocation(collectionObjDef, "Location");
@@ -144,7 +152,9 @@ public class BuildSampleDatabase
         dataObjects.addAll(locs);
         dataObjects.addAll(gtps);
         
-        // create some localities
+        ////////////////////////////////
+        // localities
+        ////////////////////////////////
         log.info("Creating localities");
         Locality forestStream = createLocality("Unnamed forest stream", (Geography)geos.get(13));
         Locality lake   = createLocality("Deep, dark lake", (Geography)geos.get(18));
@@ -153,7 +163,9 @@ public class BuildSampleDatabase
         dataObjects.add(lake);
         dataObjects.add(farmpond);
         
+        ////////////////////////////////
         // agents and addresses
+        ////////////////////////////////
         log.info("Creating agents and addresses");
         List<Agent> agents = new Vector<Agent>();
         agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "js"));
@@ -186,7 +198,10 @@ public class BuildSampleDatabase
         dataObjects.addAll(agents);
         dataObjects.addAll(addrs);
         
+        ////////////////////////////////
         // collecting events (collectors, collecting trip)
+        ////////////////////////////////
+        log.info("Creating collecting events, collectors and a collecting trip");
         Collectors collectorJosh = createCollector(agents.get(0), 2);
         Collectors collectorJim = createCollector(agents.get(1), 1);
         CollectingEvent ce1 = createCollectingEvent(forestStream, new Collectors[]{collectorJosh,collectorJim});
@@ -222,7 +237,10 @@ public class BuildSampleDatabase
         dataObjects.add(cevAttrDef);
         dataObjects.add(cevAttr);
         
+        ////////////////////////////////
         // permit
+        ////////////////////////////////
+        log.info("Creating a permit");
         Calendar issuedDate = Calendar.getInstance();
         issuedDate.set(1993, 1, 12);
         Calendar startDate = Calendar.getInstance();
@@ -233,11 +251,17 @@ public class BuildSampleDatabase
         permit.setAgentByIssuee(ku);
         dataObjects.add(permit);
         
+        ////////////////////////////////
         // catalog series
+        ////////////////////////////////
+        log.info("Creating a catalog series");
         CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish", collectionObjDef);
         dataObjects.add(catalogSeries);
 
+        ////////////////////////////////
         // collection objects
+        ////////////////////////////////
+        log.info("Creating collection objects");
         Object[]  values = {1001010.1f, "RCS101", agents.get(0), 5,  ce1,
                             1101011.1f, "RCS102", agents.get(0), 20, ce1,
                             1201012.1f, "RCS103", agents.get(1), 15, ce1,
@@ -264,7 +288,10 @@ public class BuildSampleDatabase
         dataObjects.add(colObjAttrDef);
         dataObjects.add(colObjAttr);
         
+        ////////////////////////////////
         // determinations (determination status)
+        ////////////////////////////////
+        log.info("Creating determinations");
         DeterminationStatus current = createDeterminationStatus("Current","Test Status");
         DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
         DeterminationStatus incorrect = createDeterminationStatus("Incorrect","Test Status");
@@ -298,7 +325,10 @@ public class BuildSampleDatabase
         dataObjects.add(incorrect);
         dataObjects.addAll(determs);
         
+        ////////////////////////////////
         // preparations (prep types)
+        ////////////////////////////////
+        log.info("Creating preparations");
         PrepType skel = createPrepType("Skeleton");
         PrepType cs = createPrepType("C&S");
         PrepType etoh = createPrepType("EtOH");
@@ -327,7 +357,10 @@ public class BuildSampleDatabase
         dataObjects.add(etoh);
         dataObjects.addAll(preps);
         
-        // accessions (accession agents, accession authorizations)
+        ////////////////////////////////
+        // accessions (accession agents)
+        ////////////////////////////////
+        log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession("Gift", "Complete", "2006-EN-0001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
@@ -354,11 +387,54 @@ public class BuildSampleDatabase
         dataObjects.add(acc1);
         dataObjects.add(acc2);
         dataObjects.addAll(accAgents);
+
+        ////////////////////////////////
+        // loans (loan agents, shipments)
+        ////////////////////////////////
+        log.info("Creating loans, loan agents, and shipments");
+        Calendar loanDate1 = Calendar.getInstance();
+        loanDate1.set(2004, 03, 19);
+        Calendar currentDueDate1 = Calendar.getInstance();
+        currentDueDate1.set(2004, 9, 19);
+        Calendar originalDueDate1 = currentDueDate1;
+        Calendar dateClosed1 = Calendar.getInstance();
+        dateClosed1.set(2004, 7, 4);
+        Loan closedLoan = createLoan("2004-KUFISH-0001", loanDate1, currentDueDate1, originalDueDate1, dateClosed1, Loan.LOAN, Loan.CLOSED, null);
+        
+        Calendar loanDate2 = Calendar.getInstance();
+        loanDate2.set(2005, 11, 24);
+        Calendar currentDueDate2 = Calendar.getInstance();
+        currentDueDate2.set(2006, 5, 24);
+        Calendar originalDueDate2 = currentDueDate2;
+        Loan overdueLoan = createLoan("2005-KUFISH-0001", loanDate2, currentDueDate2, originalDueDate2, null, Loan.LOAN, Loan.OPEN, null);
+        
+        dataObjects.add(closedLoan);
+        dataObjects.add(overdueLoan);
+        
+        LoanAgents loanAgent1 = createLoanAgent("Loaner", closedLoan, agents.get(1));
+        LoanAgents loanAgent2 = createLoanAgent("Loaner", overdueLoan, agents.get(3));
+        dataObjects.add(loanAgent1);
+        dataObjects.add(loanAgent2);
+        
+        Calendar ship1Date = Calendar.getInstance();
+        ship1Date.set(2004, 03, 19);
+        Shipment loan1Ship = createShipment(ship1Date, "2004-SHIP-0001", "USPS", (short) 1, "1.25 kg", null, null, agents.get(0), agents.get(0));
+        
+        Calendar ship2Date = Calendar.getInstance();
+        ship2Date.set(2005, 11, 24);
+        Shipment loan2Ship = createShipment(ship2Date, "2005-SHIP-0001", "FedEx", (short) 2, "6.0 kg", null, null, agents.get(3), agents.get(3));
+        
+        closedLoan.setShipment(loan1Ship);
+        overdueLoan.setShipment(loan2Ship);
+        
+        dataObjects.add(loan1Ship);
+        dataObjects.add(loan2Ship);
         
         // done
         log.info("Done creating single discipline database: " + disciplineName);
         return dataObjects;
     }
+
 
     public static List<Object> createSimpleGeography(final CollectionObjDef colObjDef, final String treeDefName)
     {
@@ -425,6 +501,7 @@ public class BuildSampleDatabase
         return newObjs;
     }
 
+
     public static List<Object> createSimpleGeologicTimePeriod(final CollectionObjDef colObjDef,
                                                               final String treeDefName)
     {
@@ -473,6 +550,7 @@ public class BuildSampleDatabase
 
         return newObjs;
     }
+
 
     public static List<Object> createSimpleLocation(final CollectionObjDef colObjDef, final String treeDefName)
     {
@@ -534,6 +612,7 @@ public class BuildSampleDatabase
         return newObjs;
     }
 
+
     public static List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
     {
         log.info("createSimpleTaxon " + taxonTreeDef.getName());
@@ -586,6 +665,7 @@ public class BuildSampleDatabase
         return newObjs;
     }
 
+
     public static void persist(Object o)
     {
         if (session != null)
@@ -593,6 +673,7 @@ public class BuildSampleDatabase
             session.persist(o);
         }
     }
+
 
     public static void persist(Object[] oArray)
     {
@@ -602,6 +683,7 @@ public class BuildSampleDatabase
         }
     }
 
+
     public static void persist(List<Object> oList)
     {
         for (Object o: oList)
@@ -610,21 +692,25 @@ public class BuildSampleDatabase
         }
     }
 
+
     public static void startTx()
     {
         HibernateUtil.beginTransaction();
     }
+
 
     public static void commitTx()
     {
         HibernateUtil.commitTransaction();
     }
     
+
     public static void rollbackTx()
     {
         HibernateUtil.rollbackTransaction();
     }
     
+
     public static Object getFirstObjectByClass( List<Object> objects, Class<?> clazz)
     {
         Object ret = null;
@@ -639,6 +725,7 @@ public class BuildSampleDatabase
         return ret;
     }
     
+
     public static Object getObjectByClass( List<Object> objects, Class<?> clazz, int index)
     {
         Object ret = null;
@@ -657,7 +744,7 @@ public class BuildSampleDatabase
         }
         return ret;
     }
-    
+
     public static List<Object> getObjectsByClass( List<Object> objects, Class<Object> clazz)
     {
         Vector<Object> rightClass = new Vector<Object>();
@@ -699,7 +786,6 @@ public class BuildSampleDatabase
                     startTx();
                     List<Object> dataObjects = createSingleDiscipline("Fish", "fish");
 
-                    
                     // persist the first data object (the CollectionObjDef)
                     
                     // in the final version, this should be enough to do it all

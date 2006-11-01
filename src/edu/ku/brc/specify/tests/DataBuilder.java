@@ -1532,15 +1532,16 @@ public class DataBuilder
 
     public static LoanAgents createLoanAgent(final String role, final Loan loan, final Agent agent)
     {
-        LoanAgents loanagent = new LoanAgents();
-        loanagent.initialize();
-        loanagent.setTimestampCreated(new Date());
-        loanagent.setTimestampModified(new Date());
-        loanagent.setRole(role);
-        loanagent.setAgent(agent);
-        loanagent.setLoan(loan);
-        persist(loanagent);
-        return loanagent;
+        LoanAgents loanAgent = new LoanAgents();
+        loanAgent.initialize();
+        loanAgent.setTimestampCreated(new Date());
+        loanAgent.setTimestampModified(new Date());
+        loanAgent.setRole(role);
+        loanAgent.setAgent(agent);
+        agent.getLoanAgents().add(loanAgent);
+        loanAgent.setLoan(loan);
+        persist(loanAgent);
+        return loanAgent;
     }
 
     public static LoanPhysicalObject createLoanPhysicalObject(final Short quantity,
