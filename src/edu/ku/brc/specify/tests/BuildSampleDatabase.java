@@ -45,6 +45,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -165,6 +166,8 @@ public class BuildSampleDatabase
         ku.setAgentType(Agent.ORG);
         ku.setName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
+        ku.setTimestampCreated(new Date());
+        ku.setTimestampModified(ku.getTimestampCreated());
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);
@@ -531,7 +534,6 @@ public class BuildSampleDatabase
         return newObjs;
     }
 
-
     public static List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
     {
         log.info("createSimpleTaxon " + taxonTreeDef.getName());
@@ -584,7 +586,6 @@ public class BuildSampleDatabase
         return newObjs;
     }
 
-
     public static void persist(Object o)
     {
         if (session != null)
@@ -592,7 +593,6 @@ public class BuildSampleDatabase
             session.persist(o);
         }
     }
-
 
     public static void persist(Object[] oArray)
     {
@@ -602,7 +602,6 @@ public class BuildSampleDatabase
         }
     }
 
-
     public static void persist(List<Object> oList)
     {
         for (Object o: oList)
@@ -611,19 +610,16 @@ public class BuildSampleDatabase
         }
     }
 
-
     public static void startTx()
     {
         HibernateUtil.beginTransaction();
     }
-
 
     public static void commitTx()
     {
         HibernateUtil.commitTransaction();
     }
     
-
     public static void rollbackTx()
     {
         HibernateUtil.rollbackTransaction();
@@ -710,10 +706,8 @@ public class BuildSampleDatabase
                     //persist(dataObjects.get(0));
                     
                     // but for now
-                    for (Object o: dataObjects)
-                    {
-                        persist(o);
-                    }
+                    persist(dataObjects);
+                    
                     commitTx();
                 }
                 catch(Exception e)
