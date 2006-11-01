@@ -153,6 +153,35 @@ public class BuildSampleDatabase
         dataObjects.addAll(gtps);
         
         ////////////////////////////////
+        // picklists
+        ////////////////////////////////
+        log.info("Creating picklists");
+        
+        String[] types = {"State", "Federal", "International", "<No Data>"};
+        dataObjects.add(createPickList("PermitType", true, types));
+
+        String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
+        dataObjects.add(createPickList("AgentTitle", true, titles));
+        
+        String[] roles = {"Borrower", "Receiver"};
+        dataObjects.add(createPickList("LoanAgentsRole", true, roles));
+        
+        String[] sexes = {"both", "female", "male", "unknown"};
+        dataObjects.add(createPickList("BiologicalSex", true, sexes));
+        
+        String[] status = {"complete", "in process", "<No Data>"};
+        dataObjects.add(createPickList("AccessionStatus", true, status));
+        
+        String[] methods = {"by hand", "USPS", "UPS", "FedEx", "DHL"};
+        dataObjects.add(createPickList("ShipmentMethod", true, methods));
+        
+        String[] accTypes = {"collection"};
+        dataObjects.add(createPickList("AccessionType", true, accTypes));
+        
+        String[] accRoles = {"collector", "donor"};
+        dataObjects.add(createPickList("AccessionRole", true, accRoles));
+        
+        ////////////////////////////////
         // localities
         ////////////////////////////////
         log.info("Creating localities");
@@ -362,7 +391,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
-        Accession acc1 = createAccession("Gift", "Complete", "2006-EN-0001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc1 = createAccession("gift", "complete", "2006-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor =    agents.get(0);
         Agent receiver = agents.get(1);
@@ -374,7 +403,7 @@ public class BuildSampleDatabase
         accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
         accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
 
-        Accession acc2 = createAccession("Field Work", "In Process", "2006-IC-0001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc2 = createAccession("field work", "in process", "2006-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(2);
         Agent receiver2 = agents.get(3);
@@ -776,7 +805,7 @@ public class BuildSampleDatabase
                                 userName,
                                 password))
         {
-            BasicSQLUtils.cleanAllTables();
+            //BasicSQLUtils.cleanAllTables();
             setSession(HibernateUtil.getCurrentSession());
             boolean single = true;
             if (single)
@@ -805,7 +834,7 @@ public class BuildSampleDatabase
                     }
                     catch(Exception e2)
                     {
-                        log.error("Failed to persist DB objects.  Rollback failed.  DB may be in inconsistent state", e2);
+                        log.error("Failed to persist DB objects.  Rollback failed.  DB may be in inconsistent state.", e2);
                     }
                 }
             }

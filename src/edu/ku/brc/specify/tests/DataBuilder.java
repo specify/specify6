@@ -82,6 +82,8 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.ui.db.PickList;
+import edu.ku.brc.ui.db.PickListItem;
 
 public class DataBuilder
 {
@@ -601,6 +603,44 @@ public class DataBuilder
         return location;
     }
 
+    public static PickList createPickList(final String name, boolean readOnly, int sizeLimit)
+    {
+        PickList pickList = new PickList();
+        pickList.initialize();
+        pickList.setName(name);
+        pickList.setCreated(new Date());
+        pickList.setReadOnly(readOnly);
+        pickList.setSizeLimit(sizeLimit);
+        persist(pickList);
+        return pickList;
+    }
+    
+    public static PickList createPickList(final String name, boolean readOnly)
+    {
+        return createPickList(name, readOnly, -1);
+    }
+    
+    public static PickList createPickList(final String name, boolean readOnly, String[] values)
+    {
+        PickList pickList = createPickList(name, readOnly, values.length);
+
+        for (String value: values)
+        {
+            createPickListItem(pickList,value);
+        }
+        return pickList;
+    }
+    
+    public static PickListItem createPickListItem(PickList pickList, String value)
+    {
+        PickListItem item = new PickListItem();
+        item.setCreatedDate(new Date());
+        item.setValue(value);
+        item.setTitle(value);
+        pickList.addPickListItem(item);
+        return item;
+    }
+    
     /**
      * Create a <code>GeologicTimePeriodTreeDef</code> with the given name.  The object is also
      * persisted with a call to {@link #persist(Object)}.
