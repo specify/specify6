@@ -55,7 +55,6 @@ import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.Address;
@@ -157,19 +156,19 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating picklists");
         
-        String[] types = {"State", "Federal", "International", "<No Data>"};
+        String[] types = {"state", "federal", "international", "<no data>"};
         dataObjects.add(createPickList("PermitType", true, types));
 
         String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
         dataObjects.add(createPickList("AgentTitle", true, titles));
         
-        String[] roles = {"Borrower", "Receiver"};
+        String[] roles = {"borrower", "receiver"};
         dataObjects.add(createPickList("LoanAgentsRole", true, roles));
         
         String[] sexes = {"both", "female", "male", "unknown"};
         dataObjects.add(createPickList("BiologicalSex", true, sexes));
         
-        String[] status = {"complete", "in process", "<No Data>"};
+        String[] status = {"complete", "in process", "<no data>"};
         dataObjects.add(createPickList("AccessionStatus", true, status));
         
         String[] methods = {"by hand", "USPS", "UPS", "FedEx", "DHL"};
@@ -180,6 +179,15 @@ public class BuildSampleDatabase
         
         String[] accRoles = {"collector", "donor"};
         dataObjects.add(createPickList("AccessionRole", true, accRoles));
+        
+        String[] stages = {"adult", "egg", "embryo", "hatchling", "immature", "juvenile", "larva", "nymph", "pupa", "seed"};
+        dataObjects.add(createPickList("BiologicalStage", true, stages));
+        
+        String[] collMethods = {"boat electro-shocker", "hook & line", "seine", "trap", "<no data>"};
+        dataObjects.add(createPickList("CollectingMethod", true, collMethods));
+        
+        String[] prepMeth = {"C&S", "skeleton", "x-ray", "image", "EtOH"};
+        dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth));
         
         ////////////////////////////////
         // localities
@@ -201,6 +209,8 @@ public class BuildSampleDatabase
         agents.add(createAgent("Mr.", "James", "H", "Beach", "jb"));
         agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk"));
         agents.add(createAgent("Mr.", "Rodney", "C", "Spears", "rs"));
+        agents.add(createAgent("Mr.", "Wayne", "J", "Oppenheimer", "wjo"));
+        agents.add(createAgent("Sir", "Dudley", "X", "Simmons", "dxs"));
         Agent ku = new Agent();
         ku.initialize();
         ku.setAbbreviation("KU");
@@ -278,6 +288,7 @@ public class BuildSampleDatabase
         endDate.set(1993, 5, 30);
         Permit permit = createPermit("1993-FISH-0001", "US Dept Fish and Wildlife", issuedDate, startDate, endDate, null);
         permit.setAgentByIssuee(ku);
+        permit.setAgentByIssuer(agents.get(4));
         dataObjects.add(permit);
         
         ////////////////////////////////
@@ -291,26 +302,21 @@ public class BuildSampleDatabase
         // collection objects
         ////////////////////////////////
         log.info("Creating collection objects");
-        Object[]  values = {1001010.1f, "RCS101", agents.get(0), 5,  ce1,
-                            1101011.1f, "RCS102", agents.get(0), 20, ce1,
-                            1201012.1f, "RCS103", agents.get(1), 15, ce1,
-                            1301013.1f, "RCS104", agents.get(1), 25, ce1,
-                            1401014.1f, "RCS105", agents.get(2), 35, ce2,
-                            1501015.1f, "RCS106", agents.get(2), 45, ce2,
-                            1601016.1f, "RCS107", agents.get(2), 55, ce2,
-                            1701017.1f, "RCS108", agents.get(3), 65, ce2};
+
         List<CollectionObject> collObjs = new Vector<CollectionObject>();
-        for (int i=0;i<values.length;i+=5)
-        {
-            collObjs.add(createCollectionObject((Float)values[i],
-                                               (String)values[i+1],
-                                               null,
-                                               (Agent)values[i+2],
-                                               catalogSeries,
-                                               collectionObjDef,
-                                               (Integer)values[i+3],
-                                               (CollectingEvent)values[i+4]));
-        }
+        CatalogSeries cs = catalogSeries;
+        CollectionObjDef cod = collectionObjDef;
+        Calendar catDate = Calendar.getInstance();
+        catDate.set(2006, 01, 29);
+        collObjs.add(createCollectionObject(100.0f, "RCS100", agents.get(0), cs, cod,  3, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(101.0f, "RCS101", agents.get(0), cs, cod,  2, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(102.0f, "RCS102", agents.get(1), cs, cod,  7, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(103.0f, "RCS103", agents.get(1), cs, cod, 12, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(104.0f, "RCS104", agents.get(2), cs, cod,  8, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(105.0f, "RCS105", agents.get(2), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(106.0f, "RCS106", agents.get(2), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(107.0f, "RCS107", agents.get(3), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
+        
         AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
         CollectionObjectAttr colObjAttr = createCollectionObjectAttr(collObjs.get(0), colObjAttrDef, "Full", null);
         dataObjects.addAll(collObjs);
@@ -341,7 +347,7 @@ public class BuildSampleDatabase
         determs.add(createDetermination(collObjs.get(6), agents.get(0), (Taxon)taxa.get(14), current, recent));
         determs.add(createDetermination(collObjs.get(7), agents.get(0), (Taxon)taxa.get(15), current, recent));
         
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(8), notCurrent, longAgo));
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get( 8), notCurrent, longAgo));
         determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(15), notCurrent, whileBack));
         determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(16), notCurrent, whileBack));
         determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(17), notCurrent, whileBack));
@@ -358,8 +364,8 @@ public class BuildSampleDatabase
         // preparations (prep types)
         ////////////////////////////////
         log.info("Creating preparations");
-        PrepType skel = createPrepType("Skeleton");
-        PrepType cs = createPrepType("C&S");
+        PrepType skel = createPrepType("skeleton");
+        PrepType cas = createPrepType("C&S");
         PrepType etoh = createPrepType("EtOH");
 
         List<Preparation> preps = new Vector<Preparation>();
@@ -377,9 +383,9 @@ public class BuildSampleDatabase
         preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), 1));
         preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), 1));
         preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), 1));
-        preps.add(createPreparation(cs, agents.get(1), collObjs.get(6), (Location)locs.get(10), 1));
-        preps.add(createPreparation(cs, agents.get(1), collObjs.get(7), (Location)locs.get(10), 1));
-        preps.add(createPreparation(cs, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), 1));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), 1));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
 
         dataObjects.add(skel);
         dataObjects.add(cs);
@@ -399,9 +405,9 @@ public class BuildSampleDatabase
         
         List<AccessionAgents> accAgents = new Vector<AccessionAgents>();
         
-        accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
+        accAgents.add(createAccessionAgent("donor", donor, acc1, null));
+        accAgents.add(createAccessionAgent("receiver", receiver, acc1, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer, acc1, null));
 
         Accession acc2 = createAccession("field work", "in process", "2006-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
@@ -409,9 +415,9 @@ public class BuildSampleDatabase
         Agent receiver2 = agents.get(3);
         Agent reviewer2 = agents.get(1);
         
-        accAgents.add(createAccessionAgent("Donor", donor2, acc2, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver2, acc2, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer2, acc2, null));
+        accAgents.add(createAccessionAgent("donor", donor2, acc2, null));
+        accAgents.add(createAccessionAgent("receiver", receiver2, acc2, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer2, acc2, null));
 
         dataObjects.add(acc1);
         dataObjects.add(acc2);
@@ -440,8 +446,8 @@ public class BuildSampleDatabase
         dataObjects.add(closedLoan);
         dataObjects.add(overdueLoan);
         
-        LoanAgents loanAgent1 = createLoanAgent("Loaner", closedLoan, agents.get(1));
-        LoanAgents loanAgent2 = createLoanAgent("Loaner", overdueLoan, agents.get(3));
+        LoanAgents loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
+        LoanAgents loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
         dataObjects.add(loanAgent1);
         dataObjects.add(loanAgent2);
         
@@ -805,25 +811,21 @@ public class BuildSampleDatabase
                                 userName,
                                 password))
         {
-            //BasicSQLUtils.cleanAllTables();
-            setSession(HibernateUtil.getCurrentSession());
             boolean single = true;
             if (single)
             {
                 try
                 {
-                    startTx();
                     List<Object> dataObjects = createSingleDiscipline("Fish", "fish");
 
-                    // persist the first data object (the CollectionObjDef)
-                    
-                    // in the final version, this should be enough to do it all
-                    //persist(dataObjects.get(0));
-                    
-                    // but for now
-                    persist(dataObjects);
-                    
+                    log.info("Persisting in-memory objects to DB");
+                    // save it all to the DB
+                    setSession(HibernateUtil.getCurrentSession());
+                    startTx();
+                    persist(dataObjects.get(0)); // just persist the CollectionObjDef object
+                    //persist(dataObjects);
                     commitTx();
+                    log.info("Done");
                 }
                 catch(Exception e)
                 {

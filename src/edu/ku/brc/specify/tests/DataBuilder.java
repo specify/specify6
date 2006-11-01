@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.tests;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -328,42 +329,28 @@ public class DataBuilder
 
     public static CollectionObject createCollectionObject(final float catalogNumber,
                                                           final String fieldNumber,
-                                                          final Accession accession,
                                                           final Agent cataloger,
                                                           final CatalogSeries catalogSeries,
                                                           final CollectionObjDef colObjDef,
-                                                          final int countAmt,
-                                                          final CollectingEvent collectingEvent)
+                                                          final int count,
+                                                          final CollectingEvent collectingEvent,
+                                                          final Calendar catalogedDate,
+                                                          final String lastEditedBy)
     {
-        startCal.clear();
-        startCal.set(2006, 0, 1);
-
         // Create Collection Object
         CollectionObject colObj = new CollectionObject();
         colObj.initialize();
-        colObj.setAccession(accession);
+        
         colObj.setCataloger(cataloger);
-        colObj.setCatalogedDate(startCal);
-        colObj.setCatalogedDateVerbatim("Sometime this year");
+        colObj.setCatalogedDate(catalogedDate);
+        colObj.setCatalogedDateVerbatim(DateFormat.getInstance().format(catalogedDate.getTime()));
         colObj.setCatalogNumber(catalogNumber);
         colObj.setCatalogSeries(catalogSeries);
         colObj.setCollectionObjDef(colObjDef);
         colObj.setCollectingEvent(collectingEvent);
-        colObj.setContainer(null);
-        colObj.setContainerItem(null);
-        colObj.setCountAmt(countAmt);
-        colObj.setDeaccessioned(false);
-        colObj.setDescription("This is the description");
-
+        colObj.setCountAmt(count);
         colObj.setFieldNumber(fieldNumber);
-        colObj.setGuid("This is the GUID");
-        colObj.setLastEditedBy("rods");
-        colObj.setModifier("modifier");
-        colObj.setName("The Name!!!!!!");
-        colObj.setRemarks("These are the remarks");
-        colObj.setYesNo1(false);
-        colObj.setYesNo2(true);
-
+        colObj.setLastEditedBy(lastEditedBy);
         colObj.setTimestampCreated(new Date());
         colObj.setTimestampModified(new Date());
 
