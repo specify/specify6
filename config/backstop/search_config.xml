@@ -82,10 +82,12 @@
         </index>
         <detailView icon="Geography">
             <sql>
-                <![CDATA[select FullName, GeographyID from geography where GeographyID in (%s)]]>
+                <![CDATA[select FullName, Name, Abbrev, GeographyID from geography where GeographyID in (%s)]]>
             </sql>
             <captions>
                 <caption col="FullName" text="Full Name"/>
+                <caption col="Name" text="Name"/>
+                <caption col="Abbrev" text="Abbreviation"/>
                 <caption col="GeographyID" text="ID" visible="false"/>
             </captions>
             <recordset tabletype="3" col="4"/>
