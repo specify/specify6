@@ -33,6 +33,10 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public static final Byte LOAN = 0;
     public static final Byte GIFT = 1;
     
+    // options for the 'closed' field
+    public static final Short CLOSED = -1;
+    public static final Short OPEN = 0;
+    
     // Fields    
 
      protected Long loanId;
