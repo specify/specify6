@@ -434,14 +434,14 @@ public class BuildSampleDatabase
         Calendar originalDueDate1 = currentDueDate1;
         Calendar dateClosed1 = Calendar.getInstance();
         dateClosed1.set(2004, 7, 4);
-        Loan closedLoan = createLoan("2004-KUFISH-0001", loanDate1, currentDueDate1, originalDueDate1, dateClosed1, Loan.LOAN, Loan.CLOSED, null);
+        Loan closedLoan = createLoan("2004-LOAN-0001", loanDate1, currentDueDate1, originalDueDate1, dateClosed1, Loan.LOAN, Loan.CLOSED, null);
         
         Calendar loanDate2 = Calendar.getInstance();
         loanDate2.set(2005, 11, 24);
         Calendar currentDueDate2 = Calendar.getInstance();
         currentDueDate2.set(2006, 5, 24);
         Calendar originalDueDate2 = currentDueDate2;
-        Loan overdueLoan = createLoan("2005-KUFISH-0001", loanDate2, currentDueDate2, originalDueDate2, null, Loan.LOAN, Loan.OPEN, null);
+        Loan overdueLoan = createLoan("2005-LOAN-0001", loanDate2, currentDueDate2, originalDueDate2, null, Loan.LOAN, Loan.OPEN, null);
         
         dataObjects.add(closedLoan);
         dataObjects.add(overdueLoan);
@@ -822,8 +822,8 @@ public class BuildSampleDatabase
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
                     startTx();
-                    persist(dataObjects.get(0)); // just persist the CollectionObjDef object
-                    //persist(dataObjects);
+                    //persist(dataObjects.get(0)); // just persist the CollectionObjDef object
+                    persist(dataObjects);
                     commitTx();
                     log.info("Done");
                 }
