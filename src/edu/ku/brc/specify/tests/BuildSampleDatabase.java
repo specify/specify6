@@ -388,7 +388,7 @@ public class BuildSampleDatabase
         preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
 
         dataObjects.add(skel);
-        dataObjects.add(cs);
+        dataObjects.add(cas);
         dataObjects.add(etoh);
         dataObjects.addAll(preps);
         
