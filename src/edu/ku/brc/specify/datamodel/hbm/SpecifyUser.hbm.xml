@@ -52,7 +52,7 @@
     </set>
     
     <!-- bi-directional many-to-one association to UserGroup -->
-    <many-to-one name="userGroup" class="edu.ku.brc.specify.datamodel.UserGroup" not-null="true" outer-join="true">
+    <many-to-one name="userGroup" class="edu.ku.brc.specify.datamodel.UserGroup" not-null="true" outer-join="true" cascade="save-update">
         <meta attribute="field-description"></meta>
         <column name="UserGroupID"/>
     </many-to-one>

@@ -248,14 +248,14 @@
     </set>   
   
     <!-- bi-directional many-to-one association to Geography -->
-    <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" not-null="true" outer-join="true" index="IX_LocalityGeographyID">
+    <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" cascade="save-update" not-null="true" outer-join="true" index="IX_LocalityGeographyID">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Link to Country, State, County, WaterBody, Island, IslandGroup ... info</meta>
         <column name="GeographyID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LocalityCitation -->
-    <set name="localityCitations" lazy="true" inverse="true" cascade="delete">
+    <set name="localityCitations" lazy="true" inverse="true" cascade="all-delete-orphan">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -265,7 +265,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to CollectingEvent -->
-    <set name="collectingEvents" lazy="true" inverse="true" cascade="none">
+    <set name="collectingEvents" lazy="true" inverse="true" cascade="save-update">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>

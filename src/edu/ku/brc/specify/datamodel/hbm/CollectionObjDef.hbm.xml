@@ -35,7 +35,7 @@
     <!-- Associations -->
 
     <!-- many-to-one association to DataType -->
-    <many-to-one name="dataType" class="edu.ku.brc.specify.datamodel.DataType" not-null="true" outer-join="true">
+    <many-to-one name="dataType" class="edu.ku.brc.specify.datamodel.DataType" not-null="true" outer-join="true" cascade="save-update">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="DataTypeID"/>
@@ -50,7 +50,7 @@
     </set>
         
     <!-- many-to-one association to SpecifyUser -->
-    <many-to-one name="specifyUser" class="edu.ku.brc.specify.datamodel.SpecifyUser" not-null="true" outer-join="true">
+    <many-to-one name="specifyUser" class="edu.ku.brc.specify.datamodel.SpecifyUser" not-null="true" outer-join="true" cascade="save-update">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="SpecifyUserID"/>
@@ -66,19 +66,19 @@
     </set>
     
     <!-- bi-directional many-to-one association to GeographyTreeDef -->
-    <many-to-one name="geographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef" not-null="true" outer-join="true">
+    <many-to-one name="geographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef" not-null="true" outer-join="true" cascade="save-update">
         <meta attribute="field-description"></meta>
         <column name="GeographyTreeDefID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-    <many-to-one name="geologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" not-null="true" outer-join="true">
+    <many-to-one name="geologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" not-null="true" outer-join="true" cascade="save-update">
         <meta attribute="field-description"></meta>
         <column name="GeologicTimePeriodTreeDefID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to LocationTreeDef -->
-    <many-to-one name="locationTreeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef" not-null="true" outer-join="true">
+    <many-to-one name="locationTreeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef" not-null="true" outer-join="true" cascade="save-update">
         <meta attribute="field-description"></meta>
         <column name="LocationTreeDefID"/>
     </many-to-one>
@@ -113,7 +113,7 @@
         <set name="collectionObjects"
         lazy="true"
         inverse="true"
-        cascade="delete"
+        cascade="save-update"
         >
         <meta attribute="field-description"></meta>
         <key>

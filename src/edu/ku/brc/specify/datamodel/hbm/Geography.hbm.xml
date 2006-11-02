@@ -51,20 +51,20 @@
         <!-- Associations -->
         
         <!-- bi-directional one-to-many association to Locality -->
-        <set name="localities" lazy="true" inverse="true" cascade="none">
+        <set name="localities" lazy="true" inverse="true" cascade="save-update" >
             <key column="GeographyID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Locality" />
         </set>
         
         <!-- bi-directional many-to-one association to GeographyTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
-        	lazy="false" not-null="true" outer-join="true">
+        	lazy="false" not-null="true" outer-join="true" cascade="save-update" >
             <column name="GeographyTreeDefID" />
         </many-to-one>
         
         <!-- bi-directional many-to-one association to GeographyTreeDefItem -->
         <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
-            lazy="false" not-null="true" outer-join="true">
+            lazy="false" not-null="true" outer-join="true" cascade="save-update" >
             <column name="GeographyTreeDefItemID" />
         </many-to-one>
         

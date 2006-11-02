@@ -28,7 +28,7 @@
         <!-- Associations -->
 
         <set name="treeEntries" table="Geography" inverse="true"
-            lazy="true">
+            lazy="true" cascade="save-update">
             <key column="GeographyTreeDefID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Geography" />
         </set>
