@@ -1882,8 +1882,8 @@ public class DataBuilder
                                           final Short numberOfPackages,
                                           final String weight,
                                           final String insuredForAmount,
-                                          final Agent agentAddressByShipper,
-                                          final Agent agentAddressByShippedTo,
+                                          final Agent shipper,
+                                          final Agent shippedTo,
                                           final Agent agent)
     {
         Shipment shipment = new Shipment();
@@ -1897,8 +1897,8 @@ public class DataBuilder
         shipment.setNumberOfPackages(numberOfPackages);
         shipment.setWeight(weight);
         shipment.setInsuredForAmount(insuredForAmount);
-        shipment.setAgentByShipper(agentAddressByShipper);
-        shipment.setAgentByShippedTo(agentAddressByShippedTo);
+        shipment.setAgentByShipper(shipper);
+        shipment.setAgentByShippedTo(shippedTo);
         persist(shipment);
         return shipment;
     }

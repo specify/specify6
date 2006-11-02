@@ -233,7 +233,8 @@ public class BuildSampleDatabase
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         addrs.add(createAddress(agents.get(3), "1335511 Inverness", null, "Lawrence", "KS", "USA", "66047"));
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
-        
+        addrs.add(createAddress(agents.get(5), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
+
         dataObjects.addAll(agents);
         dataObjects.addAll(addrs);
         
@@ -399,7 +400,7 @@ public class BuildSampleDatabase
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession("gift", "complete", "2006-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
-        Agent donor =    agents.get(0);
+        Agent donor =    agents.get(4);
         Agent receiver = agents.get(1);
         Agent reviewer = agents.get(2);
         
@@ -411,7 +412,7 @@ public class BuildSampleDatabase
 
         Accession acc2 = createAccession("field work", "in process", "2006-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
-        Agent donor2 =    agents.get(2);
+        Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
         Agent reviewer2 = agents.get(1);
         
@@ -448,16 +449,20 @@ public class BuildSampleDatabase
         
         LoanAgents loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
         LoanAgents loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
+        LoanAgents loanAgent3 = createLoanAgent("borrower", closedLoan, agents.get(5));
+        LoanAgents loanAgent4 = createLoanAgent("borrower", overdueLoan, agents.get(5));
         dataObjects.add(loanAgent1);
         dataObjects.add(loanAgent2);
+        dataObjects.add(loanAgent3);
+        dataObjects.add(loanAgent4);
         
         Calendar ship1Date = Calendar.getInstance();
         ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, "2004-SHIP-0001", "USPS", (short) 1, "1.25 kg", null, null, agents.get(0), agents.get(0));
+        Shipment loan1Ship = createShipment(ship1Date, "2004-SHIP-0001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(5), agents.get(0));
         
         Calendar ship2Date = Calendar.getInstance();
         ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, "2005-SHIP-0001", "FedEx", (short) 2, "6.0 kg", null, null, agents.get(3), agents.get(3));
+        Shipment loan2Ship = createShipment(ship2Date, "2005-SHIP-0001", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(5), agents.get(3));
         
         closedLoan.setShipment(loan1Ship);
         overdueLoan.setShipment(loan2Ship);
