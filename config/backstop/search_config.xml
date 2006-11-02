@@ -12,7 +12,7 @@
         </outofdate>
         <index>
             <sql>
-                <![CDATA[Select ColFieldsDef From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
+                <![CDATA[SELECT ColFieldsDef FROM collectionobject INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID INNER JOIN taxon ON taxon.TaxonID = determination.TaxonID]]>
             </sql>
             <cols>
                <col pos="1" id="true">collectionobject.CollectionObjectID</col>
@@ -25,7 +25,7 @@
         </index>
         <detailView icon="ColObj">
             <sql>
-                <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
+                <![CDATA[SELECT collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName FROM collectionobject INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID INNER JOIN taxon ON taxon.TaxonID = determination.TaxonID WHERE collectionobject.CollectionObjectID IN (%s)]]>
             </sql>
             <captions>
                 <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
@@ -43,7 +43,7 @@
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select ColFieldsDef from locality;]]>
+                <![CDATA[SELECT ColFieldsDef FROM locality;]]>
             </sql>
             <cols>
                 <col pos="1" id="true">LocalityID</col>
@@ -52,7 +52,7 @@
         </index>
         <detailView icon="Locality">
             <sql>
-                <![CDATA[select localityname,Latitude1,Longitude1, LocalityID from locality where LocalityID in (%s)]]>
+                <![CDATA[SELECT localityname,Latitude1,Longitude1, LocalityID FROM locality WHERE LocalityID IN (%s)]]>
             </sql>
             <captions>
                 <caption col="localityname" text="Locality Name"/>
@@ -71,7 +71,7 @@
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select ColFieldsDef from geography;]]>
+                <![CDATA[SELECT ColFieldsDef FROM geography;]]>
             </sql>
             <cols>
                 <col pos="1" id="true">GeographyID</col>
@@ -82,7 +82,7 @@
         </index>
         <detailView icon="Geography">
             <sql>
-                <![CDATA[select FullName, Name, Abbrev, GeographyID from geography where GeographyID in (%s)]]>
+                <![CDATA[SELECT FullName, Name, Abbrev, GeographyID FROM geography WHERE GeographyID IN (%s)]]>
             </sql>
             <captions>
                 <caption col="FullName" text="Full Name"/>
@@ -102,7 +102,7 @@
         </outofdate>
         <index>
             <sql>
-                <![CDATA[select ColFieldsDef from taxon;]]>
+                <![CDATA[SELECT ColFieldsDef FROM taxon;]]>
             </sql>
             <cols>
                 <col pos="1" id="true">TaxonID</col>
@@ -112,7 +112,7 @@
         </index>
         <detailView icon="Taxon">
             <sql>
-                <![CDATA[select Name,CommonName,TaxonID from taxon where TaxonID in (%s)]]>
+                <![CDATA[SELECT Name,CommonName,TaxonID FROM taxon WHERE TaxonID IN (%s)]]>
             </sql>
             <captions>
                 <caption col="Name" text="Taxon Name"/>
@@ -129,7 +129,7 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[select ColFieldsDef from agent]]>
+                    <![CDATA[SELECT ColFieldsDef FROM agent]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">AgentID</col>
@@ -139,7 +139,7 @@
             </index>
             <detailView icon="Agent">
                 <sql>
-                    <![CDATA[select FirstName,LastName,AgentID from agent where AgentID in (%s)]]>
+                    <![CDATA[SELECT FirstName,LastName,AgentID FROM agent WHERE AgentID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="FirstName" text="First Name"/>
@@ -156,7 +156,7 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[select  ColFieldsDef from permit]]>
+                    <![CDATA[SELECT  ColFieldsDef FROM permit]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">PermitID</col>
@@ -168,7 +168,7 @@
             </index>
             <detailView icon="Permit">
                 <sql>
-                    <![CDATA[select PermitNumber,Type,IssuedDate,StartDate,PermitID from permit where PermitID in (%s)]]>
+                    <![CDATA[SELECT PermitNumber,Type,IssuedDate,StartDate,PermitID FROM permit WHERE PermitID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="PermitNumber" text="Permit Number"/>
@@ -187,7 +187,7 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[select ColFieldsDef from accession]]>
+                    <![CDATA[SELECT ColFieldsDef FROM accession]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">AccessionID</col>
@@ -200,7 +200,7 @@
             </index>
             <detailView icon="Accession">
                 <sql>
-                    <![CDATA[select AccessionID,Number,DateAccessioned,Status,Type,Text1 from accession where AccessionID in (%s)]]>
+                    <![CDATA[SELECT AccessionID,Number,DateAccessioned,Status,Type,Text1 FROM accession WHERE AccessionID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="AccessionID" text="AccessionID" visible="false"/>
@@ -220,7 +220,7 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[select ColFieldsDef from address;]]>
+                    <![CDATA[SELECT ColFieldsDef FROM address;]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">AddressID</col>
@@ -234,7 +234,7 @@
             </index>
             <detailView icon="Address">
                 <sql>
-                    <![CDATA[select address,city,state,AddressID from address where AddressID in (%s)]]>
+                    <![CDATA[SELECT address,city,state,AddressID FROM address WHERE AddressID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="address" text="Address"/>
@@ -252,13 +252,13 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[Select ColFieldsDef From
+                    <![CDATA[SELECT ColFieldsDef FROM
     collectionobject
-    Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
-    Inner Join agent ON determination.DeterminerID = agent.AgentID
-    Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
-    Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
-    where determinationstatus.DeterminationStatusID = 2]]>
+    INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+    INNER JOIN agent ON determination.DeterminerID = agent.AgentID
+    INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID 
+    INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
+    WHERE determinationstatus.DeterminationStatusID = 2]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">collectionobject.CollectionObjectID</col>
@@ -270,20 +270,20 @@
             </index>
             <detailView icon="Agent">
                 <sql>
-                    <![CDATA[select * from (Select
+                    <![CDATA[SELECT * FROM (SELECT
 taxon.FullName,
 taxon.CommonName,
 agent.LastName,
 agent.FirstName,
 collectionobject.CollectionObjectID,
-From
+FROM
 collectionobject
-Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
-Inner Join agent ON determination.DeterminerID = agent.AgentID
-Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
-Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
-where determinationstatus.DeterminationStatusID = 2) as tx
-where tx.CollectionObjectID in (%s)]]>
+INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+INNER JOIN agent ON determination.DeterminerID = agent.AgentID
+INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID 
+INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
+WHERE determinationstatus.DeterminationStatusID = 2) AS tx
+WHERE tx.CollectionObjectID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
@@ -302,7 +302,7 @@ where tx.CollectionObjectID in (%s)]]>
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[Select ColFieldsDef From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
+                    <![CDATA[SELECT ColFieldsDef FROM collectingevent INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">collectingevent.CollectingEventID</col>
@@ -316,7 +316,7 @@ where tx.CollectionObjectID in (%s)]]>
             </index>
             <detailView icon="ColEvent">
                 <sql>
-                    <![CDATA[Select locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, locality.Longitude1, collectingevent.CollectingEventID  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s) order by StartDate]]>
+                    <![CDATA[SELECT locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, locality.Longitude1, collectingevent.CollectingEventID  FROM collectingevent INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID WHERE collectingevent.CollectingEventID IN (%s) order by StartDate]]>
                 </sql>
                 <captions>
                     <caption col="LocalityName" text="Locality Name"/>
@@ -337,7 +337,7 @@ where tx.CollectionObjectID in (%s)]]>
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[Select ColFieldsDef From collectingevent]]>
+                    <![CDATA[SELECT ColFieldsDef FROM collectingevent]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">CollectingEventID</col>
@@ -349,7 +349,7 @@ where tx.CollectionObjectID in (%s)]]>
             </index>
             <detailView icon="ColEvent">
                 <sql>
-                    <![CDATA[Select CollectingEventID, StartDate, EndDate, Method, StationFieldNumber From collectingevent where collectingevent.CollectingEventID in (%s)]]>
+                    <![CDATA[SELECT CollectingEventID, StartDate, EndDate, Method, StationFieldNumber FROM collectingevent WHERE collectingevent.CollectingEventID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="CollectingEventID" text="CollectingEventID"   visible="false"/>
@@ -398,6 +398,67 @@ where tx.CollectionObjectID in (%s)]]>
                 <recordset tabletype="20000" col="2"/>
             </detailView>
         </table>
+    
+        <table id="19" tableid="71" name="Shipment" title="Shipments" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="shipment" title="Shipment"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM shipment]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">ShipmentID</col>
+                    <col pos="2">ShipmentDate</col>
+                    <col pos="3">ShipmentNumber</col>
+                    <col pos="4">ShipmentMethod</col>
+                </cols>
+            </index>
+            <detailView icon="ColEvent">
+                <sql>
+                    <![CDATA[SELECT ShipmentID, ShipmentDate, ShipmentNumber, ShipmentMethod FROM shipment WHERE ShipmentID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="ShipmentID" text="ShipmentID" visible="false"/>
+                    <caption col="ShipmentDate" text="Date"/>
+                    <caption col="ShipmentNumber" text="Number"/>
+                    <caption col="ShipmentMethod" text="Method"/>
+                </captions>
+               <recordset tabletype="8" col="1"/>
+            </detailView>
+        </table>
+
+        <table id="20" tableid="52" name="Loan" title="Loans" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="loan" title="Loan"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM loan]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">LoanID</col>
+                    <col pos="2">LoanNumber</col>
+                    <col pos="3">LoanDate</col>
+                    <col pos="4">CurrentDueDate</col>
+                    <col pos="5">OriginalDueDate</col>
+                </cols>
+            </index>
+            <detailView icon="ColEvent">
+                <sql>
+                    <![CDATA[SELECT LoanID, LoanNumber, LoanDate, CurrentDueDate, OriginalDueDate FROM loan WHERE LoanID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="LoanID" text="LoanID" visible="false"/>
+                    <caption col="LoanNumber" text="Number"/>
+                    <caption col="LoanDate" text="Loan Date"/>
+                    <caption col="CurrentDueDate" text="Due Date"/>
+                    <caption col="OriginalDueDate" text="Orig Due Date"/>
+                </captions>
+               <recordset tabletype="8" col="1"/>
+            </detailView>
+        </table>
+      
     </express>
     
     <!-- ************************************************* -->
@@ -412,9 +473,9 @@ where tx.CollectionObjectID in (%s)]]>
             </index>
             <detailView icon="">
                 <sql>
-                    <![CDATA[select * from (select agent.AgentID,
+                    <![CDATA[SELECT * FROM (SELECT agent.AgentID,
 agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
-address.State, address.PostalCode, address.Country From agent  Left Join address ON agent.AgentID = address.AgentID) as newTable where (%s)]]>
+address.State, address.PostalCode, address.Country FROM agent  Left Join address ON agent.AgentID = address.AgentID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption col="AgentID" text="AgentID"  visible="false"/>
@@ -440,8 +501,8 @@ address.State, address.PostalCode, address.Country From agent  Left Join address
             </index>
             <detailView icon="">
                 <sql>
-                    <![CDATA[Select * from (select permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
-permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON permit.IssuerID = agent.AgentID) as newTable where (%s)]]>
+                    <![CDATA[SELECT * FROM (SELECT permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
+permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON permit.IssuerID = agent.AgentID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption col="PermitID" text="PermitID"  visible="false"/>
@@ -465,8 +526,8 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON per
             </index>
             <detailView icon="">
                 <sql>
-                    <![CDATA[select accession.AccessionID, accession.Number, accession.Status, accession.Type, accession.Text1, 
-accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
+                    <![CDATA[SELECT accession.AccessionID, accession.Number, accession.Status, accession.Type, accession.Text1, 
+accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption col="AccessionID" text="AccessionID"  visible="false"/>
@@ -489,7 +550,7 @@ accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
             </index>
             <detailView icon="">
                 <sql>
-                    <![CDATA[Select geography.GeographyID, geography.Name, geographytreedefitem.Name From geography Inner Join geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID where (%s)]]>
+                    <![CDATA[SELECT geography.GeographyID, geography.Name, geographytreedefitem.Name FROM geography INNER JOIN geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption col="geography.GeographyID" text="GeographyID"  visible="false"/>
