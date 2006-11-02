@@ -202,6 +202,16 @@
     		</altviews>
     	</view>
 
+    	<view name="Shipment"
+              class="edu.ku.brc.specify.datamodel.Shipment"
+               resourcelabels="false">
+    	    <desc><![CDATA[Shipment form]]></desc>
+    	    <altviews>
+    	        <altview name="Shipment View" viewdef="Shipment" label="View" mode="view" validated="false"/>
+    	        <altview name="Shipment Edit" viewdef="Shipment" label="Edit" mode="edit" validated="true" default="true"/>
+    		</altviews>
+    	</view>
+
     </views>
 
 <!--
@@ -882,10 +892,13 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>p,6dlu,p,15dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p</rowDef>
+            <columnDef>p,2dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p,5dlu,p</rowDef>
 
             <rows>
+                <row>
+                    <cell type="separator" label="Loan" colspan="3"/>
+                </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
                     <cell type="field" id="1" name="loanNumber" uitype="text" cols="50" colspan="1" isrequired="true"/>
@@ -922,6 +935,10 @@
                 	<cell type="label" labelfor="9" label="Attachments"/>
                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="1"/>
                 </row>
+                <row>
+                    <cell type="subview" viewname="Shipment" id="10" name="shipment" desc="Shipments" colspan="3"/>
+                </row>
+                
             </rows>
         </viewdef>
 
@@ -1242,7 +1259,53 @@
     			</row>
     			-->
     		</rows>
-    		
+    	</viewdef>
+
+    	<viewdef
+    	    type="form"
+    	    name="Shipment"
+    	    class="edu.ku.brc.specify.datamodel.Shipment"
+    	    gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+    	    settable="edu.ku.brc.ui.forms.DataSetterForObj">
+    	    <desc><![CDATA[Shipment form]]></desc>
+    	    <enableRules/>
+
+            <columnDef>p,2dlu,p:g,8dlu,p,2dlu,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+
+    		<rows>
+                <row>
+                    <cell type="separator" label="Shipment" colspan="7"/>
+                </row>
+    			<row>
+                    <cell type="label" labelfor="1" label="Date"/>
+    			    <cell type="field" id="1" name="shipmentDate" format=""/>
+
+    			    <cell type="label" labelfor="2" label="Number"/>
+    			    <cell type="field" id="2" name="shipmentNumber" isrequired="true"/>
+    			</row>
+    			<row>
+                    <cell type="label" labelfor="3" label="Package Count"/>
+    			    <cell type="field" id="3" name="numberOfPackages"/>
+
+                    <cell type="label" labelfor="4" label="Weight"/>
+    			    <cell type="field" id="4" name="weight"/>
+    			</row>
+                <row>
+    			    <cell type="label" labelfor="5" label="Size"/>
+                    <cell type="field" id="5" name="shipmentMethod" uitype="combobox" picklist="ShipmentMethod"/>
+
+    			    <cell type="label" labelfor="6" label="Insured For"/>
+                    <cell type="field" id="6" name="insuredForAmount"/>
+    			</row>
+    			<row>
+                    <cell type="label" labelfor="7" label="Shipper"/>
+                    <cell type="field" id="7" name="agentByShipper" uitype="querycbx" initialize="name=Agent;title=Shipper" isrequired="false"/>
+
+                    <cell type="label" labelfor="8" label="Shipped To"/>
+                    <cell type="field" id="8" name="agentByShippedTo" uitype="querycbx" initialize="name=Agent;title=Shipped To" isrequired="true"/>
+    			</row>
+    		</rows>
     	</viewdef>
 
     </viewdefs>
