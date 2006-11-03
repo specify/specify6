@@ -93,7 +93,7 @@ public interface FormDataObjIFace
      */
     public void removeReference(FormDataObjIFace ref, String refName);
     
-    public FormDataObjIFace getReferenceValue(String refName);
+    public Object getReferenceValue(String refName);
     
     /**
      * Returns the internal Table Id.
