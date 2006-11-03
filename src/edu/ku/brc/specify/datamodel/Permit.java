@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+
 
 
 
@@ -319,5 +321,48 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     public Integer getTableId()
     {
         return 6;
+    }
+
+//    protected Set<AccessionAuthorizations> accessionAuthorizations;
+//    protected Agent agentByIssuee;
+//    protected Agent agentByIssuer;
+//    protected Set<Attachment>          attachments;
+
+    @Override
+    public void addReference(FormDataObjIFace ref, String refType)
+    {
+        if (ref instanceof Attachment)
+        {
+            Attachment attach = (Attachment)ref;
+            attachments.add(attach);
+            attach.setPermit(this);
+            return;
+        }
+        
+        super.addReference(ref, refType);
+    }
+
+    @Override
+    public Object getReferenceValue(String refName)
+    {
+        if (refName.equals("attachments"))
+        {
+            return attachments;
+        }
+        return super.getReferenceValue(refName);
+    }
+
+    @Override
+    public void removeReference(FormDataObjIFace ref, String refType)
+    {
+        if (ref instanceof Attachment)
+        {
+            Attachment attach = (Attachment)ref;
+            attachments.remove(attach);
+            attach.setPermit(null);
+            return;
+        }
+        
+        super.removeReference(ref, refType);
     }
 }
