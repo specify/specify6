@@ -1069,19 +1069,12 @@
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+            <columnDef>p,2dlu,p:g,6dlu,p,2dlu,p:g,2dlu</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,3dlu,p</rowDef>
 
             <rows>
                 <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
-                        <rows>
-                            <row>
-                                <cell type="label" icon="Permit" recordobj="true"/>
-                                <cell type="separator" label="Permit"/>
-                            </row>
-                        </rows>
-                    </cell>
+                    <cell type="separator" label="Permit" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
@@ -1116,7 +1109,12 @@
 
                 <row>
                     <cell type="label" labelfor="9" label="Remarks"/>
-                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="9" cols="40" valtype="Changed"/>
+                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="6" cols="40" valtype="Changed"/>
+                </row>
+                
+                <row>
+                	<cell type="label" labelfor="10" label="Attachments"/>
+                	<cell type="subview" viewname="AttachmentsIconView" id="10" name="attachments" colspan="6" valtype="Changed"/>
                 </row>
 
             </rows>
