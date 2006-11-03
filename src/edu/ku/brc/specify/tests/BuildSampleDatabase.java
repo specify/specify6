@@ -177,7 +177,7 @@ public class BuildSampleDatabase
         String[] accTypes = {"collection"};
         dataObjects.add(createPickList("AccessionType", true, accTypes));
         
-        String[] accRoles = {"collector", "donor"};
+        String[] accRoles = {"collector", "donor", "reviewer", "staff", "receiver"};
         dataObjects.add(createPickList("AccessionRole", true, accRoles));
         
         String[] stages = {"adult", "egg", "embryo", "hatchling", "immature", "juvenile", "larva", "nymph", "pupa", "seed"};
