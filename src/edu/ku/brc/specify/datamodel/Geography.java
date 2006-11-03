@@ -621,7 +621,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 */
 	public void fixFullNameForAllDescendants()
 	{
-		setFullName(getFullName());
+		setFullName(fixFullName());
 		for( Geography child: getChildren() )
 		{
 			child.fixFullNameForAllDescendants();
