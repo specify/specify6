@@ -202,6 +202,7 @@ public class TreeFactory
 		Location rootNode = new Location();
 		rootNode.initialize();
 		rootNode.setName("Root");
+        rootNode.setFullName("Root");
 		rootNode.setRankId(0);
 		
 		// tie everything together
