@@ -113,7 +113,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getReferenceValue(java.lang.String)
      */
-    public FormDataObjIFace getReferenceValue(String refName)
+    public Object getReferenceValue(String refName)
     {
         throw new RuntimeException(this.getClass() + "MUST override getReferenceValue()");
     }
