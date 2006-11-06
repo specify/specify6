@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -662,10 +662,10 @@ public class GenericDBConversion
                log.error("Table ["+tableName+"] didn't copy correctly.");
                break;
                
-           } else
-           {
-               tblStats.collectStats();
            }
+           // else
+           
+           tblStats.collectStats();
        }
        BasicSQLUtils.setShowMappingError(true);
     }
@@ -1846,18 +1846,18 @@ public class GenericDBConversion
             if (idMapper != null)
             {
                 return idMapper.get((Long)data);
-            } else
+            }
+            // else
+            
+            //throw new RuntimeException("No Map for ["+fromTableName+"]["+oldMappedColName+"]");
+            if (!oldColName.equals("MethodID") &&
+                    !oldColName.equals("RoleID") &&
+                    !oldColName.equals("CollectionID") &&
+                    !oldColName.equals("ConfidenceID") &&
+                    !oldColName.equals("TypeStatusNameID") &&
+                    !oldColName.equals("ObservationMethodID"))
             {
-                //throw new RuntimeException("No Map for ["+fromTableName+"]["+oldMappedColName+"]");
-                if (!oldColName.equals("MethodID") &&
-                        !oldColName.equals("RoleID") &&
-                        !oldColName.equals("CollectionID") &&
-                        !oldColName.equals("ConfidenceID") &&
-                        !oldColName.equals("TypeStatusNameID") &&
-                        !oldColName.equals("ObservationMethodID"))
-                {
-                    System.out.println("No Map for ["+fromTableName+"]["+oldColName+"]");
-                }
+                System.out.println("No Map for ["+fromTableName+"]["+oldColName+"]");
             }
         }
         return data;
@@ -2007,8 +2007,8 @@ public class GenericDBConversion
                     if (useHibernate)
                     {
                         Criteria criteria = session.createCriteria(CollectionObject.class);
-                        criteria.add(Expression.eq("collectionObjectId", rs.getInt(1)));
-                        List list = criteria.list();
+                        criteria.add(Restrictions.eq("collectionObjectId", rs.getInt(1)));
+                        List<?> list = criteria.list();
                         if (list.size() == 0)
                         {
                             log.error("**** Can't find the CollectionObject "+rs.getInt(1));
@@ -2266,7 +2266,7 @@ public class GenericDBConversion
 
                     } else if (newFieldName.equals("DerivedFromIDX"))
                     {
-
+                        //
                     } else if (newFieldName.equals("PrepTypeID"))
                     {
                         String value = rs.getString(oldNameIndex.get("PreparationMethod")+1);
@@ -3421,10 +3421,6 @@ public class GenericDBConversion
     		public int compare(GeologicTimePeriodTreeDefItem o1, GeologicTimePeriodTreeDefItem o2)
     		{
     			return o1.getRankId().compareTo(o2.getRankId());
-    		}
-    		public boolean equals(Object obj)
-    		{
-    			return false;
     		}
     	};
     	Collections.sort(newItems, itemComparator);
