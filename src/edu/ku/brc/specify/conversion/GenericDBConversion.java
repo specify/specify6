@@ -73,6 +73,7 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.UIHelper;
@@ -2754,6 +2755,7 @@ public class GenericDBConversion
 
     	ttd.setName(taxonomyTypeName + " taxonomy tree");
     	ttd.setRemarks("Tree converted from " + oldDBName);
+        ttd.setFullNameDirection(TreeDefIface.FORWARD);
 
     	rs = st.executeQuery("SELECT DISTINCT RankID,RankName,RequiredParentRankID FROM taxonomicunittype WHERE TaxonomyTypeID="
     			+ taxonomyTypeId + " ORDER BY RankID");
@@ -2774,6 +2776,7 @@ public class GenericDBConversion
     		TaxonTreeDefItem i = new TaxonTreeDefItem();
     		i.initialize();
     		i.setName(name);
+            i.setFullNameSeparator(" ");
     		i.setRankId(rank);
     		i.setTreeDef(ttd);
     		ttd.getTreeDefItems().add(i);
@@ -2817,7 +2820,7 @@ public class GenericDBConversion
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
     	newToOldColMap.put("Name", "TaxonomyTypeName");
 
-    	String[] ignoredFields = {"Remarks"};
+    	String[] ignoredFields = {"Remarks", "FullNameDirection"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	log.info("Copying taxonomy tree definitions from 'taxonomytype' table");
@@ -2855,7 +2858,7 @@ public class GenericDBConversion
     	newToOldColMap.put("Name", "RankName");
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
 
-    	String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName"};
+    	String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName", "FullNameSeparator"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	// Copy over most of the columns in the old table to the new one
@@ -3035,6 +3038,7 @@ public class GenericDBConversion
     	def.initialize();
     	def.setName("Default Geography Definition");
     	def.setRemarks("A simple continent/country/state/county geography tree");
+        def.setFullNameDirection(TreeDefIface.REVERSE);
     	session.save(def);
 
 		GeographyTreeDefItem planet = new GeographyTreeDefItem();
@@ -3042,12 +3046,14 @@ public class GenericDBConversion
 		planet.setName("Planet");
 		planet.setRankId(0);
 		planet.setIsEnforced(true);
+        planet.setFullNameSeparator(", ");
 		session.save(planet);
 
 		GeographyTreeDefItem cont = new GeographyTreeDefItem();
 		cont.initialize();
 		cont.setName("Continent");
 		cont.setRankId(100);
+        cont.setFullNameSeparator(", ");
 		session.save(cont);
 
 		GeographyTreeDefItem country = new GeographyTreeDefItem();
@@ -3055,6 +3061,7 @@ public class GenericDBConversion
 		country.setName("Country");
 		country.setRankId(200);
 		country.setIsInFullName(true);
+        country.setFullNameSeparator(", ");
 		session.save(country);
 
 		GeographyTreeDefItem state = new GeographyTreeDefItem();
@@ -3062,6 +3069,7 @@ public class GenericDBConversion
 		state.setName("State");
 		state.setRankId(300);
 		state.setIsInFullName(true);
+        state.setFullNameSeparator(", ");
 		session.save(state);
 
 		GeographyTreeDefItem county = new GeographyTreeDefItem();
@@ -3069,6 +3077,7 @@ public class GenericDBConversion
 		county.setName("County");
 		county.setRankId(400);
 		county.setIsInFullName(true);
+        county.setFullNameSeparator(", ");
 		session.save(county);
 
 		// setup parents
@@ -3187,6 +3196,9 @@ public class GenericDBConversion
         	// add this new ID to the ID mapper
         	geoIdMapper.put(oldId, newGeo.getGeographyId());
     	}
+        
+        planetEarth.fixFullNameForAllDescendants();
+        
     	HibernateUtil.commitTransaction();
 		log.info("Converted " + counter + " geography records");
 
@@ -3289,10 +3301,12 @@ public class GenericDBConversion
     	
     	LocationTreeDef locDef = TreeFactory.createStdLocationTreeDef("Sample location tree", null);
     	locDef.setRemarks("This definition is merely for demonstration purposes.  Consult documentation or support staff for instructions on creating one tailored for an institutions specific needs.");
+        locDef.setFullNameDirection(TreeDefIface.FORWARD);
     	session.save(locDef);
     	
     	// get the root def item
     	LocationTreeDefItem rootItem = locDef.getTreeDefItems().iterator().next();
+        rootItem.setFullNameSeparator(", ");
     	session.save(rootItem);
     	
     	Location rootNode = rootItem.getTreeEntries().iterator().next();
@@ -3305,6 +3319,7 @@ public class GenericDBConversion
     	building.setIsEnforced(false);
     	building.setIsInFullName(false);
     	building.setTreeDef(locDef);
+        building.setFullNameSeparator(", ");
     	session.save(building);
 
     	LocationTreeDefItem room = new LocationTreeDefItem();
@@ -3314,6 +3329,7 @@ public class GenericDBConversion
     	room.setIsEnforced(true);
     	room.setIsInFullName(true);
     	room.setTreeDef(locDef);
+        room.setFullNameSeparator(", ");
     	session.save(room);
     	
     	LocationTreeDefItem freezer = new LocationTreeDefItem();
@@ -3323,6 +3339,7 @@ public class GenericDBConversion
     	freezer.setIsEnforced(true);
     	freezer.setIsInFullName(true);
     	freezer.setTreeDef(locDef);
+        freezer.setFullNameSeparator(", ");
     	session.save(freezer);
     	
     	rootItem.setChild(building);
@@ -3366,12 +3383,15 @@ public class GenericDBConversion
     	def.initialize();
     	def.setName("Inferred Geologic Time Period Definition");
     	def.setRemarks("");
+        def.setFullNameDirection(TreeDefIface.REVERSE);
     	session.save(def);
     	
     	Vector<GeologicTimePeriodTreeDefItem> newItems = new Vector<GeologicTimePeriodTreeDefItem>();
     	
     	GeologicTimePeriodTreeDefItem rootItem = addGtpDefItem(0, "Time Root", def);
     	rootItem.setIsEnforced(true);
+        rootItem.setIsInFullName(false);
+        rootItem.setFullNameSeparator(", ");
     	session.save(rootItem);
     	newItems.add(rootItem);
     	++count;
@@ -3385,6 +3405,7 @@ public class GenericDBConversion
     		GeologicTimePeriodTreeDefItem newItem = addGtpDefItem(rankCode, rankName, def);
     		if( newItem != null )
     		{
+                newItem.setFullNameSeparator(", ");
     			session.save(newItem);
     			newItems.add(newItem);
     		}
@@ -3474,7 +3495,8 @@ public class GenericDBConversion
     	GeologicTimePeriodTreeDefItem rootDefItem = treeDef.getDefItemByRank(0);
 		allTime.setDefinitionItem(rootDefItem);
     	allTime.setRankId(0);
-    	allTime.setName("All Time");
+    	allTime.setName("Time");
+        allTime.setFullName("Time");
     	allTime.setStart(100000f);
     	allTime.setEnd(0f);
     	allTime.setEndUncertainty(0f);
@@ -3517,6 +3539,7 @@ public class GenericDBConversion
     		GeologicTimePeriod gtp = new GeologicTimePeriod();
     		gtp.initialize();
     		gtp.setName(name);
+            gtp.setFullName(name);
     		GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(rank);
     		gtp.setDefinitionItem(defItem);
     		gtp.setRankId(rank);
@@ -3561,7 +3584,8 @@ public class GenericDBConversion
     	// TODO: fix node number, child node number stuff
     	allTime.setNodeNumber(1);
     	fixNodeNumbersFromRoot(allTime);
-    	
+    	allTime.fixFullNameForAllDescendants();
+        
     	HibernateUtil.commitTransaction();
     	HibernateUtil.closeSession();
     	

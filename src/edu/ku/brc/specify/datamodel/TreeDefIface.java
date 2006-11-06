@@ -21,7 +21,20 @@ import edu.ku.brc.util.Nameable;
 public interface TreeDefIface<N,D,I>
 	extends Nameable
 {
-	public void initialize();
+    /**
+     * An indicator that node full names should start with highest order
+     * nodes and continue to the lowest order nodes.
+     * @see #REVERSE
+     */
+    public static final int FORWARD = 1;
+    /**
+     * An indicator that node full names should start with lowest order
+     * nodes and continue to the highest order nodes.
+     * @see #FORWARD
+     */
+    public static final int REVERSE = -1;
+
+    public void initialize();
 	
 	public Long getTreeDefId();
 	public void setTreeDefId(Long id);
@@ -35,6 +48,9 @@ public interface TreeDefIface<N,D,I>
 	public Set<I> getTreeDefItems();
 	public void setTreeDefItems(Set<I> treeDefItems);
 	
+    public Integer getFullNameDirection();
+    public void setFullNameDirection(Integer direction);
+    
 	public Class<N> getNodeClass();
 	public I getDefItemByRank(Integer rank);
 	public I getDefItemByName(String name);

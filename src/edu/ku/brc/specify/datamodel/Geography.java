@@ -452,16 +452,19 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 
 	public int getFullNameDirection()
 	{
-		//TODO: move these to prefs
-		//XXX: pref
-		return REVERSE;
+        Integer dir = definition.getFullNameDirection();
+        
+        // if it's anything other than FORWARD, set it to REVERSE to avoid 'null' or undefined values
+        if (dir==null || dir!=TreeDefIface.FORWARD)
+        {
+            dir = TreeDefIface.REVERSE;
+        }
+		return dir;
 	}
 
 	public String getFullNameSeparator()
 	{
-		//TODO: move these to prefs
-		//XXX: pref
-		return ", ";
+		return definitionItem.getFullNameSeparator();
 	}
 
 	/**
@@ -507,21 +510,20 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 */
 	public String fixFullName()
 	{
-		Vector<String> parts = new Vector<String>();
-		parts.add(getName());
-		Geography taxon = getParent();
-		while( taxon != null )
+		Vector<Geography> parts = new Vector<Geography>();
+        parts.add(this);
+		Geography node = getParent();
+		while( node != null )
 		{
-			Boolean include = taxon.getDefinitionItem().getIsInFullName();
+			Boolean include = node.getDefinitionItem().getIsInFullName();
 			if( include != null && include.booleanValue() == true )
 			{
-				parts.add(taxon.getName());
+				parts.add(node);
 			}
 			
-			taxon = taxon.getParent();
+            node = node.getParent();
 		}
 		int direction = getFullNameDirection();
-		String sep = getFullNameSeparator();
 		
 		StringBuilder fullNameBuilder = new StringBuilder(parts.size() * 10);
 		
@@ -531,8 +533,11 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 			{
 				for( int j = parts.size()-1; j > -1; --j )
 				{
-					fullNameBuilder.append(parts.get(j));
-					fullNameBuilder.append(sep);
+					fullNameBuilder.append(parts.get(j).getName());
+					if(j!=0)
+                    {
+                        fullNameBuilder.append(parts.get(j).getFullNameSeparator());
+                    }
 				}
 				break;
 			}
@@ -540,8 +545,11 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 			{
 				for( int j = 0; j < parts.size(); ++j )
 				{
-					fullNameBuilder.append(parts.get(j));
-					fullNameBuilder.append(sep);
+					fullNameBuilder.append(parts.get(j).getName());
+					if(j!=parts.size()-1)
+                    {
+                        fullNameBuilder.append(parts.get(j).getFullNameSeparator());
+                    }
 				}
 				break;
 			}
@@ -552,7 +560,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 			}
 		}
 		
-		fullNameBuilder.delete(fullNameBuilder.length()-sep.length(), fullNameBuilder.length());
 		return fullNameBuilder.toString();
 	}
 	

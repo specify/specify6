@@ -23,6 +23,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	protected Long                               geologicTimePeriodTreeDefId;
     protected String                             name;
     protected String                             remarks;
+    protected Integer                            fullNameDirection;
     protected Set<CollectionObjDef>              collObjDefs;
     protected Set<GeologicTimePeriod>            treeEntries;
     protected Set<GeologicTimePeriodTreeDefItem> treeDefItems;
@@ -48,6 +49,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 		geologicTimePeriodTreeDefId = null;
 		name = null;
 		remarks = null;
+        fullNameDirection = null;
 		collObjDefs = new HashSet<CollectionObjDef>();
 		treeEntries = new HashSet<GeologicTimePeriod>();
 		treeDefItems = new HashSet<GeologicTimePeriodTreeDefItem>();
@@ -106,7 +108,17 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 		this.remarks = remarks;
 	}
 
-	/**
+	public Integer getFullNameDirection()
+    {
+        return fullNameDirection;
+    }
+
+    public void setFullNameDirection(Integer fullNameDirection)
+    {
+        this.fullNameDirection = fullNameDirection;
+    }
+
+    /**
 	 * 
 	 */
 	public Set<CollectionObjDef> getCollObjDefs()

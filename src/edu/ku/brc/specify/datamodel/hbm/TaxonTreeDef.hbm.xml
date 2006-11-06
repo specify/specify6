@@ -27,6 +27,8 @@
             <meta attribute="scope-field">protected</meta>
         </property>
 
+		<property name="fullNameDirection" type="java.lang.Integer" column="FullNameDirection"/>
+
         <!-- Associations -->
 
         <one-to-one name="collObjDef"

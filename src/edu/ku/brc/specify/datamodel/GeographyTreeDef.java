@@ -23,6 +23,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	protected Long				       geographyTreeDefId;
 	protected String				    name;
 	protected String				    remarks;
+    protected Integer                   fullNameDirection;
 	protected Set<CollectionObjDef>		collObjDefs;
 	protected Set<Geography>			treeEntries;
 	protected Set<GeographyTreeDefItem>	treeDefItems;
@@ -45,6 +46,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		geographyTreeDefId = null;
 		name = null;
 		remarks = null;
+        fullNameDirection = null;
 		collObjDefs = new HashSet<CollectionObjDef>();
 		treeEntries = new HashSet<Geography>();
 		treeDefItems = new HashSet<GeographyTreeDefItem>();
@@ -90,7 +92,17 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.remarks = remarks;
 	}
 
-	public Set<CollectionObjDef> getCollObjDefs()
+	public Integer getFullNameDirection()
+    {
+        return fullNameDirection;
+    }
+
+    public void setFullNameDirection(Integer fullNameDirection)
+    {
+        this.fullNameDirection = fullNameDirection;
+    }
+
+    public Set<CollectionObjDef> getCollObjDefs()
 	{
 		return this.collObjDefs;
 	}

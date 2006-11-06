@@ -25,6 +25,8 @@
             <meta attribute="scope-field">protected</meta>
         </property>
 
+		<property name="fullNameDirection" type="java.lang.Integer" column="FullNameDirection"/>
+
         <!-- Associations -->
 
         <set name="treeEntries" table="GeologicTimePeriod"

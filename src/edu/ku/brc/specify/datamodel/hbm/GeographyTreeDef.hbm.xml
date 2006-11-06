@@ -7,23 +7,17 @@
 
     <class name="edu.ku.brc.specify.datamodel.GeographyTreeDef"
         table="geographytreedef" lazy="true">
-        <meta attribute="class-description" inherit="false" />
 
         <id name="geographyTreeDefId" type="java.lang.Long"
             column="GeographyTreeDefID">
-            <meta attribute="scope-field">protected</meta>
             <generator class="native" />
 		</id>
 
-        <property name="name" type="java.lang.String" column="Name"
-            length="64">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="name" type="java.lang.String" column="Name" length="64"/>
 
-        <property name="remarks" type="java.lang.String"
-            column="Remarks" length="255">
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <property name="remarks" type="java.lang.String" column="Remarks" length="255"/>
+
+		<property name="fullNameDirection" type="java.lang.Integer" column="FullNameDirection"/>
 
         <!-- Associations -->
 

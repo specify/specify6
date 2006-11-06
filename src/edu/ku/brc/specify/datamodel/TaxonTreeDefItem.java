@@ -27,6 +27,9 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	protected Integer				rankId;
 	protected Boolean				isEnforced;
 	protected Boolean				isInFullName;
+    protected String                textBefore;
+    protected String                textAfter;
+    protected String                fullNameSeparator;
 	protected TaxonTreeDef			treeDef;
 	protected TaxonTreeDefItem		parent;
 	protected Set<Taxon>			treeEntries;
@@ -53,6 +56,9 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		rankId = null;
 		isEnforced = null;
 		isInFullName = null;
+        textBefore = null;
+        textAfter = null;
+        fullNameSeparator = null;
 		treeDef = null;
 		treeEntries = new HashSet<Taxon>();
 		parent = null;
@@ -129,7 +135,37 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.isInFullName = isInFullName;
 	}
 
-	public TaxonTreeDef getTreeDef()
+	public String getTextAfter()
+    {
+        return textAfter;
+    }
+
+    public void setTextAfter(String textAfter)
+    {
+        this.textAfter = textAfter;
+    }
+
+    public String getTextBefore()
+    {
+        return textBefore;
+    }
+
+    public void setTextBefore(String textBefore)
+    {
+        this.textBefore = textBefore;
+    }
+
+    public String getFullNameSeparator()
+    {
+        return fullNameSeparator;
+    }
+
+    public void setFullNameSeparator(String fullNameSeparator)
+    {
+        this.fullNameSeparator = fullNameSeparator;
+    }
+
+    public TaxonTreeDef getTreeDef()
 	{
 		return this.treeDef;
 	}

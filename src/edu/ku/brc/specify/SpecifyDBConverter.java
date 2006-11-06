@@ -51,11 +51,16 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Nameable;
+import edu.ku.brc.util.Rankable;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -337,11 +342,46 @@ public class SpecifyDBConverter
                 {
                 	conversion.copyTaxonTreeDefs();
                 	conversion.convertTaxonTreeDefItems();
+                    
+                    // fix the fullNameDirection field in each of the converted tree defs
+                    Criteria crit = HibernateUtil.getCurrentSession().createCriteria(TaxonTreeDef.class);
+                    HibernateUtil.beginTransaction();
+                    for(Object o: crit.list())
+                    {
+                        TaxonTreeDef ttd = (TaxonTreeDef)o;
+                        ttd.setFullNameDirection(TreeDefIface.FORWARD);
+                    }
+                    try
+                    {
+                        HibernateUtil.commitTransaction();
+                    }
+                    catch(Exception e)
+                    {
+                        log.error("Error while setting the fullname direction of taxonomy tree definitions.");
+                    }
+                    
+                    // fix the fullNameSeparator field in each of the converted tree def items
+                    crit = HibernateUtil.getCurrentSession().createCriteria(TaxonTreeDefItem.class);
+                    HibernateUtil.beginTransaction();
+                    for(Object o: crit.list())
+                    {
+                        TaxonTreeDefItem ttdi = (TaxonTreeDefItem)o;
+                        ttdi.setFullNameSeparator(" ");
+                    }
+                    try
+                    {
+                        HibernateUtil.commitTransaction();
+                    }
+                    catch(Exception e)
+                    {
+                        log.error("Error while setting the fullname separator of taxonomy tree definition items.");
+                    }
+                    
                 	conversion.copyTaxonRecords();
                 }
 
-                boolean doGeography = false;
-                if ((doGeography || doAll) && !databaseName.startsWith("accessions"))
+                boolean doGeography = true;
+                if (doGeography || (doAll && !databaseName.startsWith("accessions")) )
                 {
                 	GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                 	conversion.convertGeography(treeDef);

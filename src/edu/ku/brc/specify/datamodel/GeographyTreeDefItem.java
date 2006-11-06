@@ -30,6 +30,9 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	protected Integer				rankId;
 	protected Boolean				isEnforced;
 	protected Boolean				isInFullName;
+    protected String                textBefore;
+    protected String                textAfter;
+    protected String                fullNameSeparator;
 	protected GeographyTreeDef			treeDef;
 	protected GeographyTreeDefItem		parent;
 	protected Set<Geography>			treeEntries;
@@ -59,6 +62,9 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		rankId = null;
 		isEnforced = null;
 		isInFullName = null;
+        textBefore = null;
+        textAfter = null;
+        fullNameSeparator = null;
 		treeDef = null;
 		treeEntries = new HashSet<Geography>();
 		parent = null;
@@ -69,18 +75,11 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 
 	// Property accessors
 
-	/**
-	 * 
-	 */
 	public Long getGeographyTreeDefItemId()
 	{
 		return this.geographyTreeDefItemId;
 	}
 
-    /**
-     * Generic Getter for the ID Property.
-     * @returns ID Property.
-     */
     @Override
     public Long getId()
     {
@@ -92,9 +91,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.geographyTreeDefItemId = geographyTreeDefItemId;
 	}
 
-	/**
-	 * 
-	 */
 	public String getName()
 	{
 		return this.name;
@@ -105,9 +101,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.name = name;
 	}
 
-	/**
-	 * 
-	 */
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -118,9 +111,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.remarks = remarks;
 	}
 
-	/**
-	 * 
-	 */
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -131,9 +121,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.rankId = rankId;
 	}
 
-	/**
-	 * 
-	 */
 	public Boolean getIsEnforced()
 	{
 		return this.isEnforced;
@@ -153,10 +140,37 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	{
 		this.isInFullName = isInFullName;
 	}
+    
+    public String getTextAfter()
+    {
+        return textAfter;
+    }
 
-	/**
-	 * 
-	 */
+    public void setTextAfter(String textAfter)
+    {
+        this.textAfter = textAfter;
+    }
+
+    public String getTextBefore()
+    {
+        return textBefore;
+    }
+
+    public void setTextBefore(String textBefore)
+    {
+        this.textBefore = textBefore;
+    }
+
+	public String getFullNameSeparator()
+    {
+        return fullNameSeparator;
+    }
+
+    public void setFullNameSeparator(String fullNameSeparator)
+    {
+        this.fullNameSeparator = fullNameSeparator;
+    }
+
 	public GeographyTreeDef getTreeDef()
 	{
 		return this.treeDef;
@@ -167,9 +181,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.treeDef = treeDef;
 	}
 
-	/**
-	 * 
-	 */
 	public GeographyTreeDefItem getParent()
 	{
 		return this.parent;
@@ -180,9 +191,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<Geography> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -193,9 +201,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.treeEntries = treeEntries;
 	}
 
-	/**
-	 * 
-	 */
 	public Set<GeographyTreeDefItem> getChildren()
 	{
 		return this.children;
@@ -205,8 +210,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	{
 		this.children = children;
 	}
-
-	// Code added to implement TreeDefinitionItemIface
 
 	public Long getTreeDefItemId()
 	{
@@ -270,9 +273,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		return false;
 	}
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
-     */
     @Override
     public Integer getTableId()
     {

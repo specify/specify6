@@ -566,19 +566,15 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 				+highestChildNodeNumber;
 	}
 
-	public int getFullNameDirection()
-	{
-		//TODO: move these to prefs
-		//XXX: pref
-		return FORWARD;
-	}
+    public int getFullNameDirection()
+    {
+        return definition.getFullNameDirection();
+    }
 
-	public String getFullNameSeparator()
-	{
-		//TODO: move these to prefs
-		//XXX: pref
-		return " ";
-	}
+    public String getFullNameSeparator()
+    {
+        return definitionItem.getFullNameSeparator();
+    }
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
@@ -651,56 +647,60 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	 * @param node the node to get the full name for
 	 * @return the full name
 	 */
-	public String fixFullName()
-	{
-		Vector<String> parts = new Vector<String>();
-		parts.add(getName());
-		Taxon taxon = getParent();
-		while( taxon != null )
-		{
-			Boolean include = taxon.getDefinitionItem().getIsInFullName();
-			if( include != null && include.booleanValue() == true )
-			{
-				parts.add(taxon.getName());
-			}
-			
-			taxon = taxon.getParent();
-		}
-		int direction = getFullNameDirection();
-		String sep = getFullNameSeparator();
-		
-		StringBuilder fullNameBuilder = new StringBuilder(parts.size() * 10);
-		
-		switch( direction )
-		{
-			case FORWARD:
-			{
-				for( int j = parts.size()-1; j > -1; --j )
-				{
-					fullNameBuilder.append(parts.get(j));
-					fullNameBuilder.append(sep);
-				}
-				break;
-			}
-			case REVERSE:
-			{
-				for( int j = 0; j < parts.size(); ++j )
-				{
-					fullNameBuilder.append(parts.get(j));
-					fullNameBuilder.append(sep);
-				}
-				break;
-			}
-			default:
-			{
-				log.error("Invalid tree walk direction (for creating fullname field) found in tree definition");
-				return null;
-			}
-		}
-		
-		fullNameBuilder.delete(fullNameBuilder.length()-sep.length(), fullNameBuilder.length());
-		return fullNameBuilder.toString();
-	}
+    public String fixFullName()
+    {
+        Vector<Taxon> parts = new Vector<Taxon>();
+        parts.add(this);
+        Taxon node = getParent();
+        while( node != null )
+        {
+            Boolean include = node.getDefinitionItem().getIsInFullName();
+            if( include != null && include.booleanValue() == true )
+            {
+                parts.add(node);
+            }
+            
+            node = node.getParent();
+        }
+        int direction = getFullNameDirection();
+        
+        StringBuilder fullNameBuilder = new StringBuilder(parts.size() * 10);
+        
+        switch( direction )
+        {
+            case FORWARD:
+            {
+                for( int j = parts.size()-1; j > -1; --j )
+                {
+                    fullNameBuilder.append(parts.get(j).getName());
+                    if(j!=0)
+                    {
+                        fullNameBuilder.append(parts.get(j).getFullNameSeparator());
+                    }
+                }
+                break;
+            }
+            case REVERSE:
+            {
+                for( int j = 0; j < parts.size(); ++j )
+                {
+                    fullNameBuilder.append(parts.get(j).getName());
+                    if(j!=parts.size()-1)
+                    {
+                        fullNameBuilder.append(parts.get(j).getFullNameSeparator());
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                log.error("Invalid tree walk direction (for creating fullname field) found in tree definition");
+                return null;
+            }
+        }
+        
+        return fullNameBuilder.toString();
+    }
 	
 	/**
 	 * Returns the number of proper descendants for node.

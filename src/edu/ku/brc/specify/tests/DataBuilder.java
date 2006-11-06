@@ -78,6 +78,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
@@ -421,6 +422,7 @@ public class DataBuilder
         GeographyTreeDef gtd = new GeographyTreeDef();
         gtd.initialize();
         gtd.setName(name);
+        gtd.setFullNameDirection(TreeDefIface.REVERSE);
 
         persist(gtd);
         return gtd;
@@ -448,6 +450,7 @@ public class DataBuilder
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
         gtdi.setTreeDef(gtd);
+        gtdi.setFullNameSeparator(", ");
         if (gtd != null)
         {
             gtd.getTreeDefItems().add(gtdi);
@@ -518,6 +521,7 @@ public class DataBuilder
         LocationTreeDef ltd = new LocationTreeDef();
         ltd.initialize();
         ltd.setName(name);
+        ltd.setFullNameDirection(TreeDefIface.REVERSE);
 
         persist(ltd);
         return ltd;
@@ -545,6 +549,7 @@ public class DataBuilder
         ltdi.setParent(parent);
         ltdi.setRankId(rankId);
         ltdi.setTreeDef(ltd);
+        ltdi.setFullNameSeparator(", ");
         if (ltd != null)
         {
             ltd.getTreeDefItems().add(ltdi);
@@ -640,6 +645,7 @@ public class DataBuilder
         GeologicTimePeriodTreeDef gtp = new GeologicTimePeriodTreeDef();
         gtp.initialize();
         gtp.setName(name);
+        gtp.setFullNameDirection(TreeDefIface.REVERSE);
 
         persist(gtp);
         return gtp;
@@ -667,6 +673,7 @@ public class DataBuilder
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
         gtdi.setTreeDef(gtptd);
+        gtdi.setFullNameSeparator(", ");
         if (gtptd != null)
         {
             gtptd.getTreeDefItems().add(gtdi);
@@ -727,6 +734,7 @@ public class DataBuilder
         TaxonTreeDef ttd = new TaxonTreeDef();
         ttd.initialize();
         ttd.setName(name);
+        ttd.setFullNameDirection(TreeDefIface.FORWARD);
         return ttd;
     }
 
@@ -752,6 +760,7 @@ public class DataBuilder
         ttdi.setParent(parent);
         ttdi.setRankId(rankId);
         ttdi.setTreeDef(ttd);
+        ttdi.setFullNameSeparator(" ");
         if (ttd != null)
         {
             ttd.getTreeDefItems().add(ttdi);

@@ -40,6 +40,10 @@
             <meta attribute="scope-field">protected</meta>
         </property>
         
+        <property name="textBefore" type="java.lang.String" length="64" column="TextBefore"/>
+        <property name="textAfter" type="java.lang.String" length="64" column="TextAfter"/>
+        <property name="fullNameSeparator" type="java.lang.String" length="32" column="FullNameSeparator"/>
+
         <!-- Associations -->
 
         <many-to-one name="treeDef" column="TaxonTreeDefID"

@@ -30,6 +30,9 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	protected Integer				rankId;
 	protected Boolean				isEnforced;
 	protected Boolean				isInFullName;
+    protected String                textBefore;
+    protected String                textAfter;
+    protected String                fullNameSeparator;
 	protected GeologicTimePeriodTreeDef			treeDef;
 	protected GeologicTimePeriodTreeDefItem		parent;
 	protected Set<GeologicTimePeriod>			treeEntries;
@@ -61,6 +64,9 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 		rankId = null;
 		isEnforced = null;
 		isInFullName = null;
+        textBefore = null;
+        textAfter = null;
+        fullNameSeparator = null;
 		treeDef = null;
 		treeEntries = new HashSet<GeologicTimePeriod>();
 		parent = null;
@@ -156,7 +162,37 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 		this.isInFullName = isInFullName;
 	}
 
-	/**
+	public String getTextAfter()
+    {
+        return textAfter;
+    }
+
+    public void setTextAfter(String textAfter)
+    {
+        this.textAfter = textAfter;
+    }
+
+    public String getTextBefore()
+    {
+        return textBefore;
+    }
+
+    public void setTextBefore(String textBefore)
+    {
+        this.textBefore = textBefore;
+    }
+
+    public String getFullNameSeparator()
+    {
+        return fullNameSeparator;
+    }
+
+    public void setFullNameSeparator(String fullNameSeparator)
+    {
+        this.fullNameSeparator = fullNameSeparator;
+    }
+
+    /**
 	 * 
 	 */
 	public GeologicTimePeriodTreeDef getTreeDef()

@@ -23,6 +23,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	protected Long				    taxonTreeDefId;
 	protected String				name;
 	protected String				remarks;
+    protected Integer               fullNameDirection;
 	protected CollectionObjDef		collObjDef;
 	protected Set<Taxon>			treeEntries;
 	protected Set<TaxonTreeDefItem>	treeDefItems;
@@ -45,6 +46,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		taxonTreeDefId = null;
 		name = null;
 		remarks = null;
+        fullNameDirection = null;
 		collObjDef = null;
 		treeEntries = new HashSet<Taxon>();
 		treeDefItems = new HashSet<TaxonTreeDefItem>();
@@ -90,7 +92,17 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.remarks = remarks;
 	}
 
-	public CollectionObjDef getCollObjDef()
+	public Integer getFullNameDirection()
+    {
+        return fullNameDirection;
+    }
+
+    public void setFullNameDirection(Integer fullNameDirection)
+    {
+        this.fullNameDirection = fullNameDirection;
+    }
+
+    public CollectionObjDef getCollObjDef()
 	{
 		return this.collObjDef;
 	}

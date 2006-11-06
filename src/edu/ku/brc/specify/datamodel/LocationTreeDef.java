@@ -23,6 +23,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	protected Long				   locationTreeDefId;
 	protected String				name;
 	protected String				remarks;
+    protected Integer               fullNameDirection;
 	protected Set<CollectionObjDef>		collObjDefs;
 	protected Set<Location>			treeEntries;
 	protected Set<LocationTreeDefItem>	treeDefItems;
@@ -45,6 +46,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		locationTreeDefId = null;
 		name = null;
 		remarks = null;
+        fullNameDirection = null;
 		collObjDefs = new HashSet<CollectionObjDef>();
 		treeEntries = new HashSet<Location>();
 		treeDefItems = new HashSet<LocationTreeDefItem>();
@@ -93,7 +95,17 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.remarks = remarks;
 	}
 
-	public Set<CollectionObjDef> getCollObjDefs()
+	public Integer getFullNameDirection()
+    {
+        return fullNameDirection;
+    }
+
+    public void setFullNameDirection(Integer fullNameDirection)
+    {
+        this.fullNameDirection = fullNameDirection;
+    }
+
+    public Set<CollectionObjDef> getCollObjDefs()
 	{
 		return this.collObjDefs;
 	}
