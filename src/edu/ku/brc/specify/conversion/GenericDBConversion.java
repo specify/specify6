@@ -140,6 +140,9 @@ public class GenericDBConversion
     protected static boolean shouldDeleteMapTables = false;
 
     protected SpecifyAppContextMgr appContextMgr = new SpecifyAppContextMgr();
+    
+    protected SpecifyDBConvFrame   frame    = null;
+    protected boolean              hasFrame = false;
 
     /**
      * "Old" means the database you want to copy "from"
@@ -177,6 +180,63 @@ public class GenericDBConversion
         } catch (SQLException ex)
         {
             ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Sets a UI feedback frame.
+     * @param frame the frame
+     */
+    public void setFrame(final SpecifyDBConvFrame frame)
+    {
+        this.frame = frame;
+        hasFrame = frame != null;
+        
+        BasicSQLUtils.setFrame(frame);
+        
+        if (idMapperMgr != null)
+        {
+            idMapperMgr.setFrame(frame);
+        }
+    }
+    
+    public void setOverall(final int min, final int max)
+    {
+        if (hasFrame)
+        {
+            frame.setOverall(min, max);
+        }
+    }
+    
+    public void setOverall(final int value)
+    {
+        if (hasFrame)
+        {
+            frame.setOverall(value);
+        }
+    }
+    
+    public void setProcess(final int min, final int max)
+    {
+        if (hasFrame)
+        {
+            frame.setProcess(min, max);
+        }
+    }
+    
+    public void setProcess(final int value)
+    {
+        if (hasFrame)
+        {
+            frame.setProcess(value);
+        }
+    }
+
+    public void setDesc(final String text)
+    {
+        if (hasFrame)
+        {
+            frame.setDesc(text);
         }
     }
 
@@ -819,13 +879,27 @@ public class GenericDBConversion
     	try
     	{
         	Statement deterQuery = oldDBConn.createStatement();
-        	sql.append("SELECT DeterminationID,IsCurrent FROM determination");
-        	ResultSet oldDeters = deterQuery.executeQuery(sql.toString());
+            
+            int count = 0;
+            sql.append("SELECT count(DeterminationID) FROM determination");
+            ResultSet countRS = deterQuery.executeQuery(sql.toString());
+            if (countRS.next())
+            {
+                count = countRS.getInt(1);
+                setProcess(0, count / 50);
+            }
+            
+            int step = 0;
+            int inc  = 0;
+            
+            sql.setLength(0);
+            sql.append("SELECT DeterminationID,IsCurrent FROM determination");
+            ResultSet oldDeters = deterQuery.executeQuery(sql.toString());
         	while(oldDeters.next())
         	{
-                Long oldId = new Long(oldDeters.getInt(1));
+                Long    oldId     = new Long(oldDeters.getInt(1));
         		Boolean isCurrent = oldDeters.getBoolean(2);
-        		Long newId = idMapper.get(oldId);
+        		Long    newId     = idMapper.get(oldId);
         		if(isCurrent.booleanValue())
         		{
         			statusCurrent.add(newId);
@@ -834,7 +908,14 @@ public class GenericDBConversion
         		{
         			statusUnknown.add(newId);
         		}
+                
+                step++;
+                if (step % 50 == 0)
+                {
+                    setProcess(inc++);
+                }
         	}
+            setProcess( count / 50);
     	}
     	catch( SQLException sqlEx )
     	{
@@ -1457,8 +1538,14 @@ public class GenericDBConversion
                 "usysshipmentshipmentmethod",     "ShipmentMethod"
                 };
 
+        setProcess(0, tables.length);
+        
         for (int i=0;i<tables.length;i++)
         {
+            setDesc("Converting "+tables[i]);
+
+            setProcess(i);
+            
             boolean status = convertUSYSToPicklist(tables[i], tables[i+1]);
             if (!status)
             {
@@ -1466,7 +1553,8 @@ public class GenericDBConversion
                 return false;
             }
             i++;
-        }
+       }
+        setProcess(tables.length);
         return true;
     }
 
@@ -2189,9 +2277,27 @@ public class GenericDBConversion
 
             boolean doDebug   = false;
             ResultSet rs      = stmt.executeQuery(sqlStr);
+            
+            if (rs.last())
+            {
+
+                setProcess(0, rs.getRow()); 
+
+                rs.first();
+                
+            } else
+            {
+                rs.close();
+                stmt.close();
+
+                setProcess(0, 0); 
+
+                return true;
+            }
+            
             Integer   idIndex = oldNameIndex.get("CollectionObjectID");
             int       count   = 0;
-            while (rs.next())
+            do
             {
                 Long      preparedById = null;
                 Date      preparedDate = null;
@@ -2349,8 +2455,21 @@ public class GenericDBConversion
                 }
                 str.append(")");
                 //log.info("\n"+str.toString());
-                if (count % 2000 == 0) log.info("Preparation Records: "+count);
-
+                if (hasFrame)
+                {
+                    if (count % 500 == 0)
+                    {
+                        setProcess(count);
+                    }
+                    
+                } else
+                {
+                    if (count % 2000 == 0)
+                    {
+                        log.info("Preparation Records: "+count);
+                    }                        
+                }
+                
                 try
                 {
                     Statement updateStatement = newDBConn.createStatement();
@@ -2374,9 +2493,21 @@ public class GenericDBConversion
 
                 count++;
                 //if (count == 1) break;
-            }
-            log.info("Processed CollectionObject "+count+" records.");
+            } while (rs.next());
+            
+            
+            if (hasFrame)
+            {
 
+                setProcess(count);
+                
+            } else
+            {
+                if (count % 2000 == 0)
+                {
+                    log.info("Processed CollectionObject "+count+" records.");
+                }                        
+            }
 
         } catch (SQLException e)
         {
@@ -2408,8 +2539,6 @@ public class GenericDBConversion
         deleteAllRecordsFromTable(newDBConn, "collectionobject"); // automatically closes the connection
         try
         {
-
-
             Statement    stmt = oldDBConn.createStatement();
             StringBuilder str  = new StringBuilder();
 
@@ -2461,9 +2590,32 @@ public class GenericDBConversion
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
+            
+            if (hasFrame)
+            {
+                if (rs.last())
+                {
+                    setProcess(0, rs.getRow()); 
+                    rs.first();
+                    
+                } else
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;
+                }
+            } else
+            {
+                if (!rs.first())
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;                   
+                }
+            }
 
             int count = 0;
-            while (rs.next())
+            do
             {
                 str.setLength(0);
                 str.append("INSERT INTO collectionobject VALUES (");
@@ -2572,7 +2724,20 @@ public class GenericDBConversion
                 }
                 str.append(")");
                 //log.info("\n"+str.toString());
-                if (count % 2000 == 0) log.info("CollectionObject Records: "+count);
+                if (hasFrame)
+                {
+                    if (count % 500 == 0) 
+                    {
+                        setProcess(count);
+                    }
+                    
+                } else
+                {
+                    if (count % 2000 == 0) 
+                    {
+                        log.info("CollectionObject Records: "+count);
+                    }
+                }
 
                 try
                 {
@@ -2595,8 +2760,15 @@ public class GenericDBConversion
 
                 count++;
                 //if (count > 10) break;
+            } while (rs.next());
+            
+            if (hasFrame)
+            {
+                setProcess(count);
+            } else
+            {
+                log.info("Processed CollectionObject "+count+" records.");
             }
-            log.info("Processed CollectionObject "+count+" records.");
             rs.close();
 
             stmt.close();
@@ -3144,6 +3316,18 @@ public class GenericDBConversion
     	String sql = "SELECT GeographyID,ContinentOrOcean,Country,State,County FROM geography";
     	Statement statement = oldDBConn.createStatement();
     	ResultSet oldGeoRecords = statement.executeQuery(sql);
+        
+        if (hasFrame)
+        {
+            if (oldGeoRecords.last())
+            {
+                setProcess(0, oldGeoRecords.getRow()); 
+                oldGeoRecords.first();
+            }
+        } else
+        {
+            oldGeoRecords.first();
+        }
     	
     	// setup the root Geography record (planet Earth)
     	Geography planetEarth = new Geography();
@@ -3170,12 +3354,20 @@ public class GenericDBConversion
     	
     	int counter = 0;
     	// for each old record, convert the record
-    	while( oldGeoRecords.next() )
+    	do
     	{
-        	if( counter % 500 == 0 )
-        	{
-        		log.info("Converted " + counter + " geography records");
-        	}
+            if (counter % 500 == 0)
+            {
+                if (hasFrame)
+                {
+                    setProcess(counter);
+                    
+                } else
+            	{
+            		log.info("Converted " + counter + " geography records");
+            	}
+            }
+            
     		// grab the important data fields from the old record
     		int oldId = oldGeoRecords.getInt(1);
         	String cont = oldGeoRecords.getString(2);
@@ -3190,8 +3382,18 @@ public class GenericDBConversion
         	
         	// add this new ID to the ID mapper
         	geoIdMapper.put(oldId, newGeo.getGeographyId());
-    	}
+            
+    	} while (oldGeoRecords.next());
         
+        if (hasFrame)
+        {
+            setProcess(counter);
+            
+        } else
+        {
+            log.info("Converted " + counter + " geography records");
+        }
+      
         planetEarth.fixFullNameForAllDescendants();
         
     	HibernateUtil.commitTransaction();
@@ -3839,24 +4041,57 @@ public class GenericDBConversion
        {
            Statement stmtX = oldDBConn.createStatement();
            ResultSet rsX   = stmtX.executeQuery("select AddressID from address order by AddressID");
-           while (rsX.next())
+           
+           int cnt = 0;
+           if (rsX.last())
+           {
+               setProcess(0, rsX.getRow()); 
+               rsX.first();
+           }
+           
+           do
            {
                long addrId = rsX.getLong(1);
                oldAddrIds.put(addrId, 0L);
-           }
+               
+               if (cnt % 100 == 0)
+               {
+                  setProcess(0, cnt); 
+               }
+               cnt++;
+           } while (rsX.next());
+           
            rsX.close();
            stmtX.close();
-
+           
+           setProcess(0, 0); 
+           
            stmtX = oldDBConn.createStatement();
            rsX   = stmtX.executeQuery("select AgentID from agent order by AgentID");
-           while (rsX.next())
+           
+           cnt = 0;
+           if (rsX.last())
+           {
+               setProcess(0, rsX.getRow()); 
+               rsX.first();
+           }
+
+           do
            {
                long agentId = rsX.getLong(1);
                oldAgentIds.put(agentId, 0L);
-           }
+               if (cnt % 100 == 0)
+               {
+                  setProcess(0, cnt); 
+               }
+               cnt++;
+           } while (rsX.next());
+           
            rsX.close();
            stmtX.close();
-
+           
+           setProcess(0, 0); 
+           
            //////////////////////////////////////////////////////////////////////////////////
            // This does the part of AgentAddress where it has both an Address AND an Agent
            //////////////////////////////////////////////////////////////////////////////////
@@ -4298,7 +4533,7 @@ public class GenericDBConversion
                sqlStr.append(buildSelectFieldList(names, "address"));
                sqlStr.append(" from address where AddressId in (");
 
-               int cnt = 0;
+               cnt = 0;
                for (Enumeration<Long> e=oldAddrIds.keys();e.hasMoreElements();)
                {
 
@@ -4332,7 +4567,7 @@ public class GenericDBConversion
                sqlStr.append(buildSelectFieldList(names, "agent"));
                sqlStr.append(" from agent where AgentId in (");
 
-               int cnt = 0;
+               cnt = 0;
                for (Enumeration<Long> e=oldAgentIds.keys();e.hasMoreElements();)
                {
 

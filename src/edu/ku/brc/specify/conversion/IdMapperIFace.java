@@ -63,6 +63,12 @@ public interface IdMapperIFace
      * @return the number of entries in the mapping table
      */
     public int size();
+    
+    /**
+     * Sets UI frame for progress.
+     * @param frame the frame
+     */
+    public void setFrame(SpecifyDBConvFrame frame);
 
 
 }

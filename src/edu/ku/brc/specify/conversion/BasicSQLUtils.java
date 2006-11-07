@@ -59,6 +59,8 @@ public class BasicSQLUtils
     protected static Map<String, String> ignoreMappingFieldIDs   = null;
 
     protected static Connection dbConn = null;  // (it may be shared so don't close)
+    
+    protected static SpecifyDBConvFrame   frame = null;
 
     /**
      * Singleton
@@ -93,7 +95,41 @@ public class BasicSQLUtils
     {
         return showMappingError;
     }
-
+    
+    /**
+     * Sets a UI feedback frame.
+     * @param frame the frame
+     */
+    public static void setFrame(final SpecifyDBConvFrame frame)
+    {
+        BasicSQLUtils.frame = frame;
+    }
+    
+    /**
+     * Sets min to max.
+     * @param min min
+     * @param max max
+     */
+    public static void setProcess(final int min, final int max)
+    {
+        if (frame != null)
+        {
+            frame.setProcess(min, max);
+        }
+    }
+    
+    /**
+     * Sets the value.
+     * @param value the value
+     */
+    public static void setProcess(final int value)
+    {
+        if (frame != null)
+        {
+            frame.setProcess(value);
+        }
+    }
+    
     /**
      * Creates or clears and fills a list
      * @param fieldNames the list of names, can be null then the list is cleared and nulled out
@@ -585,10 +621,17 @@ public class BasicSQLUtils
     {
         IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
 
+        if (frame != null)
+        {
+            frame.setDesc("Copying Table "+fromTableName);
+        }
+
         List<String> fromFieldNameList = new ArrayList<String>();
         getFieldNamesFromSchema(fromConn, fromTableName, fromFieldNameList);
 
         String sqlStr = sql + " order by " +  fromTableName + "." + fromFieldNameList.get(0);
+        
+        setProcess(0, getNumRecords(fromConn, fromTableName));
 
         String id = "";
         try
@@ -857,7 +900,20 @@ public class BasicSQLUtils
 
                 }
                 str.append(")");
-                if (count % 2000 == 0) log.info(toTableName + " processed: " + count);
+                if (frame != null)
+                {
+                    if (count % 500 == 0)
+                    {
+                        frame.setProcess(count);
+                    }
+                    
+                } else
+                {
+                    if (count % 2000 == 0)
+                    {
+                        log.info(toTableName + " processed: " + count);
+                    }                        
+                }
                 Statement updateStatement = toConn.createStatement();
                 exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
                 int retVal = exeUpdateCmd(updateStatement, str.toString());
@@ -874,7 +930,15 @@ public class BasicSQLUtils
                 count++;
                 // if (count == 1) break;
             }
-            log.info(fromTableName + " processed " + count + " records.");
+            
+            if (frame != null)
+            {
+                frame.setProcess(count);
+               
+            } else
+            {
+                log.info(fromTableName + " processed " + count + " records.");         
+            }            
 
             rs.close();
             stmt.clearBatch();

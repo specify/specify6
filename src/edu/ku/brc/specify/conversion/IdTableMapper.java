@@ -76,10 +76,24 @@ public class IdTableMapper extends IdHashMapper
         this.sql = sqlArg;
 
         BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
+        if (frame != null)
+        {
+            frame.setDesc("Mapping "+mapTableName);
+        }
+        
         try
         {
             Statement stmtOld = oldConn.createStatement();
             ResultSet rs      = stmtOld.executeQuery(sql);
+            
+            if (rs.last())
+            {
+                if (frame != null)
+                {
+                   frame.setProcess(0, rs.getRow()); 
+                }
+            }            
+            
             if (rs.first())
             {
                 int newIndex = 1;
@@ -87,14 +101,25 @@ public class IdTableMapper extends IdHashMapper
                 {
                     int oldIndex = rs.getInt(1);
                     put(oldIndex, newIndex++);
-                    if (newIndex % 2000 == 0)
+                    
+                    if (frame != null)
                     {
-                        log.info("Mapped "+newIndex+" records from "+tableName);
+                        if (newIndex % 500 == 0)
+                        {
+                            frame.setProcess(newIndex);
+                        }
+                        
+                    } else
+                    {
+                        if (newIndex % 2000 == 0)
+                        {
+                            log.debug("Mapped "+newIndex+" records from "+tableName);
+                        }                        
                     }
 
                 } while (rs.next());
                 log.info("Mapped "+newIndex+" records from "+tableName);
-
+                
             } else
             {
                 log.info("No records to map in "+tableName);
@@ -106,6 +131,11 @@ public class IdTableMapper extends IdHashMapper
             ex.printStackTrace();
             log.error(ex);
             throw new RuntimeException(ex);
+        }
+        
+        if (frame != null)
+        {
+           frame.setProcess(0, 0); 
         }
     }
 

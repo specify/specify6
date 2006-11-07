@@ -39,12 +39,21 @@ public class IdMapperMgr
     protected Connection                      oldConn = null;
     protected Connection                      newConn = null;
     protected Hashtable<String, IdHashMapper> idMappers = new Hashtable<String, IdHashMapper>();
-    
+    protected SpecifyDBConvFrame              frame     = null;
     /**
      * Constructor.
      */
     public IdMapperMgr()
     {
+    }
+    
+    /**
+     * Sets the progress frame.
+     * @param frame the frame
+     */
+    public void setFrame(final SpecifyDBConvFrame frame)
+    {
+        this.frame = frame;
     }
     
     /**
@@ -83,6 +92,7 @@ public class IdMapperMgr
 
         IdTableMapper idMapper = new IdTableMapper(name.toLowerCase(), idName, sql);
         idMappers.put(idMapper.getName(), idMapper);
+        idMapper.setFrame(frame);
         return idMapper;
     }
     
@@ -115,6 +125,7 @@ public class IdMapperMgr
         
         IdHashMapper idMapper = new IdHashMapper(tableName.toLowerCase(), sql);
         idMappers.put(idMapper.getName(), idMapper);
+        idMapper.setFrame(frame);
         return idMapper;
     }
     

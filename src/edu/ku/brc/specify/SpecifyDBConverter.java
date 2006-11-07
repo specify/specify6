@@ -22,6 +22,8 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -42,6 +44,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
+import edu.ku.brc.specify.conversion.SpecifyDBConvFrame;
 import edu.ku.brc.specify.conversion.TableStats;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -59,8 +62,6 @@ import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.util.Nameable;
-import edu.ku.brc.util.Rankable;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -79,6 +80,12 @@ public class SpecifyDBConverter
     protected static SimpleDateFormat           dateFormatter     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static StringBuffer               strBuf            = new StringBuffer("");
     protected static Calendar                   calendar          = Calendar.getInstance();
+    
+    protected static List<String>               dbNamesToConvert  = null;
+    protected static int                        currentIndex      = 0;
+    protected static Hashtable<String, String>  old2NewDBNames    = null;
+    
+    protected static SpecifyDBConvFrame         frame             = null;
 
     /**
      * Constructor.
@@ -93,6 +100,28 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
+        /*
+        for (Enumeration e=LogManager.getCurrentLoggers(); e.hasMoreElements();)
+        {
+            Logger logger = (Logger)e.nextElement();
+            logger.setLevel(Level.ALL);
+            System.out.println("Setting "+ logger.getName() + " to " + logger.getLevel());
+        }*/
+        
+        Logger logger = LogManager.getLogger("edu.ku.brc");
+        if (logger != null)
+        {
+            logger.setLevel(Level.ALL);
+            System.out.println("Setting "+ logger.getName() + " to " + logger.getLevel());
+        }
+        
+        logger = LogManager.getLogger(edu.ku.brc.dbsupport.HibernateUtil.class);
+        if (logger != null)
+        {
+            logger.setLevel(Level.ERROR);
+            System.out.println("Setting "+ logger.getName() + " to " + logger.getLevel());
+        }
+        
         // Create Specify Application
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
@@ -111,7 +140,8 @@ public class SpecifyDBConverter
                     log.error("Can't change L&F: ", e);
                 }
                 
-                Hashtable<String, String> old2NewDBNames = new Hashtable<String, String>();
+                frame = new SpecifyDBConvFrame();
+                old2NewDBNames = new Hashtable<String, String>();
                 String[] names = {"Fish", "sp4_fish", "Accessions", "sp4_accessions", "Cranbrook", "sp4_cranbrook", "Ento", "sp4_ento"};
                 for (int i=0;i<names.length;i++)
                 {
@@ -119,20 +149,45 @@ public class SpecifyDBConverter
                 }
                 UICacheManager.setAppName("SpecifyDBConverter");
                 
-                for (String name : selectedDBsToConvert(names))
+                dbNamesToConvert = selectedDBsToConvert(names);
+                currentIndex = 0;
+                processDB();
+
+            }
+        });
+    }
+    
+    protected static void processDB()
+    {
+        
+        if (dbNamesToConvert.size() > 0 && currentIndex < dbNamesToConvert.size())
+        {
+            
+            final SwingWorker worker = new SwingWorker()
+            {
+                public Object construct()
                 {
                     try
                     {
-                        convertDB(old2NewDBNames.get(name), name.toLowerCase());
+                        String currentDBName = dbNamesToConvert.get(currentIndex++);
+                        frame.setTitle("Converting "+currentDBName+"...");
+                        convertDB(old2NewDBNames.get(currentDBName), currentDBName.toLowerCase());
                         
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
-                        return;
                     }
+                    return null;
                 }
-            }
-        });
+
+                //Runs on the event-dispatching thread.
+                public void finished()
+                {
+                    processDB();
+                }
+            };
+            worker.start();
+        }
     }
     
     /**
@@ -242,6 +297,14 @@ public class SpecifyDBConverter
         {
         	GenericDBConversion.setShouldCreateMapTables(true);
             GenericDBConversion.setShouldDeleteMapTables(true);
+            
+            frame.setOverall(0, 14);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    UIHelper.centerAndShow(frame);
+                }
+            });
 
             boolean doConvert = true;
             if (doConvert)
@@ -251,12 +314,16 @@ public class SpecifyDBConverter
                                                                          "jdbc:mysql://localhost/"+oldDatabaseName,
                                                                          "rods",
                                                                          "rods");
-
+                conversion.setFrame(frame);
+                
                 idMapperMgr = IdMapperMgr.getInstance();
                 idMapperMgr.setDBs(conversion.getOldDBConnection(), conversion.getNewDBConnection());
 
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
+
+
+                frame.setDesc("Converting Agents.");
 
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress
@@ -273,7 +340,9 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("address", "AddressID");
                     idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
                 }
+                frame.incOverall();
 
+                frame.setDesc("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
                 boolean doGTP = false;
@@ -282,7 +351,9 @@ public class SpecifyDBConverter
                 	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
                 	conversion.convertGTP(treeDef);
                 }
+                frame.incOverall();
 
+                frame.setDesc("Mapping Tables.");
                 boolean mapTables = true;
                 if (mapTables || doAll)
                 {
@@ -295,7 +366,9 @@ public class SpecifyDBConverter
                     conversion.mapIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
+                frame.incOverall();
 
+                frame.setDesc("Converting CollectionObjectDefs.");
                 boolean convertCatalogSeriesDef = false;
                 if (convertCatalogSeriesDef || doAll)
                 {
@@ -308,20 +381,26 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("CatalogSeriesDefinition", "CatalogSeriesDefinitionID");
                     idMapperMgr.addTableMapper("CollectionObjectType", "CollectionObjectTypeID");
                 }
+                frame.incOverall();
 
 
+                frame.setDesc("Converting USYS Tables.");
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
                     conversion.convertUSYSTables();
                 }
+                frame.incOverall();
 
+                frame.setDesc("Copying Tables");
                 boolean copyTables = false;
                 if (copyTables || doAll)
                 {
                     conversion.copyTables();
                 }
+                frame.incOverall();
 
+                frame.setDesc("Converting CollectionObjects");
                 boolean doCollectionObjects = true;
                 if (doCollectionObjects || doAll)
                 {
@@ -332,11 +411,21 @@ public class SpecifyDBConverter
                         conversion.createPreparationRecords(prepTypeMap);
                     }
                     conversion.createCollectionRecords();
+                    frame.incOverall();
 
                     conversion.createDefaultDeterminationStatusRecords();
+                    frame.incOverall();
                     conversion.fixDeterminationStatus();
+                    frame.incOverall();
+                    
+                } else
+                {
+                    frame.incOverall();
+                    frame.incOverall();
+                    frame.incOverall();
                 }
 
+                frame.setDesc("Converting Taxonomy");
                 boolean doTaxonomy = false;
                 if( doTaxonomy || doAll )
                 {
@@ -379,20 +468,30 @@ public class SpecifyDBConverter
                     
                 	conversion.copyTaxonRecords();
                 }
+                frame.incOverall();
 
+                frame.setDesc("Converting Geography");
                 boolean doGeography = true;
-                if (doGeography || (doAll && !databaseName.startsWith("accessions")) )
+                if (!databaseName.startsWith("accessions") && (doGeography || doAll))
                 {
                 	GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                 	conversion.convertGeography(treeDef);
+                    frame.incOverall();
                 	conversion.convertLocality();
+                    frame.incOverall();
+                } else
+                {
+                    frame.incOverall();
+                    frame.incOverall();
                 }
 
+                frame.setDesc("Creating Location");
                 boolean doLocation = false;
                 if( doLocation || doAll )
                 {
                 	conversion.buildSampleLocationTreeDef();
                 }
+                frame.incOverall();
 
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
@@ -480,13 +579,16 @@ public class SpecifyDBConverter
             {
                 idMapperMgr.cleanup();
             }
-            log.info("Done.");
+            log.info("Done - " + databaseName);
+            frame.setDesc("Done - " + databaseName);
+            frame.incOverall();
+            frame.processDone();
 
         } catch (Exception ex)
         {
             ex.printStackTrace();
 
-            if (idMapperMgr != null && GenericDBConversion.shouldDeleteMapTables())
+            if (idMapperMgr != null && GenericDBConversion .shouldDeleteMapTables())
             {
                 idMapperMgr.cleanup();
             }

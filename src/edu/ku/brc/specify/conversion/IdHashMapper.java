@@ -42,7 +42,9 @@ public class IdHashMapper implements IdMapperIFace
     protected Connection      oldConn;
 
     protected String          mapTableName  = null;
-    protected boolean         showLogErrors = true;  
+    protected boolean         showLogErrors = true;
+    
+    protected SpecifyDBConvFrame frame      = null;
     
     /**
      * Default Constructor for those creating derived classes.
@@ -137,10 +139,28 @@ public class IdHashMapper implements IdMapperIFace
 
         BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
         
+        
+        if (frame != null)
+        {
+            frame.setDesc("Mapping "+mapTableName);
+        }
+        
         try
         {
+            if (frame != null)
+            {
+               frame.setProcess(0, 0); 
+            }
             Statement stmtOld = oldConn.createStatement();
-            ResultSet rs = stmtOld.executeQuery(sql);
+            ResultSet rs      = stmtOld.executeQuery(sql);
+            if (rs.last())
+            {
+                if (frame != null)
+                {
+                   frame.setProcess(0, rs.getRow()); 
+                }
+            }
+            
             if (rs.first())
             {
                 int count = 0;
@@ -151,15 +171,29 @@ public class IdHashMapper implements IdMapperIFace
                     
                     put(oldIndex, newIndex);
                     
-                    if (count % 2000 == 0)
+                    if (frame != null)
                     {
-                        log.info("Mapped "+count+" records from "+tableName);
+                        if (count % 500 == 0)
+                        {
+                            frame.setProcess(count);
+                        }
+                        
+                    } else
+                    {
+                        if (count % 2000 == 0)
+                        {
+                            log.debug("Mapped "+count+" records from "+tableName);
+                        }                        
                     }
                     count++;
                     
                 } while (rs.next());
                 
                 log.info("Mapped "+count+" records from "+tableName);
+                if (frame != null)
+                {
+                   frame.setProcess(0, 0); 
+                }
 
             } else
             {
@@ -172,6 +206,11 @@ public class IdHashMapper implements IdMapperIFace
             ex.printStackTrace();
             log.error(ex);
             throw new RuntimeException(ex);
+        }
+        
+        if (frame != null)
+        {
+           frame.setProcess(0, 0); 
         }
 
     }
@@ -304,6 +343,11 @@ public class IdHashMapper implements IdMapperIFace
     public String getSql()
     {
         return sql;
+    }
+    
+    public void setFrame(SpecifyDBConvFrame frame)
+    {
+        this.frame = frame;
     }
     
     
