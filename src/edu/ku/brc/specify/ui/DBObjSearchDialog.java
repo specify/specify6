@@ -29,7 +29,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -54,6 +53,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -110,9 +110,9 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
 
     protected Hashtable<String, ExpressResultsTableInfo> tables = new Hashtable<String, ExpressResultsTableInfo>();
     protected ExpressResultsTableInfo  tableInfo;
-    protected ExpressTableResultsBase  etrb;
+    protected ExpressTableResultsBase  etrb = null;
 
-    protected List<Long>     idList      = null;
+    protected List<Long>     idList         = null;
     protected String         sqlStr;
 
     protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
@@ -140,31 +140,27 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         this.idFieldName = idFieldName;  
         this.searchName  = searchName;  
 
-        Hashtable<String, ExpressResultsTableInfo> tmpTables = ExpressSearchTask.getTableInfoHash();
-        for (Enumeration<ExpressResultsTableInfo> e=tmpTables.elements();e.hasMoreElements();)
-        {
-            ExpressResultsTableInfo tblInfo = e.nextElement();
-            log.info(tblInfo.getId()+" ["+tblInfo.getName()+"]["+searchName+"]");
-            if (tblInfo.getName().equals(searchName))
-            {
-                tableInfo = tblInfo;
-                tableInfo.setViewSQLOverridden(true);
-                tables.put(tableInfo.getTableId(), tableInfo);
-                sqlStr = tableInfo.getViewSql();
-            }
-        }
-        
-        if (tableInfo == null)
-        {
-            throw new RuntimeException("Couldn't find search name["+searchName+"] in the search_config.xml");
-        }
 
-        createUI(viewSetName, viewName, title);
-        
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
+        ExpressResultsTableInfo tblInfo = ExpressSearchTask.getTableInfoByName(searchName);
+        if (tblInfo != null)
+        {
+           tableInfo = tblInfo;
+           tableInfo.setViewSQLOverridden(true);
+           
+           tables.put(tableInfo.getTableId(), tableInfo);
+           
+           sqlStr = tableInfo.getViewSql();
 
+           createUI(viewSetName, viewName, title);
+           
+           setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+           setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+           this.setAlwaysOnTop(true);
+           
+       } else
+       {
+           throw new RuntimeException("Couldn't find search name["+searchName+"] in the search_config.xml");
+       }
 
     }
 
@@ -210,11 +206,14 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                         log.debug("DataMap was null for Column Name["+colName+"] make sure there is a field of this name in the form.");
                     }
                 }
+                
                 String fullSQL = sqlStr.replace("%s", strBuf.toString());
                 tableInfo.setViewSql(fullSQL);
                 log.debug(fullSQL);
                 setUIEnabled(false);
-                addSearchResults(tableInfo, null);
+                
+                ExpressSearchResults results = new ExpressSearchResults(tableInfo.getId(), null, tableInfo);
+                addSearchResults(results, null);
             }
         };
 
@@ -321,15 +320,20 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.core.ExpressSearchResults, org.apache.lucene.search.Hits)
      */
-    public void addSearchResults(final ExpressResultsTableInfo tblInfo, final Hits hits)
+    public void addSearchResults(final ExpressSearchResults results, final Hits hits)
     {
         idList = null;
         
         updateUI();
 
-        contentPanel.add(etrb = new ExpressTableResults(this, tblInfo, false));
+        if (etrb != null)
+        {
+            contentPanel.remove(etrb);
+            etrb.cleanUp();
+        }
+        contentPanel.add(etrb = new ExpressTableResults(this, results, false));
         
         table = etrb.getTable();
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -362,8 +366,10 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.af.tasks.subpane.ExpressTableResultsBase)
      */
-    public void removeTable(ExpressTableResultsBase etrbTable)
+    public void removeTable(final ExpressTableResultsBase etrbTable)
     {
+        etrbTable.cleanUp();
+        
         contentPanel.remove(etrbTable);
         contentPanel.invalidate();
         contentPanel.doLayout();
@@ -373,6 +379,15 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         scrollPane.doLayout();
         scrollPane.repaint();
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
+     */
+    public void addTable(final ExpressTableResultsBase etrBase)
+    {
+        // It has already been added so don't do anything
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#revalidateScroll()

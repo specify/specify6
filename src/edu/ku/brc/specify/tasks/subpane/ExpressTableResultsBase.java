@@ -41,6 +41,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -78,11 +79,13 @@ public abstract class ExpressTableResultsBase extends JPanel
     protected GradiantButton           showTopNumEntriesBtn;
     protected int                      rowCount       = 0;
     protected boolean                  showingAllRows = false;
+    protected boolean                  hasResults     = false;
 
     protected JPanel                   morePanel      = null;
     protected Color                    bannerColor    = new Color(30, 144, 255);    // XXX PREF
     protected int                      topNumEntries  = 7;
     protected String[]                 colLabels;
+    protected ExpressSearchResults     results;
     protected ExpressResultsTableInfo  tableInfo;
 
     /**
@@ -92,13 +95,14 @@ public abstract class ExpressTableResultsBase extends JPanel
      * @param installServices indicates whether services should be installed
      */
     public ExpressTableResultsBase(final ExpressSearchResultsPaneIFace esrPane,
-                                   final ExpressResultsTableInfo tableInfo,
-                                   final boolean installServices)
+                                   final ExpressSearchResults          results,
+                                   final boolean                       installServices)
     {
         super(new BorderLayout());
 
         this.esrPane     = esrPane;
-        this.tableInfo   = tableInfo;
+        this.results     = results;
+        this.tableInfo   = results.getTableInfo();
         this.bannerColor = tableInfo.getColor();
 
         table = new JTable();
@@ -224,6 +228,38 @@ public abstract class ExpressTableResultsBase extends JPanel
 
             }
         });
+    }
+
+    /**
+     * Returns the ExpressSearchResults object.
+     * @return the ExpressSearchResults object.
+     */
+    public ExpressSearchResults getResults()
+    {
+        return results;
+    }
+
+    /**
+     * Returns true if there were results.
+     * @return true if there were results.
+     */
+    public boolean hasResults()
+    {
+        return hasResults;
+    }
+    
+    /**
+     * Cleans up references to other objects.
+     */
+    public void cleanUp()
+    {
+        if (results != null)
+        {
+            results.cleanUp();
+        }
+        esrPane   = null;
+        results   = null;
+        tableInfo = null;
     }
 
     /**

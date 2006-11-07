@@ -23,6 +23,8 @@
 	    
 		<!-- Use the Hibernate built-in pool for tests. -->
 		<property name="hibernate.connection.pool_size">5</property>
+		<property name="hibernate.use_identifer_rollback">true</property>
+		
 		
         <!-- Use JTA for Transactions -->
         <!--
@@ -128,13 +130,32 @@
         <collection-cache collection="org.hibernate.auction.model.Category.items" usage="read-write"/>
         <collection-cache collection="org.hibernate.auction.model.Item.bids" usage="read-write"/>
         -->
-        
+		
+		<!--
+		<event type="post-commit-update">
+			<listener class="edu.ku.brc.specify.dbsupport.DBFlushEventListener"/>
+		</event> 
+		-->
+		
 	    <!--     
 	    <listener type="save" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
 	    <listener type="save-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
 	    <listener type="flush" class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" />
 	    -->
 	    
+	    <!-- 
+		<listener type="post-update" class="edu.ku.brc.specify.dbsupport.PostUpdateEventListener" />
+		<listener type="post-insert" class="edu.ku.brc.specify.dbsupport.PostInsertEventListener" />
+		<listener type="post-delete" class="edu.ku.brc.specify.dbsupport.PostDeleteEventListener" />
+		-->
+		
+		<!--
+		<listener type="post-commit-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
+		<listener type="post-commit-insert" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
+		<listener type="post-commit-delete" class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" /> 
+		 -->
+		
+		
 	</session-factory>
 
 </hibernate-configuration>

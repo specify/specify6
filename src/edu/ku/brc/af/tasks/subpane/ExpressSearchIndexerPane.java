@@ -441,7 +441,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         Statement  dbStatement  = null;
         boolean    useHitsCache = tableInfo.isUseHitsCache();
         
-        ExpressResultsTableInfo.ColInfo colInfo[] = tableInfo.getCols();
+        ExpressResultsTableInfo.ColInfo     colInfo[]     = tableInfo.getCols();
+        ExpressResultsTableInfo.JoinColInfo joinColInfo[] = tableInfo.getJoins();
 
         StringBuilder strBuf = new StringBuilder(128);
 
@@ -521,6 +522,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         if (useHitsCache)
                         {
                             strBuf.setLength(0);
+                            
+                            for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                            {
+                                doc.add(new Field(jci.getJoinTableId(), rs.getString(jci.getPosition()), Field.Store.YES, Field.Index.UN_TOKENIZED));
+                            }
+                            
                             for (int i=0;i<colInfo.length;i++)
                             {
                                 ExpressResultsTableInfo.ColInfo ci = colInfo[i];
@@ -561,6 +568,15 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                         } else
                         {
+                            for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                            {
+                                //if (jci.getJoinTableId().equals("5"))
+                                //{
+                                //    System.out.println(jci.getJoinTableId()+" "+rs.getString(jci.getPosition()));
+                                //}
+                                doc.add(new Field(jci.getJoinTableId(), rs.getString(jci.getPosition()), Field.Store.YES, Field.Index.UN_TOKENIZED));
+                            }
+                            
                             for (int i=0;i<colInfo.length;i++)
                             {
                                 ExpressResultsTableInfo.ColInfo ci = colInfo[i];
@@ -941,10 +957,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             int indexerCnt = 0;
             for (Object obj : tables)
             {
-                Element tableElement = (Element)obj;
-                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
-
-                if (isNotEmpty(tableInfo.getBuildSql()))
+                Element                  tableElement = (Element)obj;
+                ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
+                
+                if (tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
                 {
                     log.debug("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
                     indvLabel.setText(tableInfo.getTitle());

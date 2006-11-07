@@ -129,6 +129,13 @@ public class PickList implements java.io.Serializable
         this.items = items;
     }
 
+    public PickListItem addPickListItem(final String title, final String value)
+    {
+        PickListItem pli = new PickListItem(title, value, new Date());
+        items.add(pli);
+        return pli;
+    }
+
     public PickListItem addPickListItem(final PickListItem item)
     {
         items.add(item);

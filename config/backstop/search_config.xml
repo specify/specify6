@@ -4,46 +4,46 @@
     <!--      These are for Express Search      -->
     <!-- ************************************** -->
     <express>
-        <table id="1" tableid="1" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255">
-        <outofdate>
-            <table name="collectionobject" title="Collection Object"/>
-            <table name="determination" title="Determination"/>
-            <table name="taxon" title="Taxon"/>
-        </outofdate>
-        <index>
-            <sql>
-                <![CDATA[SELECT ColFieldsDef FROM collectionobject INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID INNER JOIN taxon ON taxon.TaxonID = determination.TaxonID]]>
-            </sql>
-            <cols>
-               <col pos="1" id="true">collectionobject.CollectionObjectID</col>
-               <col pos="2">collectionobject.CatalogNumber</col>
-               <col pos="3">collectionobject.CatalogedDate</col>
-               <col pos="4">taxon.FullName</col>
-               <join>determination.CollectionObjectID</join>
-               <join>determination.TaxonID</join>
-            </cols>
-        </index>
-        <detailView icon="ColObj">
-            <sql>
-                <![CDATA[SELECT collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName FROM collectionobject INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID INNER JOIN taxon ON taxon.TaxonID = determination.TaxonID WHERE collectionobject.CollectionObjectID IN (%s)]]>
-            </sql>
-            <captions>
-                <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
-                <caption col="collectionobject.CatalogNumber" text="Catalog Number"/>
-                <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
-                <caption col="taxon.FullName" text="Taxon Name"/>
-            </captions>
-            <recordset tabletype="1" col="1"/>
-        </detailView>
-      </table>
+        <table id="1" tableid="1" indexed="true" usehitscache="false" name="Collection Object" title="Collection Object" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="collectionobject" title="Collection Object"/>
+                <table name="determination" title="Determination"/>
+                <table name="taxon" title="Taxon"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef From collectionobject]]>
+                </sql>
+                <cols>
+                   <col pos="1" id="true">CollectionObjectID</col>
+                   <col pos="2">CatalogNumber</col>
+                   <col pos="3">CatalogedDate</col>
+                   <col pos="4">FieldNumber</col>
+                </cols>
+            </index>
+            <detailView icon="ColObj">
+                <sql>
+                    <![CDATA[SELECT CollectionObjectID, CatalogNumber, CatalogedDate, FieldNumber From collectionobject where CollectionObjectID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="CollectionObjectID" text="CollectionObjectID" visible="false"/>
+                    <caption col="CatalogNumber" text="Catalog Number"/>
+                    <caption col="CatalogedDate" text="Cataloged Date"/>
+                    <caption col="FieldNumber" text="Field Number"/>
+                </captions>
+                <recordset tabletype="1" col="1"/>
+            </detailView>
+        </table>
+
     
-        <table id="2" tableid="2" name="locality" title="Locality" priority="1" color="30, 144, 255">
+        <table id="2" tableid="2" indexed="true" name="locality" title="Locality" priority="1" color="30, 144, 255">
         <outofdate>
             <table name="locality" title="Locality"/>
         </outofdate>
         <index>
             <sql>
-                <![CDATA[SELECT ColFieldsDef FROM locality;]]>
+                <![CDATA[select ColFieldsDef from locality]]>
+
             </sql>
             <cols>
                 <col pos="1" id="true">LocalityID</col>
@@ -65,7 +65,7 @@
       </table>
     
     
-        <table id="3" tableid="3" name="geography" title="Geography" priority="1" color="30, 144, 255">
+        <table id="3" tableid="3" indexed="true" name="geography" title="Geography" priority="1" color="30, 144, 255">
         <outofdate>
             <table name="geography" title="Geography"/>
         </outofdate>
@@ -95,7 +95,7 @@
       </table>
       -->
     
-        <table id="4" tableid="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
+        <table id="4" tableid="4" indexed="true" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
             >
         <outofdate>
             <table name="taxon" title="Taxon"/>
@@ -123,7 +123,7 @@
         </detailView>
       </table>
     
-        <table id="5" tableid="5" name="Agent" title="Agent" priority="1" color="30, 144, 255">
+        <table id="5" tableid="5" indexed="true" name="Agent" title="Agent" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="agent" title="Agent"/>
             </outofdate>
@@ -150,7 +150,7 @@
             </detailView>
         </table>
     
-        <table id="6" tableid="6" name="Permit" title="Permits" priority="1" color="30, 144, 255">
+        <table id="6" tableid="6" indexed="true" name="Permit" title="Permits" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="permit" title="Permits"/>
             </outofdate>
@@ -181,7 +181,7 @@
             </detailView>
         </table>
     
-        <table id="7" tableid="7" name="Accession" title="Accession" priority="1" color="30, 144, 255">
+        <table id="7" tableid="7" indexed="true" name="Accession" title="Accession" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="accession" title="Accessions"/>
             </outofdate>
@@ -214,7 +214,7 @@
             </detailView>
         </table>
     
-        <table id="8" tableid="8" name="Address" title="Address" priority="1" color="30, 144, 255">
+        <table id="8" tableid="8" indexed="true" name="Address" title="Address" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="address" title="Address"/>
             </outofdate>
@@ -246,19 +246,18 @@
             </detailView>
         </table>
     
-        <table id="9" tableid="9" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255">
+        <table id="9" tableid="9" indexed="false" usehitscache="false" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="determination" title="Determination"/>
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[SELECT ColFieldsDef FROM
-    collectionobject
-    INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
-    INNER JOIN agent ON determination.DeterminerID = agent.AgentID
-    INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID 
-    INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
-    WHERE determinationstatus.DeterminationStatusID = 2]]>
+                    <![CDATA[SELECT ColFieldsDef From collectionobject 
+Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
+Inner Join agent ON determination.DeterminerID = agent.AgentID 
+Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
+Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
+where determinationstatus.DeterminationStatusID = 2]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">collectionobject.CollectionObjectID</col>
@@ -266,6 +265,14 @@
                     <col pos="3">taxon.CommonName</col>
                     <col pos="4">agent.LastName</col>
                     <col pos="5">agent.FirstName</col>
+                    
+                    <join pos="6" tableid="1">collectionobject.CollectionObjectID</join>
+                    <join pos="7" tableid="9">determination.CollectionObjectID</join>
+                    <join pos="8" tableid="5">agent.AgentID</join>
+                    <join pos="9" tableid="9">determination.DeterminerID</join>
+                    <join pos="10" tableid="9">determination.DeterminationStatusID</join>
+                    <join pos="11" tableid="9">determination.TaxonID</join>
+                    <join pos="12" tableid="4">taxon.TaxonID</join>
                 </cols>
             </index>
             <detailView icon="Agent">
@@ -296,7 +303,7 @@ WHERE tx.CollectionObjectID IN (%s)]]>
             </detailView>
         </table>
     
-        <table id="10" tableid="10" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255">
+        <table id="10" tableid="10" indexed="false" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="collectingevent" title="Collecting Event"/>
             </outofdate>
@@ -312,11 +319,18 @@ WHERE tx.CollectionObjectID IN (%s)]]>
                     <col pos="5">locality.LocalityName</col>
                     <col pos="6">locality.Township</col>
                     <col pos="7">locality.Section</col>
+                    
+                    <join pos="8" tableid="1">collectingevent.CollectingEventID</join>
+                    <join pos="9" tableid="10">collectingevent.LocalityID</join>
+                    <join pos="9" tableid="2">locality.LocalityID</join>
                 </cols>
             </index>
             <detailView icon="ColEvent">
                 <sql>
-                    <![CDATA[SELECT locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, locality.Longitude1, collectingevent.CollectingEventID  FROM collectingevent INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID WHERE collectingevent.CollectingEventID IN (%s) order by StartDate]]>
+                    <![CDATA[SELECT locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, 
+locality.Longitude1, collectingevent.CollectingEventID From collectingevent 
+Inner Join locality ON collectingevent.LocalityID = locality.LocalityID 
+where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 </sql>
                 <captions>
                     <caption col="LocalityName" text="Locality Name"/>
@@ -331,7 +345,7 @@ WHERE tx.CollectionObjectID IN (%s)]]>
         </table>
     
     
-        <table id="11" tableid="10" name="Collecting Event" title="Collecting Events" priority="1" color="30, 144, 255">
+        <table id="11" tableid="10" indexed="true" name="Collecting Event" title="Collecting Events" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="collectingevent" title="Collecting Event"/>
             </outofdate>
@@ -362,8 +376,41 @@ WHERE tx.CollectionObjectID IN (%s)]]>
             </detailView>
         </table>
       
-        
-        <table id="12" tableid="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
+      <!--
+        <table id="12" tableid="1" indexed="false" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="collectionobject" title="Collection Object"/>
+                <table name="determination" title="Determination"/>
+                <table name="taxon" title="Taxon"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">collectionobject.CollectionObjectID</col>
+                    <col pos="2">collectionobject.CatalogNumber</col>
+                    <col pos="3">collectionobject.CatalogedDate</col>
+                    <col pos="4">taxon.FullName</col>
+                    <join>determination.CollectionObjectID</join>
+                    <join>determination.TaxonID</join>
+                </cols>
+            </index>
+            <detailView icon="ColObj">
+                <sql>
+                    <![CDATA[SELECT collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
+                    <caption col="collectionobject.CatalogNumber" text="Catalog Number"/>
+                    <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
+                    <caption col="taxon.FullName" text="Taxon Name"/>
+                </captions>
+                <recordset tabletype="1" col="1"/>
+            </detailView>
+        </table>
+        -->
+        <table id="13" tableid="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
             <outofdate/>
             <index>
                 <sql/>
@@ -381,7 +428,7 @@ WHERE tx.CollectionObjectID IN (%s)]]>
             </detailView>
         </table>
         
-        <table id="13" tableid="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107">
+        <table id="14" tableid="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107">
             <outofdate/>
             <index>
                 <sql/>
@@ -465,7 +512,7 @@ WHERE tx.CollectionObjectID IN (%s)]]>
     <!--  These are for Other Non-Express Search Searches  -->
     <!-- ************************************************* -->
     <generic>
-        <table id="14" tableid="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255">
+        <table id="15" tableid="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>
@@ -493,7 +540,7 @@ address.State, address.PostalCode, address.Country FROM agent  Left Join address
             </detailView>
         </table>
     
-        <table id="15" tableid="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255">
+        <table id="16" tableid="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>
@@ -518,7 +565,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
             </detailView>
         </table>
         
-        <table id="16" tableid="7" name="AccessionSearch" title="Accessions" priority="1" color="30, 144, 255">
+        <table id="17" tableid="7" name="AccessionSearch" title="Accessions" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>
@@ -540,9 +587,9 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                 </captions>
                 <recordset tabletype="6" col="1"/>
             </detailView>
-        </table>
-        
-        <table id="18" tableid="3" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255" expresssearch="false">
+        </table>  
+              
+        <table id="18" tableid="3" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>

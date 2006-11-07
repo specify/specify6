@@ -473,7 +473,7 @@ public class SpecifyDBConverter
 
                         conversion.convertBiologicalAttrs(colObjDef, null, null);
                 }
-                conversion.showStats();
+                //conversion.showStats();
             }
 
             if (idMapperMgr != null && GenericDBConversion.shouldDeleteMapTables())

@@ -208,7 +208,8 @@ public class BuildSampleDatabase
         agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "js"));
         agents.add(createAgent("Mr.", "James", "H", "Beach", "jb"));
         agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk"));
-        agents.add(createAgent("Mr.", "Rodney", "C", "Spears", "rs"));
+        agents.add(createAgent("Mr.", "Rod", "C", "Spears", "rs"));
+        agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc"));
         agents.add(createAgent("Mr.", "Wayne", "J", "Oppenheimer", "wjo"));
         agents.add(createAgent("Sir", "Dudley", "X", "Simmons", "dxs"));
         Agent ku = new Agent();
@@ -232,6 +233,7 @@ public class BuildSampleDatabase
         agents.get(0).setEmail("beach@ku.edu");
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         addrs.add(createAddress(agents.get(3), "1335511 Inverness", null, "Lawrence", "KS", "USA", "66047"));
+        addrs.add(createAddress(agents.get(4), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
         addrs.add(createAddress(agents.get(5), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
 
@@ -345,8 +347,8 @@ public class BuildSampleDatabase
         determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(11), current, recent));
         determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(12), current, recent));
         determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(13), current, recent));
-        determs.add(createDetermination(collObjs.get(6), agents.get(0), (Taxon)taxa.get(14), current, recent));
-        determs.add(createDetermination(collObjs.get(7), agents.get(0), (Taxon)taxa.get(15), current, recent));
+        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(14), current, recent));
+        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(15), current, recent));
         
         determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get( 8), notCurrent, longAgo));
         determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(15), notCurrent, whileBack));
@@ -354,6 +356,7 @@ public class BuildSampleDatabase
         determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(17), notCurrent, whileBack));
         determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(17), notCurrent, whileBack));
         determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(20), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(19), incorrect, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         dataObjects.add(current);
@@ -689,7 +692,7 @@ public class BuildSampleDatabase
         // 6
         newObjs.add(genus);
 
-        String[] speciesNames = { "asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "vivax" };
+        String[] speciesNames = { "asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "platostomus" };
         List<Object> kids = createTaxonChildren(taxonTreeDef, genus, speciesNames, defItemLevel3.getRankId());
         // 7, 8, 9, 10, 11, 12, 13
         newObjs.addAll(kids);

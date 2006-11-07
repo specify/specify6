@@ -8,6 +8,14 @@ package edu.ku.brc.dbsupport;
 
 import java.util.List;
 
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Nov 2, 2006
+ *
+ */
 public interface DataProviderSessionIFace
 {
     
@@ -28,6 +36,8 @@ public interface DataProviderSessionIFace
     
     public Object load(Class clsObj, Long id);
     
+    public Object get(Class clsObj, Long id);
+
     public Object getData(String sqlStr);
     
     //---------------------------
@@ -41,6 +51,8 @@ public interface DataProviderSessionIFace
     public void attach(Object dataObj);
     
     public boolean save(Object dataObj) throws Exception;
+    
+    public boolean refresh(Object dataObj) throws Exception;
     
     public boolean update(Object dataObj) throws Exception;
     

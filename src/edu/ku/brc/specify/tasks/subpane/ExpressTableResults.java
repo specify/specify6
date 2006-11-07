@@ -15,9 +15,13 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
+import java.sql.SQLException;
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
@@ -51,15 +55,38 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
      * @param installServices indicates whether services should be installed
      */
     public ExpressTableResults(final ExpressSearchResultsPaneIFace esrPane,
-                               final ExpressResultsTableInfo tableInfo,
-                               final boolean installServices)
+                               final ExpressSearchResults          results,
+                               final boolean                       installServices)
     {
-        super(esrPane, tableInfo, installServices);
+        super(esrPane, results, installServices);
+        
+        String sqlStr;
+        if (results.getJoinColTableId() != null)
+        {
+            sqlStr = results.getTableInfo().getUpdateSql(results.getJoinColTableId());
+            sqlStr = String.format(sqlStr, new Object[] {results.getRecIds().get(0)});
+            
+        } else
+        {
+            String vsql = tableInfo.getViewSql();
+            
+            Vector<Long> recIds = results.getRecIds();
+            StringBuffer idsStr = new StringBuffer(recIds.size()*8);
+            for (int i=0;i<recIds.size();i++)
+            {
+                if (i > 0) idsStr.append(',');
+                idsStr.append(recIds.elementAt(i).toString());
+            }
+            sqlStr = vsql.replace("%s", idsStr.toString());
+        }
 
-        System.err.println("["+tableInfo.getViewSql()+"]");
-        sqlExecutor = new SQLExecutionProcessor(this, tableInfo.getViewSql());
-        sqlExecutor.setAutoCloseConnection(false);
-        sqlExecutor.start();
+        System.err.println("["+sqlStr+"]");
+        if (StringUtils.isNotEmpty(sqlStr))
+        {
+            sqlExecutor = new SQLExecutionProcessor(this, sqlStr);
+            sqlExecutor.setAutoCloseConnection(false);
+            sqlExecutor.start();
+        }
 
     }
 
@@ -74,7 +101,18 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
         rsm.initializeDisplayIndexes();
         rsm.addDisplayIndexes(createIndexesArray(rows));
-
+    }
+    
+    
+    /**
+     * Cleans up references to other objects.
+     */
+    public void cleanUp()
+    {
+        super.cleanUp();
+        
+        resultSet   = null;
+        sqlExecutor = null;
     }
 
     //-----------------------------------------------------
@@ -88,32 +126,46 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
     {
         this.resultSet = resultSetArg;
 
-        ResultSetTableModelDM rsm = new ResultSetTableModelDM(resultSet);
-        table.setRowSelectionAllowed(true);
-        int[] visCols = tableInfo.getDisplayColIndexes();
-        if (visCols != null)
+        try
         {
-             rsm.addDisplayColIndexes(visCols);
-        }
-        rsm.setColumnNames(tableInfo.getColLabels());
-
-        table.setModel(rsm);
-
-        configColumns();
-
-        rowCount = rsm.getRowCount();
-        if (rowCount > topNumEntries)
+            hasResults = resultSetArg.first();
+            if (hasResults)
+            {
+                esrPane.addTable(this);
+                
+                ResultSetTableModelDM rsm = new ResultSetTableModelDM(resultSet);
+                table.setRowSelectionAllowed(true);
+                
+                int[] visCols = tableInfo.getDisplayColIndexes();
+                if (visCols != null)
+                {
+                     rsm.addDisplayColIndexes(visCols);
+                }
+                rsm.setColumnNames(tableInfo.getColLabels());
+        
+                table.setModel(rsm);
+        
+                configColumns();
+        
+                rowCount = rsm.getRowCount();
+                if (rowCount > topNumEntries)
+                {
+                    buildMorePanel();
+                }
+        
+                setDisplayRows(rowCount, topNumEntries);
+        
+                sqlExecutor = null;
+                invalidate();
+                doLayout();
+                UICacheManager.forceTopFrameRepaint();
+            }
+        } catch (SQLException ex)
         {
-            buildMorePanel();
+            log.error(ex);
+            hasResults = false;
         }
-
-        setDisplayRows(rowCount, topNumEntries);
-
-        sqlExecutor = null;
-        invalidate();
-        doLayout();
-        UICacheManager.forceTopFrameRepaint();
-
+           
     }
 
     /* (non-Javadoc)

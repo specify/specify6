@@ -47,7 +47,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     protected List<Object> deleteList     = new Vector<Object>();
     
     /**
-     * Creates a new Hibernate Session
+     * Creates a new Hibernate Session.
      */
     public HibernateDataProviderSession()
     {
@@ -57,14 +57,34 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#refresh(java.lang.Object)
+     */
+    public boolean refresh(Object dataObj) throws Exception
+    {
+        if (session != null)
+        {
+            System.err.println(session.hashCode());
+            session.refresh(dataObj);
+ 
+            return true;
+        }
+        
+        log.error("Session was null.");
+
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#delete(java.lang.Object)
      */
     public boolean delete(Object dataObj) throws Exception
     {
         if (session != null)
         {
+            System.err.println(session.hashCode());
             session.delete(dataObj);
-            return false;
+ 
+            return true;
         }
         
         log.error("Session was null.");
@@ -155,6 +175,21 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     //}
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#get(java.lang.Class, java.lang.Long)
+     */
+    public Object get(Class clsObj, Long id)
+    {
+        if (session != null)
+        {
+            return session.get(clsObj, id);
+        }
+        
+        log.error("Session was null.");
+
+        return null;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#load(java.lang.Class, java.lang.Long)
      */
     public Object load(Class clsObj, Long id)
@@ -193,6 +228,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         if (session != null)
         {
             session.evict(clsObject);
+            HibernateUtil.getSessionFactory().evict(clsObject);
+            
         } else
         {
             log.error("Session was null.");
@@ -327,6 +364,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         if (transaction != null)
         {
             transaction.rollback();
+            transaction = null;
             
         } else
         {

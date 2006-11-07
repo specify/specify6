@@ -126,11 +126,19 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     
 
 
+    /**
+     * Return the current session.
+     * @return the current session.
+     */
     public DataProviderSessionIFace getSession()
     {
         return session;
     }
 
+    /**
+     * Sets the current session.
+     * @param session the new session
+     */
     public void setSession(DataProviderSessionIFace session)
     {
         this.session = session;

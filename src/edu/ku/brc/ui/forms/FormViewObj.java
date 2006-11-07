@@ -56,6 +56,7 @@ import javax.swing.ListModel;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.StaleObjectStateException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -948,7 +949,45 @@ public class FormViewObj implements Viewable,
             formValidator.validateForm();
         }
     }
-
+    
+    /**
+     * The user tried to update or delete an object that was already changed by someone else. 
+     */
+    protected void recoverFromStaleObject(final String msgResStr)
+    {
+        JOptionPane.showMessageDialog(null, getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+        
+        //session.rollback();
+        
+        session.close();
+        
+        session = DataProviderFactory.getInstance().createSession();
+        //DataProviderFactory.getInstance().evict(dataObj.getClass()); 
+        
+        if (dataObj instanceof FormDataObjIFace)
+        {
+            Long id = ((FormDataObjIFace)dataObj).getId();
+            Class cls = dataObj.getClass();
+            dataObj = session.get(cls, id);
+            
+            
+        } else
+        {
+            dataObj = session.get(dataObj.getClass(), FormHelper.getId(dataObj));
+        }
+        
+        if (mvParent != null)
+        {
+            mvParent.setSession(session);
+            mvParent.setData(dataObj);
+            
+        } else
+        {
+            setSession(session);
+            this.setDataObj(dataObj);
+        }
+        this.setDataIntoUI();
+    }
 
     /**
      * Save any changes to the current object
@@ -998,23 +1037,8 @@ public class FormViewObj implements Viewable,
 
         } catch (StaleObjectException e) // was StaleObjectStateException
         {
-            JOptionPane.showMessageDialog(null, getResourceString("DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
-            
-            session.close();
-            
-            session = DataProviderFactory.getInstance().createSession();
-            dataObj = session.load(dataObj.getClass(), FormHelper.getId(dataObj));
-            
-            if (mvParent != null)
-            {
-                mvParent.setSession(session);
-                mvParent.setData(dataObj);
-            } else
-            {
-                setSession(session);
-                this.setDataObj(dataObj);
-            }
-            this.setDataIntoUI();
+            session.rollback();
+            recoverFromStaleObject("UPDATE_DATA_STALE");
             
         } catch (Exception e)
         {
@@ -1044,12 +1068,29 @@ public class FormViewObj implements Viewable,
             
             String delMsg = businessRules != null ? businessRules.getDeleteMsg(dataObj) : "";
 
+            boolean doClearObj = true;
             if (mvParent.isTopLevel())
             {
-                session.beginTransaction();
-                session.delete(dataObj);
-                session.commit();
-                session.flush();
+                try
+                {
+    
+                    session.beginTransaction();
+                    session.delete(dataObj);
+                    session.commit();
+                    session.flush();
+                    
+                } catch (edu.ku.brc.dbsupport.StaleObjectException e)
+                {
+                    doClearObj = false;
+                    session.rollback();
+                    recoverFromStaleObject("DELETE_DATA_STALE");
+                    
+                } catch (StaleObjectStateException e)
+                {
+                    doClearObj = false;
+                    session.rollback();
+                    recoverFromStaleObject("DELETE_DATA_STALE");
+                }
                 
             } else
             {
@@ -1060,39 +1101,47 @@ public class FormViewObj implements Viewable,
             
             log.debug("Session Flushed["+session.hashCode()+"]");
 
-            if (rsController != null)
+            if (doClearObj)
             {
-                int currInx = rsController.getCurrentIndex();
-                int newLen  = rsController.getLength() - 1;
-                int newInx  = Math.min(currInx, newLen-1);
-                
-                list.remove(dataObj); // remove from list
-                
-                rsController.setLength(newLen); // set new len for controller
-
-                if (newInx > -1 && list.size() > 0)
+                if (rsController != null)
                 {
-                    rsController.setIndex(newInx);
-                    dataObj = list.get(newInx);
+                    int currInx = rsController.getCurrentIndex();
+                    int newLen  = rsController.getLength() - 1;
+                    int newInx  = Math.min(currInx, newLen-1);
                     
-                    setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
+                    if (list != null)
+                    {
+                        list.remove(dataObj); // remove from list
+                    }
+                    
+                    rsController.setLength(newLen); // set new len for controller
+    
+                    if (newInx > -1 && (list == null || list.size() > 0))
+                    {
+                        rsController.setIndex(newInx);
+                        dataObj = list.get(newInx);
+                        
+                        setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
+                    } else 
+                    {
+                        setDataObj(null, true); // true means the dataObj is already in the current "list" of data items we are working with
+                    }
                 } else
                 {
-                    setDataObj(null, true); // true means the dataObj is already in the current "list" of data items we are working with
+                    setDataObj(null); 
                 }
+                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
             } else
             {
-                setDataObj(null); 
+                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(getResourceString("OBJ_NOT_DELETED"));
             }
-            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
 
 
         } catch (Exception e)
         {
             log.error("******* " + e);
             e.printStackTrace();
-            session.rollback();
-        }
+         }
     }
 
     /**

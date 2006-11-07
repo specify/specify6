@@ -378,7 +378,7 @@ public class BasicSQLUtils
 
         } else if (obj instanceof Date)
         {
-            return obj == null ? "NULL" :  '"'+dateTimeFormatter.format((Date)obj) + '"';
+            return '"'+dateTimeFormatter.format((Date)obj) + '"';
 
         } else if (obj instanceof Float)
         {
@@ -677,7 +677,7 @@ public class BasicSQLUtils
                         timestampModifiedCached = new Date(timestampCreatedCached.getTime());
                     } else
                     {
-                        timestampCreatedCached = new Date(timestampModifiedCached.getTime());
+                        timestampCreatedCached = timestampModifiedCached != null ? new Date(timestampModifiedCached.getTime()) : new Date();
                     }
                 } else 
                 {
@@ -736,7 +736,7 @@ public class BasicSQLUtils
                         if (i > 0) str.append(", ");
                         Object dataObj = rs.getObject(columnIndex);
 
-                        if (idMapperMgr != null && oldMappedColName.endsWith("ID"))
+                        if (idMapperMgr != null && oldMappedColName != null && oldMappedColName.endsWith("ID"))
                         {
                             IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
@@ -760,7 +760,7 @@ public class BasicSQLUtils
                             		dataObj = idMapper.get(oldPrimaryKeyId);
                             	}
                                 
-                                if (dataObj == null)
+                                if (dataObj == null && showMappingError)
                                 {
                                     log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"]");
                                 }

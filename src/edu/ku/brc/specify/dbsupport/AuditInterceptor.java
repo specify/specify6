@@ -31,7 +31,6 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
@@ -57,7 +56,9 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
     protected enum IndexAction {New, Update, Delete}
     
     protected ExpressSearchIndexer     indexer        = null;
-    protected Vector<FormDataObjIFace> newFormObjsList = new Vector<FormDataObjIFace>();
+    protected Vector<FormDataObjIFace> newFormObjsList    = new Vector<FormDataObjIFace>();
+    protected Vector<FormDataObjIFace> updateFormObjsList = new Vector<FormDataObjIFace>();
+    protected Vector<FormDataObjIFace> removeFormObjsList = new Vector<FormDataObjIFace>();
     
     
     /**
@@ -80,8 +81,19 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
                          Type[] types)
     {
         log.info("onDelete "+entity);
-        updateIndex(entity, IndexAction.Delete);
-
+        //updateIndex(entity, IndexAction.Delete);
+        if (entity instanceof FormDataObjIFace)
+        {
+            FormDataObjIFace formObj = (FormDataObjIFace)entity;
+            if (formObj.getId() == null)
+            {
+                removeFormObjsList.add(formObj);
+                
+            } else
+            {
+                updateIndex(formObj, IndexAction.Delete);        
+            }
+        }
     }
     
     /* (non-Javadoc)
@@ -117,7 +129,21 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
                                 Type[] types)
     {
         log.info("onFlushDirty "+entity);
-        updateIndex(entity, IndexAction.Update);
+        
+        //updateIndex(entity, IndexAction.Update);
+        
+        if (entity instanceof FormDataObjIFace)
+        {
+            FormDataObjIFace formObj = (FormDataObjIFace)entity;
+            if (formObj.getId() == null)
+            {
+                updateFormObjsList.add(formObj);
+                
+            } else
+            {
+                updateIndex(formObj, IndexAction.Update);        
+            }
+        }        
         
         return false; // Don't veto
     }
@@ -173,6 +199,8 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
     {
         //log.info("afterTransactionCompletion "+newFormObjsList.size());
         newFormObjsList.clear();
+        updateFormObjsList.clear();
+        newFormObjsList.clear();
     }
     
     /**
@@ -184,12 +212,14 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
     protected void update(final FormDataObjIFace        formObj, 
                           final ExpressResultsTableInfo tblInfo) throws IOException
     {
+        /*
         if (indexer == null)
         {
             indexer = new ExpressSearchIndexer(ExpressSearchTask.getIndexDirPath(), null);
         }
         
         IndexWriter writer = ExpressSearchIndexer.createIndexWriter(ExpressSearchTask.getIndexDirPath(), false); // false - do not force a new index to be created
+        
         
         String updateSQLStr = tblInfo.getUpdateSql();
         if (updateSQLStr != null)
@@ -205,6 +235,7 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
         }
 
         writer.close();
+        */
         
     }
     
@@ -216,54 +247,100 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
      */
     protected boolean updateIndex(final FormDataObjIFace formObj, final IndexAction action)
     {
-        Hashtable<String, ExpressResultsTableInfo> tableInfoHash = ExpressSearchTask.getTableInfoHash();
-        for (Enumeration<ExpressResultsTableInfo> e=tableInfoHash.elements();e.hasMoreElements();)
+        try
         {
-            ExpressResultsTableInfo tblInfo = e.nextElement();
-            if (tblInfo.isExpressSearch() && formObj.getTableId() == Integer.parseInt(tblInfo.getTableId()))
+            IndexReader   reader   = IndexReader.open(FSDirectory.getDirectory(ExpressSearchTask.getIndexDirPath(), false));
+            IndexSearcher searcher = new IndexSearcher(reader);
+            
+            Hashtable<String, ExpressResultsTableInfo> tableInfoHash = ExpressSearchTask.getTableInfoHash();
+            for (Enumeration<ExpressResultsTableInfo> e=tableInfoHash.elements();e.hasMoreElements();)
             {
-                try
+                ExpressResultsTableInfo tblInfo = e.nextElement();
+                
+                if (tblInfo.isExpressSearch())
                 {
-                    if (action == IndexAction.New)
+                    if (formObj.getTableId() == Integer.parseInt(tblInfo.getTableId()))
                     {
-                        update(formObj, tblInfo);
-                        
-                    } else if (action == IndexAction.Update || action == IndexAction.Delete)
-                    {
-                        IndexReader   reader   = IndexReader.open(FSDirectory.getDirectory(ExpressSearchTask.getIndexDirPath(), false));
-                        IndexSearcher searcher = new IndexSearcher(reader);
-                        
-                        Query query = new TermQuery(new Term("id", Long.toString(formObj.getId())));
-                        Hits  hits  = searcher.search(query);
-                        System.out.println("Hits: "+hits.length()+"  Query["+query.toString("contents")+"]");
-                        for (int i=0;i<hits.length();i++)
+                        if (action == IndexAction.New)
                         {
-                            Document doc = hits.doc(i);
-                            String   sid = doc.get("sid");
-                            System.out.println("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
-                            if (sid != null && sid.equals(tblInfo.getId()))
+                            update(formObj, tblInfo);
+                            
+                        } else if (action == IndexAction.Update || action == IndexAction.Delete)
+                        {
+                            
+                            Query query = new TermQuery(new Term("id", Long.toString(formObj.getId())));
+                            Hits  hits  = searcher.search(query);
+                            System.out.println("Hits: "+hits.length()+"  Query["+query.toString("contents")+"]");
+                            for (int i=0;i<hits.length();i++)
                             {
-                                System.out.println("sid: ["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
-                                System.out.println("Removing["+hits.id(i)+"] "+sid);
-                                
-                                reader.deleteDocument(hits.id(i));
-                                
-                                if (action == IndexAction.Update)
+                                Document doc = hits.doc(i);
+                                String   sid = doc.get("sid");
+                                System.out.println("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
+                                if (sid != null && sid.equals(tblInfo.getId()))
                                 {
-                                    update(formObj, tblInfo);
+                                    System.out.println("sid: ["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
+                                    System.out.println("Removing["+hits.id(i)+"] "+sid);
+                                    
+                                    reader.deleteDocument(hits.id(i));
+                                    
+                                    if (action == IndexAction.Update)
+                                    {
+                                        update(formObj, tblInfo);
+                                    }
                                 }
                             }
                         }
-                        searcher.close();
                     }
-                   
-                    return true;
                     
-                } catch (IOException ex)
-                {
-                    ex.printStackTrace();
+                    ExpressResultsTableInfo.JoinColInfo[] joinColInfo = tblInfo.getJoins();
+                    if (joinColInfo != null)
+                    {
+                        for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                        {
+                            if (jci.getJoinTableIdAsInt() == formObj.getTableId())
+                            {
+                                Query joinQuery = new TermQuery(new Term(jci.getJoinTableId(), Long.toString(formObj.getId())));
+                                Hits  joinHits  = searcher.search(joinQuery);
+                                System.out.println("Hits: "+joinHits.length()+"  Query["+joinQuery.toString("contents")+"]");
+                                for (int i=0;i<joinHits.length();i++)
+                                {
+                                    Document doc = joinHits.doc(i);
+                                    String   sid = doc.get("sid");
+                                    System.out.println("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
+                                    if (sid != null && sid.equals(tblInfo.getId()))
+                                    {
+                                        System.out.println("sid: ["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
+                                        System.out.println("Removing["+joinHits.id(i)+"] "+sid);
+                                        
+                                        //reader.deleteDocument(joinHits.id(i));
+                                        
+                                        if (action == IndexAction.Update)
+                                        {
+                                            update(formObj, tblInfo);
+                                        }
+                                    }
+                                }
+                                for (int i=0;i<joinHits.length();i++)
+                                {
+                                    Document doc = joinHits.doc(i);
+                                    String   sid = doc.get("sid");
+                                    if (sid != null && sid.equals(tblInfo.getId()))
+                                    {
+                                        reader.deleteDocument(joinHits.id(i));
+                                    }
+                                }
+
+                            }
+                        }
+                    }
                 }
             }
+            
+            searcher.close();
+                
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
         }
         return false;
     }

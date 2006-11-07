@@ -1,6 +1,9 @@
 package edu.ku.brc.dbsupport;
 
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -13,6 +16,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+
 
 
 /**
@@ -60,6 +64,8 @@ public class HibernateUtil {
     private static ThreadLocal<Object> threadTransaction  = new ThreadLocal<Object>();
 
     private static boolean             useThreadLocal     = true;
+    
+    private static Hashtable<String, Object> eventListeners = new Hashtable<String, Object>();
     
     //static {
     //    HibernateUtil.initialize();
@@ -171,6 +177,19 @@ public class HibernateUtil {
         //} 
     }
     
+    /**
+     * Adds Event Listeners.
+     * @param type the type of listener
+     * @param listener an instance of a listener
+     */
+    public static void setListener(final String type, Object listener)
+    {
+        eventListeners.put(type, listener);
+    }
+    
+    /**
+     * Initializes the Configuration.
+     */
     public static void initialize()
     {
         if (configuration != null)
@@ -185,6 +204,12 @@ public class HibernateUtil {
             if (auditInter != null)
             {
                 //configuration.setInterceptor(auditInter);
+            }
+            
+            for (Enumeration<String> e=eventListeners.keys();e.hasMoreElements();)
+            {
+                String key = e.nextElement();
+                configuration.setListener(key, eventListeners.get(key));
             }
             setHibernateLogonConfig(configuration);
             

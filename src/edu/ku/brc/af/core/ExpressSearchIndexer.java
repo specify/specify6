@@ -83,6 +83,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     protected Element                   esDOM             = null;
     protected double                    numRows            = 0;
     protected IndexWriter               optWriter          = null;
+    protected DateFormat                formatter    = new SimpleDateFormat("yyyyMMdd");
     
     protected long                      termsIndexed      = 0;
     protected boolean                   isCancelled       = false;
@@ -237,8 +238,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                               final int        index,
                               final String     fieldName,
                               final String     secondaryKey,
-                              final Class      objClass,
-                              final DateFormat formatter) throws SQLException
+                              final Class      objClass) throws SQLException
     {
         String value = null;
 
@@ -327,10 +327,10 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                               final int                     trigger,
                               final ResultSet               resultset) throws SQLException, IOException
     {
-        DateFormat formatter    = new SimpleDateFormat("yyyyMMdd");
         boolean    useHitsCache = tableInfo.isUseHitsCache();
         
-        ExpressResultsTableInfo.ColInfo colInfo[] = tableInfo.getCols();
+        ExpressResultsTableInfo.ColInfo     colInfo[]     = tableInfo.getCols();
+        ExpressResultsTableInfo.JoinColInfo joinColInfo[] = tableInfo.getJoins();
 
         StringBuilder strBuf = new StringBuilder(128);
 
@@ -370,11 +370,25 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 doc.add(new Field("id", resultset.getString(tableInfo.getIdColIndex()), Field.Store.YES, Field.Index.UN_TOKENIZED));
                 doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
                 doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
+                
+                if (true)
+                {
+                    System.out.println("id: "+doc.get("id"));
+                    System.out.println("sid: "+doc.get("sid"));
+                    System.out.println("class: "+doc.get("class"));
+                }
 
                 int cnt = 0;
                 if (useHitsCache)
                 {
                     strBuf.setLength(0);
+                    
+                    for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                    {
+                        doc.add(new Field(jci.getJoinTableId(), resultset.getString(jci.getPosition()), Field.Store.YES, Field.Index.NO));
+                    }
+
+                    
                     for (int i=0;i<colInfo.length;i++)
                     {
                         ExpressResultsTableInfo.ColInfo ci = colInfo[i];
@@ -384,8 +398,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                             String value = indexValue(doc, resultset, inx,
                                                       rsmd.getColumnName(inx),
                                                       ci.getSecondaryKey(),
-                                                      classes[inx],
-                                                      formatter);
+                                                      classes[inx]);
                             if (value != null)
                             {
                                 cnt++;
@@ -413,13 +426,17 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
                 } else
                 {
+                    for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                    {
+                        doc.add(new Field(jci.getJoinTableId(), resultset.getString(jci.getPosition()), Field.Store.YES, Field.Index.NO));
+                    }
+                    
                     for (int i=0;i<colInfo.length;i++)
                     {
                         ExpressResultsTableInfo.ColInfo ci = colInfo[i];
                         int inx = ci.getPosition();
 
-                        if (indexValue(doc, resultset, inx, rsmd.getColumnName(inx), ci.getSecondaryKey(),
-                                       classes[inx], formatter) != null)
+                        if (indexValue(doc, resultset, inx, rsmd.getColumnName(inx), ci.getSecondaryKey(), classes[inx]) != null)
                         {
                             cnt++;
                             termsIndexed++;

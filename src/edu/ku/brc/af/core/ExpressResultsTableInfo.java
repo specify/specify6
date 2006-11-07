@@ -16,14 +16,12 @@
 package edu.ku.brc.af.core;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UIHelper.getBoolean;
 
 import java.awt.Color;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -50,23 +48,24 @@ public class ExpressResultsTableInfo
     protected String                    title;
     protected String                    name;
     protected boolean                   isExpressSearch = true;
+    protected boolean                   isIndexed       = true;
 
     // These are used for viewing the results
     protected String                    iconName      = null;
     protected String                    viewSql;
     protected boolean                   viewSQLOverridden = false;
-    protected Vector<Integer>           recIds        = new Vector<Integer>();
     protected ColInfo[]                 cols          = null;
+    protected JoinColInfo[]             joinCols      = null;
 
     // These data members are use for indexing
-    protected boolean                   useHitsCache = false;
+    protected boolean                   useHitsCache  = false;
+    protected String                    patternSql;
     protected String                    buildSql;
     protected String                    updateSql;
-    protected String[]                  colNames     = null;
-    protected String[]                  colLabels    = null;
-    protected boolean[]                 visCols      = null;
-    protected Hashtable<String, String> outOfDate    = new Hashtable<String, String>();
-    protected Vector<Integer>           indexes      = new Vector<Integer>();
+    protected String[]                  colNames      = null;
+    protected String[]                  colLabels     = null;
+    protected boolean[]                 visCols       = null;
+    protected Hashtable<String, String> outOfDate     = new Hashtable<String, String>();
 
     //protected int                       tableType;
     protected int                       recordSetColumnInx;
@@ -123,9 +122,9 @@ public class ExpressResultsTableInfo
         priority        = getAttr(tableElement, "priority", 1);
         color           = parseRGB(tableElement.attributeValue("color"));
 
-        String uhcStr = tableElement.attributeValue("usehitscache");
-        useHitsCache  = uhcStr == null || uhcStr.length() == 0 ? false : getBoolean(uhcStr);
-
+        isIndexed    = getAttr(tableElement, "indexed", true);
+        useHitsCache = getAttr(tableElement, "usehitscache", false);
+        
        // This info is used for indexing
         if (loadType == LOAD_TYPE.Building || loadType == LOAD_TYPE.Both)
         {
@@ -138,11 +137,11 @@ public class ExpressResultsTableInfo
 
             Element indexElement = (Element)tableElement.selectSingleNode("index");
 
-            buildSql  = indexElement.selectSingleNode("sql").getText();
+            Element sqlElement = (Element)indexElement.selectSingleNode("sql");
+            patternSql = sqlElement != null ? sqlElement.getText() : "";
  
             StringBuilder strBuf    = new StringBuilder();
             List          colItems  = indexElement.selectNodes("cols/col");
-            String        idColName = null;
             
             cols = new ColInfo[colItems.size()];
             for (int i=0;i<colItems.size();i++)
@@ -150,23 +149,21 @@ public class ExpressResultsTableInfo
                 ColInfo colInfo = new ColInfo((Element)colItems.get(i));
                 if (i > 0) strBuf.append(',');
                 strBuf.append(colInfo.getColName());
-                if (colInfo.isIdColumn())
-                {
-                    idColName = colInfo.getColName();
-                }
                 cols[i] = colInfo;
             }
             
-            buildSql  = buildSql.replaceFirst("ColFieldsDef", strBuf.toString());
-            updateSql = idColName != null ? buildSql + " where " + idColName + " = %d" : null;
-            
-            if (buildSql.indexOf("accession") > -1)
+            List joinColItems = indexElement.selectNodes("cols/join");
+            joinCols = new JoinColInfo[joinColItems.size()];
+            for (int i=0;i<joinColItems.size();i++)
             {
-                int x = 0;
-                x++;
+                JoinColInfo joinInfo = new JoinColInfo((Element)joinColItems.get(i));
+                if (colItems.size() > 0) strBuf.append(',');
+                strBuf.append(joinInfo.getColName());
+                joinCols[i] = joinInfo;
             }
-
             
+            buildSql  = patternSql.replaceFirst("ColFieldsDef", strBuf.toString());
+           
             //System.err.println("["+buildSql+"]");
         }
 
@@ -207,37 +204,12 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns the number of indexes.
-     * @return the number of indexes
+     * Returns whether this Search Definition should be indexed or whether it is only used or viewing results.
+     * @return whether this Search Definition should be indexed or whether it is only used or viewing results.
      */
-    public int getNumIndexes()
+    public boolean isIndexed()
     {
-        return indexes.size();
-    }
-
-    /**
-     * Adds an index.
-     * @param index the index to add
-     */
-    public void addIndex(int index)
-    {
-        indexes.add(index);
-    }
-
-    /**
-     * Returns the array of indexes.
-     * @return the array of indexes
-     */
-    public int[] getIndexes()
-    {
-        int[] inxs = new int[indexes.size()];
-        int inx = 0;
-        for (Integer i : indexes)
-        {
-            inxs[inx++] = i;
-        }
-        indexes.clear();
-        return inxs;
+        return isIndexed;
     }
 
     /**
@@ -245,8 +217,7 @@ public class ExpressResultsTableInfo
      */
     public void cleanUp()
     {
-        if (recIds != null) recIds.clear();
-        if (outOfDate != null) outOfDate.clear();
+         if (outOfDate != null) outOfDate.clear();
         colNames = null;
         cols     = null;
         viewSql  = null;
@@ -332,12 +303,21 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array of ColINfo Objects that describe the indexed Columns.
+     * Returns an array of ColInfo Objects that describe the indexed Columns.
      * @return an array of the columns that are to be indexes
      */
     public ColInfo[] getCols()
     {
         return cols;
+    }
+
+    /**
+     * Returns an array of JoinColInfo Objects that describe the indexed Join Columns.
+     * @return an array of the columns that are to be indexes
+     */
+    public JoinColInfo[] getJoins()
+    {
+        return joinCols;
     }
 
     /**
@@ -359,12 +339,6 @@ public class ExpressResultsTableInfo
         return outOfDate;
     }
 
-
-    public Vector<Integer> getRecIds()
-    {
-        return recIds;
-    }
-
     public String getName()
     {
         return name;
@@ -382,7 +356,7 @@ public class ExpressResultsTableInfo
 
     public String getViewSql()
     {
-        return viewSQLOverridden ? viewSql : viewSql.replace("%s", getRecIdList());
+        return viewSql;
     }
 
     public void setViewSql(String viewSql)
@@ -396,11 +370,6 @@ public class ExpressResultsTableInfo
         this.viewSQLOverridden = viewSQLOverridden;
     }
 
-    public void setRecIds(Vector<Integer> recIds)
-    {
-        this.recIds = recIds;
-    }
-
     public String getId()
     {
         return id;
@@ -409,17 +378,6 @@ public class ExpressResultsTableInfo
     public String getTableId()
     {
         return tableId;
-    }
-
-    public String getRecIdList()
-    {
-        StringBuffer idsStr = new StringBuffer(recIds.size()*8);
-        for (int i=0;i<recIds.size();i++)
-        {
-            if (i > 0) idsStr.append(',');
-            idsStr.append(recIds.elementAt(i).toString());
-        }
-        return idsStr.toString();
     }
 
     public String getIconName()
@@ -432,9 +390,43 @@ public class ExpressResultsTableInfo
         return buildSql;
     }
 
-    public String getUpdateSql()
+    public String getUpdateSql(final int tableIdArg)
     {
-        return updateSql;
+        StringBuilder strBuf    = new StringBuilder();
+        
+        boolean doingMainRecord = Integer.parseInt(tableId) == tableIdArg;
+        int     i               = 0;
+        String  idColName       = null;
+        
+        for (ColInfo colInfo : cols)
+        {
+            if (i > 0) strBuf.append(',');
+            if (doingMainRecord && colInfo.isIdColumn)
+            {
+                idColName = colInfo.getColName();
+            }
+            strBuf.append(colInfo.getColName());
+            i++;
+        }
+        
+        for (JoinColInfo joinInfo : joinCols)
+        {
+            if (cols.length > 0) strBuf.append(',');
+            strBuf.append(joinInfo.getColName());
+            if (joinInfo.getJoinTableIdAsInt() == tableIdArg)
+            {
+                idColName = joinInfo.getColName();
+            }
+        }
+        
+        String sql = patternSql.replaceFirst("ColFieldsDef", strBuf.toString());
+        if (sql.toLowerCase().indexOf("where") > -1)
+        {
+            return  idColName != null ? sql + " AND " + idColName + " = %d" : null;
+        }
+        
+        return  idColName != null ? sql + " where " + idColName + " = %d" : null;
+
     }
 
     public boolean isUseHitsCache()
@@ -524,6 +516,43 @@ public class ExpressResultsTableInfo
             return secondaryKey;
         }
         
+    }
+    
+    public class JoinColInfo 
+    {
+        protected int    position;
+        protected String joinTableId;
+        protected int    joinTableIdAsInt;
+        protected String colName;
+        
+        public JoinColInfo(final Element element)
+        {
+            position         = getAttr(element, "pos", -1);
+            joinTableId      =  getAttr(element, "tableid", null);
+            joinTableIdAsInt =  getAttr(element, "tableid", -1);
+            colName         = element.getTextTrim();
+        }
+
+        public int getPosition()
+        {
+            return position;
+        }
+        
+        public String getColName()
+        {
+            return colName;
+        }
+
+        public String getJoinTableId()
+        {
+            return joinTableId;
+        }
+
+        public int getJoinTableIdAsInt()
+        {
+            return joinTableIdAsInt;
+        }
+   
     }
 }
 

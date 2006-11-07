@@ -188,37 +188,43 @@ public class AccessionBusRule implements BusinessRulesIFace
      */
     public boolean okToDelete(Object dataObj)
     {
-        if (dataObj instanceof Accession)
+        if (dataObj != null)
         {
-            Accession accession = (Accession)dataObj;
-            if (accession.getAccessionId() != null)
+            if (dataObj instanceof Accession)
             {
-                
-                // Doing "accession.getCollectionObjects().size() == 0"
-                // potentially is REALLY slow if a lot of CollectionObjects are attached 
-                // to an Accessions
-                // So instead we will use straight SQL
-                try
+                Accession accession = (Accession)dataObj;
+                if (accession.getAccessionId() != null)
                 {
-                    Statement stmt = DBConnection.getInstance().getConnection().createStatement();
-                    ResultSet rs   = stmt.executeQuery("select count(*) from collectionobject where AccessionID = "+accession.getAccessionId());
-                    if (rs.first())
-                    {
-                        return rs.getInt(1) == 0;
-                    }
-                    rs.close();
-                    stmt.close();
                     
-                } catch (Exception ex)
+                    // Doing "accession.getCollectionObjects().size() == 0"
+                    // potentially is REALLY slow if a lot of CollectionObjects are attached 
+                    // to an Accessions
+                    // So instead we will use straight SQL
+                    try
+                    {
+                        Statement stmt = DBConnection.getInstance().getConnection().createStatement();
+                        ResultSet rs   = stmt.executeQuery("select count(*) from collectionobject where AccessionID = "+accession.getAccessionId());
+                        if (rs.first())
+                        {
+                            return rs.getInt(1) == 0;
+                        }
+                        rs.close();
+                        stmt.close();
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        throw new RuntimeException(ex);
+                    }
+                } else
                 {
-                    log.error(ex);
-                    throw new RuntimeException(ex);
+                    return false;
                 }
-            } else
-            {
-                return false;
             }
-        }        
+        } else
+        {
+            return false;
+        }
         throw new RuntimeException("Data Obj is not an Accession ["+dataObj.getClass().getSimpleName()+"]");
     }
     

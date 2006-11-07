@@ -24,7 +24,7 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -34,9 +34,9 @@ import edu.ku.brc.ui.UICacheManager;
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
  * supplied as an "in" clause.
- 
- * @code_status Unknown (auto-generated)
- **
+ *
+ * @code_status Beta
+ *
  * @author rods
  *
  */
@@ -62,14 +62,15 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
      * @param hits the hits results
     */
     public ExpressTableResultsHitsCache(final ExpressSearchResultsPaneIFace esrPane,
-                                        final ExpressResultsTableInfo tableInfo,
+                                        final ExpressSearchResults results,
                                         final boolean installServices,
                                         final Hits hits)
     {
-        super(esrPane, tableInfo, installServices);
+        super(esrPane, results, installServices);
 
         this.hits = hits;
-        indexes = tableInfo.getIndexes();
+        indexes   = results.getIndexes();
+        
         fillTable();
     }
 

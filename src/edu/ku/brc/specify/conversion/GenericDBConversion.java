@@ -1331,13 +1331,12 @@ public class GenericDBConversion
 
         Session session = HibernateUtil.getCurrentSession();
         PickList pl     = new PickList();
-        Set      items  = new HashSet<Object>();
+        pl.initialize();
 
         try
         {
             pl.setName(pickListName);
             pl.setCreated(new Date());
-            pl.setItems(items);
             pl.setReadOnly(false);
             pl.setSizeLimit(-1);
 
@@ -1393,11 +1392,7 @@ public class GenericDBConversion
                     if (values.get(lowerStr) == null)
                     {
                         log.info("["+val+"]");
-                        PickListItem pli = new PickListItem();
-                        pli.setTitle(val);
-                        pli.setValue(val);
-                        pli.setCreatedDate(new Date());
-                        items.add(pli);
+                        pl.addPickListItem(val, val);
                         values.put(lowerStr, val);
                         count++;
                     } else

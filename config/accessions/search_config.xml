@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <searches>
     <!-- ************************************** -->
-    <!--      These are for Express Search      -->
+    <!--     These are for Express Search       -->
     <!-- ************************************** -->
     <express>
-        <table id="1" tableid="5" name="Agent" title="Agent" priority="1" color="30, 144, 255">
+        <table id="1" tableid="5" indexed="true" name="Agent" title="Agent" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="agent" title="Agent"/>
             </outofdate>
@@ -31,7 +31,7 @@
             </detailView>
         </table>
     
-        <table id="2" tableid="6" name="Permit" title="Permits" priority="1" color="30, 144, 255">
+        <table id="2" tableid="6" indexed="true" name="Permit" title="Permits" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="permit" title="Permits"/>
             </outofdate>
@@ -62,7 +62,7 @@
             </detailView>
         </table>
     
-        <table id="3" tableid="7" name="Accession" title="Accession" priority="1" color="30, 144, 255">
+        <table id="3" tableid="7" indexed="true" name="Accession" title="Accession" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="accession" title="Accessions"/>
             </outofdate>
@@ -95,7 +95,7 @@
             </detailView>
         </table>
     
-        <table id="4" tableid="8" name="Address" title="Address" priority="1" color="30, 144, 255">
+        <table id="4" tableid="8" indexed="true" name="Address" title="Address" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="address" title="Address"/>
             </outofdate>
@@ -127,7 +127,7 @@
             </detailView>
         </table>
     
-        <table id="5" tableid="52" name="Loan" title="Loans" priority="1" color="30, 144, 255">
+        <table id="5" tableid="52" indexed="true" name="Loan" title="Loans" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="loan" title="Loans"/>
             </outofdate>
@@ -162,7 +162,7 @@
             </detailView>
         </table>
       
-        <table id="6" tableid="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
+        <table id="6" tableid="10000" indexed="true" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
             <outofdate/>
             <index>
                 <sql/>
@@ -180,7 +180,7 @@
             </detailView>
         </table>
         
-        <table id="7" tableid="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107">
+        <table id="7" tableid="20000" indexed="true" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107">
             <outofdate/>
             <index>
                 <sql/>
@@ -195,6 +195,61 @@
                     <caption col="label" text="Label"/>
                 </captions>
                 <recordset tabletype="20000" col="2"/>
+            </detailView>
+        </table>
+        
+        <table id="11" tableid="7" indexed="false" name="Accession to Agent" title="Accession to Agent" priority="1" color="30, 144, 144">
+            <outofdate>
+                <table name="agent" title="Agent"/>
+                <table name="accession" title="Accession"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[select ColFieldsDef From accession 
+Inner Join accessionagents ON accessionagents.AccessionID = accession.AccessionID 
+Inner Join agent ON agent.AgentID = accessionagents.AgentID 
+]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">accession.AccessionID</col>
+                    <col pos="2">Number</col>
+                    <col pos="3">Type</col>
+                    <col pos="4">Status</col>
+                    <col pos="5">DateAccessioned</col>
+                    <col pos="6">DateReceived</col>
+                    <col pos="7">FirstName</col>
+                    <col pos="8">LastName</col>
+                    <join pos="9" tableid="12">accessionagents.AccessionID</join>
+                    <join pos="10" tableid="5">agent.AgentID</join>
+                </cols>
+            </index>
+            <detailView icon="Accession">
+                <sql>
+                    <![CDATA[Select 
+accession.AccessionID, 
+Number,  
+Type, 
+Status, 
+DateAccessioned, 
+DateReceived, 
+FirstName, 
+LastName 
+From accession 
+Inner Join accessionagents ON accessionagents.AccessionID = accession.AccessionID 
+Inner Join agent ON agent.AgentID = accessionagents.AgentID 
+where accession.AccessionID in (%s) Order By accession.Number Asc]]>
+                </sql>
+                <captions>
+                    <caption col="accession.AccessionID" text="AccessionID" visible="false"/>
+                    <caption col="Number" text="Number"/>
+                    <caption col="Type" text="Type"/>
+                    <caption col="Status" text="Status"/>
+                    <caption col="DateAccessioned" text="Date Accessioned"/>
+                    <caption col="DateReceived" text="Date Received"/>
+                    <caption col="FirstName" text="First Name"/>
+                    <caption col="LastName" text="Last Name"/>
+                </captions>
+                <recordset tabletype="7" col="1"/>
             </detailView>
         </table>
 
@@ -281,5 +336,5 @@ accession.DateAccessioned, accession.DateReceived From accession where (%s)]]>
             </detailView>
         </table>
 
-    </generic>
+    </generic>        
 </searches>

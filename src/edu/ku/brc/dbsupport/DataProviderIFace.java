@@ -6,6 +6,14 @@
 */
 package edu.ku.brc.dbsupport;
 
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Nov 2, 2006
+ *
+ */
 public interface DataProviderIFace
 {
     public void evict(Class clsObject);

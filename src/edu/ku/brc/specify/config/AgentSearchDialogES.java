@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -38,7 +37,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -87,7 +86,6 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected Color          textBGColor    = null;
     protected Color          badSearchColor = new Color(255,235,235);
 
-    protected Hashtable<String, ExpressResultsTableInfo> tables = null;
     protected ExpressTableResultsBase  etrb;
 
     protected int            tableId        = -1;
@@ -108,7 +106,6 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     public AgentSearchDialogES() throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("AgentSearchTitle"), true);
-        tables     = ExpressSearchTask.getTableInfoHash();
         lucenePath = ExpressSearchTask.getIndexDirPath();
         tableId    = DBTableIdMgr.lookupIdByShortName("agent");
 
@@ -235,6 +232,9 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         updateUI();
     }
 
+    /**
+     *  Updates the OK button.
+     */
     protected void updateUI()
     {
         okBtn.setEnabled(recordSet != null && recordSet.getItems().size() == 1);
@@ -249,28 +249,29 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         if (isNotEmpty(searchTerm))
         {
             contentPanel.removeAll();
-            ExpressSearchTask.doQuery(lucenePath, analyzer, searchText, badSearchColor, tables, this);
+            ExpressSearchTask.doQuery(lucenePath, analyzer, searchText, badSearchColor, this);
         }
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.specify.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
      */
-    public void addSearchResults(final ExpressResultsTableInfo tableInfo, final Hits hits)
+    public void addSearchResults(final ExpressSearchResults results, final Hits hits)
     {
         //System.out.println(tableInfo.getTitle()+"  "+tableInfo.getTableId() + "  " + tableId);
-        if (Integer.parseInt(tableInfo.getTableId()) == tableId)
+        if (Integer.parseInt(results.getTableInfo().getTableId()) == tableId)
         {
             recordSet = null;
             updateUI();
 
-            if (tableInfo.isUseHitsCache())
+            if (results.getTableInfo().isUseHitsCache())
             {
-                contentPanel.add(etrb = new ExpressTableResultsHitsCache(this, tableInfo, false, hits));
+                contentPanel.add(etrb = new ExpressTableResultsHitsCache(this, results, false, hits));
             } else
             {
-                contentPanel.add(etrb = new ExpressTableResults(this, tableInfo, false));
+                contentPanel.add(etrb = new ExpressTableResults(this, results, false));
             }
+            
             table = etrb.getTable();
             table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -301,6 +302,8 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
      */
     public void removeTable(ExpressTableResultsBase expTblRes)
     {
+        expTblRes.cleanUp();
+        
         contentPanel.remove(expTblRes);
         contentPanel.invalidate();
         contentPanel.doLayout();
@@ -309,6 +312,14 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         scrollPane.revalidate();
         scrollPane.doLayout();
         scrollPane.repaint();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
+     */
+    public void addTable(ExpressTableResultsBase expTblRes)
+    {
+        // it has already been added so don't do anything
     }
 
     /* (non-Javadoc)
