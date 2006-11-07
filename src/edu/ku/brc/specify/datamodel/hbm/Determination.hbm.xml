@@ -85,14 +85,12 @@
         <meta attribute="field-description">User definable</meta>
     </property>
 
-
-
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to DeterminationStatus -->
-    <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" not-null="true" outer-join="true">
+    <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" outer-join="true">
         <meta attribute="scope-field">protected</meta>
-        <column name="DeterminationStatusID"/>
+        <column name="DeterminationStatusID" not-null="true" />
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Taxon -->

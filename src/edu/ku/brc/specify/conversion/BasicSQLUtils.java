@@ -794,19 +794,25 @@ public class BasicSQLUtils
 
                             	// if the value was null, getInt() returns 0
                             	// use wasNull() to distinguish real 0 from a null return
-                            	if( rs.wasNull() )
+                            	if( rs.wasNull())
                             	{
                             		dataObj = null;
+                                    
+                                    if (showMappingError)
+                                    {
+                                        log.info("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]");
+                                    }
                             	}
                             	else
                             	{
                             		dataObj = idMapper.get(oldPrimaryKeyId);
+                                    
+                                    if (dataObj == null)
+                                    {
+                                        log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
+                                    }
                             	}
                                 
-                                if (dataObj == null && showMappingError)
-                                {
-                                    log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"]");
-                                }
 
                                 /*if (rs.getObject(columnIndex) != null)
                                 {

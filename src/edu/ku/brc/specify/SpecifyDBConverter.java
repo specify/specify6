@@ -392,6 +392,20 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
 
+                frame.setDesc("Converting Determinations Records");
+                boolean doDeterminations = true;
+                if (doDeterminations || doAll)
+                {
+                    conversion.createDefaultDeterminationStatusRecords();
+                    frame.incOverall();
+
+                    conversion.convertDeterminationRecords();
+                } else
+                {
+                    frame.incOverall();
+                }
+                frame.incOverall();
+
                 frame.setDesc("Copying Tables");
                 boolean copyTables = false;
                 if (copyTables || doAll)
@@ -401,7 +415,7 @@ public class SpecifyDBConverter
                 frame.incOverall();
 
                 frame.setDesc("Converting CollectionObjects");
-                boolean doCollectionObjects = true;
+                boolean doCollectionObjects = false;
                 if (doCollectionObjects || doAll)
                 {
                     if (true)
@@ -410,17 +424,13 @@ public class SpecifyDBConverter
                         prepTypeMap.put("n/a", prepTypeMap.get("misc"));
                         conversion.createPreparationRecords(prepTypeMap);
                     }
+                    
                     conversion.createCollectionRecords();
                     frame.incOverall();
 
-                    conversion.createDefaultDeterminationStatusRecords();
-                    frame.incOverall();
-                    conversion.fixDeterminationStatus();
-                    frame.incOverall();
                     
                 } else
                 {
-                    frame.incOverall();
                     frame.incOverall();
                     frame.incOverall();
                 }
@@ -471,7 +481,7 @@ public class SpecifyDBConverter
                 frame.incOverall();
 
                 frame.setDesc("Converting Geography");
-                boolean doGeography = true;
+                boolean doGeography = false;
                 if (!databaseName.startsWith("accessions") && (doGeography || doAll))
                 {
                 	GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
@@ -493,6 +503,8 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
 
+                
+                
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
                 {
@@ -581,6 +593,7 @@ public class SpecifyDBConverter
             }
             log.info("Done - " + databaseName);
             frame.setDesc("Done - " + databaseName);
+            frame.setTitle("Done - " + databaseName);
             frame.incOverall();
             frame.processDone();
 

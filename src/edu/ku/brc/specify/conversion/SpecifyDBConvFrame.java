@@ -59,11 +59,10 @@ public class SpecifyDBConvFrame extends JFrame
         overallProgress = new JProgressBar();
         processProgress = new JProgressBar();
         desc            = new JLabel("");
-        closeBtn        = new JButton("Close");
+        closeBtn        = new JButton("Exit");
         
         processProgress.setStringPainted(true);
-        closeBtn.setEnabled(false);
-
+ 
         desc.setHorizontalAlignment(JLabel.CENTER);
         builder.add( desc, cc.xywh(1,1,3,1));
         
@@ -78,7 +77,7 @@ public class SpecifyDBConvFrame extends JFrame
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setContentPane(builder.getPanel());
         
-        setSize(new Dimension(500,200));
+        setSize(new Dimension(500,125));
         
         setTitle("Converting");
         
@@ -92,6 +91,8 @@ public class SpecifyDBConvFrame extends JFrame
                 System.exit(0);
             }
         });
+        
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
     
     public synchronized void incOverall()
@@ -122,7 +123,6 @@ public class SpecifyDBConvFrame extends JFrame
         processProgress.setMinimum(min);
         processProgress.setMaximum(max);
         processProgress.setValue(min);
-        closeBtn.setEnabled(false);
         processProgress.setString("");
     }
     
@@ -143,12 +143,10 @@ public class SpecifyDBConvFrame extends JFrame
     public synchronized void processDone()
     {
 
-        desc.setText("");
+        desc.setText(" ");
         processProgress.setMinimum(0);
         processProgress.setMaximum(0);
         processProgress.setValue(0);
-        processProgress.setString("");
-        closeBtn.setEnabled(true);
-
+        processProgress.setString(" ");
     }
 }

@@ -106,8 +106,8 @@ public class GenericDBConversion
         public short getType() { return ord; }
     }
     
-    protected static final int D_STATUS_UNKNOWN = 1;
-    protected static final int D_STATUS_CURRENT = 2;
+    protected static final int D_STATUS_CURRENT = 1;
+    protected static final int D_STATUS_UNKNOWN = 2;
     
     protected static final Logger log = Logger.getLogger(GenericDBConversion.class);
 
@@ -508,6 +508,7 @@ public class GenericDBConversion
             "Determination", "DeterminerID",           "Agent", "AgentID",
             "Determination", "TaxonNameID",            "TaxonName", "TaxonNameID",
             "Determination", "BiologicalObjectID",     "CollectionObject", "CollectionObjectID",
+            
             //"Determination", "PreparationID",          "Preparation", "PreparationID",
             //"Determination", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
             //"Determination", "TypeStatusNameID",       "TypeStatusName", "TypeStatusNameID",
@@ -663,7 +664,7 @@ public class GenericDBConversion
                                     "Deaccession",
                                     "DeaccessionAgents",
                                     "DeaccessionCollectionObject",
-                                    "Determination",
+                                    //"Determination",
                                     "DeterminationCitation",
                                     "ExchangeIn",
                                     "ExchangeOut",
@@ -689,7 +690,7 @@ public class GenericDBConversion
        tableMaps.put("authors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
        tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
        tableMaps.put("collectors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
-       tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
+       //tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
        tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
        tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1"}));
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
@@ -828,7 +829,7 @@ public class GenericDBConversion
 
     /**
      * Create the two default records that should be in the new 'determinationstatus' table.
-     * The first record is an 'unknown' record.  The second record is a 'current' record
+     * The first record is an 'current' record.  The second record is a 'unknown' record
      * which corresponds to the old isCurrent=true records.
      */
     public void createDefaultDeterminationStatusRecords()
@@ -842,17 +843,20 @@ public class GenericDBConversion
     		insert.append("INSERT INTO determinationstatus ");
     		insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified) ");
     		insert.append("values ");
-    		// the 'unknown status' record
-    		insert.append("(");
-    		insert.append(D_STATUS_UNKNOWN);
-    		insert.append(",'unknown','',CURRENT_DATE,CURRENT_DATE)");
     		// followed by the 'current status' record
-    		insert.append(", (");
+    		insert.append("(");
     		insert.append(D_STATUS_CURRENT);
-    		insert.append(",'current','mirror of the old schema isCurrent field',CURRENT_DATE,CURRENT_DATE)");
+    		insert.append(",'Current','mirror of the old schema isCurrent field',CURRENT_DATE,CURRENT_DATE)");
+            
+            // the 'unknown status' record
+            insert.append(", (");
+            insert.append(D_STATUS_UNKNOWN);
+            insert.append(",'Unknown','',CURRENT_DATE,CURRENT_DATE)");
 
     		Statement st = newDBConn.createStatement();
     		st.executeUpdate(insert.toString());
+            st.close();
+            
     	}
     	catch(SQLException e)
         {
@@ -862,131 +866,6 @@ public class GenericDBConversion
             throw new RuntimeException(e);
         }
     }
-    
-    /**
-     * For each record in the new 'determination' table, fix the 'determinationstatus'
-     * foreign key to point at the correct 'determinationstatus' record, based on the
-     * value in the old 'determination.isCurrent' field.
-     */
-    public void fixDeterminationStatus()
-    {
-    	IdMapperIFace idMapper = idMapperMgr.get("determination","DeterminationID");
-    	
-    	Vector<Long> statusCurrent = new Vector<Long>();
-    	Vector<Long> statusUnknown = new Vector<Long>();
-    	
-    	StringBuilder sql = new StringBuilder();
-    	try
-    	{
-        	Statement deterQuery = oldDBConn.createStatement();
-            
-            int count = 0;
-            sql.append("SELECT count(DeterminationID) FROM determination");
-            ResultSet countRS = deterQuery.executeQuery(sql.toString());
-            if (countRS.next())
-            {
-                count = countRS.getInt(1);
-                setProcess(0, count / 50);
-            }
-            
-            int step = 0;
-            int inc  = 0;
-            
-            sql.setLength(0);
-            sql.append("SELECT DeterminationID,IsCurrent FROM determination");
-            ResultSet oldDeters = deterQuery.executeQuery(sql.toString());
-        	while(oldDeters.next())
-        	{
-                Long    oldId     = new Long(oldDeters.getInt(1));
-        		Boolean isCurrent = oldDeters.getBoolean(2);
-        		Long    newId     = idMapper.get(oldId);
-        		if(isCurrent.booleanValue())
-        		{
-        			statusCurrent.add(newId);
-        		}
-        		else
-        		{
-        			statusUnknown.add(newId);
-        		}
-                
-                step++;
-                if (step % 50 == 0)
-                {
-                    setProcess(inc++);
-                }
-        	}
-            setProcess( count / 50);
-    	}
-    	catch( SQLException sqlEx )
-    	{
-    		log.error(sql.toString(),sqlEx);
-    		sqlEx.printStackTrace();
-            throw new RuntimeException(sqlEx);
-   	}
-    	
-    	// at this point we have all the info from the old DB
-    	// now we need to update the new DB
-    	
-    	if( !statusCurrent.isEmpty() )
-    	{
-    		// update the new records that should be 'current'
-	    	try
-	    	{
-	    		Statement update = newDBConn.createStatement();
-	    		sql = new StringBuilder();
-	    		sql.append("UPDATE determination SET DeterminationStatusID = ");
-	    		sql.append(D_STATUS_CURRENT);
-	    		sql.append(" WHERE DeterminationID IN (");
-	    		for(int i = 0; i < statusCurrent.size()-1; ++i)
-	    		{
-	    			Long newId = statusCurrent.get(i);
-	    			sql.append(newId);
-	    			sql.append(",");
-	    		}
-                Long newId = statusCurrent.lastElement();
-	    		sql.append(newId);
-	    		sql.append(");");
-	    		
-	    		update.executeUpdate(sql.toString());
-	    	}
-	    	catch( SQLException sqlEx )
-	    	{
-	    		log.error(sql,sqlEx);
-	    		sqlEx.printStackTrace();
-                throw new RuntimeException(sqlEx);
-	    	}
-    	}
-
-    	if(!statusUnknown.isEmpty())
-    	{
-	   		// update the new records that should be 'unknown'
-	    	try
-	    	{
-	    		Statement update = newDBConn.createStatement();
-	    		sql = new StringBuilder();
-	    		sql.append("UPDATE determination SET DeterminationStatusID = ");
-	    		sql.append(D_STATUS_UNKNOWN);
-	    		sql.append(" WHERE DeterminationID IN (");
-	    		for(int i = 0; i < statusUnknown.size()-1; ++i)
-	    		{
-                    Long newId = statusUnknown.get(i);
-	    			sql.append(newId);
-	    			sql.append(",");
-	    		}
-                Long newId = statusUnknown.lastElement();
-	    		sql.append(newId);
-	    		sql.append(");");
-	    		
-	    		update.executeUpdate(sql.toString());
-	    	}
-	    	catch( SQLException sqlEx )
-	    	{
-	    		log.error(sql,sqlEx);
-	    		sqlEx.printStackTrace();
-                throw new RuntimeException(sqlEx);
-	    	}
-    	}
-}
 
     /**
      * Create a default user.
@@ -2525,6 +2404,236 @@ public class GenericDBConversion
      * All "logical" records are moved to the CollectionObject table and all "physical" records are moved to the Preparation table.
      * @return true if no errors
      */
+    public boolean convertDeterminationRecords()
+    {
+        deleteAllRecordsFromTable(newDBConn, "determination"); // automatically closes the connection
+        
+        if (BasicSQLUtils.getNumRecords(oldDBConn, "determination") == 0)
+        {
+            return true;
+        }
+        
+        Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", 
+                "IsCurrent",           "Current1", 
+                "DeterminedDate",      "Date1", 
+                "TaxonID",             "TaxonNameID"});
+       
+        try
+        {
+            Statement     stmt = oldDBConn.createStatement();
+            StringBuilder str  = new StringBuilder();
+
+            List<String> oldFieldNames = new ArrayList<String>();
+
+            StringBuilder sql = new StringBuilder("SELECT ");
+            List<String> names = new ArrayList<String>();
+            getFieldNamesFromSchema(oldDBConn, "determination", names);
+
+            sql.append(buildSelectFieldList(names, "determination"));
+            oldFieldNames.addAll(names);
+
+            sql.append(" FROM determination");
+
+            log.info(sql);
+
+            List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
+            getFieldMetaDataFromSchema(newDBConn, "determination", newFieldMetaData);
+
+            log.info("Number of Fields in New Determination "+newFieldMetaData.size());
+            String sqlStr = sql.toString();
+
+            Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
+            int inx = 0;
+            for (String name : oldFieldNames)
+            {
+                oldNameIndex.put(name, inx++);
+            }
+
+            String tableName = "determination";
+
+            int isCurrentInx = oldNameIndex.get("IsCurrent") + 1;
+            
+            // Get Current and Unknow Record Ids
+            long currentDetStatusID = 0;
+            Statement newStmt = newDBConn.createStatement();
+            ResultSet rs2 = newStmt.executeQuery("select DeterminationStatusID from determinationstatus where Name = 'Current'");
+            if (rs2.first())
+            {
+                currentDetStatusID = rs2.getLong(1);
+                rs2.close();
+                
+            } else
+            {
+                throw new RuntimeException("Couldn't find Current DeterminationStatus record!");
+            }
+            
+            long unknownDetStatusID = 0;
+            rs2 = newStmt.executeQuery("select DeterminationStatusID from determinationstatus where Name = 'Unknown'");
+            if (rs2.first())
+            {
+                unknownDetStatusID = rs2.getLong(1);
+                rs2.close();
+                newStmt.close();
+                
+            } else
+            {
+                throw new RuntimeException("Couldn't find Current DeterminationStatus record!");
+            }
+
+            log.info(sqlStr);
+            ResultSet rs = stmt.executeQuery(sqlStr);
+            
+            if (hasFrame)
+            {
+                if (rs.last())
+                {
+                    setProcess(0, rs.getRow()); 
+                    rs.first();
+                    
+                } else
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;
+                }
+            } else
+            {
+                if (!rs.first())
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;                   
+                }
+            }
+
+            int count = 0;
+            do
+            {
+                str.setLength(0);
+                str.append("INSERT INTO determination VALUES (");
+                for (int i=0;i<newFieldMetaData.size();i++)
+                {
+                    if (i > 0) str.append(", ");
+
+                    String newFieldName = newFieldMetaData.get(i).getName();
+
+                    if (i == 0)
+                    {
+                        Integer  recId  = count+1;
+                        str.append(getStrValue(recId));
+
+                    } else if (newFieldName.equals("DeterminationStatusID"))
+                    {
+                        str.append(Long.toString(rs.getShort(isCurrentInx) != 0 ? currentDetStatusID : unknownDetStatusID)); 
+                        
+                    } else
+                    {
+                        Integer index = null;
+                        String  oldMappedColName = colNewToOldMap.get(newFieldName);
+                        if (oldMappedColName != null)
+                        {
+                            index = oldNameIndex.get(oldMappedColName);
+
+                        } else
+                        {
+                            index            = oldNameIndex.get(newFieldName);
+                            oldMappedColName = newFieldName;
+                        }
+                        
+                        if (index == null)
+                        {
+                            log.error("Couldn't find new field name["+newFieldName+"] in old field name in index Map");
+                            stmt.close();
+                            return false;
+                        }
+                        Object data  = rs.getObject(index+1);
+
+                        if (data != null)
+                        {
+                            int idInx = newFieldName.lastIndexOf("ID");
+                            if (idMapperMgr != null && idInx > -1)
+                            {
+                                IdMapperIFace idMapper =  idMapperMgr.get(tableName, oldMappedColName);
+                                if (idMapper != null)
+                                {
+                                    data = idMapper.get(rs.getLong(index+1));
+                                } else
+                                {
+                                    log.error("No Map for ["+tableName+"]["+oldMappedColName+"]");
+                                }
+                            }
+                        }
+                        str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
+                    }
+                }
+                str.append(")");
+                
+                if (hasFrame)
+                {
+                    if (count % 500 == 0) 
+                    {
+                        setProcess(count);
+                    }
+                    
+                } else
+                {
+                    if (count % 2000 == 0) 
+                    {
+                        log.info("CollectionObject Records: "+count);
+                    }
+                }
+
+                try
+                {
+                    Statement updateStatement = newDBConn.createStatement();
+                    updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                    updateStatement.executeUpdate(str.toString());
+                    updateStatement.clearBatch();
+                    updateStatement.close();
+                    updateStatement = null;
+
+                } catch (SQLException e)
+                {
+                    log.error("Count: "+count);
+                    e.printStackTrace();
+                    log.error(e);
+                    rs.close();
+                    stmt.close();
+                    throw new RuntimeException(e);
+                }
+
+                count++;
+                //if (count > 10) break;
+            } while (rs.next());
+            
+            if (hasFrame)
+            {
+                setProcess(count);
+            } else
+            {
+                log.info("Processed Determination "+count+" records.");
+            }
+            rs.close();
+
+            stmt.close();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+            throw new RuntimeException(e);
+        }
+
+
+        return true;
+
+    }
+    
+    /**
+     * Converts all the CollectionObject and CollectionObjectCatalog Records into the new schema CollectionObject table.
+     * All "logical" records are moved to the CollectionObject table and all "physical" records are moved to the Preparation table.
+     * @return true if no errors
+     */
     public boolean createCollectionRecords()
     {
         IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType");
@@ -2586,7 +2695,7 @@ public class GenericDBConversion
             }
             String tableName = "collectionobject";
 
-            int objTypeInx = oldNameIndex.get("CollectionObjectTypeID");
+            int objTypeInx   = oldNameIndex.get("CollectionObjectTypeID");
 
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
@@ -3025,7 +3134,7 @@ public class GenericDBConversion
     	newToOldColMap.put("Name", "RankName");
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
 
-    	String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName", "FullNameSeparator"};
+    	String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName", "FullNameSeparator", "TextBefore", "TextAfter"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	// Copy over most of the columns in the old table to the new one
@@ -3172,6 +3281,26 @@ public class GenericDBConversion
 
     	String[] ignoredFields = {"GUID"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+        
+        // AcceptedID is typically NULL unless they are using synonimies
+        boolean showMappingErrors = false;
+        try
+        {
+            
+            Statement stmt = oldDBConn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT count(AcceptedID)  FROM taxonname where AcceptedID <> null");
+            if (rs.first())
+            {
+                showMappingErrors = rs.getInt(1) > 0;
+            }
+            rs.close();
+            stmt.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        BasicSQLUtils.setShowMappingError(showMappingErrors);
 
     	log.info("Copying taxon records from 'taxonname' table");
     	if( !copyTable(oldDBConn,
