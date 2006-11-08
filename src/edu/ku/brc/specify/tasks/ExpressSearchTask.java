@@ -71,7 +71,6 @@ import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.ui.CommandAction;
@@ -142,7 +141,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     public static File getIndexDirPath()
     {
         File                 path       = null;
-        String               subName    = "";
         SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         if (appContext != null)
         {
@@ -499,13 +497,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             results.add(recId);
         }
         
-        System.out.println("Find any Joins for TableID ["+tblInfo.getTableId()+"]");
+        log.debug("Find any Joins for TableID ["+tblInfo.getTableId()+"]");
         List<ExpressResultsTableInfo> list = joinIdToTableInfoMap.get(tblInfo.getTableId());
         if (list != null)
         {
             for (ExpressResultsTableInfo erti : list)
             {
-                System.out.println("Checking up["+tblInfo.getTableId()+"]");
+                log.debug("Checking up["+tblInfo.getTableId()+"]");
                 results = resultsForJoinsMap.get(tblInfo.getTableId());
                 if (results == null)
                 {
@@ -525,6 +523,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                     {
                         throw new RuntimeException("Shouldn't have got here!");
                     }
+                    log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"]");
                     results = new ExpressSearchResults(erti.getId(), joinColTableId, erti);
                     resultsForJoinsMap.put(erti.getId(), results);
                 }
@@ -631,7 +630,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             iStream = getter.beginHTTPRequest("http://localhost:8080/sample/hello?q="+encoded+"&db="+SpecifyAppContextMgr.getInstance().getDatabaseName());
             
             long hits = getLong();
-            //System.out.println("Hits: "+hits);
+            log.debug("Hits: "+hits);
             
             if (hits > 0)
             {
@@ -707,14 +706,14 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             //System.out.println(query.toString());
 
             Hits hits = searcher.search(query);
-
+            
             if (hits.length() == 0)
             {
                 log.debug("No Hits for ["+searchTextStr+"]["+query.toString()+"]");
                 return false;
             }
 
-            log.info(hits.length()+" Hits for ["+searchTextStr+"]["+query.toString()+"]");
+            log.debug(hits.length()+" Hits for ["+searchTextStr+"]["+query.toString()+"]");
 
             Hashtable<String, ExpressSearchResults> resultsMap         = new Hashtable<String, ExpressSearchResults>();
             Hashtable<String, ExpressSearchResults> resultsForJoinsMap = new Hashtable<String, ExpressSearchResults>();

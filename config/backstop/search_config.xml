@@ -246,7 +246,7 @@
             </detailView>
         </table>
     
-        <table id="9" tableid="9" indexed="false" usehitscache="false" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255">
+        <table id="9" tableid="9" indexed="false" usehitscache="false" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 144">
             <outofdate>
                 <table name="determination" title="Determination"/>
             </outofdate>
@@ -257,7 +257,7 @@ Inner Join determination ON determination.CollectionObjectID = collectionobject.
 Inner Join agent ON determination.DeterminerID = agent.AgentID 
 Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
 Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
-where determinationstatus.DeterminationStatusID = 2]]>
+where determinationstatus.DeterminationStatusID = 1]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">collectionobject.CollectionObjectID</col>
@@ -289,7 +289,7 @@ INNER JOIN determination ON determination.CollectionObjectID = collectionobject.
 INNER JOIN agent ON determination.DeterminerID = agent.AgentID
 INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID 
 INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
-WHERE determinationstatus.DeterminationStatusID = 2) AS tx
+WHERE determinationstatus.DeterminationStatusID = 1) AS tx
 WHERE tx.CollectionObjectID IN (%s)]]>
                 </sql>
                 <captions>
@@ -303,7 +303,7 @@ WHERE tx.CollectionObjectID IN (%s)]]>
             </detailView>
         </table>
     
-        <table id="10" tableid="10" indexed="false" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255">
+        <table id="10" tableid="10" indexed="false" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 144">
             <outofdate>
                 <table name="collectingevent" title="Collecting Event"/>
             </outofdate>
@@ -376,8 +376,8 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </detailView>
         </table>
       
-      <!--
-        <table id="12" tableid="1" indexed="false" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255">
+      
+        <table id="12" tableid="1" indexed="false" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 144">
             <outofdate>
                 <table name="collectionobject" title="Collection Object"/>
                 <table name="determination" title="Determination"/>
@@ -385,15 +385,19 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[SELECT ColFieldsDef From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
+                    <![CDATA[SELECT ColFieldsDef From collectionobject 
+ Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
+ Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">collectionobject.CollectionObjectID</col>
                     <col pos="2">collectionobject.CatalogNumber</col>
                     <col pos="3">collectionobject.CatalogedDate</col>
                     <col pos="4">taxon.FullName</col>
-                    <join>determination.CollectionObjectID</join>
-                    <join>determination.TaxonID</join>
+                    <join pos="5" tableid="9">determination.CollectionObjectID</join>
+                    <join pos="6" tableid="1">collectionobject.CollectionObjectID</join>
+                    <join pos="7" tableid="4">taxon.TaxonID</join>
+                    <join pos="8" tableid="9">determination.TaxonID</join>
                 </cols>
             </index>
             <detailView icon="ColObj">
@@ -409,7 +413,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 <recordset tabletype="1" col="1"/>
             </detailView>
         </table>
-        -->
+        
         <table id="13" tableid="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
             <outofdate/>
             <index>
