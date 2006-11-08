@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.prefs.BackingStoreException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -65,6 +66,7 @@ import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -455,6 +457,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
                         if (SubPaneMgr.getInstance().aboutToShutdown())
                         {
+                            // Make sure the prefs are saved before logging out and loggin back in.
+                            try
+                            {
+                                AppPreferences.getLocalPrefs().flush();
+                                AppPreferences.getRemote().flush();
+                                
+                            } catch (BackingStoreException ex)
+                            {
+                                log.error(ex);
+                            }
+                            
                             UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
                         }
                     }
@@ -607,6 +620,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         AppPreferences.getLocalPrefs().putBoolean("reload_views", isReload);
                         ((JMenuItem)ae.getSource()).setSelected(isReload);
                     }});
+
+        mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        final LoggerDialog dialog = new LoggerDialog(topFrame);
+                        UIHelper.centerAndShow(dialog);
+                    }
+                });
 
          return mb;
     }
