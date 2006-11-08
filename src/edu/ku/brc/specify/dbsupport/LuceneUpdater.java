@@ -37,28 +37,39 @@ import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
+ * 
+ * This class is responsible for updating a "local" Lucene index. Local can mean on the same machine as the application or this
+ * class may be used by a servelet to update the index locally on the remote machine. This is a singleton.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Oct 23, 2006
  *
  */
 public class LuceneUpdater
 {
-    private static final Logger log = Logger.getLogger(LuceneUpdater.class);
+    protected static final Logger       log       = Logger.getLogger(LuceneUpdater.class);
+    protected static       LuceneUpdater instance = new LuceneUpdater();
     
     public enum IndexAction {New, Update, Delete}
     
+    // Data Members
     protected ExpressSearchIndexer indexer = null;
     
-    protected static LuceneUpdater instance = new LuceneUpdater();
-    
+    /**
+     * Constructor.
+     */
     protected LuceneUpdater()
     {
         
     }
     
+    /**
+     * Returns the singleton instance.
+     * @return the singleton instance.
+     */
     public static LuceneUpdater getInstance()
     {
         return instance;
@@ -99,7 +110,7 @@ public class LuceneUpdater
     }
     
     /**
-     * Upates the Lucene Index information for the Form Data Object
+     * Upates the Lucene Index information for the Form Data Object.
      * @param formObj the data object
      * @param action the action to take
      * @return true on sucess
@@ -121,10 +132,10 @@ public class LuceneUpdater
                     
                     if (tblInfo.isExpressSearch() && tblInfo.isIndexed())
                     {
-                        System.err.println("["+formObj.getTableId()+"] ["+Integer.parseInt(tblInfo.getTableId())+"]"); 
+                        //log.debug("["+formObj.getTableId()+"] ["+Integer.parseInt(tblInfo.getTableId())+"]"); 
                         if (formObj.getTableId() == Integer.parseInt(tblInfo.getTableId()))
                         {
-                            System.out.println("TABLE ID: ["+formObj.getTableId()+"] "+action); 
+                            //log.debug("TABLE ID: ["+formObj.getTableId()+"] "+action); 
                             if (action == IndexAction.New)
                             {
                                 reader.close();
@@ -140,17 +151,17 @@ public class LuceneUpdater
                                 
                                 Query query = new TermQuery(new Term("id", Long.toString(formObj.getId())));
                                 Hits  hits  = searcher.search(query);
-                                System.out.println("Hits: "+hits.length()+"  Query["+query.toString("contents")+"]");
+                                //log.debug("Hits: "+hits.length()+"  Query["+query.toString("contents")+"]");
                                 int updates = 0;
                                 for (int i=0;i<hits.length();i++)
                                 {
                                     Document doc = hits.doc(i);
                                     String   sid = doc.get("sid");
-                                    System.out.println("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
+                                    //log.debug("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
                                     if (sid != null && sid.equals(tblInfo.getId()))
                                     {
-                                        System.out.println("TBL ID["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
-                                        System.out.println("Removing HitsID["+hits.id(i)+"] SID["+sid+"]");
+                                        //log.debug("TBL ID["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
+                                        //log.debug("Removing HitsID["+hits.id(i)+"] SID["+sid+"]");
                                         
                                         reader.deleteDocument(hits.id(i));
                                         
@@ -187,7 +198,7 @@ public class LuceneUpdater
     }
     
     /**
-     * Upates the Lucene Index information for the Form Data Object
+     * Upates the Lucene Index information for the Form Data Object.
      * @param formObj the data object
      * @param action the action to take
      * @return true on sucess
