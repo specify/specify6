@@ -146,12 +146,14 @@ public class JAutoCompTextField extends JTextField
                         {
                             //System.out.println("len ["+s.length()+"]");
                             //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
-                            setText(s.substring(0, s.length()-1));
+
+                            setText(s.length() == 0 ? "" : s.substring(0, s.length()-1));
                             
                         } else
                         {
                             hasChanged = true;
                         }
+                        return;
                         
                     } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
                                  ev.getKeyCode() != KeyEvent.VK_DELETE)
