@@ -155,6 +155,7 @@ public class FormViewObj implements Viewable,
     protected Set                           origDataSet     = null;
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
+    protected int                           options;
 
     protected JPanel                        mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
@@ -232,6 +233,7 @@ public class FormViewObj implements Viewable,
             builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
         
+        this.options = options;
         boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
@@ -1339,24 +1341,31 @@ public class FormViewObj implements Viewable,
     {
         if (rsController != null)
         {
+            log.debug("----------------- "+formViewDef.getName()+"----------------- ");
             if (rsController.getDelRecBtn() != null)
             {
-                //if (isEditting)
-                //{
-               //     log.info("*"+formViewDef.getName()+" ["+(parentDataObj != null) + "] ["+(!formIsInNewDataMode)+"]["+((businessRules == null || businessRules.okToDelete(this.dataObj)) && list.size() > 0)+"] ");
-               // }
-                rsController.getDelRecBtn().setEnabled(
-                                                       (businessRules == null || businessRules.okToDelete(this.dataObj)) && 
-                                                       list != null && list.size() > 0);
+                boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToDelete(this.dataObj));// && list != null && list.size() > 0;
+                //log.debug(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
+                /*if (!enableDelBtn)
+                {
+                    //log.debug("  parentDataObj != null    ["+(parentDataObj != null) + "]");
+                    //log.debug("  formIsInNewDataMode      ["+(!formIsInNewDataMode)+"]");
+                    log.debug("  businessRules != null    ["+(businessRules != null)+"] ");
+                    log.debug("  businessRules.okToDelete ["+(businessRules != null && businessRules.okToDelete(this.dataObj))+"]");
+                    log.debug("  list != null             ["+(list != null)+"]");
+                    log.debug("  list.size() > 0          ["+(list != null && list.size() > 0)+"]");
+                }*/
+                rsController.getDelRecBtn().setEnabled(enableDelBtn);
             }
             
             if (rsController.getNewRecBtn() != null)
             {
                 boolean enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
-                if (isEditting)
+                /*if (isEditting)
                 {
-                    log.info(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
-                }
+                    log.debug(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
+                    log.debug(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
+                }*/
                 rsController.getNewRecBtn().setEnabled(enableNewBtn);
             }
         }
@@ -1491,6 +1500,35 @@ public class FormViewObj implements Viewable,
     public Object getParentDataObj()
     {
         return parentDataObj;
+    }
+    
+    
+    /**
+     * Updates the display icon as to the current state of the validator attached to the form,  
+     * if the form has a validator.
+     */
+    protected void updateValidationBtnUIState()
+    {
+        if (validationInfoBtn != null && formValidator != null)
+        {
+            boolean                 enable = true;
+            ImageIcon               icon   = IconManager.getImage("ValidationValid");
+            UIValidatable.ErrorType state  = formValidator.getState();
+
+            if (state == UIValidatable.ErrorType.Incomplete)
+            {
+                icon = IconManager.getImage("ValidationWarning");
+
+            } else if (state == UIValidatable.ErrorType.Error)
+            {
+                icon = IconManager.getImage("ValidationError");
+            } else
+            {
+                enable = false;
+            }
+            validationInfoBtn.setEnabled(enable);
+            validationInfoBtn.setIcon(icon);
+        }
     }
 
     /* (non-Javadoc)
@@ -1653,6 +1691,8 @@ public class FormViewObj implements Viewable,
 
                 } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview)
                 {
+                    fieldInfo.getSubView().setParentDataObj(dataObj);
+                    
                     data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
                     if (data != null)
                     {
@@ -1666,7 +1706,6 @@ public class FormViewObj implements Viewable,
                         }
                         fieldInfo.getSubView().setData(data);
                     }
-                    fieldInfo.getSubView().setParentDataObj(dataObj);
                 }
             }
         }
@@ -1676,6 +1715,9 @@ public class FormViewObj implements Viewable,
         // Adjust the formValidator now that all the data is in the controls
         if (formValidator != null)
         {
+            formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
+            
+            /*
             formValidator.setHasChanged(false);
 
             formValidator.resetFields();
@@ -1684,9 +1726,14 @@ public class FormViewObj implements Viewable,
 
             formValidator.validateForm();
 
-            //formValidator.resetFields();
+            if (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT))
+            {
+                formValidator.setFormValidationState(UIValidatable.ErrorType.Valid); 
+            }*/
 
-            this.listFieldChanges();
+            listFieldChanges();
+            
+            updateValidationBtnUIState();
             
         }
 
@@ -2239,26 +2286,7 @@ public class FormViewObj implements Viewable,
      */
     public void wasValidated(final UIValidator validator)
     {
-        if (validationInfoBtn != null)
-        {
-            boolean                 enable = true;
-            ImageIcon               icon   = IconManager.getImage("ValidationValid");
-            UIValidatable.ErrorType state  = formValidator.getState();
-
-            if (state == UIValidatable.ErrorType.Incomplete)
-            {
-                icon = IconManager.getImage("ValidationWarning");
-
-            } else if (state == UIValidatable.ErrorType.Error)
-            {
-                icon = IconManager.getImage("ValidationError");
-            } else
-            {
-                enable = false;
-            }
-            validationInfoBtn.setEnabled(enable);
-            validationInfoBtn.setIcon(icon);
-        }
+        updateValidationBtnUIState();
     }
 
     //-------------------------------------------------
