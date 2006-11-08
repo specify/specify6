@@ -61,21 +61,20 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected Hashtable<String, DataChangeNotifier> dcNotifiers = new Hashtable<String, DataChangeNotifier>();
     protected List<UIValidator>                     validators  = new Vector<UIValidator>();
 
-    protected Hashtable<String, Component>  fields      = new Hashtable<String, Component>();
-    protected Hashtable<String, JLabel>     labels      = new Hashtable<String, JLabel>();
+    protected Hashtable<String, Component>          fields      = new Hashtable<String, Component>();
+    protected Hashtable<String, JLabel>             labels      = new Hashtable<String, JLabel>();
 
-    protected boolean                       hasChanged  = false;
-    //protected boolean                       isFormValid = false;
-    protected UIValidatable.ErrorType       formValidationState = UIValidatable.ErrorType.Error;
+    protected boolean                               hasChanged  = false;
+    protected UIValidatable.ErrorType               formValidationState = UIValidatable.ErrorType.Error;
 
-    protected JButton                       okBtn       = null;
+    protected JButton                               okBtn       = null;
 
-    protected boolean                       ignoreValidationNotifications = false;
-    protected boolean                       okToDataChangeNotification    = true;
+    protected boolean                               ignoreValidationNotifications = false;
+    protected boolean                               okToDataChangeNotification    = true;
 
     // This is a list of listeners for when any data changes in the form
-    protected List<DataChangeListener>      dcListeners  = new ArrayList<DataChangeListener>();
-    protected List<ValidationListener>      valListeners = new ArrayList<ValidationListener>();
+    protected List<DataChangeListener>              dcListeners  = new ArrayList<DataChangeListener>();
+    protected List<ValidationListener>              valListeners = new ArrayList<ValidationListener>();
 
     /**
      *
@@ -105,6 +104,15 @@ public class FormValidator implements ValidationListener, DataChangeListener
     public boolean isFormValid()
     {
         return formValidationState == UIValidatable.ErrorType.Valid;
+    }
+
+    /**
+     * Manually sets the state of the validator.
+     * @param formValidationState the new state
+     */
+    public void setFormValidationState(UIValidatable.ErrorType formValidationState)
+    {
+        this.formValidationState = formValidationState;
     }
 
     /**
@@ -167,7 +175,30 @@ public class FormValidator implements ValidationListener, DataChangeListener
             uiv.setAsNew(isNew);
         }
     }
+    
+    /**
+     * Resets the form, typically after new data has arrived. For new objects it sets the validation state to "Valid"
+     * for non-new objects it validates the form.
+     * 
+     * @param isNewObj true if it is a new data object, false if not.
+     */
+    public void reset(final boolean isNewObj)
+    {
+        setHasChanged(false);
 
+        resetFields();
+
+        setDataChangeNotification(true); // this doesn't effect validation notifications
+
+        if (isNewObj)
+        {
+            setFormValidationState(UIValidatable.ErrorType.Valid); 
+            
+        } else 
+        {
+            validateForm();    
+        }
+    }
 
     /**
      * Evaluate all the enable/disable rules and set the control and label
