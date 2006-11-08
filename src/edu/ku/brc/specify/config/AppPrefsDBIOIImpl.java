@@ -61,7 +61,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#setAppPrefsMgr(edu.ku.brc.af.prefs.AppPreferences)
      */
-    public void setAppPrefsMgr(AppPreferences appPrefsMgr)
+    public void setAppPrefsMgr(final AppPreferences appPrefsMgr)
     {
         this.appPrefsMgr = appPrefsMgr;
     }
@@ -104,7 +104,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
      */
     public void load()
     {
-        if (appResource == null)
+        if (appResource == null && appPrefsMgr != null)
         {
             Properties properties = new Properties(); // must be done fist thing
             appPrefsMgr.setProperties(properties);
@@ -113,46 +113,49 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
-                List list = session.getDataList(AppResource.class, "name", PREF_NAME);
-                if (list.size() == 0)
+                if (session != null)
                 {
-                    appResource = new AppResource();
-                    appResource.initialize();
-                    
-                    appResource.setName(PREF_NAME);
-                    appResource.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
-                    
-                    AppResourceData appData = new AppResourceData();
-                    appData.initialize();
-                    appData.setAppResource(appResource);
-                    appResource.getAppResourceDatas().add(appData);
-                    
-                    found = false;
-                    
-                } else
-                {
-                    appResource = (AppResource)list.get(0);
-                    AppResourceData ard = null;
-                    if (appResource.getAppResourceDatas().size() == 0)
+                    List list = session.getDataList(AppResource.class, "name", PREF_NAME);
+                    if (list.size() == 0)
                     {
-                        /*
-                        ard = new AppResourceData();
-                        ard.initialize();
-                        appResource.getAppResourceDatas().add(ard);
-                        ard.setAppResource(appResource);
-                        Transaction trans = session.beginTransaction();
-                        session.save(appResource);
-                        trans.commit();
-                        */
-                        throw new RuntimeException("AppResource pref name["+PREF_NAME+"] has not AppResourceData object.");
+                        appResource = new AppResource();
+                        appResource.initialize();
+                        
+                        appResource.setName(PREF_NAME);
+                        appResource.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
+                        
+                        AppResourceData appData = new AppResourceData();
+                        appData.initialize();
+                        appData.setAppResource(appResource);
+                        appResource.getAppResourceDatas().add(appData);
+                        
+                        found = false;
                         
                     } else
                     {
-                        ard = appResource.getAppResourceDatas().iterator().next();
+                        appResource = (AppResource)list.get(0);
+                        AppResourceData ard = null;
+                        if (appResource.getAppResourceDatas().size() == 0)
+                        {
+                            /*
+                            ard = new AppResourceData();
+                            ard.initialize();
+                            appResource.getAppResourceDatas().add(ard);
+                            ard.setAppResource(appResource);
+                            Transaction trans = session.beginTransaction();
+                            session.save(appResource);
+                            trans.commit();
+                            */
+                            throw new RuntimeException("AppResource pref name["+PREF_NAME+"] has not AppResourceData object.");
+                            
+                        } else
+                        {
+                            ard = appResource.getAppResourceDatas().iterator().next();
+                        }
+                        properties.load(ard.getData().getBinaryStream());
+                        
+                        found = true;
                     }
-                    properties.load(ard.getData().getBinaryStream());
-                    
-                    found = true;
                 }
                 
             } catch (Exception ex)
@@ -228,15 +231,21 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 try 
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    session.beginTransaction();
-                    
-                    session.saveOrUpdate(appResource);
-                    
-                    session.commit();
+                    if (session != null)
+                    {
+                        session.beginTransaction();
+                        
+                        session.saveOrUpdate(appResource);
+                        
+                        session.commit();
+                    }
 
                 } catch (Exception ex) 
                 {
-                    session.rollback();
+                    if (session != null)
+                    {
+                        session.rollback();
+                    }
                     
                     log.error(ex);
                     
@@ -244,7 +253,10 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     
                 } finally 
                 {
-                    session.close();
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 } 
                 
             } catch (IOException ex)
