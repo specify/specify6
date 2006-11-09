@@ -84,7 +84,7 @@ public interface FormDataObjIFace
     public void addReference(FormDataObjIFace ref, String refName);
     
     /**
-     * Remvoes a foreign key reference to this object.  This method provides
+     * Removes a foreign key reference to this object.  This method provides
      * a generic way to call other methods such as removeAgent(Agent a) or
      * removeLocality(Locality l).
      * 
@@ -93,7 +93,18 @@ public interface FormDataObjIFace
      */
     public void removeReference(FormDataObjIFace ref, String refName);
     
-    public Object getReferenceValue(String refName);
+    /**
+     * Gets the value of a foreign key reference for this object.  This method provides
+     * a generic way to call other methods such as getAgent() or getLocalities().
+     * 
+     * @param ref the foreign key record to grab the value of
+     * @return the value of that foreign key record
+     */
+    public Object getReferenceValue(String ref);
+    
+    public void onSave();
+    public void onDelete();
+    public void onUpdate();
     
     /**
      * Returns the internal Table Id.

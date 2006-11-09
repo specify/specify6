@@ -119,6 +119,24 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     }
 
 
+    public void onDelete()
+    {
+        // do nothing
+    }
+
+
+    public void onSave()
+    {
+        // do nothing
+    }
+
+
+    public void onUpdate()
+    {
+        // do nothing
+    }
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
