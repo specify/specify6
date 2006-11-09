@@ -163,4 +163,11 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         return 501;
     }
 
+    @Override
+    public String getIdentityTitle()
+    {
+        // TODO Auto-generated method stub
+        return "DeterminationStatus: " + this.name;
+    }
+
 }

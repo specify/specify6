@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         ordinal = null;
         remarks = null;
         attachmentLocation = null;
-        timestampCreated = null;
+        timestampCreated = new Date();
         timestampModified = null;
         lastEditedBy = null;
         metadata = new HashSet<AttachmentMetadata>();

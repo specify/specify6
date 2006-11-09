@@ -379,4 +379,11 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
         return 9;
     }
 
+    @Override
+    public String getIdentityTitle()
+    {
+        // TODO Auto-generated method stub
+        return "Determination: " + this.getTaxon().getName();
+    }
+
 }
