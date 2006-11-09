@@ -30,6 +30,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.ui.CommandAction;
@@ -65,6 +66,7 @@ public class LocalityMapperTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         return new SimpleDescPane(name, this, "Map");
@@ -82,7 +84,7 @@ public class LocalityMapperTask extends BaseTask
         String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
         if (StringUtils.isNotEmpty(sqlStr))
         {
-            LocalityMapperSubPane panel = new LocalityMapperSubPane(session, name, this, session.getDataList(sqlStr));
+            LocalityMapperSubPane panel = new LocalityMapperSubPane(session, name, this, (List<CollectingEvent>)session.getDataList(sqlStr));
             addSubPaneToMgr(panel);
             
         } else
@@ -95,6 +97,7 @@ public class LocalityMapperTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -107,6 +110,7 @@ public class LocalityMapperTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -118,6 +122,7 @@ public class LocalityMapperTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
+    @Override
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
@@ -127,6 +132,7 @@ public class LocalityMapperTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
 
+    @Override
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.getAction().equals("DoLocalityMap"))

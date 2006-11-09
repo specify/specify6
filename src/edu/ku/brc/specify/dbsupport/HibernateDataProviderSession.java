@@ -16,7 +16,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -104,7 +103,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.String)
      */
-    public List getDataList(String sqlStr)
+    public List<?> getDataList(String sqlStr)
     {
         if (session != null)
         {
@@ -121,7 +120,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class)
      */
-    public List getDataList(Class clsObject)
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getDataList(Class<T> clsObject)
     {
         if (session != null)
         {
@@ -137,12 +137,13 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, java.lang.Object)
      */
-    public List getDataList(Class clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
     {
         if (session != null)
         {
             Criteria criteria = session.createCriteria(clsObject);
-            criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Expression.eq(fieldName, value) : Restrictions.eq(fieldName, value));
+            criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
             return criteria.list();           
         }
         
@@ -154,7 +155,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, java.lang.Object)
      */
-    public List getDataList(Class clsObject, String fieldName, Object value)
+    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value)
     {
         if (session != null)
         {
@@ -177,11 +178,12 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#get(java.lang.Class, java.lang.Long)
      */
-    public Object get(Class clsObj, Long id)
+    @SuppressWarnings("unchecked")
+    public <T> T get(Class<T> clsObj, Long id)
     {
         if (session != null)
         {
-            return session.get(clsObj, id);
+            return (T)session.get(clsObj, id);
         }
         
         log.error("Session was null.");
@@ -192,11 +194,12 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#load(java.lang.Class, java.lang.Long)
      */
-    public Object load(Class clsObj, Long id)
+    @SuppressWarnings("unchecked")
+    public <T> T load(Class<T> clsObj, Long id)
     {
         if (session != null)
         {
-            return session.load(clsObj, id);
+            return (T)session.load(clsObj, id);
         }
         
         log.error("Session was null.");
@@ -211,7 +214,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            List list = getDataList(sqlStr);
+            List<?> list = getDataList(sqlStr);
             return list != null && list.size() > 0 ? list.get(0) : null;
         }
         
@@ -223,7 +226,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#evict(java.lang.Class)
      */
-    public void evict(Class clsObject)
+    public void evict(Class<?> clsObject)
     {
         if (session != null)
         {

@@ -24,19 +24,19 @@ public interface DataProviderSessionIFace
     //---------------------------
     // Query Methods
     //---------------------------
-    public List getDataList(String sqlStr);
+    public List<?> getDataList(String sqlStr);
     
-    public List getDataList(Class clsObject);
+    public <T> List<T> getDataList(Class<T> clsObject);
     
-    public List getDataList(Class clsObject, String fieldName, Object value);
+    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value);
     
-    public List getDataList(Class clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
+    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
     
     //public List getDataList(RecordSetIFace recordSet);
     
-    public Object load(Class clsObj, Long id);
+    public <T> T load(Class<T> clsObj, Long id);
     
-    public Object get(Class clsObj, Long id);
+    public <T> T get(Class<T> clsObj, Long id);
 
     public Object getData(String sqlStr);
     
@@ -44,7 +44,7 @@ public interface DataProviderSessionIFace
     // Update Methods
     //---------------------------
     
-    public void evict(Class clsObject);
+    public void evict(Class<?> clsObject);
     
     public void evict(Object dataObj);
     
