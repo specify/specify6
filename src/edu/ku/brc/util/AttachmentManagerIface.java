@@ -21,6 +21,15 @@ import edu.ku.brc.specify.datamodel.Attachment;
 public interface AttachmentManagerIface
 {
     /**
+     * Sets the attachmentLocation field in the passed in Attachment
+     * object.  This allows the AttachmentManagerIface implementation
+     * to provide a storage location that isn't already in use.
+     * 
+     * @param attachment the Attachment for which a storage location is needed
+     */
+    public void setStorageLocationIntoAttachment(Attachment attachment);
+    
+    /**
      * Get a file handle to the attachment original.
      * 
      * @param attachment the attachment record
@@ -58,4 +67,9 @@ public interface AttachmentManagerIface
      * @throws IOException if an error occurs when replacing the files
      */
     public void replaceOriginal(Attachment attachment, File newOriginal, File newThumbnail) throws IOException;
+    
+    /**
+     * Perform any internal cleanup needed before shutdown.
+     */
+    public void cleanup();
 }

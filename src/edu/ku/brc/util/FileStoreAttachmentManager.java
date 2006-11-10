@@ -9,6 +9,7 @@ package edu.ku.brc.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 
@@ -26,24 +27,71 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /** The base directory path of where the files will be stored. */
     protected String baseDirectory;
     
+    protected File originalsDir;
+    protected File thumbsDir;
+    
+    /** A collection of all files created by calls to setStorageLocationIntoAttachment
+     * that have not yet been filled by calls to storeAttachmentFile.
+     */
+    protected Vector<String> unfilledFiles;
+    
     /**
      * Creates a new instance, setting baseDirectory to null.
+     * @throws IOException 
      */
-    public FileStoreAttachmentManager(String baseDirectory)
+    public FileStoreAttachmentManager(String baseDirectory) throws IOException
     {
         this.baseDirectory = baseDirectory;
+        originalsDir = new File(baseDirectory + File.separator + "originals");
+        thumbsDir = new File(baseDirectory + File.separator + "thumbnails");
+        
+        originalsDir.mkdirs();
+        thumbsDir.mkdirs();
+        
+        if (!originalsDir.canWrite())
+        {
+            throw new IOException("Storage directory not writable: " + originalsDir.getAbsolutePath());
+        }
+        if (!thumbsDir.canWrite())
+        {
+            throw new IOException("Storage directory not writable: " + originalsDir.getAbsolutePath());
+        }
+        
+        unfilledFiles = new Vector<String>();
     }
     
+    public void setStorageLocationIntoAttachment(Attachment attachment)
+    {
+        String attName = attachment.getOrigFilename();
+        int lastPeriod = attName.lastIndexOf('.');
+        String suffix = ".att";
+        if (lastPeriod!=-1)
+        {
+            suffix = ".att" + attName.substring(lastPeriod);
+        }
+        try
+        {
+            File storageFile = File.createTempFile("sp6-", suffix, originalsDir);
+            attachment.setAttachmentLocation(storageFile.getName());
+            unfilledFiles.add(attachment.getAttachmentLocation());
+        }
+        catch (IOException e)
+        {
+            // TODO What to do here?
+            e.printStackTrace();
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(edu.ku.brc.specify.datamodel.Attachment)
      */
     public File getOriginal(Attachment attachment)
     {
-        String attachFileName = baseDirectory + attachment.getAttachmentLocation();
-        File attach = new File(attachFileName);
-        if (attach.exists())
+        String fileLoc = attachment.getAttachmentLocation();
+        File storedFile = new File(baseDirectory + File.separator + "originals" + File.separator + fileLoc);
+        if (storedFile.exists())
         {
-            return attach;
+            return storedFile;
         }
         return null;
     }
@@ -53,11 +101,11 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public File getThumbnail(Attachment attachment)
     {
-        String thumbnailFileName = baseDirectory + File.separator + "thumbnails" + File.separator + attachment.getAttachmentLocation();
-        File thumbnail = new File(thumbnailFileName);
-        if (thumbnail.exists())
+        String fileLoc = attachment.getAttachmentLocation();
+        File storedFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + fileLoc);
+        if (storedFile.exists())
         {
-            return thumbnail;
+            return storedFile;
         }
         return null;
     }
@@ -68,13 +116,16 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public void storeAttachmentFile(Attachment attachment, File attachmentFile, File thumbnail) throws IOException
     {
-        String attachLoc = attachment.getAttachmentID() + "_" + attachment.getOrigFilename();
-        attachment.setAttachmentLocation(attachLoc);
-        File origDest = new File(baseDirectory + File.separator + attachLoc);
-        FileUtils.copyFile(attachmentFile, origDest);
+        String attachLoc = attachment.getAttachmentLocation();
         
-        File thumbDest = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
-        FileUtils.copyFile(thumbnail, thumbDest);
+        File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
+        
+        File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
+
+        FileUtils.copyFile(attachmentFile, origFile);
+        FileUtils.copyFile(thumbnail, thumbFile);
+        
+        unfilledFiles.remove(attachment.getAttachmentLocation());
     }
 
     /* (non-Javadoc)
@@ -83,11 +134,11 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     public void replaceOriginal(Attachment attachment, File newOriginal, File newThumbnail) throws IOException
     {
         String attachLoc = attachment.getAttachmentLocation();
-        File orig = new File(baseDirectory + File.separator + attachLoc);
-        replaceFile(orig, newOriginal);
+        File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
+        File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
 
-        File thumb = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
-        replaceFile(thumb, newThumbnail);
+        replaceFile(origFile, newOriginal);
+        replaceFile(thumbFile, newThumbnail);
     }
     
     /**
@@ -115,6 +166,18 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
                 // copy the tmp version back into place
                 FileUtils.copyFile(tmpOrig, origFile);
             }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#cleanup()
+     */
+    public void cleanup()
+    {
+        for (String unusedFile: unfilledFiles)
+        {
+            File f = new File(originalsDir.getAbsolutePath() + File.separator + unusedFile);
+            f.delete();
         }
     }
 }

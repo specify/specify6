@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,7 +9,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.util.AttachmentManagerIface;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Orderable;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 public class Attachment extends DataModelObjBase implements Serializable, Orderable
 {
@@ -95,6 +100,13 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     public void setOrigFilename(String origFilename)
     {
         this.origFilename = origFilename;
+
+        // for newly created attachments, setup the attachmentLocation field
+        if (this.attachmentID == null)
+        {
+            // set the attachmentLocation field
+            AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(this);
+        }
     }
 
     public Calendar getFileCreatedDate()
@@ -204,9 +216,9 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         return locality;
     }
 
-    public void setLocality(Locality localitie)
+    public void setLocality(Locality locality)
     {
-        this.locality = localitie;
+        this.locality = locality;
     }
 
     public Permit getPermit()
@@ -283,5 +295,39 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     public String getIdentityTitle()
     {
         return this.getOrigFilename();
+    }
+
+    @Override
+    public void onDelete()
+    {
+        // TODO Delete the attachment file from the file storage system
+    }
+
+    @Override
+    public void onSave()
+    {
+        // Copy the attachment file to the file storage system
+        try
+        {
+            File origFile = new File(origFilename);
+            File thumbFile = File.createTempFile("sp6_thumb_", null);
+
+            Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
+            AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
+
+            thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
+            attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
+        }
+        catch (IOException e)
+        {
+            // TODO how should I handle this problem?
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onUpdate()
+    {
+        // TODO Possibly update the attachment file in the file storage system
     }
 }

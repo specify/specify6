@@ -10,8 +10,8 @@ import static edu.ku.brc.specify.tests.DataBuilder.createAccession;
 import static edu.ku.brc.specify.tests.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createAddress;
 import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
-import static edu.ku.brc.specify.tests.DataBuilder.createAttachment;
 import static edu.ku.brc.specify.tests.DataBuilder.createAttributeDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createAttachment;
 import static edu.ku.brc.specify.tests.DataBuilder.createCatalogSeries;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEvent;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEventAttr;
@@ -48,6 +48,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -99,7 +100,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -485,21 +486,19 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
-//        log.info("Creating attachments and attachment metadata");
-//        try
-//        {
-//            String bigEyeFilePath = "C:\\Documents and Settings\\jstewart\\Desktop\\bigeye.jpg";
-//            
-//            Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
-//            
-//            bigEye.setLoan(closedLoan);
-//
-//            dataObjects.add(bigEye);
-//        }
-//        catch (Exception e)
-//        {
-//            log.error("Could not create attachment", e);
-//        }
+        log.info("Creating attachments and attachment metadata");
+        try
+        {
+            String bigEyeFilePath = "demo_files" + File.separator + "bigeye.jpg";
+            Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
+            bigEye.setLoan(closedLoan);
+
+            dataObjects.add(bigEye);
+        }
+        catch (Exception e)
+        {
+            log.error("Could not create attachment", e);
+        }
         
         // done
         log.info("Done creating single discipline database: " + disciplineName);
@@ -841,7 +840,7 @@ public class BuildSampleDatabase
         schemaGen.generateSchema(databaseHost, databaseName);
 
         //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
-        //HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
+        HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
         //HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
 
@@ -857,16 +856,25 @@ public class BuildSampleDatabase
             {
                 try
                 {
-//                    Thumbnailer thumb = new Thumbnailer();
-//                    thumb.registerThumbnailers("config/thumbnail_generators.xml");
-//                    thumb.setQuality(.5f);
-//                    thumb.setMaxHeight(128);
-//                    thumb.setMaxWidth(128);
-//
-//                    FileStoreAttachmentManager attachMgr = new FileStoreAttachmentManager("C:/AttachmentStorage/");
-//                    
-//                    AttachmentUtils.setAttachmentManager(attachMgr);
-//                    AttachmentUtils.setThumbnailer(thumb);
+                    Thumbnailer thumb = new Thumbnailer();
+                    thumb.registerThumbnailers("config/thumbnail_generators.xml");
+                    thumb.setQuality(.5f);
+                    thumb.setMaxHeight(128);
+                    thumb.setMaxWidth(128);
+
+                    String platform = System.getProperty("os.name");
+                    AttachmentManagerIface attachMgr;
+                    if (platform.startsWith("Windows"))
+                    {
+                        attachMgr = new FileStoreAttachmentManager("C:/AttachmentStorage/");
+                    }
+                    else
+                    {
+                        attachMgr = new FileStoreAttachmentManager("/AttachmentStorage/");
+                    }
+                    
+                    AttachmentUtils.setAttachmentManager(attachMgr);
+                    AttachmentUtils.setThumbnailer(thumb);
                     
                     List<Object> dataObjects = createSingleDiscipline("Fish", "fish");
 
@@ -879,6 +887,9 @@ public class BuildSampleDatabase
                     //persist(dataObjects.get(0)); // just persist the CollectionObjDef object
                     persist(dataObjects);
                     commitTx();
+                    
+                    attachMgr.cleanup();
+                    
                     log.info("Done");
                 }
                 catch(Exception e)

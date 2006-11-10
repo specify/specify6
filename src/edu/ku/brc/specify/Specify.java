@@ -44,9 +44,11 @@ import javax.swing.JToolBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.hibernate.cfg.Configuration;
+import org.xml.sax.SAXException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -80,7 +82,11 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.util.AttachmentManagerIface;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileCache;
+import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 /**
  * Specify Main Application Class
 
@@ -150,6 +156,36 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UICacheManager.getInstance(); // initializes it first thing
         UICacheManager.setAppName("Specify");
 
+        // Attachment related helpers
+        Thumbnailer thumb = new Thumbnailer();
+        try
+        {
+            thumb.registerThumbnailers("config/thumbnail_generators.xml");
+        }
+        catch (Exception e1)
+        {
+            // TODO: fix this up
+            System.exit(-1);
+        }
+        thumb.setQuality(.5f);
+        thumb.setMaxHeight(128);
+        thumb.setMaxWidth(128);
+
+        AttachmentManagerIface attachMgr = null;
+        try
+        {
+            attachMgr = new FileStoreAttachmentManager("C:/AttachmentStorage/");
+        }
+        catch (IOException e1)
+        {
+            // TODO: fix this up
+            System.exit(-1);
+        }
+        
+        AttachmentUtils.setAttachmentManager(attachMgr);
+        AttachmentUtils.setThumbnailer(thumb);
+
+        
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
@@ -668,6 +704,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void doExit()
     {
+        AttachmentUtils.getAttachmentManager().cleanup();
+        
         if (SubPaneMgr.getInstance().aboutToShutdown())
         {
     		log.info("Application shutdown");
