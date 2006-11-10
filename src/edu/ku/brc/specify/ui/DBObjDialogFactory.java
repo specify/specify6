@@ -137,7 +137,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         {
             return new DBObjSearchDialog(info.getViewSetName(),
                                          info.getViewName(),
-                                         info.getDialogName(),
+                                         info.getSearchName(),
                                          info.getTitle(),
                                          info.getClassName(),
                                          info.getIdFieldName()
@@ -165,7 +165,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             {
                 return new ViewBasedDisplayFrame(info.getViewSetName(),
                                                 info.getViewName(),
-                                                info.getDialogName(),
+                                                info.getSearchName(),
                                                 frameTitle,
                                                 closeBtnTitle,
                                                 info.getClassName(),
@@ -176,7 +176,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             {
                 return new ViewBasedDisplayDialog(info.getViewSetName(),
                                                   info.getViewName(),
-                                                  info.getDialogName(),
+                                                  info.getSearchName(),
                                                   frameTitle,
                                                   closeBtnTitle,
                                                   info.getClassName(),
@@ -197,7 +197,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     {
         protected String viewSetName;
         protected String viewName;
-        protected String dialogName;
+        protected String searchName;
         protected String title;
         protected String className;
         protected String idFieldName;
@@ -212,7 +212,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             super();
             this.viewSetName = viewSetName;
             this.viewName    = viewName;
-            this.dialogName  = dialogName;
+            this.searchName  = dialogName;
             this.title       = title;
             this.className   = className;
             this.idFieldName = idFieldName;
@@ -233,9 +233,9 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             return idFieldName;
         }
 
-        public String getDialogName()
+        public String getSearchName()
         {
-            return dialogName;
+            return searchName;
         }
 
         public String getTitle()

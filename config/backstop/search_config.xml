@@ -36,92 +36,91 @@
         </table>
 
     
-        <table id="2" tableid="2" indexed="true" name="locality" title="Locality" priority="1" color="30, 144, 255">
-        <outofdate>
-            <table name="locality" title="Locality"/>
-        </outofdate>
-        <index>
-            <sql>
-                <![CDATA[select ColFieldsDef from locality]]>
-
-            </sql>
-            <cols>
-                <col pos="1" id="true">LocalityID</col>
-                <col pos="2">localityname</col>
-            </cols>
-        </index>
-        <detailView icon="Locality">
-            <sql>
-                <![CDATA[SELECT localityname,Latitude1,Longitude1, LocalityID FROM locality WHERE LocalityID IN (%s)]]>
-            </sql>
-            <captions>
-                <caption col="localityname" text="Locality Name"/>
-                <caption col="Latitude1" text="Latitude"/>
-                <caption col="Longitude1" text="Longitude"/>
-                <caption col="LocalityID" text="ID" visible="false"/>
-            </captions>
-            <recordset tabletype="2" col="4"/>
-        </detailView>
-      </table>
+        <table id="2" tableid="2" indexed="true" name="Locality" title="Locality" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="locality" title="Locality"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[select ColFieldsDef from locality]]>
+    
+                </sql>
+                <cols>
+                    <col pos="1" id="true">LocalityID</col>
+                    <col pos="2">localityname</col>
+                </cols>
+            </index>
+            <detailView icon="Locality">
+                <sql>
+                    <![CDATA[SELECT localityname,Latitude1,Longitude1, LocalityID FROM locality WHERE LocalityID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="localityname" text="Locality Name"/>
+                    <caption col="Latitude1" text="Latitude"/>
+                    <caption col="Longitude1" text="Longitude"/>
+                    <caption col="LocalityID" text="ID" visible="false"/>
+                </captions>
+                <recordset tabletype="2" col="4"/>
+            </detailView>
+        </table>
     
     
-        <table id="3" tableid="3" indexed="true" name="geography" title="Geography" priority="1" color="30, 144, 255">
-        <outofdate>
-            <table name="geography" title="Geography"/>
-        </outofdate>
-        <index>
-            <sql>
-                <![CDATA[SELECT ColFieldsDef FROM geography;]]>
-            </sql>
-            <cols>
-                <col pos="1" id="true">GeographyID</col>
-                <col pos="2">Name</col>
-                <col pos="3">FullName</col>
-                <col pos="4">CommonName</col>
-            </cols>
-        </index>
-        <detailView icon="Geography">
-            <sql>
-                <![CDATA[SELECT FullName, Name, Abbrev, GeographyID FROM geography WHERE GeographyID IN (%s)]]>
-            </sql>
-            <captions>
-                <caption col="FullName" text="Full Name"/>
-                <caption col="Name" text="Name"/>
-                <caption col="Abbrev" text="Abbreviation"/>
-                <caption col="GeographyID" text="ID" visible="false"/>
-            </captions>
-            <recordset tabletype="3" col="4"/>
-        </detailView>
-      </table>
-      -->
+        <table id="3" tableid="3" indexed="true" name="Geography" title="Geography" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="geography" title="Geography"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM geography]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">GeographyID</col>
+                    <col pos="2">Name</col>
+                    <col pos="3">FullName</col>
+                    <col pos="4">CommonName</col>
+                </cols>
+            </index>
+            <detailView icon="Geography">
+                <sql>
+                    <![CDATA[SELECT FullName, Name, Abbrev, GeographyID FROM geography WHERE GeographyID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="FullName" text="Full Name"/>
+                    <caption col="Name" text="Name"/>
+                    <caption col="Abbrev" text="Abbreviation"/>
+                    <caption col="GeographyID" text="ID" visible="false"/>
+                </captions>
+                <recordset tabletype="3" col="4"/>
+            </detailView>
+        </table>
+      
     
-        <table id="4" tableid="4" indexed="true" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
-            >
-        <outofdate>
-            <table name="taxon" title="Taxon"/>
-        </outofdate>
-        <index>
-            <sql>
-                <![CDATA[SELECT ColFieldsDef FROM taxon;]]>
-            </sql>
-            <cols>
-                <col pos="1" id="true">TaxonID</col>
-                <col pos="2">Name</col>
-                <col pos="3">CommonName</col>
-            </cols>
-        </index>
-        <detailView icon="Taxon">
-            <sql>
-                <![CDATA[SELECT Name,CommonName,TaxonID FROM taxon WHERE TaxonID IN (%s)]]>
-            </sql>
-            <captions>
-                <caption col="Name" text="Taxon Name"/>
-                <caption col="CommonName" text="Common Name"/>
-                <caption col="TaxonID" text="Taxon ID" visible="false"/>
-            </captions>
-            <recordset tabletype="4" col="3"/>
-        </detailView>
-      </table>
+        <table id="4" tableid="4" indexed="true" name="Taxon" title="Taxon" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="taxon" title="Taxon"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM taxon]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">TaxonID</col>
+                    <col pos="2">Name</col>
+                    <col pos="3">CommonName</col>
+                </cols>
+            </index>
+            <detailView icon="Taxon">
+                <sql>
+                    <![CDATA[SELECT Name,CommonName,TaxonID FROM taxon WHERE TaxonID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="Name" text="Taxon Name"/>
+                    <caption col="CommonName" text="Common Name"/>
+                    <caption col="TaxonID" text="Taxon ID" visible="false"/>
+                </captions>
+                <recordset tabletype="4" col="3"/>
+            </detailView>
+        </table>
     
         <table id="5" tableid="5" indexed="true" name="Agent" title="Agent" priority="1" color="30, 144, 255">
             <outofdate>
@@ -220,7 +219,7 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[SELECT ColFieldsDef FROM address;]]>
+                    <![CDATA[SELECT ColFieldsDef FROM address]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">AddressID</col>
@@ -509,7 +508,31 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                <recordset tabletype="8" col="1"/>
             </detailView>
         </table>
-      
+        
+        <table id="18" tableid="65" indexed="true" name="Prep Type" title="Preparation Type" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="preptype" title="Preparation Type"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM preptype]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">PrepTypeID</col>
+                    <col pos="2">Name</col>
+                </cols>
+            </index>
+            <detailView icon="PrepType">
+                <sql>
+                    <![CDATA[SELECT Name, PrepTypeID FROM preptype WHERE PrepTypeID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="Name" text="Name"/>
+                    <caption col="PrepTypeID" text="PrepTypeID" visible="false"/>
+                </captions>
+                <recordset tabletype="65" col="2"/>
+            </detailView>
+        </table>
     </express>
     
     <!-- ************************************************* -->

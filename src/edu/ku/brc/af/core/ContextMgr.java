@@ -169,11 +169,11 @@ public class ContextMgr
      * @param tooltip the tooltip text for any UI
      * @return a service info object that provide the service
      */
-    public static ServiceInfo registerService(final String name, 
-                                              final int tableId, 
+    public static ServiceInfo registerService(final String   name, 
+                                              final int      tableId, 
                                               final CommandAction command, 
                                               final Taskable task, 
-                                              final String tooltip)
+                                              final String   tooltip)
     {
         ServiceInfo serviceInfo = new ServiceInfo(name, tableId, command, task, tooltip);
         instance.services.put(serviceInfo.getHashKey(), serviceInfo);

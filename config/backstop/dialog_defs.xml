@@ -11,6 +11,7 @@
     <dialog type="display" viewset="Global" view="AccessionAgents" name="AccessionAgentsDisplay" title="AccessionAgentsTitle" class="edu.ku.brc.specify.datamodel.AccessionAgents"/>
     <dialog type="display" viewset="Global" view="Geography" name="GeographyDisplay" title="GeographyTitle" class="edu.ku.brc.specify.datamodel.Geography"/>
     <dialog type="display" viewset="Global" view="AttachmentsForm" name="AttachmentsForm" title="Attachment" class="edu.ku.brc.specify.datamodel.Attachment"/>
+    <dialog type="display" viewset="Global" view="PrepType" name="PrepTypeDisplay" title="Preparation Type" class="edu.ku.brc.specify.datamodel.PrepType"/>
     
     <dialog type="display" viewset="Fish Views" view="FishBase" name="FishBase" title="FishBase" class="org.dom4j.Element"/>
     

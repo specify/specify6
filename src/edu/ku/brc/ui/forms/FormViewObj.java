@@ -262,10 +262,11 @@ public class FormViewObj implements Viewable,
             addSelectorCBX = true;
         }
 
-        String rowDefs = (addSelectorCBX ? "p," : "") + (mvParent == null ? "p" : "p:g") + (addExtraRow ? ",2px,p" : "");
+        String rowDefs = (addSelectorCBX ? "t:p," : "") + (mvParent == null ? "t:p" : "t:p:g") + (addExtraRow ? ",2px,t:p" : "");
 
         mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         mainComp    = mainBuilder.getPanel();
+        mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         
         List<JComponent> comps = new ArrayList<JComponent>();
 
@@ -969,7 +970,7 @@ public class FormViewObj implements Viewable,
         if (dataObj instanceof FormDataObjIFace)
         {
             Long id = ((FormDataObjIFace)dataObj).getId();
-            Class cls = dataObj.getClass();
+            Class<?> cls = dataObj.getClass();
             dataObj = session.get(cls, id);
             
             

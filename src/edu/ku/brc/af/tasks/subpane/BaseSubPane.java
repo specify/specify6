@@ -221,7 +221,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         if (session != null)
         {
-            session.flush();
+            //session.flush();
             session.close();
             
             log.debug("Session Close["+session.hashCode()+"]");

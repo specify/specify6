@@ -804,7 +804,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         searchText = new JAutoCompTextField(15, new PickListDBAdapter("ExpressSearch", true));
         searchText.setAskBeforeSave(false);
         
-        searchText.setText("2004-IZ-121");
+        //searchText.setText("2004-IZ-121");
+        searchText.setText("platostomus");
         
         //searchText  = searchTextAutoComp.getTnew JTextField("2004-IZ-121", 15);
 

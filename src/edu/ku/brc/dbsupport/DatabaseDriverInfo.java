@@ -115,7 +115,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     }
 
     /**
-     * Compable interface method
+     * Comparable interface method
      * @param obj the objec to compare to
      * @return 0 if equals
      */

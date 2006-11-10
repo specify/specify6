@@ -17,7 +17,6 @@ package edu.ku.brc.af.core;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
 import java.util.List;
 import java.util.Vector;
@@ -25,14 +24,16 @@ import java.util.Vector;
 import edu.ku.brc.ui.Trash;
 
 /**
- * The layout manager for laying out NavBoxes in a vertical fashion (only).
- 
+ * The layout manager for laying out NavBoxes in a vertical fashion (only). 
+ * THis REALLY needs to be reworked to take into account the insets just like BoxLayout.
+ * In fact, maybe this should extend BoxLayout and then override the layout method.
+ *
  * @code_status Complete
- **
+ *
  * @author rods
  *
  */
-public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
+public class NavBoxLayoutManager implements LayoutManager2
 {
 
     private Vector<Component> comps         = new Vector<Component>();

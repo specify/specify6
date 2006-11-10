@@ -137,7 +137,7 @@ public class LoggerDialog extends JDialog implements ActionListener
         size.width  += 15;
         builder.getPanel().setPreferredSize(size);
         
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p:g", "min(400px;p),10px,p"));
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p:g", "min(400px;p):g,10px,p"));
         outerPanel.add(new JScrollPane(builder.getPanel(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,1));
         outerPanel.add(btnBuilder.getPanel(), cc.xy(1, 3));
         outerPanel.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -255,7 +255,7 @@ public class LoggerDialog extends JDialog implements ActionListener
         }
         
         /**
-         * Compable interface method
+         * Comparable interface method
          * @param obj the objec to compare to
          * @return 0 if equals
          */

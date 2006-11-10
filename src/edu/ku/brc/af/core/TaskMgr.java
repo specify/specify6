@@ -322,9 +322,16 @@ public class TaskMgr
                         {
                             Element       serviceElement = (Element)iterServices.next();
                             int           tableId        = Integer.parseInt(serviceElement.attributeValue("tableid"));
-                            CommandAction cmd            = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
-                            ServiceInfo   serviceInfo    = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
-                            loadServiceIcons(tp.getName(), serviceInfo);
+                            if (ContextMgr.checkForService(tp.getName(), tableId) == null)
+                            {
+                                CommandAction cmd            = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
+                                ServiceInfo   serviceInfo    = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
+                                loadServiceIcons(tp.getName(), serviceInfo);
+                                
+                            } else
+                            {
+                                log.error("Duplicate Service ["+tp.getName()+"]["+tableId+"]");
+                            }
                         }
                     } else
                     {

@@ -34,7 +34,7 @@
         
         <view 
             name="GeographySearch"
-            class="edu.ku.brc.specify.datamodel.Geographyn"
+            class="edu.ku.brc.specify.datamodel.Geography"
             resourcelabels="false">
             <desc><![CDATA[The Geography Search Form]]></desc>
             <altviews>

@@ -65,7 +65,7 @@ import edu.ku.brc.ui.UIHelper;
  * @author rods
  *
  */
-public abstract class ExpressTableResultsBase extends JPanel
+public abstract class ExpressTableResultsBase extends JPanel implements Comparable<ExpressTableResultsBase>
 {
 	private static final Logger log = Logger.getLogger(ExpressTableResultsBase.class);
 
@@ -327,7 +327,7 @@ public abstract class ExpressTableResultsBase extends JPanel
     }
 
     /**
-     * Creates an array of indexes
+     * Creates an array of indexes.
      * @param rows the number of rows to be displayed
      * @return an array of indexes
      */
@@ -428,6 +428,17 @@ public abstract class ExpressTableResultsBase extends JPanel
      */
     public abstract RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll);
 
+    
+    /**
+     * Comparable interface method.
+     * @param obj the objec to compare to
+     * @return 0 if equals
+     */
+    public int compareTo(ExpressTableResultsBase obj)
+    {
+        return results.getTableInfo().getTitle().compareTo(obj.getResults().getTableInfo().getTitle());
+    }
+    
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------

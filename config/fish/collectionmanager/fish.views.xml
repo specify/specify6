@@ -202,16 +202,6 @@
     		</altviews>
     	</view>
 
-    	<view name="Shipment"
-              class="edu.ku.brc.specify.datamodel.Shipment"
-               resourcelabels="false">
-    	    <desc><![CDATA[Shipment form]]></desc>
-    	    <altviews>
-    	        <altview name="Shipment View" viewdef="Shipment" label="View" mode="view" validated="false"/>
-    	        <altview name="Shipment Edit" viewdef="Shipment" label="Edit" mode="edit" validated="true" default="true"/>
-    		</altviews>
-    	</view>
-
     </views>
 
 <!--
@@ -572,7 +562,7 @@
 
             <desc><![CDATA[Locality Mapper]]></desc>
             <columnDef>p,3dlu,p,3dlu</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
                 <row>
@@ -594,7 +584,6 @@
                     <cell type="label" labelfor="4" label="Locality Description"/>
                     <cell type="field" id="4" name="locality.localityName"/>
                 </row>
-                <!--
                 <row>
                     <cell type="label" labelfor="5" label="Country"/>
                     <cell type="field" id="5" name="locality.geography.@getCountry"/>
@@ -607,7 +596,6 @@
                     <cell type="label" labelfor="7" label="County"/>
                     <cell type="field" id="7" name="locality.geography.@getCounty"/>
                 </row>
-                -->
                 <row>
                     <cell type="label" labelfor="8" label="Method"/>
                     <cell type="field" id="8" name="method"/>
@@ -666,10 +654,6 @@
 
                  <cell type="label" labelfor="8" label="Locality"/>
     			    <cell type="field" id="8" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
-    			</row>
-
-    			<row>
-    				<cell type="separator" label="Preparations" colspan="12"/>
     			</row>
     			<row>
     			    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
@@ -892,13 +876,10 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>p,2dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p,5dlu,p</rowDef>
+            <columnDef>p,6dlu,p,15dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p</rowDef>
 
             <rows>
-                <row>
-                    <cell type="separator" label="Loan" colspan="3"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
                     <cell type="field" id="1" name="loanNumber" uitype="text" cols="50" colspan="1" isrequired="true"/>
@@ -935,10 +916,6 @@
                 	<cell type="label" labelfor="9" label="Attachments"/>
                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="1"/>
                 </row>
-                <row>
-                    <cell type="subview" viewname="Shipment" id="10" name="shipment" desc="Shipments" colspan="3"/>
-                </row>
-                
             </rows>
         </viewdef>
 
@@ -1069,12 +1046,19 @@
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2dlu,p:g,6dlu,p,2dlu,p:g,2dlu</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,3dlu,p</rowDef>
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
             <rows>
                 <row>
-                    <cell type="separator" label="Permit" colspan="4"/>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" icon="Permit" recordobj="true"/>
+                                <cell type="separator" label="Permit"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
@@ -1109,12 +1093,7 @@
 
                 <row>
                     <cell type="label" labelfor="9" label="Remarks"/>
-                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="6" cols="40" valtype="Changed"/>
-                </row>
-                
-                <row>
-                	<cell type="label" labelfor="10" label="Attachments"/>
-                	<cell type="subview" viewname="AttachmentsIconView" id="10" name="attachments" colspan="6" valtype="Changed"/>
+                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="9" cols="40" valtype="Changed"/>
                 </row>
 
             </rows>
@@ -1186,18 +1165,13 @@
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
     		<rows>
-    <!--			 <row>
-                    <cell type="label" labelfor="preparationMethod" label="Prep Method"/>
-    				<cell type="field" uitype="combobox" name="preparationMethod" initialize="data=EtOH, Skeleton, Tissue, Clear Stained, X-Ray, Misc"/>
-
-                    <cell type="label" labelfor="subNumber" label="Sub No"/>
-    				<cell type="field" name="subNumber"/>
-
-
-                    <cell type="label" labelfor="remarks" label="Remarks"/>
-    				<cell type="field" name="remarks" rowspan="8" cols="25"/>
-    			</row>
-    -->
+    		    <row>
+    		        <cell type="separator" label="Preparations" colspan="12"/>
+    		    </row>
+			   <row>
+                   <cell type="label" labelfor="7" label="Prep Method"/>
+			       <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true" valtype="Changed"/>
+			   </row>
     			<row>
                     <cell type="label" labelfor="1" label="Prepared Date"/>
     			    <cell type="field" id="1" name="preparedDate" format=""/>
@@ -1257,53 +1231,7 @@
     			</row>
     			-->
     		</rows>
-    	</viewdef>
-
-    	<viewdef
-    	    type="form"
-    	    name="Shipment"
-    	    class="edu.ku.brc.specify.datamodel.Shipment"
-    	    gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-    	    settable="edu.ku.brc.ui.forms.DataSetterForObj">
-    	    <desc><![CDATA[Shipment form]]></desc>
-    	    <enableRules/>
-
-            <columnDef>p,2dlu,p:g,8dlu,p,2dlu,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-
-    		<rows>
-                <row>
-                    <cell type="separator" label="Shipment" colspan="7"/>
-                </row>
-    			<row>
-                    <cell type="label" labelfor="1" label="Date"/>
-    			    <cell type="field" id="1" name="shipmentDate" format=""/>
-
-    			    <cell type="label" labelfor="2" label="Number"/>
-    			    <cell type="field" id="2" name="shipmentNumber" isrequired="true"/>
-    			</row>
-    			<row>
-                    <cell type="label" labelfor="3" label="Package Count"/>
-    			    <cell type="field" id="3" name="numberOfPackages"/>
-
-                    <cell type="label" labelfor="4" label="Weight"/>
-    			    <cell type="field" id="4" name="weight"/>
-    			</row>
-                <row>
-    			    <cell type="label" labelfor="5" label="Size"/>
-                    <cell type="field" id="5" name="shipmentMethod" uitype="combobox" picklist="ShipmentMethod"/>
-
-    			    <cell type="label" labelfor="6" label="Insured For"/>
-                    <cell type="field" id="6" name="insuredForAmount"/>
-    			</row>
-    			<row>
-                    <cell type="label" labelfor="7" label="Shipper"/>
-                    <cell type="field" id="7" name="agentByShipper" uitype="querycbx" initialize="name=Agent;title=Shipper" isrequired="false"/>
-
-                    <cell type="label" labelfor="8" label="Shipped To"/>
-                    <cell type="field" id="8" name="agentByShippedTo" uitype="querycbx" initialize="name=Agent;title=Shipped To" isrequired="true"/>
-    			</row>
-    		</rows>
+    		
     	</viewdef>
 
     </viewdefs>

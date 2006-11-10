@@ -779,6 +779,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
         }
+        
+        for (ViewSet vs : backStopViewSetMgr.getViewSets())
+        {
+            View view = backStopViewSetMgr.getView(vs.getName(), viewName);
+            if (view != null)
+            {
+                return view;
+            }
+        }
         throw new RuntimeException("Can't find View ["+viewName+"] colObjDef["+(colObjDef != null ? colObjDef.getName() : "null")+"] ["+fndColObjDef+"]");
     }
 
@@ -965,7 +974,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                 }
 
                                 File resFile = new File(file.getAbsoluteFile() + File.separator + fileName);
-                                if (resFile == null || !resFile.exists())
+                                if (!resFile.exists())
                                 {
                                     //throw new RuntimeException("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
                                     log.error("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");

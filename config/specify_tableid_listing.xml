@@ -100,7 +100,9 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.Preparation" id="63"/>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" id="64"/>
-        <table name="edu.ku.brc.specify.datamodel.PrepType" id="65"/>
+        <table name="edu.ku.brc.specify.datamodel.PrepType" id="65">
+            <display objtitle="Prepartion Type" view="PrepType" searchdlg="PrepTypeSearch" newobjdlg="PrepTypeDisplay"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Project" id="66"/>
         <table name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" id="67"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSet" id="68"/>

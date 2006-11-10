@@ -72,6 +72,17 @@
         </switch>
     </format>
     
+    <format
+        name="PrepType"
+        class="edu.ku.brc.specify.datamodel.PrepType"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+    
     
     <aggregators>
         <aggregator name="AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations"/>
