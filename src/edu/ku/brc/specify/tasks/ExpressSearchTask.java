@@ -688,6 +688,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap     = getIdToTableInfoHash();
         Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = getJoinIdToTableInfoHash();
         
+        IndexSearcher searcher = null;
+        
         try
         {
             // XXX sorting didn't work for some reason
@@ -695,7 +697,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             // Sort sort =  new Sort("table");
             // Sort sort2 =  new Sort(new SortField[] {new SortField("table", SortField.INT, true)});
 
-            IndexSearcher searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
+            searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
 
             Query query;
 
@@ -730,7 +732,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             }
             
             displayResults(esrPane, resultsMap, resultsForJoinsMap, hits);
-
+            
+            searcher.close();
+            
             return true;
 
         } catch (ParseException ex)
@@ -743,6 +747,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             // XXX Change message
             JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
             log.error(ex);
+        }
+        
+        if (searcher != null)
+        {
+            try
+            {
+                searcher.close();
+                
+            } catch (IOException ex)
+            {
+                log.error(ex);
+            }
         }
         return false;
     }
