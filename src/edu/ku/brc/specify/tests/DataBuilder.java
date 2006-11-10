@@ -17,6 +17,7 @@ import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.Authors;
 import edu.ku.brc.specify.datamodel.Borrow;
@@ -99,7 +100,7 @@ public class DataBuilder
 
     public static void setSession(Session session)
     {
-        ObjCreatorHelper.session = session;
+        DataBuilder.session = session;
     }
 
     public static AccessionAgents createAccessionAgent(Accession accession, Agent agent)
@@ -134,7 +135,19 @@ public class DataBuilder
         persist(agent);
         return agent;
     }
-
+    public static Attachment createAttachment(final String filename,
+                                              final String mimeType,
+                                              final Integer ordinal)
+    {
+        Attachment attachment = new Attachment();
+        attachment.initialize();
+        attachment.setOrigFilename(filename);
+        attachment.setMimeType(mimeType);
+        attachment.setOrdinal(ordinal);
+        persist(attachment);
+        return attachment;
+    }
+                                              
     public static AttributeDef createAttributeDef(final AttributeIFace.FieldType type,
                                                   final String name,
                                                   final PrepType prepType)
@@ -385,16 +398,13 @@ public class DataBuilder
                                                     final DeterminationStatus status,
                                                     final Calendar calendar)
     {
-        startCal.clear();
-        startCal.set(2006, 0, 2);
-
         // Create Determination
         Determination determination = new Determination();
         determination.initialize();
 
         determination.setStatus(status);
         determination.setCollectionObject(collectionObject);
-        determination.setDeterminedDate(calendar == null ? startCal : calendar);
+        determination.setDeterminedDate(calendar);
         determination.setDeterminer(determiner);
         determination.setTaxon(taxon);
 
