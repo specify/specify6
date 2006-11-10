@@ -29,9 +29,9 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /**
      * Creates a new instance, setting baseDirectory to null.
      */
-    public FileStoreAttachmentManager()
+    public FileStoreAttachmentManager(String baseDirectory)
     {
-        baseDirectory = null;
+        this.baseDirectory = baseDirectory;
     }
     
     /* (non-Javadoc)
@@ -74,7 +74,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         FileUtils.copyFile(attachmentFile, origDest);
         
         File thumbDest = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
-        FileUtils.copyFile(attachmentFile, thumbDest);
+        FileUtils.copyFile(thumbnail, thumbDest);
     }
 
     /* (non-Javadoc)
