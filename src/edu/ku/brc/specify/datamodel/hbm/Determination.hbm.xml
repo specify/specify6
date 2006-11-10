@@ -88,7 +88,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to DeterminationStatus -->
-    <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" outer-join="true">
+    <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" outer-join="true" cascade="save-update">
         <meta attribute="scope-field">protected</meta>
         <column name="DeterminationStatusID" not-null="true" />
     </many-to-one>
