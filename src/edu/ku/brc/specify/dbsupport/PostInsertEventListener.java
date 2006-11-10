@@ -38,7 +38,9 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
     {
         if (arg0.getEntity() instanceof FormDataObjIFace)
         {
-            LuceneUpdater.getInstance().updateIndex((FormDataObjIFace)arg0.getEntity(), LuceneUpdater.IndexAction.New);
+            FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
+            LuceneUpdater.getInstance().updateIndex(dataObj, LuceneUpdater.IndexAction.New);
+            dataObj.onSave();
         }
     }
 

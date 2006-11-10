@@ -40,7 +40,9 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
     {
         if (arg0.getEntity() instanceof FormDataObjIFace)
         {
-            LuceneUpdater.getInstance().updateIndex((FormDataObjIFace)arg0.getEntity(), LuceneUpdater.IndexAction.Delete);
+            FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
+            LuceneUpdater.getInstance().updateIndex(dataObj, LuceneUpdater.IndexAction.Delete);
+            dataObj.onDelete();
         }
     }
 

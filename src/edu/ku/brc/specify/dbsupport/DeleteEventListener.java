@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.dbsupport;
 
+import java.util.Set;
+
 import org.hibernate.HibernateException;
 import org.hibernate.event.DeleteEvent;
 
@@ -29,13 +31,33 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 public class DeleteEventListener implements org.hibernate.event.DeleteEventListener
 {
-
+    /* (non-Javadoc)
+     * @see org.hibernate.event.DeleteEventListener#onDelete(org.hibernate.event.DeleteEvent)
+     */
     public void onDelete(DeleteEvent event) throws HibernateException
     {
         if (event.getObject() instanceof FormDataObjIFace)
         {
-            LuceneUpdater.getInstance().updateIndex((FormDataObjIFace)event.getObject(), LuceneUpdater.IndexAction.Delete);
+            updateLuceneIndex((FormDataObjIFace)event.getObject());
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.hibernate.event.DeleteEventListener#onDelete(org.hibernate.event.DeleteEvent, java.util.Set)
+     */
+    public void onDelete(DeleteEvent event, Set transientEntities) throws HibernateException
+    {
+        for (Object o: transientEntities)
+        {
+            if (o instanceof FormDataObjIFace)
+            {
+                updateLuceneIndex((FormDataObjIFace)o);
+            }
+        }
+    }
+    
+    protected void updateLuceneIndex(FormDataObjIFace dataObj)
+    {
+        LuceneUpdater.getInstance().updateIndex(dataObj, LuceneUpdater.IndexAction.Delete);
+    }
 }
