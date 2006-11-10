@@ -440,19 +440,18 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
             {
                 log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
                 
-                Class classObj = Class.forName(className);
+                Class<?> classObj = Class.forName(className);
                 
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List list = session.getDataList(classObj, idFieldName, id);
+                List<?> list = session.getDataList(classObj, idFieldName, id);
                 session.close();
                 
                 if (list.size() == 1)
                 {
                     return list.get(0);
-                } else
-                {
-                    throw new RuntimeException("Why would more than one object be found in DBObjSearchDialog?");
                 }
+                // else
+                throw new RuntimeException("Why would more than one object be found in DBObjSearchDialog?");
             } catch (Exception ex)
             {
                 log.error(ex);
