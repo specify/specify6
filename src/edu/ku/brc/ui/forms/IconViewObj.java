@@ -451,6 +451,8 @@ public class IconViewObj implements Viewable
                 dataSet.add(dataObj);
             }
         }
+        
+        setDataIntoUI();
     }
 
     /* (non-Javadoc)
