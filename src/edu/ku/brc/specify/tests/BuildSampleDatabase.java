@@ -10,6 +10,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createAccession;
 import static edu.ku.brc.specify.tests.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createAddress;
 import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
+import static edu.ku.brc.specify.tests.DataBuilder.createAttachment;
 import static edu.ku.brc.specify.tests.DataBuilder.createAttributeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createCatalogSeries;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEvent;
@@ -29,20 +30,23 @@ import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriod;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDefItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createLoan;
+import static edu.ku.brc.specify.tests.DataBuilder.createLoanAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocality;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocation;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocationTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocationTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createPermit;
+import static edu.ku.brc.specify.tests.DataBuilder.createPickList;
 import static edu.ku.brc.specify.tests.DataBuilder.createPrepType;
 import static edu.ku.brc.specify.tests.DataBuilder.createPreparation;
+import static edu.ku.brc.specify.tests.DataBuilder.createShipment;
 import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxon;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonChildren;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
-import static edu.ku.brc.specify.tests.DataBuilder.*;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -59,6 +63,7 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -94,6 +99,10 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
  * 
@@ -105,7 +114,7 @@ public class BuildSampleDatabase
     private static final Logger log      = Logger.getLogger(BuildSampleDatabase.class);
     protected static Calendar   calendar = Calendar.getInstance();
     protected static Session session;
-
+    
     public static Session getSession()
     {
         return session;
@@ -209,9 +218,9 @@ public class BuildSampleDatabase
         agents.add(createAgent("Mr.", "James", "H", "Beach", "jb"));
         agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk"));
         agents.add(createAgent("Mr.", "Rod", "C", "Spears", "rs"));
-        agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc"));
         agents.add(createAgent("Mr.", "Wayne", "J", "Oppenheimer", "wjo"));
         agents.add(createAgent("Sir", "Dudley", "X", "Simmons", "dxs"));
+        agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc"));
         Agent ku = new Agent();
         ku.initialize();
         ku.setAbbreviation("KU");
@@ -233,9 +242,9 @@ public class BuildSampleDatabase
         agents.get(0).setEmail("beach@ku.edu");
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         addrs.add(createAddress(agents.get(3), "1335511 Inverness", null, "Lawrence", "KS", "USA", "66047"));
-        addrs.add(createAddress(agents.get(4), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
+        addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
-        addrs.add(createAddress(agents.get(5), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
+        addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
 
         dataObjects.addAll(agents);
         dataObjects.addAll(addrs);
@@ -472,6 +481,25 @@ public class BuildSampleDatabase
         
         dataObjects.add(loan1Ship);
         dataObjects.add(loan2Ship);
+
+        ////////////////////////////////
+        // attachments (attachment metadata)
+        ////////////////////////////////
+//        log.info("Creating attachments and attachment metadata");
+//        try
+//        {
+//            String bigEyeFilePath = "C:\\Documents and Settings\\jstewart\\Desktop\\bigeye.jpg";
+//            
+//            Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
+//            
+//            bigEye.setLoan(closedLoan);
+//
+//            dataObjects.add(bigEye);
+//        }
+//        catch (Exception e)
+//        {
+//            log.error("Could not create attachment", e);
+//        }
         
         // done
         log.info("Done creating single discipline database: " + disciplineName);
@@ -713,7 +741,7 @@ public class BuildSampleDatabase
     {
         if (session != null)
         {
-            session.persist(o);
+            session.saveOrUpdate(o);
         }
     }
 
@@ -727,7 +755,7 @@ public class BuildSampleDatabase
     }
 
 
-    public static void persist(List<Object> oList)
+    public static void persist(List<?> oList)
     {
         for (Object o: oList)
         {
@@ -788,7 +816,7 @@ public class BuildSampleDatabase
         return ret;
     }
 
-    public static List<Object> getObjectsByClass( List<Object> objects, Class<Object> clazz)
+    public static List<?> getObjectsByClass( List<Object> objects, Class<?> clazz)
     {
         Vector<Object> rightClass = new Vector<Object>();
         for (Object o: objects)
@@ -804,13 +832,18 @@ public class BuildSampleDatabase
     
     public static void main(String[] args) throws Exception
     {
-        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
         String databaseName = "testfish";
         String databaseHost = "localhost";
-        schemaGen.generateSchema(databaseHost, databaseName);
-
         String userName = "rods";
         String password = "rods";
+
+        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
+        schemaGen.generateSchema(databaseHost, databaseName);
+
+        //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
+        //HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
+        //HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
+        //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
 
         if (UIHelper.tryLogin("com.mysql.jdbc.Driver",
                                 "org.hibernate.dialect.MySQLDialect",
@@ -824,11 +857,24 @@ public class BuildSampleDatabase
             {
                 try
                 {
+//                    Thumbnailer thumb = new Thumbnailer();
+//                    thumb.registerThumbnailers("config/thumbnail_generators.xml");
+//                    thumb.setQuality(.5f);
+//                    thumb.setMaxHeight(128);
+//                    thumb.setMaxWidth(128);
+//
+//                    FileStoreAttachmentManager attachMgr = new FileStoreAttachmentManager("C:/AttachmentStorage/");
+//                    
+//                    AttachmentUtils.setAttachmentManager(attachMgr);
+//                    AttachmentUtils.setThumbnailer(thumb);
+                    
                     List<Object> dataObjects = createSingleDiscipline("Fish", "fish");
 
                     log.info("Persisting in-memory objects to DB");
+                    
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
+
                     startTx();
                     //persist(dataObjects.get(0)); // just persist the CollectionObjDef object
                     persist(dataObjects);
