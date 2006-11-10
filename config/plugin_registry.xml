@@ -13,6 +13,7 @@
 	        <service command="Edit" tableid="7" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="8" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="10" tooltip="EditRecordSetTT"/>
+	        <service command="Edit" tableid="41" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="52" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="65" tooltip="EditRecordSetTT"/>
 	    </plugin>
