@@ -42,7 +42,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     {
         Long id = getId();
         
-        return id != null ? id.toString() : "";
+        return getClass().getSimpleName() + ": " + id;
     }
     
     /* (non-Javadoc)
