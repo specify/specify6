@@ -141,6 +141,17 @@ public class IconTray extends JPanel
     }
     
     /**
+     * Removes all the items from the IconTray.
+     */
+    public synchronized void removeAllItems()
+    {
+        while (listModel.getSize() > 0)
+        {
+            listModel.remove(0);
+        }
+    }
+    
+    /**
      * Returns a Set containing all items in the tray.
      * 
      * @return a Set containing all items in the tray

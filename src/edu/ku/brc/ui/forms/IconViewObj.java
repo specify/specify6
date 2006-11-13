@@ -493,6 +493,8 @@ public class IconViewObj implements Viewable
         {
             initMainComp();
         }
+
+        iconTray.removeAllItems();
         
         for (Object o: dataSet)
         {
