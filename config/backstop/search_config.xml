@@ -276,20 +276,20 @@ where determinationstatus.DeterminationStatusID = 1]]>
             </index>
             <detailView icon="Agent">
                 <sql>
-                    <![CDATA[SELECT * FROM (SELECT
-taxon.FullName,
-taxon.CommonName,
-agent.LastName,
-agent.FirstName,
-collectionobject.CollectionObjectID,
-FROM
-collectionobject
-INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
-INNER JOIN agent ON determination.DeterminerID = agent.AgentID
-INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID 
-INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
-WHERE determinationstatus.DeterminationStatusID = 1) AS tx
-WHERE tx.CollectionObjectID IN (%s)]]>
+                    <![CDATA[SELECT * FROM (SELECT 
+ taxon.FullName,
+ taxon.CommonName,
+ agent.LastName,
+ agent.FirstName,
+ collectionobject.CollectionObjectID
+ FROM
+ collectionobject
+ INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+ INNER JOIN agent ON determination.DeterminerID = agent.AgentID
+ INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
+ INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
+ WHERE determinationstatus.DeterminationStatusID = 1) AS tx
+ WHERE tx.CollectionObjectID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>

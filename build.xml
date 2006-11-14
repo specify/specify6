@@ -197,13 +197,13 @@
 		<!-- Copy info list -->
 		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents"/>
 
-		<!-- Copy Icons -->
-		<copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources"/>
-
 		<!-- Copy the app -->
 		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java"/>
 
-		<copy todir="${appdir}/Contents/Resources/Java">
+	    <!-- Copy Icons -->
+	    <copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources"/>
+	  
+	    <copy todir="${appdir}/Contents/Resources/Java">
 		    <fileset dir="libs">
 		        <include name="*.jar"/>
 		    </fileset>
