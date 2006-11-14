@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify;
+package edu.ku.brc.specify.tests;
 
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
@@ -63,13 +63,14 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.db.PickList;
-import edu.ku.brc.ui.db.PickListItem;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 /*
  * @code_status Unknown (auto-generated)
@@ -406,7 +407,7 @@ public class PickListTestApp
         {
             HibernateUtil.beginTransaction();
             
-            Set<PickListItem> list = new HashSet<PickListItem>();
+            Set<PickListItemIFace> list = new HashSet<PickListItemIFace>();
             String[] states = {"AL", "Alabama - AL", 
                               "AK", "Alaska - AK", 
                               "AZ", "Arizona - AZ", 
@@ -462,7 +463,7 @@ public class PickListTestApp
           
           for (int i=0;i<states.length;i++)
           {
-              PickListItem pli = new PickListItem();
+              PickListItemIFace pli = new PickListItem();
               System.out.println("["+states[i]+"]["+states[i+1]+"]");
               pli.setValue(states[i++]);
               pli.setTitle(states[i]);

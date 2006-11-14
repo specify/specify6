@@ -36,7 +36,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.db.PickListDBAdapter;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation
@@ -97,7 +97,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      * Constructor
      * @param arg0 initial number of columns
      */
-    public ValTextField(int arg0, PickListDBAdapter pickListDBAdapter)
+    public ValTextField(int arg0, PickListDBAdapterIFace pickListDBAdapter)
     {
         super(arg0, pickListDBAdapter);
         init();

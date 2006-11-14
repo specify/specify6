@@ -17,6 +17,8 @@ package edu.ku.brc.ui;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * Dispatches a command to a "set" of listeners. Typically, each Task registered itself as a "type"
@@ -33,8 +35,7 @@ import java.util.Vector;
 public class CommandDispatcher
 {
     // Static Data Members
-    //private static final Logger log  = Logger.getLogger(CommandDispatcher.class);
-    
+   protected static final Logger log = Logger.getLogger(CommandDispatcher.class);
     private static final CommandDispatcher instance = new CommandDispatcher();
     
     // Data Members
@@ -120,7 +121,8 @@ public class CommandDispatcher
             return false;
         }
         // else
-        throw new RuntimeException("Type of Listeners couldn't be found["+cmdAction.getType()+"]"); 
+        log.warn("Type of Listeners couldn't be found["+cmdAction.getType()+"]"); 
+        return false;
     }
 
 }

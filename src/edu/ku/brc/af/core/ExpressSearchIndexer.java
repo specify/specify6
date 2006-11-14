@@ -15,7 +15,6 @@
 package edu.ku.brc.af.core;
 
 
-import static edu.ku.brc.ui.UIHelper.getInt;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
@@ -25,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -134,8 +134,6 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
         noIndexFile = isLuceneEmpty();
 
-        Date lastModified = noIndexFile ? new Date(0) : new Date(lucenePath.lastModified());
-
         try
         {
             if (esDOM == null)
@@ -168,18 +166,17 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                listener.namedSections(sectionNames); 
             }
 
-            DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
             for (Enumeration<String> e=namesHash.keys();e.hasMoreElements();)
             {
                 String nameStr = e.nextElement();
-                String sqlStr = "select count(*) from " + nameStr +" where datediff(TimeStampCreated, "+formatter.format(lastModified)+") > 0";
+                String sqlStr = "select TimeStampCreated from accession order by TimeStampCreated desc limit 0,1"; // TODO This needs to be per DB PLATFORM
                 log.debug(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
 
                 // Since the index doesn't exist fake like
                 // each table has at least one out of date record
-                container.add(noIndexFile ? new QueryResultsDataObj(new Integer(1)) : new QueryResultsDataObj(1,1));
+                container.add(noIndexFile ? new QueryResultsDataObj(new Date(new Date().getTime()-1000)) : new QueryResultsDataObj(1,1));
                 list.add(container);
             }
 
@@ -990,19 +987,44 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     public synchronized void allResultsBack()
     {
         boolean allOK = true;
+        
+        Timestamp lastModified = noIndexFile ? new Timestamp(0) : new Timestamp(lucenePath.lastModified());
 
         if (listener != null)
         {
             java.util.List<Object> list = handler.getDataObjects();
             for (int i=0;i<list.size();i++)
             {
-                Object name = list.get(i++);
-                int num = getInt(list.get(i));
-                if (num > 0)
+                Object nameObj         = list.get(i++);
+                Object createdDateObj  = list.get(i++);
+                
+                list.get(i++); // skip text label (should be same as nameObj
+                Object modifiedDateObj = list.get(i);
+                
+                Timestamp createdTS  = (Timestamp)createdDateObj;
+                Timestamp modifiedTS = (Timestamp)modifiedDateObj;
+     
+                boolean isOld = false;
+                if (createdDateObj != null && modifiedTS != null)
                 {
-                    allOK = false;
+                    createdTS = createdTS.getTime() > modifiedTS.getTime() ? createdTS : modifiedTS;
+                            
+                } else if (createdTS == null && modifiedTS != null)
+                {
+                    createdTS = modifiedTS;  // this should happen
                 }
-                listener.outOfDate(name.toString(), num == 0);
+                
+                if (createdTS != null)
+                {
+                    //log.debug("["+formatter.format(lastModified)+"]["+formatter.format(createdTS)+"] "+(lastModified.getTime() < createdTS.getTime()));
+                    isOld = lastModified.getTime() < createdTS.getTime();
+                    if (!isOld)
+                    {
+                        allOK = false;
+                    }                    
+                }
+
+                listener.outOfDate(nameObj.toString(), !isOld);
             }
             list.clear();
             listener.outOfDateComplete(allOK);

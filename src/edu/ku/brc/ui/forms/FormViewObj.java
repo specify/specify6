@@ -70,6 +70,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
@@ -80,7 +81,6 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
-import edu.ku.brc.ui.db.PickListItem;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
@@ -1775,7 +1775,6 @@ public class FormViewObj implements Viewable,
                         PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, selectorName);
                         Object selectorValObj = UIHelper.convertDataFromString(altView.getSelectorValue(), descr.getPropertyType());
                         
-                        // FIXME This needs to be moved out of HibernateUtil!
                         FormHelper.setFieldValue(selectorName, dataObj, selectorValObj, dg, ds);
                         
                     } catch (Exception ex)

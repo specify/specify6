@@ -83,6 +83,17 @@
         </switch>
     </format>
     
+    <format
+        name="DeterminationStatus"
+        class="edu.ku.brc.specify.datamodel.DeterminationStatus"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+    
     
     <aggregators>
         <aggregator name="AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations"/>

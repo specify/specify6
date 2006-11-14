@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.UIHelper;
 /**
  * An editable JComboBox that enables the user to edit the values in the list which actually creates a new value
@@ -54,7 +55,7 @@ public class JEditComboBox extends JComboBox
     protected boolean            ignoreFocus     = false;
     protected boolean            askBeforeSave   = false;
     
-    protected PickListDBAdapter  dbAdapter       = null;
+    protected PickListDBAdapterIFace  dbAdapter       = null;
 
     /**
      * Constructor
@@ -95,7 +96,7 @@ public class JEditComboBox extends JComboBox
      * Constructor with Adapter
      * @param dbAdapter the adaptor for enabling autocomplete
      */
-    public JEditComboBox(final PickListDBAdapter dbAdapter)
+    public JEditComboBox(final PickListDBAdapterIFace dbAdapter)
     {
         super(dbAdapter.getList());
         
@@ -108,7 +109,7 @@ public class JEditComboBox extends JComboBox
      * @param dbAdapterArg the PickListAdaptor
      * @param makeEditable indicates whether it is editable
      */
-    public void init(final PickListDBAdapter dbAdapterArg, final boolean makeEditable)
+    public void init(final PickListDBAdapterIFace dbAdapterArg, final boolean makeEditable)
     {
         setModel(new DefaultComboBoxModel(dbAdapterArg.getList()));
         
@@ -170,7 +171,7 @@ public class JEditComboBox extends JComboBox
      * Return the PickListAdaptor
      * @return the PickListAdaptor
      */
-    public PickListDBAdapter getDBAdapter()
+    public PickListDBAdapterIFace getDBAdapter()
     {
         return dbAdapter;
     }
@@ -228,7 +229,7 @@ public class JEditComboBox extends JComboBox
             if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, 
                                                             "Add new value `"+strArg+"` to the list?", "Add New Item", JOptionPane.YES_NO_OPTION))
             {
-                PickListItem pli;
+                PickListItemIFace pli;
                 if (dbAdapter != null)
                 {
                     pli = dbAdapter.addItem(strArg, strArg);
@@ -366,7 +367,7 @@ public class JEditComboBox extends JComboBox
                                            final int     sizeLimit,
                                            final boolean createWhenNotFound)
     {
-        PickListDBAdapter adaptor = new PickListDBAdapter(name, createWhenNotFound);
+        PickListDBAdapterIFace adaptor = PickListDBAdapterFactory.getInstance().create(name, createWhenNotFound);
         adaptor.getPickList().setReadOnly(readOnly);
         adaptor.getPickList().setSizeLimit(sizeLimit);
         

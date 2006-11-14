@@ -17,7 +17,6 @@ package edu.ku.brc.af.tasks.subpane;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
-import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -33,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -177,8 +177,6 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         noIndexFile = isLuceneEmpty();
 
-        Date lastModified = noIndexFile ? new Date(0) : new Date(lucenePath.lastModified());
-
         try
         {
             if (esDOM == null)
@@ -205,20 +203,32 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             }
 
             int row = 1;
-            DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
             for (Enumeration<String> e=namesHash.keys();e.hasMoreElements();)
             {
                 String nameStr = e.nextElement();
-                String sqlStr = "select count(*) from " + nameStr +" where datediff(TimeStampCreated, "+formatter.format(lastModified)+") > 0";
-                log.debug(sqlStr);
+                
+                // Find the last Created Timestamp
+                String sqlStr = "select TimeStampCreated from "+nameStr+" order by TimeStampCreated desc limit 0,1"; // TODO This needs to be per DB PLATFORM
+                log.info(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
 
                 // Since the index doesn't exist fake like
                 // each table has at least one out of date record
-                container.add(noIndexFile ? new QueryResultsDataObj(new Integer(1)) : new QueryResultsDataObj(1,1));
+                container.add(noIndexFile ? new QueryResultsDataObj(new Date(new Date().getTime()-1000)) : new QueryResultsDataObj(1,1));
                 list.add(container);
+                
+                // Now find the last Modified Timestamp
+                sqlStr = "select TimeStampModified from "+nameStr+" order by TimeStampModified desc limit 0,1"; // TODO This needs to be per DB PLATFORM
+                log.info(sqlStr);
+                container = new QueryResultsContainer(sqlStr);
+                container.add(new QueryResultsDataObj(nameStr));
 
+                // Since the index doesn't exist fake like
+                // each table has at least one out of date record
+                container.add(noIndexFile ? new QueryResultsDataObj(new Date(new Date().getTime()-1000)) : new QueryResultsDataObj(1,1));
+                list.add(container);
+                
                 JLabel label = new JLabel(namesHash.get(nameStr)+":", JLabel.RIGHT);
                 label.setFont(captionFont);
 
@@ -229,6 +239,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 builder.add(label, cc.xy(3,row));
                 row += 2;
             }
+
             resultsPanel = builder.getPanel();
 
         } catch (Exception ex)
@@ -1126,21 +1137,49 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     public synchronized void allResultsBack()
     {
         boolean allOK = true;
+        
+        //DateFormat                formatter    = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Timestamp lastModified = noIndexFile ? new Timestamp(0) : new Timestamp(lucenePath.lastModified());
 
         java.util.List<Object> list = handler.getDataObjects();
+        
         for (int i=0;i<list.size();i++)
         {
-            Object nameObj = list.get(i++);
-            Object valObj  = list.get(i);
+            Object nameObj         = list.get(i++);
+            Object createdDateObj  = list.get(i++);
+            
+            list.get(i++); // skip text label (should be same as nameObj
+            Object modifiedDateObj = list.get(i);
+            
             JLabel label   = resultsLabels.get(getString(nameObj));
             if (label != null)
             {
-                int num = getInt(valObj);
-                label.setIcon(num == 0 ? checkIcon : exclaimIcon);
-                if (num > 0)
+                Timestamp createdTS  = (Timestamp)createdDateObj;
+                Timestamp modifiedTS = (Timestamp)modifiedDateObj;
+     
+                if (createdDateObj != null && modifiedTS != null)
                 {
-                    allOK = false;
+                    createdTS = createdTS.getTime() > modifiedTS.getTime() ? createdTS : modifiedTS;
+                            
+                } else if (createdTS == null && modifiedTS != null)
+                {
+                    createdTS = modifiedTS;  // this should happen
                 }
+                
+                if (createdTS != null)
+                {
+                    //log.debug("["+formatter.format(lastModified)+"]["+formatter.format(createdTS)+"] "+(lastModified.getTime() < createdTS.getTime()));
+                    boolean isOld = lastModified.getTime() < createdTS.getTime();
+                    label.setIcon(isOld ? exclaimIcon : checkIcon);
+                    if (isOld)
+                    {
+                        allOK = false;
+                    }                    
+                } else
+                {
+                    label.setIcon(checkIcon); // This means there are no records to indicate it is up to date
+                }
+
             } else
             {
                 log.error("Couldn't find label["+getString(nameObj)+"]");

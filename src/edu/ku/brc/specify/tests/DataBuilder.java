@@ -63,6 +63,8 @@ import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
@@ -85,8 +87,6 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.ui.db.PickList;
-import edu.ku.brc.ui.db.PickListItem;
 
 public class DataBuilder
 {

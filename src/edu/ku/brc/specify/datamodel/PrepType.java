@@ -14,47 +14,55 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-
 /**
-
+ * Each Preparation has a PrepType and Preparations can have additional "attributes" based on a PrepType.
+ * 
+ * @author rods
+ *
+ * @code_status Beta
+ *
+ * Created Date: Nov 14, 2006
+ *
  */
-public class PrepType extends DataModelObjBase implements java.io.Serializable {
+public class PrepType extends DataModelObjBase implements java.io.Serializable
+{
 
     // Fields    
 
-     protected Long prepTypeId;
-     protected String name;
-     protected Set<Preparation> preparations;
-     protected Set<AttributeDef> attributeDefs;
-
+    protected Long              prepTypeId;
+    protected String            name;
+    protected Set<Preparation>  preparations;
+    protected Set<AttributeDef> attributeDefs;
 
     // Constructors
 
     /** default constructor */
-    public PrepType() {
+    public PrepType()
+    {
     }
-    
+
     /** constructor with id */
-    public PrepType(Long prepTypeId) {
+    public PrepType(Long prepTypeId)
+    {
         this.prepTypeId = prepTypeId;
     }
-   
-    
-    
 
     // Initializer
     public void initialize()
     {
         prepTypeId = null;
         name = null;
+        timestampCreated = new Date();
+        timestampModified = null;
+        lastEditedBy = null;
         preparations = new HashSet<Preparation>();
         attributeDefs = new HashSet<AttributeDef>();
     }
+
     // End Initializer
 
     // Property accessors
@@ -62,7 +70,8 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-    public Long getPrepTypeId() {
+    public Long getPrepTypeId()
+    {
         return this.prepTypeId;
     }
 
@@ -74,47 +83,50 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable {
     {
         return this.prepTypeId;
     }
-    
-    public void setPrepTypeId(Long prepTypeId) {
+
+    public void setPrepTypeId(Long prepTypeId)
+    {
         this.prepTypeId = prepTypeId;
     }
 
     /**
      * 
      */
-    public String getName() {
+    public String getName()
+    {
         return this.name;
     }
-    
-    public void setName(String name) {
+
+    public void setName(String name)
+    {
         this.name = name;
     }
 
     /**
      * 
      */
-    public Set<Preparation> getPreparations() {
+    public Set<Preparation> getPreparations()
+    {
         return this.preparations;
     }
-    
-    public void setPreparations(Set<Preparation> preparations) {
+
+    public void setPreparations(Set<Preparation> preparations)
+    {
         this.preparations = preparations;
     }
 
     /**
      * 
      */
-    public Set<AttributeDef> getAttributeDefs() {
+    public Set<AttributeDef> getAttributeDefs()
+    {
         return this.attributeDefs;
     }
-    
-    public void setAttributeDefs(Set<AttributeDef> attributeDefs) {
+
+    public void setAttributeDefs(Set<AttributeDef> attributeDefs)
+    {
         this.attributeDefs = attributeDefs;
     }
-
-
-
-
 
     // Add Methods
 
@@ -147,7 +159,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable {
     }
 
     // Delete Add Methods
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

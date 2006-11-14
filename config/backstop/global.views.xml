@@ -118,6 +118,16 @@
                 <altview name="PrepType Edit" viewdef="PrepType" label="Edit" mode="edit" validated="false"/>                
             </altviews>
         </view>
+        
+        <view name="DeterminationStatus"
+            class="edu.ku.brc.specify.datamodel.DeterminationStatus"
+            resourcelabels="false">
+            <desc><![CDATA[The PrepType Form.]]></desc>
+            <altviews>
+                <altview name="DeterminationStatus View" viewdef="DeterminationStatus" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" label="Edit" mode="edit" validated="false"/>                
+            </altviews>
+        </view>
     </views>
 
     <!-- #############################################################################################
@@ -572,6 +582,27 @@
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="50"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="DeterminationStatus"
+            class="edu.ku.brc.specify.datamodel.DeterminationStatus"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The DeterminationStatus form]]></desc>
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>t:p</rowDef>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="50"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="5" cols="40" valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>

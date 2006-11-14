@@ -449,7 +449,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </detailView>
         </table>
     
-        <table id="19" tableid="71" name="Shipment" title="Shipments" priority="1" color="30, 144, 255">
+        <table id="15" tableid="71" name="Shipment" title="Shipments" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="shipment" title="Shipment"/>
             </outofdate>
@@ -478,7 +478,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </detailView>
         </table>
 
-        <table id="20" tableid="52" name="Loan" title="Loans" priority="1" color="30, 144, 255">
+        <table id="16" tableid="52" name="Loan" title="Loans" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="loan" title="Loan"/>
             </outofdate>
@@ -509,6 +509,31 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </detailView>
         </table>
         
+        <table id="17" tableid="65" indexed="true" name="Prep Type" title="Preparation Type" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="preptype" title="Preparation Type"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM preptype]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">PrepTypeID</col>
+                    <col pos="2">Name</col>
+                </cols>
+            </index>
+            <detailView icon="PrepType">
+                <sql>
+                    <![CDATA[SELECT Name, PrepTypeID FROM preptype WHERE PrepTypeID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="Name" text="Name"/>
+                    <caption col="PrepTypeID" text="PrepTypeID" visible="false"/>
+                </captions>
+                <recordset tabletype="65" col="2"/>
+            </detailView>
+        </table>
+        
         <table id="18" tableid="65" indexed="true" name="Prep Type" title="Preparation Type" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="preptype" title="Preparation Type"/>
@@ -533,7 +558,8 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 <recordset tabletype="65" col="2"/>
             </detailView>
         </table>
-        <table id="21" tableid="41" name="Attachment" title="Attachments" priority="1" color="30, 144, 255">
+        
+        <table id="19" tableid="41" name="Attachment" title="Attachments" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="attachments" title="Attachment"/>
             </outofdate>
@@ -564,7 +590,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
     <!--  These are for Other Non-Express Search Searches  -->
     <!-- ************************************************* -->
     <generic>
-        <table id="15" tableid="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255">
+        <table id="100" tableid="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>
@@ -592,7 +618,7 @@ address.State, address.PostalCode, address.Country FROM agent  Left Join address
             </detailView>
         </table>
     
-        <table id="16" tableid="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255">
+        <table id="101" tableid="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>
@@ -617,7 +643,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
             </detailView>
         </table>
         
-        <table id="17" tableid="7" name="AccessionSearch" title="Accessions" priority="1" color="30, 144, 255">
+        <table id="102" tableid="7" name="AccessionSearch" title="Accessions" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>
@@ -641,7 +667,7 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
             </detailView>
         </table>  
               
-        <table id="18" tableid="3" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255">
+        <table id="103" tableid="3" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>

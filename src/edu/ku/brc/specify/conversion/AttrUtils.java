@@ -63,6 +63,7 @@ public class AttrUtils
             HibernateUtil.beginTransaction();
  
             PrepType prepType = new PrepType();
+            prepType.initialize();
             prepType.setName(name);
             //prepType.setPreparation(new HashSet());
             

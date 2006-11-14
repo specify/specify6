@@ -43,11 +43,11 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
-import edu.ku.brc.ui.db.PickListDBAdapter;
-import edu.ku.brc.ui.db.PickListItem;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 
 
 /**
@@ -118,13 +118,13 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      * Constructor with dbAdapter
      * @param dbAdapter the adaptor for enabling autocomplete
      */
-    public ValComboBox(PickListDBAdapter dbAdapter)
+    public ValComboBox(PickListDBAdapterIFace dbAdapter)
     {
         comboBox = new JAutoCompComboBox(dbAdapter);
         init(true);
     }
 
-    public void init(final PickListDBAdapter dbAdapter)
+    public void init(final PickListDBAdapterIFace dbAdapter)
     {
         comboBox = new JAutoCompComboBox(dbAdapter);
         init(true);

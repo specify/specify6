@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify;
+package edu.ku.brc.specify.tests;
 
 
 import static edu.ku.brc.specify.tests.CreateTestDatabases.createAgentsInMemory;
@@ -38,13 +38,18 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,14 +57,20 @@ import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -67,14 +78,15 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -82,6 +94,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -102,7 +115,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
@@ -110,6 +122,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -143,6 +156,9 @@ public class FormEditor implements DatabaseLoginListener
 
     protected PanelBuilder    builder    = null;
     protected CellConstraints cc         = new CellConstraints();
+    
+    protected ViewSetMgr    viewSetMgr      = null;
+    protected List<Object>  databaseObjects = null; 
 
 
 
@@ -159,6 +175,17 @@ public class FormEditor implements DatabaseLoginListener
      */
     private void initialize()
     {
+        UICacheManager.getInstance(); // initializes it first thing
+        UICacheManager.setAppName("Specify");
+        IconManager.setApplicationClass(Specify.class);
+        
+        /*
+        List<Object> objects = BuildSampleDatabase.createSingleDiscipline("fish", "fish");
+        
+        List<Object> dbOBjs = BuildSampleDatabase.get(objects, CollectionObject.class);
+        */
+        
+        /*
         System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
         System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
         
@@ -166,10 +193,12 @@ public class FormEditor implements DatabaseLoginListener
         UICacheManager.setAppName("Specify");
         IconManager.setApplicationClass(Specify.class);
         
+        
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
         localPrefs.load();
+        */
         
         FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
 
@@ -186,18 +215,92 @@ public class FormEditor implements DatabaseLoginListener
             // Note: This is asynchronous
             //UIHelper.doLogin(true, true, false, this); // true means do auto login if it can, second true means use dialog
             
-            if (true)
+            if (false)
             {
                 showAppPrefsEditor(false);
             }
 
-
+            selectViewSetMgr();
 
         }
         catch (Exception e)
         {
             log.error("Can't change L&F: ", e);
         }
+    }
+    
+    /**
+     * Loads the dialog
+     * @param hashNames every other one is the new name
+     * @return the list of selected DBs
+     */
+    protected ViewSetMgr selectViewSetMgr()
+    {
+        File         config   = new File(XMLHelper.getConfigDirPath(null));
+        ViewFileNode rootNode = new ViewFileNode("Config", null);
+        
+        recurseForViews(rootNode, config);
+         
+
+        
+        ChooseVSM dlg = new ChooseVSM(null, "Choose a View Set", rootNode);
+        dlg.setModal(true);
+        UIHelper.centerAndShow(dlg);
+        
+        dlg.dispose();
+        if (!dlg.isCancelled())
+        {
+            viewSetMgr = new ViewSetMgr(dlg.getSelectedNode());
+            startup("fish", "fish");
+        }
+
+        
+        return null;
+    }
+
+    
+    /**
+     * @param parentNode
+     * @param parentDir
+     * @return
+     */
+    protected boolean recurseForViews(final ViewFileNode parentNode, final File parentDir)
+    {
+        if (parentDir.getName().startsWith("."))
+        {
+            return false;
+        }
+        
+        System.out.println("Going into ["+parentDir.getAbsolutePath()+"]");
+        boolean added = false;
+        for (File f : parentDir.listFiles())
+        {
+            if (f.isDirectory() && !parentDir.getName().startsWith("."))
+            {
+                ViewFileNode node     = new ViewFileNode(f.getName(), null);
+                File         viewFile = new File(f.getAbsoluteFile() + File.separator + "viewset_registry.xml");
+                System.out.println(viewFile.getAbsolutePath());
+                if (viewFile.exists())
+                {
+                    if (parentNode != null)
+                    {
+                        parentNode.addKid(node);
+                        added = true;
+                    }
+                }
+                
+                boolean wasAdded = recurseForViews(node, f);
+                if (wasAdded)
+                {
+                    if (parentNode != null && !added)
+                    {
+                        parentNode.addKid(node);
+                    }
+                    added = true; 
+                }
+            }
+        }
+        return added;
     }
     
     /**
@@ -474,28 +577,30 @@ public class FormEditor implements DatabaseLoginListener
             } else
             */
 
-            if (currViewSetName.equals("Fish Views") && currViewName.equals("Accession"))
+            if (false)
             {
-                boolean doDB = true;
-                if (doDB)
+                if (currViewSetName.equals("Fish Views") && currViewName.equals("Accession"))
                 {
-                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setMaxResults(10);
-                    //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
-                    dataObj = criteria.list();//session.find("from collev");
-
-                } else
-                {
-                    Accession[] accessions = CreateTestDatabases.createAccessionsInMemory();
-                    Vector<Object> accessionsList = new Vector<Object>();
-                    for (Accession accession : accessions)
+                    boolean doDB = false;
+                    if (doDB)
                     {
-                        accessionsList.add(accession);
+                        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setMaxResults(10);
+                        //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
+                        dataObj = criteria.list();//session.find("from collev");
+    
+                    } else
+                    {
+                        Accession[] accessions = CreateTestDatabases.createAccessionsInMemory();
+                        Vector<Object> accessionsList = new Vector<Object>();
+                        for (Accession accession : accessions)
+                        {
+                            accessionsList.add(accession);
+                        }
+                        dataObj = accessionsList;
                     }
-                    dataObj = accessionsList;
+                    multiView.setData(dataObj);
                 }
-                multiView.setData(dataObj);
             }
-
 
             if (currViewSetName.equals("Fish Views") && currViewName.equals("FishBase"))
             {
@@ -534,7 +639,7 @@ public class FormEditor implements DatabaseLoginListener
                 }
 
 
-                boolean doCatalogItems = true;
+                boolean doCatalogItems = false;
                 if (doCatalogItems)
                 {
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(30);
@@ -634,38 +739,10 @@ public class FormEditor implements DatabaseLoginListener
    * this method should be invoked from the
    * event-dispatching thread.
    */
-    /*
+    
   @SuppressWarnings("unused")
   private void startup(final String databaseName, final String userName)
   {
-
-        for (int i=0;i<10;i++)
-        {
-            testDataObj = new TestDataObj();
-
-            Set<Object> set = new HashSet<Object>();
-            for (int j=0;j<4;j++)
-            {
-                TestDataSubObj subObj = new TestDataSubObj();
-                subObj.setTextField("Sub Obj Item #"+Integer.toString(j));
-                set.add(subObj);
-            }
-
-            if (i == 2)
-            {
-                testDataObj.setImagePathURL("");
-            }
-
-            testDataObj.setSubObjects(set);
-            testDataObj.setTextField("Item #"+Integer.toString(i));
-            list.add(testDataObj);
-        }
-
-        dataObj = list;
-
-
-
-
         //Make sure we have nice window decorations.
         JFrame.setDefaultLookAndFeelDecorated(true);
 
@@ -677,7 +754,6 @@ public class FormEditor implements DatabaseLoginListener
         builder = new PanelBuilder(new FormLayout("p", "p"), contentPane);
 
         UICacheManager.register(UICacheManager.TOPFRAME, mainFrame);
-
 
         JMenuBar menuBar = createMenus();
         if (menuBar != null)
@@ -702,7 +778,8 @@ public class FormEditor implements DatabaseLoginListener
         currViewName      = "CollectionObject";
         currViewSetName =   "Fish Views";
 
-        View view =  AppContextMgr.getInstance().getView(currViewSetName, currViewName);
+        //View view =  AppContextMgr.getInstance().getView(currViewSetName, currViewName);
+        View view = viewSetMgr.getView(currViewSetName, currViewName);
 
         if (view != null)
         {
@@ -714,7 +791,7 @@ public class FormEditor implements DatabaseLoginListener
         }
 
     }
-    */
+    
     
     /**
      * Create menus
@@ -978,5 +1055,227 @@ frame.setVisible(true);
 
     }
 
+    class ViewFileNode implements TreeNode
+    {
+        protected ViewFileNode parent;
+        protected String name;
+        protected File   file;
+        protected Vector<ViewFileNode> kids = new Vector<ViewFileNode>();
+        
+        public ViewFileNode(final String name, final File file)
+        {
+            super();
+            this.name = name;
+            this.file = file;
+        }
+        
+        public ViewFileNode addKid(final String nameArg, final File fileArg)
+        {
+            ViewFileNode node = new ViewFileNode(nameArg, fileArg);
+            kids.add(node);
+            return node;
+        }
+
+        public void addKid(final ViewFileNode node)
+        {
+            kids.add(node);
+        }
+
+        public Vector<ViewFileNode> getKids()
+        {
+            return kids;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public File getFile()
+        {
+            return file;
+        }
+
+        public void setFile(File file)
+        {
+            this.file = file;
+        }
+        
+        public void setParent(ViewFileNode parent)
+        {
+            this.parent = parent;
+        }
+
+        ///////////////////////////
+        // TreeNode
+        ///////////////////////////
+        public Enumeration children()
+        {
+            return kids.elements();
+        }
+        public boolean getAllowsChildren()
+        {
+            return true;
+        }
+        public TreeNode getChildAt(int childIndex)
+        {
+            return kids.elementAt(childIndex);
+        }
+        public int getChildCount()
+        {
+            return kids.size();
+        }
+        public int getIndex(TreeNode node)
+        {
+            return kids.indexOf(node);
+        }
+        public TreeNode getParent()
+        {
+            return parent;
+        }
+        public boolean isLeaf()
+        {
+            return kids.size() == 0;
+        }
+        
+        public String toString()
+        {
+            return name;
+        }
+    }
+    
+    public class ChooseVSM extends JDialog implements ActionListener
+    {
+        protected JButton        cancelBtn;
+        protected JButton        okBtn;
+        protected boolean        isCancelled = false;
+        protected JTree          tree        = null;
+        protected ViewFileNode   selectedNode = null;
+        
+         /**
+         * Constructor.
+         */
+        public ChooseVSM(final Frame frame, final String title, final ViewFileNode root)
+        {
+            super(frame, title);
+            createUI(root);
+        }
+        
+        /**
+         * Creates a list of Comboxes for setting the logging.
+         */
+        protected void createUI(final ViewFileNode root)
+        {
+            //PanelBuilder    builder = new PanelBuilder(new FormLayout("p,2px,p", UIHelper.createDuplicateJGoodiesDef("p", "4px", loggers.size())));
+            //CellConstraints cc      = new CellConstraints();
+            
+            tree = new JTree(root);
+            tree.expandPath(new TreePath(root));
+
+            
+            MouseListener ml = new MouseAdapter() {
+                public void mousePressed(MouseEvent e) 
+                {
+                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                    if(selRow != -1) {
+                        if(e.getClickCount() == 1) 
+                        {
+                            selectedNode = (ViewFileNode)selPath.getLastPathComponent();
+                        }
+                        else if(e.getClickCount() == 2) 
+                        {
+                            selectedNode = (ViewFileNode)selPath.getLastPathComponent();
+                            setVisible(false);
+                        }
+                    }
+                }
+            };
+            tree.addMouseListener(ml);
+            
+            // Bottom Button UI
+            cancelBtn = new JButton(getResourceString("Cancel"));
+            okBtn     = new JButton(getResourceString("OK"));
+
+            
+            okBtn.addActionListener(this);
+            okBtn.setEnabled(false);
+            
+            getRootPane().setDefaultButton(okBtn);
+
+            ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
+            btnBuilder.addGlue();
+            btnBuilder.addGriddedButtons(new JButton[] { cancelBtn, okBtn });
+           
+            
+            okBtn.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    setVisible(false);
+                }
+            });
+
+            cancelBtn.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    isCancelled = true;
+                    setVisible(false);
+                }
+            });
+
+     
+            
+            //Dimension size = builder.getPanel().getPreferredSize();
+            //size.width  += 15;
+            //builder.getPanel().setPreferredSize(size);
+            
+            PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p:g", "min(400px;p):g,10px,p"));
+            outerPanel.add(new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xy(1,1));
+            outerPanel.add(btnBuilder.getPanel(), cc.xy(1, 3));
+            outerPanel.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            setContentPane(outerPanel.getPanel());
+            
+            setTitle("View Sets");
+            
+            //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            pack();
+            setAlwaysOnTop(true);
+
+        }
+        
+        /**
+         * Sets the enabled/disabled state for the OK button.
+         */
+        protected void updateUI()
+        {
+            boolean enable = false;
+
+            okBtn.setEnabled(enable);
+        }
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
+        public void actionPerformed(ActionEvent e)
+        {
+            // Handle clicks on the OK and Cancel buttons.
+           setVisible(false);
+        }
+
+        public boolean isCancelled()
+        {
+            return isCancelled;
+        }
+
+        public File getSelectedNode()
+        {
+            return selectedNode.getFile();
+        }
+        
+        
+     }
 
 }

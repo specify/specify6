@@ -39,7 +39,6 @@
 		-->
 		
 		<!-- Specify mapping files. -->
-		<mapping resource="edu/ku/brc/ui/db/PickList.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSet.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/InfoRequest.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Accession.hbm.xml"/>
@@ -98,6 +97,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LocationTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/OtherIdentifier.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Permit.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PickList.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Preparation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PreparationAttr.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PrepType.hbm.xml"/>

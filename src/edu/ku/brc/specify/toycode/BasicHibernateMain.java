@@ -12,7 +12,7 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.SpecifyAppPrefs;
+import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;

@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 87
+    Last Used Id is 88
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -62,7 +62,9 @@
             <display view="Determination"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DeterminationCitation" id="38"/>
-        <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" id="501"/>
+        <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" id="88">
+            <display objtitle="Determination Status" view="DeterminationStatus" searchdlg="" newobjdlg=""/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" id="39"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" id="40"/>
         <table name="edu.ku.brc.specify.datamodel.Geography" id="3">

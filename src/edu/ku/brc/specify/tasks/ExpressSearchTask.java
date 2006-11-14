@@ -79,7 +79,7 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.db.PickListDBAdapter;
+import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 /**
  * This task will enable the user to index the database and preform express searches. This is where the Express Search starts.
  
@@ -817,7 +817,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         //searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
         //searchText  = new JTextField("beanii", 15);
                 
-        searchText = new JAutoCompTextField(15, new PickListDBAdapter("ExpressSearch", true));
+        searchText = new JAutoCompTextField(15, PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
         searchText.setAskBeforeSave(false);
         
         //searchText.setText("2004-IZ-121");

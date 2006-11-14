@@ -12,11 +12,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui.db;
+package edu.ku.brc.specify.ui.db;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,6 +23,11 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.db.PickListIFace;
+import edu.ku.brc.ui.db.PickListItemIFace;
 
 /**
  * This is an adaptor class that supports all the necessary functions for supporting a PickList.
@@ -33,15 +37,15 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
  * @author rods
  *
  */
-public class PickListDBAdapter
+public class PickListDBAdapter implements PickListDBAdapterIFace
 {
     // Static Data Memebers
     protected static final Logger log                = Logger.getLogger(PickListDBAdapter.class);
-    protected static PickListItem searchablePLI = new PickListItem(); // used for binary searches
+    protected static PickListItemIFace searchablePLI = new PickListItem(); // used for binary searches
     
     // Data Memebers        
-    protected Vector<PickListItem> items    = new Vector<PickListItem>(); // Make this Vector because the combobox can use it directly
-    protected PickList             pickList = null;
+    protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
+    protected PickListIFace             pickList = null;
     
     
     
@@ -50,8 +54,9 @@ public class PickListDBAdapter
      */
     protected PickListDBAdapter()
     {
-        pickList = new PickList();
-        pickList.initialize();
+        PickList pl = new PickList();
+        pl.initialize();
+        pickList = pl;
     }
     
     /**
@@ -65,9 +70,9 @@ public class PickListDBAdapter
         
         if (pickList != null)
         {
-            for (Object obj : pickList.getItems())
+            for (PickListItemIFace pli : pickList.getItems())
             {
-                items.add((PickListItem)obj); 
+                items.add(pli); 
             }
              
             // Always keep the list sorted
@@ -78,11 +83,10 @@ public class PickListDBAdapter
              DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
              try
              {
-                 pickList = new PickList();
-                 pickList.setCreated(new Date());
-                 pickList.setName(name);
-                 pickList.setReadOnly(false);
-                 pickList.setItems(new HashSet<PickListItem>());
+                 PickList pl = new PickList();
+                 pl.initialize();                 
+                 pl.setName(name);
+                 pickList = pl;
                  
                  session.beginTransaction();
                  session.save(pickList);
@@ -113,7 +117,6 @@ public class PickListDBAdapter
      * @param name the name of the picklist to get
      * @return the picklist
      */
-    @SuppressWarnings("unchecked")
     protected PickList getPickList(final String name)
     {
         PickList                 pkList  = null;
@@ -146,41 +149,34 @@ public class PickListDBAdapter
         
     }
     
-    /**
-     * Returns the pciklist object.
-     * @return Returns the pciklist object
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#getPickList()
      */
-    public PickList getPickList()
+    public PickListIFace getPickList()
     {
         return pickList;
     }
 
-    /**
-     * Returns the list of PickList items.
-     * @return Returns the list of PickList items
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#getList()
      */
-    public Vector<PickListItem> getList()
+    public Vector<PickListItemIFace> getList()
     {
         return items;
     }
-    
-    /**
-     * Gets a pick list item by index.
-     * @param index the index in question
-     * @return pick list item by index
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#getItem(int)
      */
-    public PickListItem getItem(final int index)
+    public PickListItemIFace getItem(final int index)
     {
         return items.get(index);
     }
     
-    /**
-     * Adds a new item to a picklist.
-     * @param title the title (or text) of the picklist
-     * @param value although currently no supported we may want to display one text string but save a different one
-     * @return returns the new PickListItem
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#addItem(java.lang.String, java.lang.String)
      */
-    public PickListItem addItem(final String title, final String value)
+    public PickListItemIFace addItem(final String title, final String value)
     {
         // this should never happen!
         if (pickList.getReadOnly())
@@ -202,8 +198,8 @@ public class PickListDBAdapter
             // find oldest item and remove it
             if (items.size() >= sizeLimit) 
             {
-                PickListItem oldest = null;
-                for (PickListItem pli : items)
+                PickListItemIFace oldest = null;
+                for (PickListItemIFace pli : items)
                 {
                     if (oldest == null || pli.getCreatedDate().getTime() < oldest.getCreatedDate().getTime())
                     {
@@ -232,10 +228,9 @@ public class PickListDBAdapter
         return items.elementAt(index);
     }
     
-    /**
-     * Persists the picklist and it's items.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#save()
      */
-    @SuppressWarnings("null")
     public void save()
     {
         DataProviderSessionIFace session = null;
@@ -252,14 +247,19 @@ public class PickListDBAdapter
         } catch (Exception e) 
         {
             // ignoring warning about 'null'
-            session.rollback();
+            if (session != null)
+            {
+                session.rollback();
+            }
             
             e.printStackTrace();
             
         } finally 
         {
-            // ignoring warning about 'null'
-            session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         } 
     }
     

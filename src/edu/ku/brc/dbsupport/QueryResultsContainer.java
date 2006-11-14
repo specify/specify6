@@ -82,22 +82,24 @@ public class QueryResultsContainer
     {
         try
         {
-            resultSet.first();
-            int prvRow = 1;
-            for (QueryResultsDataObj qrdo : qrdos) 
+            if (resultSet.first())
             {
-                if (qrdo.isProcessable())
+                int prvRow = 1;
+                for (QueryResultsDataObj qrdo : qrdos) 
                 {
-                    int col = qrdo.getCol();
-                    int row = qrdo.getRow();
-                    if (row-1 == prvRow)
+                    if (qrdo.isProcessable())
                     {
-                        resultSet.next();
-                    } else if (row != prvRow) 
-                    {
-                        resultSet.absolute(row);
+                        int col = qrdo.getCol();
+                        int row = qrdo.getRow();
+                        if (row-1 == prvRow)
+                        {
+                            resultSet.next();
+                        } else if (row != prvRow) 
+                        {
+                            resultSet.absolute(row);
+                        }
+                        qrdo.setResult(resultSet.getObject(col)); // XXX Clone ???
                     }
-                    qrdo.setResult(resultSet.getObject(col)); // XXX Clone ???
                 }
             }
         } catch (Exception ex)

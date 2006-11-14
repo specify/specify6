@@ -60,7 +60,8 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIPluginable;
-import edu.ku.brc.ui.db.PickListDBAdapter;
+import edu.ku.brc.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.TextFieldWithInfo;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
@@ -206,11 +207,11 @@ public class ViewFactory
         if (validator != null && (cellField.isRequired() || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
         {
 
-            String            pickListName      = cellField.getPickListName();
-            PickListDBAdapter pickListDBAdapter = null;
+            String                 pickListName      = cellField.getPickListName();
+            PickListDBAdapterIFace pickListDBAdapter = null;
             if (isNotEmpty(pickListName))
             {
-                pickListDBAdapter = new PickListDBAdapter(pickListName, false);
+                pickListDBAdapter = PickListDBAdapterFactory.getInstance().create(pickListName, false);
             }
 
             ValTextField textField = new ValTextField(cellField.getCols(), pickListDBAdapter);
@@ -435,7 +436,7 @@ public class ViewFactory
         ValComboBox cbx          = null;
         if (isNotEmpty(pickListName))
         {
-            cbx = new ValComboBox(new PickListDBAdapter(pickListName, false)); // false means don't auto-create picklist
+            cbx = new ValComboBox(PickListDBAdapterFactory.getInstance().create(pickListName, false)); // false means don't auto-create picklist
             
         } else
         {

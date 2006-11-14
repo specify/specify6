@@ -23,8 +23,8 @@ public class DataProviderFactory
    
     
     /**
-     * Returns the instance of the AuditInterceptor.
-     * @return the instance of the AuditInterceptor.
+     * Returns the instance of the DataProviderIFace.
+     * @return the instance of the DataProviderIFace.
      */
     public static DataProviderIFace getInstance()
     {

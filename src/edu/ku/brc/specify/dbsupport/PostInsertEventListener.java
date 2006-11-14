@@ -16,6 +16,8 @@ package edu.ku.brc.specify.dbsupport;
 
 import org.hibernate.event.PostInsertEvent;
 
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
@@ -36,6 +38,8 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
      */
     public void onPostInsert(PostInsertEvent arg0)
     {
+        CommandDispatcher.dispatch(new CommandAction("Database", "Insert", arg0));
+        
         if (arg0.getEntity() instanceof FormDataObjIFace)
         {
             FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();

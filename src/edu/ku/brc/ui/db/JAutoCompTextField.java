@@ -45,7 +45,7 @@ public class JAutoCompTextField extends JTextField
     protected boolean            foundMatch      = false;
     protected boolean            ignoreFocus     = false;
     
-    protected PickListDBAdapter  dbAdapter       = null;
+    protected PickListDBAdapterIFace dbAdapter       = null;
 
     /**
      * Constructor without Adaptor.
@@ -79,7 +79,7 @@ public class JAutoCompTextField extends JTextField
      * Constructor.
      * @param arg0 initial number of columns
      */
-    public JAutoCompTextField(int arg0, PickListDBAdapter pickListDBAdapter)
+    public JAutoCompTextField(int arg0, PickListDBAdapterIFace pickListDBAdapter)
     {
         super(arg0);
         dbAdapter = pickListDBAdapter;
@@ -101,7 +101,7 @@ public class JAutoCompTextField extends JTextField
      * Constructor with Adapter.
      * @param dbAdapter the adaptor for enabling autocomplete
      */
-    public JAutoCompTextField(PickListDBAdapter dbAdapter)
+    public JAutoCompTextField(PickListDBAdapterIFace dbAdapter)
     {
         super();
         this.dbAdapter = dbAdapter;
@@ -193,7 +193,7 @@ public class JAutoCompTextField extends JTextField
                     
                     foundMatch = true;
                     int inx = 0;
-                    for (PickListItem pli : dbAdapter.getList())
+                    for (PickListItemIFace pli : dbAdapter.getList())
                     {
                         String title = pli.getTitle();
                         int ind;
@@ -335,7 +335,7 @@ public class JAutoCompTextField extends JTextField
                                             final int     sizeLimit,
                                             final boolean createWhenNotFound)
     {
-        PickListDBAdapter adaptor = new PickListDBAdapter(name, createWhenNotFound);
+        PickListDBAdapterIFace adaptor = PickListDBAdapterFactory.getInstance().create(name, createWhenNotFound);
         adaptor.getPickList().setReadOnly(readOnly);
         adaptor.getPickList().setSizeLimit(sizeLimit);
         

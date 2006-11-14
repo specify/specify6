@@ -24,6 +24,8 @@ import javax.swing.ComboBoxEditor;
 import javax.swing.ComboBoxModel;
 import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
+
+import edu.ku.brc.specify.datamodel.PickListItem;
 /**
  * An editable JComboBox that enables auto-completion which is supported through PickList/PickListItem. 
  * The searches in the list can be case-sensitive or insensitive. 
@@ -76,7 +78,7 @@ public class JAutoCompComboBox extends JEditComboBox
      * Constructor with Adapter
      * @param dbAdapter the adaptor for enabling autocomplete
      */
-    public JAutoCompComboBox(final PickListDBAdapter dbAdapter)
+    public JAutoCompComboBox(final PickListDBAdapterIFace dbAdapter)
     {
         super(dbAdapter.getList());
         this.dbAdapter = dbAdapter;
@@ -256,7 +258,7 @@ public class JAutoCompComboBox extends JEditComboBox
                                            final int     sizeLimit,
                                            final boolean createWhenNotFound)
     {
-        PickListDBAdapter adaptor = new PickListDBAdapter(name, createWhenNotFound);
+        PickListDBAdapterIFace adaptor = PickListDBAdapterFactory.getInstance().create(name, createWhenNotFound);
         adaptor.getPickList().setReadOnly(readOnly);
         adaptor.getPickList().setSizeLimit(sizeLimit);
         

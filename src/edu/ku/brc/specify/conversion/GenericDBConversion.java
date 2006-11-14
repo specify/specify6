@@ -69,6 +69,8 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
+import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -77,8 +79,6 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.db.PickList;
-import edu.ku.brc.ui.db.PickListItem;
 import edu.ku.brc.util.Pair;
 
 /**

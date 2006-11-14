@@ -12,11 +12,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui.db;
+package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import edu.ku.brc.ui.db.PickListIFace;
+import edu.ku.brc.ui.db.PickListItemIFace;
 
 /**
  * A pickList of items. A pcikList can be readonly or have a set number of items where the oldest items "falls off" the queue
@@ -28,7 +31,7 @@ import java.util.Set;
  *
  */
 @SuppressWarnings("serial")
-public class PickList implements java.io.Serializable
+public class PickList implements PickListIFace, java.io.Serializable
 {
 
     // Fields    
@@ -38,7 +41,7 @@ public class PickList implements java.io.Serializable
     protected Boolean           readOnly;
     protected Integer           sizeLimit;
     protected Date              created;
-    protected Set<PickListItem> items;
+    protected Set<PickListItemIFace> items;
 
     // Constructors
 
@@ -60,7 +63,7 @@ public class PickList implements java.io.Serializable
         pickListId = null;
         readOnly   = false;
         sizeLimit  = 50;
-        items      = new HashSet<PickListItem>();
+        items      = new HashSet<PickListItemIFace>();
         created    = new Date();
     }
 
@@ -119,30 +122,30 @@ public class PickList implements java.io.Serializable
         this.created = created;
     }
 
-    public Set<PickListItem> getItems()
+    public Set<PickListItemIFace> getItems()
     {
         return this.items;
     }
 
-    public void setItems(Set<PickListItem> items)
+    public void setItems(Set<PickListItemIFace> items)
     {
         this.items = items;
     }
 
-    public PickListItem addPickListItem(final String title, final String value)
+    public PickListItemIFace addPickListItem(final String title, final String value)
     {
         PickListItem pli = new PickListItem(title, value, new Date());
         items.add(pli);
         return pli;
     }
 
-    public PickListItem addPickListItem(final PickListItem item)
+    public PickListItemIFace addPickListItem(final PickListItemIFace item)
     {
         items.add(item);
         return item;
     }
 
-    public void removePickListItem(final PickListItem item)
+    public void removePickListItem(final PickListItemIFace item)
     {
         items.remove(item);
     }
