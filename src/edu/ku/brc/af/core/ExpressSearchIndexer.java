@@ -169,9 +169,20 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
             for (Enumeration<String> e=namesHash.keys();e.hasMoreElements();)
             {
                 String nameStr = e.nextElement();
-                String sqlStr = "select TimeStampCreated from accession order by TimeStampCreated desc limit 0,1"; // TODO This needs to be per DB PLATFORM
+                String sqlStr = "select TimestampCreated from accession order by TimestampCreated desc limit 0,1"; // TODO This needs to be per DB PLATFORM
                 log.debug(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
+                container.add(new QueryResultsDataObj(nameStr));
+
+                // Since the index doesn't exist fake like
+                // each table has at least one out of date record
+                container.add(noIndexFile ? new QueryResultsDataObj(new Date(new Date().getTime()-1000)) : new QueryResultsDataObj(1,1));
+                list.add(container);
+                
+                // Now find the last Modified Timestamp
+                sqlStr = "select TimestampModified from "+nameStr+" order by TimestampModified desc limit 0,1"; // TODO This needs to be per DB PLATFORM
+                log.info(sqlStr);
+                container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
 
                 // Since the index doesn't exist fake like
