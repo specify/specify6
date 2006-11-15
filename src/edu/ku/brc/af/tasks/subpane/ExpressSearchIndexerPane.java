@@ -40,6 +40,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -123,6 +124,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
     protected PairsMultipleQueryResultsHandler handler = null;
 
+    protected Hashtable<String, Boolean>   outOfDateHash = new Hashtable<String, Boolean>();
     protected Hashtable<String, JLabel>    resultsLabels = new Hashtable<String, JLabel>();
     protected JPanel                       resultsPanel;
     protected Font                         captionFont   = null;
@@ -202,6 +204,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 captionFont = new Font(curFont.getFontName(), Font.BOLD, 14);
             }
 
+            // NOTE: Each database check is added with the table name 
+            // from the outofdate/tables list within the search definitions
             int row = 1;
             for (Enumeration<String> e=namesHash.keys();e.hasMoreElements();)
             {
@@ -944,7 +948,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      * in the config directory. If the process is cancelled then the indexing files are removed.
      *
      */
-    public void index() throws IOException
+    protected void index() throws IOException
     {
         IndexWriter writer    = null;
         long        deltaTime = 0;
@@ -959,7 +963,26 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
             List tables = esDOM.selectNodes("/searches/express/table");
 
-            int numOfCategories = tables.size() + (doIndexForms ? 1 : 0) + (doIndexLabels ? 1 : 0);
+            int numOfCategories = (doIndexForms ? 1 : 0) + (doIndexLabels ? 1 : 0);
+            
+            // Count up how many will be updated by checking each out of date table name 
+            // against the names in the outOfDateHash 
+            for (Object obj : tables)
+            {
+                Element                  tableElement = (Element)obj;
+                ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
+                
+                // Each Table was checked and outOfDateHash contains the names of the tables that need updating
+                // usually there is just one table
+                for (String tableName : tableInfo.getOutOfDate().keySet())
+                {
+                    if (outOfDateHash.get(tableName) != null && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
+                    {
+                        numOfCategories++;
+                        break;
+                    }
+                }
+            }
 
             globalProgressBar.setStringPainted(true);
             globalProgressBar.setMaximum(numOfCategories);
@@ -971,7 +994,19 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 Element                  tableElement = (Element)obj;
                 ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
                 
-                if (tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
+                // Each Table was checked and outOfDateHash contains the names of the tables that need updating
+                // usually there is just one table
+                boolean needsUpdating = false;
+                for (String tableName : tableInfo.getOutOfDate().keySet())
+                {
+                    if (outOfDateHash.get(tableName) != null)
+                    {
+                        needsUpdating = true;
+                        break;
+                    }
+                }
+                
+                if (needsUpdating && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
                 {
                     log.debug("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
                     indvLabel.setText(tableInfo.getTitle());
@@ -1151,7 +1186,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             list.get(i++); // skip text label (should be same as nameObj
             Object modifiedDateObj = list.get(i);
             
-            JLabel label   = resultsLabels.get(getString(nameObj));
+            JLabel label = resultsLabels.get(getString(nameObj));
             if (label != null)
             {
                 Timestamp createdTS  = (Timestamp)createdDateObj;
@@ -1169,16 +1204,20 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 if (createdTS != null)
                 {
                     //log.debug("["+formatter.format(lastModified)+"]["+formatter.format(createdTS)+"] "+(lastModified.getTime() < createdTS.getTime()));
-                    boolean isOld = lastModified.getTime() < createdTS.getTime();
-                    label.setIcon(isOld ? exclaimIcon : checkIcon);
-                    if (isOld)
+                    boolean outOfDate = lastModified.getTime() < createdTS.getTime();
+                    label.setIcon(outOfDate ? exclaimIcon : checkIcon);
+                    if (outOfDate)
                     {
                         allOK = false;
-                    }                    
+                        outOfDateHash.put(nameObj.toString(), outOfDate);
+                        System.out.println("["+nameObj.toString()+"]");
+                    }
+                    
                 } else
                 {
                     label.setIcon(checkIcon); // This means there are no records to indicate it is up to date
                 }
+                
 
             } else
             {
