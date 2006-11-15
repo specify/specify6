@@ -105,7 +105,7 @@
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
                 <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true" valtype="Changed"/>                
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -556,15 +556,15 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Original Filename"/>
-                    <cell type="field" id="1" name="origFilename" uitype="text" cols="50" colspan="1"/>
+                    <cell type="field" id="1" name="origFilename" uitype="browse" cols="50" colspan="1" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="MIME Type"/>
-                    <cell type="field" id="2" name="mimeType" uitype="text" cols="50" colspan="1"/>
+                    <cell type="field" id="2" name="mimeType" uitype="text" cols="50" colspan="1"  valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="1"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="1"  valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>
