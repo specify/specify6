@@ -23,10 +23,8 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
@@ -43,7 +41,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
-import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
