@@ -154,6 +154,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     public class BrowseAction implements ActionListener
     {
         private JTextField txtField;
+        private JFileChooser chooser;
 
         /**
          * Constructor with CommandAction.
@@ -162,6 +163,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         public BrowseAction(final JTextField textField)
         {
             this.txtField = textField;
+            this.chooser = new JFileChooser();
         }
 
         /* (non-Javadoc)
@@ -169,12 +171,11 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
          */
         public void actionPerformed(ActionEvent e)
         {
-            JFileChooser chooser = new JFileChooser();
-
             int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
                 txtField.setText(chooser.getSelectedFile().getAbsolutePath());
+                txtField.repaint();
             }
         }
     }
