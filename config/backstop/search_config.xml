@@ -533,33 +533,8 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 <recordset tabletype="65" col="2"/>
             </detailView>
         </table>
-        
-        <table id="18" tableid="65" indexed="true" name="Prep Type" title="Preparation Type" priority="1" color="30, 144, 255">
-            <outofdate>
-                <table name="preptype" title="Preparation Type"/>
-            </outofdate>
-            <index>
-                <sql>
-                    <![CDATA[SELECT ColFieldsDef FROM preptype]]>
-                </sql>
-                <cols>
-                    <col pos="1" id="true">PrepTypeID</col>
-                    <col pos="2">Name</col>
-                </cols>
-            </index>
-            <detailView icon="PrepType">
-                <sql>
-                    <![CDATA[SELECT Name, PrepTypeID FROM preptype WHERE PrepTypeID IN (%s)]]>
-                </sql>
-                <captions>
-                    <caption col="Name" text="Name"/>
-                    <caption col="PrepTypeID" text="PrepTypeID" visible="false"/>
-                </captions>
-                <recordset tabletype="65" col="2"/>
-            </detailView>
-        </table>
-        
-        <table id="19" tableid="41" name="Attachment" title="Attachments" priority="1" color="30, 144, 255">
+                
+        <table id="18" tableid="41" name="Attachment" title="Attachments" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="attachments" title="Attachment"/>
             </outofdate>
