@@ -85,7 +85,13 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     public void setInfoRequestID(Long infoRequestID) {
         this.infoRequestID = infoRequestID;
     }
-
+    
+    @Override
+    public Long getId()
+    {
+        return infoRequestID;
+    }
+    
     /**
      * 
      */

@@ -103,6 +103,12 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         this.recordSetId = recordSetId;
     }
 
+    @Override
+    public Long getId()
+    {
+        return recordSetId;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getName()
      */

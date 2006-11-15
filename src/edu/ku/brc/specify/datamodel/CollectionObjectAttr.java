@@ -77,6 +77,12 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
         this.attrId = attrId;
     }
     
+    @Override
+    public Long getId()
+    {
+        return attrId;
+    }
+    
     /**
      * Verifies that the Attr type if correct 
      * @param type the type to check

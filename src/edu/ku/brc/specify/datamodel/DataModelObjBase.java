@@ -30,10 +30,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getId()
      */
-    public Long getId()
-    {
-        return null;
-    }
+    public abstract Long getId();
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getIdentityTitle()

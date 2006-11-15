@@ -80,6 +80,12 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
         this.attrId = attrId;
     }
     
+    @Override
+    public Long getId()
+    {
+        return attrId;
+    }
+    
     /**
      * Verifies that the Attr type if correct 
      * @param type the type to check

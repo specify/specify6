@@ -59,6 +59,12 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
         this.attachmentMetadataID = attachmentMetadataID;
     }
 
+    @Override
+    public Long getId()
+    {
+        return attachmentMetadataID;
+    }
+
     /**
      * 
      */

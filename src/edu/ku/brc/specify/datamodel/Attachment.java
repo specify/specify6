@@ -81,6 +81,12 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     {
         this.attachmentID = attachmentID;
     }
+    
+    @Override
+    public Long getId()
+    {
+        return attachmentID;
+    }
 
     public String getMimeType()
     {

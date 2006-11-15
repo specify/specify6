@@ -70,6 +70,12 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
         this.collectingTripId = collectingTripId;
     }
 
+    @Override
+    public Long getId()
+    {
+        return collectingTripId;
+    }
+    
     /**
      * 
      */
