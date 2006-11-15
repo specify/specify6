@@ -179,7 +179,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
         AttachmentManagerIface attachMgr = null;
         try
         {
-            attachMgr = new FileStoreAttachmentManager("C:/AttachmentStorage/");
+        	if (!System.getProperty("os.name").startsWith("Win"))
+        	{
+        		attachMgr = new FileStoreAttachmentManager("/AttachmentStorage/");
+        	}
+        	else
+        	{
+        		attachMgr = new FileStoreAttachmentManager("C:\\AttachmentStorage\\");
+        	}
         }
         catch (IOException e1)
         {

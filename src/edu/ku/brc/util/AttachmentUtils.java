@@ -9,6 +9,7 @@ package edu.ku.brc.util;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -64,7 +65,9 @@ public class AttachmentUtils
                 String title = attachment.getIdentityTitle();
                 
                 Component parent = UICacheManager.get(UICacheManager.TOPFRAME);
-                ImageIcon icon = new ImageIcon(attachMgr.getOriginal(attachment).getAbsolutePath());
+                File original = attachMgr.getOriginal(attachment);
+				String absolutePath = original.getAbsolutePath();
+				ImageIcon icon = new ImageIcon(absolutePath);
                 JOptionPane.showMessageDialog(parent, null, title, JOptionPane.INFORMATION_MESSAGE, icon);
             }
         };
