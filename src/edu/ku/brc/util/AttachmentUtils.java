@@ -6,6 +6,17 @@
  */
 package edu.ku.brc.util;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
+import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -38,4 +49,26 @@ public class AttachmentUtils
         return thumbnailer;
     }
     
+    public static ActionListener getAttachmentDisplayer()
+    {
+        ActionListener displayer = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                Object source = e.getSource();
+                if (!(source instanceof Attachment))
+                {
+                    throw new IllegalArgumentException("Passed object must be an Attachment");
+                }
+                Attachment attachment = (Attachment)source;
+                String title = attachment.getIdentityTitle();
+                
+                Component parent = UICacheManager.get(UICacheManager.TOPFRAME);
+                ImageIcon icon = new ImageIcon(attachMgr.getOriginal(attachment).getAbsolutePath());
+                JOptionPane.showMessageDialog(parent, null, title, JOptionPane.INFORMATION_MESSAGE, icon);
+            }
+        };
+        
+        return displayer;
+    }
 }

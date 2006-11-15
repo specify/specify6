@@ -70,11 +70,13 @@ import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
@@ -187,7 +189,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         AttachmentUtils.setAttachmentManager(attachMgr);
         AttachmentUtils.setThumbnailer(thumb);
-
+        ActionListener attachmentDisplayer = AttachmentUtils.getAttachmentDisplayer();
+        DefaultClassActionHandler.getInstance().registerActionHandler(Attachment.class, attachmentDisplayer);
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();

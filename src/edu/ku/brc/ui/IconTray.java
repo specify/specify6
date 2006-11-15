@@ -8,6 +8,10 @@ package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -82,9 +86,28 @@ public class IconTray extends JPanel
         
         this.setLayout(new BorderLayout());
         this.add(listScrollPane,BorderLayout.CENTER);
+        
+        iconListWidget.addMouseListener(new MouseAdapter()
+        {
+
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getClickCount()>1)
+                {
+                    doDoubleClick(e);
+                }
+            }
+        });
+    }
+    
+    protected void doDoubleClick(MouseEvent e)
+    {
+        Object selection = iconListWidget.getSelectedValue();
+        ActionListener listener = DefaultClassActionHandler.getInstance().getDefaultClassActionHandler(selection.getClass());
+        listener.actionPerformed(new ActionEvent(selection,0,"double-click"));
     }
         
-    
     /**
      * Sets the cell renderer used by the tray to render the individual objects listed.
      * 
