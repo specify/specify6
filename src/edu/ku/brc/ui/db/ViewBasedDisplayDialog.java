@@ -77,10 +77,10 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         this.setAlwaysOnTop(true);
         
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
         if (mainPanel.getCancelBtn() != null)
         {
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            
             addWindowListener(new WindowAdapter()
                     {
                         @Override
@@ -89,9 +89,6 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
                             mainPanel.getCancelBtn().doClick();
                         }
                     });
-        } else
-        {
-            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         }
         
         /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)
