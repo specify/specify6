@@ -105,7 +105,7 @@
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
                 <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="false"/>                
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true" valtype="Changed"/>                
             </altviews>
         </view>
         

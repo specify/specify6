@@ -76,7 +76,7 @@
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
                 <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="false"/>                
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true" valtype="Changed"/>                
             </altviews>
         </view>
 
@@ -877,13 +877,18 @@
 
             <desc><![CDATA[Loan viewing form.]]></desc>
             <columnDef>p,6dlu,p,15dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,5dlu,p</rowDef>
+<!--            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p</rowDef> -->
 
             <rows>
+                <row>
+                    <cell type="separator" label="Loan" colspan="3"/>
+                </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
                     <cell type="field" id="1" name="loanNumber" uitype="text" cols="50" colspan="1" isrequired="true"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="2" label="Date"/>
                     <cell type="field" id="2" name="loanDate" uitype="text" cols="50" colspan="1" isrequired="true"/>
@@ -908,6 +913,7 @@
                     <cell type="label" labelfor="7" label="Closed"/>
                     <cell type="field" id="7" name="closed" uitype="text" cols="50" colspan="1"/>
                 </row>
+                -->
                 <row>
                     <cell type="label" labelfor="8" label="Remarks"/>
                     <cell type="field" id="8" name="remarks" uitype="textarea" colspan="1"/>
