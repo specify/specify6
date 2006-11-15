@@ -208,6 +208,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 Font curFont = getFont();
                 captionFont = new Font(curFont.getFontName(), Font.BOLD, 14);
             }
+            
+            Timestamp oldTimestamp = new Timestamp(new Date().getTime()-1000);
 
             // NOTE: Each database check is added with the table name 
             // from the outofdate/tables list within the search definitions
@@ -225,7 +227,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                 // Since the index doesn't exist fake like
                 // each table has at least one out of date record
-                container.add(noIndexFile ? new QueryResultsDataObj(new Date(new Date().getTime()-1000)) : new QueryResultsDataObj(1,1));
+                container.add(noIndexFile ? new QueryResultsDataObj(oldTimestamp) : new QueryResultsDataObj(1,1));
                 list.add(container);
                 
                 // Now find the last Modified Timestamp
@@ -236,7 +238,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                 // Since the index doesn't exist fake like
                 // each table has at least one out of date record
-                container.add(noIndexFile ? new QueryResultsDataObj(new Date(new Date().getTime()-1000)) : new QueryResultsDataObj(1,1));
+                container.add(noIndexFile ? new QueryResultsDataObj(oldTimestamp) : new QueryResultsDataObj(1,1));
                 list.add(container);
                 
                 JLabel label = new JLabel(namesHash.get(nameStr)+":", JLabel.RIGHT);
