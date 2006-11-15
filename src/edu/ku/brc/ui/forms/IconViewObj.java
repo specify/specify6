@@ -23,8 +23,10 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
@@ -41,6 +43,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
@@ -88,8 +91,8 @@ public class IconViewObj implements Viewable
     protected boolean dataTypeError;
     
     protected FormValidator validator;
-
-    protected BusinessRulesIFace            businessRules; 
+    
+    protected BusinessRulesIFace            businessRules;
 
     /**
      * Constructor.
@@ -109,13 +112,19 @@ public class IconViewObj implements Viewable
         this.dataTypeError = false;
         this.businessRules = view.getBusinessRule();
         
-        validator = new FormValidator();
+        // we need a form validator that always says it's valid
+        validator = new FormValidator(){
+            @Override
+            public boolean isFormValid()
+            {
+                return true;
+            }
+        };
         MultiView root = mvParent;
         while (root.getMultiViewParent() != null)
         {
             root = root.getMultiViewParent();
         }
-        validator.addValidationListener(root);
         validator.setName("IconViewObj validator");
         root.addFormValidator(validator);
     }
@@ -190,7 +199,7 @@ public class IconViewObj implements Viewable
                     return;
                 }
                 
-                ViewBasedDisplayIFace dialog = getEditObjectDialog(selection,false);
+                final ViewBasedDisplayIFace dialog = getEditObjectDialog(selection,false);
                 dialog.setCloseListener(new PropertyChangeListener()
                 {
                     public void propertyChange(PropertyChangeEvent evt)
@@ -198,8 +207,7 @@ public class IconViewObj implements Viewable
                         String action = evt.getPropertyName();
                         if (action.equals("OK"))
                         {
-                            log.warn("User clicked OK");
-                            log.error("Do I need to do a Hibernate update?");
+                            dialog.getMultiView().getDataFromUI();
                             if (mvParent != null)
                             {
                                 MultiView root = mvParent;
@@ -208,7 +216,6 @@ public class IconViewObj implements Viewable
                                     root = root.getMultiViewParent();
                                 }
                                 validator.setHasChanged(true);
-                                validator.validateFormForOK();
                                 root.dataChanged(null, null, null);
                             }
 
@@ -231,15 +238,10 @@ public class IconViewObj implements Viewable
         {
             public void actionPerformed(ActionEvent ae)
             {
-                //TODO: create a new object
-                //FormHelper.createAndNewDataObj(classObj);
-                //TODO: display an edit dialog for a new object
-                log.warn("Display edit dialog for a new object");
-                
                 final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
                 
                 // get an edit dialog for the object
-                ViewBasedDisplayIFace dialog = getEditObjectDialog(newObject,true);
+                final ViewBasedDisplayIFace dialog = getEditObjectDialog(newObject,true);
                 dialog.setCloseListener(new PropertyChangeListener()
                 {
                     public void propertyChange(PropertyChangeEvent evt)
@@ -247,6 +249,7 @@ public class IconViewObj implements Viewable
                         String action = evt.getPropertyName();
                         if (action.equals("OK"))
                         {
+                            dialog.getMultiView().getDataFromUI();
                             log.warn("User clicked OK.  Adding " + newObject.getIdentityTitle() + " into " + dataSetFieldName + ".");
                             parentDataObj.addReference(newObject, dataSetFieldName);
                             iconTray.addItem(newObject);
@@ -258,18 +261,26 @@ public class IconViewObj implements Viewable
                                     root = root.getMultiViewParent();
                                 }
                                 validator.setHasChanged(true);
-                                validator.validateFormForOK();
                                 root.dataChanged(null, null, null);
                             }
                         }
                         else if (action.equals("Cancel"))
                         {
-                            log.warn("User clicked Cancel");
-                            // TODO: what to do?
+                            // nothing to do
+                        }
+                        
+                        if (mvParent != null)
+                        {
+                            mvParent.unregisterDisplayFrame(dialog);
                         }
                     }
                 });
+                if (mvParent != null)
+                {
+                    mvParent.registerDisplayFrame(dialog);
+                }
                 dialog.setData(newObject);
+
                 dialog.showDisplay(true);
             }
         });
@@ -297,7 +308,6 @@ public class IconViewObj implements Viewable
                         root = root.getMultiViewParent();
                     }
                     validator.setHasChanged(true);
-                    validator.validateFormForOK();
                     root.dataChanged(null, null, null);
                 }
             }
@@ -309,11 +319,8 @@ public class IconViewObj implements Viewable
         TableInfo setTI = DBTableIdMgr.lookupByClassName(objectToEdit.getClass().getName());
         String defFormName = setTI.getEditObjDialog();
 
-        log.warn("Are these the correct settings for this popup?");
-        // TODO: check these settings
-
         boolean isEdit = (altView.getMode() == CreationMode.Edit) ? true : false;
-        int options = MultiView.HIDE_SAVE_BTN;
+        int options = (isNewObject ? MultiView.IS_NEW_OBJECT : 0) | MultiView.HIDE_SAVE_BTN;
         String title = (isNewObject && isEdit) ? getResourceString("Edit") : objectToEdit.getIdentityTitle();
         ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(defFormName,
                                                                     title,
@@ -468,11 +475,11 @@ public class IconViewObj implements Viewable
      */
     public void setParentDataObj(Object parentDataObj)
     {
-        if (!(parentDataObj instanceof FormDataObjIFace))
-        {
-            dataTypeError = true;
-            return;
-        }
+//        if (!(parentDataObj instanceof FormDataObjIFace))
+//        {
+//            dataTypeError = true;
+//            return;
+//        }
         this.parentDataObj = (FormDataObjIFace)parentDataObj;
     }
 

@@ -803,24 +803,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             
         } else if (frame.isEditMode())
         {
-            if (currentMode != MODE.Editting)
+            if (currentMode == MODE.NewAndEmpty)
             {
-                if (currentMode == MODE.NewAndEmpty)
+                if (multiView != null)
                 {
-                    if (multiView != null)
+                    Object parentDataObj = multiView.getData();
+                    if (parentDataObj instanceof FormDataObjIFace)
                     {
-                        Object parentDataObj = multiView.getData();
-                        if (parentDataObj instanceof FormDataObjIFace)
-                        {
-                            ((FormDataObjIFace)parentDataObj).addReference(newDataObj, cellName);
-                        } else
-                        {
-                            FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
-                        }
+                        ((FormDataObjIFace) parentDataObj).addReference(newDataObj, cellName);
                     }
-                    setValue(newDataObj, null);
-                    newDataObj = null;
-                 }
+                    else
+                    {
+                        FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
+                    }
+                }
+                setValue(newDataObj, null);
+                newDataObj = null;
             }
             valueHasChanged();
         }

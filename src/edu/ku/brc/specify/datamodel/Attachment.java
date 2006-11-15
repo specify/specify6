@@ -102,7 +102,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.origFilename = origFilename;
 
         // for newly created attachments, setup the attachmentLocation field
-        if (this.attachmentID == null)
+        if (this.attachmentID == null && origFilename != null)
         {
             // set the attachmentLocation field
             AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(this);
@@ -311,6 +311,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         {
             File origFile = new File(origFilename);
             File thumbFile = File.createTempFile("sp6_thumb_", null);
+            thumbFile.deleteOnExit();
 
             Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
             AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
