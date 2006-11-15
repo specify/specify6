@@ -3190,7 +3190,11 @@ public class GenericDBConversion
     				enforcedIds.add(reqId);
     			}
     		}
-
+            // make sure the root item is always enforeced
+            if (!enforcedIds.contains(0L))
+            {
+                enforcedIds.add(0L);
+            }
     		// now we have a vector of the required/enforced rank IDs
     		// fix the new DB values accordingly
 
