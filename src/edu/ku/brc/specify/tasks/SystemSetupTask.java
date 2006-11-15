@@ -336,9 +336,9 @@ public class SystemSetupTask extends BaseTask
             PickList pickList = (PickList)data;
             if (cmdAction.getAction().equals("SavePickList"))
             {
-                if (pickList.getCreated() == null)
+                if (pickList.getTimestampCreated() == null)
                 {
-                    pickList.setCreated(new Date());
+                    pickList.setTimestampCreated(new Date());
                     addPickList(getTitle(pickList), pickList, "DeletePickList", navBox.getItems().size()-1);
 
                     navBox.invalidate();

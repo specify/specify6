@@ -261,6 +261,8 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
                 String str;
                 if (StringUtils.isNotEmpty(fileName))
                 {
+                    log.debug("Loading File["+fileName+"]");
+                    
                     File file = new File(fileName);
                     str = XMLHelper.getContents(file);
                     timestampCreated  = new Date(file.lastModified());
@@ -268,7 +270,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
                     
                 } else
                 {
-                    str = new String(blobData.getBytes(1L, (int)blobData.length()));
+                    str = new String(blobData == null ? null : blobData.getBytes(1L, (int)blobData.length()));
                 }
                 
                 if (str.length() > 0)

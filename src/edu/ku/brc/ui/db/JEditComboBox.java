@@ -55,7 +55,7 @@ public class JEditComboBox extends JComboBox
     protected boolean            ignoreFocus     = false;
     protected boolean            askBeforeSave   = false;
     
-    protected PickListDBAdapterIFace  dbAdapter       = null;
+    protected PickListDBAdapterIFace  dbAdapter  = null;
 
     /**
      * Constructor
@@ -229,16 +229,23 @@ public class JEditComboBox extends JComboBox
             if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, 
                                                             "Add new value `"+strArg+"` to the list?", "Add New Item", JOptionPane.YES_NO_OPTION))
             {
-                PickListItemIFace pli;
+                PickListItemIFace pli = null;
                 if (dbAdapter != null)
                 {
-                    pli = dbAdapter.addItem(strArg, strArg);
+                    if (!dbAdapter.isReadOnly())
+                    {
+                        pli = dbAdapter.addItem(strArg, strArg);
+                    }
                 } else
                 {
                     pli = new PickListItem(strArg, strArg, null); // this is ok because the items will not be saved.
                 }
-                this.addItem(pli);
-                this.setSelectedItem(pli);
+                
+                if (pli != null)
+                {
+                    this.addItem(pli);
+                    this.setSelectedItem(pli);
+                }
                 
                 ignoreFocus = false;
                 
@@ -310,7 +317,10 @@ public class JEditComboBox extends JComboBox
                     if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE || ev.getKeyCode() == KeyEvent.VK_DELETE)
                     {
                         int selectedIndex = getSelectedIndex();
-                        if (selectedIndex > -1 && dbAdapter != null && textField != null && textField.getText().length() == 0)
+                        if (selectedIndex > -1 && dbAdapter != null && 
+                            textField != null && 
+                            textField.getText().length() == 0 &&
+                            !dbAdapter.isReadOnly())
                         {
                             // delete item
                             PickListItem item = (PickListItem)getSelectedItem();

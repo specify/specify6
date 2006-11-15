@@ -34,7 +34,10 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
 
     private String title;
     private String value;
-    private Date   createdDate;
+    private Date   timestampCreated;
+    
+    // Non-Persisted Value as an Object
+    private Object valueObject;
 
     // Constructors
 
@@ -46,12 +49,21 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
 
     // Property accessors
 
-    public PickListItem(String title, String value, Date createdDate)
+    public PickListItem(final String title, final String value, final Date timestampCreated)
     {
         super();
         this.title = title;
         this.value = value;
-        this.createdDate = createdDate;
+        this.timestampCreated = timestampCreated;
+    }
+
+    public PickListItem(final String title, final Object valueObject, final Date timestampCreated)
+    {
+        super();
+        this.title       = title;
+        this.value       = null;
+        this.valueObject = valueObject;
+        this.timestampCreated = timestampCreated;
     }
 
     /**
@@ -72,12 +84,23 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
      */
     public String getValue()
     {
-        return this.value;
+        return this.value == null ? title : value;
     }
 
     public void setValue(String value)
     {
         this.value = value;
+    }
+    
+
+    public Object getValueObject()
+    {
+        return valueObject;
+    }
+
+    public void setValueObject(Object valueObject)
+    {
+        this.valueObject = valueObject;
     }
 
     /* (non-Javadoc)
@@ -92,14 +115,14 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /**
      * 
      */
-    public Date getCreatedDate()
+    public Date getTimestampCreated()
     {
-        return this.createdDate;
+        return this.timestampCreated;
     }
 
-    public void setCreatedDate(Date createdDate)
+    public void setTimestampCreated(Date createdDate)
     {
-        this.createdDate = createdDate;
+        this.timestampCreated = createdDate;
     }
     
     //-------------------------------------

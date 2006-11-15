@@ -1641,7 +1641,7 @@ public class FormViewObj implements Viewable,
                     boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
 
                     boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
-                    log.info("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
+                    log.debug("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
 
                     if (useFormatName)
                     {
@@ -1875,7 +1875,7 @@ public class FormViewObj implements Viewable,
                     if (comp instanceof JAutoCompComboBox)
                     {
                         PickListItem pli = (PickListItem)((JAutoCompComboBox)comp).getSelectedItem();
-                        return pli.getValue();
+                        return pli.getValueObject() == null ? pli.getValue() : pli.getValueObject();
 
                     } else
                     {
@@ -2351,11 +2351,11 @@ public class FormViewObj implements Viewable,
             if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
             {
                 FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
-                String uiType = cellField.getUiType();
+                FormCellField.FieldType uiType = cellField.getUiType();
                 //log.debug("["+uiType+"]");
 
                 // XXX maybe check check to see if it is a JTextField component instead
-                if (uiType.equals("dsptextfield") || uiType.equals("dsptextarea"))
+                if (uiType == FormCellField.FieldType.dsptextfield || uiType == FormCellField.FieldType.dsptextarea)
                 {
                     Component comp = fieldInfo.getComp();
                     if (colorType == 0)

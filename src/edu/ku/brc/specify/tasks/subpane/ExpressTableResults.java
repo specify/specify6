@@ -80,7 +80,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
             sqlStr = vsql.replace("%s", idsStr.toString());
         }
 
-        System.err.println("["+sqlStr+"]");
+        log.debug("["+sqlStr+"]");
         if (StringUtils.isNotEmpty(sqlStr))
         {
             sqlExecutor = new SQLExecutionProcessor(this, sqlStr);

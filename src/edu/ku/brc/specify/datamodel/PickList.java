@@ -31,16 +31,18 @@ import edu.ku.brc.ui.db.PickListItemIFace;
  *
  */
 @SuppressWarnings("serial")
-public class PickList implements PickListIFace, java.io.Serializable
+public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable
 {
-
     // Fields    
 
-    protected Integer           pickListId;
+    protected Long              pickListId;
     protected String            name;
+    protected Integer           type;
+    protected String            tableName;
+    protected String            fieldName;
+    protected String            formatter; // dataobj_formatter or uiformatter
     protected Boolean           readOnly;
     protected Integer           sizeLimit;
-    protected Date              created;
     protected Set<PickListItemIFace> items;
 
     // Constructors
@@ -52,7 +54,7 @@ public class PickList implements PickListIFace, java.io.Serializable
     }
 
     /** constructor with id */
-    public PickList(Integer pickListId)
+    public PickList(Long pickListId)
     {
         this.pickListId = pickListId;
     }
@@ -61,93 +63,231 @@ public class PickList implements PickListIFace, java.io.Serializable
     public void initialize()
     {
         pickListId = null;
+        name       = null;
+        type       = 0;
+        tableName  = null;
+        fieldName  = null;
+        formatter  = null;
         readOnly   = false;
         sizeLimit  = 50;
         items      = new HashSet<PickListItemIFace>();
-        created    = new Date();
+        
+        // base class
+        timestampCreated  = new Date();
+        timestampModified = null;
+        lastEditedBy      = null;
     }
 
     // Property accessors
 
     /**
-     * 
+     * Returns the primary ID.
+      * @return the primary ID.
      */
-    public Integer getPickListId()
+    public Long getPickListId()
     {
         return this.pickListId;
     }
-
-    public void setPickListId(Integer pickListId)
+    
+    /**
+     * Sets Primary ID.
+     * @param pickListId the id
+     */
+    public void setPickListId(Long pickListId)
     {
         this.pickListId = pickListId;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
+     */
+    public Long getId()
+    {
+        return this.pickListId;
+    }
+
+   /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getName()
+     */
     public String getName()
     {
         return this.name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setName(java.lang.String)
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getReadOnly()
+     */
     public Boolean getReadOnly()
     {
         return this.readOnly;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setReadOnly(java.lang.Boolean)
+     */
     public void setReadOnly(Boolean readOnly)
     {
         this.readOnly = readOnly;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getSizeLimit()
+     */
     public Integer getSizeLimit()
     {
         return this.sizeLimit;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setSizeLimit(java.lang.Integer)
+     */
     public void setSizeLimit(Integer sizeLimit)
     {
         this.sizeLimit = sizeLimit;
     }
 
-    public Date getCreated()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getFieldName()
+     */
+    public String getFieldName()
     {
-        return this.created;
+        return fieldName;
     }
 
-    public void setCreated(Date created)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setFieldName(java.lang.String)
+     */
+    public void setFieldName(String fieldName)
     {
-        this.created = created;
+        this.fieldName = fieldName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getTableName()
+     */
+    public String getTableName()
+    {
+        return tableName;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setTableName(java.lang.String)
+     */
+    public void setTableName(String tableName)
+    {
+        this.tableName = tableName;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getFormatter()
+     */
+    public String getFormatter()
+    {
+        return formatter;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setFormatter(java.lang.String)
+     */
+    public void setFormatter(String formatter)
+    {
+        this.formatter = formatter;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getType()
+     */
+    public Integer getType()
+    {
+        return type;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setType(java.lang.Short)
+     */
+    public void setType(Integer type)
+    {
+        this.type = type;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getItems()
+     */
     public Set<PickListItemIFace> getItems()
     {
         return this.items;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#setItems(java.util.Set)
+     */
     public void setItems(Set<PickListItemIFace> items)
     {
         this.items = items;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#addPickListItem(java.lang.String, java.lang.String)
+     */
     public PickListItemIFace addPickListItem(final String title, final String value)
     {
         PickListItem pli = new PickListItem(title, value, new Date());
         items.add(pli);
         return pli;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#addPickListItem(java.lang.String, java.lang.Object)
+     */
+    public PickListItemIFace addPickListItem(final String title, final Object value)
+    {
+        PickListItem pli = new PickListItem(title, value, new Date());
+        items.add(pli);
+        return pli;
+       
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#addPickListItem(edu.ku.brc.ui.db.PickListItemIFace)
+     */
     public PickListItemIFace addPickListItem(final PickListItemIFace item)
     {
         items.add(item);
         return item;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#removePickListItem(edu.ku.brc.ui.db.PickListItemIFace)
+     */
     public void removePickListItem(final PickListItemIFace item)
     {
         items.remove(item);
     }
-
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    public Integer getTableId()
+    {
+        return 500;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    public String getIdentityTitle()
+    {
+        return name;
+    }
 }

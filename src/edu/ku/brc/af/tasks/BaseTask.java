@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -50,7 +51,6 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MemoryDropDownButton;
-import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.MultiView;
@@ -397,7 +397,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         }
         if (cnt == 1)
         {
-            currPane.clearForm();
+            if (currPane != null)
+            {
+                currPane.clearForm();
+            }
 
         } else if (cnt > 0)  // wierd we should always find something
         {

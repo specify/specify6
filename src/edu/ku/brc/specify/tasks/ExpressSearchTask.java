@@ -251,7 +251,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                                 {
                                     list = new ArrayList<ExpressResultsTableInfo>();
                                     joinIdToTableInfoHash.put(jci.getJoinTableId(), list);
-                                    System.out.println("Adding ["+jci.getJoinTableId()+"]");
+                                    //log.debug("Adding JOin Table ID["+jci.getJoinTableId()+"]");
                                 }
                                 list.add(ti);
                             }

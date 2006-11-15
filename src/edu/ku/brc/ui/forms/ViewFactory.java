@@ -15,7 +15,6 @@
 package edu.ku.brc.ui.forms;
 
 import static edu.ku.brc.ui.validation.UIValidator.parseValidationType;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
@@ -62,6 +61,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.ui.db.TextFieldWithInfo;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
@@ -108,7 +108,7 @@ public class ViewFactory
     protected MultiView               rootMultiView  = null; // transient - is valid only during a build process
 
     /**
-     * Constructor
+     * Constructor.
      */
     protected ViewFactory()
     {
@@ -199,22 +199,15 @@ public class ViewFactory
      * @return a ValTextField
      */
     protected JTextField createTextField(final FormValidator validator,
-                                         final FormCellField cellField)
+                                         final FormCellField cellField,
+                                         final PickListDBAdapterIFace adapter)
     {
         String validationRule = cellField.getValidationRule();
 
         JTextField txtField;
         if (validator != null && (cellField.isRequired() || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
         {
-
-            String                 pickListName      = cellField.getPickListName();
-            PickListDBAdapterIFace pickListDBAdapter = null;
-            if (isNotEmpty(pickListName))
-            {
-                pickListDBAdapter = PickListDBAdapterFactory.getInstance().create(pickListName, false);
-            }
-
-            ValTextField textField = new ValTextField(cellField.getCols(), pickListDBAdapter);
+            ValTextField textField = new ValTextField(cellField.getCols(), adapter);
             textField.setRequired(cellField.isRequired());
 
             validator.hookupTextField(textField,
@@ -226,6 +219,13 @@ public class ViewFactory
 
             txtField = textField;
             textField.setEditable(!cellField.isReadOnly());
+
+        } else if (adapter != null)
+        {
+            ValTextField textField = new ValTextField(cellField.getCols(), adapter);
+
+            txtField = textField;
+            textField.setEditable(false);
 
         } else
         {
@@ -417,29 +417,29 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return ValComboBox
      */
-    protected ValComboBox createComboBox(final FormValidator validator,
-                                         final FormCellField cellField)
+    protected ValComboBox createValComboBox(final FormValidator validator,
+                                            final FormCellField cellField,
+                                            final PickListDBAdapterIFace adapter)
     {
-        String[] initArray = null;
-        String data = cellField.getProperty("data");
-        if (StringUtils.isNotEmpty(data))
+        boolean                makeEditable = cellField.getPropertyAsBoolean("editable", false);
+        ValComboBox            cbx          = null;
+        if (adapter != null)
         {
-            initArray = split(data, ",");
-            for (int i=0;i<initArray.length;i++)
-            {
-                initArray[i] = initArray[i].trim();
-            }
-        }
-
-        boolean     makeEditable = cellField.getPropertyAsBoolean("editable", false);
-        String      pickListName = cellField.getPickListName();
-        ValComboBox cbx          = null;
-        if (isNotEmpty(pickListName))
-        {
-            cbx = new ValComboBox(PickListDBAdapterFactory.getInstance().create(pickListName, false)); // false means don't auto-create picklist
-            
+            cbx = new ValComboBox(adapter); // false means don't auto-create picklist
+                
         } else
         {
+            String[] initArray = null;
+            String data = cellField.getProperty("data");
+            if (StringUtils.isNotEmpty(data))
+            {
+                initArray = split(data, ",");
+                for (int i=0;i<initArray.length;i++)
+                {
+                    initArray[i] = initArray[i].trim();
+                }
+            }
+
             cbx = initArray == null || initArray.length == 0 ? new ValComboBox(makeEditable) : new ValComboBox(initArray, makeEditable);
         }
         cbx.setRequired(cellField.isRequired());
@@ -474,6 +474,167 @@ public class ViewFactory
             textField.setBackground(viewFieldColor.getColor());
         }
     }
+    
+    /**
+     * Creates a JTextArea for display purposes only.
+     * @param cellField FormCellField info
+     * @return the control
+     */
+    protected JScrollPane createDisplayTextArea(final FormCellField cellField)
+    {
+        JTextArea ta = new JTextArea(cellField.getRows(), cellField.getCols());
+        // ta.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        Insets insets = ta.getBorder().getBorderInsets(ta);
+        ta.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+        ta.setForeground(Color.BLACK);
+        ta.setEditable(false);
+        ta.setBackground(viewFieldColor.getColor());
+
+        JScrollPane scrollPane = new JScrollPane(ta);
+        insets = scrollPane.getBorder().getBorderInsets(scrollPane);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+        
+        return scrollPane;
+    }
+    
+    /**
+     * Creates a TextFieldWithInfo.
+     * @param cellField FormCellField info
+     * @param parent the parent mulitview needed because of pop Dialogs (from the info btn)
+     * @return the control
+     */
+    protected TextFieldWithInfo createTextFieldWithInfo(final FormCellField cellField,
+                                                        final MultiView         parent)
+    {
+        TextFieldWithInfo textFieldInfo;
+        String            txtName = cellField.getProperty("name");
+        if (isNotEmpty(txtName))
+        {
+            textFieldInfo = TypeSearchForQueryFactory.getTextFieldWithInfo(txtName);
+            textFieldInfo.setMultiView(parent);
+            textFieldInfo.setFrameTitle(cellField.getProperty("title"));
+            
+        } else
+        {
+            throw new RuntimeException("textfieldinfo Name for textFieldWithInfo ["+txtName+"] is empty!");
+        }
+
+        JTextField textField = textFieldInfo.getTextField();
+        textField.setColumns(cellField.getCols());
+        
+        changeTextFieldUIForDisplay(textField);
+        return textFieldInfo;
+    }
+    
+    /**
+     * Creates an ImageDisplay control,
+     * @param cellField FormCellField info
+     * @param mode indicates whether in Edit or View mode
+     * @return the control
+     */
+    protected ImageDisplay createImageDisplay(final FormCellField cellField,
+                                              final AltView.CreationMode mode)
+    {
+        int w = 150;
+        int h = 150;
+        String sizeDefStr = cellField.getProperty("size");
+        if (isNotEmpty(sizeDefStr))
+        {
+            String[] wh = StringUtils.split(sizeDefStr, ",");
+            if (wh.length == 2)
+            {
+                try
+                {
+                    w = Integer.parseInt(wh[0]);
+                    h = Integer.parseInt(wh[1]);
+
+                } catch (Exception ex)
+                {
+                    log.error("size prop for Image is incorrect ["+sizeDefStr+"]");
+                }
+            }
+
+        }
+        
+        boolean imageInEdit = mode == AltView.CreationMode.Edit;
+        String editModeStr = cellField.getProperty("edit");
+        if (isNotEmpty(editModeStr))
+        {
+            imageInEdit = editModeStr.toLowerCase().equals("true");
+        }
+
+        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit, cellField.getPropertyAsBoolean("border", true));
+        
+        String urlStr = cellField.getProperty("url");
+        if (isNotEmpty(urlStr))
+        {
+            imgDisp.setValue(urlStr, "");
+        } else
+        {
+            String name = cellField.getProperty("icon");
+            if (isNotEmpty(name))
+            {
+                boolean loadIt   = true;
+                String  iconSize = cellField.getProperty("iconsize");
+                if (isNotEmpty(iconSize))
+                {
+                    IconManager.IconSize sz = IconManager.getIconSize(Integer.parseInt(iconSize), false, false);
+                    if (sz != null)
+                    {
+                        imgDisp.setImage(IconManager.getImage(name, sz));
+                        loadIt = false;
+                    }
+                    
+                } 
+                
+                if (loadIt)
+                {
+                    imgDisp.setImage(IconManager.getImage(name));
+                }
+            }
+        }
+        return imgDisp;
+    }
+    
+    /**
+     * Creates an ImageDisplay control,
+     * @param cellField FormCellField info
+     * @param mode indicates whether in Edit or View mode
+     * @return the control
+     */
+    protected JComponent createPlugin(final FormCellField cellField)
+    {
+        String classNameStr = cellField.getProperty("class");
+        if (StringUtils.isEmpty(classNameStr))
+        {
+            throw new RuntimeException("Creating plugin and the class property was missing.");
+        }
+        
+        try
+        {
+            JComponent uiObj = Class.forName(classNameStr).asSubclass(JComponent.class).newInstance();
+            
+            if (!(uiObj instanceof GetSetValueIFace))
+            {
+                throw new RuntimeException("Plugin of class["+classNameStr+"] doesn't implement the GetSetValueIFace!");
+            }
+            
+            if (uiObj instanceof UIPluginable)
+            {
+                ((UIPluginable)uiObj).initialize(cellField.getProperties());
+            }
+            return uiObj;
+            
+        } catch (Exception ex)
+        {
+           log.error(ex);
+           throw new RuntimeException(ex);
+        }
+    }
+    
+
 
     /**
      * Processes the rows in a definition.
@@ -546,283 +707,196 @@ public class ViewFactory
                 {
                     FormCellField cellField = (FormCellField)cell;
 
-                    String uiType = cellField.getUiType();
-
-                    if (isEmpty(uiType))
+                    FormCellField.FieldType uiType = cellField.getUiType();
+                    
+                    // Check to see if there is a picklist and get it if there is
+                    String                 pickListName = cellField.getPickListName();
+                    PickListDBAdapterIFace adapter      = null;
+                    if (isNotEmpty(pickListName))
                     {
-                        uiType = "text";
+                        adapter = PickListDBAdapterFactory.getInstance().create(pickListName, false);
+                        
+                        if (adapter == null || adapter.getPickList() == null)
+                        {
+                            throw new RuntimeException("PickList Adapter ["+pickListName+"] cannot be null!");
+                        }
                     }
 
-
+                    // The Default Display for combox is dsptextfield, except when there is a TableBased PickList
+                    // At the time we set the display we don't want to go get the picklist to find out. So we do it
+                    // here after we have the picklist and actually set the change into the cellField
+                    // because it uses the value to determine whether to convert the value into a text string 
+                    // before setting it.
                     if (mode == AltView.CreationMode.View)
                     {
-                        uiType = cellField.getDspUIType();
-                    }
-
-                    if (uiType.equals("text"))
-                    {
-                        compToAdd = createTextField(validator, cellField);
-                        addToValidator = validator == null; // might already added to validator
-
-                    } else if (uiType.equals("formattedtext"))
-                    {
-                        compToAdd = createFormattedTextField(validator, cellField);
-                        addToValidator = validator == null; // might already added to validator
-
-
-                    } else if (uiType.equals("label"))
-                    {
-                        compToAdd = new JLabel("", SwingConstants.LEFT);
-
-                    } else if (uiType.equals("dsptextfield"))
-                    {
-                        JTextField text = new JTextField(cellField.getCols());
-                        changeTextFieldUIForDisplay(text);
-                        compToAdd = text;
-
-
-                    } else if (uiType.equals("textfieldinfo"))
-                    {
-                        TextFieldWithInfo textFieldInfo;
-                        String            txtName = cellField.getProperty("name");
-                        if (isNotEmpty(txtName))
+                        if (uiType == FormCellField.FieldType.combobox && cellField.getDspUIType() != FormCellField.FieldType.textpl)
                         {
-                            textFieldInfo = TypeSearchForQueryFactory.getTextFieldWithInfo(txtName);
-                            textFieldInfo.setMultiView(parent);
-                            textFieldInfo.setFrameTitle(cellField.getProperty("title"));
-                            
-                        } else
-                        {
-                            throw new RuntimeException("textfieldinfo Name for textFieldWithInfo ["+txtName+"] is empty!");
-                        }
-
-                        JTextField text = textFieldInfo.getTextField();
-                        text.setColumns(cellField.getCols());
-
-                        
-                        changeTextFieldUIForDisplay(text);
-                        
-                        compToAdd = textFieldInfo;
-
-
-                    } else if (uiType.equals("image"))
-                    {
-                        
-                        int w = 150;
-                        int h = 150;
-                        String sizeDefStr = cellField.getProperty("size");
-                        if (isNotEmpty(sizeDefStr))
-                        {
-                            String[] wh = StringUtils.split(sizeDefStr, ",");
-                            if (wh.length == 2)
+                            if (adapter != null && adapter.isTabledBased())
                             {
-                                try
-                                {
-                                    w = Integer.parseInt(wh[0]);
-                                    h = Integer.parseInt(wh[1]);
-
-                                } catch (Exception ex)
-                                {
-                                    log.error("size prop for Image is incorrect ["+sizeDefStr+"]");
-                                }
-                            }
-
-                        }
-                        
-                        boolean imageInEdit = mode == AltView.CreationMode.Edit;
-                        String editModeStr = cellField.getProperty("edit");
-                        if (isNotEmpty(editModeStr))
-                        {
-                            imageInEdit = editModeStr.toLowerCase().equals("true");
-                        }
- 
-                        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit, cellField.getPropertyAsBoolean("border", true));
-                        
-                        String urlStr = cellField.getProperty("url");
-                        if (isNotEmpty(urlStr))
-                        {
-                            imgDisp.setValue(urlStr, "");
-                        } else
-                        {
-                            String name = cellField.getProperty("icon");
-                            if (isNotEmpty(name))
-                            {
-                                boolean loadIt   = true;
-                                String  iconSize = cellField.getProperty("iconsize");
-                                if (isNotEmpty(iconSize))
-                                {
-                                    IconManager.IconSize sz = IconManager.getIconSize(Integer.parseInt(iconSize), false, false);
-                                    if (sz != null)
-                                    {
-                                        imgDisp.setImage(IconManager.getImage(name, sz));
-                                        loadIt = false;
-                                    }
-                                    
-                                } 
-                                
-                                if (loadIt)
-                                {
-                                    imgDisp.setImage(IconManager.getImage(name));
-                                }
-                            }
-                        }
-                        
-                        compToAdd = imgDisp;
-
-                        addToValidator = false;
-
-                    } else if (uiType.equals("url"))
-                    {
-                        compToAdd = new BrowserLauncherBtn(cellField.getProperty("title"));
-                        addToValidator = false;
-
-                    } else if (uiType.equals("combobox"))
-                    {
-                        compToAdd = createComboBox(validator, cellField);
-                        /*JPanel p = new JPanel(new BorderLayout());
-                        JAutoCompComboBox cbx = new JAutoCompComboBox(new String[] {"One", "Two", "Three"});
-                        cbx.init(true);
-                        compToAdd = cbx;
-                        p.add(cbx, BorderLayout.CENTER);*/
-                        addToValidator = validator != null; // might already added to validator
-
-
-                    } else if (uiType.equals("checkbox"))
-                    {
-                        JCheckBox checkbox = new JCheckBox(cellField.getLabel());
-                        if (validator != null)
-                        {
-                            DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getId(), checkbox, null);
-                            checkbox.addActionListener(dcn);
-                        }
-
-                        compToAdd = checkbox;
-
-                    } else if (uiType.equals("password"))
-                    {
-
-                        compToAdd      = createPasswordField(validator, cellField);
-                        addToValidator = validator == null; // might already added to validator
-
-
-
-                    } else if (uiType.equals("dsptextarea"))
-                    {
-                        JTextArea ta = new JTextArea(cellField.getRows(), cellField.getCols());
-                        //ta.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
-                        Insets insets = ta.getBorder().getBorderInsets(ta);
-                        ta.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
-                        ta.setForeground(Color.BLACK);
-                        ta.setEditable(false);
-                        ta.setBackground(viewFieldColor.getColor());
-
-                        JScrollPane scrollPane = new JScrollPane(ta);
-                        insets = scrollPane.getBorder().getBorderInsets(scrollPane);
-                        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-                        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                        scrollPane.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
-
-                        compToAdd = scrollPane;
-
-                    } else if (uiType.equals("textarea"))
-                    {
-                        JTextArea ta = createTextArea(validator, cellField);
-                        JScrollPane scrollPane = new JScrollPane(ta);
-                        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-                        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
-                        addToValidator = validator == null; // might already added to validator
-                        compToReg = ta;
-                        compToAdd = scrollPane;
-
-                    } else if (uiType.equals("browse"))
-                    {
-                        BrowseBtnPanel bbp = new BrowseBtnPanel(createTextField(validator, cellField));
-                        compToAdd = bbp;
-
-                    } else if (uiType.equals("querycbx"))
-                    {
-                        ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField);
-                        cbx.setMultiView(parent);
-                        cbx.setFrameTitle(cellField.getProperty("title"));
-                        
-                        compToAdd = cbx;
-                        addToValidator = validator == null; // might already added to validator
-
-                    } else if (uiType.equals("list"))
-                    {
-                        JList list = createList(validator, cellField);
-
-                        JScrollPane scrollPane = new JScrollPane(list);
-                        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-                        addToValidator = validator == null;
-                        compToReg = list;
-                        compToAdd = scrollPane;
-
-                    } else if (uiType.equals("colorchooser"))
-                    {
-                        ColorChooser colorChooser = new ColorChooser(Color.BLACK);
-                        if (validator != null)
-                        {
-                            DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), colorChooser, null);
-                            colorChooser.addPropertyChangeListener("setValue", dcn);
-                        }
-                        compToAdd = colorChooser;
-
-                    } else if (uiType.equals("button"))
-                    {
-                        JButton btn = new JButton(cellField.getProperty("title"));
-                        compToAdd = btn;
-                        
-                    } else if (uiType.equals("progress"))
-                    {
-                        JProgressBar progressBar = new JProgressBar(0, 100);
-                        compToAdd = progressBar;
-                        
-                    } else if (uiType.equals("plugin"))
-                    {
-                        String classNameStr = cellField.getProperty("class");
-                        if (StringUtils.isEmpty(classNameStr))
-                        {
-                            throw new RuntimeException("Creating plugin and the class property was missing.");
-                        }
-                        
-                        try
-                        {
-                            Class<?>  classObj = Class.forName(classNameStr);
-                            Object uiObj    = classObj.newInstance();
-                            
-                            if (!(uiObj instanceof GetSetValueIFace))
-                            {
-                                throw new RuntimeException("Plugin of class["+classNameStr+"] doesn't implement the GetSetValueIFace!");
-                            }
-                            
-                            if (uiObj instanceof UIPluginable)
-                            {
-                                ((UIPluginable)uiObj).initialize(cellField.getProperties());
-                            }
-                            
-                            if (uiObj instanceof JComponent)
-                            {
-                                compToAdd = (JComponent)uiObj;
+                                uiType = FormCellField.FieldType.textpl;
+                                cellField.setDspUIType(uiType);
                                 
                             } else
                             {
-                                throw new RuntimeException("A UIPlugin MUST be derived from a JComponent!");
+                                uiType = cellField.getDspUIType();    
                             }
-                            
-                        } catch (Exception ex)
+                        } else
                         {
-                           log.error(ex);
-                           throw new RuntimeException(ex);
+                            uiType = cellField.getDspUIType();
+                        }
+                    }
+                    
+                    // Create the UI Component
+                    
+                    switch (uiType)
+                    {
+                        case text:
+                            compToAdd = createTextField(validator, cellField, adapter);
+                            addToValidator = validator == null; // might already added to validator
+                            break;
+                        
+                        case formattedtext:
+                            compToAdd = createFormattedTextField(validator, cellField);
+                            addToValidator = validator == null; // might already added to validator
+                            break;
+                            
+                        case label:
+                            compToAdd = new JLabel("", SwingConstants.LEFT);
+                            break;
+                            
+                        case dsptextfield:
+                            if (StringUtils.isEmpty(cellField.getPickListName()))
+                            {
+                                JTextField text = new JTextField(cellField.getCols());
+                                changeTextFieldUIForDisplay(text);
+                                compToAdd = text;
+                            } else
+                            {
+                                compToAdd = createTextField(validator, cellField, adapter);
+                                addToValidator = validator == null; // might already added to validator
+                            }
+                            break;
+
+                        case textfieldinfo:
+                            compToAdd = createTextFieldWithInfo(cellField, parent);
+                            break;
+
+                            
+                        case image:
+                            compToAdd = createImageDisplay(cellField, mode);
+                            addToValidator = false;
+                            break;
+
+                        
+                        case url:
+                            compToAdd = new BrowserLauncherBtn(cellField.getProperty("title"));
+                            addToValidator = false;
+    
+                            break;
+                        
+                        case combobox:
+                            compToAdd = createValComboBox(validator, cellField, adapter);
+                            addToValidator = validator != null; // might already added to validator
+                            break;
+                        
+                        case checkbox:
+                        {
+                            JCheckBox checkbox = new JCheckBox(cellField.getLabel());
+                            if (validator != null)
+                            {
+                                DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getId(), checkbox, null);
+                                checkbox.addActionListener(dcn);
+                            }
+    
+                            compToAdd = checkbox;
+                            break;
+                       }
+                         
+                        case password:
+                            compToAdd      = createPasswordField(validator, cellField);
+                            addToValidator = validator == null; // might already added to validator
+                            break;
+                        
+                        case dsptextarea:
+                            compToAdd = createDisplayTextArea(cellField);
+                            break;
+                        
+                        case textarea:
+                        {
+                            JTextArea ta = createTextArea(validator, cellField);
+                            JScrollPane scrollPane = new JScrollPane(ta);
+                            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+                            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    
+                            addToValidator = validator == null; // might already added to validator
+                            compToReg = ta;
+                            compToAdd = scrollPane;
+                            break;
                         }
                         
-                    } else
-                    {
-                        throw new RuntimeException("Don't recognize uitype=["+uiType+"]");
-                    }
+                        case browse:
+                            BrowseBtnPanel bbp = new BrowseBtnPanel(createTextField(validator, cellField, null));
+                            compToAdd = bbp;
+                            break;
+                            
+                        case querycbx:
+                        {
+                            ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField);
+                            cbx.setMultiView(parent);
+                            cbx.setFrameTitle(cellField.getProperty("title"));
+                            
+                            compToAdd = cbx;
+                            addToValidator = validator == null; // might already added to validator
+                            break;
+                        }
+                        
+                        case list:
+                        {
+                            JList list = createList(validator, cellField);
+    
+                            JScrollPane scrollPane = new JScrollPane(list);
+                            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    
+                            addToValidator = validator == null;
+                            compToReg = list;
+                            compToAdd = scrollPane;
+                            break;
+                        }
+                        
+                        case colorchooser:
+                        {
+                            ColorChooser colorChooser = new ColorChooser(Color.BLACK);
+                            if (validator != null)
+                            {
+                                DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), colorChooser, null);
+                                colorChooser.addPropertyChangeListener("setValue", dcn);
+                            }
+                            compToAdd = colorChooser;
+    
+                            break;
+                        }
+                        
+                        case button:
+                            compToAdd = new JButton(cellField.getProperty("title"));
+                            break;
+                            
+                        case progress:
+                            compToAdd = new JProgressBar(0, 100);
+                            break;
+                        
+                        case plugin:
+                            compToAdd = createPlugin(cellField);
+                            break;
+
+                        case textpl:
+                            compToAdd = new TextFieldFromPickListTable(adapter);
+                            break;
+                        
+                        default:
+                            throw new RuntimeException("Don't recognize uitype=["+uiType+"]");
+                        
+                    } // switch
 
                 } else if (cell.getType() == FormCell.CellType.command)
                 {

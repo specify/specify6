@@ -605,12 +605,21 @@ public class DataBuilder
         return location;
     }
 
-    public static PickList createPickList(final String name, boolean readOnly, int sizeLimit)
+    public static PickList createPickList(final String  name,
+                                          final Integer type,
+                                          final String  tableName,
+                                          final String  fieldName,
+                                          final String  formatter,
+                                          boolean       readOnly, 
+                                          int           sizeLimit)
     {
         PickList pickList = new PickList();
         pickList.initialize();
         pickList.setName(name);
-        pickList.setCreated(new Date());
+        pickList.setType(type);
+        pickList.setTableName(tableName);
+        pickList.setFieldName(fieldName);
+        pickList.setFormatter(formatter);
         pickList.setReadOnly(readOnly);
         pickList.setSizeLimit(sizeLimit);
         persist(pickList);
@@ -619,12 +628,14 @@ public class DataBuilder
     
     public static PickList createPickList(final String name, boolean readOnly)
     {
-        return createPickList(name, readOnly, -1);
+        return createPickList(name, 0, null, null, null, readOnly, -1);
     }
     
-    public static PickList createPickList(final String name, boolean readOnly, String[] values)
+    public static PickList createPickList(final String name,
+                                          boolean readOnly, 
+                                          String[] values)
     {
-        PickList pickList = createPickList(name, readOnly, values.length);
+        PickList pickList = createPickList(name, 0, null, null, null, readOnly, values.length);
 
         for (String value: values)
         {
@@ -636,7 +647,7 @@ public class DataBuilder
     public static PickListItem createPickListItem(PickList pickList, String value)
     {
         PickListItem item = new PickListItem();
-        item.setCreatedDate(new Date());
+        item.setTimestampCreated(new Date());
         item.setValue(value);
         item.setTitle(value);
         pickList.addPickListItem(item);

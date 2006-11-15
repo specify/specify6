@@ -165,6 +165,10 @@ public class BuildSampleDatabase
         // picklists
         ////////////////////////////////
         log.info("Creating picklists");
+
+        //                                 Name                     Table Name         Field       Formatter         R/O  Size
+        dataObjects.add(createPickList("DeterminationStatus", 1, "determinationstatus", null, "DeterminationStatus", true, -1));
+
         
         String[] types = {"state", "federal", "international", "<no data>"};
         dataObjects.add(createPickList("PermitType", true, types));
@@ -870,7 +874,7 @@ public class BuildSampleDatabase
                     }
                     else
                     {
-                        attachMgr = new FileStoreAttachmentManager("/AttachmentStorage/");
+                        attachMgr = new FileStoreAttachmentManager("~/AttachmentStorage/");
                     }
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);

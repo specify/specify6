@@ -319,6 +319,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             }
 
             textField.setText(newVal.toString());
+            textField.setCaretPosition(0);
 
         } else
         {

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Set;
 
 /**
+ * Represents a PickList
  * @author rods
  *
  * @code_status Alpha
@@ -33,6 +34,22 @@ public interface PickListIFace
     public String getName();
 
     public void setName(String name);
+    
+    public String getFieldName();
+
+    public void setFieldName(String fieldName);
+
+    public String getTableName();
+
+    public void setTableName(String tableName);
+
+    public String getFormatter();
+
+    public void setFormatter(String formatter);
+
+    public Integer getType();
+
+    public void setType(Integer type);
 
     public Boolean getReadOnly();
 
@@ -42,15 +59,17 @@ public interface PickListIFace
 
     public void setSizeLimit(Integer sizeLimit);
 
-    public Date getCreated();
+    public Date getTimestampCreated();
 
-    public void setCreated(Date created);
+    public void setTimestampCreated(Date created);
 
     public Set<PickListItemIFace> getItems();
 
     public void setItems(Set<PickListItemIFace> items);
 
     public PickListItemIFace addPickListItem(final String title, final String value);
+
+    public PickListItemIFace addPickListItem(final String title, final Object value);
 
     public PickListItemIFace addPickListItem(final PickListItemIFace item);
 

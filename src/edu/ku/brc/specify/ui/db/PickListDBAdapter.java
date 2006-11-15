@@ -16,7 +16,6 @@ package edu.ku.brc.specify.ui.db;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -46,8 +45,7 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
     // Data Memebers        
     protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
     protected PickListIFace             pickList = null;
-    
-    
+     
     
     /**
      * Protected Default constructor derving subclasses.
@@ -60,82 +58,44 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
     }
     
     /**
-     * Constructor with a unique name.
-     * @param name the name of the picklist
-     * @param createWhenNotFound indicates whether to automatically create the picklist when the name is not found,
+     * Creates an adapter from a PickList.
+     * @param pickList the picklist
      */
-    public PickListDBAdapter(final String name, final boolean createWhenNotFound)
+    public PickListDBAdapter(final PickList pickList)
     {
-        pickList = getPickList(name);
+        this.pickList = pickList;
         
-        if (pickList != null)
+        for (PickListItemIFace pli : pickList.getItems())
         {
-            for (PickListItemIFace pli : pickList.getItems())
-            {
-                items.add(pli); 
-            }
-             
-            // Always keep the list sorted
-            Collections.sort(items);
-            
-         } else if (createWhenNotFound) 
-         {
-             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-             try
-             {
-                 PickList pl = new PickList();
-                 pl.initialize();                 
-                 pl.setName(name);
-                 pickList = pl;
-                 
-                 session.beginTransaction();
-                 session.save(pickList);
-                 session.commit();
-                 
-             } catch (Exception ex)
-             {
-                 log.error(ex);
-                 session.rollback();
-                 
-             } finally 
-             {
-                 if (session != null)
-                 {
-                     session.close();
-                 }
-             }
-
-             
-         } else 
-         {
-             throw new RuntimeException("PickList ["+name+"] was not found and shouldn't have been created!");
-         }
-     }
+            items.add(pli); 
+        }
+         
+        // Always keep the list sorted
+        Collections.sort(items);
+    }
     
     /**
-     * Gets the PickList Item from the Database.
-     * @param name the name of the picklist to get
-     * @return the picklist
+     * Constructor with a unique name.
+     * @param name the name of the picklist
      */
-    protected PickList getPickList(final String name)
+    public PickListDBAdapter(final String name)
     {
-        PickList                 pkList  = null;
-        DataProviderSessionIFace session = null;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            session = DataProviderFactory.getInstance().createSession();
-
-            // unchecked warning: Criteria results are always the requested class
-	        List<PickList> itemsList = session.getDataList(PickList.class, "name", name, DataProviderSessionIFace.CompareType.Restriction);
-	        if (itemsList != null && itemsList.size() > 0)
-	        {
-                pkList = itemsList.get(0);
-	        }
-	        
+            PickList pl = new PickList();
+            pl.initialize();                 
+            pl.setName(name);
+            pickList = pl;
+            
+            session.beginTransaction();
+            session.save(pickList);
+            session.commit();
+            
         } catch (Exception ex)
         {
             log.error(ex);
-            ex.printStackTrace();
+            session.rollback();
             
         } finally 
         {
@@ -144,9 +104,6 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
                 session.close();
             }
         }
-        
-        return pkList;
-        
     }
     
     /* (non-Javadoc)
@@ -201,7 +158,7 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
                 PickListItemIFace oldest = null;
                 for (PickListItemIFace pli : items)
                 {
-                    if (oldest == null || pli.getCreatedDate().getTime() < oldest.getCreatedDate().getTime())
+                    if (oldest == null || pli.getTimestampCreated().getTime() < oldest.getTimestampCreated().getTime())
                     {
                         oldest = pli;
                     }
@@ -261,6 +218,22 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
                 session.close();
             }
         } 
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#isReadOnly()
+     */
+    public boolean isReadOnly()
+    {
+        return pickList.getReadOnly();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#isTabledBased()
+     */
+    public boolean isTabledBased()
+    {
+        return pickList == null ? false : pickList.getType() > 0;
     }
     
 }

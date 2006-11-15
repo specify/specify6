@@ -79,6 +79,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -1180,16 +1181,14 @@ public class GenericDBConversion
         
         Session session = HibernateUtil.getCurrentSession();
         PickList pl     = new PickList();
-        Set      items  = new HashSet<Object>();
+        pl.initialize();
+        Set<PickListItemIFace> items  = pl.getItems();
+
 
         try
         {
             pl.setName("Permit");
-            pl.setCreated(new Date());
-            pl.setItems(items);
-            pl.setReadOnly(false);
             pl.setSizeLimit(-1);
-
 
             HibernateUtil.beginTransaction();
             session.saveOrUpdate(pl);
@@ -1209,7 +1208,7 @@ public class GenericDBConversion
 
             log.info(sqlStr);
 
-            ResultSet rs       = stmt.executeQuery(sqlStr);
+            ResultSet rs = stmt.executeQuery(sqlStr);
 
             // check for no records which is OK
             if (!rs.first())
@@ -1227,7 +1226,7 @@ public class GenericDBConversion
                     PickListItem pli = new PickListItem();
                     pli.setTitle(typeStr);
                     pli.setValue(typeStr);
-                    pli.setCreatedDate(new Date());
+                    pli.setTimestampCreated(new Date());
                     items.add(pli);
                     count++;
 
@@ -1296,7 +1295,6 @@ public class GenericDBConversion
         try
         {
             pl.setName(pickListName);
-            pl.setCreated(new Date());
             pl.setReadOnly(false);
             pl.setSizeLimit(-1);
 

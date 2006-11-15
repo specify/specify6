@@ -358,7 +358,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     @Override
     public void removeReference(FormDataObjIFace ref, String refType)
     {
-        System.err.println(ref+" "+ refType);
+        //System.err.println(ref+" "+ refType);
     
         if (ref instanceof CollectionObject)
         {

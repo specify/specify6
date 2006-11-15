@@ -467,16 +467,16 @@ public class PickListTestApp
               System.out.println("["+states[i]+"]["+states[i+1]+"]");
               pli.setValue(states[i++]);
               pli.setTitle(states[i]);
-              pli.setCreatedDate(new Date());
+              pli.setTimestampCreated(new Date());
               list.add(pli);
           }
                
           PickList pl = new PickList();
+          pl.initialize();
           pl.setName("states");
           pl.setItems(list);
           pl.setSizeLimit(50); // doesn't matter when readonly
           pl.setReadOnly(true);
-          pl.setCreated(new Date());
           session.save(pl);
 
           HibernateUtil.commitTransaction();

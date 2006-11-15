@@ -58,4 +58,18 @@ public interface PickListDBAdapterIFace
      * Persists the picklist and it's items.
      */
     public void save();
+    
+    
+    /**
+     * Returns whether the PickList is mutable.
+     * @return whether the PickList is mutable.
+     */
+    public boolean isReadOnly();
+    
+    /**
+     * When this returns true it means the PickListItems will be populated from other tables
+     * in the Database schema.
+     * @return true other tables, false not other tables
+     */
+    public boolean isTabledBased();
 }

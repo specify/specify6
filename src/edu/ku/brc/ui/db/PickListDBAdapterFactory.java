@@ -35,6 +35,14 @@ public class PickListDBAdapterFactory
     /**
      * @return
      */
+    public PickListIFace getPickList(final String name)
+    {
+        throw new RuntimeException("You must override this factory with your own.");
+    }
+    
+    /**
+     * @return
+     */
     public PickListIFace createPickList()
     {
         throw new RuntimeException("You must override this factory with your own.");

@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -699,7 +700,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         List<ViewSet> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
         if (viewSetList == null)
         {
-            viewSetList = new ArrayList<ViewSet>();
+            viewSetList = new Vector<ViewSet>();
             for (ViewSetObj vso : appResDef.getViewSets())
             {
                 try

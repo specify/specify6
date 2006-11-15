@@ -43,7 +43,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     {
         this.baseDirectory = baseDirectory;
         originalsDir = new File(baseDirectory + File.separator + "originals");
-        thumbsDir = new File(baseDirectory + File.separator + "thumbnails");
+        thumbsDir    = new File(baseDirectory + File.separator + "thumbnails");
         
         originalsDir.mkdirs();
         thumbsDir.mkdirs();

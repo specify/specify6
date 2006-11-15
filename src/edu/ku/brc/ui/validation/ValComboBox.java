@@ -48,6 +48,8 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.db.PickListItemIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 
 /**
@@ -439,17 +441,42 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         if (value != null)
         {
             ComboBoxModel  model = comboBox.getModel();
+            boolean isFormObjIFace = value instanceof FormDataObjIFace;
 
             if (comboBox.hasAdapter())
             {
                 for (int i=0;i<comboBox.getItemCount();i++)
                 {
-                    PickListItem pli = (PickListItem)model.getElementAt(i);
-                    if (pli.getValue().equals(value.toString()))
+                    
+                    PickListItemIFace pli    = (PickListItemIFace)model.getElementAt(i);
+                    Object            valObj = pli.getValueObject();
+                    
+                    if (valObj != null)
                     {
-                        comboBox.setSelectedIndex(i);
-                        fnd = true;
-                        break;
+                        if (isFormObjIFace && valObj instanceof FormDataObjIFace)
+                        {
+                            System.out.println(((FormDataObjIFace)value).getId().longValue()+"  "+(((FormDataObjIFace)valObj).getId().longValue()));
+                            if (((FormDataObjIFace)value).getId().longValue() == (((FormDataObjIFace)valObj).getId().longValue()))
+                            {
+                                comboBox.setSelectedIndex(i);
+                                fnd = true;
+                                break;                                
+                            }
+                        } else if (pli.getValue().equals(value.toString()))
+                        {
+                            comboBox.setSelectedIndex(i);
+                            fnd = true;
+                            break;                            
+                        }
+                    } else
+                    {
+                        Object pliObj = pli.getValue();
+                        if (pliObj != null && pliObj.equals(value.toString())) // really should never be null!
+                        {
+                            comboBox.setSelectedIndex(i);
+                            fnd = true;
+                            break;
+                        }
                     }
                 }
 

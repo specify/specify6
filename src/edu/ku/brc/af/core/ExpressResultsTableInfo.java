@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
@@ -329,12 +330,11 @@ public class ExpressResultsTableInfo
         return loadType;
     }
 
-
     /**
      * Returns out of date hash.
      * @return out of date hash.
      */
-    public Hashtable<String, String> getOutOfDate()
+    public Map<String, String> getOutOfDate()
     {
         return outOfDate;
     }

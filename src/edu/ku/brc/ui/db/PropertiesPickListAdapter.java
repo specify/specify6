@@ -180,7 +180,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
                 PickListItemIFace oldest = null;
                 for (PickListItemIFace pli : items)
                 {
-                    if (oldest == null || pli.getCreatedDate().getTime() < oldest.getCreatedDate().getTime())
+                    if (oldest == null || pli.getTimestampCreated().getTime() < oldest.getTimestampCreated().getTime())
                     {
                         oldest = pli;
                     }
@@ -270,6 +270,22 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             AppPreferences.getLocalPrefs().put(prefSelectedName, selectedItem.toString());
             log.debug("["+prefSelectedName+"]["+selectedItem.toString()+"]");
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#isReadOnly()
+     */
+    public boolean isReadOnly()
+    {
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#isTabledBased()
+     */
+    public boolean isTabledBased()
+    {
+        return false;
     }
 
 }

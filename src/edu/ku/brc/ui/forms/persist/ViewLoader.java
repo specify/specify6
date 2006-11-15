@@ -579,7 +579,7 @@ public class ViewLoader
                         }
                         case field:
                         {
-                            String uitype         = getAttr(cellElement, "uitype", "");
+                            String uitypeStr      = getAttr(cellElement, "uitype", "");
                             String format         = getAttr(cellElement, "format", "");
                             String formatName     = getAttr(cellElement, "formatname", "");
                             String uiFieldFormatter = getAttr(cellElement, "uifieldformatter", "");
@@ -589,6 +589,7 @@ public class ViewLoader
                             String validationRule = getAttr(cellElement, "validation", "");
                             String initialize     = getAttr(cellElement, "initialize", "");
                             boolean isRequired    = getAttr(cellElement, "isrequired", false);
+                            String  pickListName  = getAttr(cellElement, "picklist", "");
 
                             if (isNotEmpty(format) && isNotEmpty(formatName))
                             {
@@ -596,65 +597,87 @@ public class ViewLoader
                                 log.error("Both format and formatname cannot both be set! ["+cellName+"] ignoring format");
                                 format = "";
                             }
-
+                            
                             Hashtable<String, String> properties = processInitializeString(initialize);
                             
-                            String dspUIType;
-                            if (uitype.equals("textarea"))
+                            // XXX DEBUG ONLY PLease REMOVE LATER
+                            if (StringUtils.isEmpty(uitypeStr))
                             {
-                                dspUIType = getAttr(cellElement, "dspuitype", "dsptextarea");
-
-                            } else if (uitype.equals("querycbx"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", "textfieldinfo");
-                                
-                                String fmtName = TypeSearchForQueryFactory.getFormatName(properties.get("name"));
-                                if (isNotEmpty(fmtName))
-                                {
-                                    formatName = fmtName;
-                                }
-
-                            } else if (uitype.equals("formattedtext"))
-                            {
-                                validationRule = getAttr(cellElement, "validation", "formatted");
-                                dspUIType      = getAttr(cellElement, "dspuitype", "dsptextfield");
-                                if (isNotEmpty(uiFieldFormatter))
-                                {
-                                    Formatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
-                                    if (formatter == null)
-                                    {
-                                        log.error("Couldn't find formatter["+uiFieldFormatter+"]");
-                                        uiFieldFormatter = "";
-                                        uitype = "text";
-                                    }
-                                }
-
-                            } else if (uitype.equals("url"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
-                                properties = processInitializeString(initialize);
-
-                            } else if (uitype.equals("list") ||
-                                       uitype.equals("image") ||
-                                       uitype.equals("checkbox") ||
-                                       uitype.equals("progress") ||
-                                       uitype.equals("password"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
-                                
-                            } else if (uitype.equals("plugin") ||
-                                       uitype.equals("button") ||
-                                       uitype.equals("tray"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
-                                properties = processInitializeString(initialize);
-
-                            } else
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                System.err.println("***************************************************************************");
+                                System.err.println("***** Cell Id["+cellId+"] Name["+cellName+"] uitype is empty and should be 'text'. (Please Fix!)");
+                                System.err.println("***************************************************************************");
+                                uitypeStr = "text";
                             }
 
+                            // THis switch is used to get the "display type" and 
+                            // set up other vars needed for creating the controls
+                            FormCellField.FieldType uitype       = FormCellField.FieldType.valueOf(uitypeStr);
+                            String                  dspUITypeStr = null;
+                            switch (uitype)
+                            {
+                                case textarea:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextarea");
+                                    break;
+                                
+                                case  querycbx:
+                                {
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");
+                                    
+                                    String fmtName = TypeSearchForQueryFactory.getFormatName(properties.get("name"));
+                                    if (isNotEmpty(fmtName))
+                                    {
+                                        formatName = fmtName;
+                                    }
+                                    break;
+                                }
 
+                                case formattedtext:
+                                {
+                                    validationRule = getAttr(cellElement, "validation", "formatted");
+                                    dspUITypeStr   = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    if (isNotEmpty(uiFieldFormatter))
+                                    {
+                                        Formatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
+                                        if (formatter == null)
+                                        {
+                                            log.error("Couldn't find formatter["+uiFieldFormatter+"]");
+                                            uiFieldFormatter = "";
+                                            uitype = FormCellField.FieldType.text;
+                                        }
+                                    }
+                                    break;
+                                }
+
+                                case url:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
+                                    properties = processInitializeString(initialize);
+                                    break;
+                                    
+                                case list:
+                                case image:
+                                case checkbox:
+                                case password:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
+                                    break;
+                                
+                                case plugin:
+                                case button:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
+                                    properties = processInitializeString(initialize);
+                                    break;
+
+                                case combobox:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    break;
+                                    
+                                default:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    break;
+                                
+                            } //switch
+
+                            FormCellField.FieldType dspUIType = FormCellField.FieldType.valueOf(dspUITypeStr);
+                            
                             // check to see see if the validation is a node in the cell
                             if (isEmpty(validationRule))
                             {
@@ -671,6 +694,7 @@ public class ViewLoader
 
                             boolean isEncrypted = getAttr(cellElement, "isencrypted", false);
                             
+                            
                             FormCellField field = new FormCellField(FormCell.CellType.field, cellId, 
                                                                     cellName, uitype, dspUIType, format, formatName, uiFieldFormatter, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
@@ -678,7 +702,7 @@ public class ViewLoader
                             field.setLabel(getAttr(cellElement,        "label", ""));
                             field.setReadOnly(getAttr(cellElement,     "readonly", false));
                             field.setDefaultValue(getAttr(cellElement, "default", ""));
-                            field.setPickListName(getAttr(cellElement, "picklist", ""));
+                            field.setPickListName(pickListName);
                             field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true) && !isRequired);
                             field.setProperties(properties);
 

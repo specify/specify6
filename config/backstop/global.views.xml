@@ -197,10 +197,10 @@
                 
                 <row>
                     <cell type="label" labelfor="10" label="Edited By"/>
-                    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
+                    <cell type="field" id="10" name="lastEditedBy" uitype="text" readonly="true"/>
 
                     <cell type="label" labelfor="11" label="Last Edited"/>
-                    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
                 </row>
             </rows>
         </viewdef>

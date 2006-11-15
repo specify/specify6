@@ -121,7 +121,10 @@ public class CommandDispatcher
             return false;
         }
         // else
-        log.warn("Type of Listeners couldn't be found["+cmdAction.getType()+"]"); 
+        if (!cmdAction.getType().endsWith("Database"))
+        {
+            log.warn("Type of Listeners couldn't be found["+cmdAction.getType()+"]");
+        }
         return false;
     }
 

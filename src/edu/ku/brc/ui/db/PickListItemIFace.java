@@ -17,9 +17,11 @@ package edu.ku.brc.ui.db;
 import java.util.Date;
 
 /**
+ * Represents a PickListItem.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Nov 10, 2006
  *
@@ -34,7 +36,14 @@ public interface PickListItemIFace extends Comparable<PickListItemIFace>
 
     public void setValue(String value);
     
-    public Date getCreatedDate();
+    public Date getTimestampCreated();
 
-    public void setCreatedDate(Date createdDate);
+    public void setTimestampCreated(Date createdDate);
+    
+    // Non-Presisted Field
+    
+    public Object getValueObject();
+
+    public void setValueObject(Object valueObject);
+    
 }

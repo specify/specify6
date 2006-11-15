@@ -7,8 +7,6 @@
         <table id="1" tableid="1" indexed="true" usehitscache="false" name="Collection Object" title="Collection Object" priority="1" color="30, 144, 255">
             <outofdate>
                 <table name="collectionobject" title="Collection Object"/>
-                <table name="determination" title="Determination"/>
-                <table name="taxon" title="Taxon"/>
             </outofdate>
             <index>
                 <sql>

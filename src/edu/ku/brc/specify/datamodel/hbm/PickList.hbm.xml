@@ -7,75 +7,67 @@
 
   <import class="PickListItem"/>
   
-    <class name="edu.ku.brc.specify.datamodel.PickList" table="picklist">
+<class name="edu.ku.brc.specify.datamodel.PickList" table="picklist">
         
-    <meta attribute="class-description">
-      Represents a PickList
-      @author Rod Spears (with help from Hibernate)
-    </meta>
-
-      <id name="pickListId" type="int" column="PickListID">
-      <meta attribute="scope-set">public</meta>
-      <meta attribute="scope-field">protected</meta>
-      <generator class="native"/>
+    <id name="pickListId" type="java.lang.Long" column="PickListID">
+        <meta attribute="scope-set">public</meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="native"/>
     </id>
     
-    <property
-        name="name"
-        type="java.lang.String"
-        column="name"
-        not-null="true"
-        unique="true"
-        length="64"
-    >
+    <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="name"
-            length="64"
-            not-null="true"
-        </meta>    
-    </property>
+        <meta attribute="field-description">Versioning TimeStamp</meta>
+    </timestamp>
     
-    
-    <property
-        name="readOnly"
-        type="boolean"
-        column="readOnly"
-        not-null="true"
-    >
+    <property name="name" type="java.lang.String" column="Name" not-null="true" unique="true" length="64">
         <meta attribute="scope-field">protected</meta>
     </property>
     
-    <property
-        name="sizeLimit"
-        type="java.lang.Integer"
-        column="sizeLimit"
-        length="10"
-    >
+    <property name="type" type="java.lang.Integer" column="Type" not-null="true">
+        <meta attribute="scope-field">protected</meta>
+    </property>
+    
+    <property name="tableName" type="java.lang.String" column="TableName" not-null="false" length="64">
+        <meta attribute="scope-field">protected</meta>
+    </property>
+    
+    <property name="fieldName" type="java.lang.String" column="FieldName" not-null="false" length="64">
+        <meta attribute="scope-field">protected</meta>
+    </property>
+    
+    <property name="formatter" type="java.lang.String" column="Formatter" not-null="false" length="64">
+        <meta attribute="scope-field">protected</meta>
+    </property>
+    
+    <property name="readOnly" type="boolean" column="readOnly" not-null="true" >
+        <meta attribute="scope-field">protected</meta>
+    </property>
+    
+    <property name="sizeLimit" type="java.lang.Integer" column="sizeLimit" length="10">
         <meta attribute="scope-field">protected</meta>
     </property>
 
-	<!-- We can't change the creation time, so map it with update="false". -->
-	<property   name="created"
-				column="created"
-				type="java.util.Date"
-				update="false"
-				not-null="true">
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-    </property>    
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>   
 
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to PickListItem -->
-    <set
-        name="items" table="picklist_items" lazy="false">
+    <set name="items" table="picklist_items" lazy="false">
         <meta attribute="scope-field">protected</meta>
         <key column="pickListItemID"/>
     	<composite-element class="PickListItem">
     		<property name="title" not-null="true" unique="false" length="64"/>
     		<property name="value" not-null="false" unique="false" length="64"/>
-    		<property name="createdDate" not-null="true"/>
+    	    <property name="timestampCreated" not-null="true"/>
         </composite-element>
     </set>
 	

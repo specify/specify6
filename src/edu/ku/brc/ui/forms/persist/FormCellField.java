@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
@@ -35,18 +33,23 @@ import edu.ku.brc.ui.DateWrapper;
  */
 public final class FormCellField extends FormCell
 {
+    // NOTE: textpl is not intended to be defined in the form, it is for internal use only
+    public enum FieldType {text, formattedtext, label, dsptextfield, textfieldinfo, image, url, combobox, checkbox, 
+                           password, dsptextarea, textarea, browse, querycbx, list, colorchooser, button, progress, plugin,
+                           textpl}
+
     protected static DateWrapper scrDateFormat = null;
     
-    protected String   uiType;
-    protected String   dspUIType;
-    protected String   format;
-    protected String   formatName;
-    protected String   uiFieldFormatter;
-    protected boolean  isRequired     = false;
-    protected boolean  isReadOnly     = false;
-    protected boolean  isEncrypted    = false;
-    protected String   label          = null;
-    protected String   defaultValue   = null;
+    protected FieldType uiType;
+    protected FieldType dspUIType;
+    protected String    format;
+    protected String    formatName;
+    protected String    uiFieldFormatter;
+    protected boolean   isRequired     = false;
+    protected boolean   isReadOnly     = false;
+    protected boolean   isEncrypted    = false;
+    protected String    label          = null;
+    protected String    defaultValue   = null;
     
     protected Boolean defaultDateToday = null;
     
@@ -100,9 +103,9 @@ public final class FormCellField extends FormCell
      */
     public FormCellField(final FormCell.CellType type,
                          final String            id,
-                         final String  name,
-                         final String  uiType,
-                         final String  dspUIType,
+                         final String    name,
+                         final FieldType uiType,
+                         final FieldType dspUIType,
                          final String  format,
                          final String  formatName,
                          final String  uiFieldFormatter,
@@ -198,18 +201,16 @@ public final class FormCellField extends FormCell
         this.cols = cols;
     }
 
-    public String getDspUIType()
+    public FieldType getDspUIType()
     {
         return dspUIType;
     }
 
-    public void setDspUIType(String dspUIType)
+    public void setDspUIType(FieldType dspUIType)
     {
         this.dspUIType = dspUIType;
 
-        this.isDSPTextField = isEmpty(dspUIType) ||
-            dspUIType.equals("dsptextfield") ||
-            dspUIType.equals("dsptextarea");
+        this.isDSPTextField = dspUIType == FieldType.dsptextfield || dspUIType == FieldType.dsptextarea;
 
     }
 
@@ -338,19 +339,18 @@ public final class FormCellField extends FormCell
         this.uiFieldFormatter = uiFieldFormatter;
     }
 
-    public String getUiType()
+    public FieldType getUiType()
     {
         return uiType;
     }
 
-    public void setUiType(String uiType)
+    public void setUiType(FieldType uiType)
     {
         this.uiType = uiType;
 
-        this.isTextField = isEmpty(uiType) ||
-            uiType.equals("text") ||
-            uiType.equals("formattedtext") ||
-            uiType.equals("textarea");
+        this.isTextField = uiType == FieldType.text ||
+                           uiType == FieldType.formattedtext ||
+                           uiType == FieldType.textarea;
     }
 
     public String getValidationRule()
