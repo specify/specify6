@@ -40,12 +40,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -93,8 +93,11 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
  * NOTE: XXX The indexing of the database needs to be abstracted out to be able to run "headless"<br>
  * That way we could run it on a server. The idea is that the UI would be accessed via a proxy
  * and the headless could be a "do nothing stub".
- 
- * @code_status Unknown (auto-generated)
+ *
+ * We need to implement the the part where it only updates the tables that have been changed.
+ * This is is extra work because we need to remove all the indexes out of Lucene for that table type.
+ * 
+ * @code_status Beta
  **
  * @author rods
  *
@@ -117,6 +120,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     protected boolean      isCancelled   = false;
     protected JButton      cancelBtn;
     protected JButton      closeBtn;
+    protected JCheckBox    forceChkbx;
 
     protected ImageIcon    checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
     protected ImageIcon    exclaimIcon   = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
@@ -195,7 +199,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 namesHash.put(tableElement.attributeValue("name"), tableElement.attributeValue("title"));
             }
 
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g,2dlu,p:g", createDuplicateJGoodiesDef("p","5px", namesHash.size())));
+            int numRowDefs = (namesHash.size() / 2) + namesHash.size() % 2;
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g,2dlu,p:g,20px,p:g,2dlu,p:g", createDuplicateJGoodiesDef("p","5px", numRowDefs)));
             CellConstraints cc      = new CellConstraints();
 
             if (captionFont == null)
@@ -207,13 +212,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             // NOTE: Each database check is added with the table name 
             // from the outofdate/tables list within the search definitions
             int row = 1;
+            int col = 1;
             for (Enumeration<String> e=namesHash.keys();e.hasMoreElements();)
             {
                 String nameStr = e.nextElement();
                 
                 // Find the last Created Timestamp
                 String sqlStr = "select TimestampCreated from "+nameStr+" order by TimestampCreated desc limit 0,1"; // TODO This needs to be per DB PLATFORM
-                log.info(sqlStr);
+                log.debug(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
 
@@ -224,7 +230,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 
                 // Now find the last Modified Timestamp
                 sqlStr = "select TimestampModified from "+nameStr+" order by TimestampModified desc limit 0,1"; // TODO This needs to be per DB PLATFORM
-                log.info(sqlStr);
+                log.debug(sqlStr);
                 container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
 
@@ -236,12 +242,19 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 JLabel label = new JLabel(namesHash.get(nameStr)+":", JLabel.RIGHT);
                 label.setFont(captionFont);
 
-                builder.add(label, cc.xy(1,row));
+                builder.add(label, cc.xy(col,row));
                 label = new JLabel(exclaimYWIcon);
 
                 resultsLabels.put(nameStr, label);
-                builder.add(label, cc.xy(3,row));
-                row += 2;
+                builder.add(label, cc.xy(col+2,row));
+                
+                col += 4;
+                if (col > 7)
+                {
+                    col = 1;
+                    row += 2;
+                }
+                
             }
 
             resultsPanel = builder.getPanel();
@@ -269,14 +282,18 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     protected void openingScreenInit()
     {
         // Create Start up UI
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,2dlu,p:g", createDuplicateJGoodiesDef("c:p", "5dlu", 6)));
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,2dlu,p:g", createDuplicateJGoodiesDef("c:p", "5dlu", 8)));
         CellConstraints cc         = new CellConstraints();
 
         removeAll();
 
         NavBoxButton configureBtn = new NavBoxButton(getResourceString("Configure"), IconManager.getImage("Configure", IconManager.IconSize.Std32));
         NavBoxButton buildBtn     = new NavBoxButton(getResourceString("Build"), new ImageIcon(IconManager.getImagePath("build.gif")));
-
+        
+        forceChkbx = new JCheckBox(getResourceString("ForceLuceneUpdate"));
+        forceChkbx.setEnabled(false); // doing this for now until we can fix it.
+        forceChkbx.setSelected(true);
+        
         configureBtn.setVerticalLayout(true);
         buildBtn.setVerticalLayout(true);
 
@@ -289,6 +306,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
         row+=2;
         builder.add(resultsPanel, cc.xywh(1,row,3,1));
+        row+=2;
+        builder.add(forceChkbx, cc.xywh(1,row, 3, 1));
         row+=2;
         builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
         row+=2;
@@ -962,24 +981,33 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             }
 
             List tables = esDOM.selectNodes("/searches/express/table");
+            
+            boolean doAll = forceChkbx.isSelected();
 
             int numOfCategories = (doIndexForms ? 1 : 0) + (doIndexLabels ? 1 : 0);
             
             // Count up how many will be updated by checking each out of date table name 
             // against the names in the outOfDateHash 
-            for (Object obj : tables)
+            if (doAll)
             {
-                Element                  tableElement = (Element)obj;
-                ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
+                numOfCategories += tables.size();
                 
-                // Each Table was checked and outOfDateHash contains the names of the tables that need updating
-                // usually there is just one table
-                for (String tableName : tableInfo.getOutOfDate().keySet())
+            } else
+            {
+                for (Object obj : tables)
                 {
-                    if (outOfDateHash.get(tableName) != null && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
+                    Element                  tableElement = (Element)obj;
+                    ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
+                    
+                    // Each Table was checked and outOfDateHash contains the names of the tables that need updating
+                    // usually there is just one table
+                    for (String tableName : tableInfo.getOutOfDate().keySet())
                     {
-                        numOfCategories++;
-                        break;
+                        if (outOfDateHash.get(tableName) != null && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
+                        {
+                            numOfCategories++;
+                            break;
+                        }
                     }
                 }
             }
@@ -997,16 +1025,19 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 // Each Table was checked and outOfDateHash contains the names of the tables that need updating
                 // usually there is just one table
                 boolean needsUpdating = false;
-                for (String tableName : tableInfo.getOutOfDate().keySet())
+                if (!doAll)
                 {
-                    if (outOfDateHash.get(tableName) != null)
+                    for (String tableName : tableInfo.getOutOfDate().keySet())
                     {
-                        needsUpdating = true;
-                        break;
+                        if (outOfDateHash.get(tableName) != null)
+                        {
+                            needsUpdating = true;
+                            break;
+                        }
                     }
                 }
                 
-                if (needsUpdating && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
+                if (doAll || (needsUpdating && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql())))
                 {
                     log.debug("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
                     indvLabel.setText(tableInfo.getTitle());
