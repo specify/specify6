@@ -12,12 +12,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
