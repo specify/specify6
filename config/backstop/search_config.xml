@@ -550,7 +550,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                     <![CDATA[SELECT AttachmentID, OrigFilename FROM attachments WHERE AttachmentID IN (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="LoanID" text="LoanID" visible="false"/>
+                    <caption col="AttachmentID" text="AttachmentID" visible="false"/>
                     <caption col="OrigFilename" text="Original Filename"/>
                 </captions>
                <recordset tabletype="8" col="1"/>
