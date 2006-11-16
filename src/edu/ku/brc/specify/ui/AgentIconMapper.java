@@ -6,16 +6,20 @@
  */
 package edu.ku.brc.specify.ui;
 
+import java.io.File;
+
 import javax.swing.ImageIcon;
 
 import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.BorrowAgents;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.DeaccessionAgents;
 import edu.ku.brc.specify.datamodel.LoanAgents;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * An icon mapper for serving up icons appropriate to the agent type for all
@@ -59,6 +63,19 @@ public class AgentIconMapper implements ObjectIconMapper
         if (a==null)
         {
             return null;
+        }
+
+        for (Attachment attach: a.getAttachments())
+        {
+            if (attach.getMimeType().startsWith("image"))
+            {
+                File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attach);
+                if (thumb != null)
+                {
+                    ImageIcon icon = new ImageIcon(thumb.getAbsolutePath());
+                    return IconManager.getScaledIcon(icon, IconSize.NonStd, IconSize.Std24);
+                }
+            }
         }
         
         switch(a.getAgentType())

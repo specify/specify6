@@ -504,12 +504,32 @@ public class BuildSampleDatabase
             String bigEyeFilePath = "demo_files" + File.separator + "bigeye.jpg";
             Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
             bigEye.setLoan(closedLoan);
+            
+            String joshPhotoPath = "demo_files" + File.separator + "josh.jpg";
+            Attachment joshPhoto = createAttachment(joshPhotoPath, "image/jpeg", 0);
+            joshPhoto.setAgent(agents.get(0));
+
+            String beachPhotoPath = "demo_files" + File.separator + "beach.jpg";
+            Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 0);
+            beachPhoto.setAgent(agents.get(1));
+
+            String megPhotoPath = "demo_files" + File.separator + "meg.jpg";
+            Attachment megPhoto = createAttachment(megPhotoPath, "image/jpeg", 0);
+            megPhoto.setAgent(agents.get(2));
+
+            String rodPhotoPath = "demo_files" + File.separator + "rod.jpg";
+            Attachment rodPhoto = createAttachment(rodPhotoPath, "image/jpeg", 0);
+            rodPhoto.setAgent(agents.get(3));
 
             dataObjects.add(bigEye);
+            dataObjects.add(joshPhoto);
+            dataObjects.add(beachPhoto);
+            dataObjects.add(megPhoto);
+            dataObjects.add(rodPhoto);
         }
         catch (Exception e)
         {
-            log.error("Could not create attachment", e);
+            log.error("Could not create attachments", e);
         }
         
         // done
