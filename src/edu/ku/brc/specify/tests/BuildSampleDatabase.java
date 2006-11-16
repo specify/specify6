@@ -866,16 +866,8 @@ public class BuildSampleDatabase
                     thumb.setMaxHeight(128);
                     thumb.setMaxWidth(128);
 
-                    String platform = System.getProperty("os.name");
                     AttachmentManagerIface attachMgr;
-                    if (platform.startsWith("Windows"))
-                    {
-                        attachMgr = new FileStoreAttachmentManager("C:/AttachmentStorage/");
-                    }
-                    else
-                    {
-                        attachMgr = new FileStoreAttachmentManager("~/AttachmentStorage/");
-                    }
+                    attachMgr = new FileStoreAttachmentManager("demo_files/AttachmentStorage/");
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);

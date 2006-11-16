@@ -174,7 +174,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         thumb.setMaxWidth(128);
 
         AttachmentManagerIface attachMgr = null;
-        String                 location  = UIHelper.getOSType() == UIHelper.OSTYPE.Windows ? "C:\\AttachmentStorage\\" : "~/AttachmentStorage/";
+        //String                 location  = (UIHelper.getOSType() == UIHelper.OSTYPE.Windows) ? "AttachmentStorage" : "~/AttachmentStorage/";
+        
+        String location = "demo_files/AttachmentStorage";
         try
         {
             attachMgr = new FileStoreAttachmentManager(location);

@@ -13,6 +13,8 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
@@ -36,6 +38,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
+import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
@@ -151,6 +154,18 @@ public class IconViewObj implements Viewable
         iconTray = new IconTray(IconTray.SINGLE_ROW);
         //iconTray = new IconTray(IconTray.MULTIPLE_ROWS);
         
+        iconTray.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getClickCount()>1)
+                {
+                    doDoubleClick(e);
+                }
+            }
+        });
+        
         addActionListenerToEditButton();
         
         if (altView.getMode() == CreationMode.View)
@@ -185,6 +200,22 @@ public class IconViewObj implements Viewable
         mainComp.add(southPanel,BorderLayout.SOUTH);
     }
 
+    protected void doDoubleClick(@SuppressWarnings("unused") MouseEvent e)
+    {
+        FormDataObjIFace selection = iconTray.getSelectedValue();
+        ActionListener listener = DefaultClassActionHandler.getInstance().getDefaultClassActionHandler(selection.getClass());
+        if (listener!=null)
+        {
+            listener.actionPerformed(new ActionEvent(selection,0,"double-click"));
+        }
+        else
+        {
+            ViewBasedDisplayIFace dialog = getEditObjectDialog(selection, false);
+            dialog.setData(selection);
+            dialog.showDisplay(true);
+        }
+    }
+        
     protected void addActionListenerToEditButton()
     {
         editButton.addActionListener(new ActionListener()

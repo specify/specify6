@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -86,28 +87,20 @@ public class IconTray extends JPanel
         
         this.setLayout(new BorderLayout());
         this.add(listScrollPane,BorderLayout.CENTER);
-        
-        iconListWidget.addMouseListener(new MouseAdapter()
-        {
-
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                if (e.getClickCount()>1)
-                {
-                    doDoubleClick(e);
-                }
-            }
-        });
     }
     
-    protected void doDoubleClick(MouseEvent e)
+    @Override
+    public synchronized void addMouseListener(MouseListener l)
     {
-        Object selection = iconListWidget.getSelectedValue();
-        ActionListener listener = DefaultClassActionHandler.getInstance().getDefaultClassActionHandler(selection.getClass());
-        listener.actionPerformed(new ActionEvent(selection,0,"double-click"));
+        super.addMouseListener(l);
+        iconListWidget.addMouseListener(l);
     }
-        
+
+    public FormDataObjIFace getSelectedValue()
+    {
+        return (FormDataObjIFace)iconListWidget.getSelectedValue();
+    }
+    
     /**
      * Sets the cell renderer used by the tray to render the individual objects listed.
      * 
@@ -188,43 +181,6 @@ public class IconTray extends JPanel
         }
         return set;
     }
-
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
-//     */
-//    public Object getValue()
-//    {
-//        dataSet.clear();
-//        dataSet.addAll(getItems());
-//        return dataSet;
-//    }
-//
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
-//     */
-//    @SuppressWarnings("unchecked")
-//    public void setValue(Object value, String defaultValue)
-//    {
-//        if (value==null)
-//        {
-//            return;
-//        }
-//        
-//        if (!(value instanceof Set))
-//        {
-//            log.error("Incoming data of unexpected class: " + value);
-//            throw new IllegalArgumentException("value must be an instance of java.util.Set");
-//        }
-//        
-//        listModel.clear();
-//        dataSet = (Set)value;
-//
-//        Vector<FormDataObjIFace> tmpList = sortSet(dataSet);
-//        for (FormDataObjIFace dataObj: tmpList)
-//        {
-//            listModel.add(dataObj);
-//        }
-//    }
     
     /* (non-Javadoc)
      * @see javax.swing.JComponent#getPreferredSize()
