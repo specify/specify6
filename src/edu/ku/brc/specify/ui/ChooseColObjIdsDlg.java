@@ -72,13 +72,13 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
     protected java.util.List recordSets;
     
     
-    public ChooseColObjIdsDlg() throws HeadlessException
+    public ChooseColObjIdsDlg(final Frame frame) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        super(frame, true);
         createUI();
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
+
     }
 
     /**

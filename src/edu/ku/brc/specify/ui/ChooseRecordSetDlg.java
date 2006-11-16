@@ -72,13 +72,12 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     protected JList           list;
     protected List<RecordSet> recordSets;
 
-    public ChooseRecordSetDlg(final int tableId) throws HeadlessException
+    public ChooseRecordSetDlg(final Frame frame, final int tableId) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        super(frame, true);
         createUI(tableId);
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
     }
 
     /**

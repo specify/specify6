@@ -93,8 +93,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     protected Object             dataObj     = null;
     protected String             frameTitle = null;
 
-    protected ViewBasedDisplayIFace  frame      = null;
-    protected MultiView          multiView  = null;
+    protected ViewBasedDisplayIFace frame      = null;
+    protected MultiView             multiView  = null;
 
 
     /**
@@ -158,7 +158,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
      */
     protected void createInfoFrame()
     {
-        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName,
+        frame = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+                                                                   displayInfoDialogName,
                                                                    frameTitle,
                                                                    getResourceString("Close"),
                                                                    false,  // false means View mode

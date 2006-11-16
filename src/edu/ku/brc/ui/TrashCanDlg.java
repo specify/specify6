@@ -68,16 +68,15 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
     
     /**
      * Constructor
+     * @param frame parent frame
      * @throws HeadlessException
      */
-    public TrashCanDlg() throws HeadlessException
+    public TrashCanDlg(final Frame frame) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
         createUI();
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
-        
     }
 
     /**

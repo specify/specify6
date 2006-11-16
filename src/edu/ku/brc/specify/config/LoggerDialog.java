@@ -148,9 +148,6 @@ public class LoggerDialog extends JDialog implements ActionListener
         //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         pack();
-        setAlwaysOnTop(true);
-        
-
     }
     
     /**

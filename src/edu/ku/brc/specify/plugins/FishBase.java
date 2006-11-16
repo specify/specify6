@@ -46,6 +46,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -88,7 +89,8 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         String species = taxon.getName();
         String genus   = taxon.getParent().getName();
 
-        frame = UICacheManager.getViewbasedFactory().createDisplay("FishBase",
+        frame = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+                                                                   "FishBase",
                                                                    "Fish Base Information",
                                                                    getResourceString("Close"),
                                                                    false,

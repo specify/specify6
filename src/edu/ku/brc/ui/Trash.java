@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -152,7 +153,7 @@ public class Trash extends JComponent implements GhostActionable
      */
     protected void openTrashCan()
     {
-        TrashCanDlg dlg = new TrashCanDlg();
+        TrashCanDlg dlg = new TrashCanDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME));
         dlg.setVisible(true);        
     }
     

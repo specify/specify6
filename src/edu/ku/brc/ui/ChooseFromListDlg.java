@@ -69,74 +69,92 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
 
     /**
      * Constructor.
+     * @param frame parent frame
      * @param title the title of the dialog
      * @param itemList the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final List<T> itemList) throws HeadlessException
+    public ChooseFromListDlg(final Frame   frame, 
+                             final String  title, 
+                             final List<T> itemList) throws HeadlessException
     {
-        this(title, null, itemList, true);
+        this(frame, title, null, itemList, true);
     }
 
     /**
      * Constructor.
+     * @param frame parent frame
      * @param title the title of the dialog
      * @param desc the list to be selected from
      * @param itemList the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final String desc, final List<T> itemList) throws HeadlessException
+    public ChooseFromListDlg(final Frame   frame, 
+                             final String  title, 
+                             final String  desc, 
+                             final List<T> itemList) throws HeadlessException
     {
-        this(title, desc, itemList, true);
+        this(frame, title, desc, itemList, true);
     }
 
     /**
      * Constructor.
+     * @param frame parent frame
      * @param title the title of the dialog
      * @param itemList the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final List<T> itemList, final boolean includeCancelBtn) throws HeadlessException
+    public ChooseFromListDlg(final Frame   frame, 
+                             final String  title, 
+                             final List<T> itemList, 
+                             final boolean includeCancelBtn) throws HeadlessException
     {
-        this(title, null, itemList, includeCancelBtn);
+        this(frame, title, null, itemList, includeCancelBtn);
     }
 
     /**
      * Constructor.
+     * @param frame parent frame
      * @param title the title of the dialog
      * @param desc the list to be selected from
      * @param itemList the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final String desc, final List<T> itemList, final boolean includeCancelBtn) throws HeadlessException
+    public ChooseFromListDlg(final Frame frame, 
+                             final String title, 
+                             final String desc, 
+                             final List<T> itemList, 
+                             final boolean includeCancelBtn) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        super(frame, true);
         
         this.items = itemList;
         createUI(title, desc, includeCancelBtn);
         
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
     }
 
     /**
      * Constructor.
+     * @param frame parent frame
      * @param title the title of the dialog
      * @param items the list to be selected from
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final List<T> itemList, final ImageIcon icon) throws HeadlessException
+    public ChooseFromListDlg(final Frame     frame, 
+                             final String    title, 
+                             final List<T>   itemList, 
+                             final ImageIcon icon) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        super(frame, true);
         this.items = itemList;
         this.icon  = icon;
 
         createUI(title, null, true);
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
     }
 
     /**

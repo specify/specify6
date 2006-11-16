@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -566,7 +567,7 @@ public class FormViewObj implements Viewable,
         {
             FormValidatorInfo formInfo = new FormValidatorInfo(this);
 
-            JDialog dialog = new JDialog();
+            JDialog dialog = new JDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME));
             dialog.setTitle(formValidator.getName());
             PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("p", "p,5px,p"));
             panelBuilder.add(formInfo, cc.xy(1,1));
@@ -595,7 +596,6 @@ public class FormViewObj implements Viewable,
             panelBuilder.add(ButtonBarFactory.buildOKBar(closeBtn), cc.xy(1,3));
             closeBtn.addActionListener(new Closer(dialog, formInfo));
 
-            dialog.setAlwaysOnTop(true);
             dialog.setContentPane(panelBuilder.getPanel());
             dialog.pack();
             UIHelper.centerAndShow(dialog);

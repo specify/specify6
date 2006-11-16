@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
@@ -38,7 +39,8 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
     protected ViewBasedDisplayPanel mainPanel;
 
     /**
-     * Constructs a search dialog from form infor and from search info
+     * Constructs a search dialog from form infor and from search info.
+     * @param frame the parent frame
      * @param viewSetName the viewset name
      * @param viewName the form name from the viewset
      * @param displayName the search name, this is looked up by name in the "search_config.xml" file
@@ -48,17 +50,18 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @param options the options needed for creating the form
      */
-    public ViewBasedDisplayDialog(final String viewSetName,
-                                 final String viewName,
-                                 final String displayName,
-                                 final String title,
-                                 final String closeBtnTitle,
-                                 final String className,
-                                 final String idFieldName,
-                                 final boolean isEdit,
-                                 final int     options)
+    public ViewBasedDisplayDialog(final Frame  frame,
+                                  final String viewSetName,
+                                  final String viewName,
+                                  final String displayName,
+                                  final String title,
+                                  final String closeBtnTitle,
+                                  final String className,
+                                  final String idFieldName,
+                                  final boolean isEdit,
+                                  final int     options)
     {
-        this.setTitle(title);
+        super(frame, title);
 
         mainPanel = new ViewBasedDisplayPanel(this, 
                                               viewSetName, 
@@ -75,7 +78,6 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
         this.setModal(true);
 
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        this.setAlwaysOnTop(true);
         
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

@@ -62,14 +62,17 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
 
     /**
      * Constructor.
+     * @param parentFrame the parent Frame
      * @param title dialog title
      * @param desc description label above list (optional)
      * @param items the list to be selected from
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final String title, final List<T> listItems) throws HeadlessException
+    public CheckboxChooserDlg(final Frame   parentFrame, 
+                              final String  title, 
+                              final List<T> listItems) throws HeadlessException
     {
-        this(title, null, listItems);
+        this(parentFrame, title, null, listItems);
     }
 
     /**
@@ -79,29 +82,37 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
      * @param items the list to be selected from
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final String title, final String desc, final List<T> listItems) throws HeadlessException
+    public CheckboxChooserDlg(final Frame   parentFrame, 
+                              final String  title,
+                              final String  desc, 
+                              final List<T> listItems) throws HeadlessException
     {
-        this(title, desc, listItems, null);
+        this(parentFrame, title, desc, listItems, null);
     }
 
     /**
      * Constructor.
+     * @param parentFrame the parent Frame
      * @param title dialog title
      * @param desc description label above list (optional)
      * @param items the list to be selected from
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final String title, final String desc, final List<T> listItems, final ImageIcon icon) throws HeadlessException
+    public CheckboxChooserDlg(final Frame     parentFrame, 
+                              final String    title, 
+                              final String    desc, 
+                              final List<T>   listItems, 
+                              final ImageIcon icon) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        super(parentFrame, true);
+        
         this.items = listItems;
         this.icon  = icon;
 
         createUI(title, desc);
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
     }
 
     /**

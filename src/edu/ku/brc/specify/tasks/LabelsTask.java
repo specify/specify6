@@ -295,7 +295,7 @@ public class LabelsTask extends BaseTask
      */
     protected RecordSetIFace askForRecordSet(final int tableId)
     {
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), tableId);
         if (dlg.hasRecordSets())
         {
             dlg.setVisible(true); // modal (waits for answer here)
@@ -573,7 +573,7 @@ public class LabelsTask extends BaseTask
 
             if (needsRecordSets && (data == null || data instanceof Map))
             {
-                ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
+                ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), tableId);
                 if (dlg.getRecordSets().size() == 1)
                 {
                     data = dlg.getRecordSets().get(0);
@@ -637,7 +637,6 @@ public class LabelsTask extends BaseTask
             createUI();
             setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-            this.setAlwaysOnTop(true);
         }
 
         /**

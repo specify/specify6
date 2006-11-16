@@ -40,6 +40,7 @@ import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
@@ -319,7 +320,8 @@ public class IconViewObj implements Viewable
         boolean isEdit = (altView.getMode() == CreationMode.Edit) ? true : false;
         int options = (isNewObject ? MultiView.IS_NEW_OBJECT : 0) | MultiView.HIDE_SAVE_BTN;
         String title = (isNewObject && isEdit) ? getResourceString("Edit") : objectToEdit.getIdentityTitle();
-        ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(defFormName,
+        ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
+                                                                    defFormName,
                                                                     title,
                                                                     getResourceString("OK"),
                                                                     isEdit,

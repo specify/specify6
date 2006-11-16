@@ -44,11 +44,9 @@ import javax.swing.JToolBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.hibernate.cfg.Configuration;
-import org.xml.sax.SAXException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -84,7 +82,6 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
-import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -177,19 +174,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
         thumb.setMaxWidth(128);
 
         AttachmentManagerIface attachMgr = null;
+        String                 location  = UIHelper.getOSType() == UIHelper.OSTYPE.Windows ? "C:\\AttachmentStorage\\" : "~/AttachmentStorage/";
         try
         {
-        	if (!System.getProperty("os.name").startsWith("Win"))
-        	{
-        		attachMgr = new FileStoreAttachmentManager("/AttachmentStorage/");
-        	}
-        	else
-        	{
-        		attachMgr = new FileStoreAttachmentManager("C:\\AttachmentStorage\\");
-        	}
+            attachMgr = new FileStoreAttachmentManager(location);
         }
         catch (IOException e1)
         {
+            System.err.println("Problems setting the FileStoreAttachmentManager at ["+location+"]");
             // TODO: fix this up
             System.exit(-1);
         }

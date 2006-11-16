@@ -966,7 +966,7 @@ public class FormEditor implements DatabaseLoginListener
      */
     public void testLogin()
     {
-        DatabaseLoginDlg dl = new DatabaseLoginDlg(this);
+        DatabaseLoginDlg dl = new DatabaseLoginDlg(null, this);
         UIHelper.centerAndShow(dl);
     }
 
@@ -1242,8 +1242,6 @@ frame.setVisible(true);
             //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
             setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             pack();
-            setAlwaysOnTop(true);
-
         }
         
         /**

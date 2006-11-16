@@ -103,9 +103,9 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
      *
      * @throws HeadlessException
      */
-    public AgentSearchDialogES() throws HeadlessException
+    public AgentSearchDialogES(final Frame parent) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("AgentSearchTitle"), true);
+        super(parent, getResourceString("AgentSearchTitle"), true);
         lucenePath = ExpressSearchTask.getIndexDirPath();
         tableId    = DBTableIdMgr.lookupIdByShortName("agent");
 
@@ -118,9 +118,6 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         createUI();
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
-
-
     }
 
     /**

@@ -768,7 +768,7 @@ public class SpecifyDBConverter
         {
             public ChooseDBs(final String title, final List<T> items) throws HeadlessException
             {
-                super(title, items);
+                super(null, title, items);
                 
                 final SwingWorker worker = new SwingWorker()
                 {

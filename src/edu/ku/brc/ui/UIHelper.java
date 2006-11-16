@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Insets;
@@ -823,7 +824,7 @@ public final class UIHelper
 
         if (useDialog)
         {
-            DatabaseLoginDlg dlg = new DatabaseLoginDlg(listener);
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), listener);
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
             UIHelper.centerAndShow(dlg);
@@ -1066,5 +1067,25 @@ public final class UIHelper
             setSize(new Dimension(500, height));
 
         }
+    }
+    
+    /**
+     * Walks parents until it gets to a frame
+     * @param comp the current component whiching for its parent
+     * @return the parent frame
+     */
+    public static Frame getFrame(final Component comp)
+    {
+        Component parent = comp.getParent();
+        do
+        {
+            if (parent instanceof Frame)
+            {
+                return (Frame)parent;
+            }
+            parent = parent.getParent();
+        } while (parent != null);
+        
+        return null;
     }
 }

@@ -16,6 +16,8 @@ package edu.ku.brc.ui.db;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Frame;
+
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
@@ -41,11 +43,13 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
     /**
      * Constructor that has the form created from the view system.
-     * *
+     * @param frame the parent frame
      * @param listener the listener usually the parent like the Dialog
      */
-    public DatabaseLoginDlg(final DatabaseLoginListener listener)
+    public DatabaseLoginDlg(final Frame frame, final DatabaseLoginListener listener)
     {
+        super(frame);
+        
         this.listener = listener;
 
         setTitle(getResourceString("logintitle"));
@@ -56,7 +60,6 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setModal(true);
-        this.setAlwaysOnTop(true);
 
         getRootPane().setDefaultButton(dbPanel.getLoginBtn());
 

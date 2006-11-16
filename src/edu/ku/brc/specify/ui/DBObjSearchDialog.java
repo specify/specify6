@@ -127,14 +127,15 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @throws HeadlessException an exception
      */
-    public DBObjSearchDialog(final String viewSetName, 
+    public DBObjSearchDialog(final Frame  parentFrame,
+                             final String viewSetName, 
                              final String viewName, 
                              final String searchName,
                              final String title,
                              final String className,
                              final String idFieldName) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
+        super(parentFrame, title, true);
         
         this.className   = className;
         this.idFieldName = idFieldName;  
@@ -155,7 +156,6 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
            
            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-           this.setAlwaysOnTop(true);
            
        } else
        {

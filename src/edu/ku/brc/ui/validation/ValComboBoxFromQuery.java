@@ -346,7 +346,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(searchDialogName);
+                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(UIHelper.getFrame(searchBtn), searchDialogName);
                     dlg.getDialog().setVisible(true);
                     if (!dlg.isCancelled())
                     {
@@ -405,7 +405,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected void createEditFrame(final boolean isNewObject)
     {
         String closeBtnTitle = getResourceString(isNewObject ? "Accept" : "Save");
-        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName,
+        frame = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+                                                                   displayInfoDialogName,
                                                                    frameTitle,
                                                                    closeBtnTitle,
                                                                    true,   // false means View Mode

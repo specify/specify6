@@ -16,6 +16,7 @@ package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.awt.Frame;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -128,14 +129,15 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     //----------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createSearchDialog(java.lang.String)
+     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createSearchDialog(java.awt.Frame, java.lang.String)
      */
-    public ViewBasedSearchDialogIFace createSearchDialog(final String name)
+    public ViewBasedSearchDialogIFace createSearchDialog(final Frame parent, final String name)
     {
         DialogInfo info =  instance.searchDialogs.get(name);
         if (info != null)
         {
-            return new DBObjSearchDialog(info.getViewSetName(),
+            return new DBObjSearchDialog(parent,
+                                         info.getViewSetName(),
                                          info.getViewName(),
                                          info.getSearchName(),
                                          info.getTitle(),
@@ -151,7 +153,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
      */
-    public ViewBasedDisplayIFace createDisplay(final String     name,
+    public ViewBasedDisplayIFace createDisplay(final Frame      parent, 
+                                               final String     name,
                                                final String     frameTitle,
                                                final String     closeBtnTitle,
                                                final boolean    isEdit,
@@ -164,17 +167,18 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             if (type == ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME)
             {
                 return new ViewBasedDisplayFrame(info.getViewSetName(),
-                                                info.getViewName(),
-                                                info.getSearchName(),
-                                                frameTitle,
-                                                closeBtnTitle,
-                                                info.getClassName(),
-                                                info.getIdFieldName(),
-                                                isEdit,
-                                                options);
+                                                 info.getViewName(),
+                                                 info.getSearchName(),
+                                                 frameTitle,
+                                                 closeBtnTitle,
+                                                 info.getClassName(),
+                                                 info.getIdFieldName(),
+                                                 isEdit,
+                                                 options);
             } else
             {
-                return new ViewBasedDisplayDialog(info.getViewSetName(),
+                return new ViewBasedDisplayDialog(parent,
+                                                  info.getViewSetName(),
                                                   info.getViewName(),
                                                   info.getSearchName(),
                                                   frameTitle,

@@ -17,6 +17,7 @@ package edu.ku.brc.specify.config;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
 import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.persist.View;
@@ -264,9 +266,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     //Collections.sort(list); // Why doesn't this work?
 
-                    CheckboxChooserDlg<CatalogSeries> dlg = new CheckboxChooserDlg<CatalogSeries>("Choose a Catalog Series", list); // TODO I18N
+                    CheckboxChooserDlg<CatalogSeries> dlg = new CheckboxChooserDlg<CatalogSeries>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                                                                                                  "Choose a Catalog Series", 
+                                                                                                  list); // TODO I18N
                     //dlg.setSelectedObjects(catSeries);
-                    dlg.setAlwaysOnTop(true);
                     dlg.setModal(true);
 
                     UIHelper.centerAndShow(dlg);
@@ -392,8 +395,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             // TODO Need to add a Help Btn to this Dialog
             ChooseFromListDlg<CatSeriesColObjDefItem> dlg = 
-                new ChooseFromListDlg<CatSeriesColObjDefItem>(getResourceString("ChooseCatSeriesColObjDef"), list, false);
-            dlg.setAlwaysOnTop(true);
+                new ChooseFromListDlg<CatSeriesColObjDefItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                                                              getResourceString("ChooseCatSeriesColObjDef"), 
+                                                              list, 
+                                                              false);
             dlg.setModal(true);
 
             UIHelper.centerAndShow(dlg);
