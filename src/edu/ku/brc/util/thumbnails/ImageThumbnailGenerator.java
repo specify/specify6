@@ -30,8 +30,8 @@ public class ImageThumbnailGenerator implements ThumbnailGenerator
 	
 	public ImageThumbnailGenerator()
 	{
-		maxWidth = 64;
-		maxHeight = 64;
+		maxWidth = 32;
+		maxHeight = 32;
 	}
 	
 	/**

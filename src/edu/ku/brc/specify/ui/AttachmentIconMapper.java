@@ -6,11 +6,14 @@
  */
 package edu.ku.brc.specify.ui;
 
+import java.io.File;
+
 import javax.swing.ImageIcon;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  *
@@ -40,6 +43,13 @@ public class AttachmentIconMapper implements ObjectIconMapper
     public ImageIcon getIcon(Object o)
     {
         Attachment a = (Attachment)o;
+        File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
+        if (thumb != null)
+        {
+            ImageIcon icon = new ImageIcon(thumb.getAbsolutePath());
+            return IconManager.getScaledIcon(icon, IconSize.NonStd, IconSize.Std24);
+        }
+        
         if (a.getMimeType() == null)
         {
             return IconManager.getIcon("unknown", IconSize.Std24);

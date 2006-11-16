@@ -385,6 +385,7 @@ public class BuildSampleDatabase
         PrepType skel = createPrepType("skeleton");
         PrepType cas = createPrepType("C&S");
         PrepType etoh = createPrepType("EtOH");
+        PrepType xray = createPrepType("x-ray");
 
         List<Preparation> preps = new Vector<Preparation>();
         preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), 1));
@@ -405,9 +406,16 @@ public class BuildSampleDatabase
         preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), 1));
         preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
 
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), 1));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), 1));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), 1));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), 1));
+
         dataObjects.add(skel);
         dataObjects.add(cas);
         dataObjects.add(etoh);
+        dataObjects.add(xray);
         dataObjects.addAll(preps);
         
         ////////////////////////////////

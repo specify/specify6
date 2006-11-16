@@ -37,8 +37,8 @@ public class Thumbnailer
 		mimeMap = new MimetypesFileTypeMap();
 		
 		quality = 1f;
-		maxWidth = 64;
-		maxHeight = 64;
+		maxWidth = 32;
+		maxHeight = 32;
 	}
 	
 	public void registerThumbnailers(String generatorRegistryFile) throws SAXException, IOException, ParserConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException

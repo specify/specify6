@@ -142,4 +142,10 @@
 	<icon name="move_right"			file="1rightarrow.png"	sizes="all"/>
 	<icon name="move_to_end"		file="finish.png"		sizes="all"/>
 	
+	<!-- prep type icons -->
+	<icon name="skeleton"			file="skull.jpg"		sizes="all"/>
+	<icon name="xray"				file="xray.jpg"			sizes="all"/>
+	<icon name="etoh"				file="jar.jpg"			sizes="all"/>
+	<icon name="cs"					file="cs.jpg"			sizes="all"/>
+	
 </icons>

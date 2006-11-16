@@ -40,19 +40,25 @@ public class PreparationIconMapper implements ObjectIconMapper
     public ImageIcon getIcon(Object o)
     {
         Preparation p = (Preparation)o;
-        if(p.getPrepType().getName().equalsIgnoreCase("C&S"))
+        String prepTypeName = p.getPrepType().getName();
+        if(prepTypeName.equalsIgnoreCase("skeleton"))
         {
-            return IconManager.getIcon("image", IconSize.Std24);
+            return IconManager.getIcon("skeleton", IconSize.Std24);
         }
 
-        if(p.getPrepType().getName().equalsIgnoreCase("EtOH"))
+        if(prepTypeName.equalsIgnoreCase("C&S"))
         {
-            return IconManager.getIcon("audio", IconSize.Std24);
+            return IconManager.getIcon("cs", IconSize.Std24);
         }
 
-        if(p.getPrepType().getName().equalsIgnoreCase("X-Ray"))
+        if(prepTypeName.equalsIgnoreCase("EtOH"))
         {
-            return IconManager.getIcon("video", IconSize.Std24);
+            return IconManager.getIcon("etoh", IconSize.Std24);
+        }
+        
+        if(prepTypeName.equalsIgnoreCase("x-ray") || prepTypeName.equalsIgnoreCase("xray"))
+        {
+            return IconManager.getIcon("xray", IconSize.Std24);
         }
 
         return IconManager.getIcon("unknown", IconSize.Std24);

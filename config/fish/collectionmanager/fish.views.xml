@@ -199,6 +199,8 @@
     	    <altviews>
     	        <altview name="Preparation View" viewdef="Preparation" label="View" mode="view" validated="false"/>
     	        <altview name="Preparation Edit" viewdef="Preparation" label="Edit" mode="edit" validated="true" default="true"/>
+    	        <altview name="Preparation IconView" viewdef="PreparationsIconView" label="IconView" mode="view" validated="false"/>
+    	        <altview name="Preparation IconEdit" viewdef="PreparationsIconView" label="IconEdit" mode="edit" validated="true" default="true"/>
     		</altviews>
     	</view>
 
@@ -1237,8 +1239,16 @@
     			</row>
     			-->
     		</rows>
-    		
     	</viewdef>
+
+        <viewdef
+            type="iconview"
+            name="PreparationsIconView"
+            class="edu.ku.brc.specify.datamodel.Preparation"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Preparations Icon Viewer]]></desc>
+        </viewdef>
 
     </viewdefs>
     
