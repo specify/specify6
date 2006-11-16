@@ -1617,8 +1617,11 @@ public class CreateTestDatabases
     }
 
 
-
-    public static void main(String args[]) throws Exception
+    // This class is only being kept until all it's features can be duplicated
+    // in BuildSampleDatabases.
+    // Do not use this class anymore.
+    //public static void main(String args[]) throws Exception
+    public void main(String args[]) throws Exception
     {
         SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
         schemaGen.generateSchema("localhost", "testfish");
