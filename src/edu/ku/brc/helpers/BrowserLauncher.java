@@ -61,7 +61,7 @@ public class BrowserLauncher
         {
             if (osType == UIHelper.OSTYPE.MacOSX)
             {
-                Class fileMgr = Class.forName("com.apple.eio.FileManager");
+                Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
                 Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
                 openURL.invoke(null, new Object[] { url });
 
@@ -71,7 +71,7 @@ public class BrowserLauncher
 
             } else
             { // assume Unix or Linux
-                String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+                String[] browsers = { "firefox", "mozilla", "epiphany", "opera", "konqueror", "netscape" };
                 String browser = null;
                 for (int count = 0; count < browsers.length && browser == null; count++)
                 {
@@ -83,10 +83,8 @@ public class BrowserLauncher
                 if (browser == null)
                 {
                     throw new Exception("Could not find web browser");
-                } else
-                {
-                    Runtime.getRuntime().exec(new String[] { browser, url });
                 }
+                Runtime.getRuntime().exec(new String[] { browser, url });
             }
         } catch (Exception e)
         {
