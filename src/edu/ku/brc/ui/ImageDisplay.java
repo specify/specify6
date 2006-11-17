@@ -27,6 +27,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
@@ -207,6 +209,23 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
             if (getter != null)
             {
                 getter.stop();
+            }
+
+            if (url.startsWith("file"))
+            {
+                try
+                {
+                    File f = new File(new URI(url));
+                    ImageIcon icon = new ImageIcon(f.getAbsolutePath());
+                    setImage(icon);
+                    repaint();
+                    return;
+                }
+                catch (URISyntaxException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
             getter = new ImageGetter(url);
             getter.start();
