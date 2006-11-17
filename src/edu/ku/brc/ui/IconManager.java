@@ -222,23 +222,14 @@ public class IconManager
      */
     public static ImageIcon getIcon(final String iconName, final IconSize id)
     {
-        if (iconName == null)
+        ImageIcon icon = getIcon(iconName);
+        if (icon==null)
         {
-            throw new NullPointerException("icon name should not be null!");
+            return null;
         }
-
-        IconEntry entry = instance.entries.get(iconName);
-        if (entry != null)
-        {
-            ImageIcon icon = entry.getIcon(id);
-            if (icon == null)
-            {
-                icon = entry.getScaledIcon(getIconSize(32, id.blackWhite(), id.faded()), id);
-                entry.add(id, icon);
-            }
-            return icon;
-        }
-        return null;
+        
+        icon = getScaledIcon(icon, null, id);
+        return icon;
     }
     
     public static ImageIcon getIcon(final String iconName)
