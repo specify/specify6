@@ -629,7 +629,7 @@ public final class UIHelper
                     {
                         data = getter.getFieldValue(data, st.nextToken());
                     }
-                    dataValue = data == null ? "" : data;
+                    dataValue = (data == null) ? "" : data;
                 } else
                 {
                     dataValue = getter.getFieldValue(dataObj, fldName);

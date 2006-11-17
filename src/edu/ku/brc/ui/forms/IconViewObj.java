@@ -328,7 +328,7 @@ public class IconViewObj implements Viewable
                 }
                 
                 iconTray.removeItem(selection);
-                log.warn("Delete " + selection.getIdentityTitle());
+                session.deleteOnSaveOrUpdate(selection);
                 if (mvParent != null)
                 {
                     MultiView root = mvParent;
@@ -651,7 +651,7 @@ public class IconViewObj implements Viewable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
+     * @see edu.ku.brc.ui.forms.Viewable#setSession(edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     public void setSession(final DataProviderSessionIFace session)
     {
