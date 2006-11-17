@@ -510,9 +510,9 @@ public class BuildSampleDatabase
             Attachment joshPhoto = createAttachment(joshPhotoPath, "image/jpeg", 0);
             joshPhoto.setAgent(agents.get(0));
 
-            String beachPhotoPath = "demo_files" + File.separator + "beach.jpg";
-            Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 0);
-            beachPhoto.setAgent(agents.get(1));
+//            String beachPhotoPath = "demo_files" + File.separator + "beach.jpg";
+//            Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 0);
+//            beachPhoto.setAgent(agents.get(1));
 
             String megPhotoPath = "demo_files" + File.separator + "meg.jpg";
             Attachment megPhoto = createAttachment(megPhotoPath, "image/jpeg", 0);
@@ -524,7 +524,7 @@ public class BuildSampleDatabase
 
             dataObjects.add(bigEye);
             dataObjects.add(joshPhoto);
-            dataObjects.add(beachPhoto);
+            //dataObjects.add(beachPhoto);
             dataObjects.add(megPhoto);
             dataObjects.add(rodPhoto);
         }
