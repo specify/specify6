@@ -124,6 +124,11 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     public void setAgent(Agent agent) {
         this.agent = agent;
     }
+    
+    public String getImageURL()
+    {
+        return agent.getImageURL();
+    }
 
     /**
      *      * Accession in which the Agent played a role

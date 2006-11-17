@@ -14,11 +14,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
+
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.util.AttachmentUtils;
 
 
 
@@ -184,6 +191,26 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     public void setAttachments(Set<Attachment> attachments)
     {
         this.attachments = attachments;
+    }
+    
+    public String getImageURL()
+    {
+        for (Attachment a: attachments)
+        {
+            if (a.getMimeType().startsWith("image"))
+            {
+                File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
+                try
+                {
+                    return thumb.toURL().toString();
+                }
+                catch (MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
     /**
