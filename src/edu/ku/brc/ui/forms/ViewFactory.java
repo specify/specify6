@@ -535,7 +535,8 @@ public class ViewFactory
      * @return the control
      */
     protected ImageDisplay createImageDisplay(final FormCellField cellField,
-                                              final AltView.CreationMode mode)
+                                              final AltView.CreationMode mode,
+                                              final MultiView parent)
     {
         int w = 150;
         int h = 150;
@@ -565,7 +566,17 @@ public class ViewFactory
             imageInEdit = editModeStr.toLowerCase().equals("true");
         }
 
-        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit, cellField.getPropertyAsBoolean("border", true));
+        // create a new ImageDisplay
+        // override the selectNewImage method to notify the parent MultiView when a change occurs
+        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit, cellField.getPropertyAsBoolean("border", true))
+        {
+            @Override
+            protected void selectNewImage()
+            {
+                super.selectNewImage();
+                parent.dataChanged(this.getName(), this, null);
+            }
+        };
         
         String urlStr = cellField.getProperty("url");
         if (isNotEmpty(urlStr))
@@ -783,7 +794,7 @@ public class ViewFactory
 
                             
                         case image:
-                            compToAdd = createImageDisplay(cellField, mode);
+                            compToAdd = createImageDisplay(cellField, mode, parent);
                             addToValidator = false;
                             break;
 

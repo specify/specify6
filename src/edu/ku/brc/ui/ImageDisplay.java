@@ -26,7 +26,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -125,29 +124,26 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
            {
                public void actionPerformed(ActionEvent ae)
                {
-                   // XXX Need to add a filter for just images
-
-                   JFileChooser chooser = new JFileChooser();
-
-                   int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
-                   if (returnVal == JFileChooser.APPROVE_OPTION)
-                   {
-                       File file = new File(chooser.getSelectedFile().getAbsolutePath());
-                       try
-                       {
-                           url = file.toURL().toString();
-                           loadImage();
-                       } catch (MalformedURLException ex)
-                       {
-                           // XXX FIXME - Do pop up here ?
-                       }
-
-                   }
+                   selectNewImage();
                }
            });
            builder.add(editBtn, cc.xy(3,1));
         }
        add(builder.getPanel(), BorderLayout.CENTER);
+    }
+    
+    protected void selectNewImage()
+    {
+        //      XXX Need to add a filter for just images
+        JFileChooser chooser = new JFileChooser();
+
+        int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            File file = new File(chooser.getSelectedFile().getAbsolutePath());
+            setImage(new ImageIcon(file.getAbsolutePath()));
+            repaint();
+        }
     }
 
     /**
