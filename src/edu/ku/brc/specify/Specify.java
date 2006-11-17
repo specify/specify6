@@ -44,6 +44,7 @@ import javax.swing.JToolBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 import org.hibernate.cfg.Configuration;
@@ -688,17 +689,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
         CellConstraints cc         = new CellConstraints();
 
         builder.add(new JLabel("Specify 6.0"), cc.xy(1,1));
-        builder.add(new JLabel(IconManager.getImage("SpecifyLargeIcon")), cc.xy(3,1));
+        builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(3,1));
 
         final JDialog dialog = new JDialog(topFrame, "About Specify 6.0", true);
         //dialog.setContentPane(builder.getPanel());
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JLabel("Specify 6.0"), BorderLayout.WEST);
-        panel.add(new JLabel(IconManager.getImage("SpecifyLargeIcon")), BorderLayout.EAST);
+        panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), BorderLayout.EAST);
         dialog.setContentPane(panel);
 
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         //dialog.validate();
         //dialog.setSize(dialog.getPreferredSize());
         dialog.pack();

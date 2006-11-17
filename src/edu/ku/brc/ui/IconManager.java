@@ -233,27 +233,25 @@ public class IconManager
             ImageIcon icon = entry.getIcon(id);
             if (icon == null)
             {
-                if (id.size() != 32)
-                {
-                    return entry.getScaledIcon(getIconSize(32, id.blackWhite(), id.faded()), id);
-                }
-                // else
-                // last ditch effort to see if it is a non-Standard size
-                icon = entry.getIcon(IconSize.NonStd);
-                if (icon == null)
-                {
-                    log.error("Couldn't find Std size for icon ["+ iconName+"] is not registered.");
-                } else
-                {
-                    return icon;
-                }
-            } else
-            {
-                return icon;
+                icon = entry.getScaledIcon(getIconSize(32, id.blackWhite(), id.faded()), id);
+                entry.add(id, icon);
             }
-        } else
+            return icon;
+        }
+        return null;
+    }
+    
+    public static ImageIcon getIcon(final String iconName)
+    {
+        if (iconName == null)
         {
-            // It is ok that it isn't registered
+            throw new NullPointerException("icon name should not be null!");
+        }
+
+        IconEntry entry = instance.entries.get(iconName);
+        if (entry != null)
+        {
+            return entry.getIcon();
         }
         return null;
     }

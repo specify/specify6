@@ -591,7 +591,7 @@ public class ViewFactory
                 
                 if (loadIt)
                 {
-                    imgDisp.setImage(IconManager.getImage(name));
+                    imgDisp.setImage(IconManager.getIcon(name));
                 }
             }
         }

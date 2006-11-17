@@ -543,7 +543,7 @@ public class FormViewObj implements Viewable,
     {
         if (formValidator != null)
         {
-            validationInfoBtn = new JButton(IconManager.getImage("ValidationValid"));
+            validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
             validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
             validationInfoBtn.setMargin(new Insets(1,1,1,1));
             validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());
@@ -1513,16 +1513,16 @@ public class FormViewObj implements Viewable,
         if (validationInfoBtn != null && formValidator != null)
         {
             boolean                 enable = true;
-            ImageIcon               icon   = IconManager.getImage("ValidationValid");
+            ImageIcon               icon   = IconManager.getIcon("ValidationValid");
             UIValidatable.ErrorType state  = formValidator.getState();
 
             if (state == UIValidatable.ErrorType.Incomplete)
             {
-                icon = IconManager.getImage("ValidationWarning");
+                icon = IconManager.getIcon("ValidationWarning");
 
             } else if (state == UIValidatable.ErrorType.Error)
             {
-                icon = IconManager.getImage("ValidationError");
+                icon = IconManager.getIcon("ValidationError");
             } else
             {
                 enable = false;

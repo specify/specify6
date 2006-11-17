@@ -78,7 +78,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     protected static Icon dropDownArrow;
     
     static {
-        dropDownArrow = IconManager.getImage("DropDownArrow");
+        dropDownArrow = IconManager.getIcon("DropDownArrow");
     }
     
     // this class needs a mouse tracker to pop down the menu when the mouse isn't over it or the button

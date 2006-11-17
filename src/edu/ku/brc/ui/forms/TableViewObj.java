@@ -893,16 +893,16 @@ public class TableViewObj implements Viewable,
     {
         if (validationInfoBtn != null)
         {
-            ImageIcon icon = IconManager.getImage("ValidationValid");
+            ImageIcon icon = IconManager.getIcon("ValidationValid");
             UIValidatable.ErrorType state = formValidator.getState();
 
             if (state == UIValidatable.ErrorType.Incomplete)
             {
-                icon = IconManager.getImage("ValidationWarning");
+                icon = IconManager.getIcon("ValidationWarning");
 
             } else if (state == UIValidatable.ErrorType.Error)
             {
-                icon = IconManager.getImage("ValidationError");
+                icon = IconManager.getIcon("ValidationError");
             }
 
             validationInfoBtn.setIcon(icon);

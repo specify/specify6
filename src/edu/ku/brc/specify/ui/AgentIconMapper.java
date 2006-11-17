@@ -73,7 +73,7 @@ public class AgentIconMapper implements ObjectIconMapper
                 if (thumb != null)
                 {
                     ImageIcon icon = new ImageIcon(thumb.getAbsolutePath());
-                    return IconManager.getScaledIcon(icon, IconSize.NonStd, IconSize.Std24);
+                    return IconManager.getScaledIcon(icon, IconSize.NonStd, IconSize.Std32);
                 }
             }
         }

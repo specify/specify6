@@ -139,7 +139,7 @@ public class IconViewObj implements Viewable
         altViewsList = new Vector<AltView>();
         switcherUI   = FormViewObj.createSwitcher(mvParent, view, altView, altViewsList);
         
-        validationInfoBtn = new JButton(IconManager.getImage("ValidationValid"));
+        validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
         validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
         validationInfoBtn.setMargin(new Insets(1,1,1,1));
         validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());

@@ -139,8 +139,8 @@ public class ResultSetController implements ValidationListener
         Insets insets = new Insets(1,1,1,1);
         DefaultFormBuilder rowBuilder = new DefaultFormBuilder(new FormLayout(colDef, "p"));
         
-        firstBtn = new JButton(IconManager.getImage("FirstRec"));
-        prevBtn  = new JButton(IconManager.getImage("PrevRec"));
+        firstBtn = new JButton(IconManager.getIcon("FirstRec"));
+        prevBtn  = new JButton(IconManager.getIcon("PrevRec"));
         
         recDisp  = new JLabel("  ");
         recDisp.setHorizontalAlignment(SwingConstants.CENTER);
@@ -148,8 +148,8 @@ public class ResultSetController implements ValidationListener
         recDisp.setBackground(Color.WHITE);
         recDisp.setBorder(enabledBorder);
         
-        nextBtn  = new JButton(IconManager.getImage("NextRec"));
-        lastBtn  = new JButton(IconManager.getImage("LastRec"));
+        nextBtn  = new JButton(IconManager.getIcon("NextRec"));
+        lastBtn  = new JButton(IconManager.getIcon("LastRec"));
         
         firstBtn.setMargin(insets);
         prevBtn.setMargin(insets);
@@ -171,7 +171,7 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            newRecBtn = new JButton(IconManager.getImage("NewRec"));
+            newRecBtn = new JButton(IconManager.getIcon("NewRec"));
             newRecBtn.setToolTipText(createTooltip("NewRecordTT", objTitle));
             newRecBtn.setMargin(insets);
             rowBuilder.add(newRecBtn, cc.xy(row,1));
@@ -190,7 +190,7 @@ public class ResultSetController implements ValidationListener
         
         if (addDelBtn)
         {
-            delRecBtn = new JButton(IconManager.getImage("SmallTrash"));
+            delRecBtn = new JButton(IconManager.getIcon("SmallTrash"));
             delRecBtn.setToolTipText(createTooltip("RemoveRecordTT", objTitle));
             delRecBtn.setMargin(insets);
             rowBuilder.add(delRecBtn, cc.xy(row++,1));

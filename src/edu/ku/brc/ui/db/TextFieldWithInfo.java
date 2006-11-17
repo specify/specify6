@@ -224,7 +224,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
         if (StringUtils.isNotEmpty(displayInfoDialogName))
         {
-            infoBtn = new JButton(IconManager.getImage("InfoIcon"));
+            infoBtn = new JButton(IconManager.getIcon("InfoIcon"));
             infoBtn.setToolTipText(String.format(getResourceString("ShowRecordInfoTT"), new Object[] {objTitle}));
             infoBtn.setFocusable(false);
             infoBtn.setMargin(new Insets(1,1,1,1));

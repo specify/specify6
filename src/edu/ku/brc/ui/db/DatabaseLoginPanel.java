@@ -223,8 +223,8 @@ public class DatabaseLoginPanel extends JPanel
         loginBtn  = new JButton(getResourceString("Login"));
         helpBtn   = new JButton(getResourceString("Help"));
 
-        forwardImgIcon = IconManager.getImage("Forward");
-        downImgIcon    = IconManager.getImage("Down");
+        forwardImgIcon = IconManager.getIcon("Forward");
+        downImgIcon    = IconManager.getIcon("Down");
         moreBtn       = new JCheckBox("More", forwardImgIcon);
 
         // Extra
@@ -414,7 +414,7 @@ public class DatabaseLoginPanel extends JPanel
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1,y,3,1));
 
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p", "p,2dlu,p,2dlu,p"), this);
-        ImageDisplay icon       = new ImageDisplay(IconManager.getImage("SpecifyLargeIcon"), false, false);
+        ImageDisplay icon       = new ImageDisplay(IconManager.getIcon("SpecifyLargeIcon"), false, false);
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 

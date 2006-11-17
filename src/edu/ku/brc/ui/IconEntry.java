@@ -33,7 +33,7 @@ public class IconEntry
     //private static final Logger log = Logger.getLogger(IconManager.class);
     
     private String name;
-    private Hashtable<String, ImageIcon> icons = new Hashtable<String, ImageIcon>();
+    private Hashtable<IconSize, ImageIcon> icons = new Hashtable<IconSize, ImageIcon>();
     
     /**
      * 
@@ -52,7 +52,7 @@ public class IconEntry
     public ImageIcon getIcon(final IconSize id)
     {
         //log.debug("Getting["+name+"]["+id.toString()+"]");
-        return icons.get(id.toString());
+        return icons.get(id);
     }
     
     /**
@@ -63,7 +63,7 @@ public class IconEntry
     public void add(final IconSize id, final ImageIcon icon)
     {
         //log.debug("Putting["+name+"]["+id.toString()+"]");
-        icons.put(id.toString(), icon);
+        icons.put(id, icon);
     }
 
 
@@ -75,7 +75,7 @@ public class IconEntry
     public void addScaled(final IconSize id, final IconSize newId)
     {
         //log.debug("Putting["+name+"]["+id.toString()+"]");
-        icons.put(newId.toString(), getScaledIcon(id, newId));
+        icons.put(newId, getScaledIcon(id, newId));
     }
 
 
@@ -87,10 +87,42 @@ public class IconEntry
      */
     public ImageIcon getScaledIcon(final IconSize iconSize, final IconSize scaledIconSize)
     {
-        ImageIcon scaledIcon = IconManager.getScaledIcon(icons.get(iconSize.toString()), iconSize, scaledIconSize);
-        icons.put(scaledIconSize.toString(), scaledIcon);
+        ImageIcon scaledIcon = IconManager.getScaledIcon(icons.get(iconSize), iconSize, scaledIconSize);
+        icons.put(scaledIconSize, scaledIcon);
         return scaledIcon;
 
+    }
+    
+    public ImageIcon getIcon()
+    {
+        switch (icons.size())
+        {
+            case 0:
+            {
+                return null;
+            }
+            case 1:
+            {
+                return icons.values().iterator().next();
+            }
+            default:
+            {
+                ImageIcon icon = icons.get(IconSize.NonStd);
+                if (icon!=null)
+                {
+                    return icon;
+                }
+                for (IconSize size: IconSize.values())
+                {
+                    icon = icons.get(size);
+                    if (icon!=null)
+                    {
+                        return icon;
+                    }
+                }
+                return null;
+            }
+        }
     }
 
 
