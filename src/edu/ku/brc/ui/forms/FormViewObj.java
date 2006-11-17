@@ -1069,7 +1069,7 @@ public class FormViewObj implements Viewable,
             
             removeFromParent(dataObj);
             
-            String delMsg = businessRules != null ? businessRules.getDeleteMsg(dataObj) : "";
+            String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
 
             boolean doClearObj = true;
             if (mvParent.isTopLevel())
