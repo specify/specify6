@@ -31,11 +31,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -261,6 +266,30 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         return url;
     }
 
+    public static void main(String[] args)
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                ImageIcon icon = new ImageIcon("demo_files/beach.jpg");
+                ImageDisplay id = new ImageDisplay(icon,false,true);
+                JFrame f = new JFrame();
+                PanelBuilder builder = new PanelBuilder(new FormLayout("p,p","p,p,p,p"));
+                CellConstraints cc = new CellConstraints();
+                builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"),cc.xywh(1,1,1,1));
+                builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"),cc.xywh(1,2,1,1));
+                builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"),cc.xywh(1,3,1,1));
+                builder.add(new JLabel("1 2 3 4 5 6 7 8 9 0"),cc.xywh(1,4,1,1));
+                builder.add(id,cc.xywh(2,1,1,4));
+                f.add(builder.getPanel());
+                f.pack();
+                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                f.setVisible(true);
+            }
+        });
+    }
+    
     //--------------------------------------------------------------
     //-- Inner Class JPanel for displaying an image
     //--------------------------------------------------------------
@@ -452,6 +481,4 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
            stop();
        }
     }
-
-
 }
