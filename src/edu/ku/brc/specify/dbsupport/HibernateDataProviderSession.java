@@ -94,7 +94,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
      */
-    public void deleteOnSaveOrUpdate(Object dataObj) throws Exception
+    public void deleteOnSaveOrUpdate(Object dataObj)
     {
         deleteList.add(dataObj);
     }
