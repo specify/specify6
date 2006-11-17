@@ -133,7 +133,7 @@ public class IconViewObj implements Viewable
     {
         editButton = createButton("EditForm", getResourceString("EditRecord"));
         newButton = createButton("CreateObj", getResourceString("NewRecord"));
-        deleteButton = createButton("CreateObj", getResourceString("DeleteRecord"));
+        deleteButton = createButton("SmallTrash", getResourceString("DeleteRecord"));
 
         altViewsList = new Vector<AltView>();
         switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
