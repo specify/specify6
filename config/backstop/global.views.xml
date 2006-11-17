@@ -242,19 +242,17 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <columnDef>p,3dlu,p,3dlu,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,5dlu,p:g</rowDef>
 
             <rows>
                 <row>
-                    <cell type="separator" label="Agent Info" colspan="7"/>
+                    <cell type="separator" label="Agent Info" colspan="6"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
                     <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
-                    <cell type="label" labelfor="2" label="Title"/>
-                    <cell type="field" id="2" name="jobTitle" uitype="text" cols="20"/>
-                    <cell type="field" id="image" name="imageURL" uitype="image" rowspan="9" initialize="size=128,128"/>
+                    <cell type="field" id="image" name="imageURL" uitype="image" rowspan="9" initialize="size=128,128;border=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
@@ -273,13 +271,9 @@
                     <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6" valtype="Changed"/>
                 </row>
-<!--                <row>
-                    <cell type="label" labelfor="image" label="Image"/>
-                    <cell type="field" id="image" name="imageURL" uitype="image" size="64,64"/>
-                </row>
--->            </rows>
+			</rows>
         </viewdef>
         
         <viewdef
@@ -411,12 +405,12 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Address subform for Acessions.]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
-                    <cell type="separator" label="Address Information" colspan="11"/>
+                    <cell type="separator" label="Address Information" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label=""/>
@@ -424,11 +418,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Address"/>
-                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="9" isrequired="true"/>
+                    <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="5" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Address"/>
-                    <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="9"/>
+                    <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="City" isrequired="true"/>

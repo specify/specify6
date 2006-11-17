@@ -616,7 +616,7 @@
             <enableRules/>
 
             <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
     		<rows>
     			<row>
@@ -657,6 +657,10 @@
                     <cell type="label" labelfor="8" label="Locality"/>
     			    <cell type="field" id="8" name="collectingEvent.locality.localityName" uitype="text" cols="41" colspan="6"/>
     			</row>
+    			<row>
+    		        <cell type="separator" label="Preparations" colspan="12"/>
+    		    </row>
+    			
     			<row>
     			    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
     			</row>
@@ -1170,12 +1174,9 @@
     	    <enableRules/>
 
     	    <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
     		<rows>
-    		    <row>
-    		        <cell type="separator" label="Preparations" colspan="12"/>
-    		    </row>
 			   <row>
                    <cell type="label" labelfor="7" label="Prep Method"/>
 			       <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true" valtype="Changed"/>
