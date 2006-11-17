@@ -532,7 +532,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 
-		T newT = TreeFactory.createNewTreeable(parent.getClass(),"New Node");
+		T newT = (T)TreeFactory.createNewTreeable(parent.getClass(),"New Node");
 		
 		// only set the parent pointer to point 'upstream'
 		// if it also points 'downstream' from the parent,

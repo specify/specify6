@@ -308,7 +308,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		}
 		
 		I parent = tableModel.get(index);
-		I newItem = TreeFactory.createNewTreeDefItem(parent.getClass(),null,"New Level");
+		I newItem = (I)TreeFactory.createNewTreeDefItem(parent.getClass(),null,"New Level");
 
 		// just set the parent item to have it available after the edit form is gone
 		newItem.setParent(parent);
