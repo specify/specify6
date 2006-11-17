@@ -8,7 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -31,7 +31,7 @@ public class MemoryDropDownButton extends DropDownButton
      * @param textPosition
      * @param menus
      */
-    public MemoryDropDownButton(final String label, final Icon icon, final int textPosition, final List<JComponent> menus)
+    public MemoryDropDownButton(final String label, final ImageIcon icon, final int textPosition, final List<JComponent> menus)
     {
         super(label, icon, textPosition, menus);
         boolean valid = false;

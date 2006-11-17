@@ -15,6 +15,7 @@
 package edu.ku.brc.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -26,7 +27,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -43,10 +46,6 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 
 /**
  * 
@@ -61,7 +60,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 @SuppressWarnings("serial")
 public class DropDownButton extends JPanel implements ChangeListener, PopupMenuListener,
-                                                                ActionListener, PropertyChangeListener
+                                                      ActionListener, PropertyChangeListener
 {
     
     protected EmptyBorder          emptyBorder;
@@ -75,7 +74,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     protected List<JComponent>     menus    = null;
     protected List<ActionListener> listeners = new ArrayList<ActionListener>();
     
-    protected static Icon dropDownArrow;
+    protected static ImageIcon dropDownArrow;
     
     static {
         dropDownArrow = IconManager.getIcon("DropDownArrow");
@@ -93,15 +92,24 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     }
 
     /**
+     * Constructor with only an icon.
+     * @param icon the icon
+     */
+    public DropDownButton(ImageIcon icon)
+    {
+        init(null, icon, null);
+    }
+
+    /**
      * Creates a toolbar item with label and icon and their positions.
      * @param label label of the toolbar item
      * @param icon the icon
      * @param toolTip the tooltip text that has already been localized
      * @param textPosition the position of the text as related to the icon
      */
-    public DropDownButton(String label, Icon icon, String toolTip, int textPosition)
+    public DropDownButton(String label, ImageIcon icon, String toolTip, int horzTextPosition)
     {
-        this(label, icon, toolTip, textPosition, SwingConstants.CENTER);
+        this(label, icon, toolTip, horzTextPosition, SwingConstants.CENTER);
     }
 
     /**
@@ -112,7 +120,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @param horzTextPosition the horizontal position of the text as related to the icon
      * @param vertTextPosition the vertical position of the text as related to the icon
      */
-    public DropDownButton(String label, Icon icon, String toolTip, int horzTextPosition, int vertTextPosition)
+    public DropDownButton(String label, ImageIcon icon, String toolTip, int horzTextPosition, int vertTextPosition)
     {
         init(label, icon, toolTip);
         
@@ -121,29 +129,25 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     }
 
     /**
-     * Constructor with only an icon.
-     * @param icon the icon
-     */
-    public DropDownButton(Icon icon)
-    {
-        init(null, icon, null);
-    }
-
-    /**
      * Creates a toolbar item with label and icon and their positions and menu items to be added.
      * The Items MUST be of class JSeparator or JMenuItem.
      * @param label label of the toolbar item
      * @param icon the icon
-     * @param textPosition the position of the text as related to the icon
+     * @param vertTextPosition the position of the text as related to the icon
      * @param menus the list of menu items and separators
      */
-    public DropDownButton(final String label, final Icon icon, final int textPosition, final List<JComponent> menus)
+    public DropDownButton(final String label, final ImageIcon icon, final int vertTextPosition, final List<JComponent> menus)
     {
         this.menus = menus;
+        
         init(label, icon, null);
         
-        mainBtn.setVerticalTextPosition(textPosition);
-        mainBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        mainBtn.setVerticalTextPosition(vertTextPosition);
+        
+        if (vertTextPosition == SwingConstants.BOTTOM || vertTextPosition == SwingConstants.TOP)
+        {
+            mainBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        }
     }
 
     /**
@@ -154,7 +158,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @param icon
      * @param toolTip
      */
-    protected void init(final String label, final Icon icon, String toolTip)
+    protected void init(final String label, final ImageIcon icon, String toolTip)
     {
         mainBtn   = new JButton(label, icon);
         
@@ -178,18 +182,12 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         arrowBtn.setFocusPainted(false); 
         arrowBtn.setFocusable(false);            
         arrowBtn.setVisible(getPopMenuSize() > 0);
-        
-        
-        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p", "c:p"), this);
-        CellConstraints cc  = new CellConstraints();
-        
-        builder.add(mainBtn, cc.xy(1,1));
-        builder.add(arrowBtn, cc.xy(3,1));
-        
-//        this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-//        this.add(mainBtn);
-//        this.add(Box.createRigidArea(new Dimension(2,2)));
-//        this.add(arrowBtn);
+
+        this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
+        this.add(mainBtn);
+        this.add(Box.createRigidArea(new Dimension(2,2)));
+        this.add(arrowBtn);
+
         
         raisedBorder = new SoftBevelBorder(BevelBorder.RAISED);
         emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
@@ -485,4 +483,5 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     	mainBtn.setEnabled(value);
     	arrowBtn.setEnabled(value);
     }
+    
 }

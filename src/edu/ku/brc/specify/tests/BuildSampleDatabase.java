@@ -168,13 +168,14 @@ public class BuildSampleDatabase
 
         //                                 Name                     Table Name         Field       Formatter         R/O  Size
         dataObjects.add(createPickList("DeterminationStatus", 1, "determinationstatus", null, "DeterminationStatus", true, -1));
-
+        dataObjects.add(createPickList("Department",          2, "accession",         "text1" ,       null,          true, -1));
+        dataObjects.add(createPickList("AgentTitle",          2, "agent",             "title" ,       null,          true, -1));
         
         String[] types = {"state", "federal", "international", "<no data>"};
         dataObjects.add(createPickList("PermitType", true, types));
 
-        String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
-        dataObjects.add(createPickList("AgentTitle", true, titles));
+        //String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
+        //dataObjects.add(createPickList("AgentTitle", true, titles));
         
         String[] roles = {"borrower", "receiver"};
         dataObjects.add(createPickList("LoanAgentsRole", true, roles));

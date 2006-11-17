@@ -42,7 +42,7 @@ public class PickListDBAdapterFactory extends edu.ku.brc.ui.db.PickListDBAdapter
         {
             return new PickListDBAdapter(name);
             
-        } else if (pickList.getType() == 0)
+        } else if (pickList.getType() == PickListDBAdapterIFace.Type.Item.value())
         {
             return new PickListDBAdapter(pickList);
         }

@@ -52,6 +52,7 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
@@ -229,7 +230,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
         IndexWriter writer          = new IndexWriter(dir, analyzer, create || shouldBeCreated);
         //writer.setMaxBufferedDocs(arg0);
         writer.setMaxMergeDocs(9999999);
-        writer.setMergeFactor(100);
+        writer.setMergeFactor(UIHelper.getOSType() == UIHelper.OSTYPE.Windows ? 1000 : 100);
         //writer.mergeFactor   = 1000;
         //writer.maxMergeDocs  = 9999999;
         //writer.minMergeDocs  = 1000;

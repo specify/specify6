@@ -28,6 +28,16 @@ public interface DataProviderSessionIFace
     
     public <T> List<T> getDataList(Class<T> clsObject);
     
+    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, boolean isDistinct);
+    
+    /**
+     * Returns all the vallues for a Table where the fieldName equals the value
+     * @param <T> the class
+     * @param clsObject the class of the table to query
+     * @param fieldName the field name to be searched
+     * @param value the value the field needs to be equal to
+     * @return the List of objects
+     */
     public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value);
     
     public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);

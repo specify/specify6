@@ -211,7 +211,7 @@ public class TableViewObjModel extends AbstractTableModel
             _label = aLabel;
             _classObj = aClass;
             _fieldName = aFieldName;
-            // System.out.println("["+_label+"]["+classObj.getName()+"]["+_fieldName+"]");
+            //System.out.println("["+_label+"]["+classObj.getName()+"]["+_fieldName+"]");
         }
     }
 

@@ -75,7 +75,6 @@ import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -166,7 +165,7 @@ public class FormViewObj implements Viewable,
     protected JButton                       saveBtn         = null;
     protected JButton                       validationInfoBtn = null;
     protected boolean                       wasNull         = false;
-    protected DropDownButtonStateful        switcherUI;
+    protected MenuSwitcherPanel             switcherUI;
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
     protected List<UIValidatable>           defaultValueList = new ArrayList<UIValidatable>();
@@ -316,7 +315,7 @@ public class FormViewObj implements Viewable,
                 // you would want to switch an individual subview to a differe "mode" view than the root).
 
                 altViewsList = new Vector<AltView>();
-                switcherUI   = createSwitcher(mvParent, view, altView, altViewsList);
+                switcherUI   = createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
                 
                 if (altViewsList.size() > 0)
                 {
@@ -379,12 +378,11 @@ public class FormViewObj implements Viewable,
      * @param altViewsListArg the Vector of AltView that will contains the ones in the Drop Down
      * @return the special combobox
      */
-    public static DropDownButtonStateful createSwitcher(final MultiView       mvParentArg, 
-                                                        final View            viewArg, 
-                                                        final AltView         altViewArg, 
-                                                        final Vector<AltView> altViewsListArg)
+    public static MenuSwitcherPanel createMenuSwitcherPanel(final MultiView       mvParentArg, 
+                                                            final View            viewArg, 
+                                                            final AltView         altViewArg, 
+                                                            final Vector<AltView> altViewsListArg)
     {
-        DropDownButtonStateful switcher = null;
         
         // Add all the View if we are at the top level
         // If not, then we are a subform and we should only add the view that belong to our same creation mode.
@@ -404,79 +402,8 @@ public class FormViewObj implements Viewable,
                 }
             }
         }
-        // If we have AltView then we need to build information for the Switcher Control
-        if (altViewsListArg.size() > 0)
-        {
-            ImageIcon[] iconsArray    = new ImageIcon[altViewsListArg.size()];
-            String[]    labelsArray   = new String[altViewsListArg.size()];
-            String[]    toolTipsArray = new String[altViewsListArg.size()];
-
-            int inx = 0;
-            Hashtable<String, Boolean> useLabels = new Hashtable<String, Boolean>();
-            for (AltView av : altViewsListArg)
-            {
-                String selectorName = av.getSelectorName();
-                if (StringUtils.isNotEmpty(selectorName))
-                {
-                    String combinedName = av.getMode().toString() + "_" + selectorName;
-                    if (useLabels.get(combinedName) == null)
-                    {
-                        useLabels.put(combinedName, true);
-                        
-                    } else
-                    {
-                        continue;
-                    }
-                }
-                
-                labelsArray[inx] = av.getLabel();
-
-                // TODO This is Sort of Temporary until I get it all figured out
-                // But somehow we need to externalize this, possible have the AltView Definition
-                // define its own icon
-                if (av.getMode() == AltView.CreationMode.Edit)
-                {
-                    iconsArray[inx]    = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
-                    toolTipsArray[inx] = getResourceString("ShowEditViewTT");
-
-                } else if (av.getViewDef().getType() == ViewDef.ViewType.table ||
-                           av.getViewDef().getType() == ViewDef.ViewType.formTable)
-                {
-                    iconsArray[inx]    = IconManager.getImage("Spreadsheet", IconManager.IconSize.Std16);
-                    toolTipsArray[inx] = getResourceString("ShowSpreadsheetTT");
-
-                } else
-                {
-                    iconsArray[inx]    = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
-                    toolTipsArray[inx] = getResourceString("ShowViewTT");
-                }
-                inx++;
-            }
-            
-            class SwitcherAL implements ActionListener
-            {
-                protected DropDownButtonStateful switcherComp;
-                public SwitcherAL(final DropDownButtonStateful switcherComp)
-                {
-                    this.switcherComp = switcherComp;
-                }
-                public void actionPerformed(ActionEvent ae)
-                {
-                    log.info("Index: "+switcherComp.getCurrentIndex());
-                    
-                    mvParentArg.showView(altViewsListArg.get(switcherComp.getCurrentIndex()));
-                }
-            }
-
-            switcher = new DropDownButtonStateful(labelsArray, iconsArray, toolTipsArray);
-            switcher.setToolTipText(getResourceString("SwitchViewsTT"));
-            switcher.addActionListener(new SwitcherAL(switcher));
-            switcher.validate();
-            switcher.doLayout();
-
-        }
         
-        return switcher;
+        return new MenuSwitcherPanel(mvParentArg, viewArg, altViewArg, altViewsListArg);
     }
     
     /**
@@ -621,7 +548,7 @@ public class FormViewObj implements Viewable,
         if (switcherUI != null)
         {
             ignoreSelection = true;
-            switcherUI.setCurrentIndex(altViewsList.indexOf(altView));
+            switcherUI.set(altView);
             ignoreSelection = false;
         }
         
@@ -1799,7 +1726,7 @@ public class FormViewObj implements Viewable,
                 {
                     continue;
                 }
-                System.out.println(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
+                log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
                 String id = fieldInfo.getFormCell().getId();
                 if (hasFormControlChanged(id))
                 {

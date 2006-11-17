@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -74,7 +74,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected final String        title;
 
     protected Vector<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>();
-    protected Icon                icon          = null;
+    protected ImageIcon                icon          = null;
     protected boolean             isInitialized = false;
 
     // Members needed for initialization
@@ -148,7 +148,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                                      final List<JComponent> menus,
                                                      final ActionListener actionListener )
     {
-        Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+        ImageIcon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
 
         ToolBarDropDownBtn btn = new ToolBarDropDownBtn(label, buttonIcon, SwingConstants.BOTTOM, menus);
         btn.setStatusBarHintText(hint);
@@ -162,7 +162,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                                              final String hint,
                                                              final List<JComponent> menus)
     {
-        Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+        ImageIcon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
 
         MemoryDropDownButton btn = new MemoryDropDownButton(label, buttonIcon, SwingConstants.BOTTOM, menus);
         btn.setStatusBarHintText(hint);
@@ -480,7 +480,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getIcon()
      */
-    public Icon getIcon()
+    public ImageIcon getImageIcon()
     {
         return icon;
     }

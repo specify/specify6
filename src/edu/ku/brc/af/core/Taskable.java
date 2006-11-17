@@ -16,7 +16,7 @@ package edu.ku.brc.af.core;
 
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 
 
@@ -41,7 +41,7 @@ public interface Taskable
      * Return the icon that represents the task.
      * @return the icon that represents the task
      */
-    public Icon getIcon();
+    public ImageIcon getImageIcon();
 
     /**
      * Returns the name of the task (NOT Localized).

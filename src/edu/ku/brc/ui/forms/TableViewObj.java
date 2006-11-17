@@ -61,7 +61,6 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -147,7 +146,7 @@ public class TableViewObj implements Viewable,
     protected JButton                       saveBtn         = null;
     protected JButton                       validationInfoBtn = null;
     protected boolean                       wasNull         = false;
-    protected DropDownButtonStateful        switcherUI;
+    protected MenuSwitcherPanel             switcherUI;
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
 
@@ -232,7 +231,7 @@ public class TableViewObj implements Viewable,
                 // you would want to switch an individual subview to a differe "mode" view than the root).
 
                 altViewsList = new Vector<AltView>();
-                switcherUI   = FormViewObj.createSwitcher(mvParent, view, altView, altViewsList);
+                switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
                 
                 if (altViewsList.size() > 0)
                 {
@@ -567,7 +566,7 @@ public class TableViewObj implements Viewable,
         if (switcherUI != null)
         {
             ignoreSelection = true;
-            switcherUI.setCurrentIndex(altViewsList.indexOf(altView));
+            switcherUI.set(altView);
             ignoreSelection = false;
         }
     }
@@ -1214,7 +1213,7 @@ public class TableViewObj implements Viewable,
 
         public Object getValueAt(int row, int column)
         {
-            if (columnList != null && dataObjList != null)
+            if (columnList != null && dataObjList != null && dataObjList.size() > 0)
             {
                 ColumnInfo colInfo = columnList.get(column);
                 Object     rowObj  = dataObjList.get(row);

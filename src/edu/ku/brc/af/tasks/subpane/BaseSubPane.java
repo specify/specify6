@@ -161,7 +161,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
      */
     public Icon getIcon()
     {
-        return task.getIcon();
+        return task.getImageIcon();
     }
 
     /* (non-Javadoc)

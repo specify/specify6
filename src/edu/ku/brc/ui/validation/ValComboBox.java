@@ -252,7 +252,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public boolean isNotEmpty()
     {
-        System.out.println((comboBox.getSelectedIndex() > -1) +"  "+ hasText()+"  "+comboBox.getSelectedItem());
+        //System.out.println((comboBox.getSelectedIndex() > -1) +"  "+ hasText()+"  "+comboBox.getSelectedItem());
         return comboBox.getSelectedIndex() > -1 || hasText();
     }
 
@@ -455,7 +455,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                     {
                         if (isFormObjIFace && valObj instanceof FormDataObjIFace)
                         {
-                            System.out.println(((FormDataObjIFace)value).getId().longValue()+"  "+(((FormDataObjIFace)valObj).getId().longValue()));
+                            //System.out.println(((FormDataObjIFace)value).getId().longValue()+"  "+(((FormDataObjIFace)valObj).getId().longValue()));
                             if (((FormDataObjIFace)value).getId().longValue() == (((FormDataObjIFace)valObj).getId().longValue()))
                             {
                                 comboBox.setSelectedIndex(i);

@@ -39,7 +39,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
 import edu.ku.brc.ui.DefaultClassActionHandler;
-import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.UICacheManager;
@@ -86,7 +85,7 @@ public class IconViewObj implements Viewable
     protected JButton editButton;
     protected JButton newButton;
     protected JButton deleteButton;
-    protected DropDownButtonStateful        switcherUI;
+    protected MenuSwitcherPanel             switcherUI;
     protected JButton                       validationInfoBtn;
     
     protected boolean dataTypeError;
@@ -137,7 +136,7 @@ public class IconViewObj implements Viewable
         deleteButton = createButton("CreateObj", getResourceString("DeleteRecord"));
 
         altViewsList = new Vector<AltView>();
-        switcherUI   = FormViewObj.createSwitcher(mvParent, view, altView, altViewsList);
+        switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
         
         validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
         validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
@@ -606,7 +605,7 @@ public class IconViewObj implements Viewable
     {
         if (switcherUI != null)
         {
-            switcherUI.setCurrentIndex(altViewsList.indexOf(altView));
+            switcherUI.set(altView);
         }
     }
 

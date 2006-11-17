@@ -81,6 +81,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
@@ -374,7 +375,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         IndexWriter writer          = new IndexWriter(dir, analyzer, create || shouldBeCreated);
         //writer.setMaxBufferedDocs(arg0);
         writer.setMaxMergeDocs(9999999);
-        writer.setMergeFactor(100);
+        writer.setMergeFactor(UIHelper.getOSType() == UIHelper.OSTYPE.Windows ? 1000 : 100);
         //writer.mergeFactor   = 1000;
         //writer.maxMergeDocs  = 9999999;
         //writer.minMergeDocs  = 1000;

@@ -135,6 +135,17 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T>  getDataList(Class<T> clsObject, String fieldName, boolean isDistinct)
+    {
+        Query query = session.createQuery("SELECT DISTINCT " + fieldName + " FROM " + clsObject.getName() + " WHERE " + fieldName + " <> NULL");
+        return query.list();
+    }
+
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, java.lang.Object)
      */
     @SuppressWarnings("unchecked")

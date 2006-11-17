@@ -16,7 +16,7 @@ package edu.ku.brc.ui;
 
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 /**
@@ -36,7 +36,7 @@ public class ToolBarDropDownBtn extends DropDownButton
      * @param icon the icon
      * @param textPosition the position of the text as related to the icon
      */
-    public ToolBarDropDownBtn(final String label, final Icon icon, final int textPosition)
+    public ToolBarDropDownBtn(final String label, final ImageIcon icon, final int textPosition)
     {
         super(label, icon, null, textPosition);
     }
@@ -48,7 +48,7 @@ public class ToolBarDropDownBtn extends DropDownButton
      * @param toolTip the toolTip
      * @param textPosition the position of the text as related to the icon
      */
-    public ToolBarDropDownBtn(final String label, final Icon icon, final String toolTip, final int textPosition)
+    public ToolBarDropDownBtn(final String label, final ImageIcon icon, final String toolTip, final int textPosition)
     {
         super(label, icon, toolTip, textPosition);
     }
@@ -58,19 +58,19 @@ public class ToolBarDropDownBtn extends DropDownButton
      * The Items MUST be of class JSeparator or JMenuItem.
      * @param label label of the toolbar item
      * @param icon the icon
-     * @param textPosition the position of the text as related to the icon
+     * @param vertTextPosition the position of the text as related to the icon
      * @param menus the list of menu items and separators
      */
-    public ToolBarDropDownBtn(final String label, final Icon icon, final int textPosition, final List<JComponent> menus)
+    public ToolBarDropDownBtn(final String label, final ImageIcon icon, final int vertTextPosition, final List<JComponent> menus)
     {
-        super(label, icon, textPosition, menus);      
+        super(label, icon, vertTextPosition, menus);      
      }
 
     /**
      * Creates a toolbar item with icon.
      * @param icon the icon for the button.
      */
-    public ToolBarDropDownBtn(final Icon icon)
+    public ToolBarDropDownBtn(final ImageIcon icon)
     {
         super(icon);
 

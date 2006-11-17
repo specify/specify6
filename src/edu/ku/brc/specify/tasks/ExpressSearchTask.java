@@ -66,6 +66,7 @@ import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -96,8 +97,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     public static final String EXPRESSSEARCH = "Express_Search";
     
     // Static Data Memebers
-    protected static WeakReference<TableInfoWeakRef> tableInfo = null;
-    protected static ExpressSearchTask               instance  = null;
+    protected static WeakReference<TableInfoWeakRef> tableInfo   = null;
+    protected static ExpressSearchTask               instance    = null;
+    protected static final String                    LAST_SEARCH = "lastsearch"; 
     
     // Data Members
     protected Analyzer                     analyzer       = new StandardAnalyzer();
@@ -342,6 +344,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             {
                 UICacheManager.displayLocalizedStatusBarText("NoExpressSearchResults");
             }
+            AppPreferences.getLocalPrefs().put(LAST_SEARCH, searchTerm);
         }
     }
 
@@ -820,8 +823,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         searchText = new JAutoCompTextField(15, PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
         searchText.setAskBeforeSave(false);
         
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         //searchText.setText("2004-IZ-121");
-        searchText.setText("platostomus");
+        //searchText.setText("platostomus");
+        searchText.setText(localPrefs.get(LAST_SEARCH, ""));
         
         //searchText  = searchTextAutoComp.getTnew JTextField("2004-IZ-121", 15);
 

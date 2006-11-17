@@ -236,4 +236,18 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
         return pickList == null ? false : pickList.getType() > 0;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#getType()
+     */
+    public PickListDBAdapterIFace.Type getType()
+    {
+        switch (pickList.getType())
+        {
+            case 0 : return PickListDBAdapterIFace.Type.Item;
+            case 1 : return PickListDBAdapterIFace.Type.Table;
+            case 2 : return PickListDBAdapterIFace.Type.TableField;
+        }
+        throw new RuntimeException("Unknown picklist type["+pickList.getType()+"]");
+    }
+    
 }

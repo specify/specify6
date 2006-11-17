@@ -157,8 +157,9 @@
                     <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true" valtype="Changed"/>
 
                     <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Changed"/>
-
+                    <!-- <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Changed"/> -->
+                    <cell type="field" id="4" name="text1" uitype="combobox" picklist="Department"  isrequired="true" valtype="Changed"/>
+                    
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Accessioned"/>

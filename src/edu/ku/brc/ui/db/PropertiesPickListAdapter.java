@@ -287,5 +287,13 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
     {
         return false;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#getType()
+     */
+    public PickListDBAdapterIFace.Type getType()
+    {
+        return PickListDBAdapterIFace.Type.Item;
+    }
 
 }

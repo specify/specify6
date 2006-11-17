@@ -12,13 +12,15 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package edu.ku.brc.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -39,20 +41,32 @@ import javax.swing.SwingConstants;
 @SuppressWarnings("serial")
 public class DropDownButtonStateful extends DropDownButton
 {
-    protected ImageIcon[]            imgIcons      = null;
-    protected String[]               labels        = null;
-    protected String[]               toolTips      = null;
-    protected String                 currLabel     = null;
-    protected int                    currInx       = 0;
-    protected Dimension              preferredSize = null;
+    protected List<DropDownMenuInfo>   menuInfoItems;
+    protected String                   currLabel     = null;
+    protected int                      currInx       = 0;
+    protected Dimension                preferredSize = null;
 
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action.
      * @param labels the text labels for the UI
      * @param imgIcons the icons for the UI
      */
-    public DropDownButtonStateful(final String[]    labels, 
-                                  final ImageIcon[] imgIcons)
+    public DropDownButtonStateful(final List<DropDownMenuInfo> items)
+    {
+        super(items.get(0).getLabel(), items.get(0).getImageIcon(), items.get(0).getTooltip(), SwingConstants.RIGHT);
+        
+        menuInfoItems = items;
+        
+        init();
+    }
+    
+    /**
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action.
+     * @param labels the text labels for the UI
+     * @param imgIcons the icons for the UI
+     */
+    public DropDownButtonStateful(final List<String>    labels, 
+                                  final List<ImageIcon> imgIcons)
     {
         this(labels, imgIcons, null);
     }
@@ -63,18 +77,43 @@ public class DropDownButtonStateful extends DropDownButton
      * @param imgIcons the icons for the UI
      * @param toolTips toolTip text
      */
-    public DropDownButtonStateful(final String[]    labels, 
-                                  final ImageIcon[] imgIcons, 
-                                  final String[]    toolTips)
+    public DropDownButtonStateful(final List<String>    labels, 
+                                  final List<ImageIcon> imgIcons, 
+                                  final List<String>    toolTips)
     {
-       super(labels[0], imgIcons[0], toolTips != null ? toolTips[0] : null, SwingConstants.CENTER);
-       
-        setBorder(null);//new EmptyBorder(new Insets(1,1,1,1)));
-        setLayout(new BorderLayout());
-       
-        this.imgIcons = imgIcons;
-        this.labels   = labels;
-        this.toolTips = toolTips;
+        super(labels != null && labels.size() > 0 ? labels.get(0) : null,
+              imgIcons != null && imgIcons.size() > 0 ? imgIcons.get(0) : null, 
+              toolTips != null && toolTips.size() > 0 ? toolTips.get(0) : null, SwingConstants.CENTER);
+
+        
+        int length = 0;
+        if (imgIcons != null)
+        {
+            length = imgIcons.size();
+            
+        } else if (labels != null)
+        {
+            length = labels.size();
+        }
+        
+
+        
+        menuInfoItems = new Vector<DropDownMenuInfo>();
+        for (int i=0;i<length;i++)
+        {
+            menuInfoItems.add(new DropDownMenuInfo(labels != null && labels.size() > 0 ? labels.get(0) : null,
+                                                   imgIcons != null && imgIcons.size() > 0 ? imgIcons.get(0) : null, 
+                                                   toolTips != null && toolTips.size() > 0 ? toolTips.get(0) : null));
+        }
+
+        init();
+
+    }
+    
+    protected void init()
+    {
+        //setBorder(null);
+        //setLayout(new BorderLayout());
         
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -85,32 +124,36 @@ public class DropDownButtonStateful extends DropDownButton
                 }
             }
         };
-          
         // menus need to be set up before the the init
         menus = new ArrayList<JComponent>();
-        for (int i=0;i<imgIcons.length;i++)
+        for (DropDownMenuInfo mi : menuInfoItems)
         {
-            JMenuItem menuItem = new JMenuItem(labels[i], imgIcons[i]);
+            
+            JMenuItem menuItem = new JMenuItem(mi.getLabel(), mi.getImageIcon());
             menuItem.addActionListener(actionListener);
             menus.add(menuItem);
         }
         
-        init(labels[0], imgIcons[0], toolTips != null ? toolTips[0] : null);
+        //DropDownMenuInfo mi = menuInfoItems.get(0);
+        //super.init(mi.getLabel(), mi.getImageIcon(), mi.getTooltip());
         
         mainBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
                 currInx++;
-                if (currInx >= imgIcons.length)
+                if (currInx >= menuInfoItems.size())
                 {
                     currInx = 0;
                 }
                 setCurrentIndex(currInx);
             }
         });
-        setCurrentIndex(0);
+        
+        arrowBtn.setVisible(getPopMenuSize() > 0);
 
+        setCurrentIndex(0);
     }
+
     
     /**
      * Returns the next index in the stateful button which means we wrap around to zero
@@ -118,33 +161,8 @@ public class DropDownButtonStateful extends DropDownButton
      */
     protected int getNextIndex()
     {
-        return (currInx+ 1) % labels.length;
+        return (currInx+ 1) % menuInfoItems.size();
     }
-    
-    /* (non-Javadoc)
-     * @see java.awt.Component#getPreferredSize()
-     */
-    /*public Dimension getPreferredSize()
-    {
-        if (preferredSize == null)
-        {
-            this.validate();
-            preferredSize = super.getPreferredSize();
-            for (int i=0;i<labels.length;i++)
-            {
-                mainBtn.setIcon(imgIcons[i]);
-                mainBtn.setText(labels[i]);
-                this.validate();
-                doLayout();
-    
-                Dimension s = super.getPreferredSize();
-                System.out.println(s);
-                preferredSize.width = Math.max(s.width, preferredSize.width);
-                preferredSize.height = Math.max(s.height, preferredSize.height);
-            }
-        }
-        return preferredSize;
-    }*/
     
     /**
      * Sets Current Index.
@@ -154,12 +172,13 @@ public class DropDownButtonStateful extends DropDownButton
     {
         currInx = index;
         int nxtInx = getNextIndex();
-        mainBtn.setIcon(imgIcons[nxtInx]);
-        mainBtn.setText(labels[nxtInx]);
+        DropDownMenuInfo mi = menuInfoItems.get(nxtInx);
+        mainBtn.setIcon(mi.getImageIcon());
+        mainBtn.setText(mi.getLabel());
         
-        if (toolTips != null)
+        if (mi.getTooltip() != null)
         {
-            mainBtn.setToolTipText(toolTips[nxtInx]);
+            mainBtn.setToolTipText(mi.getTooltip());
         }
     }
     
@@ -180,15 +199,18 @@ public class DropDownButtonStateful extends DropDownButton
     {
         if (obj instanceof JMenuItem)
         {
-            JMenuItem mi = (JMenuItem)obj;
-            for (int i=0;i<imgIcons.length;i++)
+            JMenuItem item = (JMenuItem)obj;
+            int i = 0;
+            for (DropDownMenuInfo mi : menuInfoItems)
             {
-                if (labels[i] != null && labels[i].equals(mi.getText()))
+                if (mi.getLabel() != null && mi.getLabel().equals(item.getText()))
                 {
                     setCurrentIndex(i);
                     return;
                 }
+                i++;
             }
         }
-    }  
+    }
+    
 }

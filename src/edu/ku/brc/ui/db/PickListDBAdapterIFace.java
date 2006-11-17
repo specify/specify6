@@ -26,6 +26,24 @@ import java.util.Vector;
  */
 public interface PickListDBAdapterIFace
 {
+    public enum Type 
+    {
+        Item(0), Table(1), TableField(2);
+        
+        private int type;
+        Type(int t) { type = t; }
+        public int value() { return type; }
+        public static Type valueOf(int t) 
+        {
+            switch (t)
+            {
+                case 0 : return Item;
+                case 1 : return Table;
+                case 2 : return TableField;
+            }
+            throw new RuntimeException("Unknown type["+t+"]");
+        }
+    }
     
     /**
      * Returns the pciklist object.
@@ -72,4 +90,10 @@ public interface PickListDBAdapterIFace
      * @return true other tables, false not other tables
      */
     public boolean isTabledBased();
+    
+    /**
+     * Returns the type of adapter.
+     * @return the type of adapter.
+     */
+    public Type getType();
 }

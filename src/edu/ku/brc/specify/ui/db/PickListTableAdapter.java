@@ -26,6 +26,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 
@@ -52,38 +53,21 @@ public class PickListTableAdapter extends PickListDBAdapter
         init();
     }
     
-
-    /**
-     * Constructor with a unique name.
-     * @param name the name of the picklist
-     * @param createWhenNotFound indicates whether to automatically create the picklist when the name is not found,
-     */
-    /*public PickListTableAdapter(final String name, final boolean createWhenNotFound)
-    {
-        pickList = PickListDBAdapterFactory.getPickList(name);
-        
-        if (createWhenNotFound || pickList == null)
-        {
-            throw new RuntimeException("This type of picklist cannot be automatically created!["+name+"]");
-        }
-        init();
-    }*/
-    
     /**
      * Initializes list from Database. 
      */
     protected void init()
     {
-        int type = pickList.getType();
+        PickListDBAdapterIFace.Type type = PickListDBAdapterIFace.Type.valueOf(pickList.getType());
         switch (type)
         {
-            case 0 : throw new RuntimeException("This adapter is not intended for PickList's of type '0'");
+            case Item : throw new RuntimeException("This adapter is not intended for PickList's of type '0'");
             
-            case 1 : 
+            case Table : 
                 fillFromFullTable();
                 break;
                 
-            case 2 : 
+            case TableField : 
                 fillFromTableField();
                 break;
                 
@@ -95,30 +79,78 @@ public class PickListTableAdapter extends PickListDBAdapter
      */
     protected void fillFromFullTable()
     {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        
+        //DBTableIdMgr.getQueryForTable(tableId, recordId)
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(DBTableIdMgr.lookupIdByShortName(pickList.getTableName()));
+        if (tableInfo != null)
+        {
+            // This could be moved to DBTableIdMgr but a new method would be needed
+            StringBuffer strBuf = new StringBuffer("from ");
+            strBuf.append(tableInfo.getTableName());
+            strBuf.append(" in class ");
+            strBuf.append(tableInfo.getShortClassName());
+            
+            String sqlStr = strBuf.toString();//DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
+            if (StringUtils.isNotEmpty(sqlStr))
+            {
+                try
+                {
+                    List dataList = session.getDataList(sqlStr);
+                    if (dataList != null && dataList.size() > 0)
+                    {
+                        for (Object dataObj : dataList)
+                        {
+                            String title = DataObjFieldFormatMgr.format(dataObj, pickList.getFormatter());
+                            items.add(pickList.addPickListItem(title, dataObj));
+                        }
+                        
+                    } else
+                    {
+                        // No Data Error
+                    }
+        
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    ex.printStackTrace();
+                }
+            } else
+            {
+                log.error("Query String is empty for tableId["+tableInfo.getTableId()+"]");
+            }
+            session.close();
+        } else
+        {
+            throw new RuntimeException("Error looking up PickLIst's Table Name ["+pickList.getTableName()+"]");
+        }
+    }
+
+    /**
+     * 
+     */
+    protected void fillFromTableField()
+    {
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         //DBTableIdMgr.getQueryForTable(tableId, recordId)
         DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(DBTableIdMgr.lookupIdByShortName(pickList.getTableName()));
-
-        StringBuffer strBuf = new StringBuffer("from ");
-        strBuf.append(tableInfo.getTableName());
-        strBuf.append(" in class ");
-        strBuf.append(tableInfo.getShortClassName());
-
-        
-        String sqlStr = strBuf.toString();//DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
-        if (StringUtils.isNotEmpty(sqlStr))
+        if (tableInfo != null)
         {
             try
             {
-                List dataList = session.getDataList(sqlStr);
+                List dataList = session.getDataList(Class.forName(tableInfo.getClassName()), pickList.getFieldName(), true);
                 if (dataList != null && dataList.size() > 0)
                 {
+                    Object[] array = new Object[1];
+                    String   formatterStr   = pickList.getFormatter();
+                    boolean  hasFormatter = StringUtils.isNotEmpty(formatterStr);
                     for (Object dataObj : dataList)
                     {
-                        String title = DataObjFieldFormatMgr.format(dataObj, pickList.getFormatter());
-                        items.add(pickList.addPickListItem(title, dataObj));
+                        array[0] = dataObj;
+                        String valStr = hasFormatter ? String.format(formatterStr, array) : dataObj.toString();
+                        items.add(pickList.addPickListItem(valStr, valStr));
                     }
                     
                 } else
@@ -131,19 +163,12 @@ public class PickListTableAdapter extends PickListDBAdapter
                 log.error(ex);
                 ex.printStackTrace();
             }
+
+            session.close();
         } else
         {
-            log.error("Query String is empty for tableId["+tableInfo.getTableId()+"]");
+            throw new RuntimeException("Error looking up PickLIst's Table Name ["+pickList.getTableName()+"]");
         }
-        session.close();
-    }
-
-    /**
-     * 
-     */
-    protected void fillFromTableField()
-    {
-        
     }
 
     
