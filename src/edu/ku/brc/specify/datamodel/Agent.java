@@ -20,15 +20,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.ImageIcon;
-
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.AttachmentUtils;
-
-
-
 
 /**
 
@@ -211,6 +204,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
             }
         }
         return null;
+    }
+    
+    public void setImageURL(String url)
+    {
+        System.err.println("Implement this: setImageURL(" + url + ")");
     }
 
     /**
