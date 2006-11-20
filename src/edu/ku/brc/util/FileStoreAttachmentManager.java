@@ -119,11 +119,13 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         String attachLoc = attachment.getAttachmentLocation();
         
         File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
-        
-        File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
-
         FileUtils.copyFile(attachmentFile, origFile);
-        FileUtils.copyFile(thumbnail, thumbFile);
+        
+        if (thumbnail!=null)
+        {
+            File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
+            FileUtils.copyFile(thumbnail, thumbFile);
+        }
         
         unfilledFiles.remove(attachment.getAttachmentLocation());
     }
