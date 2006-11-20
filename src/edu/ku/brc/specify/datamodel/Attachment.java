@@ -313,21 +313,30 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     public void onSave()
     {
         // Copy the attachment file to the file storage system
+        Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
+        AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
+        File origFile = new File(origFilename);
+        File thumbFile = null;
+        
         try
         {
-            File origFile = new File(origFilename);
-            File thumbFile = File.createTempFile("sp6_thumb_", null);
+            thumbFile = File.createTempFile("sp6_thumb_", null);
             thumbFile.deleteOnExit();
-
-            Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
-            AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
-
             thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
+        }
+        catch (IOException e)
+        {
+            // unable to create thumbnail
+            thumbFile = null;
+        }
+        
+        try
+        {
             attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
         }
         catch (IOException e)
         {
-            // TODO how should I handle this problem?
+            // exception while saving copying attachments to storage system
             e.printStackTrace();
         }
     }
