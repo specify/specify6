@@ -347,9 +347,10 @@ public class IconViewObj implements Viewable
         TableInfo setTI = DBTableIdMgr.lookupByClassName(objectToEdit.getClass().getName());
         String defFormName = setTI.getEditObjDialog();
 
-        boolean isEdit = (altView.getMode() == CreationMode.Edit) ? true : false;
-        int options = (isNewObject ? MultiView.IS_NEW_OBJECT : 0) | MultiView.HIDE_SAVE_BTN;
-        String title = (isNewObject && isEdit) ? getResourceString("Edit") : objectToEdit.getIdentityTitle();
+        boolean isEdit  = (altView.getMode() == CreationMode.Edit) ? true : false;
+        isEdit = true;
+        int     options = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
+        String  title   = (isNewObject && isEdit) ? getResourceString("Edit") : objectToEdit.getIdentityTitle();
         ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
                                                                     defFormName,
                                                                     title,
@@ -684,6 +685,14 @@ public class IconViewObj implements Viewable
             TableRelationship rel = parentTI.getRelationshipByName(cellName);
             this.dataClassName = rel.getClassName();
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#registerSaveBtn(javax.swing.JButton)
+     */
+    public void registerSaveBtn(JButton saveBtn)
+    {
+        
     }
     
     /* (non-Javadoc)

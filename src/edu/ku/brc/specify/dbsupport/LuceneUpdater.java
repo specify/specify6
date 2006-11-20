@@ -87,7 +87,7 @@ public class LuceneUpdater
     {
         if (indexer == null)
         {
-            indexer = new ExpressSearchIndexer(ExpressSearchTask.getIndexDirPath(), null);
+            indexer = new ExpressSearchIndexer(ExpressSearchTask.getIndexDirPath(), null, false);
         }
         
         IndexWriter writer = ExpressSearchIndexer.createIndexWriter(ExpressSearchTask.getIndexDirPath(), false); // false - do not force a new index to be created

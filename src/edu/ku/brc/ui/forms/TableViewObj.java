@@ -642,6 +642,14 @@ public class TableViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#registerSaveBtn(javax.swing.JButton)
+     */
+    public void registerSaveBtn(JButton saveBtnArg)
+    {
+        this.saveBtn = saveBtnArg;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()
      */
     public void shutdown()

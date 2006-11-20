@@ -705,7 +705,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * Removes validation listener
      * @param l the listener
      */
-    public void removeValidationListenerListener(final ValidationListener l)
+    public void removeValidationListener(final ValidationListener l)
     {
         valListeners.remove(l);
     }

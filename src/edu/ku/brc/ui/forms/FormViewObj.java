@@ -166,9 +166,13 @@ public class FormViewObj implements Viewable,
     protected JButton                       validationInfoBtn = null;
     protected boolean                       wasNull         = false;
     protected MenuSwitcherPanel             switcherUI;
-    protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
     protected List<UIValidatable>           defaultValueList = new ArrayList<UIValidatable>();
+    
+    // Forms that have a Selector
+    protected JComboBox                     selectorCBX     = null;
+    protected boolean                       isSelectorForm;
+    protected boolean                       isShowing       = false;
 
     protected PanelBuilder                  mainBuilder;
     protected BusinessRulesIFace            businessRules   = null; 
@@ -256,8 +260,10 @@ public class FormViewObj implements Viewable,
         boolean addExtraRow = addController || altView.getMode() == AltView.CreationMode.Search;
         
         // See if we need to add a Selector ComboBox
+        isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
+        
         boolean addSelectorCBX = false;
-        if (StringUtils.isNotEmpty(view.getSelectorName()) && isNewObject)
+        if (isSelectorForm && isNewObject)
         {
             addSelectorCBX = true;
         }
@@ -270,6 +276,8 @@ public class FormViewObj implements Viewable,
         
         List<JComponent> comps = new ArrayList<JComponent>();
 
+        // Here we create the JCOmboBox that enables the user to switch between forms
+        // when creating a new object
         if (addSelectorCBX)
         {
             mainCompRowInx++;
@@ -291,7 +299,7 @@ public class FormViewObj implements Viewable,
             
             if (mvParent != null)
             {
-                selectorCBX.addActionListener(new ActionListener(){
+                selectorCBX.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ex)
                     {
                         mvParent.showView(((JComboBox)ex.getSource()).getSelectedItem().toString());
@@ -300,13 +308,14 @@ public class FormViewObj implements Viewable,
             }
         }
  
-
-        // We will add the switchable UI if we are mvParented to a MultiView and have multiple AltViews
-        if (addController)
+        //
+        // We will add the switchable UI if we are parented to a MultiView and have multiple AltViews
+        //
+        if (addController) // this says we are the "root" form
         {
             boolean saveWasAdded = false;
             
-            if (createViewSwitcher)
+            if (createViewSwitcher) // This is passed in outside
             {
                 // Now we have a Special case that when when there are only two AltViews and
                 // they differ only by Edit & View we hide the switching UI unless
@@ -545,6 +554,17 @@ public class FormViewObj implements Viewable,
      */
     public void aboutToShow(final boolean show)
     {
+        isShowing = show;
+        
+        if (formValidator != null)
+        {
+            //formValidator.setValidatorIsOn(isShowing);
+            
+            formValidator.validateForm();
+            
+            registerWithRootMV(show);
+        }
+        
         if (switcherUI != null)
         {
             ignoreSelection = true;
@@ -691,20 +711,36 @@ public class FormViewObj implements Viewable,
             formValidator.addValidationListener(this);
 
             //log.debug(formViewDef.getName()+ " formValidator: "+formValidator);
-
-            // if this isn't the root form then find the root form
-            // and make it listen to this validator for changes.
-            if (mvParent != null)
+            //registerWithRootMV(true);
+        }
+    }
+    
+    /**
+     * Adds or Removes the Validation listener from MultiView Root.
+     * @param add true means add it, false means remove it
+     */
+    protected void registerWithRootMV(final boolean add)
+    {
+        // if this isn't the root form then find the root form
+        // and make it listen to this validator for changes.
+        if (mvParent != null)
+        {
+            MultiView root = mvParent;
+            while (root.getMultiViewParent() != null)
             {
-                MultiView root = mvParent;
-                while (root.getMultiViewParent() != null)
-                {
-                    root = root.getMultiViewParent();
-                }
+                root = root.getMultiViewParent();
+            }
+            if (add)
+            {
                 formValidator.addValidationListener(root);
                 root.addFormValidator(formValidator);
+                
+            } else
+            {
+                formValidator.removeValidationListener(root);
+                root.removeFormValidator(formValidator);
             }
-        }
+        } 
     }
 
     /**
@@ -1644,20 +1680,6 @@ public class FormViewObj implements Viewable,
         if (formValidator != null)
         {
             formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
-            
-            /*
-            formValidator.setHasChanged(false);
-
-            formValidator.resetFields();
-
-            formValidator.setDataChangeNotification(true); // this doesn't effect validation notifications
-
-            formValidator.validateForm();
-
-            if (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT))
-            {
-                formValidator.setFormValidationState(UIValidatable.ErrorType.Valid); 
-            }*/
 
             listFieldChanges();
             
@@ -2046,6 +2068,14 @@ public class FormViewObj implements Viewable,
     {
         this.cellName = cellName;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#registerSaveBtn(javax.swing.JButton)
+     */
+    public void registerSaveBtn(JButton saveBtnArg)
+    {
+        this.saveBtn = saveBtnArg;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()
@@ -2394,7 +2424,7 @@ public class FormViewObj implements Viewable,
                 scrollPane.setEnabled(enabled);
             }
         }
-
+        
         /**
          * Tells it to clean up
          */

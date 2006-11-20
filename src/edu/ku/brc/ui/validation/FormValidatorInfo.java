@@ -69,7 +69,7 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
      */
     public void cleanUp()
     {
-        formValidator.removeValidationListenerListener(this);
+        formValidator.removeValidationListener(this);
         formValidator = null;
     }
     

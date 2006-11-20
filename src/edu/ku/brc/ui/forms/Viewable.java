@@ -18,6 +18,7 @@ import java.awt.Component;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -207,6 +208,8 @@ public interface Viewable
      * @param hasNewData true- has new data, false - doesn't
      */
     public void setHasNewData(boolean hasNewData);
+    
+    public void registerSaveBtn(JButton saveBtn);
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.

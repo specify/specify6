@@ -63,11 +63,11 @@ import edu.ku.brc.ui.validation.ValidationListener;
 public class MultiView extends JPanel implements ValidationListener, DataChangeListener
 {
     // These are the configuration Options for a View
-    public static final int NO_OPTIONS           = 0;
-    public static final int RESULTSET_CONTROLLER = 1;
-    public static final int VIEW_SWITCHER        = 2;
-    public static final int IS_NEW_OBJECT        = 4;
-    public static final int HIDE_SAVE_BTN        = 8;
+    public static final int NO_OPTIONS           = 0;  // Indicates there are no options
+    public static final int RESULTSET_CONTROLLER = 1;  // Add the ResultSet Controller with First,Previous,Next, Last
+    public static final int VIEW_SWITCHER        = 2;  // Add a View Switch in the bottom right
+    public static final int IS_NEW_OBJECT        = 4;  // Indicates the form will contain a brand new data object
+    public static final int HIDE_SAVE_BTN        = 8;  // Hide the Save Button
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -93,6 +93,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
 
     protected List<ViewBasedDisplayIFace>  displayFrames   = null;
+    
+    protected boolean                      isSelectorForm;
+    protected String                       selectorValue   = null;
 
     // Temp
     protected MultiView                    thisObj           = null;
@@ -121,6 +124,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createOptions  = options;
 
         specialEditView = view.isSpecialViewAndEdit();
+        
+        isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
 
         createDefaultViewable();
 
@@ -611,26 +616,49 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         this.data = data;
         
-        AltView altView      = currentViewable.getAltView();
-        String  selectorName = altView.getSelectorName();
-        if (StringUtils.isNotEmpty(selectorName))
+        // We the data gets set into the MultiView we need to display the correct
+        // AlView with the matching selector value.
+        AltView altView = currentViewable.getAltView();
+        selectorValue = null;
+        if (isSelectorForm)
         {
+            // Set the data into the Current view even though this may not be the correct AltView
             currentViewable.setDataObj(data);
             
-            DataObjectGettable getter       = currentViewable.getViewDef().getDataGettable();
-            Object             fieldDataObj = getter.getFieldValue(currentViewable.getDataObj(), selectorName);
-            if (fieldDataObj != null)
+            String             selectorName    = altView.getSelectorName();
+            DataObjectGettable getter          = currentViewable.getViewDef().getDataGettable();
+            Object             selectorDataVal = getter.getFieldValue(currentViewable.getDataObj(), selectorName);
+            
+            if (selectorDataVal != null)
             {
-                String             fieldDataStr = fieldDataObj.toString();
-                for (AltView av : view.getAltViews())
+                String newSelectorValue = selectorDataVal.toString(); // all selector value must be "directly" convertable to string
+                
+                // Make the Selector value has changed.
+                if (selectorValue == null || !selectorValue.equals(newSelectorValue))
                 {
-                    log.info("["+av.getSelectorName()+"]["+av.getSelectorValue()+"]["+fieldDataStr+"]");
-                    if (StringUtils.isNotEmpty(av.getSelectorName()) && 
-                        av.getSelectorValue().equals(fieldDataStr) &&
-                        altView.getMode() == av.getMode())
+                    selectorValue = newSelectorValue;
+                    
+                    // Find the matching Viewable with the same selectorValue
+                    for (AltView av : view.getAltViews())
                     {
-                        showView(av.getName());
-                        break;
+                        log.info("["+av.getSelectorName()+"]["+av.getSelectorValue()+"]["+selectorValue+"]");
+                        
+                        if (StringUtils.isNotEmpty(av.getSelectorName()) && 
+                            av.getSelectorValue().equals(selectorValue) &&
+                            altView.getMode() == av.getMode())
+                        {
+                            // Save off the current to see if it changes
+                            Viewable oldViewable = currentViewable;
+                            
+                            showView(av.getName());
+                            
+                            // Now set the data into the "new" viewable if it changed Viewables
+                            if (oldViewable != currentViewable)
+                            {
+                                currentViewable.setDataObj(data);
+                            }
+                            break;
+                        }
                     }
                 }
             } else
@@ -667,7 +695,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         for (FormValidator validator : formValidators)
         {
-            //log.debug("*** "+validator.isFormValid()+"  "+validator.getName());
+            log.debug("*** "+validator.isFormValid()+"  "+validator.getName());
             //validator.dumpState(false);
             if (!validator.isFormValid())
             {

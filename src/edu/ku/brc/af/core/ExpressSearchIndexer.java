@@ -102,15 +102,18 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      * Constructor.
      * @param lucenePath the path to the lucene index
      * @param listener the listener for when it is done (can be null)
+     * @param checkForOutOfDate check all the tables to see who is out of date
      */
-    public ExpressSearchIndexer(final File lucenePath, final ExpressSearchIndexerListener listener)
+    public ExpressSearchIndexer(final File lucenePath, final ExpressSearchIndexerListener listener, final boolean checkForOutOfDate)
     {
         this.listener = listener;
         
         this.lucenePath = lucenePath;
 
-        startCheckOutOfDateProcess(); // must be done before openingScreenInit
-
+        if (checkForOutOfDate)
+        {
+            startCheckOutOfDateProcess(); // must be done before openingScreenInit
+        }
     }
 
     /**

@@ -168,7 +168,14 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             cancelBtn.addActionListener(this);
             btnBuilder.addGriddedButtons(new JButton[] { okBtn, cancelBtn });
         }
-        //multiView.setExternalOKBtn(okBtn);
+        
+
+        for (Viewable v : multiView.getViewables())
+        {
+            //if (v.get)
+            v.registerSaveBtn(okBtn);
+        }
+        
         
         for (Viewable viewable : multiView.getViewables())
         {
@@ -178,6 +185,12 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                 fv.registerOKButton(okBtn);
             }
         }
+        
+        /*
+        for (FormValidator fv : multiView.getFormValidators())
+        {
+            fv.registerOKButton(okBtn);
+        }*/
         
         
         add(btnBuilder.getPanel(), BorderLayout.SOUTH);

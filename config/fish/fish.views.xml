@@ -292,10 +292,10 @@
                 
                 <row>
                     <cell type="label" labelfor="10" label="Edited By"/>
-                    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
+                    <cell type="field" id="10" name="lastEditedBy" readonly="true" uitype="text"/>
 
                     <cell type="label" labelfor="11" label="Last Edited"/>
-                    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -559,11 +559,11 @@
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
-
+            
             <desc><![CDATA[Locality Mapper]]></desc>
             <columnDef>p,3dlu,p,3dlu</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-
+            
             <rows>
                 <row>
                     <cell type="separator" label="Collecting Event" colspan="4"/>
@@ -582,23 +582,23 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Locality Description"/>
-                    <cell type="field" id="4" name="locality.localityName"/>
+                    <cell type="field" id="4" name="locality.localityName" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Country"/>
-                    <cell type="field" id="5" name="locality.geography.@getCountry"/>
+                    <cell type="field" id="5" name="locality.geography.@getCountry" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="State"/>
-                    <cell type="field" id="6" name="locality.geography.@getState"/>
+                    <cell type="field" id="6" name="locality.geography.@getState" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="County"/>
-                    <cell type="field" id="7" name="locality.geography.@getCounty"/>
+                    <cell type="field" id="7" name="locality.geography.@getCounty" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label="Method"/>
-                    <cell type="field" id="8" name="method"/>
+                    <cell type="field" id="8" name="method" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
@@ -622,10 +622,10 @@
     			</row>
     			<row>
     			    <cell type="label" labelfor="1" label="Catalog Number"/>
-    				<cell type="field" id="1" name="catalogNumber" format="%.0f"/>
+    				<cell type="field" id="1" name="catalogNumber" uitype="text" format="%.0f"/>
 
                     <cell type="label" labelfor="2" label="Catalog Series"/>
-    			    <cell type="field" uitype="text" id="2" name="catalogSeries.seriesName"/>
+    			    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="text"/>
     			</row>
     			<row>
                  <cell type="label" labelfor="3" label="Accession #"/>
@@ -650,10 +650,10 @@
     			</row>
     			<row>
                  <cell type="label" labelfor="7" label="Field No"/>
-    			    <cell type="field" id="7" name="fieldNumber"/>
+    			    <cell type="field" id="7" name="fieldNumber" uitype="text"/>
 
                  <cell type="label" labelfor="8" label="Locality"/>
-    			    <cell type="field" id="8" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
+    			    <cell type="field" id="8" name="collectingEvent.locality.localityName" uitype="text" cols="41" colspan="6"/>
     			</row>
 
     			<row>
@@ -668,10 +668,10 @@
     			</row>
     			<row>
                     <cell type="label" labelfor="10" label="Edited By"/>
-    			    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
+    			    <cell type="field" id="10" name="lastEditedBy" readonly="true" uitype="text"/>
 
                     <cell type="label" labelfor="11" label="Last Edited"/>
-    			    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
+    			    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
     			</row>
     		</rows>
     	</viewdef>
@@ -695,10 +695,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Catalog Number"/>
-                    <cell type="field" id="1" name="catalogNumber"/>
+                    <cell type="field" id="1" name="catalogNumber" uitype="text"/>
                     
                     <cell type="label" labelfor="2" label="Catalog Series"/>
-                    <cell type="field" uitype="text" id="2" name="catalogSeries_seriesName"/>
+                    <cell type="field" id="2" name="catalogSeries_seriesName" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Accession #"/>
@@ -767,10 +767,10 @@
     			    <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="4" label="Confidence"/>
-    			    <cell type="field" id="4" name="confidence"/>
+    			    <cell type="field" id="4" name="confidence" uitype="text"/>
 
                     <cell type="label" labelfor="5" label="Date"/>
-    			    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
+    			    <cell type="field" id="5" name="determinedDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date"/>
     			</row>
 
     			<row>
@@ -785,86 +785,86 @@
             name="FishBase"
             class="org.dom4j.Element"
             gettable="edu.ku.brc.ui.forms.DataGetterForDOM">
-
+            
             <desc><![CDATA[FishBase]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-
+            
             <rows>
                 <row>
                     <cell type="label" labelfor="author" label="Author"/>
-                    <cell type="field" id="author" name="/fishbase/species/author"/>
-
+                    <cell type="field" id="author" name="/fishbase/species/author" uitype="text"/>
+                    
                     <cell type="label" labelfor="commonname" label="Common Name"/>
-                    <cell type="field" id="commonname" name="/fishbase/species/commonname" label="Common Name"/>
-
+                    <cell type="field" id="commonname" name="/fishbase/species/commonname" uitype="text"/>
+                    
                     <cell type="label" labelfor="picname" label="Image"/>
-                    <cell type="field" uitype="image" id="picname" name="/fishbase/species/picname#src" rowspan="12"/>
+                    <cell type="field" id="picname" uitype="image" name="/fishbase/species/picname#src" rowspan="12"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="fbname" label="FB Name"/>
-                    <cell type="field" uitype="text" id="fbname" name="/fishbase/species/fbname" label="FB Name"/>
+                    <cell type="field" id="fbname" name="/fishbase/species/fbname" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="speciesfb" label="Species"/>
-                    <cell type="field" id="speciesfb" name="/fishbase/species/speciesfb" label="Species"/>
-
+                    <cell type="field" id="speciesfb" name="/fishbase/species/speciesfb" uitype="text"/>
+                    
                     <cell type="label" labelfor="speciesfb#link" label=""/>
-                    <cell type="field" uitype="url" id="speciesfb#link" name="/fishbase/species/speciesfb#link" initialize="title=Show Species"/>
+                    <cell type="field" id="speciesfb#link" name="/fishbase/species/speciesfb#link" uitype="url" initialize="title=Show Species"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="genus" label="Genus"/>
-                    <cell type="field" id="genus" name="/fishbase/species/genus"/>
-
+                    <cell type="field" id="genus" name="/fishbase/species/genus" uitype="text"/>
+                    
                     <cell type="label" labelfor="genus#link" label=""/>
-                    <cell type="field" uitype="url" id="genus#link" name="/fishbase/species/genus#link" initialize="title=Show Genus"/>
+                    <cell type="field" id="genus#link" name="/fishbase/species/genus#link" uitype="url" initialize="title=Show Genus"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="family" label="Family"/>
-                    <cell type="field" id="family" name="/fishbase/species/family" label="Family"/>
-
+                    <cell type="field" id="family" name="/fishbase/species/family" uitype="text"/>
+                    
                     <cell type="label" labelfor="family#link" label=""/>
-                    <cell type="field" uitype="url" id="family#link" name="/fishbase/species/family#link" initialize="title=Show Family"/>
+                    <cell type="field" id="family#link" name="/fishbase/species/family#link" uitype="url" initialize="title=Show Family"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="class" label="Class"/>
-                    <cell type="field" id="class" name="/fishbase/species/class"/>
+                    <cell type="field" id="class" name="/fishbase/species/class" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="distribution" label="Distribution"/>
-                    <cell type="field" id="distribution" name="/fishbase/species/distribution" colspan="10"/>
+                    <cell type="field" id="distribution" name="/fishbase/species/distribution" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="biology" label="Biology"/>
-                    <cell type="field" id="biology" name="/fishbase/species/biology" label="Biology" colspan="10"/>
+                    <cell type="field" id="biology" name="/fishbase/species/biology" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="climate" label="Climate"/>
-                    <cell type="field" id="climate" name="/fishbase/species/climate" colspan="10"/>
+                    <cell type="field" id="climate" name="/fishbase/species/climate" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="maxsize" label="Maxsize"/>
-                    <cell type="field" id="maxsize" name="/fishbase/species/maxsize" colspan="10"/>
+                    <cell type="field" id="maxsize" name="/fishbase/species/maxsize" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="environment" label="Environment"/>
-                    <cell type="field" id="environment" name="/fishbase/species/environment" colspan="10"/>
+                    <cell type="field" id="environment" name="/fishbase/species/environment" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="importance" label="Importance"/>
-                    <cell type="field" id="importance" name="/fishbase/species/importance" colspan="10"/>
+                    <cell type="field" id="importance" name="/fishbase/species/importance" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="threatened" label="Threatened"/>
-                    <cell type="field" id="threatened" name="/fishbase/species/threatened" colspan="10"/>
+                    <cell type="field" id="threatened" name="/fishbase/species/threatened" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="dangerous" label="Dangerous"/>
-                    <cell type="field" id="dangerous" name="/fishbase/species/dangerous" colspan="10"/>
+                    <cell type="field" id="dangerous" name="/fishbase/species/dangerous" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mainref" label="Main Ref"/>
-                    <cell type="field" id="mainref" name="/fishbase/species/mainref" colspan="10"/>
+                    <cell type="field" id="mainref" name="/fishbase/species/mainref" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="field" id="progress" name="progress" uitype="progress" colspan="10"/>
@@ -1156,93 +1156,84 @@
             </rows>
         </viewdef>
 
-    	<viewdef
-    	    type="form"
-    	    name="Preparation"
-    	    class="edu.ku.brc.specify.datamodel.Preparation"
-    	    gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-    	    settable="edu.ku.brc.ui.forms.DataSetterForObj">
-    	    <desc><![CDATA[Preparation for Collection Object form.]]></desc>
-    	    <enableRules/>
-
-    	    <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
-
-    		<rows>
-    <!--			 <row>
-                    <cell type="label" labelfor="preparationMethod" label="Prep Method"/>
-    				<cell type="field" uitype="combobox" name="preparationMethod" initialize="data=EtOH, Skeleton, Tissue, Clear Stained, X-Ray, Misc"/>
-
-                    <cell type="label" labelfor="subNumber" label="Sub No"/>
-    				<cell type="field" name="subNumber"/>
-
-
-                    <cell type="label" labelfor="remarks" label="Remarks"/>
-    				<cell type="field" name="remarks" rowspan="8" cols="25"/>
-    			</row>
-    -->
-    			<row>
-                    <cell type="label" labelfor="1" label="Prepared Date"/>
-    			    <cell type="field" id="1" name="preparedDate" format=""/>
-
-    			    <cell type="label" labelfor="2" label="Prepared By"/>
-    			    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
-    			</row>
-    			<row>
-                    <cell type="label" labelfor="3" label="Count"/>
-    			    <cell type="field" id="3" name="count"/>
-
-                    <cell type="label" labelfor="4" label="Storage"/>
-    			    <cell type="field" id="4" name="storageLocation" cols="20"/>
-    			</row>
-    <!--
-    			<row>
-    				<cell type="label" labelfor="url" label="URL"/>
-    				<cell type="field" name="url" label="URL" colspan="5" cols="50"/>
-    		    </row>
-    -->
+        <viewdef
+            type="form"
+            name="Preparation"
+            class="edu.ku.brc.specify.datamodel.Preparation"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Preparation for Collection Object form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
                 <row>
-
-    			    <cell type="label" labelfor="5" label="Size"/>
-                    <cell type="field" id="5" name="attrs.size"/>
-
-    				<cell type="label" labelfor="6" label="Sex"/>
+                    <cell type="label" labelfor="7" label="Prep Method"/>
+                    <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Prepared Date"/>
+                    <cell type="field" id="1" name="preparedDate" format="" uitype="text"/>
+                    
+                    <cell type="label" labelfor="2" label="Prepared By"/>
+                    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Count"/>
+                    <cell type="field" id="3" name="count" uitype="text"/>
+                    
+                    <cell type="label" labelfor="4" label="Storage"/>
+                    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
+                </row>
+                <!--
+                    <row>
+                    <cell type="label" labelfor="url" label="URL"/>
+                    <cell type="field" name="url" label="URL" colspan="5" cols="50"/>
+                    </row>
+                -->
+                <row>
+                    
+                    <cell type="label" labelfor="5" label="Size"/>
+                    <cell type="field" id="5" name="attrs.size" uitype="text"/>
+                    
+                    <cell type="label" labelfor="6" label="Sex"/>
                     <cell type="field" id="6" uitype="combobox" name="attrs.sex" initialize="data=Unknown, Male, Female"/>
-    			</row>
-
-    			<!--
-    			<row>
-    				<cell type="attrs" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef">
-    					<subview id="100" subtype="1" desc="ethonol"/>
-    					<subview id="101" subtype="2" desc="Skel"/>
-    					<subview id="102" subtype="3" desc="Tissue"/>
-    			    </column>
-    			</row>
-    			-->
-
-    			<!--
-    			<row>
-    				<cell type="attrs" id="200" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef"/>
-    			</row>
-    			-->
-
-    			<!--
-    			<row>
+                </row>
+                
+                <!--
+                    <row>
+                    <cell type="attrs" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef">
+                    <subview id="100" subtype="1" desc="ethonol"/>
+                    <subview id="101" subtype="2" desc="Skel"/>
+                    <subview id="102" subtype="3" desc="Tissue"/>
+                    </column>
+                    </row>
+                -->
+                
+                <!--
+                    <row>
+                    <cell type="attrs" id="200" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef"/>
+                    </row>
+                -->
+                
+                <!--
+                    <row>
                     <cell type="label" labelfor="attrs.size" label="Size"/>
-    				<cell type="field" id="XX" name="attrs.size"/>
-
+                    <cell type="field" id="XX" name="attrs.size"/>
+                    
                     <cell type="label" labelfor="attrs.sex" label="Sex"/>
-    				<cell type="field" id="XX" name="attrs.sex"/>
-    			</row>
-    			<row>
+                    <cell type="field" id="XX" name="attrs.sex"/>
+                    </row>
+                    <row>
                     <cell type="label" labelfor="attrs.url" label="URL"/>
-    				<cell type="field" id="XX" name="attrs.url" colspan="5"/>
-    			</row>
-    			-->
-    		</rows>
-    		
-    	</viewdef>
-
+                    <cell type="field" id="XX" name="attrs.url" colspan="5"/>
+                    </row>
+                -->
+            </rows>
+        </viewdef>
+        
     </viewdefs>
     
 </viewset>
