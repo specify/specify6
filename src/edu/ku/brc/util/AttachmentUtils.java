@@ -6,16 +6,14 @@
  */
 package edu.ku.brc.util;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
+import org.jdesktop.jdic.desktop.Desktop;
+import org.jdesktop.jdic.desktop.DesktopException;
 
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -60,13 +58,17 @@ public class AttachmentUtils
                     throw new IllegalArgumentException("Passed object must be an Attachment");
                 }
                 Attachment attachment = (Attachment)source;
-                String title = attachment.getIdentityTitle();
-                
-                Component parent = UICacheManager.get(UICacheManager.TOPFRAME);
                 File original = attachMgr.getOriginal(attachment);
-				String absolutePath = original.getAbsolutePath();
-				ImageIcon icon = new ImageIcon(absolutePath);
-                JOptionPane.showMessageDialog(parent, null, title, JOptionPane.INFORMATION_MESSAGE, icon);
+
+                try
+                {
+                    Desktop.open(original);
+                }
+                catch (DesktopException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         };
         
