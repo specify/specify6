@@ -26,7 +26,6 @@ public class Thumbnailer
 {
 	protected Hashtable<String, ThumbnailGenerator> mimeTypeToGeneratorMap;
 	protected MimetypesFileTypeMap mimeMap;
-	protected ThumbnailGenerator defaultThumbnailer;
 	protected float quality;
 	protected int maxWidth;
 	protected int maxHeight;
@@ -75,12 +74,10 @@ public class Thumbnailer
 	{
 		String mimeType = mimeMap.getContentType(originalFile);
 		ThumbnailGenerator generator = mimeTypeToGeneratorMap.get(mimeType);
-		if(generator==null)
+		if(generator!=null)
 		{
-			generator = defaultThumbnailer;
+            generator.generateThumbnail(originalFile, outputFile);
 		}
-		
-		generator.generateThumbnail(originalFile, outputFile);
 	}
 	
 	public void setMaxWidth(int maxWidth)
