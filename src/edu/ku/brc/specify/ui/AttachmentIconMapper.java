@@ -42,34 +42,35 @@ public class AttachmentIconMapper implements ObjectIconMapper
      */
     public ImageIcon getIcon(Object o)
     {
+        IconSize size = IconSize.Std32;
         Attachment a = (Attachment)o;
         File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
         if (thumb != null)
         {
             ImageIcon icon = new ImageIcon(thumb.getAbsolutePath());
-            return IconManager.getScaledIcon(icon, IconSize.NonStd, IconSize.Std24);
+            return IconManager.getScaledIcon(icon, IconSize.NonStd, size);
         }
         
         if (a.getMimeType() == null)
         {
-            return IconManager.getIcon("unknown", IconSize.Std24);
+            return IconManager.getIcon("unknown", size);
         }
         
         if(a.getMimeType().startsWith("image"))
         {
-            return IconManager.getIcon("image", IconSize.Std24);
+            return IconManager.getIcon("image", size);
         }
         
         if(a.getMimeType().startsWith("video"))
         {
-            return IconManager.getIcon("video", IconSize.Std24);
+            return IconManager.getIcon("video", size);
         }
 
         if(a.getMimeType().startsWith("audio"))
         {
-            return IconManager.getIcon("audio", IconSize.Std24);
+            return IconManager.getIcon("audio", size);
         }
 
-        return IconManager.getIcon("unknown", IconSize.Std24);
+        return IconManager.getIcon("unknown", size);
     }
 }
