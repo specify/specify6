@@ -8,10 +8,6 @@ package edu.ku.brc.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collections;
 import java.util.HashSet;
@@ -188,10 +184,8 @@ public class IconTray extends JPanel
     @Override
     public Dimension getPreferredSize()
     {
-        int scrollbarHeight = listScrollPane.getHorizontalScrollBar().getHeight();
-        int minRowsVis = (style == SINGLE_ROW) ? 1 : 3;
-        int minHeight = minRowsVis*48 + scrollbarHeight;
-        return new Dimension(this.getWidth(),minHeight);
+        Dimension d = super.getPreferredSize();
+        return new Dimension(this.getWidth(),(int)d.getHeight());
     }
     
     public FormDataObjIFace getSelection()
