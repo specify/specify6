@@ -502,31 +502,48 @@ public class BuildSampleDatabase
         log.info("Creating attachments and attachment metadata");
         try
         {
-            String bigEyeFilePath = "demo_files" + File.separator + "bigeye.jpg";
+            String attachmentFilesLoc = "demo_files" + File.separator;
+            String bigEyeFilePath = attachmentFilesLoc + "bigeye.jpg";
             Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
             bigEye.setLoan(closedLoan);
             
-            String joshPhotoPath = "demo_files" + File.separator + "josh.jpg";
+            String joshPhotoPath = attachmentFilesLoc + "josh.jpg";
             Attachment joshPhoto = createAttachment(joshPhotoPath, "image/jpeg", 0);
             joshPhoto.setAgent(agents.get(0));
 
-//            String beachPhotoPath = "demo_files" + File.separator + "beach.jpg";
+//            String beachPhotoPath = attachmentFilesLoc + "beach.jpg";
 //            Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 0);
 //            beachPhoto.setAgent(agents.get(1));
 
-            String megPhotoPath = "demo_files" + File.separator + "meg.jpg";
+            String megPhotoPath = attachmentFilesLoc + "meg.jpg";
             Attachment megPhoto = createAttachment(megPhotoPath, "image/jpeg", 0);
             megPhoto.setAgent(agents.get(2));
 
-            String rodPhotoPath = "demo_files" + File.separator + "rod.jpg";
+            String rodPhotoPath = attachmentFilesLoc + "rod.jpg";
             Attachment rodPhoto = createAttachment(rodPhotoPath, "image/jpeg", 0);
             rodPhoto.setAgent(agents.get(3));
 
+            String giftPdfPath = attachmentFilesLoc + "2004-18.pdf";
+            Attachment giftPDF = createAttachment(giftPdfPath, "application/pdf", 0);
+            giftPDF.setLoan(closedLoan);
+            
+            String accessionPdfPath = attachmentFilesLoc + "Seychelles.pdf";
+            Attachment accPDF = createAttachment(accessionPdfPath, "application/pdf", 0);
+            // TODO: change this to setAccession()
+            accPDF.setPermit(permit);
+            
+            String sharkVideoPath = attachmentFilesLoc + "shark5.mpg";
+            Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
+            sharkVideo.setLoan(closedLoan);
+            
             dataObjects.add(bigEye);
             dataObjects.add(joshPhoto);
             //dataObjects.add(beachPhoto);
             dataObjects.add(megPhoto);
             dataObjects.add(rodPhoto);
+            dataObjects.add(giftPDF);
+            dataObjects.add(accPDF);
+            dataObjects.add(sharkVideo);
         }
         catch (Exception e)
         {
@@ -931,5 +948,7 @@ public class BuildSampleDatabase
                 }
             }
         }
+        
+        
     }
 }
