@@ -66,6 +66,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	protected String noImageStr = getResourceString("noimage");
 	protected String loadingImageStr = getResourceString("loadingimage");
 	protected boolean isNoImage = true;
+    protected JFileChooser chooser;
 
 	/**
 	 * Constructor
@@ -129,8 +130,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 	protected void selectNewImage()
 	{
-		//      XXX Need to add a filter for just images
-		JFileChooser chooser = new JFileChooser();
+		synchronized(this)
+        {
+           if (chooser==null)
+           {
+            //      XXX Need to add a filter for just images
+               chooser = new JFileChooser();
+           }
+        }
 
 		int returnVal = chooser.showOpenDialog(UICacheManager
 				.get(UICacheManager.TOPFRAME));
@@ -138,6 +145,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		{
 			File file = new File(chooser.getSelectedFile().getAbsolutePath());
 			setImage(new ImageIcon(file.getAbsolutePath()));
+            url = file.getAbsolutePath();
 			repaint();
 		}
 	}
