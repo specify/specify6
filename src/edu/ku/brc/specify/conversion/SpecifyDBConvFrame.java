@@ -59,7 +59,7 @@ public class SpecifyDBConvFrame extends JFrame
         overallProgress = new JProgressBar();
         processProgress = new JProgressBar();
         desc            = new JLabel("");
-        closeBtn        = new JButton("Exit");
+        closeBtn        = new JButton("Cancel");
         
         processProgress.setStringPainted(true);
  
@@ -148,5 +148,6 @@ public class SpecifyDBConvFrame extends JFrame
         processProgress.setMaximum(0);
         processProgress.setValue(0);
         processProgress.setString(" ");
+        closeBtn.setText("Done");
     }
 }

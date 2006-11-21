@@ -420,7 +420,7 @@ public class GenericDBConversion
             //"Preparation", "PreparationTypeID", "PreparationType", "PreparationTypeID",
             //"Preparation", "ContainerTypeID", "ContainerType", "ContainerTypeID",
 
-            "LoanPhysicalObject", "PhysicalObjectID", "CollectionObject", "CollectionObjectID",
+            "LoanPhysicalObject", "PhysicalObjectID", "CollectionObjectCatalog", "CollectionObjectCatalogID",
             "LoanPhysicalObject", "LoanID", "Loan", "LoanID",
 
             // ??? "ExchangeIn", "CollectionID", "Collection", "CollectionID",
@@ -639,11 +639,11 @@ public class GenericDBConversion
     {
 
         //cleanAllTables(); // from DBCOnnection which is the new DB
-
-        //String[] tablesToMoveOver = {
-        //        "LoanAgents"
-        //};
-
+        /*
+        String[] tablesToMoveOver = {
+                "LoanPhysicalObject"
+        };
+        */
 
         String[] tablesToMoveOver = {
                                     "AccessionAgents",
@@ -692,6 +692,7 @@ public class GenericDBConversion
        tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
        tableMaps.put("collectors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
        //tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
+       tableMaps.put("loanphysicalobject", createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
        tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
        tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1"}));
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
@@ -701,6 +702,7 @@ public class GenericDBConversion
        tableMaps.put("borrowagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("deaccessionagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("loanagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
+       tableMaps.put("loan", createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
 
 
        Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
