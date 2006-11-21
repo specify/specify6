@@ -12,6 +12,8 @@ import java.io.File;
 
 import org.jdesktop.jdic.desktop.Desktop;
 import org.jdesktop.jdic.desktop.DesktopException;
+import org.jdesktop.jdic.filetypes.Association;
+import org.jdesktop.jdic.filetypes.AssociationService;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -73,5 +75,32 @@ public class AttachmentUtils
         };
         
         return displayer;
+    }
+    
+    public static String getMimeType(String filename)
+    {
+        if (filename==null)
+        {
+            return null;
+        }
+        
+        AssociationService assServ = new AssociationService();
+        String fileExt = "";
+        int lastDotIndex = filename.lastIndexOf(".");
+        if (lastDotIndex != -1)
+        {
+            fileExt = filename.substring(lastDotIndex+1);
+        }
+        Association fileAssoc = assServ.getFileExtensionAssociation(fileExt);
+        return fileAssoc.getMimeType();
+    }
+    
+    public static void main(String[] args)
+    {
+        String[] filenames = {"hello.txt","a.bmp","b.pdf","c.jpg",null,"blah.kml"};
+        for (String name: filenames)
+        {
+            System.out.println(AttachmentUtils.getMimeType(name));
+        }
     }
 }
