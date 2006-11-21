@@ -38,11 +38,13 @@ import javax.mail.Store;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -54,6 +56,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.EMailHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
@@ -62,6 +66,10 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
@@ -244,6 +252,33 @@ public class InfoRequestTask extends BaseTask
             }
         }
         return null;
+    }
+    
+    /**
+     * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace. 
+     * This method first checks to see if the boxItem is not null and uses that, i
+     * f it is null then it looks the box up by name ans used that
+     * @param boxItem the box item to be deleted
+     * @param recordSet the record set that is "owned" by some UI object that needs to be deleted (used for secodary lookup
+     */
+    protected void createInfoRequest(final RecordSetIFace recordSet)
+    {
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupByShortClassName(InfoRequest.class.getSimpleName());
+        
+        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        
+        View view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionObjDef.getCurrentCollectionObjDef());
+
+        InfoRequest infoRequest = new InfoRequest();
+        infoRequest.initialize();
+        infoRequest.setRecordSet(recordSet);
+        
+        FormPane formPane = new FormPane(DataProviderFactory.getInstance().createSession(), 
+                                         view.getName(), this, view, "edit", infoRequest, 
+                                         MultiView.IS_NEW_OBJECT );
+        SubPaneMgr.getInstance().addPane(formPane);
+        //formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+
     }
     
     /**
@@ -572,6 +607,16 @@ public class InfoRequestTask extends BaseTask
             InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
             deleteInfoRequest(inforRequest);
             deleteInfoRequestFromUI(null, inforRequest);
+
+        } else if (cmdAction.getAction().equals("Create") && cmdAction.getData() instanceof RecordSet)
+        {
+            Object data = cmdAction.getData();
+            if (data instanceof RecordSet)
+            {
+                createInfoRequest((RecordSetIFace)data);
+            }
+            //InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
+            //createInfoRequest(inforRequest);
 
         }
     }

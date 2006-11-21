@@ -1025,8 +1025,6 @@ public class FormViewObj implements Viewable,
             //log.info(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
             if (session == null)
             {
-                int x = 0;
-                x++;
                 return;
             }
             
@@ -1383,7 +1381,8 @@ public class FormViewObj implements Viewable,
         for (FieldInfo fieldInfo : controlsById.values())
         {
             if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview ||
-                fieldInfo.getFormCell().getType() == FormCell.CellType.iconview)
+                    fieldInfo.getFormCell().getType() == FormCell.CellType.iconview ||
+                    fieldInfo.getFormCell().getType() == FormCell.CellType.rstable)
             {
                 fieldInfo.getSubView().setParentDataObj(null);
             }

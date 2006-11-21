@@ -786,11 +786,12 @@ public class BasicSQLUtils
                             {
                             	long oldPrimaryKeyId = rs.getLong(columnIndex);
                                 
-                                /*if (oldPrimaryKeyId == -159020476 && fromTableName.equals("locality"))
+                                //if (oldPrimaryKeyId == -159020476 && fromTableName.equals("loanphysicalobject"))
+                                if (oldMappedColName.equals("PhysicalObjectID") && fromTableName.equals("loanphysicalobject"))
                                 {
                                     int x = 0;
                                     x++;
-                                }*/
+                                }
 
                             	// if the value was null, getInt() returns 0
                             	// use wasNull() to distinguish real 0 from a null return

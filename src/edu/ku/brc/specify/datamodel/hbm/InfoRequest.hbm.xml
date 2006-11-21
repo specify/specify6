@@ -56,15 +56,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to RecordSet -->
-    <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" not-null="true" outer-join="auto" lazy="false">
-    <meta attribute="scope-field">protected</meta>
+    <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" cascade="all" not-null="true" outer-join="auto" lazy="false">
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="RecordSetID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
 
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="false" outer-join="auto" lazy="false">
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" not-null="false" outer-join="auto" lazy="false">
         <meta attribute="field-description"></meta>
         <column name="AgentID"/>
     </many-to-one>

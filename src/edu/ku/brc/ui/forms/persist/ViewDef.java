@@ -34,7 +34,7 @@ public class ViewDef
 {
     private static final Logger log = Logger.getLogger(ViewDef.class);
     
-    public enum ViewType {form, table, field, formTable, iconview}
+    public enum ViewType {form, table, field, formTable, iconview, rstable}
     
     protected ViewType             type;
     protected String               name;

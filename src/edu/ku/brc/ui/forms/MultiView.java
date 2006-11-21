@@ -127,36 +127,37 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
 
-        createDefaultViewable();
-
-        // Testing
-        if (mvParent == null)
-        {
-            thisObj = this;
-
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e)
-                {
-                    showContextMenu(e);
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e)
-                {
-                    showContextMenu(e);
-
-                }
-                @Override
-                public void mouseClicked(MouseEvent e)
-                {
-                    ((FormViewObj)thisObj.currentViewable).listFieldChanges();
-                }
-            });
-
-        }
+        createWithAltView(createDefaultViewable());
     }
 
+    /**
+     * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
+     * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
+     * @param mvParent parent of this MultiView the root MultiView is null
+     * @param view the view to create for
+     * @param createWithMode how the form should be created (Noe, Edit or View mode)
+     * @param options the options needed for creating the form
+     */
+    public MultiView(final MultiView mvParent,
+                     final String    cellName,
+                     final View      view,
+                     final AltView   altView,
+                     final AltView.CreationMode createWithMode,
+                     final int       options)
+    {
+        setLayout(cardLayout);
+
+        this.mvParent       = mvParent;
+        this.cellName       = cellName;
+        this.view           = view;
+        this.createWithMode = createWithMode;
+        this.createOptions  = options;
+
+        specialEditView = view.isSpecialViewAndEdit();
+
+        createWithAltView(altView);
+    }
+    
     /**
      * Shows Parent Form's Context Menu.
      * @param e the mouse event
@@ -376,7 +377,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef.
       * @return return the default Viewable (ViewDef)
      */
-    protected Viewable createDefaultViewable()
+    protected AltView createDefaultViewable()
     {
         AltView  altView;
         if (createWithMode != null)
@@ -387,7 +388,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         {
             altView = view.getDefaultAltView();
         }
-
+        return altView;
+    }
+    
+    /**
+     * Create MultiView with an AltView.
+     * @param altView the altView to use.
+     */
+    protected Viewable createWithAltView(final AltView altView)
+    {
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
         // this call parents the viewable to the multiview
@@ -402,6 +411,32 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         if (add(viewable, altView.getName()))
         {
             showView(altView.getName());
+        }
+        
+        // Testing
+        if (mvParent == null)
+        {
+            thisObj = this;
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    showContextMenu(e);
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e)
+                {
+                    showContextMenu(e);
+
+                }
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    ((FormViewObj)thisObj.currentViewable).listFieldChanges();
+                }
+            });
         }
 
         return viewable;

@@ -14,7 +14,8 @@
 	        <service command="Edit" tableid="8" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="10" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="41" tooltip="EditRecordSetTT"/>
-	        <service command="Edit" tableid="52" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="50" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="52" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="65" tooltip="EditRecordSetTT"/>
 	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask"/>
@@ -39,8 +40,9 @@
             <service command="Save" tableid="10" tooltip="CreateRecordSetTT"/>
         </plugin>
         <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask">
-	    	<service command="Save" tableid="1" tooltip="CreateInfoRequestTT"/>
-	    </plugin>
+        	<!-- <service command="Save" tableid="50" tooltip="CreateInfoRequestTT"/> -->
+        	<service command="Create" tableid="1" tooltip="CreateInfoRequestTT"/>
+        </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.SystemSetupTask"/>
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>

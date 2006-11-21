@@ -117,7 +117,7 @@ public class LuceneServlet extends HttpServlet implements ExpressSearchIndexerLi
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
             }
-            ExpressSearchIndexer indexer = new ExpressSearchIndexer(lucenePath, null);
+            ExpressSearchIndexer indexer = new ExpressSearchIndexer(lucenePath, null, true);
             indexer.start();
             
         } else

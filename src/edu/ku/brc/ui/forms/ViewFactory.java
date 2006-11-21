@@ -183,7 +183,11 @@ public class ViewFactory
         else if (viewDef.getType() == FormViewDef.ViewType.iconview)
         {
             return new IconViewObj(view, altView, parentView, options);
-            
+        }
+        else if (viewDef.getType() == FormViewDef.ViewType.rstable)
+        {
+            return new RecordSetTableViewObj(view, altView, parentView, options);
+                
         } else
         {
             this.rootMultiView =  null;

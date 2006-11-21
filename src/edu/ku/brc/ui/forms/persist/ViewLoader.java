@@ -318,6 +318,10 @@ public class ViewLoader
             case iconview:
                 viewDef = createIconViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
                 break;
+                
+            case rstable:
+                viewDef = createRecordSetTableDef(element, type, name, className, gettableClassName, settableClassName, desc);
+                break;
         }
         return viewDef;
     }
@@ -445,27 +449,40 @@ public class ViewLoader
      * Gets the string (or creates one) from a columnDef
      * @param element the DOM lement to process
      * @param attrName the name of the element to go get all the elements (strings) from
+     * @param numRows the number of rows
      * @return the String representing the column definition for JGoodies
      */
-    protected static String createDef(final Element element, final String attrName)
+    protected static String createDef(final Element element, final String attrName, final int numRows)
     {
         Element cellDef = (Element)element.selectSingleNode(attrName);
         if (cellDef != null)
         {
-            int dup = getAttr(cellDef, "dup", -1);
-            if (dup > 0)
+            String cellText = cellDef.getText();
+            String cellStr  = getAttr(cellDef, "cell", null);
+            String sepStr   = getAttr(cellDef, "sep", null);
+            
+            if (cellStr != null && sepStr != null)
             {
-                String cellStr = getAttr(cellDef, "cell", null);
-                String sepStr  = getAttr(cellDef, "sep", null);
-                if (cellStr != null && sepStr != null)
+                
+                boolean auto = getAttr(cellDef, "auto", false);
+                if (auto)
                 {
-                    return createDuplicateJGoodiesDef(cellStr, sepStr, dup);
+                    return createDuplicateJGoodiesDef(cellStr, sepStr, numRows) + 
+                                (StringUtils.isNotEmpty(cellText) ? ("," + cellText) : "");
+                }
+                
+                int dup = getAttr(cellDef, "dup", -1);
+                if (dup > 0)
+                {
+                    return createDuplicateJGoodiesDef(cellStr, sepStr, dup) + 
+                        (StringUtils.isNotEmpty(cellText) ? ("," + cellText) : "");
+
                 }
                 // else
-                throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' on column def.");
+                throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
             }
             // else
-            return cellDef.getText();
+            return cellText;
         }
         // else
         log.error("Element ["+element.getName()+"] must have a columnDef");
@@ -746,6 +763,7 @@ public class ViewLoader
 
                             break;
                         }
+                        case rstable:
                         case iconview:
                         {
                             String vsName = cellElement.attributeValue("viewsetname");
@@ -764,6 +782,7 @@ public class ViewLoader
 
                             break;
                         }
+
                         case statusbar:
                         {
                             cell = formRow.addCell(new FormCell(FormCell.CellType.statusbar, cellId, cellName, colspan, rowspan));
@@ -785,8 +804,8 @@ public class ViewLoader
     }
 
     /**
-     * @param type the type of form to be built
      * @param element the DOM element for building the form
+     * @param type the type of form to be built
      * @param id the id of the form
      * @param name the name of the form
      * @param className the class name of the data object
@@ -807,28 +826,69 @@ public class ViewLoader
     {
         FormViewDef formView = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
-        formView.setColumnDef(createDef(element, "columnDef"));
-        formView.setRowDef(createDef(element, "rowDef"));
+        List<FormRow> rows = formView.getRows();
+        
+        formView.setColumnDef(createDef(element, "columnDef", rows.size()));
+        formView.setRowDef(createDef(element, "rowDef", rows.size()));
         formView.setEnableRules(getEnableRules(element));
 
-        processRows(element, formView.getRows());
+        processRows(element, rows);
 
         return formView;
     }
     
     
+    /**
+     * @param element the DOM element for building the form
+     * @param type the type of form to be built
+     * @param name the name of the form
+     * @param className the class name of the data object
+     * @param gettableClassName the class name of the getter
+     * @param settableClassName the class name of the setter
+     * @param desc the description
+     * @return a form view of type "form"
+     */
     protected static ViewDef createIconViewDef(final Element element,
-                                                   final ViewDef.ViewType type,
-                                                   final String  name,
-                                                   final String  className,
-                                                   final String  gettableClassName,
-                                                   final String  settableClassName,
-                                                   final String  desc)
+                                               final ViewDef.ViewType type,
+                                               final String  name,
+                                               final String  className,
+                                               final String  gettableClassName,
+                                               final String  settableClassName,
+                                               final String  desc)
     {
         ViewDef formView = new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
         //formView.setEnableRules(getEnableRules(element));
 
+        return formView;
+    }
+
+    /**
+     * @param element the DOM element for building the form
+     * @param type the type of form to be built
+     * @param name the name of the form
+     * @param className the class name of the data object
+     * @param gettableClassName the class name of the getter
+     * @param settableClassName the class name of the setter
+     * @param desc the description
+     * @return a form view of type "form"
+     */
+    protected static ViewDef createRecordSetTableDef(final Element element,
+                                                     final ViewDef.ViewType type,
+                                                     final String  name,
+                                                     final String  className,
+                                                     final String  gettableClassName,
+                                                     final String  settableClassName,
+                                                     final String  desc)
+    {
+        RecordSetTableViewDef formView = new RecordSetTableViewDef(type, 
+                name, 
+                className, 
+                gettableClassName, 
+                settableClassName, 
+                desc,
+                getAttr(element, "viewset", null),
+                getAttr(element, "view", null));
         return formView;
     }
 
@@ -862,7 +922,8 @@ public class ViewLoader
 
                 FormColumn column = new FormColumn(colElement.attributeValue(NAME),
                         colElement.attributeValue(LABEL),
-                        getAttr(colElement, "format", "")
+                        getAttr(colElement, "dataobjformatter", null),
+                        getAttr(colElement, "format", null)
                         );
 
                 tableView.addColumn(column);

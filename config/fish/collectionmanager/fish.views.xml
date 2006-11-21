@@ -204,6 +204,26 @@
     		</altviews>
     	</view>
 
+        <view name="InfoRequest"
+            class="edu.ku.brc.specify.datamodel.InfoRequest"
+            resourcelabels="false">
+            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <altviews>
+                <altview name="InfoRequest View" viewdef="InfoRequest" label="View" mode="view" validated="false"/>
+                <altview name="InfoRequest Edit" viewdef="InfoRequest" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="InfoRequestColObj"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            resourcelabels="false">
+            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <altviews>
+                <altview name="InfoRequestColObj View" viewdef="InfoRequestColObj" label="View" mode="view" validated="false"/>
+                <altview name="InfoRequestColObj Edit" viewdef="InfoRequestColObj" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
 <!--
@@ -1242,6 +1262,121 @@
     			-->
     		</rows>
     	</viewdef>
+        
+        <viewdef
+            type="form"
+            name="InfoRequest"
+            class="edu.ku.brc.specify.datamodel.InfoRequest"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
+            <rowDef>p,4px,p,4px,p,4px,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Request Date"/>
+                    <cell type="field" id="1" name="requestDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="label" labelfor="2" label="Reply Date"/>
+                    <cell type="field" id="2" name="replyDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="5" valtype="Changed"/>
+                </row>
+                
+                <row>
+                    <cell type="rstable" id="4" name="recordSet" viewsetname="Fish Views" viewname="InfoRequestColObj" colspan="8"/>
+                </row>
+                <!--
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="f:p:g" rowdef="p,2px,p" colspan="8">
+                        <rows>
+                            <row>
+                                <cell type="label" labelfor="4" label="Collection Objects"/>
+                            </row>
+                            <row>
+                                <cell type="rstable" id="4" name="recordSet" viewsetname="Fish Views" viewname="InfoRequestColObj"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                -->
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="InfoRequestColObj"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="KU Fish" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Catalog Number" uitype="text"/>
+                    <cell type="field" id="1" name="catalogNumber" format="%.0f" uitype="text"/>
+                    
+                    <cell type="label" labelfor="2" label="Catalog Series"/>
+                    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Accession #"/>
+                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false" valtype="Changed"/>
+                    
+                    <cell type="label" labelfor="4" label="Cataloger"/>
+                    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
+                    
+                    <cell type="label" labelfor="5" label="Date"/>
+                    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Determination" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="separator" label="Locality" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Field No"/>
+                    <cell type="field" id="7" name="fieldNumber" uitype="text"/>
+                    
+                    <cell type="label" labelfor="8" label="Locality"/>
+                    <cell type="field" id="8" name="collectingEvent.locality.localityName" uitype="text" cols="41" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="separator" label="" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10" label="Edited By"/>
+                    <cell type="field" id="10" name="lastEditedBy" uitype="text" readonly="true"/>
+                    
+                    <cell type="label" labelfor="11" label="Last Edited"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+        
 
         <viewdef
             type="iconview"

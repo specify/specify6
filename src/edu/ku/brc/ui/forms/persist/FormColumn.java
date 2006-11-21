@@ -25,13 +25,20 @@ public class FormColumn
 
     protected String name;
     protected String label;
+    protected String dataObjFormatter;
     protected String format;
 
-    public FormColumn(String name, String label, String format)
+    public FormColumn(String name, String label, String dataObjFormatter, String format)
     {
         this.name = name;
         this.label = label;
+        this.dataObjFormatter = dataObjFormatter;
         this.format = format;
+    }
+
+    public String getDataObjFormatter()
+    {
+        return dataObjFormatter;
     }
 
     public String getFormat()
@@ -39,29 +46,14 @@ public class FormColumn
         return format;
     }
 
-    public void setFormat(String format)
-    {
-        this.format = format;
-    }
-
     public String getLabel()
     {
         return label;
     }
 
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
-
     public String getName()
     {
         return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
  }

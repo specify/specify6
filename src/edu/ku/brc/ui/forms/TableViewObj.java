@@ -1240,6 +1240,7 @@ public class TableViewObj implements Viewable,
                        x++;
                     }
                 }*/
+                
                 String dataObjFormatName = colInfo.getDataObjFormatName();
                 
                 Object[] dataValues = UIHelper.getFieldValues(new String[] {colInfo.getFullCompName()}, rowObj, dataGetter);
