@@ -511,9 +511,9 @@ public class BuildSampleDatabase
             Attachment joshPhoto = createAttachment(joshPhotoPath, "image/jpeg", 0);
             joshPhoto.setAgent(agents.get(0));
 
-//            String beachPhotoPath = attachmentFilesLoc + "beach.jpg";
-//            Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 0);
-//            beachPhoto.setAgent(agents.get(1));
+            String beachPhotoPath = attachmentFilesLoc + "beach.jpg";
+            Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 2);
+            beachPhoto.setAgent(agents.get(1));
 
             String megPhotoPath = attachmentFilesLoc + "meg.jpg";
             Attachment megPhoto = createAttachment(megPhotoPath, "image/jpeg", 0);
@@ -535,15 +535,20 @@ public class BuildSampleDatabase
             String sharkVideoPath = attachmentFilesLoc + "shark5.mpg";
             Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
             sharkVideo.setLoan(closedLoan);
+
+            String beakerPath = attachmentFilesLoc + "beaker.jpg";
+            Attachment beakerAsBeach = createAttachment(beakerPath, "image/jpg", 1);
+            beakerAsBeach.setAgent(agents.get(1));
             
             dataObjects.add(bigEye);
             dataObjects.add(joshPhoto);
-            //dataObjects.add(beachPhoto);
+            dataObjects.add(beachPhoto);
             dataObjects.add(megPhoto);
             dataObjects.add(rodPhoto);
             dataObjects.add(giftPDF);
             dataObjects.add(accPDF);
             dataObjects.add(sharkVideo);
+            dataObjects.add(beakerAsBeach);
         }
         catch (Exception e)
         {
