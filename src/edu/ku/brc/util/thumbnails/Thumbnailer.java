@@ -77,7 +77,9 @@ public class Thumbnailer
 		if(generator!=null)
 		{
             generator.generateThumbnail(originalFile, outputFile);
+            return;
 		}
+        throw new IOException("No ThumbnailGenerator registered for this MIME type");
 	}
 	
 	public void setMaxWidth(int maxWidth)
