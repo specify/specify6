@@ -301,7 +301,12 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     @Override
     public String getIdentityTitle()
     {
-        return this.getOrigFilename();
+        if (getOrigFilename() != null)
+        {
+            File f = new File(getOrigFilename());
+            return f.getName();
+        }
+        return super.getIdentityTitle();
     }
 
     @Override
