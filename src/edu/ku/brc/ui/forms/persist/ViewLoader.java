@@ -828,11 +828,12 @@ public class ViewLoader
 
         List<FormRow> rows = formView.getRows();
         
+        processRows(element, rows);
+        
         formView.setColumnDef(createDef(element, "columnDef", rows.size()));
         formView.setRowDef(createDef(element, "rowDef", rows.size()));
         formView.setEnableRules(getEnableRules(element));
 
-        processRows(element, rows);
 
         return formView;
     }
