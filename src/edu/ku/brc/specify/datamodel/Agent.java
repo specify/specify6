@@ -208,14 +208,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     
     public void setImageURL(String url)
     {
-        if (getImageURL()!=null)
-        {
-            System.err.println("Replacing old image with new one.");
-            System.err.println("Keep old one as another attachment.");
-            return;
-        }
-        
         System.err.println("Implement this: setImageURL(" + url + ")");
+
+        Attachment newImage = new Attachment();
+        newImage.initialize();
+        newImage.setOrigFilename(url);
+        newImage.setAgent(this);
+        this.attachments.add(newImage);
+        return;
     }
 
     /**

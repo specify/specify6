@@ -112,6 +112,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         {
             // set the attachmentLocation field
             AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(this);
+            this.mimeType = AttachmentUtils.getMimeType(origFilename);
         }
     }
 
