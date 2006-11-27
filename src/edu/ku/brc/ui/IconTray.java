@@ -27,6 +27,7 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.renderers.TrayListCellRenderer;
 import edu.ku.brc.util.FormDataObjComparator;
@@ -45,6 +46,8 @@ public class IconTray extends JPanel
     
     public static final int SINGLE_ROW = 1;
     public static final int MULTIPLE_ROWS = 2;
+    
+    protected int minHeight = 64;
 
     /** A JList used to display the icons representing the items. */
     protected JList iconListWidget;
@@ -184,8 +187,16 @@ public class IconTray extends JPanel
     @Override
     public Dimension getPreferredSize()
     {
-        Dimension d = super.getPreferredSize();
-        return new Dimension(this.getWidth(),(int)d.getHeight());
+        // need to set the min height to something other than 0 so
+        // that empty trays don't get flattened by containers that
+        // use preferred size
+        int height = minHeight;
+        Dimension d = super.getPreferredSize();        
+        if ((int)d.getHeight() > height)
+        {
+            height = (int)d.getHeight();
+        }
+        return new Dimension(this.getWidth(),height);
     }
     
     public FormDataObjIFace getSelection()
