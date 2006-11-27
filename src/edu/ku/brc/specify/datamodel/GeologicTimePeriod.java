@@ -583,7 +583,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 */
 	public void fixFullNameForAllDescendants()
 	{
-		setFullName(getFullName());
+        setFullName(fixFullName());
 		for( GeologicTimePeriod child: getChildren() )
 		{
 			child.fixFullNameForAllDescendants();

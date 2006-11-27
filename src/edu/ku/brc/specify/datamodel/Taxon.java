@@ -789,7 +789,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	 */
 	public void fixFullNameForAllDescendants()
 	{
-		setFullName(getFullName());
+		setFullName(fixFullName());
 		for( Taxon child: getChildren() )
 		{
 			child.fixFullNameForAllDescendants();

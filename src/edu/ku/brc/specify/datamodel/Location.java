@@ -488,7 +488,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
         
         return fullNameBuilder.toString();
     }
-	
+
 	/**
 	 * Returns the number of proper descendants for node.
 	 * 
@@ -554,7 +554,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	 */
 	public void fixFullNameForAllDescendants()
 	{
-		setFullName(getFullName());
+		setFullName(fixFullName());
 		for( Location child: getChildren() )
 		{
 			child.fixFullNameForAllDescendants();
