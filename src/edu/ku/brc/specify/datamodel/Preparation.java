@@ -77,6 +77,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         preparationId = null;
@@ -108,10 +109,10 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         return this.preparationId;
     }
 
-    /**
-     * Generic Getter for the ID Property.
-     * @returns ID Property.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
+    @Override
     public Long getId()
     {
         return this.preparationId;
@@ -120,7 +121,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return Preparation.class;
     }
@@ -160,6 +161,19 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     
     public void setCount(Integer count) {
         this.count = count;
+    }
+    
+    public int getAvailable()
+    {
+        int stillOut = 0;
+        for (LoanPhysicalObject lpo : getLoanPhysicalObjects())
+        {
+            int quantityLoaned   = lpo.getQuantity();
+            int quantityReturned = lpo.getQuantityReturned();
+            
+            stillOut += (quantityLoaned - quantityReturned);
+        }
+        return getCount() - stillOut;
     }
 
     /**
