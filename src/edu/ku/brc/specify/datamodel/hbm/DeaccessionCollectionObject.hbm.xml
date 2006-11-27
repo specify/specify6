@@ -38,7 +38,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one name="collectionObjectCatalog" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" unique-key="IX_DeaccessionCollectionObject">
+    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" unique-key="IX_DeaccessionCollectionObject">
         <meta attribute="field-description">The object being deaccessioned</meta>
         <column name="CollectionObjectID"/>
     </many-to-one>

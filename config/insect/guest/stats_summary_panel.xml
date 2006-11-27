@@ -114,14 +114,14 @@
   <row>
       <box title="Loans">
         <item title="Items On Loan">
-            <sql><statement><![CDATA[select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.category = 0 and quantityresolved < quantity and (closed = 0 or closed is null)]]></statement></sql>
+            <sql><statement><![CDATA[select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement></sql>
         </item>
         <item title="Overdue Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and category = 0 and (closed = 0 or closed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
+            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
             <link>OverdueLoansList</link>
         </item>
         <item title="Open Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where category = 0 and (closed = 0 or closed is null)]]></statement></sql>
+            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loan.IsGift = false and (IsClosed = false or IsClosed is null)]]></statement></sql>
             <link>ListOnLoan</link>
         </item>
       </box>

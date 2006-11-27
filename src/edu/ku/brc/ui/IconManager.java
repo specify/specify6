@@ -134,8 +134,20 @@ public class IconManager
             log.error("Couldn't find URL for resource path: ["+(relativePath+fileName)+"]");
         }
 
-        ImageIcon icon = new ImageIcon(url);
-        return register(iconName, icon, id);
+        ImageIcon icon = null;
+        try
+        {
+            icon = new ImageIcon(url);
+            if (icon == null)
+            {
+                log.error("Image at URL ["+url+"] couldn't be loaded.");
+            }
+        } catch (NullPointerException ex)
+        {
+            log.error("Image at URL ["+url+"] couldn't be loaded.");
+        }
+        
+        return icon != null ? register(iconName, icon, id) : null;
     }
 
     /**
@@ -286,7 +298,7 @@ public class IconManager
                     String file  = iconElement.attributeValue("file");
                     if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
                     {
-
+                        //log.info("["+name+"]["+sizes+"]["+file+"]");
                         IconEntry entry = register(name, file, IconManager.IconSize.Std32);
 
                         entry.addScaled(IconSize.Std32, IconSize.Std24);

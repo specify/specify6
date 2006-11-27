@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.UIHelper;
+
 
 /**
  * This knows how to set a field's value into a POJO.<br><br>
@@ -58,12 +60,24 @@ public class DataSetterForObj implements DataObjectSettable
             PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
             if (descr != null)
             {
+                // Check to see if the class of the data we have is different than the one we are trying to set into
+                // This typically happens when we have a TextField with a number and it needs to be converted from a 
+                // String representation of the number to the actuall numeric type like from String to Integer or Short
+                Object dataVal = data;
+                if (data != null)
+                {
+                    Class<?> fieldClass = descr.getPropertyType();
+                    if (dataVal.getClass() != fieldClass)
+                    {
+                        dataVal = UIHelper.convertDataFromString(dataVal.toString(), fieldClass);
+                    }
+                }
                 Method setter = PropertyUtils.getWriteMethod(descr);
                 if (setter != null)
                 {
-                    args[0] = data;
-                    log.debug("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+data+"] ("+(data != null ? data.getClass().getSimpleName() : "")+")");
-                    setter.invoke(dataObj, new Object[] { data});
+                    args[0] = dataVal;
+                    log.debug("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+dataVal+"] ("+(dataVal != null ? dataVal.getClass().getSimpleName() : "")+")");
+                    setter.invoke(dataObj, new Object[] {dataVal});
                 }
             } else
             {

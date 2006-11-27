@@ -1407,7 +1407,7 @@ public class DataBuilder
     }
 
     public static DeaccessionCollectionObject createDeaccessionCollectionObject(final Short quantity,
-                                                                                final CollectionObject collectionObjectCatalog,
+                                                                                final CollectionObject collectionObject,
                                                                                 final Deaccession deaccession)
     {
         DeaccessionCollectionObject deaccessioncollectionobject = new DeaccessionCollectionObject();
@@ -1416,7 +1416,7 @@ public class DataBuilder
         deaccessioncollectionobject.setTimestampModified(new Date());
         deaccessioncollectionobject.setQuantity(quantity);
         deaccessioncollectionobject.setDeaccession(deaccession);
-        deaccessioncollectionobject.setCollectionObjectCatalog(collectionObjectCatalog);
+        deaccessioncollectionobject.setCollectionObject(collectionObject);
         persist(deaccessioncollectionobject);
         return deaccessioncollectionobject;
     }
@@ -1567,9 +1567,10 @@ public class DataBuilder
                                   final Calendar currentDueDate,
                                   final Calendar originalDueDate,
                                   final Calendar dateClosed,
-                                  final Byte category,
-                                  final Short closed,
-                                  final Shipment shipment)
+                                  final Boolean isGift,
+                                  final Boolean isClosed,
+                                  final Shipment shipment,
+                                  final List<Preparation> preps)
     {
         Loan loan = new Loan();
         loan.initialize();
@@ -1581,8 +1582,23 @@ public class DataBuilder
         loan.setCurrentDueDate(currentDueDate);
         loan.setLoanNumber(loanNumber);
         loan.setLoanDate(loanDate);
-        loan.setCategory(category);
-        loan.setClosed(closed);
+        loan.setIsGift(isGift);
+        loan.setIsClosed(isClosed);
+        
+        for (Preparation p : preps)
+        {
+            LoanPhysicalObject lpo = new LoanPhysicalObject();
+            lpo.initialize();
+            
+            short quantity = (short)(p.getCount() > 1 ? p.getCount() / 2 : p.getCount());
+            
+            lpo.setQuantity(quantity);
+            //lpo.setDescriptionOfMaterial()
+            lpo.setPreparation(p);
+            
+            loan.getLoanPhysicalObjects().add(lpo);
+            lpo.setLoan(loan);
+        }
         persist(loan);
         return loan;
     }

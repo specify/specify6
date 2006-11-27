@@ -12,6 +12,20 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
@@ -22,6 +36,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 
 
@@ -158,6 +173,14 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public Long getId()
     {
         return this.collectionObjectId;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
+     */
+    public Class getDataClass()
+    {
+        return CollectionObject.class;
     }
 
     public void setCollectionObjectId(Long collectionObjectId) {
@@ -538,98 +561,99 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.container = container;
     }
 
-
-    // Add Methods
-
-    public void addCollectionObjectCitations(final CollectionObjectCitation collectionObjectCitation)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    @Override
+    public void addReference(FormDataObjIFace ref, String refType)
     {
-        this.collectionObjectCitations.add(collectionObjectCitation);
-        collectionObjectCitation.setCollectionObject(this);
+        if (ref instanceof Preparation)
+        {
+            preparations.add((Preparation)ref);
+            ((Preparation)ref).setCollectionObject(this);
+            
+        } else if (ref instanceof Determination)
+        {
+            determinations.add((Determination)ref);
+            ((Determination)ref).setCollectionObject(this);
+            
+        } else if (ref instanceof CollectionObjectCitation)
+        {
+            collectionObjectCitations.add((CollectionObjectCitation)ref);
+            ((CollectionObjectCitation)ref).setCollectionObject(this);
+            
+        } else if (ref instanceof CollectionObjectAttr)
+        {
+            attrs.add((CollectionObjectAttr)ref);
+            ((CollectionObjectAttr)ref).setCollectionObject(this);
+            
+        } else if (ref instanceof ProjectCollectionObject)
+        {
+            projectCollectionObjects.add((ProjectCollectionObject)ref);
+            ((ProjectCollectionObject)ref).setCollectionObject(this);
+            
+        } else if (ref instanceof DeaccessionCollectionObject)
+        {
+            deaccessionCollectionObjects.add((DeaccessionCollectionObject)ref);
+            ((DeaccessionCollectionObject)ref).setCollectionObject(this);
+            
+        } else if (ref instanceof OtherIdentifier)
+        {
+            otherIdentifiers.add((OtherIdentifier)ref);
+            ((OtherIdentifier)ref).setCollectionObject(this);
+
+        } else
+        {
+            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
     }
 
-    public void addAttrs(final CollectionObjectAttr attr)
-    {
-        this.attrs.add(attr);
-        attr.setCollectionObject(this);
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    @Override
+    public void removeReference(FormDataObjIFace ref, String refType)
+    {       
+        if (ref instanceof Preparation)
+        {
+            preparations.remove(ref);
+            ((Preparation)ref).setCollectionObject(null);
+            
+        } else if (ref instanceof Determination)
+        {
+            determinations.remove(ref);
+            ((Determination)ref).setCollectionObject(null);
+            
+        } else if (ref instanceof CollectionObjectCitation)
+        {
+            collectionObjectCitations.remove(ref);
+            ((CollectionObjectCitation)ref).setCollectionObject(null);
+            
+        } else if (ref instanceof CollectionObjectAttr)
+        {
+            attrs.remove(ref);
+            ((CollectionObjectAttr)ref).setCollectionObject(null);
+            
+        } else if (ref instanceof ProjectCollectionObject)
+        {
+            projectCollectionObjects.remove(ref);
+            ((ProjectCollectionObject)ref).setCollectionObject(null);
+            
+        } else if (ref instanceof DeaccessionCollectionObject)
+        {
+            deaccessionCollectionObjects.remove(ref);
+            ((DeaccessionCollectionObject)ref).setCollectionObject(null);
+            
+        } else if (ref instanceof OtherIdentifier)
+        {
+            otherIdentifiers.remove(ref);
+            ((OtherIdentifier)ref).setCollectionObject(null);
+
+        } else
+        {
+            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
     }
-
-    public void addPreparations(final Preparation preparation)
-    {
-        this.preparations.add(preparation);
-        preparation.setCollectionObject(this);
-    }
-
-    public void addDeterminations(final Determination determination)
-    {
-        this.determinations.add(determination);
-        determination.setCollectionObject(this);
-    }
-
-    public void addProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
-    {
-        this.projectCollectionObjects.add(projectCollectionObject);
-        projectCollectionObject.setCollectionObject(this);
-    }
-
-    public void addDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
-    {
-        this.deaccessionCollectionObjects.add(deaccessionCollectionObject);
-        deaccessionCollectionObject.setCollectionObjectCatalog(this);
-    }
-
-    public void addOtherIdentifiers(final OtherIdentifier otherIdentifier)
-    {
-        this.otherIdentifiers.add(otherIdentifier);
-        otherIdentifier.setCollectionObject(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeCollectionObjectCitations(final CollectionObjectCitation collectionObjectCitation)
-    {
-        this.collectionObjectCitations.remove(collectionObjectCitation);
-        collectionObjectCitation.setCollectionObject(null);
-    }
-
-    public void removeAttrs(final CollectionObjectAttr attr)
-    {
-        this.attrs.remove(attr);
-        attr.setCollectionObject(null);
-    }
-
-    public void removePreparations(final Preparation preparation)
-    {
-        this.preparations.remove(preparation);
-        preparation.setCollectionObject(null);
-    }
-
-    public void removeDeterminations(final Determination determination)
-    {
-        this.determinations.remove(determination);
-        determination.setCollectionObject(null);
-    }
-
-    public void removeProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
-    {
-        this.projectCollectionObjects.remove(projectCollectionObject);
-        projectCollectionObject.setCollectionObject(null);
-    }
-
-    public void removeDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
-    {
-        this.deaccessionCollectionObjects.remove(deaccessionCollectionObject);
-        deaccessionCollectionObject.setCollectionObjectCatalog(null);
-    }
-
-    public void removeOtherIdentifiers(final OtherIdentifier otherIdentifier)
-    {
-        this.otherIdentifiers.remove(otherIdentifier);
-        otherIdentifier.setCollectionObject(null);
-    }
-
-    // Delete Add Methods
     
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase

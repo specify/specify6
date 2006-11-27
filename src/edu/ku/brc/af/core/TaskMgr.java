@@ -126,6 +126,16 @@ public class TaskMgr
             throw new NullPointerException("Trying to unregister a null plugin!");
         }
     }
+    
+    /**
+     * Returns a Task instance by name
+     * @param name the name of the plugin task
+     * @return the name of the plugin task
+     */
+    public static Taskable getTask(final String name)
+    {
+        return instance.plugins.get(name);
+    }
 
     /**
      * Registers the plugin's UI compontents with the various parts of the UI
@@ -400,11 +410,4 @@ public class TaskMgr
         }
         return list;
     }
-
-
-    //---------------------------------------------------------------
-    //-- Inner Classes
-    //---------------------------------------------------------------
-
-
 }

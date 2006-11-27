@@ -112,6 +112,12 @@ public interface FormDataObjIFace
      */
     public Integer getTableId();
     
+    /**
+     * Returns the actual class object befoire being wrapped by ORM tools.
+     * @return the actual class object befoire being wrapped by ORM tools.
+     */
+    public Class getDataClass();
+    
     //---------------------------------------------------------------------------
     // Property Change Support
     //---------------------------------------------------------------------------

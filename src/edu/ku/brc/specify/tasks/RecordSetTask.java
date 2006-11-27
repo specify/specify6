@@ -371,7 +371,7 @@ public class RecordSetTask extends BaseTask
             {
                 RecordSetIFace srcRecordSet = (RecordSetIFace)srcObj;
                 RecordSetIFace dstRecordSet = (RecordSetIFace)dstObj;
-                if (srcRecordSet.getDbTableId() == dstRecordSet.getDbTableId())
+                if (srcRecordSet.getDbTableId().intValue() == dstRecordSet.getDbTableId().intValue())
                 {
                     int oldSize = dstRecordSet.getItems().size();
                     Vector<RecordSetItemIFace> dstList  = new Vector<RecordSetItemIFace>(dstRecordSet.getItems());

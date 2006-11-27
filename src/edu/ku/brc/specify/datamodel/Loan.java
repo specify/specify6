@@ -12,6 +12,20 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
@@ -30,12 +44,12 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 public class Loan extends DataModelObjBase implements java.io.Serializable {
 
     // options for the 'category' field
-    public static final Byte LOAN = 0;
-    public static final Byte GIFT = 1;
+    public static final Boolean LOAN = false;
+    public static final Boolean GIFT = true;
     
     // options for the 'closed' field
-    public static final Short CLOSED = -1;
-    public static final Short OPEN = 0;
+    public static final Boolean CLOSED = true;
+    public static final Boolean OPEN   = false;
     
     // Fields    
 
@@ -45,13 +59,13 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      protected Calendar currentDueDate;
      protected Calendar originalDueDate;
      protected Calendar dateClosed;
-     protected Byte category;
+     protected Boolean isGift;
      protected String remarks;
      protected String text1;
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Short closed;
+     protected Boolean isClosed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<LoanAgents> loanAgents;
@@ -77,28 +91,28 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
-        loanId = null;
-        loanNumber = null;
-        loanDate = null;
-        currentDueDate = null;
+        loanId          = null;
+        loanNumber      = null;
+        loanDate        = null;
+        currentDueDate  = null;
         originalDueDate = null;
-        dateClosed = null;
-        category = null;
-        remarks = null;
-        text1 = null;
-        text2 = null;
-        number1 = null;
-        number2 = null;
+        dateClosed      = null;
+        isGift          = null;
+        remarks         = null;
+        text1           = null;
+        text2           = null;
+        number1         = null;
+        number2         = null;
         timestampCreated = new Date();
         timestampModified = null;
-        lastEditedBy = null;
-        closed = null;
-        yesNo1 = null;
-        yesNo2 = null;
-        loanAgents = new HashSet<LoanAgents>();
+        lastEditedBy    = null;
+        isClosed        = OPEN;
+        yesNo1          = null;
+        yesNo2          = null;
+        loanAgents      = new HashSet<LoanAgents>();
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
-        shipment = null;
-        attachments = new HashSet<Attachment>();
+        shipment        = null;
+        attachments     = new HashSet<Attachment>();
     }
     // End Initializer
 
@@ -119,6 +133,14 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public Long getId()
     {
         return this.loanId;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
+     */
+    public Class getDataClass()
+    {
+        return Loan.class;
     }
     
     public void setLoanId(Long loanId) {
@@ -183,12 +205,12 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Type of record: loan(0), Gift(1)
      */
-    public Byte getCategory() {
-        return this.category;
+    public Boolean getIsGift() {
+        return this.isGift;
     }
     
-    public void setCategory(Byte category) {
-        this.category = category;
+    public void setIsGift(Boolean isGift) {
+        this.isGift = isGift;
     }
 
     /**
@@ -249,12 +271,12 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * 'No' until all preparations in the loan have been returned/resolved.
      */
-    public Short getClosed() {
-        return this.closed;
+    public Boolean getIsClosed() {
+        return this.isClosed;
     }
     
-    public void setClosed(Short closed) {
-        this.closed = closed;
+    public void setIsClosed(Boolean isClosed) {
+        this.isClosed = isClosed;
     }
 
     /**

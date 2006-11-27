@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <formats>
-    <format name="AccessionNumber">
-		<field size="4" type="numeric" value="YEAR"/>
-		<field size="1" type="separator" value="-"/>
-		<field size="2" type="alphanumeric" value="AA"/>
-		<field size="1" type="separator" value="-"/>
-		<field size="3" type="alphanumeric" value="AAA"/>
+    <format name="AccessionNumber" class="edu.ku.brc.specify.datamodel.Accession" default="true">
+        <field size="4" type="numeric" value="YEAR"/>
+        <field size="1" type="separator" value="-"/>
+        <field size="2" type="alphanumeric" value="AA"/>
+        <field size="1" type="separator" value="-"/>
+        <field size="3" type="alphanumeric" value="AAA"/>
+    </format>
+    <format name="LoanNumber" class="edu.ku.brc.specify.datamodel.Loan" default="true">
+        <field size="4" type="numeric" value="YEAR"/>
+        <field size="1" type="separator" value="-"/>
+        <field size="3" type="numeric" value="NNN"/>
     </format>
     <format name="Date" type="date"/>
 </formats>

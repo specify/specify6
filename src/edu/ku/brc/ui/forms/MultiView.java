@@ -155,7 +155,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         specialEditView = view.isSpecialViewAndEdit();
 
-        createWithAltView(altView);
+        createWithAltView(altView != null ? altView : createDefaultViewable());
     }
     
     /**
@@ -400,10 +400,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
         // this call parents the viewable to the multiview
-        //Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions | (editable ? MultiView.RESULTSET_CONTROLLER : 0));
-        //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
-        //MultiView.printCreateOptions("createOptions "+view.getName(), createOptions);
-        //MultiView.printCreateOptions("createDefaultViewable "+view.getName(), adjustedOptions);
         Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions);
         viewable.setParentDataObj(parentDataObj);
 

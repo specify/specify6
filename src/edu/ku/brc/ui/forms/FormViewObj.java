@@ -372,7 +372,7 @@ public class FormViewObj implements Viewable,
             mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
         }
 
-        if (createResultSetController)
+        if (createResultSetController && controlPanel != null)
         {
             addRSController();
         }
@@ -1170,7 +1170,7 @@ public class FormViewObj implements Viewable,
     protected void addRSController()
     {
         // If the Control panel doesn't exist, then add it
-        if (rsController == null)
+        if (rsController == null && controlPanel != null)
         {
             boolean inEditMode = altView.getMode() == AltView.CreationMode.Edit;
             rsController = new ResultSetController(formValidator, inEditMode, inEditMode, view.getObjTitle(), 0);
@@ -1694,7 +1694,7 @@ public class FormViewObj implements Viewable,
         }
         defaultValueList.clear();
 
-        if (mvParent != null && mvParent.isRoot() && saveBtn != null)
+        if (mvParent != null && mvParent.isRoot() && saveBtn != null && isEditting)
         {
             saveBtn.setEnabled(false);
         }
@@ -1707,61 +1707,64 @@ public class FormViewObj implements Viewable,
      */
     public void getDataFromUI()
     {
-        DataObjectSettable ds = formViewDef.getDataSettable();
-        DataObjectGettable dg = formViewDef.getDataGettable();
-        if (ds != null)
+        if (isEditting)
         {
-            
-            // Get Data From Selector
-            if (selectorCBX != null)
+            DataObjectSettable ds = formViewDef.getDataSettable();
+            DataObjectGettable dg = formViewDef.getDataGettable();
+            if (ds != null)
             {
-                String selectorName = altView.getSelectorName();
-                if (StringUtils.isNotEmpty(selectorName))
+                
+                // Get Data From Selector
+                if (selectorCBX != null)
                 {
-                    try
+                    String selectorName = altView.getSelectorName();
+                    if (StringUtils.isNotEmpty(selectorName))
                     {
-                        PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, selectorName);
-                        Object selectorValObj = UIHelper.convertDataFromString(altView.getSelectorValue(), descr.getPropertyType());
-                        
-                        FormHelper.setFieldValue(selectorName, dataObj, selectorValObj, dg, ds);
-                        
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
-                        // XXX TODO Show error dialog here
+                        try
+                        {
+                            PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, selectorName);
+                            Object selectorValObj = UIHelper.convertDataFromString(altView.getSelectorValue(), descr.getPropertyType());
+                            
+                            FormHelper.setFieldValue(selectorName, dataObj, selectorValObj, dg, ds);
+                            
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                            // XXX TODO Show error dialog here
+                        }
                     }
                 }
-            }
-            
-            for (FieldInfo fieldInfo : controlsById.values())
-            {
-                FormCell fc = fieldInfo.getFormCell();
-                boolean isReadOnly = false;
-
-                if (fc instanceof FormCellField)
+                
+                for (FieldInfo fieldInfo : controlsById.values())
                 {
-                    isReadOnly = ((FormCellField)fieldInfo.getFormCell()).isReadOnly();
-                }
-
-                if (isReadOnly || fc.isIgnoreSetGet())
-                {
-                    continue;
-                }
-                log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
-                String id = fieldInfo.getFormCell().getId();
-                if (hasFormControlChanged(id))
-                {
-                    Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
-                    if (uiData != null)
+                    FormCell fc = fieldInfo.getFormCell();
+                    boolean isReadOnly = false;
+    
+                    if (fc instanceof FormCellField)
                     {
-                        //log.debug(fieldInfo.getFormCell().getName());
-                        FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
+                        isReadOnly = ((FormCellField)fieldInfo.getFormCell()).isReadOnly();
+                    }
+    
+                    if (isReadOnly || fc.isIgnoreSetGet())
+                    {
+                        continue;
+                    }
+                    log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
+                    String id = fieldInfo.getFormCell().getId();
+                    if (hasFormControlChanged(id))
+                    {
+                        Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
+                        if (uiData != null)
+                        {
+                            log.info(fieldInfo.getFormCell().getName()+" "+dataObj.getClass().getSimpleName());
+                            FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
+                        }
                     }
                 }
+            } else
+            {
+                throw new RuntimeException("Calling getDataFromUI when the DataObjectSettable is null for the form.");
             }
-        } else
-        {
-            throw new RuntimeException("Calling getDataFromUI when the DataObjectSettable is null for the form.");
         }
     }
 

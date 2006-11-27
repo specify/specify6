@@ -4,6 +4,7 @@
     <format
         name="Agent"
         class="edu.ku.brc.specify.datamodel.Agent"
+        default="true"
         >
         <switch single="false" field="agentType">
             <fields value="0">
@@ -19,6 +20,7 @@
     <format
         name="CollectionObject"
         class="edu.ku.brc.specify.datamodel.CollectionObject"
+        default="true"
         >
         <switch single="true">
             <fields>
@@ -30,6 +32,7 @@
     <format
         name="Permit"
         class="edu.ku.brc.specify.datamodel.Permit"
+        default="true"
         >
         <switch single="true">
             <fields>
@@ -41,6 +44,7 @@
     <format
         name="AccessionAuthorizations"
         class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
+        default="true"
         >
         <switch single="true">
             <fields>
@@ -52,6 +56,7 @@
     <format
         name="AccessionAgents"
         class="edu.ku.brc.specify.datamodel.AccessionAgents"
+        default="true"
         >
         <switch single="true">
             <fields>
@@ -64,6 +69,7 @@
     <format
         name="Geography"
         class="edu.ku.brc.specify.datamodel.Geography"
+        default="true"
         >
         <switch single="true">
             <fields>
@@ -75,6 +81,7 @@
     <format
         name="PrepType"
         class="edu.ku.brc.specify.datamodel.PrepType"
+        default="true"
         >
         <switch single="true">
             <fields>
@@ -86,6 +93,7 @@
     <format
         name="DeterminationStatus"
         class="edu.ku.brc.specify.datamodel.DeterminationStatus"
+        default="true"
         >
         <switch single="true">
             <fields>
@@ -96,8 +104,8 @@
     
     
     <aggregators>
-        <aggregator name="AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations"/>
-        <aggregator name="AccessionAgents"         separator="; " count="" ending="" format="AccessionAgents"/>   
+        <aggregator name="AccessionAuthorizations" class="edu.ku.brc.specify.datamodel.AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations" default="true"/>
+        <aggregator name="AccessionAgents"         class="edu.ku.brc.specify.datamodel.AccessionAgents" separator="; " count="" ending="" format="AccessionAgents" default="true"/>   
     </aggregators>
     
      

@@ -10,8 +10,8 @@ import static edu.ku.brc.specify.tests.DataBuilder.createAccession;
 import static edu.ku.brc.specify.tests.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createAddress;
 import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
-import static edu.ku.brc.specify.tests.DataBuilder.createAttributeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createAttachment;
+import static edu.ku.brc.specify.tests.DataBuilder.createAttributeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createCatalogSeries;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEvent;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEventAttr;
@@ -52,7 +52,9 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -85,6 +87,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgents;
+import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
@@ -114,7 +117,10 @@ public class BuildSampleDatabase
 {
     private static final Logger log      = Logger.getLogger(BuildSampleDatabase.class);
     protected static Calendar   calendar = Calendar.getInstance();
-    protected static Session session;
+    protected static Session    session;
+    protected static Random     rand     = new Random(331013311);
+    
+
     
     public static Session getSession()
     {
@@ -124,6 +130,44 @@ public class BuildSampleDatabase
     public static void setSession(Session s)
     {
         session = s;
+    }
+    
+    /**
+     * Adds all the Loan's LoanPhysicalObject to the dataObjects list to be saved.
+     * @param loan the loan
+     * @param dataObjects the list of dataObjects
+     */
+    protected static void addLoanPhysicalObject(final Loan loan, final Vector<Object> dataObjects)
+    {
+        for (LoanPhysicalObject lpo : loan.getLoanPhysicalObjects())
+        {
+            dataObjects.add(lpo);
+        }
+    }
+    
+    /**
+     * Given the full list of preparations it returns a random number of preparations
+     * @param prepsList the complete list of available Preparations
+     * @return a reduced set for the loan (less than 10 of them)
+     */
+    protected static List<Preparation> getPrepsToLoan(final List<Preparation> prepsList)
+    {
+        Hashtable<Integer, Boolean> noResuse = new Hashtable<Integer, Boolean>();
+        
+        List<Preparation> preps = new Vector<Preparation>();
+        
+        int num = (int)(rand.nextDouble() * 10);
+        for (int i=0;i<num;i++)
+        {
+            int inx = (int)(rand.nextDouble() * prepsList.size());
+            Boolean isThere = noResuse.get(inx);
+            if (isThere == null)
+            {
+                preps.add(prepsList.get(inx));
+                noResuse.put(inx, true);
+            }
+        }
+        return preps;
     }
     
     public static List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
@@ -389,29 +433,29 @@ public class BuildSampleDatabase
         PrepType xray = createPrepType("x-ray");
 
         List<Preparation> preps = new Vector<Preparation>();
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), 1));
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), 1));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), 1));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), 1));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), 1));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), 1));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), 1));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), 1));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), 1));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), 1));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), 1));
-        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), 1));
-        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), 1));
-        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), 1));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), 1));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), 1));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
 
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), 1));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), 1));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), 1));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), 1));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), 1));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
 
         dataObjects.add(skel);
         dataObjects.add(cas);
@@ -461,14 +505,20 @@ public class BuildSampleDatabase
         Calendar originalDueDate1 = currentDueDate1;
         Calendar dateClosed1 = Calendar.getInstance();
         dateClosed1.set(2004, 7, 4);
-        Loan closedLoan = createLoan("2004-LOAN-0001", loanDate1, currentDueDate1, originalDueDate1, dateClosed1, Loan.LOAN, Loan.CLOSED, null);
+        
+        
+        Loan closedLoan = createLoan("2006-001", loanDate1, currentDueDate1, originalDueDate1, 
+                                     dateClosed1, Loan.LOAN, Loan.CLOSED, null, getPrepsToLoan(preps));
+        addLoanPhysicalObject(closedLoan, dataObjects);
         
         Calendar loanDate2 = Calendar.getInstance();
         loanDate2.set(2005, 11, 24);
         Calendar currentDueDate2 = Calendar.getInstance();
         currentDueDate2.set(2006, 5, 24);
         Calendar originalDueDate2 = currentDueDate2;
-        Loan overdueLoan = createLoan("2005-LOAN-0001", loanDate2, currentDueDate2, originalDueDate2, null, Loan.LOAN, Loan.OPEN, null);
+        Loan overdueLoan = createLoan("2006-002", loanDate2, currentDueDate2, originalDueDate2,  
+                                      null, Loan.LOAN, Loan.OPEN, null, getPrepsToLoan(preps));
+        addLoanPhysicalObject(overdueLoan, dataObjects);
         
         dataObjects.add(closedLoan);
         dataObjects.add(overdueLoan);
@@ -484,11 +534,11 @@ public class BuildSampleDatabase
         
         Calendar ship1Date = Calendar.getInstance();
         ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, "2004-SHIP-0001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(5), agents.get(0));
+        Shipment loan1Ship = createShipment(ship1Date, "2006-001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(5), agents.get(0));
         
         Calendar ship2Date = Calendar.getInstance();
         ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, "2005-SHIP-0001", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(5), agents.get(3));
+        Shipment loan2Ship = createShipment(ship2Date, "2006-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(5), agents.get(3));
         
         closedLoan.setShipment(loan1Ship);
         overdueLoan.setShipment(loan2Ship);
@@ -499,62 +549,64 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
-        log.info("Creating attachments and attachment metadata");
-        try
+        if (false)
         {
-            String attachmentFilesLoc = "demo_files" + File.separator;
-            String bigEyeFilePath = attachmentFilesLoc + "bigeye.jpg";
-            Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
-            bigEye.setLoan(closedLoan);
-            
-            String joshPhotoPath = attachmentFilesLoc + "josh.jpg";
-            Attachment joshPhoto = createAttachment(joshPhotoPath, "image/jpeg", 0);
-            joshPhoto.setAgent(agents.get(0));
-
-            String beachPhotoPath = attachmentFilesLoc + "beach.jpg";
-            Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 2);
-            beachPhoto.setAgent(agents.get(1));
-
-            String megPhotoPath = attachmentFilesLoc + "meg.jpg";
-            Attachment megPhoto = createAttachment(megPhotoPath, "image/jpeg", 0);
-            megPhoto.setAgent(agents.get(2));
-
-            String rodPhotoPath = attachmentFilesLoc + "rod.jpg";
-            Attachment rodPhoto = createAttachment(rodPhotoPath, "image/jpeg", 0);
-            rodPhoto.setAgent(agents.get(3));
-
-            String giftPdfPath = attachmentFilesLoc + "2004-18.pdf";
-            Attachment giftPDF = createAttachment(giftPdfPath, "application/pdf", 0);
-            giftPDF.setLoan(closedLoan);
-            
-            String accessionPdfPath = attachmentFilesLoc + "Seychelles.pdf";
-            Attachment accPDF = createAttachment(accessionPdfPath, "application/pdf", 0);
-            // TODO: change this to setAccession()
-            accPDF.setPermit(permit);
-            
-            String sharkVideoPath = attachmentFilesLoc + "shark5.mpg";
-            Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
-            sharkVideo.setLoan(closedLoan);
-
-            String beakerPath = attachmentFilesLoc + "beaker.jpg";
-            Attachment beakerAsBeach = createAttachment(beakerPath, "image/jpg", 1);
-            beakerAsBeach.setAgent(agents.get(1));
-            
-            dataObjects.add(bigEye);
-            dataObjects.add(joshPhoto);
-            dataObjects.add(beachPhoto);
-            dataObjects.add(megPhoto);
-            dataObjects.add(rodPhoto);
-            dataObjects.add(giftPDF);
-            dataObjects.add(accPDF);
-            dataObjects.add(sharkVideo);
-            dataObjects.add(beakerAsBeach);
+            log.info("Creating attachments and attachment metadata");
+            try
+            {
+                String attachmentFilesLoc = "demo_files" + File.separator;
+                String bigEyeFilePath = attachmentFilesLoc + "bigeye.jpg";
+                Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
+                bigEye.setLoan(closedLoan);
+                
+                String joshPhotoPath = attachmentFilesLoc + "josh.jpg";
+                Attachment joshPhoto = createAttachment(joshPhotoPath, "image/jpeg", 0);
+                joshPhoto.setAgent(agents.get(0));
+    
+                String beachPhotoPath = attachmentFilesLoc + "beach.jpg";
+                Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 2);
+                beachPhoto.setAgent(agents.get(1));
+    
+                String megPhotoPath = attachmentFilesLoc + "meg.jpg";
+                Attachment megPhoto = createAttachment(megPhotoPath, "image/jpeg", 0);
+                megPhoto.setAgent(agents.get(2));
+    
+                String rodPhotoPath = attachmentFilesLoc + "rod.jpg";
+                Attachment rodPhoto = createAttachment(rodPhotoPath, "image/jpeg", 0);
+                rodPhoto.setAgent(agents.get(3));
+    
+                String giftPdfPath = attachmentFilesLoc + "2004-18.pdf";
+                Attachment giftPDF = createAttachment(giftPdfPath, "application/pdf", 0);
+                giftPDF.setLoan(closedLoan);
+                
+                String accessionPdfPath = attachmentFilesLoc + "Seychelles.pdf";
+                Attachment accPDF = createAttachment(accessionPdfPath, "application/pdf", 0);
+                // TODO: change this to setAccession()
+                accPDF.setPermit(permit);
+                
+                String sharkVideoPath = attachmentFilesLoc + "shark5.mpg";
+                Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
+                sharkVideo.setLoan(closedLoan);
+    
+                String beakerPath = attachmentFilesLoc + "beaker.jpg";
+                Attachment beakerAsBeach = createAttachment(beakerPath, "image/jpg", 1);
+                beakerAsBeach.setAgent(agents.get(1));
+                
+                dataObjects.add(bigEye);
+                dataObjects.add(joshPhoto);
+                dataObjects.add(beachPhoto);
+                dataObjects.add(megPhoto);
+                dataObjects.add(rodPhoto);
+                dataObjects.add(giftPDF);
+                dataObjects.add(accPDF);
+                dataObjects.add(sharkVideo);
+                dataObjects.add(beakerAsBeach);
+            }
+            catch (Exception e)
+            {
+                log.error("Could not create attachments", e);
+            }
         }
-        catch (Exception e)
-        {
-            log.error("Could not create attachments", e);
-        }
-        
         // done
         log.info("Done creating single discipline database: " + disciplineName);
         return dataObjects;

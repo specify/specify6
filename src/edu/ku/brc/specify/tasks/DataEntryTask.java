@@ -146,8 +146,8 @@ public class DataEntryTask extends BaseTask
                          final FormDataObjIFace data,
                          final boolean          isNewForm)
     {
-        View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
-        
+        View view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionObjDef.getCurrentCollectionObjDef()) : 
+                                          AppContextMgr.getInstance().getView(viewSetName, viewName);
         FormDataObjIFace  dataObj = data;
         if (dataObj == null)
         {
@@ -171,7 +171,7 @@ public class DataEntryTask extends BaseTask
         }
         
         FormPane formPane = new FormPane(DataProviderFactory.getInstance().createSession(), 
-                                         view.getName(), task, viewSetName, viewName, mode, dataObj, 
+                                         view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
                                          isNewForm ? (MultiView.IS_NEW_OBJECT |  MultiView.RESULTSET_CONTROLLER): 0);
         
         formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));

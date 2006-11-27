@@ -114,7 +114,7 @@ public class View implements Comparable<View>
         // First get default AltView and check to see if it's 
         // edit mode matches the desired edit mode
         AltView defAltView = getDefaultAltView();
-        if (defAltView.getMode() == editMode)
+        if (defAltView.getMode() == editMode || altViews.size() == 1)
         {
             return defAltView;
         }

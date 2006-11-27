@@ -21,7 +21,7 @@
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AccessionAgent IconView" viewdef="AccessionAgentIconView" label="IconView " mode="view" validated="false"/>
-                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit" validated="false"/>
+                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit" validated="true"/>
                 <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view" validated="false"/>
                 <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
@@ -76,7 +76,7 @@
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
                 <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="false"/>                
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true"/>                
             </altviews>
         </view>
 
@@ -86,7 +86,7 @@
             <desc><![CDATA[The Attachments Icon View.]]></desc>
             <altviews>
                 <altview name="Attachments Icon View" viewdef="AttachmentsIconView" label="IconView" mode="view" validated="false" default="true"/>                
-                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit" validated="false"/>                
+                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit" validated="true"/>                
             </altviews>
         </view>
 
@@ -148,7 +148,7 @@
         	<desc><![CDATA[Loan display form]]></desc>
         	<altviews>
         		<altview name="Loan View" viewdef="Loan" label="View" mode="view" validated="false" default="true"/>
-        		<altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit" validated="false"/>
+        		<altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit" validated="true"/>
 			</altviews>
 		</view>
 		

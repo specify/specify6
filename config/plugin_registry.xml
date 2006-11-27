@@ -31,8 +31,10 @@
 	        <service command="DoLocalityMap" tableid="10" tooltip="CreateLocalityMapTT"/>
 	        <service command="DoLocalityMap" tableid="11" tooltip="CreateLocalityMapTT"/>
 	    </plugin>
-	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask"/>
-	    <plugin class="edu.ku.brc.af.tasks.StatsTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask">
+			<service command="CreateLoan" tableid="1" tooltip="CreateLoanFromRecordSetTT"/>
+	    </plugin>
+		<plugin class="edu.ku.brc.af.tasks.StatsTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.QueryTask"/>
         <plugin class="edu.ku.brc.specify.tasks.RecordSetTask">
 	    	<service command="Save" tableid="1" tooltip="CreateRecordSetTT"/>

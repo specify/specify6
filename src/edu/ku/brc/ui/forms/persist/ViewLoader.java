@@ -780,6 +780,10 @@ public class ViewLoader
                                                    colspan,
                                                    rowspan));
 
+                            if (cellType == FormCell.CellType.rstable)
+                            {
+                                cell.setType(FormCell.CellType.rstable);
+                            }
                             break;
                         }
 

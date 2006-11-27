@@ -1408,7 +1408,7 @@ public class ObjCreatorHelper
     }
 
     public static DeaccessionCollectionObject createDeaccessionCollectionObject(final Short quantity,
-                                                                                final CollectionObject collectionObjectCatalog,
+                                                                                final CollectionObject collectionObject,
                                                                                 final Deaccession deaccession)
     {
         DeaccessionCollectionObject deaccessioncollectionobject = new DeaccessionCollectionObject();
@@ -1417,7 +1417,7 @@ public class ObjCreatorHelper
         deaccessioncollectionobject.setTimestampModified(new Date());
         deaccessioncollectionobject.setQuantity(quantity);
         deaccessioncollectionobject.setDeaccession(deaccession);
-        deaccessioncollectionobject.setCollectionObjectCatalog(collectionObjectCatalog);
+        deaccessioncollectionobject.setCollectionObject(collectionObject);
         if (session != null)
         {
           session.saveOrUpdate(deaccessioncollectionobject);
@@ -1587,8 +1587,8 @@ public class ObjCreatorHelper
                                   final Calendar currentDueDate,
                                   final Calendar originalDueDate,
                                   final Calendar dateClosed,
-                                  final Byte category,
-                                  final Short closed,
+                                  final Boolean isGift,
+                                  final Boolean isClosed,
                                   final Shipment shipment)
     {
         Loan loan = new Loan();
@@ -1601,8 +1601,8 @@ public class ObjCreatorHelper
         loan.setCurrentDueDate(currentDueDate);
         loan.setLoanNumber(loanNumber);
         loan.setLoanDate(loanDate);
-        loan.setCategory(category);
-        loan.setClosed(closed);
+        loan.setIsGift(isGift);
+        loan.setIsClosed(isClosed);
         if (session != null)
         {
           session.saveOrUpdate(loan);

@@ -87,6 +87,17 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
                             mainPanel.getCancelBtn().doClick();
                         }
                     });
+        } else if (mainPanel.getOkBtn() != null)
+        {
+            mainPanel.getOkBtn().setEnabled(true);
+            addWindowListener(new WindowAdapter()
+            {
+                @Override
+                public void windowClosing(WindowEvent e)
+                {
+                    mainPanel.getOkBtn().doClick();
+                }
+            });
         }
         
         /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)

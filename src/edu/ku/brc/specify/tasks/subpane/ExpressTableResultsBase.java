@@ -131,7 +131,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
         colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", services.size())); // add additional col defs for services
 
-        FormLayout      formLayout = new FormLayout(colDef.toString(), "center:p");
+        FormLayout      formLayout = new FormLayout(colDef.toString(), "f:p:g");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
 
@@ -148,7 +148,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         // install the btns on the banner with available services
         for (ServiceInfo serviceInfo : services)
         {
-            GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16));
+            GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
             btn.setToolTipText(getResourceString(serviceInfo.getTooltip()));
             btn.setForeground(bannerColor);
             builder.add(btn, cc.xy(col,1));

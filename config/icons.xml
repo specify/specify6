@@ -143,9 +143,9 @@
 	<icon name="move_to_end"		file="finish.png"		sizes="all"/>
 	
 	<!-- prep type icons -->
-	<icon name="skeleton"			file="fishskel.gif"		sizes="all"/>
-	<icon name="xray"				file="xray.jpg"			sizes="all"/>
-	<icon name="etoh"				file="jar.jpg"			sizes="all"/>
-	<icon name="cs"					file="cs.jpg"			sizes="all"/>
+    <icon name="skeleton"			file="fishskel.png"     sizes="all"/>
+    <icon name="xray"				file="xray.png"			sizes="all"/>
+    <icon name="etoh"				file="fishinjar.png"	sizes="all"/>
+    <icon name="cs"					file="fishskeljar.png"  sizes="all"/>
 	
 </icons>

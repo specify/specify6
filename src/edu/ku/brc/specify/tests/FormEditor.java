@@ -38,6 +38,7 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,15 +59,21 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTree;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.tree.TreeNode;
@@ -105,8 +112,10 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -116,6 +125,8 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
+import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
+import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -1003,6 +1014,249 @@ public class FormEditor implements DatabaseLoginListener
     {
         System.exit(0);
     }
+    
+    class PrepPanel extends JPanel
+    {
+        protected Preparation prep;
+        protected JLabel     label    = null;
+        protected JLabel     label2    = null;
+        protected JSpinner   spinner; 
+
+        public PrepPanel(Preparation prep)
+        {
+            super();
+            this.prep = prep;
+            
+            setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+            //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
+     
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p:g", "c:p"), this);
+            CellConstraints cc      = new CellConstraints();
+            
+            
+            pbuilder.add(label = new JLabel(prep.getPrepType().getName()), cc.xy(1,1));
+            label.setOpaque(false);
+            
+            //JPanel contentPanel = new JPanel();
+            //contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+            
+            int count       = prep.getCount();
+            int quantityOut = 0;
+            
+            if (prep.getLoanPhysicalObjects().size() > 0)
+            {
+                for (LoanPhysicalObject lpo : prep.getLoanPhysicalObjects())
+                {
+                    int quantityLoaned   = lpo.getQuantity();
+                    int quantityReturned = lpo.getQuantityReturned();
+                    
+                    quantityOut = quantityLoaned - quantityReturned;
+                }
+            }
+            
+            int quantityAvailable = count - quantityOut;
+            if (quantityAvailable > 0)
+            {
+                SpinnerModel model = new SpinnerNumberModel(0, //initial value
+                                           0, //min
+                                           quantityAvailable, //max
+                                           1);                //step
+                spinner = new JSpinner(model);
+                pbuilder.add(spinner, cc.xy(3, 1));
+                pbuilder.add(label2 = new JLabel(" of " + Integer.toString(quantityAvailable)), cc.xy(5, 1));
+                
+                
+            } else
+            {
+                pbuilder.add(label2 = new JLabel("(None Available)"), cc.xywh(3, 1, 3, 1));
+            }
+            //pbuilder.add(contentPanel, cc.xy(1,3));
+        }
+        
+        public void setEnabled(final boolean enabled)
+        {
+            if (label != null)
+            {
+                label.setEnabled(enabled);
+            }
+            if (label2 != null)
+            {
+                label2.setEnabled(enabled);
+            }
+            if (spinner != null)
+            {
+                spinner.setEnabled(enabled);
+            }
+        }
+        
+        public int getCount()
+        {
+            if (spinner != null)
+            {
+                Object valObj = spinner.getValue();
+                return valObj == null ? 0 : ((Integer)valObj).intValue();
+                
+            } else
+            {
+                return 0;
+            }
+        }
+    }
+    
+
+    class ColObjPanel extends JPanel
+    {
+        protected CollectionObject colObj;
+        protected JCheckBox checkBox;
+        protected Vector<PrepPanel> panels = new Vector<PrepPanel>();
+        
+        
+        /**
+         * @param colObj
+         */
+        public ColObjPanel(CollectionObject colObj)
+        {
+            super();
+            
+            this.colObj = colObj;
+            
+            setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+            //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
+            //setBorder(new CurvedBorder(new Color(160,160,160)));
+     
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this);
+            CellConstraints cc      = new CellConstraints();
+     
+            String taxonName = "";
+            for (Determination deter : colObj.getDeterminations())
+            {
+                if (deter.getStatus().getDeterminationStatusId() == null ? deter.getStatus().getName().equals("Current") : deter.getStatus().getDeterminationStatusId() == 1)
+                {
+                    if (deter.getTaxon().getFullName() == null)
+                    {
+                        Taxon parent = deter.getTaxon().getParent();
+                        String genus = parent.getFullName() == null ? parent.getName() : parent.getFullName();
+                        taxonName = genus + " " + deter.getTaxon().getName();
+                        
+                    } else
+                    {
+                        taxonName = deter.getTaxon().getFullName();
+                    }
+
+                    break;
+                }
+            }
+            String descr = String.format("%6.0f - %s", new Object[]{colObj.getCatalogNumber(), taxonName});
+            
+            
+            pbuilder.add(checkBox = new JCheckBox(descr), cc.xy(1,1));
+            //builder.add(new JLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
+            checkBox.setSelected(true);
+            
+            JPanel outerPanel = new JPanel();
+            outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
+            outerPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+            
+            JPanel contentPanel = new JPanel();
+            contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+            outerPanel.add(contentPanel);
+            
+            Color[] colors = new Color[] { new Color(255,255,255), new Color(245,245,255)};
+            
+            int i = 0;
+            for (Preparation prep : colObj.getPreparations())
+            {
+                PrepPanel pp = new PrepPanel(prep);
+                panels.add(pp);
+                pp.setBackground(colors[i % 2]);
+                contentPanel.add(pp);
+                i++;
+            }
+            pbuilder.add(outerPanel, cc.xy(1,3));
+            
+            checkBox.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    for (PrepPanel pp : panels)
+                    {
+                        pp.setEnabled(checkBox.isSelected());
+                    }
+                    System.out.println(getNewLoanCount());
+                    repaint();
+                }
+            });
+        }
+        
+        public int getNewLoanCount()
+        {
+            int count = 0;
+            if (checkBox.isSelected())
+            {
+                for (PrepPanel pp : panels)
+                {
+                    count += pp.getCount();
+                }
+            }
+            return count;
+        }
+    }
+    
+    protected void createLoanSelector()
+    {
+        List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");
+        
+        List<CollectionObject> colObjs = (List<CollectionObject>)BuildSampleDatabase.getObjectsByClass(dataObjs, CollectionObject.class);
+        
+        if (true)
+        {
+            LoanSelectPrepsDlg dlg = new LoanSelectPrepsDlg(colObjs);
+            UIHelper.centerAndShow(dlg);
+            return;
+        }
+        
+        JPanel mainPanel = new JPanel();
+        
+        //mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));     
+        //mainPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        
+        PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px,", (colObjs.size()*2)-1)), mainPanel);
+        CellConstraints cc      = new CellConstraints();
+
+        //mainPanel.setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), mainPanel.getBorder()));
+ 
+        int i = 0;
+        int y = 1;
+        for (CollectionObject co : colObjs)
+        {
+            if (i > 0)
+            {
+                pbuilder.addSeparator("", cc.xy(1,y));
+            }
+            y += 2;
+            
+            ColObjPanel p = new ColObjPanel(co);
+            //mainPanel.add(p);
+            pbuilder.add(p, cc.xy(1,y));
+            y += 2;
+            i++;
+            if (i > 2)
+                break;
+        }
+        
+        
+        
+        JFrame frame = new JFrame("Select Preparations");
+        frame.setContentPane(new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+        //frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        frame.pack();
+
+        UIHelper.centerAndShow(frame);
+
+        
+    }
 
 
     /**
@@ -1048,7 +1302,7 @@ frame.pack();
 frame.setVisible(true);
 */
                 FormEditor formEditor = new FormEditor();
-                formEditor.initialize();
+                formEditor.createLoanSelector();
             }
       });
 

@@ -44,15 +44,20 @@ public class ReportsTask extends BaseTask
     {
         super(REPORTS, getResourceString(REPORTS));
 
-        // Temporary
-        NavBox navBox = new NavBox(getResourceString("Actions"));
-        navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
-        navBoxes.addElement(navBox);
-
-        navBox = new NavBox(name);
-        navBox.add(NavBox.createBtn("Year End Report", name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn("Grant Statistics Report", name, IconManager.IconSize.Std16));
-        navBoxes.addElement(navBox);
+        if (!isInitialized)
+        {
+            super.initialize(); // sets isInitialized to false
+            
+           // Temporary
+            NavBox navBox = new NavBox(getResourceString("Actions"));
+            navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
+            navBoxes.addElement(navBox);
+    
+            navBox = new NavBox(name);
+            navBox.add(NavBox.createBtn("Year End Report", name, IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Grant Statistics Report", name, IconManager.IconSize.Std16));
+            navBoxes.addElement(navBox);
+        }
     }
 
     /**

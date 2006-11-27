@@ -40,9 +40,9 @@
         <meta attribute="field-description">Date loan was closed.</meta>
     </property>
     
-    <property name="category" type="java.lang.Byte" column="Category" length="3">
+    <property name="isGift" type="boolean" column="IsGift">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Type of record: loan(0), Gift(1)</meta>
+        <meta attribute="field-description">Type of record: loan = false, Gift = true</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -80,7 +80,7 @@
         <meta attribute="field-description">Login name of the user who last edited the record</meta>
     </property>
     
-    <property name="closed" type="short" column="Closed">
+    <property name="IsClosed" type="boolean" column="IsClosed">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">'No' until all preparations in the loan have been returned/resolved.</meta>
     </property>

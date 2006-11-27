@@ -172,7 +172,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
         for (Viewable v : multiView.getViewables())
         {
-            //if (v.get)
             v.registerSaveBtn(okBtn);
         }
         

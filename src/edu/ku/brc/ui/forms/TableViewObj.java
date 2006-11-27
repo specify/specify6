@@ -59,6 +59,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -1034,6 +1035,7 @@ public class TableViewObj implements Viewable,
         protected String[]    fieldNames;
         protected boolean     isSet;
         protected String      dataObjFormatName = null;
+        protected boolean     hasDataObjFormatter = false;
 
         public ColumnInfo(String       parentClassName,
                           FormCell     formCell, 
@@ -1098,11 +1100,6 @@ public class TableViewObj implements Viewable,
         
         public void setFullCompName(String fullCompName)
         {
-            if (getFullCompName().startsWith("accessionAuthorizations"))
-            {
-                int x = 0;
-                x++;
-            }
             this.fullCompName = fullCompName;
             fieldNames = split(StringUtils.deleteWhitespace(fullCompName), ".");
         }
@@ -1169,6 +1166,16 @@ public class TableViewObj implements Viewable,
             }
         }
 
+        public boolean hasDataObjFormatter()
+        {
+            return hasDataObjFormatter;
+        }
+
+        public void setHasDataObjFormatter(boolean hasDataObjFormatter)
+        {
+            this.hasDataObjFormatter = hasDataObjFormatter;
+        }
+
         /**
          * Tells it to clean up
          */
@@ -1219,6 +1226,9 @@ public class TableViewObj implements Viewable,
             return dataObjList == null ? 0 : dataObjList.size();
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.table.TableModel#getValueAt(int, int)
+         */
         public Object getValueAt(int row, int column)
         {
             if (columnList != null && dataObjList != null && dataObjList.size() > 0)
@@ -1241,39 +1251,47 @@ public class TableViewObj implements Viewable,
                     }
                 }*/
                 
-                String dataObjFormatName = colInfo.getDataObjFormatName();
-                
                 Object[] dataValues = UIHelper.getFieldValues(new String[] {colInfo.getFullCompName()}, rowObj, dataGetter);
+                if (dataValues == null || dataValues[0] == null)
+                {
+                    return null;
+                }
                 
-                if (colInfo.getFullCompName().equals("accessionAuthorizations"))
-                {
-                    return DataObjFieldFormatMgr.aggregate((Set)dataValues[0], "AccessionAuthorizations");
-                }
-                if (colInfo.getFullCompName().equals("accessionAgents"))
-                {
-                    return DataObjFieldFormatMgr.aggregate((Set)dataValues[0], "AccessionAgents");
-                }
-                if (colInfo.getFullCompName().equals("permit"))
+                Object dataVal = dataValues[0];
+                
+                if (dataVal instanceof Agent)
                 {
                     int x = 0;
                     x++;
                 }
                 
-                if (dataValues != null && dataValues[0] != null)
+                String dataObjFormatName = colInfo.getDataObjFormatName();
+                if (StringUtils.isNotEmpty(dataObjFormatName))
                 {
-                    Object data = dataValues[0];
-                    if (StringUtils.isNotEmpty(dataObjFormatName))
+                    return DataObjFieldFormatMgr.format(dataVal, dataObjFormatName);
+                    
+                } else if (dataVal instanceof FormDataObjIFace)
+                {
+                    FormDataObjIFace formObj = (FormDataObjIFace)dataVal;
+                    Object val = DataObjFieldFormatMgr.format(dataVal, formObj.getDataClass());
+                    if (val != null)
                     {
-                        return DataObjFieldFormatMgr.format(data, dataObjFormatName);
-                        
-                    } else if (data instanceof Set)
-                    {
-                        
+                        return val;
                     }
-                    return data;
                 }
                 
-                return null;
+                if (dataVal instanceof Set)
+                {
+                    Set<?> objSet = (Set)dataVal;
+                    return DataObjFieldFormatMgr.aggregate(objSet, objSet.iterator().next().getClass());
+                    
+                } else
+                {
+                    log.error("No formatter for ["+dataVal+"]");
+                }
+                
+                return dataVal;
+
                 
                 //return dataGetter.getFieldValue(rowObj, colInfo.getFullCompName());
             }

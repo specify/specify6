@@ -171,7 +171,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     /**
      * Helper.
-     * @param label the (localized) label string
+     * @param summaryLabel the (localized) label string
      * @param iconName the name of the icon (as registered with IconManager)
      * @param hint a (localized) hint string
      * @param menus a List of JComponents to be added in a drop down box
@@ -461,7 +461,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             
             // IMportant for reinitializing
             navBoxes.clear();
-            commands.clear();
+            if (commands != null)
+            {
+                commands.clear();
+            }
         }
     }
 

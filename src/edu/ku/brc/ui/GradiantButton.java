@@ -101,6 +101,19 @@ public class GradiantButton extends JButton implements MouseListener
         w += (int)(scale*1.4f);
         int h = fm.getHeight();
         h += (int)(scale*.3f);
+        
+        // Make sure the height is at least as big as the icon
+        if (icon != null)
+        {
+            if (h <= icon.getIconHeight())
+            {
+                h = icon.getIconHeight() + 4;
+            }
+            if (w <= icon.getIconWidth())
+            {
+                w = icon.getIconWidth() + 2;
+            }
+        }
         return new Dimension(w, h);
     }
     

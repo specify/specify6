@@ -1035,6 +1035,78 @@ public class ViewFactory
                     addControl     = true;
                     addToValidator = false;
                     
+                } else if (cell.getType() == FormCell.CellType.rstable)
+                {
+                    FormCellSubView cellSubView = (FormCellSubView)cell;
+                    
+                    /*
+                    String subViewName = cellSubView.getViewName();
+                    
+                    View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
+                    if (subView != null)
+                    {
+                        AltView altView = null;
+                        for (AltView av : subView.getAltViews())
+                        {
+                            if (av.getViewDef().getType() == ViewDef.ViewType.formTable)
+                            {
+                                altView = av;
+                                break;
+                            }
+                        }
+                        int options = MultiView.VIEW_SWITCHER | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
+                        Viewable viewable = ViewFactory.createFormView(parent, subView, altView.getName(), null, options);
+                        viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);
+                        viewBldObj.closeSubView(cellSubView);
+                        curMaxRow = rowInx;
+
+                    }*/
+                    
+                    
+
+                    String subViewName = cellSubView.getViewName();
+
+                    View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
+                    if (subView != null)
+                    {
+                        if (parent != null)
+                        {
+                            int options = MultiView.VIEW_SWITCHER
+                                    | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
+
+                            
+                            AltView altView = null;
+                            for (AltView av : subView.getAltViews())
+                            {
+                                if (av.getViewDef().getType() == ViewDef.ViewType.formTable)
+                                {
+                                    altView = av;
+                                    break;
+                                }
+                            }
+                            MultiView multiView = new MultiView(parent, cellSubView.getName(), subView, altView, parent.getCreateWithMode(), options);
+                            parent.addChild(multiView);
+
+                            viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);
+                            viewBldObj.closeSubView(cellSubView);
+                            curMaxRow = rowInx;
+
+                        }
+                        else
+                        {
+                            log.error("buildFormView - parent is NULL for subview [" + subViewName + "]");
+                        }
+
+                    }
+                    else
+                    {
+                        log.error("buildFormView - Could find subview's with ViewSet[" + cellSubView.getViewSetName()
+                                + "] ViewName[" + subViewName + "]");
+                    }
+                    
+                    // still have compToAdd = null;
+                    colInx += 2;
+                    
                 } else if (cell.getType() == FormCell.CellType.panel)
                 {
                     FormCellPanel           cellPanel = (FormCellPanel)cell;

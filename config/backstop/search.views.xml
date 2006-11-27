@@ -8,7 +8,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Agent Search Form]]></desc>
             <altviews>
-                <altview name="AgentSearch" viewdef="AgentSearch" label="Edit" mode="edit" validated="false" default="true"/>
+                <altview name="AgentSearch" viewdef="AgentSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -18,7 +18,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Permit Search Form]]></desc>
             <altviews>
-                <altview name="PermitSearch" viewdef="PermitSearch" label="Edit" mode="edit" validated="false" default="true"/>
+                <altview name="PermitSearch" viewdef="PermitSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -28,7 +28,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Accession Search Form]]></desc>
             <altviews>
-                <altview name="AccessionSearch" viewdef="AccessionSearch" label="Edit" mode="edit" validated="false" default="true"/>
+                <altview name="AccessionSearch" viewdef="AccessionSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -38,7 +38,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Geography Search Form]]></desc>
             <altviews>
-                <altview name="GeographySearch" viewdef="GeographySearch" label="Edit" mode="edit" validated="false" default="true"/>
+                <altview name="GeographySearch" viewdef="GeographySearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
     </views>

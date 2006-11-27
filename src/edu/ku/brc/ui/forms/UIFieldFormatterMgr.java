@@ -15,8 +15,10 @@
 package edu.ku.brc.ui.forms;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -73,6 +75,63 @@ public class UIFieldFormatterMgr
     }
 
     /**
+     * Returns a formatter by data class. Returns the "default" formatter and if no default
+     * is set it returns the first one it finds.
+     * @param clazz the class of the data tghat the formatter is used for.
+     * @return return a formatter if it is there, returns null if it isn't
+     */
+    public static Formatter getFormatter(final Class clazz)
+    {
+        Formatter formatter = null;
+        for (Enumeration<Formatter> e=instance.hash.elements();e.hasMoreElements();)
+        {
+            Formatter f = e.nextElement();
+            if (clazz == f.getDataClass())
+            {
+                if (f.isDefault())
+                {
+                    return f;
+                }
+                if (formatter == null)
+                {
+                    formatter = f;
+                }
+            }
+        }
+        return formatter;
+    }
+
+    /**
+     * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
+     * @param clazz the class of the data tghat the formatter is used for.
+     * @return return a list of formatters that match the class
+     */
+    public static List<Formatter> getFormatterList(final Class clazz)
+    {
+        Vector<Formatter> list = new Vector<Formatter>();
+        Formatter defFormatter = null;
+        for (Enumeration<Formatter> e=instance.hash.elements();e.hasMoreElements();)
+        {
+            Formatter f = e.nextElement();
+            if (clazz == f.getDataClass())
+            {
+                if (f.isDefault())
+                {
+                    defFormatter = f;
+                } else
+                {
+                    list.add(f);
+                }
+            }
+        }
+        if (defFormatter != null)
+        {
+            list.insertElementAt(defFormatter, 0);
+        }
+        return list;
+    }
+
+    /**
      * Loads the formats from the config file.
      *
      */
@@ -89,8 +148,10 @@ public class UIFieldFormatterMgr
                 {
                     Element formatElement = (Element)fObj;
 
-                    String  name   = formatElement.attributeValue("name");
-                    String  fType  = formatElement.attributeValue("type");
+                    String  name          = formatElement.attributeValue("name");
+                    String  fType         = formatElement.attributeValue("type");
+                    String  dataClassName = formatElement.attributeValue("class");
+                    boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
 
                     List<?>              fieldsList = formatElement.selectNodes("field");
                     List<FormatterField> fields     = new ArrayList<FormatterField>();
@@ -99,8 +160,8 @@ public class UIFieldFormatterMgr
                     {
                         Element fldElement = (Element)fldObj;
 
-                        int       size  = XMLHelper.getAttr(fldElement, "size", 1);
-                        String    value = fldElement.attributeValue("value");
+                        int       size    = XMLHelper.getAttr(fldElement, "size", 1);
+                        String    value   = fldElement.attributeValue("value");
                         String    typeStr = fldElement.attributeValue("type");
                         FieldType type = null;
                         try
@@ -112,9 +173,18 @@ public class UIFieldFormatterMgr
                         }
                         fields.add(new FormatterField(type, size, value));
                     }
+                    
+                    Class dataClass = null;
+                    try
+                    {
+                        dataClass = Class.forName(dataClassName);
+                    } catch (Exception ex)
+                    {
+                        log.error("Couldn't load class ["+dataClassName+"]");
+                    }
 
-                    boolean isDate = StringUtils.isNotEmpty(fType) && fType.equals("date");
-                    Formatter formatter = new Formatter(name, isDate, fields);
+                    boolean   isDate    = StringUtils.isNotEmpty(fType) && fType.equals("date");
+                    Formatter formatter = new Formatter(name, isDate, dataClass, isDefault, fields);
                     if (isDate && fields.size() == 0)
                     {
                         addFieldsForDate(formatter);
@@ -194,15 +264,23 @@ public class UIFieldFormatterMgr
 
     public class Formatter
     {
-        protected String name;
-        protected boolean isDate;
+        protected String               name;
+        protected Class                dataClass;
+        protected boolean              isDate;
+        protected boolean              isDefault;
         protected List<FormatterField> fields;
 
-        public Formatter(String name, boolean isDate, List<FormatterField> fields)
+        public Formatter(final String  name, 
+                         final boolean isDate, 
+                         final Class   dataClass,
+                         final boolean isDefault,
+                         final List<FormatterField> fields)
         {
-            this.name   = name;
-            this.isDate = isDate;
-            this.fields = fields;
+            this.name      = name;
+            this.dataClass = dataClass;
+            this.isDate    = isDate;
+            this.isDefault = isDefault;
+            this.fields    = fields;
         }
 
         public List<FormatterField> getFields()
@@ -218,6 +296,16 @@ public class UIFieldFormatterMgr
         public boolean isDate()
         {
             return isDate;
+        }
+
+        public Class getDataClass()
+        {
+            return dataClass;
+        }
+
+        public boolean isDefault()
+        {
+            return isDefault;
         }
 
 

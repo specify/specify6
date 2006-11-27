@@ -21,7 +21,7 @@
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
                 <altview name="AccessionAgent IconView" viewdef="AccessionAgentIconView" label="IconView " mode="view" validated="false"/>
-                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit" validated="false"/>
+                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit" validated="true"/>
                 <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view" validated="false"/>
                 <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
@@ -86,7 +86,7 @@
             <desc><![CDATA[The Attachments Icon View.]]></desc>
             <altviews>
                 <altview name="Attachments Icon View" viewdef="AttachmentsIconView" label="IconView" mode="view" validated="false" default="true"/>                
-                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit" validated="false"/>                
+                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit" validated="true"/>                
             </altviews>
         </view>
 
@@ -143,15 +143,34 @@
         </view>
         
         <view name="Loan"
-        	class="edu.ku.brc.specify.datamodel.Loan"
-        	resourcelabels="false">
-        	<desc><![CDATA[Loan display form]]></desc>
-        	<altviews>
-        		<altview name="Loan View" viewdef="Loan" label="View" mode="view" validated="false" default="true"/>
-        		<altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit" validated="false"/>
-			</altviews>
-		</view>
-		
+            class="edu.ku.brc.specify.datamodel.Loan"
+            resourcelabels="false">
+            <desc><![CDATA[Loan display form]]></desc>
+            <altviews>
+                <altview name="Loan View" viewdef="Loan" label="View" mode="view" validated="false" default="true"/>
+                <altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="LoanItems"
+            class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+            resourcelabels="false">
+            <desc><![CDATA[Loan display form]]></desc>
+            <altviews>
+                <altview name="LoanItems View" viewdef="LoanItems" label="View" mode="view" validated="false" default="true"/>
+                <altview name="LoanItems Edit" viewdef="LoanItems" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="LoanPreparation"
+            class="edu.ku.brc.specify.datamodel.Preparation"
+            resourcelabels="false">
+            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Preparation View" viewdef="LoanPreparation" label="View" mode="view" validated="false"/>
+            </altviews>
+        </view>
+        
         <view name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
             resourcelabels="false">
@@ -640,9 +659,12 @@
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
     		<rows>
-    			<row>
+    			<!-- <row>
     				<cell type="separator" label="KU Fish" colspan="12"/>
-    			</row>
+    			</row> -->
+    		    <row>
+    		        <cell type="label" label="Fish" icon="CollectionObject" recordobj="true" colspan="12"/>
+    		    </row>    		    
     			<row>
     			    <cell type="label" labelfor="1" label="Catalog Number" uitype="text"/>
     			    <cell type="field" id="1" name="catalogNumber" format="%.0f" uitype="text"/>
@@ -894,6 +916,7 @@
                 </row>
             </rows>
         </viewdef>
+
         
         <viewdef
             type="form"
@@ -901,57 +924,116 @@
             class="edu.ku.brc.specify.datamodel.Loan"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
-
+            
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>p,6dlu,p,15dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,5dlu,p</rowDef>
-<!--            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,5dlu,p,5dlu,p</rowDef> -->
-
+            <columnDef>p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
             <rows>
                 <row>
-                    <cell type="separator" label="Loan" colspan="3"/>
+                     <cell type="separator" label="Loan" colspan="8"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Number"/>
-                    <cell type="field" id="1" name="loanNumber" uitype="text" cols="50" colspan="1" isrequired="true"/>
-                </row>
-                <!--
-                <row>
-                    <cell type="label" labelfor="2" label="Date"/>
-                    <cell type="field" id="2" name="loanDate" uitype="text" cols="50" colspan="1" isrequired="true"/>
+                     <cell type="label" labelfor="1" label="Number"/>
+                     <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                     <cell type="label" labelfor="2" label=""/>
+                     <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" valtype="Changed" initialize="editable=true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Curr Due Date"/>
-                    <cell type="field" id="3" name="currentDueDate" uitype="text" cols="50" colspan="1"/>
+                     <cell type="label" labelfor="3" label="Date"/>
+                    <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true" default="today"/>
+                     <cell type="label" labelfor="4" label="Date Closed"/>
+                    <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Orig Due Date"/>
-                    <cell type="field" id="4" name="originalDueDate" uitype="text" cols="50" colspan="1"/>
+                     <cell type="label" labelfor="5" label="Remarks"/>
+                     <cell type="field" id="5" name="remarks" uitype="textarea" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Date Closed"/>
-                    <cell type="field" id="5" name="dateClosed" uitype="text" cols="50" colspan="1"/>
+                    <cell type="separator" label="Preparations To be Loaned" colspan="8"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Category"/>
-                    <cell type="field" id="6" name="category" uitype="text" cols="50" colspan="1"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="8"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Closed"/>
-                    <cell type="field" id="7" name="closed" uitype="text" cols="50" colspan="1"/>
-                </row>
-                -->
-                <row>
-                    <cell type="label" labelfor="8" label="Remarks"/>
-                    <cell type="field" id="8" name="remarks" uitype="textarea" colspan="1"/>
-                </row>
-                <row>
-                	<cell type="label" labelfor="9" label="Attachments"/>
-                    <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="1"/>
+                     <cell type="label" labelfor="9" label="Attachments"/>
+                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="6"/>
                 </row>
             </rows>
         </viewdef>
-
+        
+        <viewdef
+            type="form"
+            name="LoanItems"
+            class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Loan viewing form.]]></desc>
+            <columnDef>100px,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Quantity"/>
+                    <cell type="field" id="1" name="quantity" uitype="text" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Description"/>
+                    <cell type="field" id="2" name="descriptionOfMaterial" uitype="text" colspan="2" valtype="Changed"/>
+                </row>
+                <!-- <row>
+                    <cell type="label" labelfor="5" label="Comments"/>
+                    <cell type="field" id="5" name="outComments" uitype="textarea" colspan="2"/>
+                </row> -->
+                <row>
+                    <cell type="subview" viewname="LoanPreparation" id="9" name="preparation" readonly="true" colspan="4"/>
+                </row>                
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="LoanPreparation"
+            class="edu.ku.brc.specify.datamodel.Preparation"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Preparation for Collection Object form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="7" label="Prep Method"/>
+                    <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Prepared Date"/>
+                    <cell type="field" id="1" name="preparedDate" format="" uitype="text"/>
+                    
+                    <cell type="label" labelfor="2" label="Prepared By"/>
+                    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Count"/>
+                    <cell type="field" id="3" name="count" uitype="text"/>
+                    
+                    <cell type="label" labelfor="4" label="Storage"/>
+                    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Size"/>
+                    <cell type="field" id="5" name="attrs.size" uitype="text"/>
+                    
+                    <cell type="label" labelfor="6" label="Sex"/>
+                    <cell type="field" id="6" uitype="combobox" name="attrs.sex" initialize="data=Unknown, Male, Female"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        
         <viewdef
             type="form"
             name="Locality"
