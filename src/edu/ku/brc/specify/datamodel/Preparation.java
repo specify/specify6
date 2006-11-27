@@ -155,25 +155,33 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * The number of objects (specimens, slides, pieces) prepared
      */
-    public Integer getCount() {
+    public Integer getCount() 
+    {
         return this.count;
     }
     
-    public void setCount(Integer count) {
+    public void setCount(Integer count) 
+    {
         this.count = count;
     }
     
     public int getAvailable()
     {
+        int cnt = this.count != null ? this.count : 0;
+        return cnt - getQuantityOut();
+    }
+
+    public int getQuantityOut()
+    {
         int stillOut = 0;
         for (LoanPhysicalObject lpo : getLoanPhysicalObjects())
         {
-            int quantityLoaned   = lpo.getQuantity();
-            int quantityReturned = lpo.getQuantityReturned();
+            int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
+            int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;
             
             stillOut += (quantityLoaned - quantityReturned);
         }
-        return getCount() - stillOut;
+        return stillOut;
     }
 
     /**
