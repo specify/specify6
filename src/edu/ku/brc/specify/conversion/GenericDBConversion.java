@@ -3673,8 +3673,11 @@ public class GenericDBConversion
     	session.save(freezer);
     	
     	rootItem.setChild(building);
+        building.setParent(rootItem);
     	building.setChild(room);
+        room.setParent(building);
     	room.setChild(freezer);
+        freezer.setParent(room);
     	
     	locDef.addTreeDefItem(building);
     	locDef.addTreeDefItem(room);
