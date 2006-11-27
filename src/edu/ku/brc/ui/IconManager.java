@@ -138,10 +138,7 @@ public class IconManager
         try
         {
             icon = new ImageIcon(url);
-            if (icon == null)
-            {
-                log.error("Image at URL ["+url+"] couldn't be loaded.");
-            }
+
         } catch (NullPointerException ex)
         {
             log.error("Image at URL ["+url+"] couldn't be loaded.");

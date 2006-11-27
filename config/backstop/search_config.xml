@@ -374,7 +374,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
         </table>
       
       
-        <table id="12" tableid="1" indexed="false" usehitscache="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 144">
+        <table id="12" tableid="1" indexed="false" usehitscache="false" name="CollObject" title="Collection ObjectX" priority="1" color="30, 144, 144">
             <outofdate>
                 <table name="collectionobject" title="Collection Object"/>
                 <table name="determination" title="Determination"/>
@@ -382,7 +382,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[SELECT ColFieldsDef From collectionobject 
+                    <![CDATA[SELECT distinct ColFieldsDef From collectionobject 
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
  Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
                 </sql>
@@ -399,7 +399,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </index>
             <detailView icon="ColObj">
                 <sql>
-                    <![CDATA[SELECT collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
+                    <![CDATA[SELECT distinct collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
                 </sql>
                 <captions>
                     <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>

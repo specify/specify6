@@ -1040,7 +1040,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     }
                 }
                 
-                if (doAll || (needsUpdating && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql())))
+                if ((doAll || needsUpdating) && tableInfo.isIndexed() && isNotEmpty(tableInfo.getBuildSql()))
                 {
                     log.debug("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
                     indvLabel.setText(tableInfo.getTitle());
