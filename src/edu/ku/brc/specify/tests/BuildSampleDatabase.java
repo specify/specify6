@@ -484,6 +484,7 @@ public class BuildSampleDatabase
             int quantity = Math.max(1,rand.nextInt(available));
             LoanPhysicalObject lpo = DataBuilder.createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, closedLoan);
             loanPhysObjs.add(lpo);
+            p.getLoanPhysicalObjects().add(lpo);
         }
         
         Calendar loanDate2 = Calendar.getInstance();
@@ -506,6 +507,7 @@ public class BuildSampleDatabase
             int quantity = Math.max(1,rand.nextInt(available));
             LoanPhysicalObject lpo = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, overdueLoan);
             loanPhysObjs.add(lpo);
+            p.getLoanPhysicalObjects().add(lpo);
         }
 
         Calendar loanDate3 = Calendar.getInstance();
@@ -528,6 +530,7 @@ public class BuildSampleDatabase
                 int quantity = Math.max(1,rand.nextInt(available));
                 LoanPhysicalObject newLPO = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, lpo.getPreparation(), loan3);
                 newLoanLPOs.add(newLPO);
+                lpo.getPreparation().getLoanPhysicalObjects().add(newLPO);
                 
                 // stop after we put 6 LPOs in the new loan
                 lpoCountInNewLoan++;
