@@ -116,7 +116,7 @@ public interface FormDataObjIFace
      * Returns the actual class object befoire being wrapped by ORM tools.
      * @return the actual class object befoire being wrapped by ORM tools.
      */
-    public Class getDataClass();
+    public Class<?> getDataClass();
     
     //---------------------------------------------------------------------------
     // Property Change Support
