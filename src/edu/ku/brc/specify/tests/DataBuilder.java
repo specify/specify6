@@ -493,6 +493,10 @@ public class DataBuilder
         geography.setDefinition(gtd);
         geography.setName(name);
         geography.setParent(parent);
+        if (parent!=null)
+        {
+            parent.getChildren().add(geography);
+        }
         geography.setRankId(rankId);
         GeographyTreeDefItem defItem = gtd.getDefItemByRank(rankId);
         if (defItem != null)
@@ -592,6 +596,10 @@ public class DataBuilder
         location.setDefinition(ltd);
         location.setName(name);
         location.setParent(parent);
+        if (parent!=null)
+        {
+            parent.getChildren().add(location);
+        }
         LocationTreeDefItem defItem = ltd.getDefItemByRank(rankId);
         if (defItem != null)
         {
@@ -728,6 +736,10 @@ public class DataBuilder
         gtp.setDefinition(gtptd);
         gtp.setName(name);
         gtp.setParent(parent);
+        if (parent!=null)
+        {
+            parent.getChildren().add(gtp);
+        }
         gtp.setStart(startMYA);
         gtp.setStartUncertainty(0.0f);
         gtp.setEnd(endMYA);
@@ -809,6 +821,10 @@ public class DataBuilder
         taxon.setDefinition(ttd);
         taxon.setName(name);
         taxon.setParent(parent);
+        if (parent!=null)
+        {
+            parent.getChildren().add(taxon);
+        }
         TaxonTreeDefItem defItem = ttd.getDefItemByRank(rankId);
         if (defItem != null)
         {
@@ -1569,8 +1585,7 @@ public class DataBuilder
                                   final Calendar dateClosed,
                                   final Boolean isGift,
                                   final Boolean isClosed,
-                                  final Shipment shipment,
-                                  final List<Preparation> preps)
+                                  final Shipment shipment)
     {
         Loan loan = new Loan();
         loan.initialize();
@@ -1585,20 +1600,6 @@ public class DataBuilder
         loan.setIsGift(isGift);
         loan.setIsClosed(isClosed);
         
-        for (Preparation p : preps)
-        {
-            LoanPhysicalObject lpo = new LoanPhysicalObject();
-            lpo.initialize();
-            
-            short quantity = (short)(p.getCount() > 1 ? p.getCount() / 2 : p.getCount());
-            
-            lpo.setQuantity(quantity);
-            //lpo.setDescriptionOfMaterial()
-            lpo.setPreparation(p);
-            
-            loan.getLoanPhysicalObjects().add(lpo);
-            lpo.setLoan(loan);
-        }
         persist(loan);
         return loan;
     }

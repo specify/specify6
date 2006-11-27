@@ -31,6 +31,8 @@ import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriod;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoan;
+import static edu.ku.brc.specify.tests.DataBuilder.createLoanPhysicalObject;
+import static edu.ku.brc.specify.tests.DataBuilder.createLoanReturnPhysicalObject;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoanAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocality;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocation;
@@ -52,9 +54,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Random;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -88,6 +88,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgents;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
@@ -118,9 +119,7 @@ public class BuildSampleDatabase
     private static final Logger log      = Logger.getLogger(BuildSampleDatabase.class);
     protected static Calendar   calendar = Calendar.getInstance();
     protected static Session    session;
-    protected static Random     rand     = new Random(331013311);
-    
-
+    protected static FakeRandom     rand = new FakeRandom();
     
     public static Session getSession()
     {
@@ -131,45 +130,7 @@ public class BuildSampleDatabase
     {
         session = s;
     }
-    
-    /**
-     * Adds all the Loan's LoanPhysicalObject to the dataObjects list to be saved.
-     * @param loan the loan
-     * @param dataObjects the list of dataObjects
-     */
-    protected static void addLoanPhysicalObject(final Loan loan, final Vector<Object> dataObjects)
-    {
-        for (LoanPhysicalObject lpo : loan.getLoanPhysicalObjects())
-        {
-            dataObjects.add(lpo);
-        }
-    }
-    
-    /**
-     * Given the full list of preparations it returns a random number of preparations
-     * @param prepsList the complete list of available Preparations
-     * @return a reduced set for the loan (less than 10 of them)
-     */
-    protected static List<Preparation> getPrepsToLoan(final List<Preparation> prepsList)
-    {
-        Hashtable<Integer, Boolean> noResuse = new Hashtable<Integer, Boolean>();
-        
-        List<Preparation> preps = new Vector<Preparation>();
-        
-        int num = (int)(rand.nextDouble() * 10);
-        for (int i=0;i<num;i++)
-        {
-            int inx = (int)(rand.nextDouble() * prepsList.size());
-            Boolean isThere = noResuse.get(inx);
-            if (isThere == null)
-            {
-                preps.add(prepsList.get(inx));
-                noResuse.put(inx, true);
-            }
-        }
-        return preps;
-    }
-    
+
     public static List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         log.info("Creating single discipline database: " + disciplineName);
@@ -433,29 +394,29 @@ public class BuildSampleDatabase
         PrepType xray = createPrepType("x-ray");
 
         List<Preparation> preps = new Vector<Preparation>();
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), rand.nextInt(20)));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), rand.nextInt(20)));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), rand.nextInt(20)));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), rand.nextInt(20)));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), rand.nextInt(20)));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), rand.nextInt(20)));
+        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), rand.nextInt(20)));
+        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)));
+        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), rand.nextInt(20)));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), rand.nextInt(20)));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), rand.nextInt(20)));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)));
 
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), (int)(rand.nextDouble() * 20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), (int)(rand.nextDouble() * 20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), rand.nextInt(20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)));
 
         dataObjects.add(skel);
         dataObjects.add(cas);
@@ -505,11 +466,25 @@ public class BuildSampleDatabase
         Calendar originalDueDate1 = currentDueDate1;
         Calendar dateClosed1 = Calendar.getInstance();
         dateClosed1.set(2004, 7, 4);
-        
+      
+        List<LoanPhysicalObject> loanPhysObjs = new Vector<LoanPhysicalObject>();
         
         Loan closedLoan = createLoan("2006-001", loanDate1, currentDueDate1, originalDueDate1, 
-                                     dateClosed1, Loan.LOAN, Loan.CLOSED, null, getPrepsToLoan(preps));
-        addLoanPhysicalObject(closedLoan, dataObjects);
+                                     dateClosed1, Loan.LOAN, Loan.CLOSED, null);
+        for (int i = 0; i < 7; ++i)
+        {
+            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
+            int available = p.getAvailable();
+            if (available<1)
+            {
+                // retry
+                i--;
+                continue;
+            }
+            int quantity = Math.max(1,rand.nextInt(available));
+            LoanPhysicalObject lpo = DataBuilder.createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, closedLoan);
+            loanPhysObjs.add(lpo);
+        }
         
         Calendar loanDate2 = Calendar.getInstance();
         loanDate2.set(2005, 11, 24);
@@ -517,16 +492,79 @@ public class BuildSampleDatabase
         currentDueDate2.set(2006, 5, 24);
         Calendar originalDueDate2 = currentDueDate2;
         Loan overdueLoan = createLoan("2006-002", loanDate2, currentDueDate2, originalDueDate2,  
-                                      null, Loan.LOAN, Loan.OPEN, null, getPrepsToLoan(preps));
-        addLoanPhysicalObject(overdueLoan, dataObjects);
+                                      null, Loan.LOAN, Loan.OPEN, null);
+        for (int i = 0; i < 5; ++i)
+        {
+            Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
+            int available = p.getAvailable();
+            if (available<1)
+            {
+                // retry
+                i--;
+                continue;
+            }
+            int quantity = Math.max(1,rand.nextInt(available));
+            LoanPhysicalObject lpo = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, overdueLoan);
+            loanPhysObjs.add(lpo);
+        }
+
+        Calendar loanDate3 = Calendar.getInstance();
+        loanDate3.set(2006, 3, 21);
+        Calendar currentDueDate3 = Calendar.getInstance();
+        currentDueDate3.set(2007, 3, 21);
+        Calendar originalDueDate3 = Calendar.getInstance();
+        originalDueDate3.set(2006, 9, 21);
+        Loan loan3 = createLoan("2006-003", loanDate3, currentDueDate3, originalDueDate3,  
+                                      null, Loan.LOAN, Loan.OPEN, null);
+        Vector<LoanPhysicalObject> newLoanLPOs = new Vector<LoanPhysicalObject>();
+        int lpoCountInNewLoan = 0;
+        // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
+        // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
+        for( LoanPhysicalObject lpo: loanPhysObjs)
+        {
+            int available = lpo.getPreparation().getAvailable();
+            if (available > 0)
+            {
+                int quantity = Math.max(1,rand.nextInt(available));
+                LoanPhysicalObject newLPO = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, lpo.getPreparation(), loan3);
+                newLoanLPOs.add(newLPO);
+                
+                // stop after we put 6 LPOs in the new loan
+                lpoCountInNewLoan++;
+                if(lpoCountInNewLoan==6)
+                {
+                    break;
+                }
+            }
+        }
         
+        // create some LoanReturnPhysicalObjects
+        Vector<LoanReturnPhysicalObject> returns = new Vector<LoanReturnPhysicalObject>();
+        for (int i = 0; i < 5; ++i)
+        {
+            LoanPhysicalObject lpo = getObjectByClass(loanPhysObjs, LoanPhysicalObject.class, rand.nextInt(loanPhysObjs.size()));
+            int quantityReturned = Math.max(1, lpo.getQuantity());
+            Calendar returnedDate = Calendar.getInstance();
+            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
+            // make the returned date be a little while after the original loan
+            returnedDate.add(Calendar.DAY_OF_YEAR, 72);
+            LoanReturnPhysicalObject lrpo = createLoanReturnPhysicalObject(returnedDate, (short)quantityReturned, lpo, null, agents.get(0));
+            lpo.addLoanReturnPhysicalObjects(lrpo);
+            lpo.setQuantityReturned(lrpo.getQuantity());
+            returns.add(lrpo);
+        }
+
         dataObjects.add(closedLoan);
         dataObjects.add(overdueLoan);
+        dataObjects.add(loan3);
+        dataObjects.addAll(loanPhysObjs);
+        dataObjects.addAll(newLoanLPOs);
+        dataObjects.addAll(returns);
         
         LoanAgents loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
         LoanAgents loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
-        LoanAgents loanAgent3 = createLoanAgent("borrower", closedLoan, agents.get(5));
-        LoanAgents loanAgent4 = createLoanAgent("borrower", overdueLoan, agents.get(5));
+        LoanAgents loanAgent3 = createLoanAgent("borrower", closedLoan, agents.get(4));
+        LoanAgents loanAgent4 = createLoanAgent("borrower", overdueLoan, agents.get(4));
         dataObjects.add(loanAgent1);
         dataObjects.add(loanAgent2);
         dataObjects.add(loanAgent3);
@@ -534,11 +572,11 @@ public class BuildSampleDatabase
         
         Calendar ship1Date = Calendar.getInstance();
         ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, "2006-001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(5), agents.get(0));
+        Shipment loan1Ship = createShipment(ship1Date, "2006-001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
         
         Calendar ship2Date = Calendar.getInstance();
         ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, "2006-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(5), agents.get(3));
+        Shipment loan2Ship = createShipment(ship2Date, "2006-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
         
         closedLoan.setShipment(loan1Ship);
         overdueLoan.setShipment(loan2Ship);
@@ -903,9 +941,10 @@ public class BuildSampleDatabase
     }
     
 
-    public static Object getObjectByClass( List<Object> objects, Class<?> clazz, int index)
+    @SuppressWarnings("unchecked")
+    public static <T> T getObjectByClass( List<?> objects, Class<T> clazz, int index)
     {
-        Object ret = null;
+        T ret = null;
         int i = -1;
         for (Object o: objects)
         {
@@ -915,7 +954,7 @@ public class BuildSampleDatabase
             }
             if (i==index)
             {
-                ret = o;
+                ret = (T)o;
                 break;
             }
         }
@@ -1005,7 +1044,5 @@ public class BuildSampleDatabase
                 }
             }
         }
-        
-        
     }
 }
