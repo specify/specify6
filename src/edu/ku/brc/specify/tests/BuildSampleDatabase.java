@@ -769,15 +769,15 @@ public class BuildSampleDatabase
         GeologicTimePeriod level0 = createGeologicTimePeriod(treeDef, null,
                 "Time As We Know It", 10.0f, 0.0f, defItemLevel0.getRankId());
         GeologicTimePeriod level1 = createGeologicTimePeriod(treeDef, level0,
-                "Some Really Big Time Period", 5.0f, 0.0f, defItemLevel0.getRankId());
+                "Some Really Big Time Period", 5.0f, 0.0f, defItemLevel1.getRankId());
         GeologicTimePeriod level2 = createGeologicTimePeriod(treeDef, level1,
-                "A Slightly Smaller Time Period", 1.74f, 0.0f, defItemLevel0.getRankId());
+                "A Slightly Smaller Time Period", 1.74f, 0.0f, defItemLevel2.getRankId());
         GeologicTimePeriod level3_1 = createGeologicTimePeriod(treeDef, level2,
-                "Yesterday", 0.1f, 0.0f, defItemLevel0.getRankId());
+                "Yesterday", 0.1f, 0.0f, defItemLevel3.getRankId());
         GeologicTimePeriod level3_2 = createGeologicTimePeriod(treeDef, level2,
-                "A couple of days ago", 0.2f, 0.1f, defItemLevel0.getRankId());
+                "A couple of days ago", 0.2f, 0.1f, defItemLevel3.getRankId());
         GeologicTimePeriod level3_3 = createGeologicTimePeriod(treeDef, level2,
-                "Last week", 0.7f, 1.4f, defItemLevel0.getRankId());
+                "Last week", 0.7f, 1.4f, defItemLevel3.getRankId());
         newObjs.add(level0);
         newObjs.add(level1);
         newObjs.add(level2);
