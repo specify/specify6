@@ -715,6 +715,8 @@ public class BuildSampleDatabase
                 new String[] { "Dakota", "Logan", "Valley", "Wheeler" }, county.getRankId());
         // 20, 21, 22, 23
         newObjs.addAll(counties);
+        
+        earth.fixFullNameForAllDescendants();
 
         return newObjs;
     }
@@ -766,6 +768,8 @@ public class BuildSampleDatabase
         newObjs.add(level3_2);
         newObjs.add(level3_3);
 
+        level0.fixFullNameForAllDescendants();
+        
         return newObjs;
     }
 
@@ -827,6 +831,8 @@ public class BuildSampleDatabase
         // 12
         newObjs.add(shelf1);
         
+        dyche.fixFullNameForAllDescendants();
+        
         return newObjs;
     }
 
@@ -879,6 +885,8 @@ public class BuildSampleDatabase
         kids = createTaxonChildren(taxonTreeDef, genus, speciesNames2, defItemLevel3.getRankId());
         // 15, 16, 17, 18, 19, 20, 21
         newObjs.addAll(kids);
+        
+        order.fixFullNameForAllDescendants();
         
         return newObjs;
     }
