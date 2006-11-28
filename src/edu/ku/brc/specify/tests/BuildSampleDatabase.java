@@ -214,8 +214,23 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating localities");
         Locality forestStream = createLocality("Unnamed forest stream", (Geography)geos.get(13));
+        forestStream.setLat1text("38.925467 deg N");
+        forestStream.setLatitude1(38.925467);
+        forestStream.setLong1text("94.984867 deg W");
+        forestStream.setLongitude1(-94.984867);
+
         Locality lake   = createLocality("Deep, dark lake", (Geography)geos.get(18));
+        lake.setLat1text("41.548842 deg N");
+        lake.setLatitude1(41.548842);
+        lake.setLong1text("93.732129 deg W");
+        lake.setLongitude1(-93.732129);
+        
         Locality farmpond = createLocality("Farm pond", (Geography)geos.get(21));
+        farmpond.setLat1text("41.642187 deg N");
+        farmpond.setLatitude1(41.642187);
+        farmpond.setLong1text("100.403163 deg W");
+        farmpond.setLongitude1(-100.403163);
+
         dataObjects.add(forestStream);
         dataObjects.add(lake);
         dataObjects.add(farmpond);
