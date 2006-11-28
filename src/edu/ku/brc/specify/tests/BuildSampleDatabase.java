@@ -687,7 +687,9 @@ public class BuildSampleDatabase
         GeographyTreeDefItem cont = createGeographyTreeDefItem(root, geoTreeDef, "Continent", 100);
         GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
         GeographyTreeDefItem state = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
+        state.setIsInFullName(true);
         GeographyTreeDefItem county = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
+        county.setIsInFullName(true);
         // 1
         newObjs.add(root);
         // 2
