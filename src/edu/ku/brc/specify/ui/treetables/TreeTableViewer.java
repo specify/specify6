@@ -1218,6 +1218,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 			
 			boolean changed = listModel.reparent(child,newParent);
+            redoNodeNumbers = true;
+            unsavedChanges = true;
 			return changed;
 		}
 		return false;

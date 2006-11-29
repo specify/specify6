@@ -146,7 +146,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 			{
 				node.setParent(null);
 			}
-			session.delete(node);
+            if (node.getTreeId()!=null)
+            {
+                session.delete(node);
+            }
 		}
 		try
 		{
