@@ -41,8 +41,9 @@ import net.sf.jasperreports.engine.JRScriptletException;
  */
 public class Scriptlet extends JRDefaultScriptlet
 {
+	
 
-    /**
+	/**
      * beforeReportInit
      */
     public void beforeReportInit() throws JRScriptletException
@@ -65,7 +66,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public void beforePageInit() throws JRScriptletException
     {
-        //System.out.println("call   beforePageInit : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
+       //System.out.println("call   beforePageInit : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
     }
 
 
@@ -74,7 +75,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public void afterPageInit() throws JRScriptletException
     {
-        //System.out.println("call   afterPageInit  : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
+       //System.out.println("call   afterPageInit  : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
     }
 
 
@@ -83,7 +84,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public void beforeColumnInit() throws JRScriptletException
     {
-        //System.out.println("call     beforeColumnInit");
+       //System.out.println("call     beforeColumnInit");
     }
 
 
@@ -92,7 +93,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public void afterColumnInit() throws JRScriptletException
     {
-        //System.out.println("call     afterColumnInit");
+       //System.out.println("call     afterColumnInit");
     }
 
 
@@ -138,7 +139,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public void beforeDetailEval() throws JRScriptletException
     {
-        //System.out.println("        detail");
+       //System.out.println("        detail");
     }
 
 
@@ -304,4 +305,115 @@ public class Scriptlet extends JRDefaultScriptlet
         return fieldNumber == null ? "" : fieldNumber;
     }
 
+    /**
+     * Creates the category string wich is either "LOAN" or "GIFT"
+     * @param isGift
+     * @return "LOAN" if isGift is null else "GIFT"
+     */
+    public String loanCategory(Boolean isGift)
+    {
+    	if(isGift)
+    	{
+    		return "GIFT";
+    	}
+    	else
+    	{
+    		return "LOAN";
+    	}
+    }
+    
+    /**
+     * Builds the shipped to agent's name string
+     * @param firstName
+     * @param lastName
+     * @param middleInitial
+     */
+    public String buildNameString(String firstName, String lastName, String middleInitial)
+    {
+    	String name = lastName + ", " + firstName;
+    	if (middleInitial != null)
+    	{
+    		name += " " + middleInitial;
+    	}
+    	return name;
+    }
+    
+    /**
+     * Builds the locality string
+     * @param geoName - the geography place name (country, state)
+     * @param localityName - the locality name
+     * @param latitude - latitude
+     * @param longitude - longitude
+     */
+    public String buildLocalityString(String geoName, String localityName, String latitude, String longitude)
+    {
+    	String locality = "";
+    	
+    	if (geoName != null && geoName.length() >= 1)
+    	{
+    		locality += geoName;
+    	}
+    	
+    	if (localityName != null && localityName.length() >= 1)
+    	{
+    		locality += ", " + localityName;
+    	}
+    	
+    	if (latitude != null && latitude.length() >= 1)
+    	{
+    		String temp1[] = latitude.split("deg");
+    		locality += ", " + temp1[0] + "° " + temp1[1];
+    	}
+    	
+    	if (longitude != null && longitude.length() >= 1)
+    	{
+    		String temp2[] = longitude.split("deg");
+    		locality += ", " + temp2[0] + "° " + temp2[1];
+    	}
+    	
+    	return locality;
+    }
+    
+    /**
+     * Create a string representing the difference between two dates
+     * @param startDate
+     * @param endDate
+     */
+    public String dateDifference(java.sql.Date startDate, java.sql.Date endDate)
+    {
+    	String loanLength = "";
+    	String startString[] = startDate.toString().split("-");
+    	String endString[] = endDate.toString().split("-");
+    	int yearDiff = Integer.parseInt(endString[0]) - Integer.parseInt(startString[0]);
+    	int monthDiff = Integer.parseInt(endString[1]) - Integer.parseInt(startString[1]);
+    	
+   		monthDiff = yearDiff * 12 + monthDiff;
+   		
+   		loanLength = monthDiff + " months";
+    	
+    	return loanLength;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
