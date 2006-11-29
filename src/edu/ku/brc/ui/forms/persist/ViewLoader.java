@@ -300,6 +300,7 @@ public class ViewLoader
 
         switch (type)
         {
+            case rstable:
             case formTable :
             case form :
                 viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
@@ -317,10 +318,6 @@ public class ViewLoader
                
             case iconview:
                 viewDef = createIconViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
-                break;
-                
-            case rstable:
-                viewDef = createRecordSetTableDef(element, type, name, className, gettableClassName, settableClassName, desc);
                 break;
         }
         return viewDef;
@@ -744,7 +741,7 @@ public class ViewLoader
                             processRows(cellElement, cellPanel.getRows());
                             cell = formRow.addCell(cellPanel);
                             break;
-                        } 
+                        }
                         case subview:
                         {
                             String vsName = cellElement.attributeValue("viewsetname");
@@ -763,7 +760,6 @@ public class ViewLoader
 
                             break;
                         }
-                        case rstable:
                         case iconview:
                         {
                             String vsName = cellElement.attributeValue("viewsetname");
@@ -772,18 +768,13 @@ public class ViewLoader
                                 vsName = instance.viewSetName;
                             }
 
-                            cell = formRow.addCell(new FormCellSubView(cellId, cellName,
-                                                   vsName,
-                                                   cellElement.attributeValue("viewname"),
-                                                   cellElement.attributeValue("class"),
-                                                   getAttr(cellElement, "desc", ""),
-                                                   colspan,
-                                                   rowspan));
-
-                            if (cellType == FormCell.CellType.rstable)
-                            {
-                                cell.setType(FormCell.CellType.rstable);
-                            }
+                             cell = formRow.addCell(new FormCellSubView(cellId, cellName,
+                                    vsName,
+                                    cellElement.attributeValue("viewname"),
+                                    cellElement.attributeValue("class"),
+                                    getAttr(cellElement, "desc", ""),
+                                    colspan,
+                                    rowspan));
                             break;
                         }
 
@@ -865,35 +856,6 @@ public class ViewLoader
 
         //formView.setEnableRules(getEnableRules(element));
 
-        return formView;
-    }
-
-    /**
-     * @param element the DOM element for building the form
-     * @param type the type of form to be built
-     * @param name the name of the form
-     * @param className the class name of the data object
-     * @param gettableClassName the class name of the getter
-     * @param settableClassName the class name of the setter
-     * @param desc the description
-     * @return a form view of type "form"
-     */
-    protected static ViewDef createRecordSetTableDef(final Element element,
-                                                     final ViewDef.ViewType type,
-                                                     final String  name,
-                                                     final String  className,
-                                                     final String  gettableClassName,
-                                                     final String  settableClassName,
-                                                     final String  desc)
-    {
-        RecordSetTableViewDef formView = new RecordSetTableViewDef(type, 
-                name, 
-                className, 
-                gettableClassName, 
-                settableClassName, 
-                desc,
-                getAttr(element, "viewset", null),
-                getAttr(element, "view", null));
         return formView;
     }
 

@@ -128,7 +128,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return RepositoryAgreement.class;
     }

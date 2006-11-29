@@ -97,7 +97,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return TaxonTreeDefItem.class;
     }

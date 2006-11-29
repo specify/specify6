@@ -109,7 +109,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return InfoRequest.class;
     }
@@ -212,10 +212,6 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     public void setAgent(Agent agent) {
         this.agent = agent;
     }
-
-
-
-
 
     // Add Methods
 

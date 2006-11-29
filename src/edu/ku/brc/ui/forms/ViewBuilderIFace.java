@@ -90,6 +90,10 @@ public interface ViewBuilderIFace
      */
     public void addSubView(FormCellSubView formCell, MultiView subView, int colInx, int rowInx, int colSpan, int rowSpan);
     
+    /**
+     * Tells it the FormCellSubView is being closed.
+     * @param formCell the formcel being closed.
+     */
     public void closeSubView(FormCellSubView formCell);
     
     /**

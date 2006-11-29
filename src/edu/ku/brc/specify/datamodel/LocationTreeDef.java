@@ -87,7 +87,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return LocationTreeDef.class;
     }

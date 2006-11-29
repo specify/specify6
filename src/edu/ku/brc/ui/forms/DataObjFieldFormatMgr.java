@@ -29,6 +29,8 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.UIHelper;
 
 
@@ -296,9 +298,15 @@ public class DataObjFieldFormatMgr
                                 strBuf.append(value.toString());
                             } else
                             {
+                                String sep = field.getSep();
+                                if (sep != null)
+                                {
+                                    strBuf.append(sep);
+                                }
+                                //log.debug("["+value+"]["+format.getFormat()+"]");
                                 args[0] = value;
                                 Formatter formatter = new Formatter();
-                                formatter.format(format.getFormat(), args);
+                                formatter.format(field.getFormat(), args);
                                 strBuf.append(formatter.toString());
                                 args[0] = null;
                             }
@@ -522,6 +530,11 @@ public class DataObjFieldFormatMgr
     public static String aggregate(final Collection<?> items, final Class dataClass)
     {
         Aggregator defAgg = null;
+        if (dataClass == Determination.class)
+        {
+            int x = 0;
+            x++;
+        }
         for (Enumeration<Aggregator> e=instance.aggHash.elements();e.hasMoreElements();)
         {
             Aggregator agg = e.nextElement();

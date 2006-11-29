@@ -94,7 +94,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return DeterminationCitation.class;
     }

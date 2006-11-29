@@ -82,7 +82,7 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return AttachmentMetadata.class;
     }

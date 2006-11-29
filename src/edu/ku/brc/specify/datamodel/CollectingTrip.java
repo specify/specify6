@@ -93,7 +93,7 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return CollectingTrip.class;
     }

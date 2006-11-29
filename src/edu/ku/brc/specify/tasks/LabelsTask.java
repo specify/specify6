@@ -24,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -44,13 +43,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.opensymphony.oscache.util.StringUtil;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -66,7 +65,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconListCellRenderer;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
@@ -94,6 +92,7 @@ public class LabelsTask extends BaseTask
 
     public static final String DOLABELS_ACTION     = "DoLabels";
     public static final String NEWRECORDSET_ACTION = "NewRecordSet";
+    public static final String PRINT_LABEL         = "PrintLabel";
 
     // Data Members
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -158,21 +157,7 @@ public class LabelsTask extends BaseTask
             
             for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
             {
-                Map<String, String> params = new HashMap<String, String>();
-                
-                String metaData = ap.getMetaData();
-                for (Object arg : StringUtil.split(metaData, ';'))
-                {
-                    if (StringUtils.isNotEmpty((String)arg))
-                    {
-                        List pair = StringUtil.split((String)arg, '=');
-                        if (pair.size() == 2)
-                        {
-                            params.put((String)pair.get(0), (String)pair.get(1));
-                            //log.debug("["+(String)pair.get(0)+"]["+(String)pair.get(1)+"]");
-                        }
-                    }
-                }
+                Map<String, String> params = ap.getMetaDataMap();
                 params.put("title", ap.getDescription());
                 params.put("file", ap.getName());
                 //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
@@ -293,7 +278,7 @@ public class LabelsTask extends BaseTask
      * @param tableId the table id
      * @return returns the selected RecordSet or null
      */
-    protected RecordSetIFace askForRecordSet(final int tableId)
+    public static RecordSetIFace askForRecordSet(final int tableId)
     {
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), tableId);
         if (dlg.hasRecordSets())
@@ -450,7 +435,7 @@ public class LabelsTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
 
-    public void doCommand(CommandAction cmdAction)
+    public void doCommand(final CommandAction cmdAction)
     {
         if (cmdAction.getAction().equals(DOLABELS_ACTION))
         {
@@ -458,12 +443,22 @@ public class LabelsTask extends BaseTask
             {
                 RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
 
+                String labelFileName = null;
+                if (cmdAction instanceof LabelsCommandAction)
+                {
+                    
+                }
+                
                 if (checkForALotOfLabels(recordSet))
                 {
-                    String labelName = askForLabelName();
-                    if (labelName != null)
+                    if (StringUtils.isNotEmpty(labelFileName))
                     {
-                        doLabels(labelName, "Labels", recordSet);
+                        labelFileName = askForLabelName();
+                    }
+                    
+                    if (StringUtils.isNotEmpty(labelFileName))
+                    {
+                        doLabels(labelFileName, "Labels", recordSet);
                     }
                 }
             }
@@ -481,6 +476,27 @@ public class LabelsTask extends BaseTask
                         gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), nbi.getUIComponent(), ga));
                     }
                  }
+            }
+        } else if (cmdAction.getAction().equals(PRINT_LABEL))
+        {
+            if (cmdAction.getData() instanceof RecordSet)
+            {
+                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+
+                if (checkForALotOfLabels(recordSet))
+                {
+                    String labelFileName = cmdAction.getProperty("file");
+                    
+                    if (StringUtils.isEmpty(labelFileName))
+                    {
+                        labelFileName = askForLabelName();
+                    }
+                    
+                    if (StringUtils.isNotEmpty(labelFileName))
+                    {
+                        doLabels(labelFileName, cmdAction.getProperty("title"), recordSet);
+                    }
+                }
             }
         } else if (cmdAction.getType().equals(RecordSetTask.RECORD_SET) &&
                    cmdAction.getAction().equals("Clicked"))
@@ -730,4 +746,31 @@ public class LabelsTask extends BaseTask
     }
 
 
+    public class LabelsCommandAction extends CommandAction
+    {
+        protected String reportType;
+        protected String reportSubType;
+        
+        public LabelsCommandAction(final String action, 
+                                   final String reportType, 
+                                   final String reportSubType, 
+                                   final Object data)
+        {
+            super(LabelsTask.LABELS, action, data);
+            
+            this.reportType    = reportType;
+            this.reportSubType = reportSubType;
+        }
+
+        public String getReportSubType()
+        {
+            return reportSubType;
+        }
+
+        public String getReportType()
+        {
+            return reportType;
+        }
+        
+    }
 }

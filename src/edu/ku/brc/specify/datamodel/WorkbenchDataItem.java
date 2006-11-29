@@ -97,7 +97,7 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return WorkbenchDataItem.class;
     }

@@ -16,7 +16,6 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,15 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
@@ -43,22 +42,17 @@ import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -69,8 +63,6 @@ import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.DataActionEvent;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -87,7 +79,10 @@ public class InteractionsTask extends BaseTask
 
     public static final String     INTERACTIONS        = "Interactions";
     public static final DataFlavor INTERACTIONS_FLAVOR = new DataFlavor(DataEntryTask.class, INTERACTIONS);
-
+    
+    protected static final String InfoRequestName = "InfoRequest";
+    protected static final String NewLoan         = "New_Loan";
+    protected static final String PrintLoan       = "PrintLoan";
 
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -100,32 +95,75 @@ public class InteractionsTask extends BaseTask
     {
         super(INTERACTIONS, getResourceString("Interactions"));
         
+        CommandDispatcher.register(INTERACTIONS, this);
+        CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
+        CommandDispatcher.register("App", this);
+
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    public void initialize()
+    {
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
+            
+            extendedNavBoxes.clear();
+            //labelsList.clear();
 
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
             //navBox.add(NavBox.createBtn(getResourceString("Accession"),  "Interactions", IconManager.IconSize.Std16,
             //        new CreateViewAction(this, null, "Accession", "Edit", Accession.class)));
             //navBox.add(NavBox.createBtn(getResourceString("New_Loan"),  name, IconManager.IconSize.Std16));
-            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString("New_Loan"),  name, IconManager.IconSize.Std16, new InteractionAction("","")), null);
+            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(NewLoan),  name, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, NewLoan)), null);
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), name, IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), name, IconManager.IconSize.Std16));
+            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(InfoRequestName),  InfoRequestName, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, InfoRequestName)), null);
             navBoxes.addElement(navBox);
     
+            // These need to be loaded as Resources
             navBox = new NavBox(getResourceString(ReportsTask.REPORTS));
             navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
+            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(PrintLoan),  ReportsTask.REPORTS, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, PrintLoan)), null);
+            navBoxes.addElement(navBox);
+            
+            // Then add
+            if (commands != null)
+            {
+                for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
+                {
+                    Map<String, String> params = ap.getMetaDataMap();
+                    params.put("title", ap.getDescription());
+                    params.put("file", ap.getName());
+                    //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
+                    
+                    commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+                }
+                
+                for (TaskCommandDef tcd : commands)
+                {
+                    // XXX won't be needed when we start validating the XML
+                    String tableIdStr = tcd.getParams().get("tableid");
+                    if (tableIdStr == null)
+                    {
+                        log.error("Interaction Command is missing the table id");
+                    } else
+                    {
+                        addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), name, IconManager.IconSize.Std16, new NavBoxAction(tcd)), tcd.getParams());
+                    }
+                }
+            }
+
             navBoxes.addElement(navBox);
         }
-        
-        CommandDispatcher.register(INTERACTIONS, this);
-        CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
-        CommandDispatcher.register("App", this);
 
     }
+
     /**
      * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
      * @param navBox the parent box for the nbi to be added to
@@ -210,6 +248,140 @@ public class InteractionsTask extends BaseTask
     {
         return this.getClass();
     }
+    
+    /**
+     * Creates a new loan from a RecordSet.
+     * @param recordSet the recordset to use to create the loan
+     */
+    protected void printLoan(final Object data)
+    {
+        String loanNumber = null;
+        if (data instanceof RecordSetIFace)
+        {
+            RecordSetIFace rs = (RecordSetIFace)data;
+            CommandDispatcher.dispatch(new CommandAction(LabelsTask.LABELS, LabelsTask.DOLABELS_ACTION, rs));
+            
+            /*
+            if (rs.getItems().size() > 0)
+            {
+                Long recordId = rs.getItems().iterator().next().getRecordId();
+                if (recordId != null)
+                {
+                    DBTableIdMgr.TableInfo   tableInfo = DBTableIdMgr.lookupByClassName(Loan.class.getName());
+                    String                   sqlStr    = DBTableIdMgr.getQueryForTable(tableInfo.getTableId(), recordId);
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    List<?> loans = session.getDataList(sqlStr);
+                    if (loans.size() > 0)
+                    {
+                        //RecordSet rs = new RecordSet();
+                        //rs.setDbTableId(tableId)
+                        CommandDispatcher.dispatch(new CommandAction(LabelsTask.LABELS, LabelsTask.DOLABELS_ACTION, ));
+                        
+                    } else
+                    {
+                        // Error Dialog
+                    }
+                    
+                } else
+                {
+                    // ask for Loan Noan Number
+                }
+                
+            } else
+            {
+                // ask for loan number here
+            }*/
+        }
+    }
+    
+    /**
+     * Creates a new loan from a RecordSet.
+     * @param recordSet the recordset to use to create the loan
+     */
+    @SuppressWarnings("unchecked")
+    protected void createNewLoan(final RecordSetIFace recordSet)
+    {
+       
+        DBTableIdMgr.getInClause(recordSet);
+
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+        
+        DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        
+        String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+        if (StringUtils.isNotBlank(sqlStr))
+        {
+            final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg((List<CollectionObject>)session.getDataList(sqlStr));
+            loanSelectPrepsDlg.setModal(true);
+            
+            UIHelper.centerAndShow(loanSelectPrepsDlg);
+            
+
+            final Taskable thisTask = this;
+            final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
+            if (prepsHash.size() > 0)
+            {
+                final SwingWorker worker = new SwingWorker()
+                {
+                    public Object construct()
+                    {
+                        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                        statusBar.setIndeterminate(true);
+                        statusBar.setText("Creating Loan...");
+                        Loan loan = new Loan();
+                        loan.initialize();
+                        
+                        for (Preparation prep : prepsHash.keySet())
+                        {
+                            Integer count = prepsHash.get(prep);
+                            
+                            LoanPhysicalObject lpo = new LoanPhysicalObject();
+                            lpo.setPreparation(prep);
+                            lpo.setQuantity(count.shortValue());
+                            lpo.setLoan(loan);
+                            loan.getLoanPhysicalObjects().add(lpo);
+                        }
+                        
+                        DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                        if (dataEntryTask != null)
+                        {
+                            DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.lookupInfoById(loan.getTableId());
+                            dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                        }
+                        return null;
+                    }
+
+                    //Runs on the event-dispatching thread.
+                    public void finished()
+                    {
+                        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                        statusBar.setIndeterminate(false);
+                        statusBar.setText("");
+                    }
+                };
+                worker.start();
+
+            }
+
+            
+        } else
+        {
+            log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
+        }
+
+    }
+    
+    /**
+     * Creates a new InfoRequest from a RecordSet.
+     * @param recordSet the recordset to use to create the InfoRequest
+     */
+    protected void createInfoRequest(final RecordSetIFace recordSet)
+    {
+        InfoRequestTask.createInfoRequest(recordSet);
+    }
+    
 
     //-------------------------------------------------------
     // CommandListener Interface
@@ -242,89 +414,45 @@ public class InteractionsTask extends BaseTask
             {
                 log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
             }
-        } else if (cmdAction.getAction().equals("CreateLoan"))
+          
+        } else if (cmdAction.getAction().equals(PrintLoan))
         {
-            if (cmdAction.getData() instanceof RecordSetIFace)
+            printLoan(cmdAction.getData());
+            
+        } else 
+        {
+            Object cmdData = cmdAction.getData();
+            if (cmdData == null)
             {
-                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
                 
-                DBTableIdMgr.getInClause(recordSet);
-
-                DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
-                
-                DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
-                
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                
-                String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
-                if (StringUtils.isNotBlank(sqlStr))
-                {
-                    final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg((List<CollectionObject>)session.getDataList(sqlStr));
-                    loanSelectPrepsDlg.setModal(true);
-                    
-                    UIHelper.centerAndShow(loanSelectPrepsDlg);
-                    
-
-                    final Taskable thisTask = this;
-                    final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
-                    if (prepsHash.size() > 0)
-                    {
-                        final SwingWorker worker = new SwingWorker()
-                        {
-                            public Object construct()
-                            {
-                                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
-                                statusBar.setIndeterminate(true);
-                                statusBar.setText("Creating Loan...");
-                                Loan loan = new Loan();
-                                loan.initialize();
-                                
-                                for (Preparation prep : prepsHash.keySet())
-                                {
-                                    Integer count = prepsHash.get(prep);
-                                    
-                                    LoanPhysicalObject lpo = new LoanPhysicalObject();
-                                    lpo.setPreparation(prep);
-                                    lpo.setQuantity(count.shortValue());
-                                    lpo.setLoan(loan);
-                                    loan.getLoanPhysicalObjects().add(lpo);
-                                }
-                                
-                                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-                                if (dataEntryTask != null)
-                                {
-                                    DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.lookupInfoById(loan.getTableId());
-                                    dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
-                                }
-                                return null;
-                            }
-
-                            //Runs on the event-dispatching thread.
-                            public void finished()
-                            {
-                                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
-                                statusBar.setIndeterminate(false);
-                                statusBar.setText("");
-                            }
-                        };
-                        worker.start();
-
-                    }
-                    
-                } else
-                {
-                    log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
-                }
+                //LabelsTask.askForRecordSet(tableId)
                 
             }
+            
+            // These all assume there needs to be a recordsset
+            if (cmdData != null && cmdData instanceof RecordSetIFace)
+            {
+                if (cmdAction.getAction().equals(NewLoan))
+                {
+                    createNewLoan((RecordSetIFace)cmdData);    
+                        
+                } else if (cmdAction.getAction().equals(InfoRequestName))
+                {
+                    createInfoRequest((RecordSetIFace)cmdData);    
+                }
+            }
         }
+
     }
+
 
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-    class InteractionAction implements ActionListener
+    /*class InteractionAction implements ActionListener
     {
+        private String    type;
+        private String    action;
         private String    nameStr;
         private String    titleStr;
         private int       tableId;
@@ -335,13 +463,15 @@ public class InteractionsTask extends BaseTask
         {
             this.nameStr  = tcd.getParams().get("file");
             this.titleStr = tcd.getParams().get("title");
+            this.type     = tcd.getParams().get("type");
+            this.action   = tcd.getParams().get("action");
             this.tableId  = Integer.parseInt(tcd.getParams().get("tableid"));
         }
 
-        public InteractionAction(final String nameStr, final String titleStr)
+        public InteractionAction(final String action)
         {
-            this.nameStr  = nameStr;
-            this.titleStr = titleStr;
+            this.type   = INTERACTIONS;
+            this.action = action;
         }
 
         public void actionPerformed(ActionEvent e)
@@ -358,9 +488,29 @@ public class InteractionsTask extends BaseTask
                     RecordSetIFace rs = (RecordSetIFace)data;
                     if (rs.getDbTableId() != tableId)
                     {
-                        doCommand(new CommandAction(INTERACTIONS, "CreateLoan", data));
-                        //JOptionPane.showMessageDialog(null, getResourceString("ERROR_LABELS_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
-                        return;
+                        if (StringUtils.isNotEmpty(action))
+                        {
+                            if (action.equals(NewLoan))
+                            {
+                                doCommand(new CommandAction(INTERACTIONS, action, data));
+                                //JOptionPane.showMessageDialog(null, getResourceString("ERROR_LABELS_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                            else if (action.equals(InfoRequestName))
+                            {
+                                InfoRequestTask.createInfoRequest((RecordSetIFace)data);
+                                return;
+                            } else
+                            {
+                                CommandAction cmd = new CommandAction(type, action, data);
+                                //cmd.addProperties();
+                                CommandDispatcher.dispatch(new CommandAction(type, action, data));
+                                return;
+                            }
+                        } else
+                        {
+                            log.debug("Action was NULL!");
+                        }
                     }
                 }
             }
@@ -389,7 +539,7 @@ public class InteractionsTask extends BaseTask
         {
             return recordSet;
         }
-    }
+    }*/
 
 
 }

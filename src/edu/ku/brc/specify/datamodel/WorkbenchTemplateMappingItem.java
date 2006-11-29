@@ -104,7 +104,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return WorkbenchTemplateMappingItem.class;
     }

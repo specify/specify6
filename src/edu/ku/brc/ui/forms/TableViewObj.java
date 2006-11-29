@@ -59,7 +59,9 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -236,7 +238,7 @@ public class TableViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (altView.getMode() == AltView.CreationMode.Edit)
+                    if (altView.getMode() == AltView.CreationMode.Edit && saveBtn != null)
                     {
                         // We want it on the left side of other buttons
                         // so wee need to add it before the Save button
@@ -472,6 +474,25 @@ public class TableViewObj implements Viewable,
                 origDataSet = (Set<Object>)dataObj;
                 dataObjList.addAll(origDataSet);
                 
+            } else if (dataObj instanceof RecordSetIFace)
+            {
+                this.dataObj = dataObj;
+                /*
+                RecordSetIFace recordSet = (RecordSetIFace)dataObj;
+                
+                DBTableIdMgr.getInClause(recordSet);
+                DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+                
+                DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
+                
+                //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                
+                String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+                if (StringUtils.isNotBlank(sqlStr))
+                {
+                    dataObjList =(List<Object>)session.getDataList(sqlStr);
+                }
+*/
             } else
             {
                 // single object
@@ -621,9 +642,29 @@ public class TableViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setSession(org.hibernate.Session)
      */
+    @SuppressWarnings("unchecked")
     public void setSession(final DataProviderSessionIFace session)
     {
         this.session = session;
+        /*
+        if (dataObj instanceof RecordSetIFace)
+        {
+            RecordSetIFace recordSet = (RecordSetIFace)dataObj;
+            
+            DBTableIdMgr.getInClause(recordSet);
+            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+            
+            DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
+            
+            //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            
+            String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+            if (StringUtils.isNotBlank(sqlStr))
+            {
+                dataObjList.addAll(session.getDataList(sqlStr));
+            }
+        }
+        */
     }
 
     /* (non-Javadoc)
@@ -1265,6 +1306,11 @@ public class TableViewObj implements Viewable,
                     x++;
                 }
                 
+                if (dataVal instanceof Preparation)
+                {
+                    int x = 0;
+                    x++;
+                }
                 String dataObjFormatName = colInfo.getDataObjFormatName();
                 if (StringUtils.isNotEmpty(dataObjFormatName))
                 {
@@ -1287,7 +1333,7 @@ public class TableViewObj implements Viewable,
                     
                 } else
                 {
-                    log.error("No formatter for ["+dataVal+"]");
+                    //log.error("No formatter for ["+dataVal+"]");
                 }
                 
                 return dataVal;

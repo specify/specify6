@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -36,6 +37,7 @@ import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JRViewer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -69,7 +71,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected JLabel                 label            = null;
     protected JasperCompilerRunnable compiler         = null;
 
-    protected RecordSetIFace              recordSet        = null;
+    protected RecordSetIFace         recordSet        = null;
     protected File                   cachePath        = null;
 
     /**
@@ -84,7 +86,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         
         cachePath = checkAndCreateReportsCache();
         
-        refreshCacheFromDatabase();
+        refreshCacheFromDatabase("jrxml/label");
+        refreshCacheFromDatabase("jrxml/report");
+        refreshCacheFromDatabase("jrxml/subreport");
     }
 
     /**
@@ -125,16 +129,16 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * Checks to see if any files in the database need to be copied to the database. A file may not
      * exist or be out of date.
      */
-    protected void refreshCacheFromDatabase()
+    protected void refreshCacheFromDatabase(final String mimeType)
     {
         Hashtable<String, File> hash = new Hashtable<String, File>();
         for (File f : cachePath.listFiles())
         {
-            log.info(f.getName());
+            //log.info("Report Cache File["+f.getName()+"]");
             hash.put(f.getName(), f);  
         }
         
-        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
+        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
             
             boolean updateCache = false;
@@ -149,7 +153,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 updateCache = fileDate.getTime() < ap.getTimestampModified().getTime();
             }
             
-            log.info(ap.getName()+"  "+updateCache);
+            log.debug("Report Cache File["+ap.getName()+"]  updateCache["+updateCache+"]");
             if (updateCache)
             {
                 File localFilePath = new File(cachePath.getAbsoluteFile() + File.separator + ap.getName());
@@ -165,17 +169,15 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         }
     }
     
+    
     /**
      * Starts the report creation process
      * @param fileName the XML file name of the report definition
      * @param recrdSet the recordset to use to fill the labels
      */
-    public void createReport(final String fileName, final RecordSetIFace recrdSet)
+    public ReportCompileInfo checkReport(final File file)
     {
-        this.recordSet = recrdSet;
-     
-        refreshCacheFromDatabase();
-
+        String fileName     = file.getName();
         String compiledName = getFileNameWithoutExt(fileName) + ".jasper";
         File   compiledPath = new File(cachePath.getAbsoluteFile() + File.separator + compiledName);
 
@@ -197,14 +199,98 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         // call "compileComplete" directly to have it start filling the labels
         // otherswise create the compiler runnable and have it be compiled 
         // asynchronously
-        if (compiledPath != null && compiledPath.exists() && appRes.getTimestampModified().getTime() < compiledPath.lastModified())
+        boolean needsCompiling = compiledPath.exists() && 
+                                 appRes.getTimestampModified().getTime() < compiledPath.lastModified();
+        
+        return new ReportCompileInfo(reportPath, compiledPath, needsCompiling);
+    }
+    
+    
+    /**
+     * Starts the report creation process
+     * @param fileName the XML file name of the report definition
+     * @param recrdSet the recordset to use to fill the labels
+     */
+    public void createReport(final String mainReportName, final RecordSetIFace recrdSet)
+    {
+        this.recordSet = recrdSet;
+     
+        refreshCacheFromDatabase("jrxml/label");
+        refreshCacheFromDatabase("jrxml/report");
+        refreshCacheFromDatabase("jrxml/subreport");
+        
+        Vector<File>   reportFiles = new Vector<File>();
+        AppResourceIFace appRes    = AppContextMgr.getInstance().getResource(mainReportName); 
+        if (appRes != null)
         {
-            this.compileComplete(compiledPath);
+            String subReportsStr = appRes.getMetaData("subreports");
+            if (StringUtils.isNotEmpty(subReportsStr))
+            {
+                String[] subReportNames = subReportsStr.split(",");
+                for (String subReportName : subReportNames)
+                {
+                    AppResourceIFace subReportAppRes = AppContextMgr.getInstance().getResource(subReportName); 
+                    if (subReportAppRes != null)
+                    {
+                        File subReportPath = new File(cachePath.getAbsoluteFile() + File.separator + subReportName);
+                        if (subReportPath.exists())
+                        {
+                            reportFiles.add(subReportPath);
+                            
+                        } else
+                        {
+                            throw new RuntimeException("Subreport doesn't exist on disk ["+subReportPath.getAbsolutePath()+"]");
+                        }
+                        
+                    } else
+                    {
+                        throw new RuntimeException("Couldn't load subreport ["+name+"]");
+                    }
+                }
+            }
+            
+            File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + mainReportName);
+            if (reportPath.exists())
+            {
+                reportFiles.add(reportPath);
+                
+            } else
+            {
+                throw new RuntimeException("Subreport doesn't exist on disk ["+reportPath.getAbsolutePath()+"]");
+            }
+            
+        } else
+        {
+            throw new RuntimeException("Couldn't load report/label ["+mainReportName+"]");
+        }
+
+
+        boolean allAreCompiled = true;
+        Vector<ReportCompileInfo> files = new Vector<ReportCompileInfo>();
+        for (File file : reportFiles)
+        {
+            ReportCompileInfo info = checkReport(file);
+            files.add(info);
+            if (!info.isCompiled())
+            {
+                allAreCompiled = false;
+            }
+        }
+
+       
+
+        // Check to see if it needs to be recompiled, if it doesn't need compiling then
+        // call "compileComplete" directly to have it start filling the labels
+        // otherswise create the compiler runnable and have it be compiled 
+        // asynchronously
+        if (allAreCompiled)
+        {
+            this.compileComplete(files.get(files.size()-1).getCompiledFile());
 
         } else
         {
             progressLabel.setText(getResourceString("JasperReportCompiling"));
-            compiler = new JasperCompilerRunnable(this, reportPath, compiledPath);
+            compiler = new JasperCompilerRunnable(this, files);
             compiler.start();
         }
     }
@@ -234,6 +320,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     if (recordSet != null)
                     {
                         parameters.put("itemnum", itemnum);
+                        parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
                     }
 
                     progressLabel.setText(getResourceString("JasperReportFilling"));
@@ -352,10 +439,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     //------------------------------------------------------------
     public class JasperCompilerRunnable implements Runnable
     {
-        protected Thread               thread;
-        protected LabelsPane           listener;
-        protected File                 reportFile;
-        protected File                 compiledFile;
+        protected Thread                    thread;
+        protected LabelsPane                listener;
+        protected Vector<ReportCompileInfo> files;
 
         /**
          * Constructs a an object to execute an SQL staement and then notify the listener
@@ -363,13 +449,12 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
          * @param reportFile the file that contains the report
          * @param compiledFile the file that will contain the compiled report
          */
-        public JasperCompilerRunnable(final LabelsPane listener, final File reportFile, final File compiledFile)
+        public JasperCompilerRunnable(final LabelsPane listener, 
+                                      final Vector<ReportCompileInfo> files)
         {
             this.listener     = listener;
-            this.reportFile   = reportFile;
-            this.compiledFile = compiledFile;
+            this.files   = files;
         }
-
 
         /**
          * Starts the thread to make the SQL call
@@ -402,8 +487,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         {
             try
             {
-                JasperCompileManager.compileReportToFile(reportFile.getAbsolutePath(), compiledFile.getAbsolutePath());
-                listener.compileComplete(compiledFile);
+                for (ReportCompileInfo info : files)
+                {
+                    JasperCompileManager.compileReportToFile(info.getReportFile().getAbsolutePath(), info.getCompiledFile().getAbsolutePath());
+                }
+                listener.compileComplete(files.get(files.size()-1).getCompiledFile());
 
             } catch (Exception ex)
             {
@@ -411,9 +499,43 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 listener.compileComplete(null);
             }
             listener     = null;
-            reportFile   = null;
-            compiledFile = null;
+            files.clear();
+            files = null;
         }
+    }
+    
+    
+    
+    class ReportCompileInfo
+    {
+        protected File reportFile;
+        protected File compiledFile;
+        protected boolean needsCompiled;
+        
+        public ReportCompileInfo(File reportFile, File compiledFile, boolean needsCompiled)
+        {
+            super();
+            this.reportFile = reportFile;
+            this.compiledFile = compiledFile;
+            this.needsCompiled = needsCompiled;
+        }
+
+        public File getCompiledFile()
+        {
+            return compiledFile;
+        }
+
+        public boolean isCompiled()
+        {
+            return needsCompiled;
+        }
+
+        public File getReportFile()
+        {
+            return reportFile;
+        }
+        
+        
     }
 
 }

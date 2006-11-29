@@ -563,7 +563,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions);
                     if (viewable != null)
                     {
-                        //viewable.setSession(session);
+                        viewable.setSession(session);
                         if (add(viewable, altViewName))
                         {
                             if (mvParent != null)

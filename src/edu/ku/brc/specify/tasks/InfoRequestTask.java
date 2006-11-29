@@ -41,10 +41,12 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -63,11 +65,8 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -261,7 +260,7 @@ public class InfoRequestTask extends BaseTask
      * @param boxItem the box item to be deleted
      * @param recordSet the record set that is "owned" by some UI object that needs to be deleted (used for secodary lookup
      */
-    protected void createInfoRequest(final RecordSetIFace recordSet)
+    public static void createInfoRequest(final RecordSetIFace recordSet)
     {
         DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupByShortClassName(InfoRequest.class.getSimpleName());
         
@@ -273,8 +272,10 @@ public class InfoRequestTask extends BaseTask
         infoRequest.initialize();
         infoRequest.setRecordSet(recordSet);
         
+        //TaskMgr.getInstance().getTask(INFOREQUEST)
+        
         FormPane formPane = new FormPane(DataProviderFactory.getInstance().createSession(), 
-                                         view.getName(), this, view, "edit", infoRequest, 
+                                         view.getName(), TaskMgr.getTask(INFOREQUEST), view, "edit", infoRequest, 
                                          MultiView.IS_NEW_OBJECT );
         SubPaneMgr.getInstance().addPane(formPane);
         //formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));

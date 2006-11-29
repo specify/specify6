@@ -106,7 +106,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return Container.class;
     }

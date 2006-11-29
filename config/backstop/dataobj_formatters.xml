@@ -102,10 +102,37 @@
         </switch>
     </format>
     
+    <format
+        name="Preparation"
+        class="edu.ku.brc.specify.datamodel.Preparation"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="PrepType">prepType</field>
+                <field sep=" - "  format="%d" type="int">count</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="Determination"
+        class="edu.ku.brc.specify.datamodel.Determination"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>taxon.fullName</field>
+            </fields>
+        </switch>
+    </format>
+    
     
     <aggregators>
         <aggregator name="AccessionAuthorizations" class="edu.ku.brc.specify.datamodel.AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations" default="true"/>
         <aggregator name="AccessionAgents"         class="edu.ku.brc.specify.datamodel.AccessionAgents" separator="; " count="" ending="" format="AccessionAgents" default="true"/>   
+        <aggregator name="Preparation"             class="edu.ku.brc.specify.datamodel.Preparation" separator="; " count="" ending="" format="Preparation" default="true"/>   
+        <aggregator name="Determination"           class="edu.ku.brc.specify.datamodel.Determination" separator="; " count="1" ending="" format="Determination" default="true"/>   
     </aggregators>
     
      

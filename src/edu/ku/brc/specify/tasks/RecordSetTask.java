@@ -224,11 +224,8 @@ public class RecordSetTask extends BaseTask
         try
         {
             session.beginTransaction();
-            session.saveOrUpdate(recordSet);
+            session.delete(recordSet);
             session.commit();
-            
-            FormHelper.updateLastEdittedInfo(recordSet);
-
             
         } catch (Exception ex)
         {

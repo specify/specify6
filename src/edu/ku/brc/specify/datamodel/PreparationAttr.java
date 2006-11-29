@@ -100,7 +100,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return PreparationAttr.class;
     }

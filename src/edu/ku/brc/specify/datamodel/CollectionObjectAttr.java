@@ -100,7 +100,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return CollectionObjectAttr.class;
     }

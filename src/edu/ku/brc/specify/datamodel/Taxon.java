@@ -169,7 +169,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return Taxon.class;
     }

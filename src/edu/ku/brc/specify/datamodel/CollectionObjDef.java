@@ -122,7 +122,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return CollectionObjDef.class;
     }

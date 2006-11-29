@@ -103,7 +103,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return GeographyTreeDefItem.class;
     }

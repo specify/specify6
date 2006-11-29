@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.ui;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 /**
  * Represents a single command action typically between the UI and a task, sometimes between tasks
  * The "type" of command determines who will be listening for it.
@@ -35,6 +38,8 @@ public class CommandAction
     protected Object dstObj;
     
     protected boolean isConsumed = false;
+    
+    protected Hashtable<String, String> properties = null;
     
     /**
      * Constructs a command
@@ -148,6 +153,32 @@ public class CommandAction
     public Object getSrcObj()
     {
         return srcObj;
+    }
+    
+    public String getProperty(final String name)
+    {
+        return properties == null ? null : properties.get(name);
+    }
+    
+    public void setProperty(final String name, final String value)
+    {
+        if (properties == null)
+        {
+            properties = new Hashtable<String, String>();
+        }
+        properties.put(name, value);
+    }
+    
+    public void addProperties(final Map<String, String> props)
+    {
+        if (props != null)
+        {
+            if (properties == null)
+            {
+                properties = new Hashtable<String, String>();
+            }
+            properties.putAll(props);
+        }
     }
     
 }

@@ -102,7 +102,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return AccessionAuthorizations.class;
     }

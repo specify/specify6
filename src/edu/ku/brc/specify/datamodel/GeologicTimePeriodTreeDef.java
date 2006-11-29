@@ -94,7 +94,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return GeologicTimePeriodTreeDef.class;
     }

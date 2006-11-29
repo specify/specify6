@@ -103,7 +103,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return CollectingEventAttr.class;
     }

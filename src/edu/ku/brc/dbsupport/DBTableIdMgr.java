@@ -308,7 +308,7 @@ public class DBTableIdMgr
 	 * @param recordId a single Record Id
 	 * @return a query object
 	 */
-	public static String getQueryForTable(final int tableId, final int recordId)
+	public static String getQueryForTable(final int tableId, final long recordId)
 	{
 		TableInfo tableInfo = instance.hash.get(tableId);
 		if (tableInfo != null)

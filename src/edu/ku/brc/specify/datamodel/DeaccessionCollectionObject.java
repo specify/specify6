@@ -100,7 +100,7 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return DeaccessionCollectionObject.class;
     }

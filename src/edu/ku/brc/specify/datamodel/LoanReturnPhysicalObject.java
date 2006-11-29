@@ -101,7 +101,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return LoanReturnPhysicalObject.class;
     }

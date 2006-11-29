@@ -21,17 +21,28 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -55,6 +66,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -202,7 +214,9 @@ public class LoanSelectPrepsDlg extends JDialog
         return hash;
     }
     
-    
+    //------------------------------------------------------------------------------------------
+    //
+    //------------------------------------------------------------------------------------------
     class ColObjPanel extends JPanel
     {
         protected CollectionObject colObj;
@@ -322,11 +336,15 @@ public class LoanSelectPrepsDlg extends JDialog
        
     }
     
+    //------------------------------------------------------------------------------------------
+    //
+    //------------------------------------------------------------------------------------------
     class PrepPanel extends JPanel
     {
         protected Preparation prep;
         protected JLabel      label    = null;
         protected JLabel      label2    = null;
+        protected JComponent  prepInfoBtn    = null;
         protected JSpinner    spinner; 
 
         /**
@@ -336,34 +354,22 @@ public class LoanSelectPrepsDlg extends JDialog
         {
             super();
             this.prep = prep;
+
             
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
-            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p:g", "c:p"), this);
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p:g", "c:p"), this);
             CellConstraints cc      = new CellConstraints();
             
             
             pbuilder.add(label = new JLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
             
-            //JPanel contentPanel = new JPanel();
-            //contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
             if (prep.getCount() !=  null)
             {
                 int count       = prep.getCount() == null ? 0 : prep.getCount();
-                int quantityOut = 0;
-                
-                if (prep.getLoanPhysicalObjects().size() > 0)
-                {
-                    for (LoanPhysicalObject lpo : prep.getLoanPhysicalObjects())
-                    {
-                        int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
-                        int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;
-                        
-                        quantityOut = quantityLoaned - quantityReturned;
-                    }
-                }
+                int quantityOut = prep.getQuantityOut();
                 
                 int quantityAvailable = count - quantityOut;
                 if (quantityAvailable > 0)
@@ -374,7 +380,16 @@ public class LoanSelectPrepsDlg extends JDialog
                                                1);                //step
                     spinner = new JSpinner(model);
                     pbuilder.add(spinner, cc.xy(3, 1));
-                    pbuilder.add(label2 = new JLabel(" of " + Integer.toString(quantityAvailable)), cc.xy(5, 1));
+                    //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
+                    String fmtStr = String.format(" of %3d  ", new Object[] {quantityAvailable}); // TODO I18N
+                    pbuilder.add(label2 = new JLabel(fmtStr), cc.xy(5, 1));
+                    if (quantityOut > 0)
+                    {
+                        fmtStr = String.format("(%d on loan)", new Object[] {quantityOut}); // TODO I18N
+                        prepInfoBtn = new LinkLabelBtn(fmtStr, IconManager.getIcon("InfoIcon"));
+                        //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                        pbuilder.add(prepInfoBtn, cc.xy(7, 1));
+                    }
                     
                     
                 } else
@@ -451,7 +466,56 @@ public class LoanSelectPrepsDlg extends JDialog
         }
     }
     
+    protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
+    protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
+    class LinkLabelBtn extends JLabel
+    {
+        
+        public LinkLabelBtn(final String label, final ImageIcon imgIcon)
+        {
+            super(label, imgIcon, JLabel.LEFT);
+            setHorizontalTextPosition(JLabel.LEFT);
+            
+            //setBorderPainted(false);
+            //setBorder(BorderFactory.createEmptyBorder());
+            //setOpaque(false);
+            //setCursor(handCursor);
+            
+            final LinkLabelBtn llb = this;
+
+            addMouseListener(new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e) {}
+
+                /**
+                 * Invoked when a mouse button has been pressed on a component.
+                 */
+                public void mousePressed(MouseEvent e) {}
+
+                /**
+                 * Invoked when a mouse button has been released on a component.
+                 */
+                public void mouseReleased(MouseEvent e) {}
+
+                /**
+                 * Invoked when the mouse enters a component.
+                 */
+                public void mouseEntered(MouseEvent e) 
+                {
+                    //llb.setCursor(handCursor);
+                }
+
+                /**
+                 * Invoked when the mouse exits a component.
+                 */
+                public void mouseExited(MouseEvent e) 
+                {
+                    //llb.setCursor(defCursor);
+                }
+            });
+        }
+    }
 
 
 }

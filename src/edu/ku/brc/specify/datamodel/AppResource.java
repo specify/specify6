@@ -33,6 +33,8 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -65,7 +67,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      protected Set<AppResourceDefault> appResourceDefaults;
      
      // Non Persisted Fields
-     protected String                  fileName = null;
+     protected String                    fileName     = null;
+     protected Hashtable<String, String> metaDataHash = null;
 
     // Constructors
 
@@ -85,17 +88,17 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     @Override
     public void initialize()
     {
-        appResourceId = null;
-        level = null;
-        name = null;
-        description = null;
-        mimeType = null;
-        metaData = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
+        appResourceId       = null;
+        level               = null;
+        name                = null;
+        description         = null;
+        mimeType            = null;
+        metaData            = null;
+        timestampCreated    = new Date();
+        timestampModified   = null;
+        lastEditedBy        = null;
         appResourceDefaults = new HashSet<AppResourceDefault>();
-        appResourceDatas = new HashSet<AppResourceData>();
+        appResourceDatas    = new HashSet<AppResourceData>();
         
         fileName = null;
     }
@@ -124,7 +127,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return AppResource.class;
     }
@@ -189,14 +192,71 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         this.mimeType = mimeType;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceIFace#getMetaData()
+     */
     public String getMetaData()
     {
         return metaData;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceIFace#getMetaData(java.lang.String)
+     */
+    public String getMetaData(final String attr)
+    {
+        initMetaData();
+        
+        return metaDataHash != null ? metaDataHash.get(attr) : null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceIFace#setMetaData(java.lang.String)
+     */
     public void setMetaData(String metaData)
     {
+        if (StringUtils.isNotEmpty(this.metaData) && metaDataHash != null)
+        {
+            metaDataHash.clear();
+        }
         this.metaData = metaData;
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceIFace#getMetaDataMap()
+     */
+    public Map<String, String> getMetaDataMap()
+    {
+        initMetaData();
+        
+        return metaDataHash;
+    }
+
+    /**
+     * Builds meta data hash. 
+     */
+    protected void initMetaData()
+    {
+        if (metaDataHash == null)
+        {
+            metaDataHash = new Hashtable<String, String>(); 
+        }
+        
+        if (StringUtils.isNotEmpty(metaData))
+        {
+            for (String pair : metaData.split(";"))
+            {
+                if (StringUtils.isNotEmpty(pair))
+                {
+                    String[] tokens = pair.split("=");
+                    if (tokens != null && tokens.length == 2)
+                    {
+                        metaDataHash.put(tokens[0], tokens[1]);
+                    }
+                }
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -314,15 +374,6 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         }
         return null;
     }
-
-
-    // Add Methods
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    // Delete Add Methods
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

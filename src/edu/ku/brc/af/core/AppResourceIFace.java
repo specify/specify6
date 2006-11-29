@@ -15,12 +15,13 @@
 package edu.ku.brc.af.core;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Represents a resource that the application needs to run and the format is specified by a mime type. This is typically an XML
  * "blob", but it doesn't have to be.
  * 
- * @code_status Code Freeze
+ * @code_status Beta
  * 
  * @author rods
  *
@@ -65,8 +66,12 @@ public interface AppResourceIFace
     public abstract void setLastEditedBy(String lastEditedBy);
     
     public String getMetaData();
+    
+    public String getMetaData(String attr);
 
     public void setMetaData(String metaData);
+    
+    public Map<String, String> getMetaDataMap();
     
     public abstract void setDataAsString(final String dataStr);
     

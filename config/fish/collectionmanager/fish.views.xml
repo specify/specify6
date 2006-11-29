@@ -236,7 +236,7 @@
         <view name="InfoRequestColObj"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
             resourcelabels="false">
-            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <desc><![CDATA[Subform within the InfoRequestColObj Object form.]]></desc>
             <altviews>
                 <altview name="InfoRequestColObj View" viewdef="InfoRequestColObj" label="View" mode="view" validated="false"/>
                 <altview name="InfoRequestColObj Edit" viewdef="InfoRequestColObj" label="Edit" mode="edit" validated="true" default="true"/>
@@ -1371,7 +1371,7 @@
                 </row>
                 
                 <row>
-                    <cell type="rstable" id="4" name="recordSet" viewsetname="Fish Views" viewname="InfoRequestColObj" colspan="8"/>
+                    <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSet" colspan="8" valtype="Changed"/>
                 </row>
                 <!--
                 <row>
@@ -1391,7 +1391,7 @@
         </viewdef>
         
         <viewdef
-            type="form"
+            type="rstable"
             name="InfoRequestColObj"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
@@ -1400,61 +1400,44 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <columnDef></columnDef>
+            <rowDef>p</rowDef>
             
             <rows>
                 <row>
-                    <cell type="separator" label="KU Fish" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="Catalog Number" uitype="text"/>
-                    <cell type="field" id="1" name="catalogNumber" format="%.0f" uitype="text"/>
-                    
-                    <cell type="label" labelfor="2" label="Catalog Series"/>
-                    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="text"/>
-                </row>
-                <row>
+                    <!--
                     <cell type="label" labelfor="3" label="Accession #"/>
-                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false" valtype="Changed"/>
+                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession"/>
+                    -->
                     
+                    <cell type="label" labelfor="1" label="Date"/>
+                    <cell type="field" id="1" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    
+                    <cell type="label" labelfor="2" label="Catalog Number" uitype="text"/>
+                    <cell type="field" id="2" name="catalogNumber" format="%.0f" uitype="text"/>
+                                      
+                    <cell type="label" labelfor="3" label="Field No"/>
+                    <cell type="field" id="3" name="fieldNumber" uitype="text"/>
+                    
+                    <!--
                     <cell type="label" labelfor="4" label="Cataloger"/>
-                    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
+                    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent"/>
+                    -->
                     
-                    <cell type="label" labelfor="5" label="Date"/>
-                    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Determination" colspan="12"/>
-                </row>
-                
-                <row>
-                    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
-                </row>
-                
-                <row>
-                    <cell type="separator" label="Locality" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="7" label="Field No"/>
-                    <cell type="field" id="7" name="fieldNumber" uitype="text"/>
+                    <cell type="label" labelfor="5" label="Determination"/>
+                    <cell type="field" id="5" name="determinations" uitype="text"/>                  
                     
-                    <cell type="label" labelfor="8" label="Locality"/>
-                    <cell type="field" id="8" name="collectingEvent.locality.localityName" uitype="text" cols="41" colspan="6"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
-                </row>
-                
-                <row>
-                    <cell type="separator" label="" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="10" label="Edited By"/>
-                    <cell type="field" id="10" name="lastEditedBy" uitype="text" readonly="true"/>
+                    <cell type="label" labelfor="6" label="Locality"/>
+                    <cell type="field" id="6" name="collectingEvent.locality.localityName" uitype="text"/>
                     
-                    <cell type="label" labelfor="11" label="Last Edited"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
+                    <cell type="label" labelfor="7" label="Latitude"/>
+                    <cell type="field" id="7" name="collectingEvent.locality.latitude1" uitype="text"/>
+                    
+                    <cell type="label" labelfor="8" label="Longitude"/>
+                    <cell type="field" id="8" name="collectingEvent.locality.longitude1" uitype="text"/>
+                    
+                    <cell type="label" labelfor="9" label="Preparations"/>
+                    <cell type="field" id="9" name="preparations" uitype="text"/>                  
                 </row>
             </rows>
         </viewdef>

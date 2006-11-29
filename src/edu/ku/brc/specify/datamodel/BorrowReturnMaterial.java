@@ -99,7 +99,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return BorrowReturnMaterial.class;
     }

@@ -105,21 +105,21 @@ public abstract class AppContextMgr
             
         }
         // else
-        String factoryName = AccessController.doPrivileged(new PrivilegedAction<String>() {
+        String factoryNameStr = AccessController.doPrivileged(new PrivilegedAction<String>() {
                 public String run() {
                     return System.getProperty(
                     "edu.ku.brc.af.core.AppContextMgrFactory");}});
             
-        if (factoryName != null) 
+        if (factoryNameStr != null) 
         {
             try 
             {
-                instance = (AppContextMgr)Class.forName(factoryName).newInstance();
+                instance = (AppContextMgr)Class.forName(factoryNameStr).newInstance();
                 return instance;
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate AppContextMgr factory " + factoryName);
+                InternalError error = new InternalError("Can't instantiate AppContextMgr factory " + factoryNameStr);
                 error.initCause(e);
                 throw error;
             }

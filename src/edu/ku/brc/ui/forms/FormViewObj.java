@@ -1381,8 +1381,7 @@ public class FormViewObj implements Viewable,
         for (FieldInfo fieldInfo : controlsById.values())
         {
             if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview ||
-                    fieldInfo.getFormCell().getType() == FormCell.CellType.iconview ||
-                    fieldInfo.getFormCell().getType() == FormCell.CellType.rstable)
+                fieldInfo.getFormCell().getType() == FormCell.CellType.iconview)
             {
                 fieldInfo.getSubView().setParentDataObj(null);
             }

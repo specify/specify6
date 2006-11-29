@@ -186,7 +186,7 @@ public class ViewFactory
         }
         else if (viewDef.getType() == FormViewDef.ViewType.rstable)
         {
-            return new RecordSetTableViewObj(view, altView, parentView, options);
+            return buildRecordSetTableViewable(view, altView, parentView, options);
                 
         } else
         {
@@ -1035,78 +1035,6 @@ public class ViewFactory
                     addControl     = true;
                     addToValidator = false;
                     
-                } else if (cell.getType() == FormCell.CellType.rstable)
-                {
-                    FormCellSubView cellSubView = (FormCellSubView)cell;
-                    
-                    /*
-                    String subViewName = cellSubView.getViewName();
-                    
-                    View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
-                    if (subView != null)
-                    {
-                        AltView altView = null;
-                        for (AltView av : subView.getAltViews())
-                        {
-                            if (av.getViewDef().getType() == ViewDef.ViewType.formTable)
-                            {
-                                altView = av;
-                                break;
-                            }
-                        }
-                        int options = MultiView.VIEW_SWITCHER | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
-                        Viewable viewable = ViewFactory.createFormView(parent, subView, altView.getName(), null, options);
-                        viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);
-                        viewBldObj.closeSubView(cellSubView);
-                        curMaxRow = rowInx;
-
-                    }*/
-                    
-                    
-
-                    String subViewName = cellSubView.getViewName();
-
-                    View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
-                    if (subView != null)
-                    {
-                        if (parent != null)
-                        {
-                            int options = MultiView.VIEW_SWITCHER
-                                    | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
-
-                            
-                            AltView altView = null;
-                            for (AltView av : subView.getAltViews())
-                            {
-                                if (av.getViewDef().getType() == ViewDef.ViewType.formTable)
-                                {
-                                    altView = av;
-                                    break;
-                                }
-                            }
-                            MultiView multiView = new MultiView(parent, cellSubView.getName(), subView, altView, parent.getCreateWithMode(), options);
-                            parent.addChild(multiView);
-
-                            viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);
-                            viewBldObj.closeSubView(cellSubView);
-                            curMaxRow = rowInx;
-
-                        }
-                        else
-                        {
-                            log.error("buildFormView - parent is NULL for subview [" + subViewName + "]");
-                        }
-
-                    }
-                    else
-                    {
-                        log.error("buildFormView - Could find subview's with ViewSet[" + cellSubView.getViewSetName()
-                                + "] ViewName[" + subViewName + "]");
-                    }
-                    
-                    // still have compToAdd = null;
-                    colInx += 2;
-                    
                 } else if (cell.getType() == FormCell.CellType.panel)
                 {
                     FormCellPanel           cellPanel = (FormCellPanel)cell;
@@ -1387,6 +1315,45 @@ public class ViewFactory
     }
 
     /**
+     * Creates a Table View.
+     * @param view view the view definition
+     * @param altView the altView to use (if null, then it uses the default ViewDef)
+     * @param parentView the MultiView parent (this may be null)
+     * @param options the options needed for creating the form
+     * @return the form
+     */
+    public TableViewObj buildRecordSetTableViewable(final View        view,
+                                                    final AltView     altView,
+                                                    final MultiView   parentView,
+                                                    final int         options)
+    {
+        RecordSetTableViewObj rsTableViewObj = null;
+        try
+        {
+            ViewDef viewDef = altView.getViewDef();
+            
+            // Special situation where we create a table from a Form Definition
+            if (viewDef instanceof FormViewDef)
+            {
+                FormViewDef               formViewDef   = (FormViewDef)viewDef;  
+                Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+                
+                rsTableViewObj  = new RecordSetTableViewObj(view, altView, parentView, null, 0);
+
+                processRows(parentView, formViewDef, null, rsTableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
+                return rsTableViewObj;
+            }
+
+        } catch (Exception e)
+        {
+            log.error("buildPanel - Outer Name["+altView.getName()+"]");
+            e.printStackTrace();
+        }
+        return rsTableViewObj;
+    }
+
+
+    /**
      * Creates a FormViewObj.
      * 
      * @param multiView
@@ -1426,7 +1393,7 @@ public class ViewFactory
                     viewable.setDataIntoUI();
                 } else
                 {
-                    throw new RuntimeException("Form could be created! ["+view.getName()+"]["+altView.getName()+"]");
+                    throw new RuntimeException("Form could be created because the data was null! ["+view.getName()+"]["+altView.getName()+"]");
                 }
                 return viewable;
             }

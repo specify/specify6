@@ -92,7 +92,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return DeterminationStatus.class;
     }

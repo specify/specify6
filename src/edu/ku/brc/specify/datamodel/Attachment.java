@@ -105,7 +105,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return Attachment.class;
     }

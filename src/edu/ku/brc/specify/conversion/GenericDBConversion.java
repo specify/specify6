@@ -2247,6 +2247,16 @@ public class GenericDBConversion
                     } else if (newFieldName.equals("DerivedFromIDX"))
                     {
                         //
+                    } else if (newFieldName.equals("Count"))
+                    {
+                        Integer value = rs.getInt("Count1");
+                        if (rs.wasNull())
+                        {
+                            value = null;
+                        }
+                        str.append(getStrValue(value));
+                        
+                        
                     } else if (newFieldName.equals("PrepTypeID"))
                     {
                         String value = rs.getString(oldNameIndex.get("PreparationMethod")+1);
