@@ -127,12 +127,25 @@
         </switch>
     </format>
     
+    <format
+        name="Collector"
+        class="edu.ku.brc.specify.datamodel.Collectors"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="Agent">agent</field>
+            </fields>
+        </switch>
+    </format>
+    
     
     <aggregators>
         <aggregator name="AccessionAuthorizations" class="edu.ku.brc.specify.datamodel.AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations" default="true"/>
         <aggregator name="AccessionAgents"         class="edu.ku.brc.specify.datamodel.AccessionAgents" separator="; " count="" ending="" format="AccessionAgents" default="true"/>   
         <aggregator name="Preparation"             class="edu.ku.brc.specify.datamodel.Preparation" separator="; " count="" ending="" format="Preparation" default="true"/>   
         <aggregator name="Determination"           class="edu.ku.brc.specify.datamodel.Determination" separator="; " count="1" ending="" format="Determination" default="true"/>   
+        <aggregator name="Collectors"              class="edu.ku.brc.specify.datamodel.Collectors" separator="; " count="" ending="" format="Collector" default="true"/>   
     </aggregators>
     
      

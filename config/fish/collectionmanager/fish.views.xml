@@ -243,6 +243,16 @@
             </altviews>
         </view>
         
+        <view name="Shipment"
+            class="edu.ku.brc.specify.datamodel.Shipment"
+            resourcelabels="false">
+            <desc><![CDATA[Shipment Subform within the Loan Object form.]]></desc>
+            <altviews>
+                <altview name="Shipment View" viewdef="Shipment" label="View" mode="view" validated="false"/>
+                <altview name="Shipment Edit" viewdef="Shipment" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
 <!--
@@ -940,14 +950,24 @@
                      <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" valtype="Changed" initialize="editable=true"/>
                 </row>
                 <row>
-                     <cell type="label" labelfor="3" label="Date"/>
+                    <cell type="label" labelfor="3" label="Date"/>
                     <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true" default="today"/>
-                     <cell type="label" labelfor="4" label="Date Closed"/>
+                    <cell type="label" labelfor="4" label="Date Closed"/>
                     <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="12" label="Due Date"/>
+                    <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="5" label="Remarks"/>
                      <cell type="field" id="5" name="remarks" uitype="textarea" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Shipment" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipment" colspan="8"/>
                 </row>
                 <row>
                     <cell type="separator" label="Preparations To be Loaned" colspan="8"/>
@@ -1367,7 +1387,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="5" valtype="Changed"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="6" valtype="Changed"/>
                 </row>
                 
                 <row>
@@ -1440,8 +1460,7 @@
                     <cell type="field" id="9" name="preparations" uitype="text"/>                  
                 </row>
             </rows>
-        </viewdef>
-        
+        </viewdef>   
 
         <viewdef
             type="iconview"
@@ -1451,6 +1470,45 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Preparations Icon Viewer]]></desc>
         </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Shipment"
+            class="edu.ku.brc.specify.datamodel.Shipment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Shipment form.]]></desc>
+            <columnDef>p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Date"/>
+                    <cell type="field" id="1" name="shipmentDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true" default="today"/>
+                    <cell type="label" labelfor="2" label="Number"/>
+                    <cell type="field" id="2" name="shipmentNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Method"/>
+                    <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod" isrequired="true" valtype="Changed"/>
+                    <cell type="label" labelfor="4" label="Number of Packages"/>
+                    <cell type="field" id="4" name="numberOfPackages" uitype="text"  isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Weight"/>
+                    <cell type="field" id="5" name="weight" uitype="text" valtype="Changed"/>
+                    <cell type="label" labelfor="6" label="Insured For Amount"/>
+                    <cell type="field" id="6" name="insuredForAmount" uitype="text" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Shipped By"/>
+                    <cell type="field" id="7" name="agentByShippedTo" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+                    <cell type="label" labelfor="8" label="Shipped To"/>
+                    <cell type="field" id="8" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+                </row>
+            </rows>
+        </viewdef>
+        
 
     </viewdefs>
     

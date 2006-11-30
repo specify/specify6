@@ -49,12 +49,14 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -192,13 +194,17 @@ public class LabelsTask extends BaseTask
      * @param labelName the name of lable (the file name)
      * @param labelTitle the localized title to be displayed as the tab title
      * @param recordSet the recordSet to be turned into labels
+     * @param originatingTask the Taskable requesting the the labels be made
      */
-    public void doLabels(final String labelName, final String labelTitle, final RecordSetIFace recordSet)
+    public void doLabels(final String labelName, 
+                         final String labelTitle, 
+                         final RecordSetIFace recordSet, 
+                         final Taskable originatingTask)
     {
         LabelsPane labelsPane;
         if (starterPane == null)
         {
-            labelsPane = new LabelsPane(labelTitle, this);
+            labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this);
             SubPaneMgr.getInstance().addPane(labelsPane);
             
         } else
@@ -368,7 +374,7 @@ public class LabelsTask extends BaseTask
 
             if (fileName != null)
             {
-                doLabels(fileName, "Labels", (RecordSetIFace)data);
+                doLabels(fileName, "Labels", (RecordSetIFace)data, this);
             }
         }
     }
@@ -444,11 +450,6 @@ public class LabelsTask extends BaseTask
                 RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
 
                 String labelFileName = null;
-                if (cmdAction instanceof LabelsCommandAction)
-                {
-                    
-                }
-                
                 if (checkForALotOfLabels(recordSet))
                 {
                     if (StringUtils.isNotEmpty(labelFileName))
@@ -458,7 +459,7 @@ public class LabelsTask extends BaseTask
                     
                     if (StringUtils.isNotEmpty(labelFileName))
                     {
-                        doLabels(labelFileName, "Labels", recordSet);
+                        doLabels(labelFileName, "Labels", recordSet, this);
                     }
                 }
             }
@@ -485,7 +486,7 @@ public class LabelsTask extends BaseTask
 
                 if (checkForALotOfLabels(recordSet))
                 {
-                    String labelFileName = cmdAction.getProperty("file");
+                    String labelFileName = cmdAction.getProperty("file").toString();
                     
                     if (StringUtils.isEmpty(labelFileName))
                     {
@@ -494,7 +495,8 @@ public class LabelsTask extends BaseTask
                     
                     if (StringUtils.isNotEmpty(labelFileName))
                     {
-                        doLabels(labelFileName, cmdAction.getProperty("title"), recordSet);
+                        Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
+                        doLabels(labelFileName, cmdAction.getProperty("title").toString(), recordSet, originatingTask);
                     }
                 }
             }
@@ -611,11 +613,11 @@ public class LabelsTask extends BaseTask
 
             if (!needsRecordSets)
             {
-                doLabels(nameStr, titleStr, null);
+                doLabels(nameStr, titleStr, null, null);
                 
             } else if (data instanceof RecordSet)
             {
-                doLabels(nameStr, titleStr, (RecordSetIFace)data);
+                doLabels(nameStr, titleStr, (RecordSetIFace)data, null);
 
             } else
             {
@@ -743,34 +745,5 @@ public class LabelsTask extends BaseTask
                 return null;
             }
         }
-    }
-
-
-    public class LabelsCommandAction extends CommandAction
-    {
-        protected String reportType;
-        protected String reportSubType;
-        
-        public LabelsCommandAction(final String action, 
-                                   final String reportType, 
-                                   final String reportSubType, 
-                                   final Object data)
-        {
-            super(LabelsTask.LABELS, action, data);
-            
-            this.reportType    = reportType;
-            this.reportSubType = reportSubType;
-        }
-
-        public String getReportSubType()
-        {
-            return reportSubType;
-        }
-
-        public String getReportType()
-        {
-            return reportType;
-        }
-        
     }
 }

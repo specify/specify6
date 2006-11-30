@@ -81,7 +81,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
 	</variable>
 	<variable name="specimenCount" class="java.lang.Integer" resetType="Report" calculation="Nothing">
-		<variableExpression><![CDATA[new java.lang.Integer(  $V{specimenCount}.intValue() + ($F{Count}.intValue()) )]]></variableExpression>
+		<variableExpression><![CDATA[new java.lang.Integer(  $V{specimenCount}.intValue() + ($F{Quantity}.intValue()) )]]></variableExpression>
 		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
 	</variable>
 	<variable name="prepCount" class="java.lang.Integer" resetType="Report" calculation="Nothing">
@@ -168,7 +168,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 					<textElement textAlignment="Center">
 						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$V{prepCount} + " " + $F{Name} +  " of " + $F{Count} + " " + $F{Name}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{Quantity} + " " + $F{Name} +  " of " + ((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).calcLoanQuantity($F{Count}, $F{QuantityReturned}, $F{QuantityResolved}) + " " + $F{Name}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

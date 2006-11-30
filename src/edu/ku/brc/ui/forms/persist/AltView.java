@@ -128,6 +128,11 @@ public class AltView implements Comparable<AltView>
         return view;
     }
 
+    public void setMode(CreationMode mode)
+    {
+        this.mode = mode;
+    }
+
     @Override
     public String toString()
     {

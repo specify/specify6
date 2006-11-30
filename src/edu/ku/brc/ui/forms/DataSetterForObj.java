@@ -67,7 +67,7 @@ public class DataSetterForObj implements DataObjectSettable
                 if (data != null)
                 {
                     Class<?> fieldClass = descr.getPropertyType();
-                    if (dataVal.getClass() != fieldClass)
+                    if (dataVal.getClass() != fieldClass && !fieldClass.isAssignableFrom(dataVal.getClass()))
                     {
                         dataVal = UIHelper.convertDataFromString(dataVal.toString(), fieldClass);
                     }

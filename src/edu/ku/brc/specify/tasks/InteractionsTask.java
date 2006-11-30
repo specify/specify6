@@ -17,8 +17,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -62,7 +61,6 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -115,21 +113,18 @@ public class InteractionsTask extends BaseTask
 
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            //navBox.add(NavBox.createBtn(getResourceString("Accession"),  "Interactions", IconManager.IconSize.Std16,
-            //        new CreateViewAction(this, null, "Accession", "Edit", Accession.class)));
-            //navBox.add(NavBox.createBtn(getResourceString("New_Loan"),  name, IconManager.IconSize.Std16));
             addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(NewLoan),  name, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, NewLoan)), null);
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), name, IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), name, IconManager.IconSize.Std16));
-            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(InfoRequestName),  InfoRequestName, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, InfoRequestName)), null);
+            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(InfoRequestName),  InfoRequestName, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, InfoRequestName, this)), null);
             navBoxes.addElement(navBox);
     
             // These need to be loaded as Resources
             navBox = new NavBox(getResourceString(ReportsTask.REPORTS));
             navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
-            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(PrintLoan),  ReportsTask.REPORTS, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, PrintLoan)), null);
+            //navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
+            //navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
+            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(PrintLoan),  ReportsTask.REPORTS, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, PrintLoan, this)), null);
             navBoxes.addElement(navBox);
             
             // Then add
@@ -154,7 +149,7 @@ public class InteractionsTask extends BaseTask
                         log.error("Interaction Command is missing the table id");
                     } else
                     {
-                        addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), name, IconManager.IconSize.Std16, new NavBoxAction(tcd)), tcd.getParams());
+                        addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), name, IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
                     }
                 }
             }
@@ -255,11 +250,13 @@ public class InteractionsTask extends BaseTask
      */
     protected void printLoan(final Object data)
     {
-        String loanNumber = null;
+        //String loanNumber = null;
         if (data instanceof RecordSetIFace)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
-            CommandDispatcher.dispatch(new CommandAction(LabelsTask.LABELS, LabelsTask.DOLABELS_ACTION, rs));
+            CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.DOLABELS_ACTION, rs);
+            cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+            CommandDispatcher.dispatch(cmd);
             
             /*
             if (rs.getItems().size() > 0)
@@ -329,15 +326,27 @@ public class InteractionsTask extends BaseTask
                     {
                         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
                         statusBar.setIndeterminate(true);
-                        statusBar.setText("Creating Loan...");
+                        statusBar.setText("Creating Loan..."); // XXX I18N
+                        
                         Loan loan = new Loan();
                         loan.initialize();
+                        
+                        Calendar dueDate = Calendar.getInstance();
+                        dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+                        loan.setCurrentDueDate(dueDate);
+                        
+                        Shipment shipment = new Shipment();
+                        shipment.initialize();
+                        
+                        loan.setShipment(shipment);
+                        shipment.getLoans().add(loan);
                         
                         for (Preparation prep : prepsHash.keySet())
                         {
                             Integer count = prepsHash.get(prep);
                             
                             LoanPhysicalObject lpo = new LoanPhysicalObject();
+                            lpo.initialize();
                             lpo.setPreparation(prep);
                             lpo.setQuantity(count.shortValue());
                             lpo.setLoan(loan);

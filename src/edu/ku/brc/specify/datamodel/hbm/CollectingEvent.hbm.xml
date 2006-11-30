@@ -108,7 +108,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to Collectors -->
-    <set name="collectors" lazy="true" inverse="true" cascade="delete">
+    <set name="collectors" lazy="true" inverse="true" cascade="delete" order-by="orderNumber asc">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectingEventID"/>

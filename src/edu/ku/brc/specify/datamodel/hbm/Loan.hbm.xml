@@ -109,7 +109,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to LoanPhysicalObject -->
-    <set name="loanPhysicalObjects" lazy="true" inverse="true" cascade="delete">
+    <set name="loanPhysicalObjects" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="LoanID"/>
@@ -118,7 +118,7 @@
     </set>
     
     <!-- bi-directional many-to-one association to Shipment -->
-    <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" outer-join="true" index="IX_LoanShipmentID">
+    <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" cascade="all" not-null="true" outer-join="true" index="IX_LoanShipmentID">
         <meta attribute="field-description">Link to Shipment table</meta>
         <column name="ShipmentID"/>
     </many-to-one>

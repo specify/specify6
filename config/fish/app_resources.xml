@@ -9,7 +9,7 @@
     <file level="3" mimetype="jrxml/label" name="fish_label.jrxml" description="Fish Labels" file="fish_label.jrxml" 
         metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=Label;reportsubtype=CollectionObject"/>
         
-    <file level="3" mimetype="jrxml/report" name="LoanInvoice.jrxml" description="LoanInvoice" file="LoanInvoice.jrxml" 
+    <file level="3" mimetype="jrxml/report" name="LoanInvoice.jrxml" description="Loan Invoice" file="LoanInvoice.jrxml" 
         metadata="tableid=52;reqrs=true;type=Labels;action=PrintLabel;reporttype=Report;reportsubtype=Invoice;subreports=LoanInvoice_subreport1.jrxml"/>
         
     <file level="3" mimetype="jrxml/subreport" name="LoanInvoice_subreport1.jrxml" description="LoanInvoice SubReport" file="LoanInvoice_subreport1.jrxml" 

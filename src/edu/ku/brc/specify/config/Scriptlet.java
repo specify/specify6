@@ -29,9 +29,19 @@
 package edu.ku.brc.specify.config;
 
 import java.text.DecimalFormat;
+import java.util.List;
+import java.util.Set;
 
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
+
+import org.apache.log4j.Logger;
+
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -41,7 +51,7 @@ import net.sf.jasperreports.engine.JRScriptletException;
  */
 public class Scriptlet extends JRDefaultScriptlet
 {
-	
+    private static final Logger log = Logger.getLogger(Scriptlet.class);
 
 	/**
      * beforeReportInit
@@ -158,14 +168,25 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a String to a float to a String
      * @throws JRScriptletException xxx
      */
-    public String format(String floatStr) throws JRScriptletException
+    public String formatCatNo(String floatStr) throws JRScriptletException
     {
         if (floatStr == null)
         {
             return "";
         }
-        return format(new Float(Float.parseFloat(floatStr)));
+        float num = Float.parseFloat(floatStr); 
+        return String.format("%.0f", new Object[] {num});
     }
+
+    /*
+    public String formatCatNo(Float catalogNo) throws JRScriptletException
+    {
+        if (catalogNo == null)
+        {
+            return "N/A";
+        }
+        return String.format("%*.0f", new Object[] {catalogNo});
+    }*/
 
     /**
      * Formats a float to a string
@@ -362,13 +383,13 @@ public class Scriptlet extends JRDefaultScriptlet
     	if (latitude != null && latitude.length() >= 1)
     	{
     		String temp1[] = latitude.split("deg");
-    		locality += ", " + temp1[0] + "° " + temp1[1];
+    		locality += ", " + temp1[0] + "ï¿½ " + temp1[1];
     	}
     	
     	if (longitude != null && longitude.length() >= 1)
     	{
     		String temp2[] = longitude.split("deg");
-    		locality += ", " + temp2[0] + "° " + temp2[1];
+    		locality += ", " + temp2[0] + "ï¿½ " + temp2[1];
     	}
     	
     	return locality;
@@ -381,17 +402,66 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String dateDifference(java.sql.Date startDate, java.sql.Date endDate)
     {
-    	String loanLength = "";
-    	String startString[] = startDate.toString().split("-");
-    	String endString[] = endDate.toString().split("-");
-    	int yearDiff = Integer.parseInt(endString[0]) - Integer.parseInt(startString[0]);
-    	int monthDiff = Integer.parseInt(endString[1]) - Integer.parseInt(startString[1]);
-    	
-   		monthDiff = yearDiff * 12 + monthDiff;
-   		
-   		loanLength = monthDiff + " months";
-    	
+    	String loanLength = "N/A";
+        if (startDate != null && endDate != null)
+        {
+        	String startString[] = startDate.toString().split("-");
+        	String endString[]   = endDate.toString().split("-");
+        	int    yearDiff      = Integer.parseInt(endString[0]) - Integer.parseInt(startString[0]);
+        	int    monthDiff     = Integer.parseInt(endString[1]) - Integer.parseInt(startString[1]);
+        	
+       		monthDiff = yearDiff * 12 + monthDiff;
+       		
+       		loanLength = monthDiff + " months";
+        }
     	return loanLength;
+    }
+    
+    /**
+     * @param colEvId
+     * @return
+     */
+    public String getCollectors(final Long colEvId)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        System.out.println(colEvId);
+        
+        //DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupByClassName(CollectingEvent.class.getName());
+        String collectorsStr = "N/A"; // XXX I18N
+        List<?> list = session.getDataList(CollectingEvent.class, "collectingEventId", colEvId);
+        if (list.size() > 0)
+        {
+            CollectingEvent ce = (CollectingEvent)list.get(0);
+            Set<Collectors> collectors = ce.getCollectors();
+            if (collectors.size() > 0)
+            {
+                collectorsStr = DataObjFieldFormatMgr.aggregate(collectors, Collectors.class);
+            } else
+            {
+                collectorsStr = "No Collectors"; // XXX I18N
+            }
+            
+        } else
+        {
+            log.error("Couldn't locate CollecingEventID ["+colEvId+"]");
+        }
+        
+        session.close();
+        
+        return collectorsStr;
+    }
+    
+    protected int convertInt(final Integer val)
+    {
+        return val == null ? 0 : val.intValue();
+    }
+    
+    public Integer calcLoanQuantity(final Integer countArg, final Integer QuantityReturnedArg, final Integer QuantityResolvedArg)
+    {
+        int count            = convertInt(countArg);
+        int quantityReturned = convertInt(QuantityReturnedArg);
+        int quantityResolved = convertInt(QuantityResolvedArg);
+        return count - quantityReturned - quantityResolved;
     }
 }
 

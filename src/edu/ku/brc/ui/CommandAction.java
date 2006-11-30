@@ -39,7 +39,7 @@ public class CommandAction
     
     protected boolean isConsumed = false;
     
-    protected Hashtable<String, String> properties = null;
+    protected Hashtable<String, Object> properties = null;
     
     /**
      * Constructs a command
@@ -155,27 +155,27 @@ public class CommandAction
         return srcObj;
     }
     
-    public String getProperty(final String name)
+    public Object getProperty(final String name)
     {
         return properties == null ? null : properties.get(name);
     }
     
-    public void setProperty(final String name, final String value)
+    public void setProperty(final String name, final Object value)
     {
         if (properties == null)
         {
-            properties = new Hashtable<String, String>();
+            properties = new Hashtable<String, Object>();
         }
         properties.put(name, value);
     }
     
-    public void addProperties(final Map<String, String> props)
+    public void addProperties(final Map<String, Object> props)
     {
         if (props != null)
         {
             if (properties == null)
             {
-                properties = new Hashtable<String, String>();
+                properties = new Hashtable<String, Object>();
             }
             properties.putAll(props);
         }

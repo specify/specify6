@@ -36,25 +36,57 @@ import edu.ku.brc.ui.dnd.DataActionEvent;
  */
 public class NavBoxAction  implements ActionListener
 {
+    public static final String ORGINATING_TASK = "OriginatingTask";
+    
     private static final Logger log = Logger.getLogger(NavBoxAction.class);
     
-    private String                type;
-    private String                action;
-    private Map<String, String>   properties = null; 
+    protected Taskable              originatingTask = null;
+    protected String                type;
+    protected String                action;
+    protected Map<String, Object>   properties = null; 
 
 
     public NavBoxAction(final TaskCommandDef tcd)
     {
-        this.type       = tcd.getParams().get("type");
-        this.action     = tcd.getParams().get("action");
-        this.properties = new Hashtable<String, String>();
+        this(tcd, null);
+    }
+
+    public NavBoxAction(final TaskCommandDef tcd, Taskable origTask)
+    {
+        this.originatingTask = origTask;
+        this.type            = tcd.getParams().get("type");
+        this.action         = tcd.getParams().get("action");
+        
+        this.properties = new Hashtable<String, Object>();
         this.properties.putAll(tcd.getParams());
+        
+        setOriginatingTask(origTask);
     }
 
     public NavBoxAction(final String type, final String action)
     {
+        this(type, action, null);
+    }
+
+    public NavBoxAction(final String type, final String action, final Taskable origTask)
+    {
         this.type   = type;
         this.action = action;
+        
+        setOriginatingTask(origTask);
+    }
+
+    public void setOriginatingTask(final Taskable origTask)
+    {
+        this.originatingTask = origTask;
+        if (origTask != null)
+        {
+            if (this.properties == null)
+            {
+                this.properties = new Hashtable<String, Object>();
+            }
+            this.properties.put(ORGINATING_TASK, this.originatingTask);
+        }
     }
 
     /* (non-Javadoc)

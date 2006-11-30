@@ -117,6 +117,7 @@ public class TableViewObj implements Viewable,
     protected View                          view;
     protected AltView                       altView;
     protected FormViewDef                   formViewDef;
+    protected int                           options;
     protected String                        cellName       = null;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
@@ -182,6 +183,7 @@ public class TableViewObj implements Viewable,
         this.view        = view;
         this.altView     = altView;
         this.mvParent    = mvParent;
+        this.options     = options;
         
         businessRules    = view.getBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
@@ -234,7 +236,26 @@ public class TableViewObj implements Viewable,
                 // you would want to switch an individual subview to a differe "mode" view than the root).
 
                 altViewsList = new Vector<AltView>();
+                
+                // Very Special Case until Tables can handle edit mode or be in edit mode.
+                // Since they can't, and when a form is for a "new" object then we need to fake out the switcher code 
+                // so it thinks we are in edit mode (at this time Tables are ALWAYS in View mode)
+                // so we temporarily set the mode of the Table's AltView to Edit create the switcher
+                // and then set it back to View.
+                boolean isNewObj = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+                AltView.CreationMode tempMode = null;
+                if (isNewObj && altView.getMode() == AltView.CreationMode.View)
+                {
+                    tempMode = altView.getMode();
+                    altView.setMode(AltView.CreationMode.Edit);
+                }
+                
                 switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
+                
+                if (tempMode != null)
+                {
+                    altView.setMode(tempMode);
+                }
                 
                 if (altViewsList.size() > 0)
                 {

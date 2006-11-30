@@ -158,6 +158,7 @@ public class FormViewObj implements Viewable,
     protected int                           options;
 
     protected JPanel                        mainComp        = null;
+    protected JScrollPane                   scrollPane      = null;
     protected ControlBarPanel               controlPanel    = null;
     protected ResultSetController           rsController    = null;
     protected List<Object>                  list            = null;
@@ -273,6 +274,11 @@ public class FormViewObj implements Viewable,
         mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         mainComp    = mainBuilder.getPanel();
         mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        
+        if (mvParent.isRoot())
+        {
+            scrollPane = new JScrollPane(mainComp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        }
         
         List<JComponent> comps = new ArrayList<JComponent>();
 
@@ -1226,7 +1232,7 @@ public class FormViewObj implements Viewable,
      */
     public Component getUIComponent()
     {
-        return mainComp;
+        return scrollPane != null ? scrollPane : mainComp;
     }
 
     /* (non-Javadoc)
