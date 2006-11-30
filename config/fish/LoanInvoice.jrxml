@@ -24,9 +24,8 @@
 	<import value="net.sf.jasperreports.engine.*" />
 	<import value="net.sf.jasperreports.engine.data.*" />
 
-    <parameter name="itemnum" class="java.lang.String"/>
+	<parameter name="itemnum" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String"/>
-	
 	<queryString><![CDATA[SELECT Expr2.*, address.Address, address.Address2, address.City, address.State, address.PostalCode, address.Country
 FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial
 FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, loan.isGift, shipment.ShipmentMethod, shipment.NumberOfPackages, shipment.ShippedToID
@@ -67,26 +66,6 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 		</background>
 		<title>
 			<band height="240"  isSplitAllowed="true" >
-				<staticText>
-					<reportElement
-						x="168"
-						y="2"
-						width="225"
-						height="118"
-						key="staticText-1"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement textAlignment="Center">
-						<font size="11"/>
-					</textElement>
-				<text><![CDATA[INVOICE OF SPECIMENS
-Division of Ichthyology
-Biodiversity Research Center
-1345 Jayhawk Boulevard
-University of Kansas
-Lawrence, Kansas, USA 66045-7561
-Voice: 785-864-3369 Fax: 785-864-5335
-e-mail: ABentley@ku.edu]]></text>
-				</staticText>
 				<image  evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="0"
@@ -96,7 +75,7 @@ e-mail: ABentley@ku.edu]]></text>
 						key="image-1"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
 					<graphicElement stretchType="NoStretch"/>
-					<imageExpression class="java.lang.String"><![CDATA["/home/rods/workspace/Specify/topbrc4.jpg"]]></imageExpression>
+					<imageExpression class="java.lang.String"><![CDATA["/Users/rods/Documents/workspace/Specify/topbrc4.jpg"]]></imageExpression>
 				</image>
 				<staticText>
 					<reportElement
@@ -115,7 +94,7 @@ e-mail: ABentley@ku.edu]]></text>
 					<reportElement
 						x="481"
 						y="1"
-						width="70"
+						width="95"
 						height="20"
 						key="textField"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -154,7 +133,7 @@ e-mail: ABentley@ku.edu]]></text>
 					<reportElement
 						x="465"
 						y="55"
-						width="70"
+						width="110"
 						height="18"
 						key="textField"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -167,7 +146,7 @@ e-mail: ABentley@ku.edu]]></text>
 					<reportElement
 						x="465"
 						y="73"
-						width="70"
+						width="110"
 						height="18"
 						key="textField"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -179,15 +158,15 @@ e-mail: ABentley@ku.edu]]></text>
 				<staticText>
 					<reportElement
 						x="380"
-						y="110"
-						width="146"
+						y="111"
+						width="93"
 						height="15"
 						key="staticText-5"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
+					<textElement textAlignment="Right">
 						<font/>
 					</textElement>
-				<text><![CDATA[Prepared by:   Bentley, Andy]]></text>
+				<text><![CDATA[Prepared by:]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -197,7 +176,7 @@ e-mail: ABentley@ku.edu]]></text>
 						height="15"
 						key="staticText-6"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
+					<textElement textAlignment="Right">
 						<font/>
 					</textElement>
 				<text><![CDATA[Mode of Shipment:]]></text>
@@ -206,11 +185,11 @@ e-mail: ABentley@ku.edu]]></text>
 					<reportElement
 						x="380"
 						y="150"
-						width="68"
+						width="93"
 						height="15"
 						key="staticText-7"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
+					<textElement textAlignment="Right">
 						<font/>
 					</textElement>
 				<text><![CDATA[# of packages:]]></text>
@@ -219,11 +198,11 @@ e-mail: ABentley@ku.edu]]></text>
 					<reportElement
 						x="380"
 						y="170"
-						width="47"
+						width="93"
 						height="15"
 						key="staticText-8"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
+					<textElement textAlignment="Right">
 						<font/>
 					</textElement>
 				<text><![CDATA[Category:]]></text>
@@ -232,11 +211,11 @@ e-mail: ABentley@ku.edu]]></text>
 					<reportElement
 						x="380"
 						y="190"
-						width="77"
+						width="92"
 						height="15"
 						key="staticText-9"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
+					<textElement textAlignment="Right">
 						<font/>
 					</textElement>
 				<text><![CDATA[Length of Loan:]]></text>
@@ -245,7 +224,7 @@ e-mail: ABentley@ku.edu]]></text>
 					<reportElement
 						x="477"
 						y="130"
-						width="50"
+						width="97"
 						height="15"
 						key="textField"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -256,9 +235,9 @@ e-mail: ABentley@ku.edu]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="435"
+						x="477"
 						y="170"
-						width="120"
+						width="99"
 						height="20"
 						key="textField"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -269,9 +248,9 @@ e-mail: ABentley@ku.edu]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="455"
+						x="477"
 						y="150"
-						width="50"
+						width="95"
 						height="15"
 						key="textField"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -430,9 +409,9 @@ e-mail: ABentley@ku.edu]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="460"
+						x="477"
 						y="190"
-						width="100"
+						width="97"
 						height="15"
 						key="textField-3"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -441,6 +420,39 @@ e-mail: ABentley@ku.edu]]></text>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).dateDifference($F{LoanDate}, $F{CurrentDueDate})]]></textFieldExpression>
 				</textField>
+				<staticText>
+					<reportElement
+						x="476"
+						y="111"
+						width="99"
+						height="15"
+						key="staticText-19"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font/>
+					</textElement>
+				<text><![CDATA[Bentley, Andy]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="156"
+						y="4"
+						width="256"
+						height="118"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font size="11" isBold="true"/>
+					</textElement>
+				<text><![CDATA[INVOICE OF SPECIMENS
+Division of Ichthyology
+Biodiversity Research Center
+1345 Jayhawk Boulevard
+University of Kansas
+Lawrence, Kansas, USA 66045-7561
+Voice: 785-864-3369 Fax: 785-864-5335
+e-mail: ABentley@ku.edu]]></text>
+				</staticText>
 			</band>
 		</title>
 		<pageHeader>
@@ -460,7 +472,7 @@ e-mail: ABentley@ku.edu]]></text>
 						width="549"
 						height="98"
 						key="subreport-1"/>
-					<subreportParameter name="itemnum">
+					<subreportParameter  name="itemnum">
 						<subreportParameterExpression><![CDATA[$P{itemnum}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
