@@ -148,12 +148,15 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
                 configColumns();
         
                 rowCount = rsm.getRowCount();
-                if (rowCount > topNumEntries)
+                if (rowCount > topNumEntries+2)
                 {
                     buildMorePanel();
+                    setDisplayRows(rowCount, topNumEntries);
                 }
-        
-                setDisplayRows(rowCount, topNumEntries);
+                else
+                {
+                	setDisplayRows(rowCount,Integer.MAX_VALUE);
+                }
         
                 sqlExecutor = null;
                 invalidate();

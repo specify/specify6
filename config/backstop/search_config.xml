@@ -557,6 +557,37 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </detailView>
         </table>
       
+        <table id="19" tableid="63" name="Preparations" title="Preparations" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="preparation" title="Preparation"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM preparation]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">PreparationID</col>
+                    <col pos="2">Text1</col>
+                    <col pos="2">Text2</col>
+                    <col pos="2">StorageLocation</col>
+                    <col pos="2">Remarks</col>
+                </cols>
+            </index>
+            <detailView icon="Attachment">
+                <sql>
+                    <![CDATA[SELECT PreparationID, Text1, Text2, StorageLocation, Remarks FROM preparation WHERE PreparationID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="PreparationID" text="PreparationID" visible="false"/>
+                    <caption col="Text1" text="Text1"/>
+                    <caption col="Text2" text="Text2"/>
+                    <caption col="StorageLocation" text="Storage Location"/>
+                    <caption col="Remarks" text="Remarks"/>
+                </captions>
+               <recordset tabletype="8" col="1"/>
+            </detailView>
+        </table>
+      
     </express>
     
     <!-- ************************************************* -->
