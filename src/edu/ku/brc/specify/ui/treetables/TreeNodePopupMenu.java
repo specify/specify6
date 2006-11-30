@@ -16,6 +16,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * @code_status Beta
  * @author jstewart
  */
+@SuppressWarnings("serial")
 public class TreeNodePopupMenu extends JPopupMenu
 {
 	protected JList list;

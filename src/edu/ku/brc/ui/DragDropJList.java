@@ -30,7 +30,6 @@ import javax.swing.ListModel;
  *
  * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 @SuppressWarnings("serial")
 public class DragDropJList extends JList implements DragSourceListener,

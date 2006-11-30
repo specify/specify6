@@ -1396,6 +1396,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 
+		if (e.isPopupTrigger())
+		{
+			showPopup(e);
+		}
+		
 		if(e.getButton() != MouseEvent.BUTTON1)
 		{
 			return;
@@ -1451,6 +1456,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			statusBar.setText("System busy: " + busyReason);
 			return;
+		}
+
+		if(e.isPopupTrigger())
+		{
+			showPopup(e);
 		}
 
 		if(e.getButton() != MouseEvent.BUTTON1)
