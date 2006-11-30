@@ -81,18 +81,19 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	
 	protected void createNavBoxes(@SuppressWarnings("unused") List<D> defs)
 	{
-		ActionListener toggleViewAction = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				toggleViewMode();
-			}
-		};
 		NavBox actions = new NavBox(getResourceString("Actions"));
-		String label = getResourceString("ToggleViewMode");
-		String iconName = "TTV_ToggleViewMode";
-		NavBoxItemIFace toggleViewItem = NavBox.createBtn(label,iconName,IconManager.IconSize.Std16,toggleViewAction); 
-		actions.add(toggleViewItem);
+
+//		ActionListener toggleViewAction = new ActionListener()
+//		{
+//			public void actionPerformed(ActionEvent ae)
+//			{
+//				toggleViewMode();
+//			}
+//		};
+//		String toggleLabel = getResourceString("ToggleViewMode");
+//		String toggleIconName = "TTV_ToggleViewMode";
+//		NavBoxItemIFace toggleViewItem = NavBox.createBtn(toggleLabel,toggleIconName,IconManager.IconSize.Std16,toggleViewAction); 
+//		actions.add(toggleViewItem);
 
 		ActionListener saveTreeAction = new ActionListener()
 		{
@@ -101,9 +102,9 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 				saveTree();
 			}
 		};
-		label = getResourceString("SaveTree");
-		iconName = "Save";
-		NavBoxItemIFace saveTreeItem = NavBox.createBtn(label,iconName,IconManager.IconSize.Std16,saveTreeAction);
+		String saveLabel = getResourceString("SaveTree");
+		String saveIconName = "Save";
+		NavBoxItemIFace saveTreeItem = NavBox.createBtn(saveLabel,saveIconName,IconManager.IconSize.Std16,saveTreeAction);
 		actions.add(saveTreeItem);
 		
 		NavBox find = new NavBox(getResourceString("FindNode"));

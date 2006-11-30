@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
@@ -32,7 +33,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Vector;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -139,6 +142,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected boolean unsavedChanges;
     protected boolean redoNodeNumbers;
     
+    protected List<AbstractButton> allButtons;
+    
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
 	 * 
@@ -152,6 +157,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 		super(name,task);
 		this.treeDef = treeDef;
+		allButtons = new Vector<AbstractButton>();
 		dataService = TreeDataServiceFactory.createService();
 		Comparator<Rankable> reverseComp = Collections.reverseOrder(new RankBasedComparator());
 		deletedNodes = new TreeSet<T>(reverseComp);
@@ -308,6 +314,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	protected void setBusy(boolean busy,String statusText)
 	{
+		if (busy)
+		{
+			setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		}
+		else
+		{
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
+		
+		for (AbstractButton ab: allButtons)
+		{
+			ab.setEnabled(!busy);
+		}
+
 		this.busy = busy;
 		busyReason = statusText;
 		statusBar.setText(busyReason);
@@ -330,6 +350,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			setViewMode(SINGLE_VIEW_MODE);
 		}
+		
+		repaint();
+    	UICacheManager.forceTopFrameRepaint();
 	}
 	
 	protected void setViewMode(int newMode)
@@ -362,6 +385,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
 		Icon icon_delNode    = IconManager.getIcon("TTV_DelNode",   IconManager.IconSize.Std16);
 		Icon icon_toParent   = IconManager.getIcon("TTV_ToParent",  IconManager.IconSize.Std16);
+		Icon icon_toggle     = IconManager.getIcon("TTV_ToggleViewMode", IconManager.IconSize.Std16);
+		
+		// TODO: externalize these strings
 		
 		JButton subtree = new JButton(icon_subtree);
 		subtree.setSize(20,20);
@@ -393,6 +419,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			public void actionPerformed(ActionEvent ae)
 			{
 				selectParentOfSelection(list);
+			}
+		});
+		
+		JButton toggle = new JButton(icon_toggle);
+		toggle.setSize(20,20);
+		toggle.setToolTipText("Toggle View Mode");
+		toggle.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				toggleViewMode();
 			}
 		});
 
@@ -462,6 +499,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		wholeTree.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buttonPanel.add(toParent);
 		toParent.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(toggle);
+		toggle.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buttonPanel.add(showDescend);
 		showDescend.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -482,6 +521,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		buttonPanel.add(Box.createVerticalGlue());
 		buttonPanel.add(syncViews);
 		syncViews.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		allButtons.add(subtree);
+		allButtons.add(wholeTree);
+		allButtons.add(toParent);
+		allButtons.add(toggle);
+		allButtons.add(showDescend);
+		allButtons.add(newChild);
+		allButtons.add(editNode);
+		allButtons.add(deleteNode);
 		
 		return buttonPanel;
 	}
@@ -755,7 +803,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	protected void editSelectedNodeOK(T node)
 	{
-		log.info("User selected 'OK' from edit node dialog: ");
+		log.info("User selected 'OK' from edit node dialog");
 		
 		boolean nameChanged = !node.getName().equals(nameBeforeEditDialogShown);
 		Boolean levelIsInFullName = node.getDefinitionItem().getIsInFullName();
