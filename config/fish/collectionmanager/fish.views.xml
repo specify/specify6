@@ -936,48 +936,56 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <columnDef>p,4px,p,5px,p,4px,p,5px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
-                     <cell type="separator" label="Loan" colspan="8"/>
-                </row>
-                <row>
-                     <cell type="label" labelfor="1" label="Number"/>
-                     <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
-                     <cell type="label" labelfor="2" label=""/>
-                     <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" valtype="Changed" initialize="editable=true"/>
+                     <cell type="separator" label="Loan" colspan="12"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Date"/>
                     <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true" default="today"/>
                     <cell type="label" labelfor="4" label="Date Closed"/>
                     <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="12" label="Due Date"/>
                     <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                    <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" valtype="Changed" initialize="editable=true"/>
+                </row>
+                <row>
                      <cell type="label" labelfor="5" label="Remarks"/>
-                     <cell type="field" id="5" name="remarks" uitype="textarea" colspan="6"/>
+                     <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Shipment" colspan="8"/>
+                    <cell type="separator" label="Shipment" colspan="12"/>
+                </row>
+                <row>                   
+                    <cell type="subview" viewname="Shipment" id="11" name="shipment" colspan="12"/>
+                </row>
+                <!--
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="f:p:g" rowdef="f:p:g" colspan="12">
+                        <rows>
+                            <row>                   
+                                <cell type="subview" viewname="Shipment" id="11" name="shipment"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                -->
+                <row>
+                    <cell type="separator" label="Preparations To be Loaned" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Shipment" id="11" name="shipment" colspan="8"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Preparations To be Loaned" colspan="8"/>
-                </row>
-                <row>
-                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="8"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="12"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="9" label="Attachments"/>
-                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="6"/>
+                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -1022,7 +1030,7 @@
             <enableRules/>
             
             <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
@@ -1042,13 +1050,6 @@
                     
                     <cell type="label" labelfor="4" label="Storage"/>
                     <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="5" label="Size"/>
-                    <cell type="field" id="5" name="attrs.size" uitype="text"/>
-                    
-                    <cell type="label" labelfor="6" label="Sex"/>
-                    <cell type="field" id="6" uitype="combobox" name="attrs.sex" initialize="data=Unknown, Male, Female"/>
                 </row>
             </rows>
         </viewdef>

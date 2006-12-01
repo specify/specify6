@@ -51,6 +51,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -81,6 +82,8 @@ public class InteractionsTask extends BaseTask
     protected static final String InfoRequestName = "InfoRequest";
     protected static final String NewLoan         = "New_Loan";
     protected static final String PrintLoan       = "PrintLoan";
+    protected static final String AppType         = "App";
+    protected static final String DatabaseType    = "Database";
 
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -95,7 +98,8 @@ public class InteractionsTask extends BaseTask
         
         CommandDispatcher.register(INTERACTIONS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
-        CommandDispatcher.register("App", this);
+        CommandDispatcher.register(AppType, this);
+        CommandDispatcher.register(DatabaseType, this);
 
     }
     
@@ -427,6 +431,19 @@ public class InteractionsTask extends BaseTask
         } else if (cmdAction.getAction().equals(PrintLoan))
         {
             printLoan(cmdAction.getData());
+            
+        } else if (cmdAction.getType().equals(DatabaseType) && cmdAction.getAction().equals("Insert"))
+        {
+            if (cmdAction.getData() instanceof Loan)
+            {
+                Loan loan = (Loan)cmdAction.getData();
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.setName(loan.getIdentityTitle());
+                rs.setDbTableId(loan.getTableId());
+                rs.addItem(loan.getId());
+                printLoan(rs);
+            }
             
         } else 
         {

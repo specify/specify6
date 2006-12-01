@@ -225,7 +225,7 @@ public class DatabaseLoginPanel extends JPanel
 
         forwardImgIcon = IconManager.getIcon("Forward");
         downImgIcon    = IconManager.getIcon("Down");
-        moreBtn       = new JCheckBox("More", forwardImgIcon);
+        moreBtn       = new JCheckBox("More", forwardImgIcon); // XXX I18N
 
         // Extra
         dbDrivers = DatabaseDriverInfo.loadDatabaseDriverInfo();

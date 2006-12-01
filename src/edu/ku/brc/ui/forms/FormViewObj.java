@@ -53,6 +53,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -71,9 +72,10 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
-import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -81,6 +83,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
@@ -966,6 +969,7 @@ public class FormViewObj implements Viewable,
      */
     protected void saveObject()
     {
+        boolean sendSaveMsg = true;
         //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
         try
         {
@@ -1011,12 +1015,14 @@ public class FormViewObj implements Viewable,
         {
             session.rollback();
             recoverFromStaleObject("UPDATE_DATA_STALE");
+            sendSaveMsg = false;
             
         } catch (Exception e)
         {
             log.error("******* " + e);
             e.printStackTrace();
             session.rollback();
+            sendSaveMsg = false;
         }
         saveBtn.setEnabled(false);
     }
@@ -1830,7 +1836,7 @@ public class FormViewObj implements Viewable,
                 {
                     if (comp instanceof JAutoCompComboBox)
                     {
-                        PickListItem pli = (PickListItem)((JAutoCompComboBox)comp).getSelectedItem();
+                        PickListItemIFace pli = (PickListItemIFace)((JAutoCompComboBox)comp).getSelectedItem();
                         return pli.getValueObject() == null ? pli.getValue() : pli.getValueObject();
 
                     } else

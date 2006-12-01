@@ -38,7 +38,7 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
      */
     public void onPostInsert(PostInsertEvent arg0)
     {
-        CommandDispatcher.dispatch(new CommandAction("Database", "Insert", arg0));
+        CommandDispatcher.dispatch(new CommandAction("Database", "Insert", arg0.getEntity()));
         
         if (arg0.getEntity() instanceof FormDataObjIFace)
         {

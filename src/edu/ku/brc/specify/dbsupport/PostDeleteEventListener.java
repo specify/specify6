@@ -40,7 +40,7 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
      */
     public void onPostDelete(PostDeleteEvent arg0)
     {
-        CommandDispatcher.dispatch(new CommandAction("Database", "Delete", arg0));
+        CommandDispatcher.dispatch(new CommandAction("Database", "Delete", arg0.getEntity()));
         
         if (arg0.getEntity() instanceof FormDataObjIFace)
         {
