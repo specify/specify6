@@ -23,16 +23,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -63,7 +57,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.IconManager;
@@ -98,7 +91,15 @@ public class LoanSelectPrepsDlg extends JDialog
         
         JPanel mainPanel = new JPanel();
         
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px,", (colObjs.size()*2)-1) + ",10px,p";
+        int cntColObj = 0;
+        for (CollectionObject co : colObjs)
+        {
+            if (getCurrentDetermination(co) != null)
+            {
+                cntColObj++;
+            }
+        }
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px,", (cntColObj*2)-1) + ",10px,p";
         PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
         CellConstraints cc      = new CellConstraints();
         
@@ -122,18 +123,21 @@ public class LoanSelectPrepsDlg extends JDialog
         int y = 1;
         for (CollectionObject co : colObjs)
         {
-            if (i > 0)
+            if (getCurrentDetermination(co) != null)
             {
-                pbuilder.addSeparator("", cc.xy(1,y));
+                if (i > 0)
+                {
+                    pbuilder.addSeparator("", cc.xy(1,y));
+                }
+                y += 2;
+                
+                ColObjPanel panel = new ColObjPanel(co);
+                colObjPanels.add(panel);
+                panel.addActionListener(al, cl);
+                pbuilder.add(panel, cc.xy(1,y));
+                y += 2;
+                i++;
             }
-            y += 2;
-            
-            ColObjPanel panel = new ColObjPanel(co);
-            colObjPanels.add(panel);
-            panel.addActionListener(al, cl);
-            pbuilder.add(panel, cc.xy(1,y));
-            y += 2;
-            i++;
         }
         okBtn = new JButton(getResourceString("OK"));
         JButton cancel = new JButton(getResourceString("Cancel"));
@@ -183,6 +187,18 @@ public class LoanSelectPrepsDlg extends JDialog
         setSize(size);
     }
     
+    protected Determination getCurrentDetermination(final CollectionObject colObj)
+    {
+        for (Determination d : colObj.getDeterminations())
+        {
+            if (d.getStatus().getDeterminationStatusId() == 1)
+            {
+                return d;
+            }
+        }
+        return null;
+    }
+    
     protected void doEnableOKBtn()
     {
         int count = 0;
@@ -197,6 +213,10 @@ public class LoanSelectPrepsDlg extends JDialog
         //}
     }
     
+    /**
+     * Returns a Hastable of Preparation to Count.
+     * @return a Hastable of Preparation to Count.
+     */
     public Hashtable<Preparation, Integer> getPreparationCounts()
     {
         Hashtable<Preparation, Integer> hash = new Hashtable<Preparation, Integer>();
@@ -482,7 +502,7 @@ public class LoanSelectPrepsDlg extends JDialog
             //setOpaque(false);
             //setCursor(handCursor);
             
-            final LinkLabelBtn llb = this;
+            //final LinkLabelBtn llb = this;
 
             addMouseListener(new MouseAdapter()
             {

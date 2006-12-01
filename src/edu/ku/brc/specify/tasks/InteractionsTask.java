@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -48,6 +50,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -84,6 +87,10 @@ public class InteractionsTask extends BaseTask
     protected static final String PrintLoan       = "PrintLoan";
     protected static final String AppType         = "App";
     protected static final String DatabaseType    = "Database";
+    
+    protected final int loanTableId;
+    protected final int infoRequestTableId;
+    protected final int colObjTableId;
 
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -100,6 +107,12 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         CommandDispatcher.register(AppType, this);
         CommandDispatcher.register(DatabaseType, this);
+        
+        loanTableId        = DBTableIdMgr.lookupIdByClassName(Loan.class.getName());
+        infoRequestTableId = DBTableIdMgr.lookupIdByClassName(InfoRequest.class.getName());
+        colObjTableId      = DBTableIdMgr.lookupIdByClassName(CollectionObject.class.getName());
+        
+        this.icon = IconManager.getIcon(INTERACTIONS, IconManager.IconSize.Std16);
 
     }
     
@@ -128,7 +141,7 @@ public class InteractionsTask extends BaseTask
             navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
             //navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
             //navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
-            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(PrintLoan),  ReportsTask.REPORTS, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, PrintLoan, this)), null);
+            //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(PrintLoan),  ReportsTask.REPORTS, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, PrintLoan, this)), null);
             navBoxes.addElement(navBox);
             
             // Then add
@@ -157,10 +170,8 @@ public class InteractionsTask extends BaseTask
                     }
                 }
             }
-
             navBoxes.addElement(navBox);
         }
-
     }
 
     /**
@@ -258,40 +269,14 @@ public class InteractionsTask extends BaseTask
         if (data instanceof RecordSetIFace)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
-            CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.DOLABELS_ACTION, rs);
+            
+            // XXX For Demo purposes only we need to be able to look up report and labels
+            CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
+            cmd.setProperty("file", "LoanInvoice.jrxml");
+            cmd.setProperty("title", "Loan Invoice");
             cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
             CommandDispatcher.dispatch(cmd);
-            
-            /*
-            if (rs.getItems().size() > 0)
-            {
-                Long recordId = rs.getItems().iterator().next().getRecordId();
-                if (recordId != null)
-                {
-                    DBTableIdMgr.TableInfo   tableInfo = DBTableIdMgr.lookupByClassName(Loan.class.getName());
-                    String                   sqlStr    = DBTableIdMgr.getQueryForTable(tableInfo.getTableId(), recordId);
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    List<?> loans = session.getDataList(sqlStr);
-                    if (loans.size() > 0)
-                    {
-                        //RecordSet rs = new RecordSet();
-                        //rs.setDbTableId(tableId)
-                        CommandDispatcher.dispatch(new CommandAction(LabelsTask.LABELS, LabelsTask.DOLABELS_ACTION, ));
-                        
-                    } else
-                    {
-                        // Error Dialog
-                    }
-                    
-                } else
-                {
-                    // ask for Loan Noan Number
-                }
-                
-            } else
-            {
-                // ask for loan number here
-            }*/
+
         }
     }
     
@@ -307,7 +292,7 @@ public class InteractionsTask extends BaseTask
 
         DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
         
-        DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
+        DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
@@ -330,7 +315,7 @@ public class InteractionsTask extends BaseTask
                     {
                         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
                         statusBar.setIndeterminate(true);
-                        statusBar.setText("Creating Loan..."); // XXX I18N
+                        statusBar.setText(getResourceString("CreatingLoan"));
                         
                         Loan loan = new Loan();
                         loan.initialize();
@@ -432,17 +417,42 @@ public class InteractionsTask extends BaseTask
         {
             printLoan(cmdAction.getData());
             
-        } else if (cmdAction.getType().equals(DatabaseType) && cmdAction.getAction().equals("Insert"))
+        } else if (cmdAction.getType().equals(DatabaseType))
         {
             if (cmdAction.getData() instanceof Loan)
             {
                 Loan loan = (Loan)cmdAction.getData();
-                RecordSet rs = new RecordSet();
-                rs.initialize();
-                rs.setName(loan.getIdentityTitle());
-                rs.setDbTableId(loan.getTableId());
-                rs.addItem(loan.getId());
-                printLoan(rs);
+                boolean printLoan = false;
+                
+                if (cmdAction.getAction().equals("Insert"))
+                {
+                    printLoan = true;
+                    
+                } else if (cmdAction.getAction().equals("Update"))
+                {
+                    Object[] options = {getResourceString("CreateLoanInvoice"), getResourceString("Cancel")};
+                    int n = JOptionPane.showOptionDialog(UICacheManager.get(UICacheManager.FRAME),
+                                                        String.format(getResourceString("CreateLoanInvoiceForNum"), new Object[] {(loan.getLoanNumber())}),
+                                                        getResourceString("CreateLoanInvoice"),
+                                                        JOptionPane.YES_NO_OPTION,
+                                                        JOptionPane.QUESTION_MESSAGE,
+                                                        null,     //don't use a custom Icon
+                                                        options,  //the titles of buttons
+                                                        options[0]); //default button title
+                    printLoan = n == 0;
+                }
+                
+                if (printLoan)
+                {
+                    RecordSet rs = new RecordSet();
+                    rs.initialize();
+                    rs.setName(loan.getIdentityTitle());
+                    rs.setDbTableId(loan.getTableId());
+                    rs.addItem(loan.getId());
+                    printLoan(rs);
+                }
+
+                
             }
             
         } else 
@@ -458,114 +468,25 @@ public class InteractionsTask extends BaseTask
             // These all assume there needs to be a recordsset
             if (cmdData != null && cmdData instanceof RecordSetIFace)
             {
-                if (cmdAction.getAction().equals(NewLoan))
-                {
-                    createNewLoan((RecordSetIFace)cmdData);    
-                        
-                } else if (cmdAction.getAction().equals(InfoRequestName))
-                {
-                    createInfoRequest((RecordSetIFace)cmdData);    
-                }
-            }
-        }
-
-    }
-
-
-    //--------------------------------------------------------------
-    // Inner Classes
-    //--------------------------------------------------------------
-    /*class InteractionAction implements ActionListener
-    {
-        private String    type;
-        private String    action;
-        private String    nameStr;
-        private String    titleStr;
-        private int       tableId;
-        private RecordSetIFace recordSet = null;
-
-
-        public InteractionAction(final TaskCommandDef tcd)
-        {
-            this.nameStr  = tcd.getParams().get("file");
-            this.titleStr = tcd.getParams().get("title");
-            this.type     = tcd.getParams().get("type");
-            this.action   = tcd.getParams().get("action");
-            this.tableId  = Integer.parseInt(tcd.getParams().get("tableid"));
-        }
-
-        public InteractionAction(final String action)
-        {
-            this.type   = INTERACTIONS;
-            this.action = action;
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            boolean needsRecordSets = true;
-            
-            Object data = null;
-            if (e instanceof DataActionEvent)
-            {
-                DataActionEvent dae = (DataActionEvent)e;
-                data = dae.getData();
-                if (data instanceof RecordSet)
-                {
-                    RecordSetIFace rs = (RecordSetIFace)data;
-                    if (rs.getDbTableId() != tableId)
-                    {
-                        if (StringUtils.isNotEmpty(action))
-                        {
-                            if (action.equals(NewLoan))
-                            {
-                                doCommand(new CommandAction(INTERACTIONS, action, data));
-                                //JOptionPane.showMessageDialog(null, getResourceString("ERROR_LABELS_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                            else if (action.equals(InfoRequestName))
-                            {
-                                InfoRequestTask.createInfoRequest((RecordSetIFace)data);
-                                return;
-                            } else
-                            {
-                                CommandAction cmd = new CommandAction(type, action, data);
-                                //cmd.addProperties();
-                                CommandDispatcher.dispatch(new CommandAction(type, action, data));
-                                return;
-                            }
-                        } else
-                        {
-                            log.debug("Action was NULL!");
-                        }
-                    }
-                }
-            }
-
-            if (!needsRecordSets)
-            {
-                //doLabels(nameStr, titleStr, null);
+                RecordSetIFace rs = (RecordSetIFace)cmdData;
                 
-            } else if (data instanceof RecordSet)
-            {
-                //doLabels(nameStr, titleStr, (RecordSetIFace)data);
-
-            } else
-            {
-                log.error("Data is not RecordSet");
+                if (rs.getDbTableId() == colObjTableId)
+                {
+                    if (cmdAction.getAction().equals(NewLoan))
+                    {    
+                        createNewLoan(rs);
+                            
+                    } else if (cmdAction.getAction().equals(InfoRequestName))
+                    {
+                        createInfoRequest(rs);    
+ 
+                    }
+                } else
+                {
+                    log.error("Dropped wrong table type.");
+                    // Error Msg Dialog XXX
+                }
             }
-
         }
-
-        public void setRecordSet(final RecordSetIFace recordSet)
-        {
-            this.recordSet = recordSet;
-        }
-
-        public RecordSetIFace getRecordSet()
-        {
-            return recordSet;
-        }
-    }*/
-
-
+    }
 }

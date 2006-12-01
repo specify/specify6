@@ -225,7 +225,7 @@ public class LabelsTask extends BaseTask
         //
         if (recordSet.getItems().size() > 200) // XXX Pref
         {
-            Object[] options = {"Create Labels", "Cancel"};
+            Object[] options = {getResourceString("CreateLabels"), getResourceString("Cancel")};
             int n = JOptionPane.showOptionDialog(UICacheManager.get(UICacheManager.FRAME),
                                                 String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getItems().size())}),
                                                 getResourceString("LotsOfLabelsTitle"),
@@ -483,10 +483,18 @@ public class LabelsTask extends BaseTask
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+                
+                // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
+                // to To things. One way to get here with a null title is to click on the Labels btn from the search results
+                if (recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
+                {
+                    cmdAction.setProperty("file", "LoanInvoice.jrxml");
+                    cmdAction.setProperty("title", "Loan Invoice");
+                }
 
                 if (checkForALotOfLabels(recordSet))
                 {
-                    String labelFileName = cmdAction.getProperty("file").toString();
+                    String labelFileName = cmdAction.getPropertyAsString("file");
                     
                     if (StringUtils.isEmpty(labelFileName))
                     {
@@ -495,8 +503,8 @@ public class LabelsTask extends BaseTask
                     
                     if (StringUtils.isNotEmpty(labelFileName))
                     {
-                        Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                        doLabels(labelFileName, cmdAction.getProperty("title").toString(), recordSet, originatingTask);
+                         Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
+                        doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, originatingTask);
                     }
                 }
             }

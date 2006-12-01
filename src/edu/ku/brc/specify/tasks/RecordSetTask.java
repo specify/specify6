@@ -32,6 +32,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -59,6 +60,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
@@ -344,7 +346,28 @@ public class RecordSetTask extends BaseTask
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)
             {
-                String rsName  = JOptionPane.showInputDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("AskForRSName"));
+                // If there is only one item in the RecordSet then the User will most likely want it named the same
+                // as the "identity" of the data object. So this goes and gets the Identity name and
+                // pre-sets the name in the dialog.
+                String intialName = "";
+                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+                if (recordSet.getItems().size() == 1)
+                {
+                    RecordSetItemIFace item = recordSet.getItems().iterator().next();
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    String                   sqlStr  = DBTableIdMgr.getQueryForTable(recordSet.getDbTableId(), item.getRecordId());
+                    if (StringUtils.isNotEmpty(sqlStr))
+                    {
+                        Object dataObj = session.getData(sqlStr);
+                        if (dataObj != null)
+                        {
+                            intialName = ((FormDataObjIFace)dataObj).getIdentityTitle();
+                        }
+                    }
+                    session.close();
+                }
+                String rsName  = JOptionPane.showInputDialog(UICacheManager.get(UICacheManager.FRAME), 
+                                                             getResourceString("AskForRSName"), intialName);
                 if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;

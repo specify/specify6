@@ -123,6 +123,7 @@ public class JStatusBar extends JPanel
     {
         statusLabel.setForeground(NORMAL_COLOR);
         statusLabel.setText(text);
+        statusLabel.repaint();
     }
 
     /**

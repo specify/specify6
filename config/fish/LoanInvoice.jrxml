@@ -31,7 +31,7 @@ FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial
 FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, loan.isGift, shipment.ShipmentMethod, shipment.NumberOfPackages, shipment.ShippedToID
 FROM loan
 INNER JOIN shipment
-ON loan.LoanNumber = shipment.ShipmentNumber) Expr1
+ON loan.ShipmentID = shipment.ShipmentID) Expr1
 INNER JOIN agent
 ON Expr1.ShippedToID = agent.AgentID) Expr2
 INNER JOIN address

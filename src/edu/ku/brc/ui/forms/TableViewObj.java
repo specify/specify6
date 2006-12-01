@@ -1447,7 +1447,5 @@ public class TableViewObj implements Viewable,
             compGetSet.setValue(value, null);
             return comp;
         }
-
-
      }
 }

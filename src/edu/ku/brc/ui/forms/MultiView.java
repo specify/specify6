@@ -235,6 +235,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     }
                 }
             }
+            // XXX For the Demo I can't figure out why a Different session is being checked when I try
+            // to save the session in the form.
+            if (viewable instanceof RecordSetTableViewObj)
+            {
+                viewable.getDataFromUI();
+            }
         }
     }
 

@@ -65,6 +65,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
@@ -127,13 +128,13 @@ public class InfoRequestTask extends BaseTask
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             
             navBox = new NavBox(title);
-            
+            /*
             List infoRequests = session.getDataList(InfoRequest.class);
             for (Iterator iter=infoRequests.iterator();iter.hasNext();)
             {
                 addInfoRequest((InfoRequest)iter.next());
                 
-            }          
+            } */         
             navBoxes.addElement(navBox);
             session.close();
         }
@@ -277,6 +278,8 @@ public class InfoRequestTask extends BaseTask
         FormPane formPane = new FormPane(DataProviderFactory.getInstance().createSession(), 
                                          view.getName(), TaskMgr.getTask(INFOREQUEST), view, "edit", infoRequest, 
                                          MultiView.IS_NEW_OBJECT );
+        formPane.setIcon(IconManager.getIcon(INFOREQUEST, IconManager.IconSize.Std16));
+        
         SubPaneMgr.getInstance().addPane(formPane);
         //formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
 

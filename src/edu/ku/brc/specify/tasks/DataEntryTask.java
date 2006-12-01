@@ -129,6 +129,31 @@ public class DataEntryTask extends BaseTask
     {
         return viewSetName + "_" + viewName;
     }
+    
+    /**
+     * Returns a icon defined by the view, if not found then it by the Clas, if not found then it returns the one for the task
+     * @param view the view 
+     * @return the icon for the view
+     */
+    protected static ImageIcon getIconForView(final View view)
+    {
+        ImageIcon imgIcon = iconForFormClass.get(createFullName(view.getViewSetName(), view.getName()));
+        if (imgIcon == null)
+        {
+            try
+            {
+                Class clsObj = Class.forName(view.getClassName());
+                imgIcon = IconManager.getIcon(clsObj.getSimpleName(), IconManager.IconSize.Std16);
+                
+            } catch (Exception ex) {}
+            
+            if (imgIcon == null)
+            {
+                return IconManager.getIcon(DATA_ENTRY, IconManager.IconSize.Std16);
+            }
+        }
+        return imgIcon;
+    }
 
     /**
      * Opens a pane with a view to data. NOTE:If the data object is null and isNewForm = true then it will create a new dataObj.
@@ -174,7 +199,7 @@ public class DataEntryTask extends BaseTask
                                          view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
                                          isNewForm ? (MultiView.IS_NEW_OBJECT |  MultiView.RESULTSET_CONTROLLER): 0);
         
-        formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+        formPane.setIcon(getIconForView(view));
         
         
         if (starterPane == null)
@@ -215,7 +240,7 @@ public class DataEntryTask extends BaseTask
                                                      mode, 
                                                      data.get(0), 
                                                      MultiView.VIEW_SWITCHER);
-                    formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+                    formPane.setIcon(getIconForView(view));
     
                 } else
                 {
@@ -264,7 +289,7 @@ public class DataEntryTask extends BaseTask
             View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
             
             formPane = new FormPane(session, name, task, view, null, session.getDataList(sqlStr), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
-            formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
+            formPane.setIcon(getIconForView(view));
             
         } else
         {
@@ -300,7 +325,14 @@ public class DataEntryTask extends BaseTask
                         String toolTip  = getAttr(element, "tooltip", null);
                         
                         ImageIcon iconImage = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
-                        iconForFormClass.put(createFullName(viewset, view), iconImage);
+                        if (iconImage != null)
+                        {
+                            iconForFormClass.put(createFullName(viewset, view), iconImage);
+                            
+                        } else
+                        {
+                            log.error("Icon ["+iconname+"] could not be found.");
+                        }
                         
                         ShowViewAction sva = new ShowViewAction(this, viewset, view);
                         

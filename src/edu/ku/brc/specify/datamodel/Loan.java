@@ -372,10 +372,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         this.loanPhysicalObjects.remove(loanPhysicalObject);
         loanPhysicalObject.setLoan(null);
     }
-
-
-    // Delete Add Methods
-    
+   
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
@@ -385,6 +382,18 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         return 52;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    public String getIdentityTitle()
+    {
+        return loanNumber != null ? loanNumber : super.getIdentityTitle();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
     @Override
     public void addReference(FormDataObjIFace ref, String refType)
     {
@@ -398,6 +407,9 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         super.addReference(ref, refType);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
     @Override
     public void removeReference(FormDataObjIFace refObj, String refType)
     {

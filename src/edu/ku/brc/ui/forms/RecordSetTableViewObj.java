@@ -57,6 +57,7 @@ public class RecordSetTableViewObj extends TableViewObj
     protected boolean dataTypeError;
     
     protected FormValidator validator;
+    protected DataProviderSessionIFace tempSession = null;
 
 
     /**
@@ -76,7 +77,8 @@ public class RecordSetTableViewObj extends TableViewObj
         super(view, altView, mvParent, formValidator, options);
         
         // we need a form validator that always says it's valid
-        validator = new FormValidator(){
+        validator = new FormValidator()
+        {
             @Override
             public boolean isFormValid()
             {
@@ -181,6 +183,7 @@ public class RecordSetTableViewObj extends TableViewObj
             dataObjList.clear(); 
         }
         
+        
         if (dataObj instanceof RecordSetIFace)
         {
             this.dataObj = dataObj;
@@ -192,12 +195,15 @@ public class RecordSetTableViewObj extends TableViewObj
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
-            //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            if (tempSession == null)
+            {
+                tempSession = DataProviderFactory.getInstance().createSession();
+            }
             
             String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
-                dataObjList.addAll(session.getDataList(sqlStr));
+                dataObjList.addAll(tempSession.getDataList(sqlStr));
                 if (table != null)
                 {
                     table.tableChanged(new TableModelEvent(model));
@@ -220,7 +226,8 @@ public class RecordSetTableViewObj extends TableViewObj
     @Override
     public void setSession(final DataProviderSessionIFace session)
     {
-        this.session = session;
+        this.session = null;//session;
+        
         
         if (dataObj instanceof RecordSetIFace)
         {
@@ -231,12 +238,15 @@ public class RecordSetTableViewObj extends TableViewObj
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
-            //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            if (tempSession == null)
+            {
+                tempSession = DataProviderFactory.getInstance().createSession();
+            }
             
             String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
-                dataObjList.addAll(session.getDataList(sqlStr));
+                dataObjList.addAll(tempSession.getDataList(sqlStr));
                 if (table != null)
                 {
                     table.tableChanged(new TableModelEvent(model));
@@ -252,6 +262,28 @@ public class RecordSetTableViewObj extends TableViewObj
     public Object getDataObj()
     {
         return dataObj;
+    }
+
+    @Override
+    public void aboutToShow(boolean show)
+    {
+        if (!show && tempSession != null)
+        {
+            tempSession.close();
+            tempSession = null;
+        }
+        super.aboutToShow(show);
+    }
+
+    @Override
+    public void getDataFromUI()
+    {
+        if (tempSession != null)
+        {
+            tempSession.close();
+            tempSession = null;
+        }
+        super.getDataFromUI();
     }
 
 }

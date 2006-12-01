@@ -53,7 +53,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -74,8 +73,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -969,7 +966,6 @@ public class FormViewObj implements Viewable,
      */
     protected void saveObject()
     {
-        boolean sendSaveMsg = true;
         //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
         try
         {
@@ -1015,14 +1011,12 @@ public class FormViewObj implements Viewable,
         {
             session.rollback();
             recoverFromStaleObject("UPDATE_DATA_STALE");
-            sendSaveMsg = false;
             
         } catch (Exception e)
         {
             log.error("******* " + e);
             e.printStackTrace();
             session.rollback();
-            sendSaveMsg = false;
         }
         saveBtn.setEnabled(false);
     }
@@ -1764,6 +1758,7 @@ public class FormViewObj implements Viewable,
                     String id = fieldInfo.getFormCell().getId();
                     if (hasFormControlChanged(id))
                     {
+                        log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
                         Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
                         if (uiData != null)
                         {

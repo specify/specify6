@@ -60,7 +60,7 @@ INNER JOIN geography
 ON e8.GeographyID = geography.GeographyID 
 where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 
-	<field name="CatalogNumber" class="java.lang.Float"/>
+	<field name="CatalogNumber" class="java.lang.String"/>
 	<field name="FieldNumber" class="java.lang.String"/>
 	<field name="TaxonFullName" class="java.lang.String"/>
 	<field name="Count" class="java.lang.Integer"/>
@@ -155,7 +155,7 @@ where LoanID $P!{itemnum} order by CatalogNumber]]></queryString>
 					<textElement>
 						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.Float"><![CDATA[$F{CatalogNumber}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).formatCatNo($F{CatalogNumber})]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

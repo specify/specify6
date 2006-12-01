@@ -953,7 +953,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
-                    <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                    <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" valtype="Changed" isrequired="true"/>
                     <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" valtype="Changed" initialize="editable=true"/>
                 </row>
                 <row>

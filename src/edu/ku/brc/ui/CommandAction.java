@@ -42,7 +42,7 @@ public class CommandAction
     protected Hashtable<String, Object> properties = null;
     
     /**
-     * Constructs a command
+     * Constructs a command.
      * @param type the type of command determines who listens for it
      * @param action the name of the action to be performed (contract between producer and consumer)
      * @param srcObj the source object
@@ -64,7 +64,7 @@ public class CommandAction
     }
     
     /**
-     * Constructs a command
+     * Constructs a command.
      * @param type the type of command determines who listens for it
      * @param action the name of the action to be performed (contract between producer and consumer)
      * @param data the data to be passed
@@ -80,7 +80,7 @@ public class CommandAction
     }
     
     /**
-     * Constructs a command
+     * Constructs a command.
      * @param type the type of command determines who listens for it
      * @param action the name of the action to be performed (contract between producer and consumer)
      * @param tableId the table id that the command is associated with
@@ -158,6 +158,16 @@ public class CommandAction
     public Object getProperty(final String name)
     {
         return properties == null ? null : properties.get(name);
+    }
+    
+    public String getPropertyAsString(final String name)
+    {
+        if (properties != null)
+        {
+            Object obj = properties.get(name);
+            return obj != null ? obj.toString() : null;
+        }
+        return null;
     }
     
     public void setProperty(final String name, final Object value)
