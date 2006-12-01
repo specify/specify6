@@ -22,7 +22,7 @@
     <icon name="People"		file="emblem-people.png" sizes="all"/>
     <icon name="Determination"       file="agent.gif" sizes="all"/>
     <icon name="AccessionAgent"      file="agent.gif" sizes="all"/>
-    <icon name="CollectionObject"    file="bug.png" sizes="all"/>
+    <icon name="CollectionObject"    file="catobj_fish32x32.gif" sizes="all"/>
     <icon name="Series"     file="series.gif" sizes="all"/>
     <icon name="Taxon"      file="taxon.gif" sizes="all"/>
     <icon name="Form"       file="form.gif" sizes="all"/>
