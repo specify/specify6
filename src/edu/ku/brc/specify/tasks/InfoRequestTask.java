@@ -24,27 +24,15 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Vector;
 
-import javax.mail.Folder;
-import javax.mail.Header;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.Session;
-import javax.mail.Store;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -58,6 +46,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
@@ -69,10 +58,11 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -80,7 +70,6 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -391,79 +380,135 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
+     * Returns whether all the email prefs needed for sending mail have been filled in.
+     * @return whether all the email prefs needed for sending mail have been filled in.
+     */
+    public boolean isEMailPrefsOK(final Hashtable<String, String> emailPrefs)
+    {
+        AppPreferences appPrefs = AppPreferences.getRemote();
+        boolean allOK = true;
+        String[] emailPrefNames = { "servername", "username", "password", "email"};
+        for (String pName : emailPrefNames)
+        {
+            String value = appPrefs.get("settings.email."+pName, null);
+            //log.info("["+pName+"]["+value+"]");
+            if (StringUtils.isNotEmpty(value))
+            {
+                emailPrefs.put(pName, value);
+            } else
+            {
+                allOK = false;
+                break;
+            }
+        }
+        return allOK;
+    }
+    
+    /**
      * Creates an Excel SpreadSheet or CVS file and attaches it to an email and send it to an agent.
      * 
      * @param infoRequest the info request to be sent
      */
-    public static void createAndSendEMail(final SubPaneIFace subPane)
+    public void createAndSendEMail(final SubPaneIFace subPane)
     {
-        MultiView   mv          =  subPane.getMultiView();
-        Viewable    mvViewable  = mv.getCurrentView();
-        FormViewObj formViewObj = (FormViewObj)mvViewable;
-
-        Boolean sendEMail = null;
-        if (formViewObj != null)
+        FormViewObj formViewObj = getCurrentFormViewObj();
+        if (formViewObj != null) // Should never happen
         {
-            Component comp = formViewObj.getControlByName("sendEMail");
+            InfoRequest infoRequest = (InfoRequest)formViewObj.getDataObj();
+            Agent       toAgent     = infoRequest.getAgent();
+            
+            boolean   sendEMail = true; // default to true
+            Component comp      = formViewObj.getControlByName("sendEMail");
             if (comp instanceof JCheckBox)
             {
                 sendEMail = ((JCheckBox)comp).isSelected();
             }
-        }
-        
-        mv = formViewObj.getSubView("InfoRequestColObj");
-        if (mv != null && sendEMail)
-        {
-            final Viewable viewable = mv.getCurrentView();
-            if (viewable instanceof TableViewObj)
+            
+            MultiView mv = formViewObj.getSubView("InfoRequestColObj");
+            if (mv != null && sendEMail)
             {
-                final Hashtable<String, String> values = new Hashtable<String, String>();
-                values.put("to", "rods@ku.edu");
-                values.put("from", "rods@ku.edu");
-                values.put("subject", "Information Request");
-                values.put("bodytext", "");
-                final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
-                                              "SystemSetup",
-                                              "SendMail",
-                                              null,
-                                              "Mail",
-                                              "Send",
-                                              null, // className,
-                                              null, // idFieldName,
-                                              true, // isEdit,
-                                              0);
-                dlg.setData(values);
-                dlg.setModal(true);
-                
-                dlg.setCloseListener(new PropertyChangeListener()
+                final Viewable viewable = mv.getCurrentView();
+                if (viewable instanceof TableViewObj)
                 {
-                    public void propertyChange(PropertyChangeEvent evt)
+                    final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
+                    if (!isEMailPrefsOK(emailPrefs))
                     {
-                        String action = evt.getPropertyName();
-                        if (action.equals("OK"))
-                        {
-                            dlg.getMultiView().getDataFromUI();
-                            
-                            System.out.println("["+values.get("bodytext")+"]");
-                            
-                            TableViewObj  tblViewObj = (TableViewObj)viewable;
-                            File          excelFile  = TableModel2Excel.convertToExcel("Test", tblViewObj.getTable().getModel());
-                            StringBuilder sb         = TableModel2Excel.convertToHTML("Test", tblViewObj.getTable().getModel());
-                            EMailHelper.setDebugging(true);
-                            EMailHelper.sendMsg("imap.ku.edu", "rods", "Vintage1601*", "rods@ku.edu", "rods@ku.edu", 
-                                                "Info Request", sb.toString(), EMailHelper.HTML_TEXT, excelFile);
-                        }
-                        else if (action.equals("Cancel"))
-                        {
-                            log.warn("User clicked Cancel");
-                        }
+                        JOptionPane.showConfirmDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
+                                getResourceString("NO_EMAIL_PREF_INFO"), 
+                                getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.OK_OPTION);
+                        return;
                     }
-                });
+                    
+                    final File tempExcelFileName = TableModel2Excel.getTempExcelName();
+                    
+                    AppPreferences appPrefs = AppPreferences.getRemote();
+                    final Hashtable<String, String> values = new Hashtable<String, String>();
+                    values.put("to", toAgent.getEmail() != null ? toAgent.getEmail() : "");
+                    values.put("from", appPrefs.get("settings.email.email", ""));
+                    values.put("subject", getResourceString("INFO_REQUEST"));
+                    values.put("bodytext", "");
+                    values.put("attachedFileName", tempExcelFileName.getName());
+                    
+                    final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+                                                  "SystemSetup",
+                                                  "SendMail",
+                                                  null,
+                                                  getResourceString("SEND_MAIL_TITLE"),
+                                                  getResourceString("SEND_BTN"),
+                                                  null, // className,
+                                                  null, // idFieldName,
+                                                  true, // isEdit,
+                                                  0);
+                    dlg.setData(values);
+                    dlg.setModal(true);
+                    
+                    dlg.setCloseListener(new PropertyChangeListener()
+                    {
+                        public void propertyChange(PropertyChangeEvent evt)
+                        {
+                            String action = evt.getPropertyName();
+                            if (action.equals("OK"))
+                            {
+                                dlg.getMultiView().getDataFromUI();
+                                
+                                System.out.println("["+values.get("bodytext")+"]");
+                                
+                                TableViewObj  tblViewObj = (TableViewObj)viewable;
+                                File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
+                                                                                           getResourceString("CollectionObject"), 
+                                                                                           tblViewObj.getTable().getModel());
+                                StringBuilder sb         = TableModel2Excel.convertToHTML(getResourceString("CollectionObject"), 
+                                                                                          tblViewObj.getTable().getModel());
+                                
+                                //EMailHelper.setDebugging(true);
+                                String text = values.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
 
-                dlg.setVisible(true);
-                
-
+                                final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
+                                                                        emailPrefs.get("username"), 
+                                                                        Encryption.decrypt(emailPrefs.get("password")), 
+                                                                        emailPrefs.get("email"), 
+                                                                        values.get("to"), 
+                                                                        values.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run()
+                                    {
+                                        UICacheManager.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                    }
+                                });
+                            }
+                            else if (action.equals("Cancel"))
+                            {
+                                log.warn("User clicked Cancel");
+                            }
+                        }
+                    });
+    
+                    dlg.setVisible(true);
+                }
             }
+        } else
+        {
+            log.error("Why doesn't the current SubPane have a main FormViewObj?");
         }
     }
     

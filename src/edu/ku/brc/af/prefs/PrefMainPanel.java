@@ -196,6 +196,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         } catch (BackingStoreException ex)
         {
             // XXX FIXME
+            log.error(ex);
         }
     }
 
@@ -267,6 +268,10 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
                 currentComp = comp;
                 if (oldSize != null)
                 {
+                    Dimension winDim = dialog.getSize();
+                    winDim.width += currentComp.getPreferredSize().width - oldSize.width;
+                    dialog.setSize(winDim);
+                    currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
                     startAnimation(dialog, comp, currentComp.getPreferredSize().height - oldSize.height, false);
                 }
             }
@@ -443,6 +448,8 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
                 rect.height = endHeight;
                 comp.setVisible(true);
                 ((Timer) e.getSource()).stop();
+                //window.pack();
+                
             } else if (delta > 0 && pixelStep < 0)
             {
                 rect.height = endHeight;

@@ -78,7 +78,7 @@ public class ViewLoader
 
 
     /**
-     * Creates the view
+     * Creates the view.
      * @param element the element to build the View from
      * @return the view
      * @throws Exception anything
@@ -86,9 +86,7 @@ public class ViewLoader
     public static View createView(final Element element,
                                   final Hashtable<String, ViewDef> viewDefs) throws Exception
     {
-        // set a global value while creating this form as to whether the labels are keys to a resource bundle
-        // or whether they are the actual label
-        instance.doingResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
+       boolean useResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
 
         String   name              = element.attributeValue(NAME);
         String   objTitle          = getAttr(element, "objtitle", null);
@@ -97,7 +95,7 @@ public class ViewLoader
         String   desc              = getDesc(element);
         String   businessRules     = getAttr(element, "busrules", null);
 
-        View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc, resLabels);
+        View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc, useResourceLabels, resLabels);
 
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)

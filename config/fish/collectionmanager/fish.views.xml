@@ -1386,7 +1386,7 @@
             <enableRules/>
             
             <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
-            <rowDef>p,4px,p,4px,p,4px,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
@@ -1396,10 +1396,13 @@
                     <cell type="field" id="2" name="replyDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="6" label="Requester"/>
+                    <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent;title=Requester" isrequired="true"/>                
+                </row>
+                <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
                     <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="6" valtype="Changed"/>
                 </row>
-                
                 <row>
                     <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSet" colspan="8" valtype="Changed"/>
                 </row>

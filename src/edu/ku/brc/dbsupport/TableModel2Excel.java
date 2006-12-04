@@ -16,6 +16,8 @@ package edu.ku.brc.dbsupport;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 import javax.swing.table.TableModel;
 
@@ -43,22 +45,63 @@ public class TableModel2Excel
     private static final Logger log = Logger.getLogger(TableModel2Excel.class);
     
     /**
-     * @param title
-     * @param aTableModel
-     * @return
+     * Returns just the name part with the path or the extension.
+     * @param path the fill path with file name and extension
+     * @return Returns just the name part with the path or the extension
      */
-    public static File convertToExcel(String title, TableModel aTableModel)
+    public static String getFileNameWithoutExt(final String path)
     {
-        File tmpFile = null;
-        if (aTableModel != null && aTableModel.getRowCount() > 0)
+        int inx = path.indexOf(File.separator);
+        return path.substring(inx+1, path.lastIndexOf('.'));
+    }
+    
+    /**
+     * Returns a temporary file name (no path).
+     * @return a temporary file name (no path).
+     */
+    public static File getTempExcelName()
+    {
+        String prefix = "collection_items_";
+        String ext    = ".xls";
+        try
+        {
+            String fileName = getFileNameWithoutExt(File.createTempFile(prefix, null).getName());
+            return new File(fileName  + ext);
+            
+        } catch (IOException ioex)
+        {
+            return new File(prefix + Long.toString(new Date().getTime()) + ext);
+        }
+    }
+    
+    /**
+     * Converts a tableModel to an Excel Spreadsheet.
+     * @param title the title of the spreadsheet.
+     * @param tableModel the table model
+     * @return a file to a spreadsheet
+     */
+    public static File convertToExcel(String title, TableModel tableModel)
+    {
+        return convertToExcel(getTempExcelName(), title, tableModel);
+    }
+    
+    
+
+    /**
+     * Converts a tableModel to an Excel Spreadsheet.
+     * @param toFile the file object to write it to.
+     * @param title the title of the spreadsheet.
+     * @param tableModel the table model
+     * @return a file to a spreadsheet
+     */
+    public static File convertToExcel(final File toFile, final String title, final TableModel tableModel)
+    {
+        if (tableModel != null && tableModel.getRowCount() > 0)
         {
             try
             {
-                tmpFile = new File(File.createTempFile("collection_items_", null).getName() + ".xls");
-                //tmpFile = new File("temp.xls");
-                
                 // create a new file
-                FileOutputStream out = new FileOutputStream(tmpFile);
+                FileOutputStream out = new FileOutputStream(toFile);
                 
                 // create a new workbook
                 HSSFWorkbook wb = new HSSFWorkbook();
@@ -78,7 +121,7 @@ public class TableModel2Excel
                 headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
                 headerStyle.setFont(headerFont);
                 
-                short numColumns = (short)aTableModel.getColumnCount();
+                short numColumns = (short)tableModel.getColumnCount();
                 
                 HSSFRow  headerRow  = sheet.createRow(0);
                 for (int i=0;i<numColumns;i++)
@@ -87,7 +130,7 @@ public class TableModel2Excel
                     headerCell.setCellStyle(headerStyle);
                     
                     //add the date to the header cell
-                    headerCell.setCellValue(aTableModel.getColumnName(i));
+                    headerCell.setCellValue(tableModel.getColumnName(i));
                     sheet.setColumnWidth((short)i, (short)(30 * 256));
                 }
                 
@@ -118,7 +161,7 @@ public class TableModel2Excel
                 // set the sheet name to HSSF Test
                 wb.setSheetName(0, title);
                 
-                for (short rownum = 0; rownum < (short)aTableModel.getRowCount(); rownum++)
+                for (short rownum = 0; rownum < (short)tableModel.getRowCount(); rownum++)
                 {
                     // create a row
                     HSSFRow row = sheet.createRow(rownum+1);
@@ -128,7 +171,7 @@ public class TableModel2Excel
                         // create a numeric cell
                         HSSFCell cell = row.createCell(cellnum);
                         
-                        cell.setCellValue(aTableModel.getValueAt(rownum, cellnum).toString());
+                        cell.setCellValue(tableModel.getValueAt(rownum, cellnum).toString());
 
                         // on every other row
                         cell.setCellStyle((rownum % 2) == 0 ? evenCellStyle : oddCellStyle);
@@ -146,14 +189,15 @@ public class TableModel2Excel
             }
         }
         
-        return tmpFile;
+        return toFile;
         
     }
 
     /**
-     * @param title
-     * @param tableModel
-     * @return
+     * Converts a tableModel to an HTML Table.
+     * @param title the title of the spreadsheet.
+     * @param tableModel the table model
+     * @return a file to a spreadsheet
      */
     public static StringBuilder convertToHTML(String title, TableModel tableModel)
     {

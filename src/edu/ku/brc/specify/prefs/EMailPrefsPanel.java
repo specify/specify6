@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -26,6 +27,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
@@ -39,16 +41,21 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.helpers.EMailHelper;
+import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.validation.ValPasswordField;
 
 /**
  * Preference Panel for setting EMail Preferences.
@@ -104,10 +111,10 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
     protected void createUI()
     {
 
-        String viewName = "EMail";
-        String name     = "Preferences";
+        String viewName    = "EMail";
+        String viewSetName = "Preferences";
 
-        formView = AppContextMgr.getInstance().getView(name, viewName);
+        formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
 
         if (formView != null)
         {
@@ -116,7 +123,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 
         } else
         {
-            log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
+            log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
 
         form.setDataObj(AppPreferences.getRemote());
@@ -130,13 +137,42 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 
 
     /**
+     * Sends a test mail message.
+     * @return true if the message was sent ok, false if there was an error.
+     */
+    protected boolean simpleTestSettings()
+    {
+        // -- this use IDs instead of names
+        String usernameStr     = (String)form.getDataFromUIComp("username");
+        String passwordStr     = (String)form.getDataFromUIComp("password");
+        String smtpStr         = (String)form.getDataFromUIComp("smtp");
+        String emailStr        = (String)form.getDataFromUIComp("email");
+        //String serverNameStr   = (String)form.getDataFromUIComp("servername");
+        //String acctTypeStr     = (String)form.getDataFromUIComp("accounttype");
+        //String localMailBoxStr = (String)form.getDataFromUIComp("localmailbox");
+        
+        //EMailHelper.AccountType acctType = EMailHelper.getAccountType(acctTypeStr);
+
+        Component comp = form.getValidator().getComp("password");
+        if (comp != null && comp instanceof ValPasswordField && ((ValPasswordField)comp).isEncrypted())
+        {
+            passwordStr = Encryption.decrypt(passwordStr);
+        }
+
+        String htmlMsg = "<html><body>" + testMessage + "</body></html>";
+        return EMailHelper.sendMsg(smtpStr, usernameStr, passwordStr, emailStr, emailStr, testMessage, htmlMsg, EMailHelper.HTML_TEXT, null);
+    }
+
+
+
+    /**
      * Test to make the mailbox is present and we can read it and
      * then check to see if we can download messages
      */
     protected void testSettings()
     {
-        /*
-        -- this use IDs instead of names
+/*
+        // -- this use IDs instead of names
         String usernameStr     = (String)form.getDataFromUIComp("username");
         String passwordStr     = (String)form.getDataFromUIComp("password");
         String smtpStr         = (String)form.getDataFromUIComp("smtp");
@@ -144,6 +180,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         String serverNameStr   = (String)form.getDataFromUIComp("servername");
         String acctTypeStr     = (String)form.getDataFromUIComp("accounttype");
         String localMailBoxStr = (String)form.getDataFromUIComp("localmailbox");
+        
         EMailHelper.AccountType acctType = EMailHelper.getAccountType(acctTypeStr);
 
         Component comp = form.getValidator().getComp("password");
@@ -360,8 +397,9 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         builder.addSeparator(getResourceString("checkingemailsettings"), cc.xyw(col,row,3));
         row += 2;
 
-        String[] labels = {getResourceString("chksendingmail"), getResourceString("chkmailbox"),
-                           getResourceString("chkgetmail"), getResourceString("chkforsentmsg")};
+        //String[] labels = {getResourceString("chksendingmail"), getResourceString("chkmailbox"),
+        //        getResourceString("chkgetmail"), getResourceString("chkforsentmsg")};
+        String[] labels = {getResourceString("chksendingmail")};
         checkerIcons  = new JLabel[labels.length];
         checkerLabels = new JLabel[labels.length];
         for (int i=0;i<labels.length;i++)
@@ -409,7 +447,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         //checkerDialog.setPreferredSize(checkerDialog.getPreferredSize());
         checkerDialog.setSize(checkerDialog.getPreferredSize());
 
-        emailCheckerRunnable = new EMailCheckerRunnable();
+        emailCheckerRunnable = new EMailCheckerRunnable(checkerDialog);
         emailCheckerRunnable.start();
 
         UIHelper.centerAndShow(checkerDialog);
@@ -420,54 +458,36 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
     // Runnable to check for the email settings
     //----------------------------------------------------------------------------
 
-    public class EMailCheckerRunnable implements Runnable
+    public class EMailCheckerRunnable extends SwingWorker
     {
-        protected Thread               thread;
+        protected JDialog parentDlg;
+        protected boolean status = false;
 
         /**
          * Constructs a an object to execute an SQL staement and then notify the listener
          */
-        public EMailCheckerRunnable()
+        public EMailCheckerRunnable(final JDialog parentDlg)
         {
+            this.parentDlg = parentDlg;
         }
 
-        /**
-         * Starts the thread to make the SQL call
-         *
-         */
-        public void start()
+        public Object construct()
         {
-            thread = new Thread(this);
-            thread.start();
+            status = simpleTestSettings();
+            return null;
         }
 
-        /**
-         * Stops the thread making the call
-         *
-         */
-        public synchronized void stop()
+        //Runs on the event-dispatching thread.
+        public void finished()
         {
-            if (thread != null)
+            if (!status)
             {
-                thread.interrupt();
-            }
-            thread = null;
-            notifyAll();
-        }
-
-        /**
-         * Test the various settings
-         */
-        public void run()
-        {
-            try
+                // XXX Get response error message from Helper and display it.
+                JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), "Error Sending EMail");
+                
+            } else
             {
-                testSettings();
-
-            } catch (Exception ex)
-            {
-                //ex.printStackTrace();
-                log.error(ex);
+                JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), "Message Sent\nCheck your mailbox to see if it worked.");
             }
         }
     }

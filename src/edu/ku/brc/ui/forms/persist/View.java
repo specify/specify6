@@ -39,6 +39,7 @@ public class View implements Comparable<View>
     protected String               className;
     protected String               businessRulesClassName;
     protected List<AltView>        altViews       = new Vector<AltView>();
+    protected boolean              useResourceLabels;
     protected String               resourceLabels = null;
     
     protected AltView.CreationMode defaultMode    = AltView.CreationMode.View;
@@ -65,6 +66,7 @@ public class View implements Comparable<View>
                 final String className, 
                 final String businessRulesClassName,
                 final String desc,
+                final boolean useResourceLabels,
                 final String resourceLabels)
     {
         this.viewSetName    = viewSetName;
@@ -73,6 +75,7 @@ public class View implements Comparable<View>
         this.className      = className;
         this.businessRulesClassName = businessRulesClassName;
         this.desc           = desc;
+        this.useResourceLabels = useResourceLabels;
         this.resourceLabels = resourceLabels;
 
     }
@@ -223,6 +226,11 @@ public class View implements Comparable<View>
     public List<AltView> getAltViews()
     {
         return altViews;
+    }
+
+    public boolean isUseResourceLabels()
+    {
+        return useResourceLabels;
     }
 
     public String getResourceLabels()

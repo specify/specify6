@@ -219,20 +219,20 @@ public class FormValidator implements ValidationListener, DataChangeListener
             }
         }
 
-        log.debug("------------------------------------------------- Number of Rules: "+formRules.size());
+        log.debug("["+name+"]------------------------------------------------- Number of Rules: "+formRules.size());
         for (FormValidationRuleIFace rule : formRules)
         {
             try
             {
                 // Now evaluate the expression, getting the result
                 boolean result = rule.evaluate(jc);
-                log.debug(name+" Result "+result+" for "+rule.getId()+"  ["+((RuleExpression)rule).expression.getExpression()+"]");
+                log.debug("Result ["+result+"] for ID["+rule.getId()+"]  Rule["+((RuleExpression)rule).expression.getExpression()+"]");
                 if (rule.getScope() == FormValidationRuleIFace.Scope.Field)
                 {
                     Component comp = getComp(rule.getId());
                     if (comp != null)
                     {
-                        log.debug("  "+name+" comp.setEnabled("+result+") "+comp.getClass().toString());
+                        log.debug("    comp.setEnabled("+result+") "+comp.getClass().toString());
                         comp.setEnabled(result);
                     }
 

@@ -275,7 +275,7 @@ public class FormViewObj implements Viewable,
         mainComp    = mainBuilder.getPanel();
         mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         
-        if (mvParent.isRoot())
+        if (mvParent != null && mvParent.isRoot())
         {
             scrollPane = new JScrollPane(mainComp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         }
@@ -1146,7 +1146,13 @@ public class FormViewObj implements Viewable,
                 for (DataChangeNotifier dcn : formValidator.getDCNs().values())
                 {
                     FieldInfo fieldInfo = controlsById.get(dcn.getId());
-                    log.debug("Changed Field["+fieldInfo.getName()+"]\t["+(dcn.isDataChanged() ? "CHANGED" : "not changed")+"]");
+                    if (fieldInfo != null)
+                    {
+                        log.debug("Changed Field["+fieldInfo.getName()+"]\t["+(dcn.isDataChanged() ? "CHANGED" : "not changed")+"]");
+                    } else
+                    {
+                        log.debug("Field Info is null for dcn.getId()["+dcn.getId()+"]");
+                    }
                 }
                 log.debug("===================================");
             }
@@ -2186,19 +2192,19 @@ public class FormViewObj implements Viewable,
                 throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
             }
 
-            JScrollPane scrollPane;
+            JScrollPane scrPane;
             Component comp;
             if (control instanceof JScrollPane)
             {
-                scrollPane = (JScrollPane)control;
-                comp = scrollPane.getViewport().getView();
+                scrPane = (JScrollPane)control;
+                comp = scrPane.getViewport().getView();
             } else
             {
-                scrollPane = null;
+                scrPane = null;
                 comp = control;
             }
             
-            FieldInfo fieldInfo = new FieldInfo(formCell, comp, scrollPane, controlsById.size());
+            FieldInfo fieldInfo = new FieldInfo(formCell, comp, scrPane, controlsById.size());
             controlsById.put(formCell.getId(), fieldInfo);
             controlsByName.put(formCell.getName(), fieldInfo);
 
@@ -2405,7 +2411,7 @@ public class FormViewObj implements Viewable,
         protected FormCell    formCell;
         protected MultiView   subView;
         protected Component   comp;
-        protected JScrollPane scrollPane;
+        protected JScrollPane fieldScrollPane;
         protected int         insertPos;
 
         public FieldInfo(FormCell formCell, Component comp, JScrollPane scrollPane, int insertPos)
@@ -2413,7 +2419,7 @@ public class FormViewObj implements Viewable,
             this.comp     = comp;
             this.formCell = formCell;
             this.subView  = null;
-            this.scrollPane = scrollPane;
+            this.fieldScrollPane = scrollPane;
             this.insertPos = insertPos;
         }
 
@@ -2463,9 +2469,9 @@ public class FormViewObj implements Viewable,
         {
             //log.debug(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
             comp.setEnabled(enabled);
-            if (scrollPane != null)
+            if (fieldScrollPane != null)
             {
-                scrollPane.setEnabled(enabled);
+                fieldScrollPane.setEnabled(enabled);
             }
         }
         
@@ -2481,7 +2487,7 @@ public class FormViewObj implements Viewable,
             formCell   = null;
             subView    = null;
             comp       = null;
-            scrollPane = null;
+            fieldScrollPane = null;
         }
 
     }
