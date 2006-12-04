@@ -540,7 +540,8 @@ public class ViewFactory
      */
     protected ImageDisplay createImageDisplay(final FormCellField cellField,
                                               final AltView.CreationMode mode,
-                                              final MultiView parent)
+                                              final MultiView parent,
+                                              final FormValidator validator)
     {
         int w = 150;
         int h = 150;
@@ -572,15 +573,18 @@ public class ViewFactory
 
         // create a new ImageDisplay
         // override the selectNewImage method to notify the parent MultiView when a change occurs
-        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit, cellField.getPropertyAsBoolean("border", true))
+        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit, cellField.getPropertyAsBoolean("border", true));
+        
+        if (validator != null)
         {
-            @Override
-            protected void selectNewImage()
+            DataChangeNotifier dcn = validator.hookupComponent(imgDisp, cellField.getId(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            imgDisp.addPropertyChangeListener("imageURL", dcn);
+
+            if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
             {
-                super.selectNewImage();
-                parent.dataChanged(this.getName(), this, null);
+                imgDisp.addFocusListener(dcn);
             }
-        };
+        }
         
         String urlStr = cellField.getProperty("url");
         if (isNotEmpty(urlStr))
@@ -798,8 +802,8 @@ public class ViewFactory
 
                             
                         case image:
-                            compToAdd = createImageDisplay(cellField, mode, parent);
-                            addToValidator = false;
+                            compToAdd = createImageDisplay(cellField, mode, parent, validator);
+                            addToValidator = (validator != null);
                             break;
 
                         
