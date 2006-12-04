@@ -17,6 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +130,11 @@ public class IconViewObj implements Viewable
         root.addFormValidator(validator);
     }
     
+    public String getDataClassName()
+    {
+        return this.dataClassName;
+    }
+    
     protected void initMainComp()
     {
         editButton = createButton("EditForm", getResourceString("EditRecord"));
@@ -176,6 +182,9 @@ public class IconViewObj implements Viewable
         {
             addActionListenerToNewButton();
             addActionListenerToDeleteButton();
+            
+            IconViewTransferHandler ivth = new IconViewTransferHandler(this);
+            iconTray.setTransferHandler(ivth);
         }
 
         mainComp = new JPanel();
@@ -258,6 +267,31 @@ public class IconViewObj implements Viewable
                 dialog.showDisplay(true);
             }
         });
+    }
+    
+    public boolean addRecord(File f)
+    {
+        final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
+
+        FileImportProcessor importer = FileImportProcessor.getInstance();
+        if (!importer.importFileIntoRecord(newObject, f))
+        {
+            return false;
+        }
+        
+        parentDataObj.addReference(newObject, dataSetFieldName);
+        iconTray.addItem(newObject);
+        if (mvParent != null)
+        {
+            MultiView root = mvParent;
+            while (root.getMultiViewParent() != null)
+            {
+                root = root.getMultiViewParent();
+            }
+            validator.setHasChanged(true);
+            root.dataChanged(null, null, null);
+        }
+        return true;
     }
     
     protected void addActionListenerToNewButton()
@@ -692,7 +726,7 @@ public class IconViewObj implements Viewable
      */
     public void registerSaveBtn(JButton saveBtn)
     {
-        
+        // TODO: ???
     }
     
     /* (non-Javadoc)

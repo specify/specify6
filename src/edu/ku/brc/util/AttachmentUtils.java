@@ -60,7 +60,16 @@ public class AttachmentUtils
                     throw new IllegalArgumentException("Passed object must be an Attachment");
                 }
                 Attachment attachment = (Attachment)source;
-                File original = attachMgr.getOriginal(attachment);
+                File original = null;
+                if (attachment.getId()!=null)
+                {
+                    original = attachMgr.getOriginal(attachment);
+                }
+                else
+                {
+                    String origFile = attachment.getOrigFilename();
+                    original = new File(origFile);
+                }
 
                 try
                 {
