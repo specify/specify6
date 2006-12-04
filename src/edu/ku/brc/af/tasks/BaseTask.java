@@ -53,7 +53,9 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * Abstract class to provide a base level of functionality for implementing a task.
@@ -68,6 +70,14 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(BaseTask.class);
+    
+    protected static final String APP_CMD_TYPE   = "App";
+    protected static final String DB_CMD_TYPE    = "Database";
+    
+    protected static final String SAVE_CMD_ACT   = "Save";
+    protected static final String INSERT_CMD_ACT = "Insert";
+    protected static final String DELETE_CMD_ACT = "Delete";
+    protected static final String UPDATE_CMD_ACT = "Update";
 
     // Data Members
     protected final String        name;
@@ -444,6 +454,29 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             }
         }
         return null;
+    }
+    
+    /**
+     * Returns the top FormViewObj for the current SubPaneIFace, or null.
+     * @return the top FormViewObj for the current SubPaneIFace, or null.
+     */
+    protected FormViewObj getCurrentFormViewObj()
+    {
+        FormViewObj  formViewObj = null;
+        SubPaneIFace subPane     = SubPaneMgr.getInstance().getCurrentSubPane();
+        if (subPane != null)
+        {
+            MultiView mv = subPane.getMultiView();
+            if (mv != null)
+            {
+                Viewable currentViewable = mv.getCurrentView();
+                if (currentViewable != null && currentViewable instanceof FormViewObj)
+                {
+                    formViewObj = (FormViewObj)currentViewable;
+                }
+            }
+        }
+        return formViewObj;
     }
 
     //-------------------------------------------------------

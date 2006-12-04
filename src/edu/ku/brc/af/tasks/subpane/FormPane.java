@@ -137,6 +137,14 @@ public class FormPane extends DroppableTaskPane
     {
         this.icon = icon;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#getMultiView()
+     */
+    public MultiView getMultiView()
+    {
+        return multiView;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#shutdown()

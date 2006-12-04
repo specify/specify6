@@ -437,7 +437,7 @@ public class DataEntryTask extends BaseTask
      */
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.getAction().equals("Edit"))
+        if (cmdAction.isAction("Edit"))
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
@@ -462,7 +462,7 @@ public class DataEntryTask extends BaseTask
                 log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
             }
             
-        } else if (cmdAction.getAction().equals("ShowView"))
+        } else if (cmdAction.isAction("ShowView"))
         {
             if (cmdAction.getData() instanceof Object[])
             {
@@ -473,7 +473,7 @@ public class DataEntryTask extends BaseTask
                 openView(this, view, mode, idStr);
             }
             
-        } else if (cmdAction.getType().equals("App") && cmdAction.getAction().equals("Restart"))
+        } else if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
         {
             viewsNavBox.clear();
             //initializeViewsNavBox();

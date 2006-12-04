@@ -29,24 +29,25 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
 /**
- * Helper that converts a Swing TableModel to an MS-Excel Spreadsheet
- 
- * @code_status Beta
- **
+ * Helper that converts a Swing TableModel to an MS-Excel Spreadsheet, HTML Table.
+ * 
  * @author rods
+ *
+ * @code_status Beta
+ *
+ * Created Date: Dec 2, 2006
+ *
  */
-
 public class TableModel2Excel
 {
     private static final Logger log = Logger.getLogger(TableModel2Excel.class);
-
-    public TableModel2Excel()
-    {
-        super();
-        // TODO Auto-generated constructor stub
-    }
     
-    public static File convertToExcel(String aTitle, TableModel aTableModel)
+    /**
+     * @param title
+     * @param aTableModel
+     * @return
+     */
+    public static File convertToExcel(String title, TableModel aTableModel)
     {
         File tmpFile = null;
         if (aTableModel != null && aTableModel.getRowCount() > 0)
@@ -115,12 +116,12 @@ public class TableModel2Excel
                 evenCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 
                 // set the sheet name to HSSF Test
-                wb.setSheetName(0, aTitle);
+                wb.setSheetName(0, title);
                 
-                for (short rownum = 1; rownum < (short)aTableModel.getRowCount(); rownum++)
+                for (short rownum = 0; rownum < (short)aTableModel.getRowCount(); rownum++)
                 {
                     // create a row
-                    HSSFRow row = sheet.createRow(rownum);
+                    HSSFRow row = sheet.createRow(rownum+1);
 
                     for (short cellnum = (short) 0; cellnum < numColumns; cellnum++)
                     {
@@ -146,6 +147,48 @@ public class TableModel2Excel
         }
         
         return tmpFile;
+        
+    }
+
+    /**
+     * @param title
+     * @param tableModel
+     * @return
+     */
+    public static StringBuilder convertToHTML(String title, TableModel tableModel)
+    {
+        StringBuilder strBuilder = new StringBuilder(512);
+        strBuilder.append("<table border=1>");
+        if (tableModel != null && tableModel.getRowCount() > 0)
+        {
+            for (int i=0;i<tableModel.getColumnCount();i++)
+            {    
+                //add the date to the header cell
+                strBuilder.append("<td align=center>");
+                strBuilder.append(tableModel.getColumnName(i));
+                strBuilder.append("</td>");
+            }
+            strBuilder.append("</tr>\n");
+            
+            //--------------------------
+            // done header
+            //--------------------------
+            
+            for (int rownum = 0; rownum < tableModel.getRowCount(); rownum++)
+            {
+                strBuilder.append("<tr>\n");
+                for (short cellnum = (short) 0; cellnum < tableModel.getColumnCount(); cellnum++)
+                {
+                    //add the date to the header cell
+                    strBuilder.append("<td align=center>");
+                    strBuilder.append(tableModel.getValueAt(rownum, cellnum).toString());
+                    strBuilder.append("</td>");
+                }
+                strBuilder.append("</tr>\n");
+            }
+            strBuilder.append("</table>\n");
+        }
+        return strBuilder;
         
     }
 

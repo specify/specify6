@@ -12,7 +12,7 @@
             </altviews>
         </view>
         
-                <view name="Taxon"
+        <view name="Taxon"
             class="edu.ku.brc.specify.datamodel.Taxon"
             resourcelabels="false">
             <desc><![CDATA[Taxon Node Form]]></desc>
@@ -67,12 +67,21 @@
         </view>
         
         <view name="TreeDefEditor"
-        	class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
-        	resourcelabels="false">
-        	<desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
-        	<altviews>
-        		<altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDataEntry" label="Edit" mode="edit" validated="true"/>
-        	</altviews>
+            class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
+            resourcelabels="false">
+            <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
+            <altviews>
+                <altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDataEntry" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="SendMail"
+            class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
+            resourcelabels="false">
+            <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
+            <altviews>
+                <altview name="SendMail" viewdef="SendMail" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
         </view>
     </views>
   
@@ -369,6 +378,39 @@
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="SendMail"
+            class="java.util.Hashtable"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[Send Mail Email Form]]></desc>
+            <columnDef>p,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="From"/>
+                    <cell type="field" id="1" name="from" uitype="text" valtype="Changed"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="To"/>
+                    <cell type="field" id="2" name="to" uitype="text" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Subject"/>
+                    <cell type="field" id="3" name="subject" uitype="text" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="separator" label="" colspan="3"/>
+                </row>                
+                <row>
+                    <cell type="field" id="4" name="bodytext" uitype="textarea" cols="60" rows="10" colspan="3" valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>

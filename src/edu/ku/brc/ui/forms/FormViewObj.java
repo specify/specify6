@@ -1386,8 +1386,8 @@ public class FormViewObj implements Viewable,
         
         for (FieldInfo fieldInfo : controlsById.values())
         {
-            if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview ||
-                fieldInfo.getFormCell().getType() == FormCell.CellType.iconview)
+            if (fieldInfo.isOfType(FormCell.CellType.subview) ||
+                fieldInfo.isOfType(FormCell.CellType.iconview))
             {
                 fieldInfo.getSubView().setParentDataObj(null);
             }
@@ -1529,12 +1529,12 @@ public class FormViewObj implements Viewable,
             for (FieldInfo fieldInfo : controlsById.values())
             {
                 fieldInfo.getComp().setEnabled(false);
-                if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+                if (fieldInfo.isOfType(FormCell.CellType.field))
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
                     //log.debug("Setting ["+fieldInfo.getName()+"] to enabled=false");
 
-                } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview)
+                } else if (fieldInfo.isOfType(FormCell.CellType.subview))
                 {
                     fieldInfo.getSubView().setData(null);
                 }
@@ -1584,6 +1584,8 @@ public class FormViewObj implements Viewable,
         
         if (weHaveData)
         {
+            Object[] defaultDataArray = new Object[1]; // needed for setting the default value
+            
             // Now we know the we have data, so loop through all the controls
             // and set their values
             for (FieldInfo fieldInfo : controlsById.values())
@@ -1593,12 +1595,7 @@ public class FormViewObj implements Viewable,
                 Object data = null;
 
                 // This is for panels that use in layout but have no data
-                if (fieldInfo.getFormCell().isIgnoreSetGet())
-                {
-                    continue;
-                }
-
-                if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+                if (fieldInfo.isOfType(FormCell.CellType.field))
                 {
                     // Do Formatting here
                     FormCellField cellField    = (FormCellField)fieldInfo.getFormCell();
@@ -1616,13 +1613,31 @@ public class FormViewObj implements Viewable,
                         {
                             throw new RuntimeException("formatName ["+formatName+"] only works on a single value.");
                         }
-                        Object[] vals = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
-                        setDataIntoUIComp(comp, DataObjFieldFormatMgr.format(vals[0], formatName), defaultValue);
+                        
+                        Object[] values;
+                        if (fieldInfo.getFormCell().isIgnoreSetGet())
+                        {
+                            defaultDataArray[0] = defaultValue;
+                            values = defaultDataArray;
+                        } else
+                        {
+                            values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
+                        }
+                        
+                        setDataIntoUIComp(comp, DataObjFieldFormatMgr.format(values[0], formatName), defaultValue);
 
                     } else
                     {
+                        Object[] values;
+                        if (fieldInfo.getFormCell().isIgnoreSetGet())
+                        {
+                            defaultDataArray[0] = defaultValue;
+                            values = defaultDataArray;
+                        } else
+                        {
+                            values = UIHelper.getFieldValues(cellField, dataObj, dg);
+                        }
 
-                        Object[] values = UIHelper.getFieldValues(cellField, dataObj, dg);
                         if( values != null && values.length > 0 )
                         {
                             String   format = cellField.getFormat();
@@ -1657,8 +1672,13 @@ public class FormViewObj implements Viewable,
                         }
                     }
 
-                } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview)
+                } else if (fieldInfo.isOfType(FormCell.CellType.subview))
                 {
+                    if (fieldInfo.getFormCell().isIgnoreSetGet())
+                    {
+                        continue;
+                    }
+
                     fieldInfo.getSubView().setParentDataObj(dataObj);
                     
                     data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
@@ -1772,6 +1792,17 @@ public class FormViewObj implements Viewable,
                 throw new RuntimeException("Calling getDataFromUI when the DataObjectSettable is null for the form.");
             }
         }
+    }
+    
+    /**
+     * Returns a Component by name from the Form.
+     * @param name the name of the field according to the XML definition
+     * @return the component or null
+     */
+    public Component getControlByName(final String name)
+    {
+        FieldInfo fieldInfo = controlsByName.get(name);
+        return fieldInfo != null ? fieldInfo.comp : null;
     }
 
     /**
@@ -2313,7 +2344,7 @@ public class FormViewObj implements Viewable,
     {
         for (FieldInfo fieldInfo : controlsById.values())
         {
-            if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+            if (fieldInfo.isOfType(FormCell.CellType.field))
             {
                 FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
                 FormCellField.FieldType uiType = cellField.getUiType();
@@ -2358,7 +2389,7 @@ public class FormViewObj implements Viewable,
     {
         for (FieldInfo fieldInfo : controlsById.values())
         {
-            if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+            if (fieldInfo.isOfType(FormCell.CellType.field))
             {
                 fieldIds.add(((FormCellField)fieldInfo.getFormCell()).getId());
             }
@@ -2392,6 +2423,11 @@ public class FormViewObj implements Viewable,
             this.subView  = subView;
             this.comp     = subView;
             this.insertPos = insertPos;
+        }
+        
+        public boolean isOfType(final FormCell.CellType type)
+        {
+            return formCell.getType() == type;
         }
 
         public String getName()

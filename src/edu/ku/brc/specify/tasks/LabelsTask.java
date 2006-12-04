@@ -443,15 +443,37 @@ public class LabelsTask extends BaseTask
 
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.getAction().equals(DOLABELS_ACTION))
+        //---------------------------------------------------------------------------
+        // This Code here needs to be refactored and moved to the NavBoxAction
+        // so it can happen in a single generic place (Each task has this code)
+        //---------------------------------------------------------------------------
+        /*if (cmdAction.getData() instanceof RecordSetIFace)
+        {
+            if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
+            {
+                JOptionPane.showMessageDialog(null, getResourceString("ERROR_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }*/
+        
+        if (cmdAction.isAction(DOLABELS_ACTION))
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+                
+                // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
+                // to To things. One way to get here with a null title is to click on the Labels btn from the search results
+                if (recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
+                {
+                    cmdAction.setProperty("file", "fish_label.jrxml");
+                    cmdAction.setProperty("title", "Fish Labels");
+                }
 
-                String labelFileName = null;
                 if (checkForALotOfLabels(recordSet))
                 {
+                    String labelFileName = cmdAction.getPropertyAsString("file");
+
                     if (StringUtils.isNotEmpty(labelFileName))
                     {
                         labelFileName = askForLabelName();
@@ -459,11 +481,11 @@ public class LabelsTask extends BaseTask
                     
                     if (StringUtils.isNotEmpty(labelFileName))
                     {
-                        doLabels(labelFileName, "Labels", recordSet, this);
+                        doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, this);
                     }
                 }
             }
-        } else if (cmdAction.getAction().equals(NEWRECORDSET_ACTION))
+        } else if (cmdAction.isAction(NEWRECORDSET_ACTION))
         {
             if (cmdAction.getData() instanceof GhostActionable)
             {
@@ -478,7 +500,7 @@ public class LabelsTask extends BaseTask
                     }
                  }
             }
-        } else if (cmdAction.getAction().equals(PRINT_LABEL))
+        } else if (cmdAction.isAction(PRINT_LABEL))
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
@@ -508,8 +530,8 @@ public class LabelsTask extends BaseTask
                     }
                 }
             }
-        } else if (cmdAction.getType().equals(RecordSetTask.RECORD_SET) &&
-                   cmdAction.getAction().equals("Clicked"))
+        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) &&
+                   cmdAction.isAction("Clicked"))
         {
             Object srcObj = cmdAction.getSrcObj();
             Object dstObj = cmdAction.getDstObj();
@@ -519,7 +541,7 @@ public class LabelsTask extends BaseTask
             
             createLabelFromSelectedRecordSet(srcObj);
             
-        } else if (cmdAction.getType().equals("App") && cmdAction.getAction().equals("Restart"))
+        } else if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
         {
             isInitialized = false;
             this.initialize();

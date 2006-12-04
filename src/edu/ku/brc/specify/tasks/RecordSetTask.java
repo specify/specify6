@@ -341,7 +341,7 @@ public class RecordSetTask extends BaseTask
      */
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.getAction().equals("Save"))
+        if (cmdAction.isAction("Save"))
         {
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)
@@ -376,13 +376,13 @@ public class RecordSetTask extends BaseTask
                     saveRecordSet(rs);
                 }
             }
-        } else if (cmdAction.getAction().equals("Delete") && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction("Delete") && cmdAction.getData() instanceof RecordSet)
         {
             RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
             deleteRecordSet(recordSet);
             deleteRecordSetFromUI(null, recordSet);
 
-        } else if (cmdAction.getType().equals(RecordSetTask.RECORD_SET) && cmdAction.getAction().equals("Dropped"))
+        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Dropped"))
         {
             Object srcObj = cmdAction.getSrcObj();
             Object dstObj = cmdAction.getDstObj();
@@ -437,7 +437,7 @@ public class RecordSetTask extends BaseTask
 
                 }
             }
-        } else if (cmdAction.getType().equals("App") && cmdAction.getAction().equals("Restart"))
+        } else if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
         {
             isInitialized = false;
             this.initialize();

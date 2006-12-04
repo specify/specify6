@@ -135,7 +135,7 @@ public class LocalityMapperTask extends BaseTask
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.getAction().equals("DoLocalityMap"))
+        if (cmdAction.isAction("DoLocalityMap"))
         {
             if (cmdAction.getData() instanceof RecordSet)
             {

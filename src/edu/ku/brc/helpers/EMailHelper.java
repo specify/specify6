@@ -38,6 +38,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -83,28 +84,28 @@ public class EMailHelper
 
     /**
      * Send an email.
-     * @param aHost host of SMTP server
-     * @param aUserName username of email account
-     * @param aPassword password of email account
-     * @param aFrom the email address of who the email is coming from typically this is the same as the user's email
-     * @param aTo the email addr of who this is going to
-     * @param aSubject the Textual subject line of the email
-     * @param aBodyText the body text of the email (plain text???)
-     * @param aFileAttachment and optional file to be attached to the email
+     * @param host host of SMTP server
+     * @param userName username of email account
+     * @param password password of email account
+     * @param fromEMailAddr the email address of who the email is coming from typically this is the same as the user's email
+     * @param toEMailAddr the email addr of who this is going to
+     * @param subject the Textual subject line of the email
+     * @param bodyText the body text of the email (plain text???)
+     * @param fileAttachment and optional file to be attached to the email
      * @return true if the msg was sent, false if not
      */
-    public static boolean sendMsg(String aHost,
-                                  String aUserName,
-                                  String aPassword,
-                                  String aFrom,
-                                  String aTo,
-                                  String aSubject,
-                                  String aBodyText,
+    public static boolean sendMsg(String host,
+                                  String userName,
+                                  String password,
+                                  String fromEMailAddr,
+                                  String toEMailAddr,
+                                  String subject,
+                                  String bodyText,
                                   String mimeType,
-                                  File   aFileAttachment)
+                                  File   fileAttachment)
     {
         Properties props = System.getProperties();
-        props.put("mail.smtp.host", aHost);
+        props.put("mail.smtp.host", host);
         props.put( "mail.smtp.auth", "true");
 
         Session session = Session.getInstance(props, null);
@@ -112,12 +113,12 @@ public class EMailHelper
         session.setDebug(instance.isDebugging);
         if (instance.isDebugging)
         {
-            log.debug("Host:     " + aHost);
-            log.debug("UserName: " + aUserName);
-            log.debug("Password: " + aPassword);
-            log.debug("From:     " + aFrom);
-            log.debug("To:       " + aTo);
-            log.debug("Subject:  " + aSubject);
+            log.debug("Host:     " + host);
+            log.debug("UserName: " + userName);
+            log.debug("Password: " + password);
+            log.debug("From:     " + fromEMailAddr);
+            log.debug("To:       " + toEMailAddr);
+            log.debug("Subject:  " + subject);
         }
 
 
@@ -126,10 +127,10 @@ public class EMailHelper
             // create a message
             MimeMessage msg = new MimeMessage(session);
 
-            msg.setFrom(new InternetAddress(aFrom));
-            if (aTo.indexOf(",") > -1)
+            msg.setFrom(new InternetAddress(fromEMailAddr));
+            if (toEMailAddr.indexOf(",") > -1)
             {
-                StringTokenizer st = new StringTokenizer(aTo, ",");
+                StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
                 InternetAddress[] address = new InternetAddress[st.countTokens()];
                 int i = 0;
                 while (st.hasMoreTokens())
@@ -140,22 +141,25 @@ public class EMailHelper
                 msg.setRecipients(Message.RecipientType.TO, address);
             } else
             {
-                InternetAddress[] address = {new InternetAddress(aTo)};
+                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
                 msg.setRecipients(Message.RecipientType.TO, address);
             }
-            msg.setSubject(aSubject);
+            msg.setSubject(subject);
+            
+            //msg.setContent( aBodyText , "text/html;charset=\"iso-8859-1\"");
 
             // create the second message part
-            if (aFileAttachment != null)
+            if (fileAttachment != null)
             {
                 // create and fill the first message part
                 MimeBodyPart mbp1 = new MimeBodyPart();
-                mbp1.setText(aBodyText);
+                mbp1.setContent(bodyText, mimeType);//"text/html;charset=\"iso-8859-1\"");
+                //mbp1.setContent(bodyText, "text/html;charset=\"iso-8859-1\"");
 
                 MimeBodyPart mbp2 = new MimeBodyPart();
 
-                    // attach the file to the message
-                FileDataSource fds = new FileDataSource(aFileAttachment);
+               // attach the file to the message
+                FileDataSource fds = new FileDataSource(fileAttachment);
                 mbp2.setDataHandler(new DataHandler(fds));
                 mbp2.setFileName(fds.getName());
 
@@ -165,12 +169,12 @@ public class EMailHelper
                 mp.addBodyPart(mbp2);
 
                 // add the Multipart to the message
-                msg.setContent(mp, mimeType);
+                msg.setContent(mp);
 
             } else
             {
                 // add the Multipart to the message
-                msg.setContent(aBodyText, mimeType);
+                msg.setContent(bodyText, mimeType);
             }
 
 
@@ -182,7 +186,7 @@ public class EMailHelper
 
             SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
             try {
-                t.connect(aHost, aUserName, aPassword);
+                t.connect(host, userName, password);
 
                 t.sendMessage(msg, msg.getAllRecipients());
 

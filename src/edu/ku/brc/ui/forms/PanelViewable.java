@@ -18,9 +18,12 @@
 package edu.ku.brc.ui.forms;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,9 +31,11 @@ import javax.swing.JPanel;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellPanel;
@@ -50,6 +55,12 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
 {
     public enum PanelType {Unknown, Panel, ButtonBar};
     
+    protected boolean            isCollapsablePanel = false;
+    protected JPanel             innerPanel;
+    protected JCheckBox          moreBtn;
+    protected ImageIcon          forwardImgIcon;
+    protected ImageIcon          downImgIcon;
+    
     protected DefaultFormBuilder builder;
     protected CellConstraints    cc = new CellConstraints();
    
@@ -60,10 +71,62 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
      */
     public PanelViewable(final FormCellPanel cellPanel)
     {
-        builder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()), this);
+        if (isCollapsablePanel)
+        {
+            PanelBuilder panelBldr = new PanelBuilder(new FormLayout("f:p:g", "p:g,2px,f:p:g"), this);
+            forwardImgIcon = IconManager.getIcon("Forward");
+            downImgIcon    = IconManager.getIcon("Down");
+            moreBtn        = new JCheckBox("More", forwardImgIcon);
+            moreBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (innerPanel.isVisible())
+                    {
+                        innerPanel.setVisible(false);
+                        moreBtn.setIcon(forwardImgIcon);
+                    } else
+                    {
+                        innerPanel.setVisible(true);
+                        moreBtn.setIcon(downImgIcon);
+                    }
+                    invalidate();
+                    doLayout();
+                    repaint();
+                }
+             });
+            innerPanel = new JPanel();
+            panelBldr.add(moreBtn, cc.xy(1,1));
+            panelBldr.add(innerPanel, cc.xy(1,3));
+            
+        } else
+        {
+            innerPanel = this;
+        }
+        builder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()), innerPanel);
        
     }
     
+    /**
+     * @param btns
+     * @return
+     */
+    public static JComponent buildButtonBar(final JButton[] btns)
+    {
+        return com.jgoodies.forms.factories.ButtonBarFactory.buildCenteredBar(btns);
+    }
+    
+    /**
+     * @param typeStr
+     * @return
+     */
+    public static PanelType getType(final String typeStr)
+    {
+        return StringUtils.isNotEmpty(typeStr) && typeStr.equalsIgnoreCase("buttonbar") ? PanelType.ButtonBar : PanelType.Panel;
+    }
+    
+    //--------------------------------------------------------
+    // ViewBuilderIFace
+    //--------------------------------------------------------
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addControlToUI(java.awt.Component, int, int, int, int)
@@ -145,23 +208,6 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     {
         return false;
     }
-    
-    /**
-     * @param btns
-     * @return
-     */
-    public static JComponent buildButtonBar(final JButton[] btns)
-    {
-        return com.jgoodies.forms.factories.ButtonBarFactory.buildCenteredBar(btns);
-    }
-    
-    /**
-     * @param typeStr
-     * @return
-     */
-    public static PanelType getType(final String typeStr)
-    {
-        return StringUtils.isNotEmpty(typeStr) && typeStr.equalsIgnoreCase("buttonbar") ? PanelType.ButtonBar : PanelType.Panel;
-    }
+
 
 }

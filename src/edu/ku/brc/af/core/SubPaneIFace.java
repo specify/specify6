@@ -17,6 +17,8 @@ package edu.ku.brc.af.core;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
+import edu.ku.brc.ui.forms.MultiView;
+
 
 /**
  *
@@ -59,6 +61,12 @@ public interface SubPaneIFace
      * @return the UI component of the pane
      */
     public JComponent getUIComponent();
+    
+    /**
+     * Returns the MultiView for the SubPane (may return null).
+     * @return the MultiView for the SubPane (may return null).
+     */
+    public MultiView getMultiView();
 
     /**
      * Returns the task who owns this pane (needed for context).

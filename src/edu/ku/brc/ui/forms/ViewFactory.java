@@ -435,7 +435,7 @@ public class ViewFactory
         {
             String[] initArray = null;
             String data = cellField.getProperty("data");
-            if (StringUtils.isNotEmpty(data))
+            if (isNotEmpty(data))
             {
                 initArray = split(data, ",");
                 for (int i=0;i<initArray.length;i++)

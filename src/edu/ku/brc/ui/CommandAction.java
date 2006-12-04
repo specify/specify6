@@ -110,6 +110,26 @@ public class CommandAction
         this.dstObj  = null;
     }
     
+    /**
+     * Return true if the type is equals the value (case sensitive).
+     * @param typ the type in question
+     * @return true if equal
+     */
+    public boolean isType(final String typ)
+    {
+        return type != null && type.equals(typ);
+    }
+    
+    /**
+     * Return true if the action is equals the value (case sensitive).
+     * @param act the action in question
+     * @return true if equal
+     */
+    public boolean isAction(final String act)
+    {
+        return action != null && action.equals(act);
+    }
+    
     public String getAction()
     {
         return action;

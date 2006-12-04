@@ -334,7 +334,7 @@ public class SystemSetupTask extends BaseTask
         if (data instanceof PickList)
         {
             PickList pickList = (PickList)data;
-            if (cmdAction.getAction().equals("SavePickList"))
+            if (cmdAction.isAction("SavePickList"))
             {
                 if (pickList.getTimestampCreated() == null)
                 {
@@ -357,7 +357,7 @@ public class SystemSetupTask extends BaseTask
                 String viewName = DBTableIdMgr.lookupDefaultFormNameById(DBTableIdMgr.lookupIdByShortName("picklist"));
                 removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
 
-            } else if (cmdAction.getAction().equals("DeletePickList"))
+            } else if (cmdAction.isAction("DeletePickList"))
             {
                 deletePickList(pickList);
                 deletePickListFromUI(null, pickList);

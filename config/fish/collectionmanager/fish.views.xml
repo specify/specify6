@@ -936,8 +936,8 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>p,4px,p,5px,p,4px,p,5px,p,4px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <columnDef>85px,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
                 <row>
@@ -984,8 +984,11 @@
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="12"/>
                 </row>
                 <row>
-                     <cell type="label" labelfor="9" label="Attachments"/>
-                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="10"/>
+                    <cell type="label" labelfor="9" label="Attachments"/>
+                    <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true" colspan="6"/>
                 </row>
             </rows>
         </viewdef>
@@ -998,25 +1001,31 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>100px,4px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <columnDef>85px,4px,p,80px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Quantity"/>
                     <cell type="field" id="1" name="quantity" uitype="text" isrequired="true"/>
+                    <cell type="label" labelfor="2" label="Prep Method"/>
+                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Description"/>
-                    <cell type="field" id="2" name="descriptionOfMaterial" uitype="text" colspan="2" valtype="Changed"/>
+                    <cell type="label" labelfor="3" label="Description"/>
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="6" valtype="Changed"/>
                 </row>
                 <!-- <row>
-                    <cell type="label" labelfor="5" label="Comments"/>
-                    <cell type="field" id="5" name="outComments" uitype="textarea" colspan="2"/>
+                    <cell type="label" labelfor="4" label="Comments"/>
+                    <cell type="field" id="4" name="outComments" uitype="textarea" colspan="2"/>
                 </row> -->
                 <row>
-                    <cell type="subview" viewname="LoanPreparation" id="9" name="preparation" readonly="true" colspan="4"/>
-                </row>                
+                    <cell type="label" labelfor="5" label="Count"/>
+                    <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
+                    
+                    <cell type="label" labelfor="6" label="Storage"/>
+                    <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colspan="2" />
+                </row>              
             </rows>
         </viewdef>
         
@@ -1029,11 +1038,11 @@
             <desc><![CDATA[Preparation for Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>85px,4px,p,4px,100px,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
-                <row>
+                <!-- <row>
                     <cell type="label" labelfor="7" label="Prep Method"/>
                     <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true" valtype="Changed"/>
                 </row>
@@ -1043,13 +1052,13 @@
                     
                     <cell type="label" labelfor="2" label="Prepared By"/>
                     <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
-                </row>
+                    </row> -->
                 <row>
                     <cell type="label" labelfor="3" label="Count"/>
                     <cell type="field" id="3" name="count" uitype="text"/>
                     
                     <cell type="label" labelfor="4" label="Storage"/>
-                    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
+                    <cell type="field" id="4" name="storageLocation" uitype="text" colspan="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -1408,6 +1417,10 @@
                     </cell>
                 </row>
                 -->
+                <row>
+                    <cell type="field" uitype="checkbox" id="5" name="sendEMail" label="Send EMail on Save" ignore="true" default="true" colspan="6"/>
+                </row>
+                
             </rows>
         </viewdef>
         
@@ -1480,7 +1493,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Shipment form.]]></desc>
-            <columnDef>p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <columnDef>85px,4px,p,10px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>

@@ -33,6 +33,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
@@ -188,6 +189,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     public JComponent getUIComponent()
     {
         return this;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#getMultiView()
+     */
+    public MultiView getMultiView()
+    {
+        return null;
     }
 
     /* (non-Javadoc)

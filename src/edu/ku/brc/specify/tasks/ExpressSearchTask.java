@@ -906,7 +906,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.getType().equals("App") && cmdAction.getAction().equals("Restart"))
+        if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
         {
             lucenePath = getIndexDirPath(); // must be initialized here (again)
             

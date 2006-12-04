@@ -385,6 +385,15 @@ public class TableViewObj implements Viewable,
         }
     }
     
+    /**
+     * Returns the JTable.
+     * @return the JTable.
+     */
+    public JTable getTable()
+    {
+        return table;
+    }
+    
     //-------------------------------------------------
     // Viewable
     //-------------------------------------------------

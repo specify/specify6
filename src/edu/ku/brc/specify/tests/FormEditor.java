@@ -1301,8 +1301,12 @@ frame.add("South", toggle);
 frame.pack();
 frame.setVisible(true);
 */
-                FormEditor formEditor = new FormEditor();
-                formEditor.createLoanSelector();
+                //FormEditor formEditor = new FormEditor();
+                //formEditor.createLoanSelector();
+                String text = "<table><tr><td>XXXX</rd></tr></table>";
+                File excelFile = new File("collection_items_64367.tmp.xls");
+                EMailHelper.sendMsg("imap.ku.edu", "rods", "Vintage1601*", "rods@ku.edu", "rods@ku.edu", 
+                        "Info Request", text, EMailHelper.HTML_TEXT, excelFile);
             }
       });
 

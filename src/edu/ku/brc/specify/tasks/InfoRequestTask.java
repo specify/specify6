@@ -17,12 +17,17 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -35,7 +40,12 @@ import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.swing.JCheckBox;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
 
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -57,10 +67,12 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.InfoRequest;
+import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -68,7 +80,12 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.TableViewObj;
+import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -86,8 +103,10 @@ public class InfoRequestTask extends BaseTask
     
     public static final String     INFOREQUEST        = "InfoRequest";
     public static final DataFlavor INFOREQUEST_FLAVOR = new DataFlavor(RecordSetTask.class, INFOREQUEST);
-    public static final String INFO_REQ_MESSAGE = "Specify Info Request";
+    public static final String     INFO_REQ_MESSAGE = "Specify Info Request";
+    public static final String     CREATE_MAILMSG   = "CreateMailMsg";
     
+
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
 
@@ -102,6 +121,8 @@ public class InfoRequestTask extends BaseTask
     {
         super(INFOREQUEST, getResourceString(INFOREQUEST));
         CommandDispatcher.register(INFOREQUEST, this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
+        CommandDispatcher.register(DB_CMD_TYPE, this);
     }
     
     /**
@@ -141,7 +162,7 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
-     * Add an InfoRequest Item to the box
+     * Add an InfoRequest Item to the box.
      * @param infoRequest the infoRequest to be added
      */
     protected void addInfoRequest(final InfoRequest infoRequest)
@@ -162,7 +183,7 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
-     * Adds the appropriate flavors to make it draggable
+     * Adds the appropriate flavors to make it draggable.
      * @param nbi the item to be made draggable
      */
     protected void addDraggableDataFlavors(NavBoxButton roc)
@@ -172,11 +193,7 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
-     * Save a info request
-     * @param infoRequest the ir to be saved
-     */
-    /**
-     * Save a info request
+     * Save a info request.
      * @param infoRequest the ir to be saved
      * @param recordSet the recordSet to be saved with it
      */
@@ -330,215 +347,7 @@ public class InfoRequestTask extends BaseTask
         return null;
     }
     
-    /**
-     * (WORK IN PROGRESS)
-     * @param commentId (WORK IN PROGRESS)
-     * @param content (WORK IN PROGRESS)
-     * @return (WORK IN PROGRESS)
-     */
-    public static int getCommentValueAsInt(final String commentId, final String content)
-    {
-        String valueStr = getCommentValueAsStr(commentId, content);
-        if (valueStr != null)
-        {
-            return Integer.parseInt(valueStr.trim());
-        }
-        return -1;
-    }
-    
-    /**
-     * @param commentId (WORK IN PROGRESS)
-     * @param content (WORK IN PROGRESS)
-     * @return (WORK IN PROGRESS)
-     */
-    public static boolean getCommentValueAsCheck(final String commentId, final String content)
-    {
-        int inx = content.indexOf(commentId);
-        if (inx > -1)
-        {
-            inx += commentId.length() + 1;
-            String subString = content.substring(inx);
-            int sInx = subString.indexOf("-->")+1;
-            int eInx = subString.indexOf("<!--");
-            String boxStr = subString.substring(sInx, eInx).trim().toLowerCase();
-            return boxStr.indexOf("x") > -1;
-        }
-        return false;
-    }
-    
-    /**
-     * (work in progress)
-     * @param content xxxxxxx
-     * @return (work in progress)
-     */
-    public static List<String> parseForCollectionObjects(final String content)
-    {
-        List<String> list = new ArrayList<String>();
-        
-        int numItems = getCommentValueAsInt("<!-- NUM_ITEMS", content);
-        //System.out.println("Num: " + numItems);
-        for (int i=0;i<numItems;i++)
-        {
-            //System.out.println("ID: " + getCommentValueAsInt("<!-- ITEM"+i, content));
-            //System.out.println("Checked: " + getCommentValueAsCheck("<!-- ITEM"+i, content));
-            if (getCommentValueAsCheck("<!-- ITEM"+i, content))
-            {
-                list.add(getCommentValueAsStr("<!-- ITEM"+i, content));
-            }
-        }
-        return list;
-    }
-    
-
-    /**
-     * @param host host name
-     * @param username the username of the email account
-     * @param password the pasword of the email account
-     */
-    public static void findRepliesFromResearch(String host, String username, String password)
-    {
-        if (true)
-        {
-            parseForCollectionObjects("<!-- NUM_ITEMS 2 --><form name=\"form\"><table><tr><td><!-- ITEM0 101 -->[  ]<!-- END --></td><td>Megalotis</td></tr><tr><td><!-- ITEM1 102 -->[  X]<!-- END --></td><td>Megalotis</td></tr></table><form>");
-            System.out.println("Should be false "+getCommentValueAsCheck("<!-- ITEM0", "<!-- ITEM0 101 -->[  ]<!-- END -->"));
-            System.out.println("Should be true  "+getCommentValueAsCheck("<!-- ITEM0", "<!-- ITEM0 101 -->[X  ]<!-- END -->"));
-            System.out.println("Should be true  "+getCommentValueAsCheck("<!-- ITEM0", "<!-- ITEM0 101 -->[  X]<!-- END -->"));
-            System.out.println("Should be true  "+getCommentValueAsCheck("<!-- ITEM0", "<!-- ITEM0 101 -->[  X  ]<!-- END -->"));
-            return;
-        }
-        Properties props = System.getProperties();
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.auth", "true");
-
-        Session session = Session.getInstance(props, null);
-
-        session.setDebug(false);
-
-        try
-        {
-            Store store = session.getStore("imap");
-            // Store store = session.getStore("pop3");
-            store.connect(host, username, password);
-            Folder folder = store.getFolder("Test");
-            folder.open(Folder.READ_ONLY);
-
-            Message message[] = folder.getMessages();
-            for (Message msg : message)
-            {
-                String subject = msg.getSubject().toLowerCase();
-                if (subject.indexOf("re: research request") != -1)
-                {
-                    String mimeType = msg.getContentType().toLowerCase();
-                    if (mimeType.indexOf(EMailHelper.PLAIN_TEXT) != -1)
-                    {
-                        
-                    } else if (mimeType.indexOf(EMailHelper.HTML_TEXT) != -1)
-                    {
-                        Object contentObj = msg.getContent();
-                        if (contentObj instanceof String)
-                        {
-                            List<String> items = parseForCollectionObjects((String)contentObj);
-                        } else
-                        {
-                            log.error("Not sure of the content's object"+contentObj.getClass().toString());
-                        }
-
-                    }
-                }
-
-            }
-            folder.close(false);
-            store.close();
-
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    
-    /**
-     * 
-     */
-    public static void findReplies()
-    {
-
-        List<javax.mail.Message> msgList = new ArrayList<javax.mail.Message>();
-        if (EMailHelper.getAvailableMsgs(msgList))
-        {
-            try 
-            {
-                for (Message msg : msgList)
-                {
-                    String subject = msg.getSubject();
-                    if (subject != null && subject.indexOf(INFO_REQ_MESSAGE) > -1)
-                    {
-                        // Need to make sure it isn't a reply of a reply
-                        // we do that by storing requests in the database and then check dates
-                        
-                        //System.out.println(msg.getSubject());
-                        //System.out.println(msg.getContentType());
-                        //System.out.println(msg.getContent());
-                    
-                        if (msg.getContent() instanceof Multipart)
-                        {
-                            Multipart mp = (Multipart)msg.getContent(); 
-                            for (int i=0, n=mp.getCount(); i<n; i++) 
-                            { 
-                                Part part = mp.getBodyPart(i);
-                                for (Enumeration e=part.getAllHeaders();e.hasMoreElements();)
-                                {
-                                    Header hdr = (Header)e.nextElement();
-                                    System.out.println(hdr.getName()+" = "+hdr.getValue());
-                                }
-                                System.out.println("FNAME: "+part.getFileName());
-                                System.out.println("Part:  "+part.getContentType());
-                                System.out.println("Desc:  "+part.getDescription());
-                                System.out.println("Size:  "+part.getSize());
-                                String disposition = part.getDisposition(); 
-                                if ((disposition != null) &&  
-                                    (disposition.equals(Part.ATTACHMENT) || (disposition.equals(Part.INLINE))))
-                                { 
-                                    System.out.println(part.getFileName()); 
-                                    //part.getInputStream()
-                                } else
-                                {
-                                    System.out.println(part.getContent());
-                                }
-                            }
-                        }
-                    }
-                }
-
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-            EMailHelper.closeAllMailBoxes();
-            
-        } else
-        {
-            // Display EMailHelper.getLastErrorMsg(); // XXX FIXME
-        }
-    }
-    
-    /**
-     * @param recordSet
-     * @param toEMail
-     * @return true or false
-     */
-    public boolean sendRecordSetToResearcher(final RecordSetIFace recordSet, final String toEMail)
-    {
-        /*
-        Set setOfRecords = recordSet.getItems();
-        {
-            
-        }*/
-        return false;
-    }    
-    
-    /* (non-Javadoc)
+     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     @Override
@@ -581,6 +390,83 @@ public class InfoRequestTask extends BaseTask
         return this.getClass();
     }
     
+    /**
+     * Creates an Excel SpreadSheet or CVS file and attaches it to an email and send it to an agent.
+     * 
+     * @param infoRequest the info request to be sent
+     */
+    public static void createAndSendEMail(final SubPaneIFace subPane)
+    {
+        MultiView   mv          =  subPane.getMultiView();
+        Viewable    mvViewable  = mv.getCurrentView();
+        FormViewObj formViewObj = (FormViewObj)mvViewable;
+
+        Boolean sendEMail = null;
+        if (formViewObj != null)
+        {
+            Component comp = formViewObj.getControlByName("sendEMail");
+            if (comp instanceof JCheckBox)
+            {
+                sendEMail = ((JCheckBox)comp).isSelected();
+            }
+        }
+        
+        mv = formViewObj.getSubView("InfoRequestColObj");
+        if (mv != null && sendEMail)
+        {
+            final Viewable viewable = mv.getCurrentView();
+            if (viewable instanceof TableViewObj)
+            {
+                final Hashtable<String, String> values = new Hashtable<String, String>();
+                values.put("to", "rods@ku.edu");
+                values.put("from", "rods@ku.edu");
+                values.put("subject", "Information Request");
+                values.put("bodytext", "");
+                final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+                                              "SystemSetup",
+                                              "SendMail",
+                                              null,
+                                              "Mail",
+                                              "Send",
+                                              null, // className,
+                                              null, // idFieldName,
+                                              true, // isEdit,
+                                              0);
+                dlg.setData(values);
+                dlg.setModal(true);
+                
+                dlg.setCloseListener(new PropertyChangeListener()
+                {
+                    public void propertyChange(PropertyChangeEvent evt)
+                    {
+                        String action = evt.getPropertyName();
+                        if (action.equals("OK"))
+                        {
+                            dlg.getMultiView().getDataFromUI();
+                            
+                            System.out.println("["+values.get("bodytext")+"]");
+                            
+                            TableViewObj  tblViewObj = (TableViewObj)viewable;
+                            File          excelFile  = TableModel2Excel.convertToExcel("Test", tblViewObj.getTable().getModel());
+                            StringBuilder sb         = TableModel2Excel.convertToHTML("Test", tblViewObj.getTable().getModel());
+                            EMailHelper.setDebugging(true);
+                            EMailHelper.sendMsg("imap.ku.edu", "rods", "Vintage1601*", "rods@ku.edu", "rods@ku.edu", 
+                                                "Info Request", sb.toString(), EMailHelper.HTML_TEXT, excelFile);
+                        }
+                        else if (action.equals("Cancel"))
+                        {
+                            log.warn("User clicked Cancel");
+                        }
+                    }
+                });
+
+                dlg.setVisible(true);
+                
+
+            }
+        }
+    }
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -590,7 +476,29 @@ public class InfoRequestTask extends BaseTask
      */
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.getAction().equals("Save"))
+        if (cmdAction.isType(DB_CMD_TYPE))
+        {
+            if (cmdAction.getData() instanceof InfoRequest)
+            {
+                if (cmdAction.isAction(INSERT_CMD_ACT))
+                {
+                    //final CommandAction cm = cmdAction;
+                    // Create Specify Application
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            //createAndSendEMail((InfoRequest)cm.getData());  
+                            CommandDispatcher.dispatch(new CommandAction(INFOREQUEST, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
+                        }
+                    });
+                }
+            }
+            
+        } else if (cmdAction.isAction(CREATE_MAILMSG))
+        {
+            createAndSendEMail((SubPaneIFace)cmdAction.getData());
+            
+        } else if (cmdAction.isAction("Save"))
         {
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)
@@ -606,13 +514,13 @@ public class InfoRequestTask extends BaseTask
                 
                 saveInfoRequest(infoRequest, (RecordSetIFace)data);
             }
-        } else if (cmdAction.getAction().equals("Delete") && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction("Delete") && cmdAction.getData() instanceof RecordSet)
         {
             InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
             deleteInfoRequest(inforRequest);
             deleteInfoRequestFromUI(null, inforRequest);
 
-        } else if (cmdAction.getAction().equals("Create") && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction("Create") && cmdAction.getData() instanceof RecordSet)
         {
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)

@@ -228,8 +228,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      */
     public static IndexWriter createIndexWriter(final File path, final boolean create) throws IOException
     {
-        boolean     shouldBeCreated = path.exists();
-        Directory   dir             = FSDirectory.getDirectory(path, true);
+        boolean     shouldBeCreated = !path.exists();
+        Directory   dir             = FSDirectory.getDirectory(path, shouldBeCreated);
         IndexWriter writer          = new IndexWriter(dir, analyzer, create || shouldBeCreated);
         //writer.setMaxBufferedDocs(arg0);
         writer.setMaxMergeDocs(9999999);
