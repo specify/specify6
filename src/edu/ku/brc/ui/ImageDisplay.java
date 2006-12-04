@@ -130,6 +130,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 
 	protected void selectNewImage()
 	{
+        String oldURL = this.url;
 		synchronized(this)
         {
            if (chooser==null)
@@ -148,6 +149,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
             url = file.getAbsolutePath();
 			repaint();
 		}
+        
+        firePropertyChange("imageURL", oldURL, url);
 	}
 
 	/**
