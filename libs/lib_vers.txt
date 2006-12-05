@@ -17,15 +17,15 @@ commons-logging      -> 1.0.4
 commons-pool         -> 1.2
 log4j                -> 1.2.12
 
-jfreechart           -> 1.0.1
-jcommon              => 1.0.0 rc1
+jfreechart           -> 1.0.3
+jcommon              => 1.0.6
 
 dom4j                -> 1.6.1      (Using Hibernate's)
 jaxen                -> 1.1-beta-7 (Using Hibernate's)
 
 forms                -> 1.0.7 (JGoodies)
 looks                -> 2.0.4 (JGoodies)
-itext                -> 1.4.3
+itext                -> 1.4.6
 exif-metadata-extractor -> metadata-extractor-2.3.1.jar
 
 jdom                 -> Version unknown (Mail)
