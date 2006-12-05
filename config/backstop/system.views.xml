@@ -191,7 +191,7 @@
                     <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="ser_num" label="TaxonomicSerialNumber"/>
+                    <cell type="label" labelfor="ser_num" label="Taxonomic Serial Number"/>
                     <cell type="field" id="ser_num" uitype="text" name="taxonomicSerialNumber"/>
                 </row>
                 <row>
