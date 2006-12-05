@@ -67,7 +67,12 @@ public class AgentIconMapper implements ObjectIconMapper
 
         for (Attachment attach: a.getAttachments())
         {
-            if (attach.getMimeType().startsWith("image"))
+        	String mimeType = attach.getMimeType();
+        	if (mimeType==null)
+        	{
+        		continue;
+        	}
+            if (mimeType.startsWith("image"))
             {
                 File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(attach);
                 if (thumb != null)

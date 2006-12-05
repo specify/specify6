@@ -101,6 +101,10 @@ public class AttachmentUtils
             fileExt = filename.substring(lastDotIndex+1);
         }
         Association fileAssoc = assServ.getFileExtensionAssociation(fileExt);
+        if (fileAssoc==null)
+        {
+        	return null;
+        }
         return fileAssoc.getMimeType();
     }
     
