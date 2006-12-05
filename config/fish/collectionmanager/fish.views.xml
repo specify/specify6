@@ -495,8 +495,8 @@
                     <cell type="label" labelfor="1" label="Title"/>
                     <!-- <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> --> <!-- Needs to be a PickList -->
                     <cell type="field" id="1" name="title" uitype="combobox" picklist="AgentTitle" valtype="Changed"/> <!-- Needs to be a PickList -->
-                    <cell type="label" labelfor="2" label="Title"/>
-                    <cell type="field" id="2" name="jobTitle" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="2" label="E-mail"/>
+                    <cell type="field" id="2" name="email" uitype="text" cols="32"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>

@@ -132,6 +132,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Override
     public Class<?> getDataClass()
     {
         return GeologicTimePeriod.class;
@@ -488,8 +489,20 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
             {
                 for( int j = parts.size()-1; j > -1; --j )
                 {
-                    fullNameBuilder.append(parts.get(j).getName());
-                    if(j!=0)
+                    GeologicTimePeriod part = parts.get(j);
+                    String before = part.getDefinitionItem().getTextBefore();
+                    String after = part.getDefinitionItem().getTextAfter();
+
+                    if (before!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextBefore());
+                    }
+                    fullNameBuilder.append(part.getName());
+                    if (after!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextAfter());
+                    }
+                    if(j!=parts.size()-1)
                     {
                         fullNameBuilder.append(parts.get(j).getFullNameSeparator());
                     }
@@ -500,7 +513,19 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
             {
                 for( int j = 0; j < parts.size(); ++j )
                 {
-                    fullNameBuilder.append(parts.get(j).getName());
+                    GeologicTimePeriod part = parts.get(j);
+                    String before = part.getDefinitionItem().getTextBefore();
+                    String after = part.getDefinitionItem().getTextAfter();
+
+                    if (before!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextBefore());
+                    }
+                    fullNameBuilder.append(part.getName());
+                    if (after!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextAfter());
+                    }
                     if(j!=parts.size()-1)
                     {
                         fullNameBuilder.append(parts.get(j).getFullNameSeparator());

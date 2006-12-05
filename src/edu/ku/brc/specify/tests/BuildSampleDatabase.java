@@ -55,6 +55,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -119,7 +120,7 @@ public class BuildSampleDatabase
     private static final Logger log      = Logger.getLogger(BuildSampleDatabase.class);
     protected static Calendar   calendar = Calendar.getInstance();
     protected static Session    session;
-    protected static FakeRandom     rand = new FakeRandom();
+    protected static Random     rand = new Random(12345678L);
     
     public static Session getSession()
     {
@@ -194,7 +195,7 @@ public class BuildSampleDatabase
         String[] methods = {"by hand", "USPS", "UPS", "FedEx", "DHL"};
         dataObjects.add(createPickList("ShipmentMethod", true, methods));
         
-        String[] accTypes = {"collection"};
+        String[] accTypes = {"collection","gift"};
         dataObjects.add(createPickList("AccessionType", true, accTypes));
         
         String[] accRoles = {"collector", "donor", "reviewer", "staff", "receiver"};
@@ -225,7 +226,7 @@ public class BuildSampleDatabase
         lake.setLong1text("93.732129 deg W");
         lake.setLongitude1(-93.732129);
         
-        Locality farmpond = createLocality("Farm pond", (Geography)geos.get(21));
+        Locality farmpond = createLocality("Farm pond", (Geography)geos.get(22));
         farmpond.setLat1text("41.642187 deg N");
         farmpond.setLatitude1(41.642187);
         farmpond.setLong1text("100.403163 deg W");
@@ -247,6 +248,13 @@ public class BuildSampleDatabase
         agents.add(createAgent("Mr.", "Wayne", "J", "Oppenheimer", "wjo"));
         agents.add(createAgent("Sir", "Dudley", "X", "Simmons", "dxs"));
         agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc"));
+        
+        // e-mail addresses
+        agents.get(0).setEmail("jds@ku.edu");
+        agents.get(1).setEmail("beach@ku.edu");
+        agents.get(2).setEmail("megkumin@ku.edu");
+        agents.get(3).setEmail("rods@ku.edu");
+        
         Agent ku = new Agent();
         ku.initialize();
         ku.setAbbreviation("KU");
@@ -262,15 +270,21 @@ public class BuildSampleDatabase
         agents.get(3).setOrganization(ku);
 
         List<Address> addrs = new Vector<Address>();
+        // Josh
         addrs.add(createAddress(agents.get(0), "11911 S Redbud Ln", null, "Olathe", "KS", "USA", "66061"));
-        agents.get(0).setEmail("jds@ku.edu");
+        // Jim
         addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
-        agents.get(0).setEmail("beach@ku.edu");
+        // Meg
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
+        // Rod
         addrs.add(createAddress(agents.get(3), "1335511 Inverness", null, "Lawrence", "KS", "USA", "66047"));
-        addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
-        addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
+        // Wayne Oppenheimer
         addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
+        // no address for agent 5 (Dudley Simmons)
+        // Rod Carew
+        addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
+        // KU
+        addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
 
         dataObjects.addAll(agents);
         dataObjects.addAll(addrs);
@@ -409,29 +423,30 @@ public class BuildSampleDatabase
         PrepType xray = createPrepType("x-ray");
 
         List<Preparation> preps = new Vector<Preparation>();
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)));
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), rand.nextInt(20)));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), rand.nextInt(20)));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), rand.nextInt(20)));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), rand.nextInt(20)));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), rand.nextInt(20)));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), rand.nextInt(20)));
-        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), rand.nextInt(20)));
-        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)));
-        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), rand.nextInt(20)));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), rand.nextInt(20)));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), rand.nextInt(20)));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)));
+        Calendar prepDate = Calendar.getInstance();
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
 
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), rand.nextInt(20)));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
 
         dataObjects.add(skel);
         dataObjects.add(cas);
@@ -445,6 +460,7 @@ public class BuildSampleDatabase
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession("gift", "complete", "2006-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        acc1.setText1("Ichthyology");
         
         Agent donor =    agents.get(4);
         Agent receiver = agents.get(1);
@@ -605,7 +621,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
-        if (false)
+        if (true)
         {
             log.info("Creating attachments and attachment metadata");
             try
@@ -644,9 +660,9 @@ public class BuildSampleDatabase
                 Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
                 sharkVideo.setLoan(closedLoan);
     
-                String beakerPath = attachmentFilesLoc + "beaker.jpg";
-                Attachment beakerAsBeach = createAttachment(beakerPath, "image/jpg", 1);
-                beakerAsBeach.setAgent(agents.get(1));
+//                String beakerPath = attachmentFilesLoc + "beaker.jpg";
+//                Attachment beakerAsBeach = createAttachment(beakerPath, "image/jpg", 1);
+//                beakerAsBeach.setAgent(agents.get(1));
                 
                 dataObjects.add(bigEye);
                 dataObjects.add(joshPhoto);
@@ -656,7 +672,7 @@ public class BuildSampleDatabase
                 dataObjects.add(giftPDF);
                 dataObjects.add(accPDF);
                 dataObjects.add(sharkVideo);
-                dataObjects.add(beakerAsBeach);
+                //dataObjects.add(beakerAsBeach);
             }
             catch (Exception e)
             {
@@ -690,6 +706,7 @@ public class BuildSampleDatabase
         state.setIsInFullName(true);
         GeographyTreeDefItem county = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
         county.setIsInFullName(true);
+        county.setTextAfter(" Co.");
         // 1
         newObjs.add(root);
         // 2
@@ -706,7 +723,7 @@ public class BuildSampleDatabase
         Geography earth = createGeography(geoTreeDef, null, "Earth", root.getRankId());
         Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
         Geography us = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
-        List<Geography> states = createGeographyChildren(geoTreeDef, northAmerica,
+        List<Geography> states = createGeographyChildren(geoTreeDef, us,
                 new String[] { "Kansas", "Iowa", "Nebraska" }, state.getRankId());
         // 6
         newObjs.add(earth);
@@ -725,12 +742,12 @@ public class BuildSampleDatabase
         // 12, 13, 14, 15
         newObjs.addAll(counties);
         counties = createGeographyChildren(geoTreeDef, states.get(1),
-                new String[] { "Blackhawk", "Fayette", "Polk", "Woodbury" }, county.getRankId());
-        // 16, 17, 18, 19
+                new String[] { "Blackhawk", "Fayette", "Polk", "Woodbury", "Johnson" }, county.getRankId());
+        // 16, 17, 18, 19, 20
         newObjs.addAll(counties);
         counties = createGeographyChildren(geoTreeDef, states.get(2),
-                new String[] { "Dakota", "Logan", "Valley", "Wheeler" }, county.getRankId());
-        // 20, 21, 22, 23
+                new String[] { "Dakota", "Logan", "Valley", "Wheeler", "Johnson" }, county.getRankId());
+        // 21, 22, 23, 24, 25
         newObjs.addAll(counties);
         
         earth.fixFullNameForAllDescendants();

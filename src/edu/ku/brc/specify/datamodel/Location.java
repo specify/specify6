@@ -124,6 +124,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Override
     public Class<?> getDataClass()
     {
         return Location.class;
@@ -459,8 +460,20 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
             {
                 for( int j = parts.size()-1; j > -1; --j )
                 {
-                    fullNameBuilder.append(parts.get(j).getName());
-                    if(j!=0)
+                    Location part = parts.get(j);
+                    String before = part.getDefinitionItem().getTextBefore();
+                    String after = part.getDefinitionItem().getTextAfter();
+
+                    if (before!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextBefore());
+                    }
+                    fullNameBuilder.append(part.getName());
+                    if (after!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextAfter());
+                    }
+                    if(j!=parts.size()-1)
                     {
                         fullNameBuilder.append(parts.get(j).getFullNameSeparator());
                     }
@@ -471,7 +484,19 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
             {
                 for( int j = 0; j < parts.size(); ++j )
                 {
-                    fullNameBuilder.append(parts.get(j).getName());
+                    Location part = parts.get(j);
+                    String before = part.getDefinitionItem().getTextBefore();
+                    String after = part.getDefinitionItem().getTextAfter();
+
+                    if (before!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextBefore());
+                    }
+                    fullNameBuilder.append(part.getName());
+                    if (after!=null)
+                    {
+                        fullNameBuilder.append(part.getDefinitionItem().getTextAfter());
+                    }
                     if(j!=parts.size()-1)
                     {
                         fullNameBuilder.append(parts.get(j).getFullNameSeparator());
