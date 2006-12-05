@@ -483,12 +483,14 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             if (!status)
             {
                 // XXX Get response error message from Helper and display it.
-                JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), "Error Sending EMail");
+                JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), "Error Sending EMail"); // XXX I18N
                 
             } else
             {
                 JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), "Message Sent\nCheck your mailbox to see if it worked.");
             }
+            parentDlg.setVisible(false);
+            parentDlg.dispose();
         }
     }
 

@@ -433,9 +433,9 @@ public class InfoRequestTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showConfirmDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
+                        JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
-                                getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.OK_OPTION);
+                                getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;
                     }
                     
@@ -482,7 +482,12 @@ public class InfoRequestTask extends BaseTask
                                 
                                 //EMailHelper.setDebugging(true);
                                 String text = values.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
-
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run()
+                                    {
+                                        UICacheManager.displayLocalizedStatusBarText("SENDING_EMAIL");
+                                    }
+                                });
                                 final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
                                                                         emailPrefs.get("username"), 
                                                                         Encryption.decrypt(emailPrefs.get("password")), 
