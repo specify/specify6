@@ -854,22 +854,23 @@ public class DataBuilder
                                                 final Agent preparedBy,
                                                 final CollectionObject colObj,
                                                 final Location location,
-                                                final int count)
+                                                final int count,
+                                                final Calendar preparedDate)
     {
         Preparation prep = new Preparation();
         prep.initialize();
 
         prep.setCollectionObject(colObj);
         prep.setCount(count);
-        prep.setLastEditedBy("");
+        prep.setLastEditedBy(null);
         prep.setLocation(location);
         prep.setPreparedByAgent(preparedBy);
-        prep.setPreparedDate(Calendar.getInstance());
+        prep.setPreparedDate(preparedDate);
         prep.setPrepType(prepType);
-        prep.setRemarks("These are the remarks");
-        prep.setStorageLocation("This is the textual storage location");
-        prep.setText1("Thi is text1");
-        prep.setText2("This is text2");
+        prep.setRemarks(null);
+        prep.setStorageLocation(null);
+        prep.setText1(null);
+        prep.setText2(null);
         prep.setTimestampModified(new Date());
 
         colObj.getPreparations().add(prep);
