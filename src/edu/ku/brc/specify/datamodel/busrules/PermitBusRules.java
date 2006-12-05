@@ -43,16 +43,16 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
  * @author rods
  *
  */
-public class PermitBusRule implements BusinessRulesIFace
+public class PermitBusRules implements BusinessRulesIFace
 {
-    private static final Logger  log = Logger.getLogger(PermitBusRule.class);
+    private static final Logger  log = Logger.getLogger(PermitBusRules.class);
     
     private List<String> errorList = new Vector<String>();
     
     /**
      * Constructor.
      */
-    public PermitBusRule()
+    public PermitBusRules()
     {
         
     }

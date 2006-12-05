@@ -86,7 +86,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected boolean                      editable        = false;
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
-    protected boolean                      dataHasChanged  = false;    
+    protected boolean                      dataHasChanged  = false;
+    protected boolean                      ignoreDataChanges = false;
 
     protected int                          createOptions   = 0;
 
@@ -332,12 +333,20 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public boolean hasChanged()
     {
-        if (!dataHasChanged)
+        if (!ignoreDataChanges && !dataHasChanged)
         {
-            //log.info("MV ---------- "+hashCode());
             for (FormValidator validator : formValidators)
             {
-                //log.info("FV1 ---------- "+validator.hashCode());
+                validator.setFirstTime(false);
+            }
+
+            for (FormValidator validator : formValidators)
+            {
+                if (validator.getName().equals("Shipment"))
+                {
+                    int x = 0;
+                    x++;
+                }
                 if (validator.hasChanged())
                 {
                     return true;
@@ -346,11 +355,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             
             for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
             {
-                Viewable viewable = e.nextElement();
+                Viewable      viewable  = e.nextElement();
                 FormValidator validator = viewable.getValidator();
                 if (validator != null)
                 {
-                    //log.info("FV2 ---------- "+validator.hashCode());
                     if (validator.hasChanged())
                     {
                         return true;
@@ -653,6 +661,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         this.data = data;
         
+        ignoreDataChanges = true;
+        
         // We the data gets set into the MultiView we need to display the correct
         // AlView with the matching selector value.
         AltView altView = currentViewable.getAltView();
@@ -708,6 +718,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             currentViewable.setDataObj(data);
         }
         
+        ignoreDataChanges = false;
         dataHasChanged = false;
     }
 

@@ -45,22 +45,23 @@ import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
+ *Business rules for validating a Accession.
  *
  * @code_status Complete
  *
  * @author rods
  *
  */
-public class AccessionBusRule implements BusinessRulesIFace
+public class AccessionBusRules implements BusinessRulesIFace
 {
-    private static final Logger  log      = Logger.getLogger(AccessionBusRule.class);
+    private static final Logger  log      = Logger.getLogger(AccessionBusRules.class);
     
     private List<String> errorList = new Vector<String>();
    
     /**
      * Constructor.
      */
-    public AccessionBusRule()
+    public AccessionBusRules()
     {
         
     }

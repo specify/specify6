@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -33,6 +34,8 @@ import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.log4j.Logger;
+
+import edu.ku.brc.ui.IconManager;
 
 /**
  * This class manages all the validators for a single form. One or all the UI components
@@ -65,12 +68,17 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected Hashtable<String, JLabel>             labels      = new Hashtable<String, JLabel>();
 
     protected boolean                               hasChanged  = false;
-    protected UIValidatable.ErrorType               formValidationState = UIValidatable.ErrorType.Error;
-
+    protected boolean                               isNewObj    = false;
+    protected boolean                               isFirstTime = false;
+    protected UIValidatable.ErrorType               formValidationState = UIValidatable.ErrorType.Valid;
+    protected boolean                               processRulesAreOK   = true;
+    
     protected JButton                               okBtn       = null;
 
     protected boolean                               ignoreValidationNotifications = false;
     protected boolean                               okToDataChangeNotification    = true;
+    
+    protected JButton                               validationInfoBtn             = null;
 
     // This is a list of listeners for when any data changes in the form
     protected List<DataChangeListener>              dcListeners  = new ArrayList<DataChangeListener>();
@@ -103,7 +111,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public boolean isFormValid()
     {
-        return formValidationState == UIValidatable.ErrorType.Valid;
+        return formValidationState == UIValidatable.ErrorType.Valid && processRulesAreOK;
     }
 
     /**
@@ -112,6 +120,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setFormValidationState(UIValidatable.ErrorType formValidationState)
     {
+        if (this.formValidationState != formValidationState)
+        {
+            updateValidationBtnUIState();
+        }
         this.formValidationState = formValidationState;
     }
 
@@ -122,7 +134,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public UIValidatable.ErrorType getState()
     {
-        return formValidationState;
+        return !hasChanged && isNewObj && isFirstTime ? UIValidatable.ErrorType.Valid : processRulesAreOK ? formValidationState : UIValidatable.ErrorType.Error;
     }
 
     /**
@@ -162,8 +174,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
         formRules.add(rule);
     }
 
-
-
     /**
      * Tells all the validators that are required not to validate
      */
@@ -174,15 +184,22 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             uiv.setAsNew(isNew);
         }
+        updateValidationBtnUIState();
     }
     
+    public void setFirstTime(boolean isFirstTime)
+    {
+        this.isFirstTime = isFirstTime;
+        updateValidationBtnUIState();
+    }
+
     /**
      * Resets the form, typically after new data has arrived. For new objects it sets the validation state to "Valid"
      * for non-new objects it validates the form.
      * 
      * @param isNewObj true if it is a new data object, false if not.
      */
-    public void reset(final boolean isNewObj)
+    public void reset(final boolean isNewObjArg)
     {
         setHasChanged(false);
 
@@ -190,14 +207,19 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         setDataChangeNotification(true); // this doesn't effect validation notifications
 
-        if (isNewObj)
+        if (isNewObjArg)
         {
-            setFormValidationState(UIValidatable.ErrorType.Valid); 
+            isNewObj = isNewObjArg;
+            isFirstTime = true;
+            //setFormValidationState(UIValidatable.ErrorType.Valid); 
             
         } else 
         {
+            isFirstTime = false;
             validateForm();    
         }
+        
+        updateValidationBtnUIState();
     }
 
     /**
@@ -497,37 +519,51 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void checkForValidForm()
     {
-        formValidationState = processFormRules() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
+        processRulesAreOK = processFormRules();
 
         //log.debug(name+" checkForValidForm -> formValidationState - processFormRules ["+formValidationState+"]");
-
-        if (formValidationState == UIValidatable.ErrorType.Valid)
+        if (name.equals("LoanItems"))
         {
+            int x = 0;
+            x++;
+        }
+        
+        if (processRulesAreOK)
+        {
+            formValidationState = UIValidatable.ErrorType.Valid;
             for (UIValidator uiv : validators)
             {
                 if (uiv.isInError())
                 {
-                    UIValidatable.ErrorType state = uiv.getUIV().getState();
-
+                   switch (uiv.getUIV().getState())
+                   {
+                       case Valid :
+                            break;
+                    
+                       case Incomplete:
+                            if (formValidationState == UIValidatable.ErrorType.Valid)
+                            {
+                                formValidationState = UIValidatable.ErrorType.Incomplete;
+                            }
+                            break;
+                    
+                       case Error :
+                            formValidationState = UIValidatable.ErrorType.Error;
+                            break;
+                    }
+                   
                     // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
                     // then we don't want to override an error with a lesser state
-                    if (formValidationState != UIValidatable.ErrorType.Error)
+                    if (formValidationState == UIValidatable.ErrorType.Error)
                     {
-                        formValidationState = state;
+                        break;
+                        
                     }
-
-                    if (state == UIValidatable.ErrorType.Error)
-                    {
-                        // Break for an Erro, but keep going for Incomplete
-                        // to see if there are any errors
-                        //break;
-                    }
-
                 }
             }
         }
 
-        turnOnOKButton(hasChanged && formValidationState == UIValidatable.ErrorType.Valid);
+        turnOnOKButton(hasChanged && getState() == UIValidatable.ErrorType.Valid);
     }
 
     /**
@@ -536,11 +572,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param type if validateAll is false, then validate only the fields with a
      * validator of this type.
      */
-    protected void validateForm(boolean validateAll, UIValidator.Type valType)
+    protected void validateForm(boolean validateAll)
     {
         ignoreValidationNotifications = true;
 
-        formValidationState = processFormRules() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
+        processRulesAreOK = processFormRules();
+        
+        formValidationState = UIValidatable.ErrorType.Valid;
 
         // We need to go ahead and validate everything even if processFormRules fails
         // because the user will need the visual feed back on the form for which fields are in error
@@ -549,46 +587,33 @@ public class FormValidator implements ValidationListener, DataChangeListener
             dcn.manualCheckForDataChanged();
             
             UIValidator uiv = dcn.getUIV();
-            if (uiv != null)
+            if (uiv != null && !uiv.validate())
             {
-                // Make sure we validate the fields that only get validated the type matches
-                if (validateAll || uiv.getType() == valType)
+                switch (uiv.getUIV().getState())
                 {
-                    if (!uiv.validate())
-                    {
-                        UIValidatable.ErrorType state = uiv.getUIV().getState();
-
-                        // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
-                        // then we don't want to override an error with a lesser state
-                        if (formValidationState != UIValidatable.ErrorType.Error)
-                        {
-                            formValidationState = state;
-                        }
-                        if (state == UIValidatable.ErrorType.Error)
-                        {
-                            // Break for an Erro, but keep going for Incomplete
-                            // to see if there are any errors
-                            //break;
-                        }
-                    }
-                }
+                    case Valid :
+                         break;
+                 
+                    case Incomplete:
+                         if (formValidationState == UIValidatable.ErrorType.Valid)
+                         {
+                             formValidationState = UIValidatable.ErrorType.Incomplete;
+                         }
+                         break;
+                 
+                    case Error :
+                         formValidationState = UIValidatable.ErrorType.Error;
+                         break;
+                 }
             }
         }
 
+        updateValidationBtnUIState();
+        
         // when validating for OK we always leave it enabled
         //turnOnOKButton(true);
 
         ignoreValidationNotifications = false;
-    }
-
-    /**
-     * Validate all the fields when the OK or Apply button is pressed.
-     * Note that we turn off all the Validation notifications because we don't want them firing when
-     * we manually call it.
-     */
-    public void validateFormForOK()
-    {
-        validateForm(false, UIValidator.Type.OK);
     }
 
     /**
@@ -597,7 +622,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     public void validateForm()
     {
         // Because we call it manually it will turn off validation notifications
-        validateForm(true, UIValidator.Type.Changed); // second arg doesn't matter
+        //validateForm(true, UIValidator.Type.Changed); // second arg doesn't matter
     }
 
     /**
@@ -781,7 +806,41 @@ public class FormValidator implements ValidationListener, DataChangeListener
             }
             log.debug("-------------------------");
         }
+    }
+    
+    /**
+     * @param validationInfoBtn
+     */
+    public void setValidationBtn(final JButton valInfoBtn)
+    {
+        this.validationInfoBtn = valInfoBtn;
+    }
+    
+    /**
+     * Sets the visual state on the validation btn. 
+     */
+    public void updateValidationBtnUIState()
+    {
+        if (validationInfoBtn != null)
+        {
+            boolean                 enable = true;
+            ImageIcon               icon   = IconManager.getIcon("ValidationValid");
+            UIValidatable.ErrorType state  = getState();
 
+            if (state == UIValidatable.ErrorType.Incomplete)
+            {
+                icon = IconManager.getIcon("ValidationWarning");
+
+            } else if (state == UIValidatable.ErrorType.Error)
+            {
+                icon = IconManager.getIcon("ValidationError");
+            } else
+            {
+                enable = false;
+            }
+            validationInfoBtn.setEnabled(enable);
+            validationInfoBtn.setIcon(icon);
+        }
     }
 
     //-----------------------------------------------------
@@ -795,6 +854,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void turnOnOKButton(final boolean itsOKToEnable)
     {
+        if (name.equals("Shipment"))
+        {
+            int x = 0;
+            x++;
+        }
         //log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
         log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
@@ -802,6 +866,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             okBtn.setEnabled(itsOKToEnable);
         }
+        updateValidationBtnUIState();
     }
 
    /* (non-Javadoc)
@@ -809,7 +874,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void wasValidated(final UIValidator validator)
     {
-
+        if (name.equals("Shipment"))
+        {
+            int x = 0;
+            x++;
+        }
         // When the form has been asked manually to be validated then ignore the notifications
         if (!ignoreValidationNotifications)
         {
@@ -819,6 +888,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
             {
                 vcl.wasValidated(validator);
             }
+            updateValidationBtnUIState();
         }
 
     }
@@ -875,6 +945,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
 
         turnOnOKButton(formValidationState == UIValidatable.ErrorType.Valid);
+        updateValidationBtnUIState();
     }
 
     /**

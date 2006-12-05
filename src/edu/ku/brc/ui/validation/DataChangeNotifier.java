@@ -190,7 +190,7 @@ public class DataChangeNotifier implements FocusListener,
         {
             UIValidatable uiVal = (UIValidatable)comp;
             uiVal.setChanged(false);
-            uiVal.setState(UIValidatable.ErrorType.Valid);
+            //uiVal.setState(UIValidatable.ErrorType.Valid);
             
         } else
         {

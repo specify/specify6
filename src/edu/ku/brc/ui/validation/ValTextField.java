@@ -312,14 +312,8 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
 
         if (value != null)
         {
-            if (value instanceof String)
-            {
-                data = (String)value;
+            data = value.toString();
 
-            } else
-            {
-                data = value.toString();
-            }
         } else
         {
             data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";

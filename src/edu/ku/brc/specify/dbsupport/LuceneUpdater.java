@@ -120,7 +120,7 @@ public class LuceneUpdater
         try
         {
             File lucenePath = ExpressSearchTask.getIndexDirPath();
-            if (lucenePath != null)
+            if (lucenePath != null && lucenePath.exists())
             {
                 IndexReader   reader   = IndexReader.open(FSDirectory.getDirectory(lucenePath, false));
                 IndexSearcher searcher = new IndexSearcher(reader);

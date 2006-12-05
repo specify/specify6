@@ -164,7 +164,6 @@ public class FormViewObj implements Viewable,
     protected List<Object>                  list            = null;
     protected boolean                       ignoreSelection = false;
     protected JButton                       saveBtn         = null;
-    protected JButton                       validationInfoBtn = null;
     protected boolean                       wasNull         = false;
     protected MenuSwitcherPanel             switcherUI;
     protected int                           mainCompRowInx  = 1;
@@ -485,7 +484,7 @@ public class FormViewObj implements Viewable,
     {
         if (formValidator != null)
         {
-            validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
+            JButton validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
             validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
             validationInfoBtn.setMargin(new Insets(1,1,1,1));
             validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());
@@ -497,6 +496,7 @@ public class FormViewObj implements Viewable,
                 }
             });
             comps.add(validationInfoBtn);
+            formValidator.setValidationBtn(validationInfoBtn);
         }
     }
 
@@ -1475,35 +1475,6 @@ public class FormViewObj implements Viewable,
     {
         return parentDataObj;
     }
-    
-    
-    /**
-     * Updates the display icon as to the current state of the validator attached to the form,  
-     * if the form has a validator.
-     */
-    protected void updateValidationBtnUIState()
-    {
-        if (validationInfoBtn != null && formValidator != null)
-        {
-            boolean                 enable = true;
-            ImageIcon               icon   = IconManager.getIcon("ValidationValid");
-            UIValidatable.ErrorType state  = formValidator.getState();
-
-            if (state == UIValidatable.ErrorType.Incomplete)
-            {
-                icon = IconManager.getIcon("ValidationWarning");
-
-            } else if (state == UIValidatable.ErrorType.Error)
-            {
-                icon = IconManager.getIcon("ValidationError");
-            } else
-            {
-                enable = false;
-            }
-            validationInfoBtn.setEnabled(enable);
-            validationInfoBtn.setIcon(icon);
-        }
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataIntoUI()
@@ -1712,9 +1683,6 @@ public class FormViewObj implements Viewable,
             formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
 
             listFieldChanges();
-            
-            updateValidationBtnUIState();
-            
         }
 
         // Now set all the controls with default values as having been changed
@@ -2288,7 +2256,10 @@ public class FormViewObj implements Viewable,
      */
     public void wasValidated(final UIValidator validator)
     {
-        updateValidationBtnUIState();
+        if (formValidator != null)
+        {
+            formValidator.updateValidationBtnUIState();
+        }
     }
 
     //-------------------------------------------------

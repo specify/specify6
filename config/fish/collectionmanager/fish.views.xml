@@ -4,7 +4,7 @@
     <views>
         <view name="Accession"
               class="edu.ku.brc.specify.datamodel.Accession"
-              busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRule"
+              busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules"
               resourcelabels="false">
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
@@ -144,6 +144,7 @@
         
         <view name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
@@ -192,7 +193,7 @@
 
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
-            busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRule"
+            busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRules"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews  defaultmode="view">
@@ -245,6 +246,7 @@
         
         <view name="Shipment"
             class="edu.ku.brc.specify.datamodel.Shipment"
+            busrules="edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules"
             resourcelabels="false">
             <desc><![CDATA[Shipment Subform within the Loan Object form.]]></desc>
             <altviews>

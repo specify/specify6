@@ -25,7 +25,9 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 
 	<parameter name="itemnum" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="RPT_IMAGE_DIR" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String"/>
+	
 	<queryString><![CDATA[SELECT Expr2.*, address.Address, address.Address2, address.City, address.State, address.PostalCode, address.Country
 FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial
 FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, loan.isGift, shipment.ShipmentMethod, shipment.NumberOfPackages, shipment.ShippedToID
@@ -75,7 +77,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 						key="image-1"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
 					<graphicElement stretchType="NoStretch"/>
-					<imageExpression class="java.lang.String"><![CDATA["/Users/rods/Documents/workspace/Specify/topbrc4.jpg"]]></imageExpression>
+					<imageExpression class="java.lang.String"><![CDATA[$P{RPT_IMAGE_DIR} + "/topbrc4.jpg"]]></imageExpression>
 				</image>
 				<staticText>
 					<reportElement
