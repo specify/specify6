@@ -495,10 +495,8 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
-                    <!-- <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> --> <!-- Needs to be a PickList -->
-                    <cell type="field" id="1" name="title" uitype="combobox" picklist="AgentTitle" valtype="Changed"/> <!-- Needs to be a PickList -->
-                    <cell type="label" labelfor="2" label="E-mail"/>
-                    <cell type="field" id="2" name="email" uitype="text" cols="32"/>
+                    <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
+                    <cell type="field" id="image" name="imageURL" uitype="image" rowspan="11" initialize="size=128,128;border=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
@@ -513,8 +511,12 @@
                     <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Abbreviation"/>
-                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
+                    <cell type="label" labelfor="7" label="E-mail"/>
+                    <cell type="field" id="7" name="email" uitype="text" cols="32" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Abbreviation"/>
+                    <cell type="field" id="8" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
