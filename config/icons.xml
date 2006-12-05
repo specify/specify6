@@ -135,8 +135,12 @@
 	<icon name="audio"				file="audio.png"	sizes="all"/>
 	<icon name="video"				file="video.png"	sizes="all"/>
 	<icon name="image"				file="image.png"	sizes="all"/>
-	<icon name="unknown"			file="unknown.png"	sizes="all"/>
-	
+    <icon name="unknown"			file="binary.png"	sizes="all"/>
+    <icon name="text"			    file="text.png"	    sizes="all"/>
+    <icon name="pdf"			    file="pdf.png"	    sizes="all"/>
+    <icon name="html"			    file="html.png"	    sizes="all"/>
+    <icon name="spreadsheet"		file="spreadsheet.png"	sizes="all"/>
+    
 	<!-- sorting button icons -->
 	<icon name="move_to_start"		file="start.png"		sizes="all"/>
 	<icon name="move_left"			file="1leftarrow.png"	sizes="all"/>

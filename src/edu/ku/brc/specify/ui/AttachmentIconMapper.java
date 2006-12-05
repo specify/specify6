@@ -127,24 +127,51 @@ public class AttachmentIconMapper implements ObjectIconMapper
             t.start();
         }
         
-        if (a.getMimeType() == null)
+        String mimeType = a.getMimeType();
+        
+        if (mimeType == null)
         {
             return IconManager.getIcon("unknown", size);
         }
         
-        if(a.getMimeType().startsWith("image"))
+        if(mimeType.startsWith("image"))
         {
             return IconManager.getIcon("image", size);
         }
         
-        if(a.getMimeType().startsWith("video"))
+        if(mimeType.startsWith("video"))
         {
             return IconManager.getIcon("video", size);
         }
-
-        if(a.getMimeType().startsWith("audio"))
+        
+        if(mimeType.startsWith("audio"))
         {
             return IconManager.getIcon("audio", size);
+        }
+        
+        if(mimeType.equals("application/pdf"))
+        {
+            return IconManager.getIcon("pdf", size);
+        }
+        
+        if(mimeType.equals("text/html"))
+        {
+            return IconManager.getIcon("html", size);
+        }
+        
+        if(mimeType.equals("text/plain"))
+        {
+            return IconManager.getIcon("text", size);
+        }
+        
+        if(mimeType.equals("application/excel") ||
+                mimeType.equals("text/csv") ||
+                mimeType.equals("application/csv") ||
+                mimeType.equals("application/vnd.ms-excel") ||
+                mimeType.equals("application/vnd.msexcel") )
+                
+        {
+            return IconManager.getIcon("spreadsheet", size);
         }
 
         return IconManager.getIcon("unknown", size);
