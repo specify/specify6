@@ -178,7 +178,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return this.treeDef;
 	}
 	
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
 	 */
 	@Override
@@ -198,6 +198,30 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 
+    protected boolean checkBusy()
+    {
+        if (statusBar!=null)
+        {
+            if(busy)
+            {
+                setStatusBarText("System busy: " + busyReason);
+            }
+            else
+            {
+                setStatusBarText("");
+            }
+        }
+        return busy;
+    }
+    
+    protected void setStatusBarText(String text)
+    {
+        if (statusBar!=null)
+        {
+            statusBar.setText(text);
+        }
+    }
+    
 	/**
 	 * Initialize the tree display component with the tree defined by the given
 	 * {@link TreeDefIface}.
@@ -239,7 +263,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			String error = "Error while initializing tree editor: No root node found";
 			log.error(error);
-			statusBar.setText(error);
+			setStatusBarText(error);
 			SubPaneMgr.getInstance().closeCurrent();
 			return;
 		}
@@ -300,12 +324,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		scrollers[1].setColumnHeaderView(listHeaders[1]);
 		
 		treeListPanels[0] = new JPanel();
-		treeListPanels[0].setLayout(new BoxLayout(treeListPanels[0],BoxLayout.LINE_AXIS));
+		treeListPanels[0].setLayout(new BorderLayout());
 		treeListPanels[0].add(scrollers[0], BorderLayout.CENTER);
 		treeListPanels[0].add(setupButtonPanel(lists[0]),BorderLayout.EAST);
 		
 		treeListPanels[1] = new JPanel();
-		treeListPanels[1].setLayout(new BoxLayout(treeListPanels[1],BoxLayout.LINE_AXIS));
+		treeListPanels[1].setLayout(new BorderLayout());
 		treeListPanels[1].add(scrollers[1], BorderLayout.CENTER);
 		treeListPanels[1].add(setupButtonPanel(lists[1]),BorderLayout.EAST);
 		
@@ -330,15 +354,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 		this.busy = busy;
 		busyReason = statusText;
-		statusBar.setText(busyReason);
-		statusBar.setIndeterminate(busy);
+        if (statusBar!=null)
+        {
+            setStatusBarText(busyReason);
+            statusBar.setIndeterminate(busy);
+        }
 	}
 	
 	public void toggleViewMode()
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 		
@@ -560,11 +586,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void addChildToSelectedNode(JList list)
 	{
-		if(busy)
-		{
-			statusBar.setText("System busy: " + busyReason);
-			return;
-		}
+        if (checkBusy())
+        {
+            return;
+        }
 
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -681,9 +706,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
     public void deleteSelectedNode(JList list)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -727,12 +751,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				unsavedChanges = true;
 				
 				log.info("Deleted node");
-				statusBar.setText("Node deleted");
+                setStatusBarText("Node deleted");
 			}
 		}
 		else
 		{
-			statusBar.setText("Selected node cannot be deleted");
+			setStatusBarText("Selected node cannot be deleted");
 			log.info("Selected node cannot be deleted");
 		}
 	}
@@ -764,9 +788,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void editSelectedNode(JList list)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -827,9 +850,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void commitStructureToDb()
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -870,9 +892,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void showSubtreeOfSelection(JList list)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -896,9 +917,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void showWholeTree(JList list)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -915,9 +935,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void selectParentOfSelection(JList list)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -937,9 +956,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void expandAllDescendantsOfSelection(JList list)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -993,9 +1011,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void find(String nodeName,int where,boolean wrap)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -1005,7 +1022,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			//TODO: notify the user that no results were found
 			log.error("Search returned no results");
-			statusBar.setText("Search returned no results");
+			setStatusBarText("Search returned no results");
 			return;
 		}
 		
@@ -1015,7 +1032,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			//TODO: notify the user that no results are below current visible root
 			log.error("No results below current visible root");
-			statusBar.setText("No results below current visible root");
+			setStatusBarText("No results below current visible root");
 			return;
 		}
 		
@@ -1031,9 +1048,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void find(String nodeName,JList where,boolean wrap)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -1054,9 +1070,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void findNext(String key,int where,boolean wrap)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -1074,7 +1089,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			{
 				//TODO: notify the user that no more results
 				log.error("No more results");
-				statusBar.setText("No more results");
+				setStatusBarText("No more results");
 				return;
 			}
 			
@@ -1084,7 +1099,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			{
 				//TODO: notify the user that no results are below current visible root
 				log.error("No more results below current visible root");
-				statusBar.setText("No more results below current visible root");
+				setStatusBarText("No more results below current visible root");
 				return;
 			}
 
@@ -1104,14 +1119,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		List<T> matches = dataService.findByName(treeDef,current.getName());
 		if(matches.size()==1)
 		{
-			statusBar.setText("No more matches");
+			setStatusBarText("No more matches");
 			return;
 		}
 		
 		int curIndex = matches.indexOf(current);
 		if(!wrap && curIndex == matches.size()-1)
 		{
-			statusBar.setText("No more matches");
+			setStatusBarText("No more matches");
 			return;
 		}
 		
@@ -1128,9 +1143,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void findNext(JList where,boolean wrap,T currentNode)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 		
@@ -1209,11 +1223,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		T t = (T)sourceList.getSelectedValue();
 		if( t == null )
 		{
-			statusBar.setText(null);
+			setStatusBarText(null);
 			return;
 		}
 		
-		statusBar.setText(t.getFullName());
+		setStatusBarText(t.getFullName());
 	}
 	
 
@@ -1228,9 +1242,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public boolean dropOccurred( Object dragged, Object droppedOn, int dropAction )
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return false;
 		}
 
@@ -1277,9 +1290,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public boolean dropAcceptable( Object dragged, Object droppedOn, int dropAction )
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return false;
 		}
 
@@ -1316,9 +1328,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void showPopup(MouseEvent e)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -1390,9 +1401,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void mouseButtonClicked(MouseEvent e)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -1438,9 +1448,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void mouseButtonReleased(MouseEvent e)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -1452,9 +1461,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void mouseButtonPressed(MouseEvent e)
 	{
-		if(busy)
+		if(checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return;
 		}
 
@@ -1482,9 +1490,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@Override
 	public boolean aboutToShutdown()
 	{
-		if(busy)
+		if (checkBusy())
 		{
-			statusBar.setText("System busy: " + busyReason);
 			return false;
 		}
 		
