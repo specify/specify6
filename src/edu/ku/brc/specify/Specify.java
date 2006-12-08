@@ -17,12 +17,17 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+//import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+//import java.awt.MenuItem;
+//import java.awt.PopupMenu;
+//import java.awt.SystemTray;
 import java.awt.Toolkit;
+//import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -144,7 +149,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //log.info("CURRENT THREAD: "+Thread.currentThread().hashCode()+"  "+SwingUtilities.isEventDispatchThread());
         
     	// we simply need to create this class, not use it
-        @SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
+        //@SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
+        new MacOSAppHandler(this);
 
         // Name factories
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
@@ -204,6 +210,28 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
  
         specifyApp = this;
+        
+//        SystemTray sysTray = SystemTray.getSystemTray();
+//        PopupMenu popup = new PopupMenu("Sp6");
+//        MenuItem exitItem = new MenuItem("Exit");
+//        exitItem.addActionListener(new ActionListener()
+//        {
+//            public void actionPerformed(ActionEvent ae)
+//            {
+//                doExit();
+//            }
+//        });
+//        popup.add(exitItem);
+//        TrayIcon sp6icon = new TrayIcon(IconManager.getIcon("Specify16").getImage(),"Sepcify 6",popup);
+//        try
+//        {
+//            sysTray.add(sp6icon);
+//        }
+//        catch (AWTException e1)
+//        {
+//            // TODO Auto-generated catch block
+//            e1.printStackTrace();
+//        }
 
         try
         {
@@ -212,7 +240,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
                 UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
+                //PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
+                PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
             }
 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel());
@@ -483,10 +512,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         mi = UIHelper.createMenuItem(menu, "Login", "L", "Database Login", false, null);
         mi.addActionListener(new ActionListener()
                 {
+                    @SuppressWarnings("synthetic-access")
                     public void actionPerformed(ActionEvent ae)
                     {
                         class DBListener implements DatabaseLoginListener
                         {
+                            @SuppressWarnings("synthetic-access")
                             public void loggedIn(final String databaseNameArg, final String userNameArg)
                             {
                                 specifyApp.loggedIn(databaseNameArg, userNameArg);
@@ -629,11 +660,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         mi = UIHelper.createMenuItem(menu, "Show Local Prefs", "L", "Show Local Prefs", false, null);
         mi.addActionListener(new ActionListener()
                 {
+                    @SuppressWarnings("synthetic-access")
                     public void actionPerformed(ActionEvent ae)
                     {
                         final JDialog dialog = new JDialog(topFrame, "Local Prefs", true);
                         dialog.setContentPane(new AppPrefsEditor(false));
-                        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                         dialog.pack();
                         UIHelper.centerAndShow(dialog);
                     }
@@ -642,11 +674,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         mi = UIHelper.createMenuItem(menu, "Show Remote Prefs", "R", "Show Remote Prefs", false, null);
         mi.addActionListener(new ActionListener()
                 {
+                    @SuppressWarnings("synthetic-access")
                     public void actionPerformed(ActionEvent ae)
                     {
                         final JDialog dialog = new JDialog(topFrame, "Remote Prefs", true);
                         dialog.setContentPane(new AppPrefsEditor(true));
-                        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                         dialog.pack();
                         UIHelper.centerAndShow(dialog);
                     }
@@ -668,6 +701,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", false, null);
         mi.addActionListener(new ActionListener()
                 {
+                    @SuppressWarnings("synthetic-access")
                     public void actionPerformed(ActionEvent ae)
                     {
                         final LoggerDialog dialog = new LoggerDialog(topFrame);
@@ -748,7 +782,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         f.addWindowListener(new WindowAdapter()
         		{
-        			public void windowClosing(WindowEvent e)
+        			@Override
+                    public void windowClosing(WindowEvent e)
         			{
         				doExit();
         			}
@@ -782,10 +817,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // do the following on the gui thread
         SwingUtilities.invokeLater(new SpecifyRunnable(this, s)
         {
-          public void run()
-          {
-            mApp.statusField.setText((String) obj);
-          }
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void run()
+            {
+                mApp.statusField.setText((String) obj);
+            }
         });
     }
     
@@ -821,7 +858,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 
                 initialize(gc);
     
-                topFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UICacheManager.register(UICacheManager.FRAME, topFrame);
             }
             
@@ -870,7 +907,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void aboutToLoginIn()
     {
-        
+        // do nothing
     }
     
     /* (non-Javadoc)
@@ -940,6 +977,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
       public void run()
       {
+          // do nothing
       }
   }
 
@@ -958,7 +996,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
       SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
-              @SuppressWarnings("unused") Specify specify = new Specify();
+              //@SuppressWarnings("unused") Specify specify = new Specify();
+              new Specify();
           }
       });
 
