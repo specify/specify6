@@ -217,7 +217,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
                 File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
                 try
                 {
-                    return thumb.toURL().toString();
+                    return thumb.toURI().toURL().toString();
                 }
                 catch (MalformedURLException e)
                 {
