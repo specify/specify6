@@ -455,7 +455,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 						String fileName = fileCache.cacheWebResource(urlStr);
 						file = fileCache.getCacheFile(fileName);
 					}
-					Image img = getToolkit().getImage(file.toURL());
+					Image img = getToolkit().getImage(file.toURI().toURL());
 					ImageIcon imgIcon = new ImageIcon(img);
 
 					setImage(imgIcon);
