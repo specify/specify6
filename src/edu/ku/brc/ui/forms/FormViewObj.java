@@ -2182,18 +2182,21 @@ public class FormViewObj implements Viewable,
      * Adjusts the font for the separator.
      * @param sep the separator container
      */
-    public  static void adjustFontForSeparator(JComponent sep)
+    public static void adjustFontForSeparator(JComponent sep)
     {
         Font labelFont = UICacheManager.getFont(JLabel.class);
-        for (int i=0;i<sep.getComponentCount();i++)
+        if (labelFont != null)
         {
-            Component comp = sep.getComponent(i);
-            Font f = comp.getFont();
-            if (f != null && labelFont.getStyle() != f.getStyle())
+            for (int i=0;i<sep.getComponentCount();i++)
             {
-                f = new Font(labelFont.getFamily(), f.getStyle(), labelFont.getSize());
+                Component comp = sep.getComponent(i);
+                Font f = comp.getFont();
+                if (f != null && labelFont.getStyle() != f.getStyle())
+                {
+                    f = new Font(labelFont.getFamily(), f.getStyle(), labelFont.getSize());
+                }
+                sep.getComponent(i).setFont(f);    
             }
-            sep.getComponent(i).setFont(f);    
         }
     }
     

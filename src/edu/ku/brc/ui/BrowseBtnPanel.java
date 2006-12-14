@@ -51,24 +51,25 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      * @param value the value is set into the text field using "toString"
      * @param cols the number of columns for the text field
      */
-    public BrowseBtnPanel(Object  value,
-                          int     cols)
+    public BrowseBtnPanel(final Object  value,
+                          final int     cols,
+                          final boolean doDirsOnly)
     {
         super(new BorderLayout());
 
-        createUI(value, cols);
+        createUI(value, cols, doDirsOnly);
     }
 
     /**
      * Constructor.
      * @param textField the text field to use (most likely is a ValTextField)
      */
-    public BrowseBtnPanel(JTextField textField)
+    public BrowseBtnPanel(final JTextField textField, final boolean doDirsOnly)
     {
         super(new BorderLayout());
         this.textField = textField;
 
-        createUI(null, -1);
+        createUI(null, -1, doDirsOnly);
    }
 
     /**
@@ -76,7 +77,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      * @param value the value for the new TextField
      * @param cols the number of columns for the new TextField
      */
-    protected void createUI(final Object value, int cols)
+    protected void createUI(final Object value, final int cols, final boolean doDirsOnly)
     {
         PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"));
         CellConstraints cc = new CellConstraints();
@@ -88,7 +89,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         panelBuilder.add(textField, cc.xy(1,1));
 
         browseBtn = UICacheManager.createButton(getResourceString("Browse"));
-        browseBtn.addActionListener(new BrowseAction(textField));
+        browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 
         add(panelBuilder.getPanel(), BorderLayout.CENTER);
@@ -160,10 +161,11 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
          * Constructor with CommandAction.
          * @param textField the text control of the Browse Action
          */
-        public BrowseAction(final JTextField textField)
+        public BrowseAction(final JTextField textField, final boolean dirsOnly)
         {
             this.txtField = textField;
             this.chooser = new JFileChooser();
+            this.chooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
         }
 
         /* (non-Javadoc)

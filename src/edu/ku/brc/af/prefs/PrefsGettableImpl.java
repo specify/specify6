@@ -44,7 +44,7 @@ public class PrefsGettableImpl implements DataObjectGettable
      */
     public Object getFieldValue(Object dataObj, String fieldName)
     {
-        return AppPreferences.getRemote().get(fieldName, "");
+        return dataObj instanceof AppPreferences ? ((AppPreferences)dataObj).get(fieldName, "") : null;
     }
     
     /* (non-Javadoc)

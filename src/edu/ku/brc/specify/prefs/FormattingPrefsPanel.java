@@ -91,8 +91,15 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         }
         
         Font baseFont = UICacheManager.getBaseFont();
-        fontNames.setSelectedItem(baseFont.getFamily());
-        fontSizes.setSelectedItem(Integer.toString(baseFont.getSize()));
+        if (baseFont != null)
+        {
+            fontNames.setSelectedItem(baseFont.getFamily());
+            fontSizes.setSelectedItem(Integer.toString(baseFont.getSize()));
+        } else
+        {
+            fontNames.setEnabled(false);
+            fontSizes.setEnabled(false);
+        }
         
         form.getValidator().validateForm();
 

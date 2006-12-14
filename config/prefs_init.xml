@@ -8,5 +8,9 @@
     <section title="settings">
         <pref title="email" icon="Browse" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
     </section>
-
+    
+    <section title="misc">
+        <pref title="Misc." icon="Browse" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
+    </section>
+    
 </prefs>

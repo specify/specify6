@@ -92,6 +92,7 @@ public class UICacheManager
     protected String         appName            = null;
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
+    protected boolean        isMacOSX           = false;
 
     /**
      * Default private constructor for singleton.
@@ -99,6 +100,8 @@ public class UICacheManager
      */
     private UICacheManager()
     {
+        isMacOSX = UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX;
+        
         if (resourceBundle == null)
         {
             try {
@@ -110,11 +113,14 @@ public class UICacheManager
             }
         }
         
-        // Build the initial font sizes for all the Components
-        baseFont = (new JLabel()).getFont();
-        for (Class clazz : compClasses)
+        if (isMacOSX)
         {
-            buildFontInfo(clazz, baseFont);
+            // Build the initial font sizes for all the Components
+            baseFont = (new JLabel()).getFont();
+            for (Class clazz : compClasses)
+            {
+                buildFontInfo(clazz, baseFont);
+            }
         }
     }
 
@@ -552,24 +558,24 @@ public class UICacheManager
     
     
     protected Class[]                    compClasses = {JLabel.class, JTextField.class, JPasswordField.class, JTextArea.class, 
-                                                        JComboBox.class, JCheckBox.class, JList.class, JMenuItem.class}; 
+                                                        JComboBox.class, JCheckBox.class, JList.class, JMenuItem.class, JButton.class}; 
     protected Hashtable<Class, FontInfo> fontMap     = new Hashtable<Class, FontInfo>();
     protected Font                       baseFont    = null;
 
     /**
      * Creates the initial font mapping from the base font size to the other sizes.
      * @param clazz the class of the component
-     * @param baseFont the base font size
+     * @param baseFontArg the base font size
      */
-    protected void buildFontInfo(final Class clazz, final Font baseFont)
+    protected void buildFontInfo(final Class clazz, final Font baseFontArg)
     {
         try
         {
             JComponent comp = (JComponent)clazz.newInstance();
             Font       font = comp.getFont();
-            int        diff = font.getSize() - baseFont.getSize();
-            log.info("Building new Font for "+clazz.getSimpleName()+"  "+diff);
-            fontMap.put(clazz, new FontInfo(baseFont, diff));
+            int        diff = font.getSize() - baseFontArg.getSize();
+            log.info("Building new Font for "+clazz.getSimpleName()+" df: "+diff+"  style: "+baseFontArg.getStyle()+" font: "+font.toString());
+            fontMap.put(clazz, new FontInfo(baseFontArg, font.getStyle(), diff));
             
         } catch (Exception ex)
         {
@@ -627,7 +633,7 @@ public class UICacheManager
     public static JButton createButton(final String label)
     {
         JButton btn = new JButton(label);
-        btn.setFont(getFont(JButton.class));
+        if (instance.isMacOSX) btn.setFont(getFont(JButton.class));
         return btn;
     }    
     
@@ -640,7 +646,7 @@ public class UICacheManager
     public static JButton createButton(final String label, final Icon icon)
     {
         JButton btn = new JButton(label, icon);
-        btn.setFont(getFont(JButton.class));
+        if (instance.isMacOSX) btn.setFont(getFont(JButton.class));
         return btn;
     }
     
@@ -652,7 +658,7 @@ public class UICacheManager
     public static JTextField createTextField(final int cols)
     {
         JTextField tf = new JTextField(cols);
-        tf.setFont(getFont(JButton.class));
+        if (instance.isMacOSX) tf.setFont(getFont(JButton.class));
         return tf;
     }
     
@@ -664,7 +670,7 @@ public class UICacheManager
     public static JMenuItem createMenuItem(final String label)
     {
         JMenuItem mi = new JMenuItem(label);
-        mi.setFont(getFont(JMenuItem.class));
+        if (instance.isMacOSX) mi.setFont(getFont(JMenuItem.class));
         return mi;
     }
     
@@ -677,7 +683,7 @@ public class UICacheManager
     public static JMenuItem createMenuItem(final String label, final Icon icon)
     {
         JMenuItem mi = new JMenuItem(label, icon);
-        mi.setFont(getFont(JMenuItem.class));
+        if (instance.isMacOSX) mi.setFont(getFont(JMenuItem.class));
         return mi;
     }
     
@@ -688,10 +694,13 @@ public class UICacheManager
     {
         protected Font font;
         protected int  diffFromBase;
+        protected int  style;
         
-        public FontInfo(final Font baseFont, final int diffFromBase)
+        public FontInfo(final Font baseFont, final int style, final int diffFromBase)
         {
             this.diffFromBase = diffFromBase;
+            this.style        = style;
+            
             rebuildFont(baseFont);
         }
         
@@ -702,12 +711,12 @@ public class UICacheManager
         
         public void rebuildFont(final Font newBaseFont)
         {
-            if (diffFromBase == 0)
+            if (diffFromBase == 0 && newBaseFont.getStyle() == style)
             {
                 font = newBaseFont;
             } else
             {
-                font = new Font(newBaseFont.getFamily(), newBaseFont.getStyle(), newBaseFont.getSize()+diffFromBase);
+                font = new Font(newBaseFont.getFamily(), style, newBaseFont.getSize()+diffFromBase);
             }
         }
     }

@@ -876,7 +876,8 @@ public class ViewFactory
                         }
                         
                         case browse:
-                            BrowseBtnPanel bbp = new BrowseBtnPanel(createTextField(validator, cellField, null));
+                            BrowseBtnPanel bbp = new BrowseBtnPanel(createTextField(validator, cellField, null), 
+                                                                    cellField.getPropertyAsBoolean("dirsonly", false));
                             compToAdd = bbp;
                             break;
                             
@@ -966,10 +967,11 @@ public class ViewFactory
                     {
                         sep = viewBldObj.createSeparator(fcs.getLabel(), colInx, rowInx, colspan);
                     }
-                    addControl = cell.getName().length() > 0;
-                    log.info("colInx "+colInx+"  rowInx "+rowInx+"  rowspan "+rowspan+"  colspan "+colspan);
-                    compToAdd = (JComponent)sep;
-                    addControl = false;
+                    addControl     = cell.getName().length() > 0;
+                    compToAdd      = (JComponent)sep;
+                    addControl     = false;
+                    addToValidator = false;
+                    
                     //curMaxRow = rowInx;
                     //colInx += 2;
 
@@ -1127,6 +1129,13 @@ public class ViewFactory
                     if (validator != null && addToValidator)
                     {
 
+                        String id = cell.getId();
+                        if (StringUtils.isEmpty(id))
+                        {
+                            System.out.println(cell.getName());
+                            int x = 0;
+                            x++;
+                        }
                         validator.addUIComp(cell.getId(), compToReg == null ? compToAdd : compToReg);
                     }
                     colInx += colspan + 1;

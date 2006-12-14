@@ -12,16 +12,26 @@
 			</altviews>
 		</view>
 
-	    <view
+		<view
 			name="Formatting"
-	         class="java.util.prefs.Preferences"
-	    	useresourcelabels="false">
-	    		<desc><![CDATA[Formatting Preference Form.]]></desc>
+			class="java.util.prefs.Preferences"
+			useresourcelabels="false">
+			<desc><![CDATA[Formatting Preference Form.]]></desc>
 			<altviews>
 				<altview name="Formatting" viewdef="Formatting" label="Formatting" mode="edit" validated="true"/>
 			</altviews>
 		</view>
-
+		
+		<view
+			name="Misc"
+			class="java.util.prefs.Preferences"
+			useresourcelabels="false">
+			<desc><![CDATA[Misc Preference Form.]]></desc>
+			<altviews>
+				<altview name="Misc" viewdef="Misc" label="Misc." mode="edit" validated="true"/>
+			</altviews>
+		</view>
+		
 	</views>
 
 	<viewdefs>
@@ -93,34 +103,34 @@
 			</rows>
 		</viewdef>
 
-	    <viewdef
-	    	 type="form"
-             name="Formatting"
-             class="java.util.prefs.Preferences"
-             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-             settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
-
-	    		<desc><![CDATA[Formatting Preference Form.]]></desc>
-
+		<viewdef
+			type="form"
+			name="Formatting"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+			
+			<desc><![CDATA[Formatting Preference Form.]]></desc>
+			
 			<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
 			<rowDef auto="true" cell="p" sep="4dlu"/>
-
+			
 			<rows>
 				<row>
 					<cell type="separator" label="formatting"/>
 				</row>
 				<row>
 					<cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="scrdateformat"/>
-				    <cell type="field" uitype="text" cols="10" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true"/>
+					<cell type="field" uitype="text" cols="10" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true"/>
 				</row>
 				<row>
 					<cell type="label" labelfor="valtextcolor" label="valtextcolor"/>
-				    <cell type="field" uitype="colorchooser" id="valtextcolor" name="ui.formatting.valtextcolor"/>
+					<cell type="field" uitype="colorchooser" id="valtextcolor" name="ui.formatting.valtextcolor"/>
 				</row>
-			    <row>
-			        <cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
-			        <cell type="field" uitype="colorchooser" id="requiredfieldcolor" name="ui.formatting.requiredfieldcolor"/>
-			    </row>
+				<row>
+					<cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
+					<cell type="field" uitype="colorchooser" id="requiredfieldcolor" name="ui.formatting.requiredfieldcolor"/>
+				</row>
 				<row>
 					<cell type="label" labelfor="viewfieldcolor" label="viewfieldcolor"/>
 					<cell type="field" uitype="colorchooser" id="viewfieldcolor" name="ui.formatting.viewfieldcolor"/>
@@ -130,6 +140,29 @@
 					<cell type="field" uitype="combobox" id="fontNames" name="ui.formatting.fontNames" readonly="true" changesonly="true"/>
 					<cell type="label" labelfor="fontSizes" label="Size"/>
 					<cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
+				</row>
+			</rows>
+		</viewdef>
+		
+		<viewdef
+			type="form"
+			name="Misc"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+			
+			<desc><![CDATA[Formatting Misc Form.]]></desc>
+			
+			<columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
+			<rowDef auto="true" cell="p" sep="2dlu"/>
+			
+			<rows>
+				<row>
+					<cell type="separator" label="Misc" colspan="3"/>
+				</row>
+				<row>
+					<cell type="label" labelfor="luceneLocation" label="Lucene Location"/>
+					<cell type="field" uitype="browse" id="luceneLocation" name="ui.misc.luceneLocation" cols="30" initialize="dirsonly=true" isrequired="false" changesonly="true"/>
 				</row>
 			</rows>
 		</viewdef>
