@@ -175,6 +175,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         textField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         textField.setForeground(Color.BLACK);
         textField.setEditable(false);
+        textField.setFont(UICacheManager.getFont(JTextField.class));
 
         ColorWrapper viewFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         if (viewFieldColor != null)

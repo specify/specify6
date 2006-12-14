@@ -23,6 +23,8 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
 
 /**
@@ -87,7 +89,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
 
     /**
-     * Adds the sub pane and return the same one it added.
+     * Adds the sub pane and return the same one it added. It's ok to add the same
+     * pane in twice, it will detect it, show it, and then return.
      * @param pane the pane to be added
      * @return the same pane
      */
@@ -96,6 +99,15 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         if (pane == null)
         {
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
+        }
+        
+        for (Enumeration<SubPaneIFace> e=instance.panes.elements();e.hasMoreElements();)
+        {
+            if (e.nextElement() == pane)
+            {
+                showPane(pane);
+                return pane;
+            }
         }
 
         // Add this pane to the tabs
@@ -206,6 +218,51 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         // Make Sure
         removeAll();
         panes.clear();
+    }
+    
+    /**
+     * Looks for the first SubPane it finds that is has the same task  and the UI is of SimpleDescPane and then replaces it.
+     * If there are none then it adds it.
+     * @param subPane the new subpane
+     */
+    public static void replaceSimplePaneForTask(final SubPaneIFace subPane)
+    {
+        for (Enumeration<SubPaneIFace> e=instance.panes.elements();e.hasMoreElements();)
+        {
+            SubPaneIFace sp = e.nextElement();
+            if (sp.getTask() == subPane.getTask() && sp.getUIComponent() instanceof SimpleDescPane)
+            {
+                instance.replacePane(sp, subPane);
+                return;
+            }
+        }
+        instance.addPane(subPane);
+    }
+
+    /**
+     * Returns a SubPaneIFace that currently contains the same recordset as the one in question.
+     * @param rs the recordset in question
+     * @return the subpane containing the recordset or null.
+     */
+    public static SubPaneIFace getSubPaneWithRecordSet(final RecordSetIFace rs)
+    {
+        SubPaneIFace subPane = null;
+        if (rs != null)
+        {
+            for (Enumeration<SubPaneIFace> e=instance.panes.elements();e.hasMoreElements();)
+            {
+                SubPaneIFace sp = e.nextElement();
+                RecordSetIFace sprs = sp.getRecordSet();
+                if (sprs == rs || 
+                   (sprs != null && sprs.getRecordSetId() != null && 
+                                    rs.getRecordSetId() != null &&
+                                    sprs.getRecordSetId().intValue() == sprs.getRecordSetId().intValue()))
+                {
+                    return sp;
+                }
+            }
+        }
+        return subPane;
     }
 
     /**
@@ -413,9 +470,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
              }
              currentPane = subPane;
        } else
-        {
+       {
             ContextMgr.requestContext(null);
-        }
+       }
     }
 
 }

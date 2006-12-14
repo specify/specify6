@@ -28,11 +28,15 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 
@@ -113,6 +117,29 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         shipment        = null;
         attachments     = new HashSet<Attachment>();
+        
+        // For Demo
+        try
+        {
+            Connection conn = DBConnection.getInstance().createConnection();
+            Statement  stmt = conn.createStatement();
+            ResultSet  rs   = stmt.executeQuery("select LoanNumber from Loan order by LoanNumber desc limit 0,1");
+            if (rs.first())
+            {
+                String numStr = rs.getString(1);
+                int num = Integer.parseInt(numStr.substring(6,8));
+                num++;
+                loanNumber = String.format("2006-%03d", new Object[] {num});
+            } else
+            {
+                loanNumber = "2006-001";
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
     }
     // End Initializer
 

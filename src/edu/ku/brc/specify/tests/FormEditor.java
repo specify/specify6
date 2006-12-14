@@ -39,6 +39,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,15 +63,20 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -126,7 +132,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
-import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -1258,7 +1263,6 @@ public class FormEditor implements DatabaseLoginListener
         
     }
 
-
     /**
      * @param args args
      */
@@ -1279,7 +1283,7 @@ cp.setLayout(new BorderLayout());
 JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
 controls.add(new JLabel("Search:"));
 controls.add(new JTextField(10));
-controls.add(new JButton("Refresh"));
+controls.add(UICacheManager.createButton("Refresh"));
 controls.setBorder(new TitledBorder("Filters"));
 cp.add("Center", controls);
 
@@ -1294,7 +1298,7 @@ JScrollPane scroll = new JScrollPane(new JTree());
 frame.add("Center", scroll);
 
 // Show/hide the "Controls"
-JButton toggle = new JButton(cp.getActionMap().get(JCollapsiblePane.TOGGLE_ACTION));
+JButton toggle = UICacheManager.createButton(cp.getActionMap().get(JCollapsiblePane.TOGGLE_ACTION));
 toggle.setText("Show/Hide Search Panel");
 frame.add("South", toggle);
 
@@ -1303,10 +1307,11 @@ frame.setVisible(true);
 */
                 //FormEditor formEditor = new FormEditor();
                 //formEditor.createLoanSelector();
-                String text = "<table><tr><td>XXXX</rd></tr></table>";
-                File excelFile = new File("collection_items_64367.tmp.xls");
-                EMailHelper.sendMsg("imap.ku.edu", "rods", "Vintage1601*", "rods@ku.edu", "rods@ku.edu", 
-                        "Info Request", text, EMailHelper.HTML_TEXT, excelFile);
+                //String text = "<table><tr><td>XXXX</rd></tr></table>";
+                //File excelFile = new File("collection_items_64367.tmp.xls");
+                //EMailHelper.sendMsg("imap.ku.edu", "rods", "Vintage1601*", "rods@ku.edu", "rods@ku.edu", 
+                //        "Info Request", text, EMailHelper.HTML_TEXT, excelFile);
+                
             }
       });
 
@@ -1452,8 +1457,8 @@ frame.setVisible(true);
             tree.addMouseListener(ml);
             
             // Bottom Button UI
-            cancelBtn = new JButton(getResourceString("Cancel"));
-            okBtn     = new JButton(getResourceString("OK"));
+            cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
+            okBtn     = UICacheManager.createButton(getResourceString("OK"));
 
             
             okBtn.addActionListener(this);

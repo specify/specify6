@@ -36,6 +36,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellPanel;
@@ -55,7 +56,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
 {
     public enum PanelType {Unknown, Panel, ButtonBar};
     
-    protected boolean            isCollapsablePanel = false;
+    protected boolean            isCollapsablePanel = true;
     protected JPanel             innerPanel;
     protected JCheckBox          moreBtn;
     protected ImageIcon          forwardImgIcon;
@@ -63,14 +64,17 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     
     protected DefaultFormBuilder builder;
     protected CellConstraints    cc = new CellConstraints();
+    protected ViewBuilderIFace   parentBuilder;
    
     /**
      * Creates a class that is used to organize or help crafted the layout. It is light-weight
      * and is merely for arranging UI components.
      * @param cellPanel the cell definition
      */
-    public PanelViewable(final FormCellPanel cellPanel)
+    public PanelViewable(final ViewBuilderIFace parentBuilder, final FormCellPanel cellPanel)
     {
+        this.parentBuilder = parentBuilder;
+        
         if (isCollapsablePanel)
         {
             PanelBuilder panelBldr = new PanelBuilder(new FormLayout("f:p:g", "p:g,2px,f:p:g"), this);
@@ -142,8 +146,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
      */
     public void addLabel(final FormCellLabel formCell, final JLabel label)
     {
-        // not supported
-
+        parentBuilder.addLabel(formCell, label);
     }
 
     /* (non-Javadoc)
@@ -151,7 +154,12 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
      */
     public Component createSeparator(final String title, final int colInx, final int rowInx, final int colSpan)
     {
-        return builder.addSeparator(title, cc.xyw(colInx, rowInx, colSpan));
+        JComponent jComp = builder.addSeparator(title, cc.xyw(colInx, rowInx, colSpan));
+        for (int i=0;i<jComp.getComponentCount();i++)
+        {
+            jComp.setFont(UICacheManager.getFont(JLabel.class));    
+        }
+        return jComp;
     }
 
     /* (non-Javadoc)
@@ -173,8 +181,11 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
                            final int colSpan,
                            final int rowSpan)
     {
-        // not supported
-
+        if (parentBuilder instanceof FormViewObj)
+        {
+            ((FormViewObj)parentBuilder).addSubView(formCell, subView, colInx, rowInx, colSpan, rowSpan, false);
+            builder.add(subView, cc.xywh(colInx, rowInx, colSpan, rowSpan, "fill,fill"));
+        }
     }
 
     /* (non-Javadoc)
@@ -190,7 +201,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
      */
     public void registerControl(final FormCell formCell, final Component control)
     {
-        // not supported
+        parentBuilder.registerControl(formCell, control);
     }
 
     /* (non-Javadoc)
@@ -207,6 +218,14 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     public boolean shouldFlatten()
     {
         return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#getControlByName(java.lang.String)
+     */
+    public Component getControlByName(final String name)
+    {
+        return null;
     }
 
 

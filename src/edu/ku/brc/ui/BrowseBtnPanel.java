@@ -87,7 +87,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         }
         panelBuilder.add(textField, cc.xy(1,1));
 
-        browseBtn = new JButton(getResourceString("browse"));
+        browseBtn = UICacheManager.createButton(getResourceString("Browse"));
         browseBtn.addActionListener(new BrowseAction(textField));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 

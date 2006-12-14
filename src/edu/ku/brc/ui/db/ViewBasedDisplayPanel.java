@@ -34,6 +34,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
@@ -141,7 +142,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
         } else
         {
-            log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
+            log.error("Couldn't load form with ViewSetName ["+viewSetName+"] View Name ["+viewName+"]");
             return;
         }
 
@@ -152,7 +153,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
 
 
-        okBtn = new JButton(closeBtnTitle);
+        okBtn = UICacheManager.createButton(closeBtnTitle);
         okBtn.addActionListener(this);
 
         ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
@@ -164,7 +165,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
         } else
         {
-            cancelBtn = new JButton(getResourceString("Cancel"));
+            cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
             cancelBtn.addActionListener(this);
             btnBuilder.addGriddedButtons(new JButton[] { okBtn, cancelBtn });
         }

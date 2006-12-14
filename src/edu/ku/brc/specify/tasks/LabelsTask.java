@@ -725,8 +725,8 @@ public class LabelsTask extends BaseTask
                 panel.add(listScroller, BorderLayout.CENTER);
 
                 // Bottom Button UI
-                cancelBtn         = new JButton(getResourceString("Cancel"));
-                okBtn             = new JButton(getResourceString("OK"));
+                cancelBtn         = UICacheManager.createButton(getResourceString("Cancel"));
+                okBtn             = UICacheManager.createButton(getResourceString("OK"));
 
                 okBtn.addActionListener(this);
                 getRootPane().setDefaultButton(okBtn);

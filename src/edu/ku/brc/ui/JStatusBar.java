@@ -80,7 +80,9 @@ public class JStatusBar extends JPanel
 
         statusLabel.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
         progressBar.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
-
+        statusLabel.setFont(UICacheManager.getFont(JLabel.class));
+        progressBar.setFont(UICacheManager.getFont(JLabel.class));
+        
         PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,2px,right:p" + (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? ",15px" : ""), "p"), this);
         CellConstraints cc = new CellConstraints();
         if (sectionSize == null)

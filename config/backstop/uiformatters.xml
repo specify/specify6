@@ -5,12 +5,17 @@
         <field size="1" type="separator" value="-"/>
         <field size="2" type="alphanumeric" value="AA"/>
         <field size="1" type="separator" value="-"/>
-        <field size="3" type="alphanumeric" value="AAA"/>
+        <field size="3" type="numeric" value="NNN" inc="true"/>
     </format>
     <format name="LoanNumber" class="edu.ku.brc.specify.datamodel.Loan" default="true">
         <field size="4" type="numeric" value="YEAR"/>
         <field size="1" type="separator" value="-"/>
-        <field size="3" type="numeric" value="NNN"/>
+        <field size="3" type="numeric" value="NNN" inc="true"/>
+    </format>
+    <format name="InfoRequestNumber" class="edu.ku.brc.specify.datamodel.InfoRequest" default="true">
+        <field size="4" type="numeric" value="YEAR"/>
+        <field size="1" type="separator" value="-"/>
+        <field size="3" type="numeric" value="NNN" inc="true"/>
     </format>
     <format name="Date" type="date"/>
 </formats>

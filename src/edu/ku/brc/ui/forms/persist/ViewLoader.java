@@ -586,7 +586,11 @@ public class ViewLoader
                         }
                         case separator:
                         {
-                            cell = formRow.addCell(new FormCellSeparator(cellId, cellName, getLabel(cellElement), colspan));
+                            cell = formRow.addCell(new FormCellSeparator(cellId, 
+                                                                         cellName, 
+                                                                         getLabel(cellElement), 
+                                                                         getAttr(cellElement, "collapse", ""),
+                                                                         colspan));
                             break;
                         }
                         case field:

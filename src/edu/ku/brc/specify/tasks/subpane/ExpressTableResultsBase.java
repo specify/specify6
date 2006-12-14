@@ -53,6 +53,7 @@ import edu.ku.brc.ui.GradiantButton;
 import edu.ku.brc.ui.GradiantLabel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.TriangleButton;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -288,7 +289,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
 
-        JButton btn = new JButton(String.format(getResourceString("MoreEntries"), new Object[] {(rowCount - topNumEntries)}));//(rowCount - topNumEntries)+" more...");
+        JButton btn = UICacheManager.createButton(String.format(getResourceString("MoreEntries"), new Object[] {(rowCount - topNumEntries)}));//(rowCount - topNumEntries)+" more...");
         btn.setCursor(handCursor);
 
         btn.setBorderPainted(false);

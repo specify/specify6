@@ -28,9 +28,13 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 
 
@@ -43,16 +47,17 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Long infoRequestID;
-     protected String firstName;
-     protected String lastName;
-     protected String institution;
-     protected String email;
+     protected Long     infoRequestID;
+     protected String   number;
+     protected String   firstName;
+     protected String   lastName;
+     protected String   institution;
+     protected String   email;
      protected Calendar requestDate;
      protected Calendar replyDate;
-     protected String remarks;
+     protected String   remarks;
      protected RecordSetIFace recordSet;
-     protected Agent agent;
+     protected Agent    agent;
 
 
     // Constructors
@@ -65,14 +70,12 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     public InfoRequest(Long infoRequestID) {
         this.infoRequestID = infoRequestID;
     }
-   
-    
-    
 
     // Initializer
     public void initialize()
     {
         infoRequestID = null;
+        number = null;
         firstName = null;
         lastName = null;
         institution = null;
@@ -84,6 +87,29 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
         timestampModified = null;
         recordSet = null;
         agent = null;
+        
+        // For Demo
+        try
+        {
+            Connection conn = DBConnection.getInstance().createConnection();
+            Statement  stmt = conn.createStatement();
+            ResultSet  rs   = stmt.executeQuery("select number from inforequest order by Number desc limit 0,1");
+            if (rs.first())
+            {
+                String numStr = rs.getString(1);
+                int num = Integer.parseInt(numStr.substring(6,8));
+                num++;
+                number = String.format("2006-%03d", new Object[] {num});
+            } else
+            {
+                number = "2006-001";
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
     }
     // End Initializer
 
@@ -202,6 +228,16 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
         this.recordSet = recordSet;
     }
 
+    public String getNumber()
+    {
+        return number;
+    }
+
+    public void setNumber(String requestNumber)
+    {
+        this.number = requestNumber;
+    }
+
     /**
      * 
      */
@@ -220,6 +256,15 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     // Delete Methods
 
     // Delete Add Methods
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    public String getIdentityTitle()
+    {
+        return number != null ? number : super.getIdentityTitle();
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

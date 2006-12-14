@@ -36,6 +36,7 @@ import org.apache.commons.jexl.JexlHelper;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This class manages all the validators for a single form. One or all the UI components
@@ -377,6 +378,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     public JLabel createLabel(final String labelName, final String labelStr)
     {
         JLabel lbl = new JLabel(labelStr);
+        lbl.setFont(UICacheManager.getFont(JLabel.class));
         labels.put(labelName, lbl);
         return lbl;
     }

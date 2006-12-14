@@ -15,14 +15,26 @@
 package edu.ku.brc.ui;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.io.File;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -82,7 +94,7 @@ public class UICacheManager
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
 
     /**
-     * Default private constructor for singleton
+     * Default private constructor for singleton.
      *
      */
     private UICacheManager()
@@ -96,6 +108,13 @@ public class UICacheManager
             } catch (MissingResourceException ex) {
                 log.error("Couldn't find Resource Bundle Name["+resourceName+"]", ex);
             }
+        }
+        
+        // Build the initial font sizes for all the Components
+        baseFont = (new JLabel()).getFont();
+        for (Class clazz : compClasses)
+        {
+            buildFontInfo(clazz, baseFont);
         }
     }
 
@@ -530,8 +549,168 @@ public class UICacheManager
 	{
 		instance.shortTermCache = shortTermCache;
 	}
-
     
+    
+    protected Class[]                    compClasses = {JLabel.class, JTextField.class, JPasswordField.class, JTextArea.class, 
+                                                        JComboBox.class, JCheckBox.class, JList.class, JMenuItem.class}; 
+    protected Hashtable<Class, FontInfo> fontMap     = new Hashtable<Class, FontInfo>();
+    protected Font                       baseFont    = null;
+
+    /**
+     * Creates the initial font mapping from the base font size to the other sizes.
+     * @param clazz the class of the component
+     * @param baseFont the base font size
+     */
+    protected void buildFontInfo(final Class clazz, final Font baseFont)
+    {
+        try
+        {
+            JComponent comp = (JComponent)clazz.newInstance();
+            Font       font = comp.getFont();
+            int        diff = font.getSize() - baseFont.getSize();
+            log.info("Building new Font for "+clazz.getSimpleName()+"  "+diff);
+            fontMap.put(clazz, new FontInfo(baseFont, diff));
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+    }
+    
+    /**
+     * Builds all the fonts for the controls.
+     * @param baseFont the base font to build relative sizes for.
+     */
+    protected void setBaseFontInternal(final Font baseFont)
+    {
+        for (Enumeration<FontInfo> e=fontMap.elements();e.hasMoreElements();)
+        {
+            FontInfo fi = e.nextElement();
+            fi.rebuildFont(baseFont);
+        }
+    }
+    
+    /**
+     * Return the std font for the UI component.
+     * @return the std font for the UI.
+     */
+    public static Font getFont(final Class clazz)
+    {
+        FontInfo fontInfo = instance.fontMap.get(clazz);
+        return fontInfo == null ? instance.baseFont : fontInfo.getFont();
+    }
+    
+    /**
+     * Return the base font for the UI component.
+     * @return the base font for the UI.
+     */
+    public static Font getBaseFont()
+    {
+        return instance.baseFont;
+    }
+    
+    /**
+     * Sets the base font and builds all the control's fonts.
+     * @param font the new font
+     */
+    public static void setBaseFont(final Font font)
+    {
+        instance.baseFont = font;
+        instance.setBaseFontInternal(font);
+    }
+    
+    /**
+     * Creates a button with the proper font.
+     * @param label the label for the button.
+     * @return the new button
+     */
+    public static JButton createButton(final String label)
+    {
+        JButton btn = new JButton(label);
+        btn.setFont(getFont(JButton.class));
+        return btn;
+    }    
+    
+    /**
+     * Creates a button with the proper font.
+     * @param label the label for the button.
+     * @param icon the icon for the button
+     * @return the new button
+     */
+    public static JButton createButton(final String label, final Icon icon)
+    {
+        JButton btn = new JButton(label, icon);
+        btn.setFont(getFont(JButton.class));
+        return btn;
+    }
+    
+    /**
+     * Creates a TextField with the corrent font.
+     * @param cols the columns for the JTextField
+     * @return
+     */
+    public static JTextField createTextField(final int cols)
+    {
+        JTextField tf = new JTextField(cols);
+        tf.setFont(getFont(JButton.class));
+        return tf;
+    }
+    
+    /**
+     * Creates a MenuItem with the proper font.
+     * @param label the label for the item
+     * @return the menu item
+     */    
+    public static JMenuItem createMenuItem(final String label)
+    {
+        JMenuItem mi = new JMenuItem(label);
+        mi.setFont(getFont(JMenuItem.class));
+        return mi;
+    }
+    
+    /**
+     * Creates a MenuItem with the proper font.
+     * @param label the label for the item
+     * @param icon the icon
+     * @return the menu item
+     */
+    public static JMenuItem createMenuItem(final String label, final Icon icon)
+    {
+        JMenuItem mi = new JMenuItem(label, icon);
+        mi.setFont(getFont(JMenuItem.class));
+        return mi;
+    }
+    
+    //--------------------------------------------------------------------
+    //-- Inner Classes
+    //--------------------------------------------------------------------
+    class FontInfo 
+    {
+        protected Font font;
+        protected int  diffFromBase;
+        
+        public FontInfo(final Font baseFont, final int diffFromBase)
+        {
+            this.diffFromBase = diffFromBase;
+            rebuildFont(baseFont);
+        }
+        
+        public Font getFont()
+        {
+            return font;
+        }
+        
+        public void rebuildFont(final Font newBaseFont)
+        {
+            if (diffFromBase == 0)
+            {
+                font = newBaseFont;
+            } else
+            {
+                font = new Font(newBaseFont.getFamily(), newBaseFont.getStyle(), newBaseFont.getSize()+diffFromBase);
+            }
+        }
+    }
     
 }
 

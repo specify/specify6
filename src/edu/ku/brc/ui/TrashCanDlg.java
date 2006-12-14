@@ -91,7 +91,9 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
         
-        panel.add(new JLabel(getResourceString("DeletedItems"), SwingConstants.CENTER), BorderLayout.NORTH);
+        JLabel label = new JLabel(getResourceString("DeletedItems"), SwingConstants.CENTER);
+        label.setFont(UICacheManager.getFont(JLabel.class));
+        panel.add(label, BorderLayout.NORTH);
 
         try
         {
@@ -119,8 +121,8 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
             panel.add(listScroller, BorderLayout.CENTER);
             
             // Bottom Button UI
-            restoreBtn         = new JButton(getResourceString("Restore"));
-            okBtn             = new JButton(getResourceString("Close"));
+            restoreBtn         = UICacheManager.createButton(getResourceString("Restore"));
+            okBtn             = UICacheManager.createButton(getResourceString("Close"));
 
             restoreBtn.setEnabled(false);
             

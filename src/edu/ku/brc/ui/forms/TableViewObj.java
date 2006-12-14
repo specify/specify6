@@ -295,9 +295,9 @@ public class TableViewObj implements Viewable,
     }
     
     /**
-     * Build tyhe table now that we have all the information we need for the columns.
+     * Build the table now that we have all the information we need for the columns.
      */
-    public void buildTable()
+    protected void buildTable()
     {
         // Now Build the JTable
         model    = new ColTableModel();
@@ -958,6 +958,14 @@ public class TableViewObj implements Viewable,
     public boolean shouldFlatten()
     {
         return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#getControlByName(java.lang.String)
+     */
+    public Component getControlByName(final String name)
+    {
+        return null;
     }
     
     //-----------------------------------------------------

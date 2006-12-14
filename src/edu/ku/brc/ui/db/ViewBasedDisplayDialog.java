@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -62,7 +63,75 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
                                   final int     options)
     {
         super(frame, title);
-
+        
+        init(viewSetName,
+                viewName,
+                displayName,
+                title,
+                closeBtnTitle,
+                className,
+                idFieldName,
+                isEdit,
+                options);
+    }
+    /**
+     * Constructs a search dialog from form infor and from search info.
+     * @param dlg the parent frame
+     * @param viewSetName the viewset name
+     * @param viewName the form name from the viewset
+     * @param displayName the search name, this is looked up by name in the "search_config.xml" file
+     * @param title the title (should be already localized before passing in)
+     * @param closeBtnTitle the title of close btn
+     * @param className the name of the class to be created from the selected results
+     * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
+     * @param options the options needed for creating the form
+     */
+    public ViewBasedDisplayDialog(final Dialog dlg,
+                                  final String viewSetName,
+                                  final String viewName,
+                                  final String displayName,
+                                  final String title,
+                                  final String closeBtnTitle,
+                                  final String className,
+                                  final String idFieldName,
+                                  final boolean isEdit,
+                                  final int     options)
+    {
+        super(dlg, title);
+        
+        init(viewSetName,
+                viewName,
+                displayName,
+                title,
+                closeBtnTitle,
+                className,
+                idFieldName,
+                isEdit,
+                options);
+    }
+    
+    /**
+     * Creates a search dialog from form infor and from search info.
+     * @param frame the parent frame
+     * @param viewSetName the viewset name
+     * @param viewName the form name from the viewset
+     * @param displayName the search name, this is looked up by name in the "search_config.xml" file
+     * @param title the title (should be already localized before passing in)
+     * @param closeBtnTitle the title of close btn
+     * @param className the name of the class to be created from the selected results
+     * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
+     * @param options the options needed for creating the form
+     */
+    protected void init(final String viewSetName,
+                        final String viewName,
+                        final String displayName,
+                        final String title,
+                        final String closeBtnTitle,
+                        final String className,
+                        final String idFieldName,
+                        final boolean isEdit,
+                        final int     options)
+    {
         mainPanel = new ViewBasedDisplayPanel(this, 
                                               viewSetName, 
                                               viewName, 
@@ -92,11 +161,6 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
                         }
                     });
         }
-        
-        /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)
-        {
-            mainPanel.getMultiView().getCurrentView().getValidator().validateForm();
-        }*/
     }
 
     //------------------------------------------------------------

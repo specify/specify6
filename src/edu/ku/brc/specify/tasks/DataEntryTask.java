@@ -76,6 +76,7 @@ public class DataEntryTask extends BaseTask
     private static final Logger log = Logger.getLogger(DataEntryTask.class);
 
     public static final String     DATA_ENTRY   = "Data_Entry";
+    public static final String     OPEN_VIEW    = "OpenView";
     public static final DataFlavor DATAENTRY_FLAVOR = new DataFlavor(DataEntryTask.class, "Data_Entry");
     
     protected static Hashtable<String, ImageIcon> iconForFormClass = new Hashtable<String, ImageIcon>();
@@ -201,7 +202,6 @@ public class DataEntryTask extends BaseTask
         
         formPane.setIcon(getIconForView(view));
         
-        
         if (starterPane == null)
         {
             SubPaneMgr.getInstance().addPane(formPane);
@@ -211,6 +211,8 @@ public class DataEntryTask extends BaseTask
             SubPaneMgr.getInstance().replacePane(starterPane, formPane);
             starterPane = null;
         }
+        
+        CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, OPEN_VIEW, formPane));
     }
 
     /**
@@ -242,6 +244,8 @@ public class DataEntryTask extends BaseTask
                                                      MultiView.VIEW_SWITCHER);
                     formPane.setIcon(getIconForView(view));
     
+                    CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, OPEN_VIEW, formPane));
+                    
                 } else
                 {
                     // No Data Error
@@ -267,33 +271,46 @@ public class DataEntryTask extends BaseTask
      */
     protected static FormPane createFormFor(final Taskable task, final String name, final RecordSetIFace recordSet)
     {
-        DBTableIdMgr.getInClause(recordSet);
-
-        String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getDbTableId());
-        
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
-        
-        DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
-        
         FormPane formPane = null;
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        // Look up and see if we already have a SubPane that is working on the RecordSet
         
-        String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
-        if (StringUtils.isNotBlank(sqlStr))
+        SubPaneIFace subPane = SubPaneMgr.getSubPaneWithRecordSet(recordSet);
+        if (subPane == null)
         {
-            // "null" ViewSet name means it should use the default
+            DBTableIdMgr.getInClause(recordSet);
+    
+            String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getDbTableId());
             
-            SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
             
-            View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
+            DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
-            formPane = new FormPane(session, name, task, view, null, session.getDataList(sqlStr), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
-            formPane.setIcon(getIconForView(view));
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            
+            String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+            if (StringUtils.isNotBlank(sqlStr))
+            {
+                // "null" ViewSet name means it should use the default
+                
+                SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                
+                View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
+                
+                formPane = new FormPane(session, name, task, view, null, session.getDataList(sqlStr), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+                formPane.setIcon(getIconForView(view));
+                formPane.setRecordSet(recordSet);
+                
+                CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, OPEN_VIEW, formPane));
+                
+            } else
+            {
+                log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
+            }
             
         } else
         {
-            log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
+            formPane = subPane instanceof FormPane ? (FormPane) subPane : null;
         }
         
         return formPane;

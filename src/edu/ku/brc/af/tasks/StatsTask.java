@@ -70,47 +70,59 @@ public class StatsTask extends BaseTask
     public StatsTask()
     {
         super(STATISTICS, getResourceString(STATISTICS));
+    }
 
-        try
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    public void initialize()
+    {
+        if (!isInitialized)
         {
-            panelDOM = AppContextMgr.getInstance().getResourceAsDOM("StatisticsPanel");   // contains a description of the NavBoxes
-
-        } catch (Exception ex)
-        {
-            log.error("Couldn't load `StatisticsPanel` " +ex);
-        }
-
-        // Process the NavBox Panel and create all the commands
-        // XXX This needs to be made generic so everyone can use it
-        //
-        List<?> boxes = panelDOM.selectNodes("/boxes/box");
-        for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
-        {
-            Element box = (Element) iter.next();
-            NavBox navBox = new NavBox(box.attributeValue("title"));
-
-            List<?> items = box.selectNodes("item");
-            for ( Iterator<?> iter2 = items.iterator(); iter2.hasNext(); )
+            super.initialize(); // sets isInitialized to false
+            
+    
+            try
             {
-                Element item = (Element) iter2.next();
-                String boxName  = item.attributeValue("name");
-                String boxTitle = item.attributeValue("title");
-                String type     = item.attributeValue("type");
-                ActionListener action = null;
-                if (type.toLowerCase().equals(PIE_CHART))
+                panelDOM = AppContextMgr.getInstance().getResourceAsDOM("StatisticsPanel");   // contains a description of the NavBoxes
+    
+            } catch (Exception ex)
+            {
+                log.error("Couldn't load `StatisticsPanel` " +ex);
+            }
+    
+            // Process the NavBox Panel and create all the commands
+            // XXX This needs to be made generic so everyone can use it
+            //
+            List<?> boxes = panelDOM.selectNodes("/boxes/box");
+            for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
+            {
+                Element box = (Element) iter.next();
+                NavBox navBox = new NavBox(box.attributeValue("title"));
+    
+                List<?> items = box.selectNodes("item");
+                for ( Iterator<?> iter2 = items.iterator(); iter2.hasNext(); )
                 {
-                    type = "Pie_Chart";
-                    action = new DisplayAction(boxName);
-
-                } else if (type.toLowerCase().equals(BAR_CHART))
-                {
-                    type = "Bar_Chart";
-                    action = new DisplayAction(boxName);
-                }
-
-                navBox.add(NavBox.createBtn(boxTitle, type, IconManager.IconSize.Std16, action));
-           }
-           navBoxes.addElement(navBox);
+                    Element item = (Element) iter2.next();
+                    String boxName  = item.attributeValue("name");
+                    String boxTitle = item.attributeValue("title");
+                    String type     = item.attributeValue("type");
+                    ActionListener action = null;
+                    if (type.toLowerCase().equals(PIE_CHART))
+                    {
+                        type = "Pie_Chart";
+                        action = new DisplayAction(boxName);
+    
+                    } else if (type.toLowerCase().equals(BAR_CHART))
+                    {
+                        type = "Bar_Chart";
+                        action = new DisplayAction(boxName);
+                    }
+    
+                    navBox.add(NavBox.createBtn(boxTitle, type, IconManager.IconSize.Std16, action));
+               }
+               navBoxes.addElement(navBox);
+            }
         }
     }
 

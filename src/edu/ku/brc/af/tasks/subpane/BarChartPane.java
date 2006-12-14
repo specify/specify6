@@ -39,6 +39,7 @@ import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 
 /**
@@ -173,7 +174,9 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
         
-        addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), SwingConstants.CENTER));
+        JLabel lbl = new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), SwingConstants.CENTER);
+        lbl.setFont(UICacheManager.getFont(JLabel.class));
+        addCompletedComp(lbl);
     }
 
    

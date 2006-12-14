@@ -816,10 +816,28 @@ public class DataBuilder
     @SuppressWarnings("unchecked")
     public static Taxon createTaxon(final TaxonTreeDef ttd, final Taxon parent, final String name, final int rankId)
     {
+        return createTaxon(ttd, parent, name, null, rankId);
+    }
+
+    /**
+     * Creates a new <code>Taxon</code> object using the given values.  The object is also
+     * persisted with a call to {@link #persist(Object)}.
+     * 
+     * @param ttd the associated definition
+     * @param parent the parent node
+     * @param name the name of the node
+     * @param commonName the common name of the node
+     * @param rankId the rank of the node
+     * @return the new node
+     */
+    @SuppressWarnings("unchecked")
+    public static Taxon createTaxon(final TaxonTreeDef ttd, final Taxon parent, final String name, final String commonName, final int rankId)
+    {
         Taxon taxon = new Taxon();
         taxon.initialize();
         taxon.setDefinition(ttd);
         taxon.setName(name);
+        taxon.setCommonName(commonName);
         taxon.setParent(parent);
         if (parent!=null)
         {
@@ -840,12 +858,13 @@ public class DataBuilder
     public static List<Object> createTaxonChildren(final TaxonTreeDef treeDef,
                                               final Taxon parent,
                                               final String[] childNames,
+                                              final String[] commonNames,
                                               final int rankId)
     {
         Vector<Object> kids = new Vector<Object>();
         for (int i = 0; i < childNames.length; i++)
         {
-            kids.add(createTaxon(treeDef, parent, childNames[i], rankId));
+            kids.add(createTaxon(treeDef, parent, childNames[i], commonNames[i], rankId));
         }
         return kids;
     }
@@ -938,6 +957,7 @@ public class DataBuilder
         address.setCountry(country);
         address.setPostalCode(postalCode);
         address.setState(state);
+        address.setIsPrimary(true);
 
         agent.getAddresses().add(address);
         persist(address);

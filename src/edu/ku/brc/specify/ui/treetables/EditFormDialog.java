@@ -116,11 +116,11 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
 
         panel.add(multiView, BorderLayout.CENTER);
 
-        okBtn = new JButton(getResourceString("OK"));
+        okBtn = UICacheManager.createButton(getResourceString("OK"));
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);
         
-        cancelBtn = new JButton(getResourceString("Cancel"));
+        cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
         cancelBtn.addActionListener(this);
 
         JPanel buttonPanel = new JPanel();

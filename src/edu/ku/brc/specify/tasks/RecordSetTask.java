@@ -117,7 +117,7 @@ public class RecordSetTask extends BaseTask
                 
                 session.evict(recordSet);
                 
-                NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), RECORD_SET, "Delete", recordSet);
+                NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, RECORD_SET, "Delete", recordSet);
                 DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
                 if (tblInfo != null)
                 {
@@ -153,7 +153,7 @@ public class RecordSetTask extends BaseTask
      */
     public void saveRecordSet(final RecordSet recordSet)
     {
-        NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
+        NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, "Record_Set", "Delete", recordSet);
         
         DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
         if (tblInfo != null)

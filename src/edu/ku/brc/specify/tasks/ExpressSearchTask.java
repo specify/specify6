@@ -814,7 +814,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         JPanel     searchPanel = new JPanel(gridbag);
         JLabel     spacer      = new JLabel(" ");
 
-        searchBtn   = new JButton(getResourceString("Search"));
+        searchBtn = UICacheManager.createButton(getResourceString("Search"));
         searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
 
         //searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"

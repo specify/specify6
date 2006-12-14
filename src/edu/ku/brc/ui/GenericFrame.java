@@ -45,7 +45,7 @@ public class GenericFrame extends JFrame
         JMenuItem item = null;
         
         //close
-        item = new JMenuItem("Close");
+        item = UICacheManager.createMenuItem("Close");
         item.setMnemonic(KeyEvent.VK_C);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

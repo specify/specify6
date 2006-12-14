@@ -172,7 +172,9 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
         
         if (desc != null)
         {
-            panel.add(new JLabel(desc, SwingConstants.CENTER), BorderLayout.NORTH);
+            JLabel lbl = new JLabel(desc, SwingConstants.CENTER);
+            lbl.setFont(UICacheManager.getFont(JLabel.class));
+            panel.add(lbl, BorderLayout.NORTH);
         }
 
         try
@@ -211,13 +213,13 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
             panel.add(listScroller, BorderLayout.CENTER);
 
             // Bottom Button UI
-            okBtn             = new JButton(getResourceString("OK"));
+            okBtn             = UICacheManager.createButton(getResourceString("OK"));
             okBtn.addActionListener(this);
             getRootPane().setDefaultButton(okBtn);
 
             if (includeCancelBtn)
             {
-                cancelBtn = new JButton(getResourceString("Cancel"));
+                cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
                 ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
                 btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
     

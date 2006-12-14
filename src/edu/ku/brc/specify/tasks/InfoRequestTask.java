@@ -26,6 +26,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -39,6 +40,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
@@ -113,18 +115,6 @@ public class InfoRequestTask extends BaseTask
         CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DB_CMD_TYPE, this);
     }
-    
-    /**
-     * Returns a title for the InfoRequest
-     * @param infoRequest the infor request to construct a title for
-     * @return Returns a title for the InfoRequest
-     */
-    protected String getTitle(final InfoRequest infoRequest)
-    {
-        //System.out.println(scrDateFormat.toPattern());
-        return infoRequest.getFirstName() + " " + infoRequest.getLastName() + " - " + scrDateFormat.format(infoRequest.getRequestDate());
-    }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
@@ -138,13 +128,13 @@ public class InfoRequestTask extends BaseTask
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             
             navBox = new NavBox(title);
-            /*
+            
             List infoRequests = session.getDataList(InfoRequest.class);
             for (Iterator iter=infoRequests.iterator();iter.hasNext();)
             {
                 addInfoRequest((InfoRequest)iter.next());
                 
-            } */         
+            }      
             navBoxes.addElement(navBox);
             session.close();
         }
@@ -156,19 +146,27 @@ public class InfoRequestTask extends BaseTask
      */
     protected void addInfoRequest(final InfoRequest infoRequest)
     {
-        // These value should not be hard coded here
-        int tableId = DBTableIdMgr.lookupIdByShortName("inforequest");
-        DroppableFormObject dfo = new DroppableFormObject("view valid", tableId, infoRequest);
-        NavBoxItemIFace     nbi = addNavBoxItem(navBox, getTitle(infoRequest), INFOREQUEST, "Delete", dfo);
-        NavBoxButton     roc = (NavBoxButton)nbi;
-        roc.addActionListener(new ActionListener()
+        // XXX FIXME These value should not be hard coded here
+        if (false)
         {
-            public void actionPerformed(ActionEvent ae)
+            int                 tableId = DBTableIdMgr.lookupIdByShortName("InfoRequest");
+            DroppableFormObject dfo     = new DroppableFormObject("view valid", tableId, infoRequest);
+            NavBoxItemIFace     nbi     = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), INFOREQUEST, INFOREQUEST, "Delete", dfo);
+            NavBoxButton        roc     = (NavBoxButton)nbi;
+            roc.addActionListener(new ActionListener()
             {
-                createFormPanel((NavBoxButton)ae.getSource());
-            }
-        });
-        addDraggableDataFlavors(roc);
+                public void actionPerformed(ActionEvent ae)
+                {
+                    createFormPanel((NavBoxButton)ae.getSource());
+                }
+            });
+            addDraggableDataFlavors(roc);
+        } else
+        {
+            
+            NavBoxItemIFace nbi = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), INFOREQUEST, INFOREQUEST, "Delete", infoRequest);
+            setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+        }
     }
     
     /**
@@ -301,7 +299,7 @@ public class InfoRequestTask extends BaseTask
     protected void deleteInfoRequestFromUI(final NavBoxItemIFace boxItem, final InfoRequest infoRequest)
     {
         
-        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByName(getTitle(infoRequest)).getUIComponent(); 
+        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByName(infoRequest.getIdentityTitle()).getUIComponent(); 
         if (comp != null)
         {
             navBox.remove(comp);
@@ -385,7 +383,7 @@ public class InfoRequestTask extends BaseTask
      */
     public boolean isEMailPrefsOK(final Hashtable<String, String> emailPrefs)
     {
-        AppPreferences appPrefs = AppPreferences.getRemote();
+        AppPreferences appPrefs = AppPreferences.getLocalPrefs();
         boolean allOK = true;
         String[] emailPrefNames = { "servername", "username", "password", "email"};
         for (String pName : emailPrefNames)
@@ -441,11 +439,11 @@ public class InfoRequestTask extends BaseTask
                     
                     final File tempExcelFileName = TableModel2Excel.getTempExcelName();
                     
-                    AppPreferences appPrefs = AppPreferences.getRemote();
+                    AppPreferences appPrefs = AppPreferences.getLocalPrefs();
                     final Hashtable<String, String> values = new Hashtable<String, String>();
                     values.put("to", toAgent.getEmail() != null ? toAgent.getEmail() : "");
                     values.put("from", appPrefs.get("settings.email.email", ""));
-                    values.put("subject", getResourceString("INFO_REQUEST"));
+                    values.put("subject", String.format(getResourceString("INFO_REQUEST_SUBJECT"), new Object[] {infoRequest.getIdentityTitle()}));
                     values.put("bodytext", "");
                     values.put("attachedFileName", tempExcelFileName.getName());
                     

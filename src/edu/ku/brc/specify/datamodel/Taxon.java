@@ -167,6 +167,16 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    public String getIdentityTitle()
+    {
+        String title = fullName != null && fullName.length() > 0 ? fullName : name;
+        return title != null && title.length() > 0 ? title : super.getIdentityTitle();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
     @Override

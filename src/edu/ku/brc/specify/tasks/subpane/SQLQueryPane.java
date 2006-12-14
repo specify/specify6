@@ -116,7 +116,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
            
-            exeBtn = new JButton(getResourceString("Execute"));
+            exeBtn = UICacheManager.createButton(getResourceString("Execute"));
             exeBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) 
                 {
@@ -139,9 +139,9 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
             
-            selectAllBtn   = new JButton(getResourceString("SelectAll"));
-            deselectAllBtn = new JButton(getResourceString("DeselectAll"));
-            saveToRSBtn    = new JButton(getResourceString("SaveToRecordSet"));
+            selectAllBtn   = UICacheManager.createButton(getResourceString("SelectAll"));
+            deselectAllBtn = UICacheManager.createButton(getResourceString("DeselectAll"));
+            saveToRSBtn    = UICacheManager.createButton(getResourceString("SaveToRecordSet"));
             
             builder.add(selectAllBtn,   cc.xy(1,1));
             builder.add(deselectAllBtn, cc.xy(3,1));

@@ -18,6 +18,7 @@
 package edu.ku.brc.ui.forms;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -94,44 +95,21 @@ public class RecordSetTableViewObj extends TableViewObj
         root.addFormValidator(validator);
     }
     
+    /**
+     * Build the table now that we have all the information we need for the columns.
+     */
+    protected void buildTable()
+    {
+        super.buildTable();
+        
+        Dimension size = table.getPreferredSize();
+        size.height = 200;
+        table.setPreferredSize(size);
+    }
+    
     protected void initMainComp()
     {
-        /*
-        editButton = createButton("EditForm", getResourceString("EditRecord"));
-        newButton = createButton("CreateObj", getResourceString("NewRecord"));
-        deleteButton = createButton("CreateObj", getResourceString("DeleteRecord"));
 
-        altViewsList = new Vector<AltView>();
-        switcherUI   = FormViewObj.createSwitcher(mvParent, view, altView, altViewsList);
-        
-        validationInfoBtn = new JButton(IconManager.getImage("ValidationValid"));
-        validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
-        validationInfoBtn.setMargin(new Insets(1,1,1,1));
-        validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());
-        validationInfoBtn.setFocusable(false);
-        validationInfoBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                log.error("validation button clicked: not yet implemented");
-            }
-        });
-        
-        iconTray = new IconTray(IconTray.SINGLE_ROW);
-        //iconTray = new IconTray(IconTray.MULTIPLE_ROWS);
-        
-        addActionListenerToEditButton();
-        
-        if (altView.getMode() == CreationMode.View)
-        {
-            newButton.setEnabled(false);
-            deleteButton.setEnabled(false);
-        }
-        else
-        {
-            addActionListenerToNewButton();
-            addActionListenerToDeleteButton();
-        }
-*/
         mainComp = new JPanel();
         mainComp.setLayout(new BorderLayout());
         if (mvParent == null)

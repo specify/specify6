@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -53,6 +54,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -364,7 +366,7 @@ public class FormViewObj implements Viewable,
         {
             if (!hideSaveBtn)
             {
-                saveBtn = new JButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+                saveBtn = UICacheManager.createButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
                 comps.add(saveBtn);
             }
 
@@ -425,7 +427,7 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
+        saveBtn = UICacheManager.createButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
         saveBtn.setToolTipText(ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle()));
         saveBtn.setMargin(new Insets(1,1,1,1));
         saveBtn.setEnabled(false);
@@ -534,7 +536,7 @@ public class FormViewObj implements Viewable,
                 }
             }
 
-            JButton closeBtn = new JButton("Close");
+            JButton closeBtn = UICacheManager.createButton("Close");
             panelBuilder.add(ButtonBarFactory.buildOKBar(closeBtn), cc.xy(1,3));
             closeBtn.addActionListener(new Closer(dialog, formInfo));
 
@@ -1767,17 +1769,6 @@ public class FormViewObj implements Viewable,
             }
         }
     }
-    
-    /**
-     * Returns a Component by name from the Form.
-     * @param name the name of the field according to the XML definition
-     * @return the component or null
-     */
-    public Component getControlByName(final String name)
-    {
-        FieldInfo fieldInfo = controlsByName.get(name);
-        return fieldInfo != null ? fieldInfo.comp : null;
-    }
 
     /**
      * If the control supports UIValidatable interface then it return whether the controls has been changed. If it
@@ -2187,12 +2178,35 @@ public class FormViewObj implements Viewable,
         builder.add(control, cc.xywh(colInx, rowInx, colSpan, rowSpan));
     }
     
+    /**
+     * Adjusts the font for the separator.
+     * @param sep the separator container
+     */
+    public  static void adjustFontForSeparator(JComponent sep)
+    {
+        Font labelFont = UICacheManager.getFont(JLabel.class);
+        for (int i=0;i<sep.getComponentCount();i++)
+        {
+            Component comp = sep.getComponent(i);
+            Font f = comp.getFont();
+            if (f != null && labelFont.getStyle() != f.getStyle())
+            {
+                f = new Font(labelFont.getFamily(), f.getStyle(), labelFont.getSize());
+            }
+            sep.getComponent(i).setFont(f);    
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSeparator(java.lang.String, int, int, int)
      */
     public Component createSeparator(String title, int colInx, int rowInx, int colSpan)
     {
-        return builder.addSeparator(title, cc.xyw(colInx, rowInx, colSpan));
+        //JComponent titledSeparator = builder.addSeparator(title, cc.xyw(colInx, rowInx, colSpan));
+        int titleAlignment = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
+        JComponent titledSeparator = builder.getComponentFactory().createSeparator(title, titleAlignment);
+        adjustFontForSeparator(titledSeparator);
+        return titledSeparator;
     }
     
     /* (non-Javadoc)
@@ -2204,7 +2218,7 @@ public class FormViewObj implements Viewable,
         draggableRecIdentifier = DraggableRecordIdentifierFactory.getInstance().createDraggableRecordIdentifier(icon);
         
         panelBldr.add(draggableRecIdentifier, cc.xy(1, 1));
-        panelBldr.addSeparator(title, cc.xy(3, 1));
+        adjustFontForSeparator(panelBldr.addSeparator(title, cc.xy(3, 1)));
         return panelBldr.getPanel();
     }
 
@@ -2213,8 +2227,13 @@ public class FormViewObj implements Viewable,
      * Adds a control by name so it can be looked up later
      * @param formCell the FormCell def that describe the cell
      * @param subView the subView
+     * @param colInx column index
+     * @param rowInx row index
+     * @param colSpan column span
+     * @param rowSpan row span
+     * @param addIt add it to the layout
      */
-    public void addSubView(final FormCellSubView formCell, final MultiView subView, int colInx, int rowInx, int colSpan, int rowSpan)
+    public void addSubView(final FormCellSubView formCell, final MultiView subView, final int colInx, final int rowInx, final int colSpan, final int rowSpan, final boolean addIt)
     {
         if (formCell != null)
         {
@@ -2223,11 +2242,29 @@ public class FormViewObj implements Viewable,
                 throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
             }
 
-            builder.add(subView, cc.xywh(colInx, rowInx, colSpan, rowSpan, "fill,fill"));
+            if (controlsByName.get(formCell.getName()) != null)
+            {
+                throw new RuntimeException("Two controls have the same Name ["+formCell.getName()+"] "+formViewDef.getName());
+            }
+
+            if (addIt)
+            {
+                builder.add(subView, cc.xywh(colInx, rowInx, colSpan, rowSpan, "fill,fill"));
+            }
             
-            controlsById.put(formCell.getId(), new FieldInfo(formCell, subView, controlsById.size()));
+            FieldInfo fi = new FieldInfo(formCell, subView, controlsById.size());
+            controlsById.put(formCell.getId(), fi);
+            controlsByName.put(formCell.getName(), fi);
             kids.add(subView);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSubView(edu.ku.brc.ui.forms.persist.FormCellSubView, edu.ku.brc.ui.forms.MultiView, int, int, int, int)
+     */
+    public void addSubView(final FormCellSubView formCell, final MultiView subView, final int colInx, final int rowInx, final int colSpan, final int rowSpan)
+    {
+        addSubView(formCell, subView, colInx, rowInx, colSpan, rowSpan, true);
     }
     
     /* (non-Javadoc)
@@ -2245,6 +2282,37 @@ public class FormViewObj implements Viewable,
     {
         return false;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#getControlByName(java.lang.String)
+     */
+    public Component getControlByName(final String name)
+    {
+        FieldInfo fieldInfo = controlsByName.get(name);
+        // If it wasn't found in the immediate form then 
+        // recurse through all the SubViews
+        if (fieldInfo == null)
+        {
+            for (MultiView mv : kids)
+            {
+                if (mv != null)
+                {
+                    FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        Component comp = fvo.getControlByName(name);
+                        if (comp != null)
+                        {
+                            return comp;
+                        }
+                    }
+                }
+            }
+        }
+        return fieldInfo != null ? fieldInfo.comp : null;
+    }
+
     
     //-----------------------------------------------------
     // ValidationListener

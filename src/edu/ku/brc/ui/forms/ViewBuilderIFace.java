@@ -103,5 +103,12 @@ public interface ViewBuilderIFace
      * @return true flatten, false hierarchical
      */
     public boolean shouldFlatten();
+
+    /**
+     * Returns a Component by name from the Form.
+     * @param name the name of the field according to the XML definition
+     * @return the component or null
+     */
+    public Component getControlByName(final String name);
     
 }

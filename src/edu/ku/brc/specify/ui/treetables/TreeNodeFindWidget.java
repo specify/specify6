@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  *
@@ -97,10 +98,10 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 				}
 			}
 		});
-		findButton = new JButton(findStr);
+		findButton = UICacheManager.createButton(findStr);
 		findButton.addActionListener(this);
 		findButton.setEnabled(false);
-		findNextButton = new JButton(findNextStr);
+		findNextButton = UICacheManager.createButton(findNextStr);
 		findNextButton.addActionListener(this);
 		findNextButton.setEnabled(false);
 		buttonPanel = new JPanel();

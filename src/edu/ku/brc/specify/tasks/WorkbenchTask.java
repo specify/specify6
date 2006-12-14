@@ -61,28 +61,38 @@ public class WorkbenchTask extends BaseTask
     protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>          menus  = new Vector<JComponent>();
 
-	public WorkbenchTask() {
+	public WorkbenchTask() 
+    {
 		super(WORKBENCH, getResourceString(WORKBENCH));
 		CommandDispatcher.register(WORKBENCH, this);
-		NavBox navBox = new NavBox(getResourceString("File"));
-		navBox.add(NavBox.createBtn(getResourceString("New_Workbench"), name, IconManager.IconSize.Std16));
-		navBox.add(NavBox.createBtn(getResourceString("New_Template"), name, IconManager.IconSize.Std16));
-		navBoxes.addElement(navBox);
-		//
-		navBox = new NavBox(getResourceString("Templates"));
-		navBox.add(NavBox.createBtn(getResourceString("Field_Book_Entry"),	name, IconManager.IconSize.Std16, new ImportFieldBookAction()));
-		navBox.add(NavBox.createBtn(getResourceString("Label_Entry"), name,	IconManager.IconSize.Std16));
-		navBoxes.addElement(navBox);
 
-		navBox = new NavBox(getResourceString("Workbenches"));
-		navBox.add(NavBox.createBtn(getResourceString("Lawrence_River"), name,IconManager.IconSize.Std16));
-		navBox.add(NavBox.createBtn(getResourceString("Smith_Collection"), name, IconManager.IconSize.Std16));
-		navBoxes.addElement(navBox);
 	}
-		// super(getResourceString("Workbench"));
-		// TODO Auto-generated constructor stub
-		//NavBox navBox = new NavBox(name);
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    public void initialize()
+    {
+        if (!isInitialized)
+        {
+            super.initialize(); // sets isInitialized to false
+            
+            NavBox navBox = new NavBox(getResourceString("File"));
+            navBox.add(NavBox.createBtn(getResourceString("New_Workbench"), name, IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn(getResourceString("New_Template"), name, IconManager.IconSize.Std16));
+            navBoxes.addElement(navBox);
+            //
+            navBox = new NavBox(getResourceString("Templates"));
+            navBox.add(NavBox.createBtn(getResourceString("Field_Book_Entry"),  name, IconManager.IconSize.Std16, new ImportFieldBookAction()));
+            navBox.add(NavBox.createBtn(getResourceString("Label_Entry"), name, IconManager.IconSize.Std16));
+            navBoxes.addElement(navBox);
+
+            navBox = new NavBox(getResourceString("Workbenches"));
+            navBox.add(NavBox.createBtn(getResourceString("Lawrence_River"), name,IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn(getResourceString("Smith_Collection"), name, IconManager.IconSize.Std16));
+            navBoxes.addElement(navBox);
+        }
+    }
 
 
     protected void importFieldNotebook()

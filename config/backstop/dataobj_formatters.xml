@@ -139,6 +139,18 @@
         </switch>
     </format>
     
+    <format
+        name="Taxon"
+        class="edu.ku.brc.specify.datamodel.Taxon"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>fullName</field>
+            </fields>
+        </switch>
+    </format>
+    
     
     <aggregators>
         <aggregator name="AccessionAuthorizations" class="edu.ku.brc.specify.datamodel.AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations" default="true"/>

@@ -215,9 +215,6 @@ public class HibernateUtil {
             
             sessionFactory = configuration.configure().buildSessionFactory();
             
-            // We could also let Hibernate bind it to JNDI:
-            //configuration.configure().buildSessionFactory();
-            
         } catch (Throwable ex) {
             // We have to catch Throwable, otherwise we will miss
             // NoClassDefFoundError and other subclasses of Error

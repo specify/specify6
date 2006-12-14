@@ -33,14 +33,16 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
  * It also adds the progress indicator and it provide.
-
+ *
  * @code_status Complete
- **
+ *
  * @author rods
  *
  */
@@ -85,6 +87,8 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
         builder.add(progressBar, cc.xy(1,1));
         builder.add(progressLabel = new JLabel("", SwingConstants.CENTER), cc.xy(1,3));
+        progressLabel.setFont(UICacheManager.getFont(JLabel.class));
+        progressBar.setFont(UICacheManager.getFont(JLabel.class));
 
         PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
         builder2.add(builder.getPanel(), cc.xy(1,1));
@@ -106,26 +110,6 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         this(null, name, task);
     }
-
-
-    /* (non-Javadoc)
-     * @see javax.swing.JComponent#paintChildren(java.awt.Graphics)
-     */
-    /*public void paintChildren(Graphics g)
-    {
-
-        ImageIcon imgIcon = IconManager.getImage("BGImage");
-        if (imgIcon != null)
-        {
-            Dimension size = getSize();
-            g.drawImage(imgIcon.getImage(), (size.width - imgIcon.getIconWidth())/2, (size.height - imgIcon.getIconHeight())/2, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
-        }
-        super.paintChildren(g);
-
-    }*/
-    
-    
-
 
     /**
      * Return the current session.
@@ -206,6 +190,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         return task;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#getRecordSet()
+     */
+    public RecordSetIFace getRecordSet()
+    {
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see java.awt.Component#showingPane(boolean)
@@ -230,7 +222,6 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         if (session != null)
         {
-            //session.flush();
             session.close();
             
             log.debug("Session Close["+session.hashCode()+"]");

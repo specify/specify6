@@ -108,7 +108,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to Collectors -->
-    <set name="collectors" lazy="true" inverse="true" cascade="delete" order-by="orderNumber asc">
+    <set name="collectors" lazy="true" inverse="true" cascade="all-delete-orphan" order-by="orderNumber asc">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectingEventID"/>
@@ -117,7 +117,7 @@
     </set>
     
     <!-- bi-directional many-to-one association to Locality -->
-    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" not-null="true" outer-join="true" index="IX_CollectingEventLocalityID">
+    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" cascade="save-update" not-null="true" outer-join="true" index="IX_CollectingEventLocalityID">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Locality where collection took place</meta>
         <column name="LocalityID"/>

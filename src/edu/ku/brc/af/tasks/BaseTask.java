@@ -16,6 +16,7 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
@@ -84,7 +86,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected final String        title;
 
     protected Vector<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>();
-    protected ImageIcon                icon          = null;
+    protected ImageIcon           icon          = null;
     protected boolean             isInitialized = false;
 
     // Members needed for initialization
@@ -206,6 +208,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Helper method to add an item to the navbox.
      * @param navBox navBox
      * @param labelText labelText
+     * @param icoonName icon name
      * @param cmdGroup cmdGroup
      * @param cmdStr cmdStr
      * @param data data
@@ -213,12 +216,13 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox navBox,
                                             final String labelText,
+                                            final String iconName,
                                             final String cmdGroup,
                                             final String cmdStr,
                                             final Object data,
                                             final int    position)
     {
-        NavBoxItemIFace nb = NavBox.createBtn(labelText, name, IconManager.IconSize.Std16);
+        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16);
         NavBoxButton rb = (NavBoxButton)nb;
 
         // This is part of the "DndDeletable" Interface,
@@ -257,6 +261,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Helper method to add an item to the navbox.
      * @param navBox navBox
      * @param labelText navBox
+     * @param iconName icon name
      * @param cmdGroup navBox
      * @param cmdStr cmdStr
      * @param data data
@@ -264,11 +269,28 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox navBox,
                                             final String labelText,
+                                            final String iconName,
                                             final String cmdGroup,
                                             final String cmdStr,
                                             final Object data)
     {
-        return addNavBoxItem(navBox, labelText,  cmdGroup, cmdStr, data, -1);
+        return addNavBoxItem(navBox, labelText,  iconName, cmdGroup, cmdStr, data, -1);
+    }
+    
+    /**
+     * Sets up NavBoxItemIFace item as a draggable and adds the action
+     * @param nbi the item
+     * @param flavors the draggable flavors
+     * @param navBoxAction the action to be performed
+     */
+    protected void setUpDraggable(final NavBoxItemIFace nbi, final DataFlavor[] flavors, final NavBoxAction navBoxAction)
+    {
+        NavBoxButton roc = (NavBoxButton)nbi;
+        for (DataFlavor df : flavors)
+        {
+            roc.addDragDataFlavor(df);
+        }
+        roc.addActionListener(navBoxAction);
     }
 
     /**
@@ -277,13 +299,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected void addSubPaneToMgr(final SubPaneIFace subPane)
     {
-        //if (isSuperClassOf(subPane, subPaneClassFilter))
-        //{
-        //    SubPaneMgr.getInstance().addPane(subPane);
-        //}
-
         SubPaneMgr.getInstance().addPane(subPane);
-
     }
 
     /**
@@ -351,15 +367,25 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
     /**
      * Looks to see if a form already exists for this request and shows it
-     * otherwise it creates a form and add it to the SubPaneMgr
+     * otherwise it creates a form and add it to the SubPaneMgr.  This call is for existing data objects.
+     * For new objects use the call with "options".
      */
     protected FormPane createFormPanel(final String viewsetName, final String viewName, final String mode, final Object data)
+    {
+        return createFormPanel(viewsetName, viewName, mode, data, MultiView.VIEW_SWITCHER);
+    }
+
+    /**
+     * Looks to see if a form already exists for this request and shows it
+     * otherwise it creates a form and add it to the SubPaneMgr.
+     */
+    protected FormPane createFormPanel(final String viewsetName, final String viewName, final String mode, final Object data, final int options)
     {
         FormPane fp = null;
 
         if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
         {
-            recentFormPane.createForm(viewsetName, viewName, null, data, MultiView.VIEW_SWITCHER); // not new data object
+            recentFormPane.createForm(viewsetName, viewName, null, data, options); // not new data object
             fp = recentFormPane;
 
         } else
@@ -372,9 +398,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             } else
             {
                 recentFormPane = new FormPane(DataProviderFactory.getInstance().createSession(),
-                                              name, this, viewsetName, viewName, mode, data, MultiView.VIEW_SWITCHER); // not new data object
-                addSubPaneToMgr(recentFormPane);
+                                              name, this, viewsetName, viewName, mode, data, options); // not new data object
+                //addSubPaneToMgr(recentFormPane);
+                SubPaneMgr.replaceSimplePaneForTask(recentFormPane);
                 fp = recentFormPane;
+                
             }
         }
         return fp;

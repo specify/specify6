@@ -21,6 +21,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 //import java.awt.MenuItem;
@@ -164,6 +165,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         IconManager.setApplicationClass(Specify.class);
         UICacheManager.getInstance(); // initializes it first thing
         UICacheManager.setAppName("Specify");
+        
+        //Font baseFont = UICacheManager.getBaseFont();
+        //UICacheManager.setBaseFont(new Font(baseFont.getFamily(), baseFont.getStyle(), 11));
 
         // Attachment related helpers
         Thumbnailer thumb = new Thumbnailer();
@@ -430,6 +434,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         // set the preferred size of the demo
         setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
+        setPreferredSize(new Dimension(1024, 768)); // For demo
 
         topFrame = new JFrame(gc);
         topFrame.setIconImage( IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage() );
@@ -543,6 +548,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                                 log.error(ex);
                             }
                             
+                            AppPreferences.setConnectedToDB(false);
                             UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
                         }
                     }
@@ -568,25 +574,28 @@ public class Specify extends JPanel implements DatabaseLoginListener
         changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
 
 
-        menu.addSeparator();
-        mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            menu.addSeparator();
+            mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
+            mi.addActionListener(new ActionListener()
                     {
-                        doExit();
-                    }
-                });
-
-        menu = UIHelper.createMenu(mb, "EditMenu", "EditMneu");
-        mi = UIHelper.createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doExit();
+                        }
+                    });
+    
+            menu = UIHelper.createMenu(mb, "EditMenu", "EditMneu");
+            mi = UIHelper.createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
+            mi.addActionListener(new ActionListener()
                     {
-                        preferences();
-                    }
-                });
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            preferences();
+                        }
+                    });
+        }
 
 
         /*JMenuItem mi2;
@@ -925,6 +934,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         statusField.setSectionText(0, userName);
         statusField.setSectionText(1, databaseName);
+        
+        AppPreferences.setConnectedToDB(true);
 
     }
 

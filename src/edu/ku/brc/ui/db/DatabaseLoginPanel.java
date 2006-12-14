@@ -16,6 +16,7 @@ package edu.ku.brc.ui.db;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,6 +42,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -598,15 +600,6 @@ public class DatabaseLoginPanel extends JPanel
     }
 
     /**
-     * Sets the ProgressWorker
-     * @param pw the ProgressWorker
-     */
-    protected synchronized void setProgressWorker(final ProgressWorker pw)
-    {
-        progressWorker = pw;
-    }
-
-    /**
      * Tells it whether the parent (frame or dialog) should be auto closed when
      * it is logged in successfully.
      * @param isAutoClose true / false
@@ -648,8 +641,11 @@ public class DatabaseLoginPanel extends JPanel
 
         if (loginCount != -1 && loginAccumTime != -1)
         {
-            progressWorker = new ProgressWorker(statusBar.getProgressBar(), 0, (int)(((double)loginAccumTime / (double)loginCount)+0.5));
-            progressWorker.start();
+            int timesPerSecond = 4;
+            progressWorker = new ProgressWorker(statusBar.getProgressBar(), 
+                                                0, 
+                                                (int)(((double)loginAccumTime / (double)loginCount)+0.5), timesPerSecond);
+            new Timer(1000 / timesPerSecond, progressWorker).start();
 
         } else
         {
@@ -855,65 +851,56 @@ public class DatabaseLoginPanel extends JPanel
     //-- Inner Classes
     //-------------------------------------------------------------------------
 
-    class ProgressWorker extends SwingWorker
+    class ProgressWorker implements ActionListener
     {
-        protected final int    timesASecond = 4;
+        protected int          timesASecond;
         protected JProgressBar progressBar;
         protected int          count;
         protected int          totalCount;
         protected boolean      stop = false;
 
-        public ProgressWorker(final JProgressBar progressBar, final int count, final int totalCount)
+        public ProgressWorker(final JProgressBar progressBar, 
+                              final int count, 
+                              final int totalCount,
+                              final int timesPerSecond)
         {
-            this.progressBar = progressBar;
-            this.count       = count;
-            this.totalCount  = totalCount * timesASecond;
+            this.timesASecond = timesPerSecond;
+            this.progressBar  = progressBar;
+            this.count        = count;
+            this.totalCount   = totalCount * timesASecond;
 
             this.progressBar.setIndeterminate(false);
             this.progressBar.setMinimum(0);
             this.progressBar.setMaximum(this.totalCount);
             //log.info("Creating PW: "+count+"  "+this.totalCount);
         }
-
-        @Override
-        public Object construct()
+        
+        public void actionPerformed(ActionEvent e)
         {
             count++;
             progressBar.setValue(count);
-            try
+            
+            if (!stop)
             {
-                Thread.sleep(1000 / timesASecond);
-            } catch (Exception ex)
-            {
-                // do nothing
-            }
+                if (count < totalCount && progressBar.getValue() < totalCount)
+                {
 
-            return null;
+
+                } else
+                {
+                    progressBar.setIndeterminate(true);
+                }
+                
+            } else
+            {
+                ((Timer) e.getSource()).stop();
+            }
+            
         }
 
         public synchronized void stop()
         {
             this.stop = true;
         }
-
-        //Runs on the event-dispatching thread.
-        @Override
-        public void finished()
-        {
-            if (!stop)
-            {
-                if (count < totalCount && progressBar.getValue() < totalCount)
-                {
-                    ProgressWorker pw = new ProgressWorker(progressBar, count++, totalCount/timesASecond);
-                    pw.start();
-                    setProgressWorker(pw);
-
-                } else
-                {
-                    progressBar.setIndeterminate(true);
-                }
-            }
-        }
     }
-
 }

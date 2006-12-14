@@ -21,8 +21,10 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -55,12 +57,23 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * @author rods
@@ -131,7 +144,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 }
                 y += 2;
                 
-                ColObjPanel panel = new ColObjPanel(co);
+                ColObjPanel panel = new ColObjPanel(this, co);
                 colObjPanels.add(panel);
                 panel.addActionListener(al, cl);
                 pbuilder.add(panel, cc.xy(1,y));
@@ -139,8 +152,8 @@ public class LoanSelectPrepsDlg extends JDialog
                 i++;
             }
         }
-        okBtn = new JButton(getResourceString("OK"));
-        JButton cancel = new JButton(getResourceString("Cancel"));
+        okBtn = UICacheManager.createButton(getResourceString("OK"));
+        JButton cancel = UICacheManager.createButton(getResourceString("Cancel"));
         y += 2;
         
         summaryLabel = new JLabel("");
@@ -239,18 +252,19 @@ public class LoanSelectPrepsDlg extends JDialog
     //------------------------------------------------------------------------------------------
     class ColObjPanel extends JPanel
     {
-        protected CollectionObject colObj;
-        protected JCheckBox checkBox;
+        protected CollectionObject  colObj;
+        protected JCheckBox         checkBox;
         protected Vector<PrepPanel> panels = new Vector<PrepPanel>();       
+        protected JDialog           dlgParent;
         
         /**
          * @param colObj
          */
-        public ColObjPanel(CollectionObject colObj)
+        public ColObjPanel(final JDialog dlgParent, final CollectionObject colObj)
         {
             super();
-            
-            this.colObj = colObj;
+            this.dlgParent = dlgParent;
+            this.colObj    = colObj;
             
             setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
@@ -298,7 +312,7 @@ public class LoanSelectPrepsDlg extends JDialog
             int i = 0;
             for (Preparation prep : colObj.getPreparations())
             {
-                PrepPanel pp = new PrepPanel(prep);
+                PrepPanel pp = new PrepPanel(dlgParent, prep);
                 panels.add(pp);
                 pp.setBackground(colors[i % 2]);
                 contentPanel.add(pp);
@@ -359,21 +373,23 @@ public class LoanSelectPrepsDlg extends JDialog
     //------------------------------------------------------------------------------------------
     //
     //------------------------------------------------------------------------------------------
-    class PrepPanel extends JPanel
+    class PrepPanel extends JPanel implements ActionListener
     {
         protected Preparation prep;
         protected JLabel      label    = null;
         protected JLabel      label2    = null;
         protected JComponent  prepInfoBtn    = null;
         protected JSpinner    spinner; 
+        protected JDialog     parent;
 
         /**
          * @param prep
          */
-        public PrepPanel(final Preparation prep)
+        public PrepPanel(final JDialog parent, final Preparation prep)
         {
             super();
             this.prep = prep;
+            this.parent = parent;
 
             
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
@@ -389,7 +405,7 @@ public class LoanSelectPrepsDlg extends JDialog
             if (prep.getCount() !=  null)
             {
                 int count       = prep.getCount() == null ? 0 : prep.getCount();
-                int quantityOut = prep.getQuantityOut();
+                int quantityOut = prep.getQuantityOut();  
                 
                 int quantityAvailable = count - quantityOut;
                 if (quantityAvailable > 0)
@@ -406,7 +422,7 @@ public class LoanSelectPrepsDlg extends JDialog
                     if (quantityOut > 0)
                     {
                         fmtStr = String.format("(%d on loan)", new Object[] {quantityOut}); // TODO I18N
-                        prepInfoBtn = new LinkLabelBtn(fmtStr, IconManager.getIcon("InfoIcon"));
+                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
                         //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
                     }
@@ -484,6 +500,44 @@ public class LoanSelectPrepsDlg extends JDialog
                 return 0;
             }
         }
+        
+        public void actionPerformed(ActionEvent e)
+        {
+            List<Loan> loans = new Vector<Loan>();
+            
+            for (LoanPhysicalObject lpo : prep.getLoanPhysicalObjects())
+            {
+                loans.add(lpo.getLoan());
+            }
+            
+            View view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", CollectionObjDef.getCurrentCollectionObjDef());
+            final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
+                    view.getViewSetName(),
+                    "Loan",
+                    null,
+                    getResourceString("LOAN_REVIEW"),
+                    getResourceString("Close"),
+                    null, // className,
+                    null, // idFieldName,
+                    false, // isEdit,
+                    MultiView.RESULTSET_CONTROLLER);
+            
+            MultiView mv = dlg.getMultiView();
+            Viewable currentViewable = mv.getCurrentView();
+            if (currentViewable != null && currentViewable instanceof FormViewObj)
+            {
+                FormViewObj formViewObj = (FormViewObj)currentViewable;
+                Component comp      = formViewObj.getControlByName("generateInvoice");
+                if (comp instanceof JCheckBox)
+                {
+                    comp.setVisible(false);
+                }
+
+            }
+            dlg.setModal(true);
+            dlg.setData(loans);
+            dlg.setVisible(true);
+        }
     }
     
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
@@ -491,11 +545,13 @@ public class LoanSelectPrepsDlg extends JDialog
 
     class LinkLabelBtn extends JLabel
     {
+        protected ActionListener al;
         
-        public LinkLabelBtn(final String label, final ImageIcon imgIcon)
+        public LinkLabelBtn(final ActionListener al, final String label, final ImageIcon imgIcon)
         {
             super(label, imgIcon, JLabel.LEFT);
             setHorizontalTextPosition(JLabel.LEFT);
+            this.al = al;
             
             //setBorderPainted(false);
             //setBorder(BorderFactory.createEmptyBorder());
@@ -506,7 +562,10 @@ public class LoanSelectPrepsDlg extends JDialog
 
             addMouseListener(new MouseAdapter()
             {
-                public void mouseClicked(MouseEvent e) {}
+                public void mouseClicked(MouseEvent e) 
+                {
+                    al.actionPerformed(new ActionEvent(this, 0, ""));
+                }
 
                 /**
                  * Invoked when a mouse button has been pressed on a component.

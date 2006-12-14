@@ -665,8 +665,11 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     @Override
     public String getIdentityTitle()
     {
-        String title = catalogNumber.toString();
+        String title = null;
         if (StringUtils.isNotEmpty(title))
+        {
+            title = catalogNumber.toString();
+        } else
         {
             title = fieldNumber;
         }

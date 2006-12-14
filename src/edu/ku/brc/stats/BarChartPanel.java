@@ -192,7 +192,9 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
 
-        addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
+        JLabel label = new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER);
+        label.setFont(UICacheManager.getFont(JLabel.class));
+        addCompletedComp(label);
     }
 
     /*

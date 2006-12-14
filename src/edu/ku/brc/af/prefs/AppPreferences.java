@@ -49,8 +49,8 @@ public class AppPreferences
     
     protected static final Logger log                 = Logger.getLogger(AppPreferences.class);
             
-    protected static AppPreferences instanceRemote             = null;
-    protected static AppPreferences instanceRemoteLocal        = null;
+    protected static AppPreferences instanceRemote    = null;
+    protected static AppPreferences instanceLocal     = null;
 
     // instanceRemote Data Memeber
     protected Properties         properties           = null;
@@ -145,12 +145,12 @@ public class AppPreferences
      */
     public static AppPreferences getLocalPrefs()
     {
-        if (instanceRemoteLocal == null)
+        if (instanceLocal == null)
         {
-            instanceRemoteLocal = new AppPreferences(false);
+            instanceLocal = new AppPreferences(false);
         }
         
-        return instanceRemoteLocal;
+        return instanceLocal;
     }
     
     /**
@@ -556,6 +556,15 @@ public class AppPreferences
     }
 
     /**
+     * Tells prefs whether it is ok to access the database.
+     * @param connectedToDB true - it is ok, false it isn't
+     */
+    public static void setConnectedToDB(boolean connectedToDB)
+    {
+        AppPreferences.connectedToDB = connectedToDB;
+    }
+
+    /**
      * Notifies listener of a property change.
      * @param e the change event
      */
@@ -590,7 +599,7 @@ public class AppPreferences
         })));
 
     protected static Timer syncTimer = new Timer(true); // Daemon Thread
-
+    protected static boolean connectedToDB = false;
     static {
         // Add periodic timer task to periodically sync cached prefs
         syncTimer.schedule(new TimerTask() {
@@ -628,7 +637,7 @@ public class AppPreferences
 
         synchronized(AppPreferences.class)
         {
-            prefsLocal   = instanceRemoteLocal;
+            prefsLocal   = instanceLocal;
             prefsRemote  = instanceRemote;
         }
 
@@ -647,7 +656,7 @@ public class AppPreferences
         
         try 
         {
-            if (prefsRemote != null)
+            if (connectedToDB && prefsRemote != null)
             {
                 prefsRemote.flush();
             }

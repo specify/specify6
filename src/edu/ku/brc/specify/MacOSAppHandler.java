@@ -55,6 +55,12 @@ public class MacOSAppHandler extends Application
             app.get().preferences();
             event.setHandled(true);
         }
+        
+        public void handlePreferences(ApplicationEvent event) 
+        {
+            app.get().preferences();
+            event.setHandled(true);
+        }
 
         public void handleQuit(ApplicationEvent event)
         {

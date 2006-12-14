@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -168,7 +169,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         if (e.isPopupTrigger())
         {
             JPopupMenu popup = new JPopupMenu();
-            JMenuItem menuItem = new JMenuItem("Configure Carry Forward"); // I18N
+            JMenuItem menuItem = UICacheManager.createMenuItem("Configure Carry Forward"); // I18N
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ex)
                 {
@@ -281,6 +282,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public List<MultiView> getKids()
     {
         return kids;
+    }
+    
+    /**
+     * The flags used when the MultiView was created.
+     * @return the int bit mask of options
+     */
+    public int getOptions()
+    {
+        return createOptions;
     }
 
     /**
@@ -415,38 +425,45 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         // this call parents the viewable to the multiview
         Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions);
-        viewable.setParentDataObj(parentDataObj);
-
-        // Add Viewable to the CardLayout
-        if (add(viewable, altView.getName()))
+        if (viewable != null)
         {
-            showView(altView.getName());
-        }
-        
-        // Testing
-        if (mvParent == null)
+            viewable.setParentDataObj(parentDataObj);
+    
+            // Add Viewable to the CardLayout
+            if (add(viewable, altView.getName()))
+            {
+                showView(altView.getName());
+            }
+            
+            // Testing
+            if (mvParent == null)
+            {
+                thisObj = this;
+    
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e)
+                    {
+                        showContextMenu(e);
+                    }
+    
+                    @Override
+                    public void mouseReleased(MouseEvent e)
+                    {
+                        showContextMenu(e);
+    
+                    }
+                    @Override
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        ((FormViewObj)thisObj.currentViewable).listFieldChanges();
+                    }
+                });
+            }
+        } else
         {
-            thisObj = this;
-
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e)
-                {
-                    showContextMenu(e);
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e)
-                {
-                    showContextMenu(e);
-
-                }
-                @Override
-                public void mouseClicked(MouseEvent e)
-                {
-                    ((FormViewObj)thisObj.currentViewable).listFieldChanges();
-                }
-            });
+            log.error("Couldn't create View["+view.getName()+"] alt["+altView.getName()+"] options["+createOptions+"]");
+            printCreateOptions("Error", createOptions);
         }
 
         return viewable;
@@ -836,6 +853,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public Viewable getCurrentView()
     {
         return currentViewable;
+    }
+    
+    /**
+     * Returns the current viewable as a FormViewObj if it is one, or return null.
+     * @return the current viewable as a FormViewObj if it is one, or return null.
+     */
+    public FormViewObj getCurrentViewAsFormViewObj()
+    {
+        return currentViewable instanceof FormViewObj ? (FormViewObj)currentViewable : null;
     }
 
     /**

@@ -20,6 +20,8 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import edu.ku.brc.ui.UICacheManager;
+
 /**
  * 
  * One row (or section) of the prefs when it is laaid out in a grid  
@@ -44,6 +46,7 @@ public class PrefPanelRow extends JPanel
     public PrefPanelRow(final String titleStr)
     {
         title = new JLabel(titleStr);
+        title.setFont(UICacheManager.getFont(JLabel.class));
         setLayout(layout = new PrefPanelRowLayoutManager(title));     
         add(title);
         

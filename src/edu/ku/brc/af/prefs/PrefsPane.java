@@ -19,6 +19,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 
+import edu.ku.brc.ui.UICacheManager;
+
 /**
  *
  * This class creates a grid of AppPreferences icon (commands) where each icon will dispay a panel.
@@ -139,7 +141,7 @@ public class PrefsPane extends JPanel
 //                        log.error("Icon was created - path["+iconPath+"]");
 //                    }
 //
-//                    JButton btn = new JButton(getResourceString(title), icon);
+//                    JButton btn = UICacheManager.createButton(getResourceString(title), icon);
 //                    btn.setHorizontalTextPosition(JLabel.CENTER);
 //                    btn.setVerticalTextPosition(JLabel.BOTTOM);
 //                    btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

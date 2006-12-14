@@ -31,6 +31,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import edu.ku.brc.ui.UICacheManager;
+
 /**
  * Allows user to edit a properties file
  * 
@@ -74,7 +76,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         
-        removeBtn = new JButton("Remove Property");
+        removeBtn = UICacheManager.createButton("Remove Property");
         removeBtn.setEnabled(false);
         add(removeBtn, BorderLayout.SOUTH);
         

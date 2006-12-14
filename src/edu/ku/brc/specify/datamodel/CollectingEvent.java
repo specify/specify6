@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 
 
@@ -445,5 +446,33 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     {
         return 10;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    @Override
+    public void addReference(FormDataObjIFace ref, String refType)
+    {
+        if( ref instanceof Attachment )
+        {
+            Attachment a = (Attachment)ref;
+            attachments.add(a);
+            a.setCollectingEvent(this);
+            return;
+        }
+        super.addReference(ref, refType);
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    @Override
+    public void removeReference(FormDataObjIFace refObj, String refType)
+    {
+        if( refObj instanceof Attachment )
+        {
+            attachments.remove(refObj);
+            return;
+        }
+        super.removeReference(refObj, refType);
+    }
 }

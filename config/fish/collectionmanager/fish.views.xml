@@ -617,9 +617,9 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Locality Mapper]]></desc>
-            <columnDef>p,3dlu,p,3dlu</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+            
             <rows>
                 <row>
                     <cell type="separator" label="Collecting Event" colspan="4"/>
@@ -641,21 +641,18 @@
                     <cell type="field" id="4" name="locality.localityName" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Country"/>
-                    <cell type="field" id="5" name="locality.geography.@getCountry" uitype="text"/>
+                    <cell type="label" labelfor="5" label="Method"/>
+                    <cell type="field" id="5" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="State"/>
-                    <cell type="field" id="6" name="locality.geography.@getState" uitype="text"/>
-                </row>
+                    <cell type="label" labelfor="7" label="Geography"/>
+                    <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
+                </row>                
                 <row>
-                    <cell type="label" labelfor="7" label="County"/>
-                    <cell type="field" id="7" name="locality.geography.@getCounty" uitype="text"/>
+                    <cell type="label" labelfor="8" label="Attachments"/>
+                    <cell type="subview" viewname="AttachmentsIconView" id="8" name="attachments" colspan="2"/>
                 </row>
-                <row>
-                    <cell type="label" labelfor="8" label="Method"/>
-                    <cell type="field" id="8" name="method" uitype="text"/>
-                </row>
+                
             </rows>
         </viewdef>
 
@@ -670,8 +667,7 @@
             <enableRules/>
 
             <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-
+            <rowDef auto="true" cell="p" sep="1dlu"/>
     		<rows>
     			<!-- <row>
     				<cell type="separator" label="KU Fish" colspan="12"/>
@@ -712,7 +708,7 @@
     			    <cell type="field" id="7" name="fieldNumber" uitype="text"/>
 
                     <cell type="label" labelfor="8" label="Locality"/>
-    			    <cell type="field" id="8" name="collectingEvent.locality.localityName" uitype="text" cols="41" colspan="6"/>
+    			    <cell type="field" id="8" name="collectingEvent.locality.localityName" uitype="text" colspan="6"/>
     			</row>
     			<row>
     		        <cell type="separator" label="Preparations" colspan="12"/>
@@ -725,6 +721,7 @@
     			<row>
     				<cell type="separator" label="" colspan="12"/>
     			</row>
+    			
     			<row>
                     <cell type="label" labelfor="10" label="Edited By"/>
     			    <cell type="field" id="10" name="lastEditedBy" uitype="text" readonly="true"/>
@@ -732,6 +729,7 @@
                     <cell type="label" labelfor="11" label="Last Edited"/>
     			    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
     			</row>
+    			
     		</rows>
     	</viewdef>
 
@@ -756,7 +754,7 @@
                     <cell type="label" labelfor="1" label="Catalog Number"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="text"/>
                     
-                    <cell type="label" labelfor="2" label="Catalog Series"/>
+                    <cell type="label" labelfor="2" label="Collection"/>
                     <cell type="field" id="2" name="catalogSeries_seriesName" uitype="text" />
                 </row>
                 <row>
@@ -965,14 +963,15 @@
                      <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Shipment" colspan="12"/>
+                    <cell type="separator" label="Shipment" collapse="shipment" colspan="12"/>
                 </row>
+                
                 <row>                   
                     <cell type="subview" viewname="Shipment" id="11" name="shipment" colspan="12"/>
                 </row>
                 <!--
                 <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="f:p:g" rowdef="f:p:g" colspan="12">
+                    <cell type="panel" id="outerPanel" name="shipmentPanel" coldef="f:p:g" rowdef="f:p:g" colspan="12">
                         <rows>
                             <row>                   
                                 <cell type="subview" viewname="Shipment" id="11" name="shipment"/>
@@ -985,14 +984,22 @@
                     <cell type="separator" label="Preparations To be Loaned" colspan="12"/>
                 </row>
                 <row>
-                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="12"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="6"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="9" label="Attachments"/>
                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true" colspan="6"/>
+                    <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p,5px,p" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="command" id="14" name="ReturnLoan" label="Return Loan" commandtype="" action="" ignore="true"/>
+                                <cell type="command" id="15" name="ReturnPartialLoan" label="Return Partial Loan" commandtype="" action="" ignore="true"/>                                
+                                <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
             </rows>
         </viewdef>
@@ -1005,19 +1012,21 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
-            <columnDef>85px,4px,p,80px,p,4px,p,p:g</columnDef>
+            <columnDef>85px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Quantity"/>
                     <cell type="field" id="1" name="quantity" uitype="text" isrequired="true"/>
-                    <cell type="label" labelfor="2" label="Prep Method"/>
-                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield"/>
+                    <cell type="label" labelfor="7" label="Returned"/>
+                    <cell type="field" id="7" name="quantityReturned" uitype="text" isrequired="true" default="0"/>
+                    <cell type="label" labelfor="2" label="Method"/>
+                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Description"/>
-                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="6" valtype="Changed"/>
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="10" valtype="Changed"/>
                 </row>
                 <!-- <row>
                     <cell type="label" labelfor="4" label="Comments"/>
@@ -1028,7 +1037,7 @@
                     <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
                     
                     <cell type="label" labelfor="6" label="Storage"/>
-                    <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colspan="2" />
+                    <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colspan="6" />
                 </row>              
             </rows>
         </viewdef>
@@ -1196,18 +1205,11 @@
             <enableRules/>
 
             <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
-
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
             <rows>
                 <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
-                        <rows>
-                            <row>
-                                <cell type="label" icon="Permit" recordobj="true"/>
-                                <cell type="separator" label="Permit"/>
-                            </row>
-                        </rows>
-                    </cell>
+                    <cell type="label" label="Permit" icon="Permit" recordobj="true" colspan="12"/>                    
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
@@ -1242,9 +1244,12 @@
 
                 <row>
                     <cell type="label" labelfor="9" label="Remarks"/>
-                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="9" cols="40" valtype="Changed"/>
+                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10" valtype="Changed"/>
                 </row>
-
+                <row>
+                    <cell type="label" labelfor="10" label="Attachments"/>
+                    <cell type="subview" viewname="AttachmentsIconView" id="10" name="attachments" colspan="10"/>
+                </row>
             </rows>
         </viewdef>
 
@@ -1338,6 +1343,7 @@
     				<cell type="field" name="url" label="URL" colspan="5" cols="50"/>
     		    </row>
     -->
+    <!--
                 <row>
 
     			    <cell type="label" labelfor="5" label="Size"/>
@@ -1346,7 +1352,7 @@
     				<cell type="label" labelfor="6" label="Sex"/>
                     <cell type="field" id="6" uitype="combobox" name="attrs.sex" initialize="data=Unknown, Male, Female"/>
     			</row>
-
+-->
     			<!--
     			<row>
     				<cell type="attrs" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef">
@@ -1390,9 +1396,13 @@
             <enableRules/>
             
             <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,200px,2dlu,p</rowDef>>
             
             <rows>
+                <row>
+                    <cell type="label" labelfor="7" label="Number"/>
+                    <cell type="field" id="7" name="number" uitype="formattedtext" uifieldformatter="InfoRequestNumber" isrequired="true"/>
+                </row>
                 <row>
                     <cell type="label" labelfor="1" label="Request Date"/>
                     <cell type="field" id="1" name="requestDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
@@ -1513,7 +1523,7 @@
                     <cell type="label" labelfor="3" label="Method"/>
                     <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod" isrequired="true" valtype="Changed"/>
                     <cell type="label" labelfor="4" label="Number of Packages"/>
-                    <cell type="field" id="4" name="numberOfPackages" uitype="text"  isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="4" name="numberOfPackages" uitype="text"  isrequired="true" valtype="Changed" default="1"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Weight"/>

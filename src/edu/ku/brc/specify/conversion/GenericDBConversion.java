@@ -3537,6 +3537,8 @@ public class GenericDBConversion
             log.info("Converted " + counter + " geography records");
         }
       
+        planetEarth.setNodeNumber(1);
+        fixNodeNumbersFromRoot(planetEarth);
         planetEarth.fixFullNameForAllDescendants();
         
     	HibernateUtil.commitTransaction();

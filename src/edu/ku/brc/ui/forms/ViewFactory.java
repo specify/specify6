@@ -25,6 +25,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -58,6 +60,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
@@ -131,7 +134,7 @@ public class ViewFactory
     public JPanel createIconPanel(final JComponent comp)
     {
         JPanel  panel = new JPanel(new BorderLayout());
-        JButton btn   = new JButton("...");
+        JButton btn   = UICacheManager.createButton("...");
         panel.add(btn, BorderLayout.WEST);
         panel.add(comp, BorderLayout.EAST);
         return panel;
@@ -235,7 +238,8 @@ public class ViewFactory
         {
             txtField = new JTextField(cellField.getCols());
         }
-
+        
+        txtField.setFont(UICacheManager.getFont(JTextField.class));
         return txtField;
     }
 
@@ -270,6 +274,9 @@ public class ViewFactory
         {
             txt = new ValPasswordField(cellField.getCols());
         }
+        
+        txt.setFont(UICacheManager.getFont(JTextField.class));
+
         return txt;
     }
 
@@ -294,7 +301,7 @@ public class ViewFactory
 
             textField = new ValFormattedTextField(cellField.getUIFieldFormatter());
             textField.setRequired(cellField.isRequired());
-
+            
             validator.hookupTextField(textField,
                                       cellField.getId(),
                                       cellField.isRequired(),
@@ -307,6 +314,7 @@ public class ViewFactory
             textField = new ValFormattedTextField(cellField.getUIFieldFormatter());
         }
 
+        textField.setFont(UICacheManager.getFont(JTextField.class));
         textField.setEditable(!cellField.isReadOnly());
 
         return textField;
@@ -341,6 +349,8 @@ public class ViewFactory
         }
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        textArea.setFont(UICacheManager.getFont(JTextArea.class));
+
 
         textArea.setEditable(!cellField.isReadOnly());
 
@@ -375,6 +385,7 @@ public class ViewFactory
             valList.getModel().addListDataListener(dcn);
             valList.addFocusListener(dcn);
         }
+        valList.setFont(UICacheManager.getFont(JList.class));
         valList.setRequired(cellField.isRequired());
         
         valList.setVisibleRowCount(cellField.getPropertyAsInt("rows", 15));
@@ -401,7 +412,8 @@ public class ViewFactory
             {
                 DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
                 cbx.getComboBox().getModel().addListDataListener(dcn);
-                
+                cbx.getComboBox().setFont(UICacheManager.getFont(JComboBox.class));
+
                 if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
                 {
                     cbx.addFocusListener(dcn);
@@ -447,10 +459,15 @@ public class ViewFactory
             cbx = initArray == null || initArray.length == 0 ? new ValComboBox(makeEditable) : new ValComboBox(initArray, makeEditable);
         }
         cbx.setRequired(cellField.isRequired());
-
-        if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
+        cbx.getComboBox().setFont(UICacheManager.getFont(JComboBox.class));
+        
+        if (validator != null && (cellField.isRequired() || cellField.isChangeListenerOnly() || isNotEmpty(cellField.getValidationRule())))
         {
-            DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            DataChangeNotifier dcn = validator.hookupComponent(cbx, 
+                                                               cellField.getId(), 
+                                                               parseValidationType(cellField.getValidationType()), 
+                                                               cellField.getValidationRule(), 
+                                                               cellField.isChangeListenerOnly());
             //cbx.getModel().addListDataListener(dcn);
             cbx.getComboBox().addActionListener(dcn);
 
@@ -493,7 +510,8 @@ public class ViewFactory
         ta.setForeground(Color.BLACK);
         ta.setEditable(false);
         ta.setBackground(viewFieldColor.getColor());
-
+        ta.setFont(UICacheManager.getFont(JTextArea.class));
+        
         JScrollPane scrollPane = new JScrollPane(ta);
         insets = scrollPane.getBorder().getBorderInsets(scrollPane);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -527,6 +545,7 @@ public class ViewFactory
 
         JTextField textField = textFieldInfo.getTextField();
         textField.setColumns(cellField.getCols());
+        textField.setFont(UICacheManager.getFont(JTextField.class));
         
         changeTextFieldUIForDisplay(textField);
         return textFieldInfo;
@@ -679,15 +698,13 @@ public class ViewFactory
     {
         int rowInx    = 1;
         int curMaxRow = 1;
+        
+        Hashtable<CollapsableSeparator, String> collapseSepHash = null;
 
         for (FormRow row : formRows)
         {
             int colInx = 1;
 
-            if (rowInx < curMaxRow)
-            {
-                //rowInx = curMaxRow;
-            }
             for (FormCell cell : row.getCells())
             {
                 JComponent compToAdd = null;
@@ -712,6 +729,8 @@ public class ViewFactory
                     } else
                     {
                         JLabel lbl = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", SwingConstants.RIGHT);
+                        lbl.setFont(UICacheManager.getFont(JLabel.class));
+                        
                         //lbl.setFont(boldLabelFont);
                         labelsForHash.put(cellLabel.getLabelFor(), lbl);
                         compToAdd      =  lbl;
@@ -780,13 +799,15 @@ public class ViewFactory
                             break;
                             
                         case label:
-                            compToAdd = new JLabel("", SwingConstants.LEFT);
+                            JLabel label = new JLabel("", SwingConstants.LEFT);
+                            label.setFont(UICacheManager.getFont(JLabel.class));
+                            compToAdd = label;
                             break;
                             
                         case dsptextfield:
                             if (StringUtils.isEmpty(cellField.getPickListName()))
                             {
-                                JTextField text = new JTextField(cellField.getCols());
+                                JTextField text = UICacheManager.createTextField(cellField.getCols());
                                 changeTextFieldUIForDisplay(text);
                                 compToAdd = text;
                             } else
@@ -826,7 +847,7 @@ public class ViewFactory
                                 DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getId(), checkbox, null);
                                 checkbox.addActionListener(dcn);
                             }
-    
+                            checkbox.setFont(UICacheManager.getFont(JCheckBox.class));
                             compToAdd = checkbox;
                             break;
                        }
@@ -846,7 +867,8 @@ public class ViewFactory
                             JScrollPane scrollPane = new JScrollPane(ta);
                             scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
                             scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    
+                            ta.setFont(UICacheManager.getFont(JTextArea.class));
+                            
                             addToValidator = validator == null; // might already added to validator
                             compToReg = ta;
                             compToAdd = scrollPane;
@@ -872,7 +894,8 @@ public class ViewFactory
                         case list:
                         {
                             JList list = createList(validator, cellField);
-    
+                            list.setFont(UICacheManager.getFont(JList.class));
+                            
                             JScrollPane scrollPane = new JScrollPane(list);
                             scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                             scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -897,7 +920,10 @@ public class ViewFactory
                         }
                         
                         case button:
-                            compToAdd = new JButton(cellField.getProperty("title"));
+                            JButton btn = UICacheManager.createButton(cellField.getProperty("title"));
+                            btn.setFont(UICacheManager.getFont(JButton.class));
+                            
+                            compToAdd = btn;
                             break;
                             
                         case progress:
@@ -909,7 +935,9 @@ public class ViewFactory
                             break;
 
                         case textpl:
-                            compToAdd = new TextFieldFromPickListTable(adapter);
+                            JTextField txt = new TextFieldFromPickListTable(adapter);
+                            txt.setFont(UICacheManager.getFont(JLabel.class));
+                            compToAdd = txt;
                             break;
                         
                         default:
@@ -917,10 +945,38 @@ public class ViewFactory
                         
                     } // switch
 
+                } else if (cell.getType() == FormCell.CellType.separator)
+                {
+                    
+                    // still have compToAdd = null;
+                    FormCellSeparator fcs             = (FormCellSeparator)cell;
+                    String            collapsableName = fcs.getCollapseCompName();
+                    Component         sep             = viewBldObj.createSeparator(fcs.getLabel(), colInx, rowInx, colspan);
+                    if (isNotEmpty(collapsableName))
+                    {
+                        CollapsableSeparator collapseSep = new CollapsableSeparator(sep);
+                        if (collapseSepHash == null)
+                        {
+                            collapseSepHash = new Hashtable<CollapsableSeparator, String>();
+                        }
+                        collapseSepHash.put(collapseSep, collapsableName);
+                        sep = collapseSep;
+                        
+                    } else
+                    {
+                        sep = viewBldObj.createSeparator(fcs.getLabel(), colInx, rowInx, colspan);
+                    }
+                    addControl = cell.getName().length() > 0;
+                    log.info("colInx "+colInx+"  rowInx "+rowInx+"  rowspan "+rowspan+"  colspan "+colspan);
+                    compToAdd = (JComponent)sep;
+                    addControl = false;
+                    //curMaxRow = rowInx;
+                    //colInx += 2;
+
                 } else if (cell.getType() == FormCell.CellType.command)
                 {
                     FormCellCommand cellCmd = (FormCellCommand)cell;
-                    JButton btn  = new JButton(cellCmd.getLabel());
+                    JButton btn  = UICacheManager.createButton(cellCmd.getLabel());
                     if (cellCmd.getCommandType().length() > 0)
                     {
                         btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));
@@ -928,18 +984,7 @@ public class ViewFactory
                     addToValidator = false;
                     compToAdd = btn;
 
-                } else if (cell.getType() == FormCell.CellType.separator)
-                {
-                    // still have compToAdd = null;
-                    Component sep = viewBldObj.createSeparator(((FormCellSeparator)cell).getLabel(), colInx, rowInx, cell.getColspan());
-                    if (cell.getName().length() > 0)
-                    {
-                        viewBldObj.registerControl(cell, sep);
-                    }
-                    curMaxRow = rowInx;
-                    colInx += 2;
-
-                }
+                } 
                 else if (cell.getType() == FormCell.CellType.iconview)
                 {
                     FormCellSubView cellSubView = (FormCellSubView) cell;
@@ -1046,7 +1091,7 @@ public class ViewFactory
                     
                     if (panelType == PanelViewable.PanelType.Panel)
                     {
-                        PanelViewable panelViewable = new PanelViewable(cellPanel);
+                        PanelViewable panelViewable = new PanelViewable(viewBldObj, cellPanel);
 
                         processRows(parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
 
@@ -1091,6 +1136,18 @@ public class ViewFactory
             rowInx += 2;
         }
 
+        if (collapseSepHash != null)
+        {
+            for (Enumeration<CollapsableSeparator> e=collapseSepHash.keys();e.hasMoreElements();)
+            {
+                CollapsableSeparator collapseSep = e.nextElement();
+                Component            comp        = viewBldObj.getControlByName(collapseSepHash.get(collapseSep));
+                if (comp != null)
+                {
+                    collapseSep.setInnerComp(comp);
+                }
+            }
+        }
 
     }
 
@@ -1112,7 +1169,7 @@ public class ViewFactory
                 if (cell.getType() == FormCell.CellType.command)
                 {
                     FormCellCommand cellCmd = (FormCellCommand)cell;
-                    JButton btn  = new JButton(cellCmd.getLabel());
+                    JButton btn  = UICacheManager.createButton(cellCmd.getLabel());
                     if (cellCmd.getCommandType().length() > 0)
                     {
                         btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));

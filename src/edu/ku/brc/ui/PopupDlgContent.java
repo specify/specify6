@@ -33,10 +33,10 @@ import javax.swing.JLabel;
  *
  */
 public class PopupDlgContent
-{
-	//String message = "";	
-	JLabel message = new JLabel("");
-	JCheckBox checkbox = new JCheckBox("Do not me ask again");
+{      
+    protected JLabel    message;
+    protected JCheckBox checkbox;
+    
 	Object[] values = new Object[] {message, checkbox};
 
 
@@ -44,11 +44,9 @@ public class PopupDlgContent
 	 * Constructor
 	 * @param message
 	 */
-	public PopupDlgContent(String message)
+	public PopupDlgContent(final String messageStr)
 	{
-		super();
-		JLabel dispalyableMessage = new JLabel(message);
-		values = new Object[] {dispalyableMessage, checkbox};
+		this(messageStr, UICacheManager.getResourceString("DONT_ASK_AGAIN"));
 	}	
 
 
@@ -57,22 +55,29 @@ public class PopupDlgContent
 	 * @param message
 	 * @param doNotAgainMessage
 	 */
-	public PopupDlgContent(String message, String doNotAgainMessage)
+	public PopupDlgContent(final String messageStr, String doNotAgainMessage)
 	{
 		super();
-		checkbox = new JCheckBox(doNotAgainMessage);
-		JLabel dispalyableMessage = new JLabel(message);
-		values = new Object[] {dispalyableMessage, checkbox};
+        
+        message  = new JLabel(messageStr);
+        checkbox = new JCheckBox(doNotAgainMessage);
+		values   = new Object[] {message, checkbox};
+        
+        message.setFont(UICacheManager.getFont(JLabel.class));
+        checkbox.setFont(UICacheManager.getFont(JCheckBox.class));
 	}
 
 	/**
 	 * Constructor
 	 * @param displayableComponent
 	 */
-	public PopupDlgContent(Container displayableComponent)
+	public PopupDlgContent(final Container displayableComponent)
 	{
 		super();
-		values = new Object[] {displayableComponent, checkbox};
+		checkbox = new JCheckBox(UICacheManager.getResourceString("DONT_ASK_AGAIN"));
+		values   = new Object[] {displayableComponent, checkbox};
+        message.setFont(UICacheManager.getFont(JLabel.class));
+        checkbox.setFont(UICacheManager.getFont(JCheckBox.class));
 	}	
 
 	/**
@@ -80,18 +85,18 @@ public class PopupDlgContent
 	 * @param displayableComponent
 	 * @param doNotCommand
 	 */
-	public PopupDlgContent(JComponent displayableComponent, String doNotCommand)
+	public PopupDlgContent(final JComponent displayableComponent, final String doNotCommand)
 	{
-		super();
-		checkbox = new JCheckBox(doNotCommand);
-		values = new Object[] {displayableComponent, checkbox};
+		this(displayableComponent);
+		checkbox.setText(doNotCommand);
 	}
 
 	/**
 	 * @return - 
 	 * Object[] - 
 	 */
-	public Object[] getComponents() {
+	public Object[] getComponents() 
+    {
 		return values;
 	}
 
@@ -102,15 +107,6 @@ public class PopupDlgContent
 	public boolean isCheckboxSelected()
 	{
 		return checkbox.isSelected();
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args)
-
-	{
-		// TODO Auto-generated method stub
 	}
 }
 

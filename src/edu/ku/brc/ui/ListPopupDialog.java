@@ -3,6 +3,8 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -32,9 +34,9 @@ public class ListPopupDialog extends JDialog
 	protected ListPopupCallback callback;
 	protected Vector<Object> options;
 	
-	protected JPanel messagePanel;
-	protected JPanel cbPanel;
-	protected JPanel buttonPanel;
+	protected JPanel    messagePanel;
+	protected JPanel    cbPanel;
+	protected JPanel    buttonPanel;
 	protected JComboBox optionList;
 	protected DefaultComboBoxModel model;
 	
@@ -44,20 +46,27 @@ public class ListPopupDialog extends JDialog
 	public ListPopupDialog(Frame owner,String message,List<Object> options,ListPopupCallback popupCallback)
 	{
 		super(owner);
+        
 		this.setLayout(new BorderLayout());
 		this.callback = popupCallback;
 		this.options = new Vector<Object>(options);
 		
-		model = new DefaultComboBoxModel(this.options);
+		model      = new DefaultComboBoxModel(this.options);
 		optionList = new JComboBox(model);
-		cbPanel = new JPanel();
+		cbPanel    = new JPanel();
 		cbPanel.add(optionList);
 		add(cbPanel,BorderLayout.CENTER);
+        optionList.setFont(UICacheManager.getFont(JComboBox.class));
+         
+        JLabel lbl = new JLabel(message);
+        lbl.setFont(UICacheManager.getFont(JLabel.class));
+        
+		add(lbl,BorderLayout.NORTH);
 		
-		add(new JLabel(message),BorderLayout.NORTH);
-		
-		buttonPanel = new JPanel(new FlowLayout());
-		cancelButton = new JButton("Cancel");
+		buttonPanel  = new JPanel(new FlowLayout());
+		cancelButton = UICacheManager.createButton(getResourceString("Cancel"));
+        cancelButton.setFont(UICacheManager.getFont(JButton.class));
+
 		cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -66,7 +75,9 @@ public class ListPopupDialog extends JDialog
 				callback.cancelled();
 			}
 		});
-		okButton = new JButton("OK");
+		okButton = UICacheManager.createButton(getResourceString("OK"));
+        okButton.setFont(UICacheManager.getFont(JButton.class));
+
 		okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -91,7 +102,7 @@ public class ListPopupDialog extends JDialog
 		});
 	}
 	
-	public void setComboBoxCellRenderer(ListCellRenderer renderer)
+	public void setComboBoxCellRenderer(final ListCellRenderer renderer)
 	{
 		optionList.setRenderer(renderer);
 	}

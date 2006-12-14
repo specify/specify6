@@ -44,6 +44,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -93,8 +94,8 @@ public class LoggerDialog extends JDialog implements ActionListener
         CellConstraints cc      = new CellConstraints();
         
         // Bottom Button UI
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        okBtn     = new JButton(getResourceString("OK"));
+        cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
+        okBtn     = UICacheManager.createButton(getResourceString("OK"));
         cnt = 1;
         for (LoggerInfo logInfo : loggers)
         {

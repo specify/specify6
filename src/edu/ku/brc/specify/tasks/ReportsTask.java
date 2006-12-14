@@ -43,20 +43,26 @@ public class ReportsTask extends BaseTask
     public ReportsTask()
     {
         super(REPORTS, getResourceString(REPORTS));
+    }    
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    public void initialize()
+    {
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
             
-           // Temporary
-            NavBox navBox = new NavBox(getResourceString("Actions"));
-            navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
-            navBoxes.addElement(navBox);
-    
-            navBox = new NavBox(name);
-            navBox.add(NavBox.createBtn("Year End Report", name, IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn("Grant Statistics Report", name, IconManager.IconSize.Std16));
-            navBoxes.addElement(navBox);
+            // Temporary
+             NavBox navBox = new NavBox(getResourceString("Actions"));
+             navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
+             navBoxes.addElement(navBox);
+     
+             navBox = new NavBox(name);
+             navBox.add(NavBox.createBtn("Year End Report", name, IconManager.IconSize.Std16));
+             navBox.add(NavBox.createBtn("Grant Statistics Report", name, IconManager.IconSize.Std16));
+             navBoxes.addElement(navBox);
         }
     }
 

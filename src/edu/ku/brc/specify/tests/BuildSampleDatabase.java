@@ -31,9 +31,9 @@ import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriod;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoan;
+import static edu.ku.brc.specify.tests.DataBuilder.createLoanAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoanPhysicalObject;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoanReturnPhysicalObject;
-import static edu.ku.brc.specify.tests.DataBuilder.createLoanAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocality;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocation;
 import static edu.ku.brc.specify.tests.DataBuilder.createLocationTreeDef;
@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -177,28 +178,28 @@ public class BuildSampleDatabase
         dataObjects.add(createPickList("Department",          2, "accession",         "text1" ,       null,          true, -1));
         dataObjects.add(createPickList("AgentTitle",          2, "agent",             "title" ,       null,          true, -1));
         
-        String[] types = {"state", "federal", "international", "<no data>"};
+        String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
         dataObjects.add(createPickList("PermitType", true, types));
 
         //String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
         //dataObjects.add(createPickList("AgentTitle", true, titles));
         
-        String[] roles = {"borrower", "receiver"};
+        String[] roles = {"Borrower", "Receiver"};
         dataObjects.add(createPickList("LoanAgentsRole", true, roles));
         
-        String[] sexes = {"both", "female", "male", "unknown"};
+        String[] sexes = {"Both", "Female", "Male", "Unknown"};
         dataObjects.add(createPickList("BiologicalSex", true, sexes));
         
-        String[] status = {"complete", "in process", "<no data>"};
+        String[] status = {"Complete", "In Process", "<no data>"};
         dataObjects.add(createPickList("AccessionStatus", true, status));
         
-        String[] methods = {"by hand", "USPS", "UPS", "FedEx", "DHL"};
+        String[] methods = {"By Hand", "USPS", "UPS", "FedEx", "DHL"};
         dataObjects.add(createPickList("ShipmentMethod", true, methods));
         
-        String[] accTypes = {"collection","gift"};
+        String[] accTypes = {"Collection","Gift"};
         dataObjects.add(createPickList("AccessionType", true, accTypes));
         
-        String[] accRoles = {"collector", "donor", "reviewer", "staff", "receiver"};
+        String[] accRoles = {"Collector", "Donor", "Reviewer", "Staff", "Receiver"};
         dataObjects.add(createPickList("AccessionRole", true, accRoles));
         
         String[] stages = {"adult", "egg", "embryo", "hatchling", "immature", "juvenile", "larva", "nymph", "pupa", "seed"};
@@ -285,9 +286,11 @@ public class BuildSampleDatabase
         addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
         // KU
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
-
+        
         dataObjects.addAll(agents);
         dataObjects.addAll(addrs);
+        
+        
         
         ////////////////////////////////
         // collecting events (collectors, collecting trip)
@@ -302,6 +305,7 @@ public class BuildSampleDatabase
         calendar.set(1993, 3, 19, 13, 03, 00);
         ce1.setEndDate(calendar);
         ce1.setEndDateVerbatim("19 Mar 1993, 1:03 PM");
+        ce1.setMethod(collMethods[1]);
         
         AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
         CollectingEventAttr cevAttr = createCollectingEventAttr(ce1, cevAttrDef, "Sleepy Hollow", null);
@@ -315,6 +319,7 @@ public class BuildSampleDatabase
         calendar.set(1993, 3, 20, 07, 31, 00);
         ce2.setEndDate(calendar);
         ce2.setEndDateVerbatim("20 Mar 1993, 7:31 AM");
+        ce2.setMethod(collMethods[2]);
 
         CollectingTrip trip = createCollectingTrip("Sample collecting trip", new CollectingEvent[]{ce1,ce2});
         
@@ -459,7 +464,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
-        Accession acc1 = createAccession("gift", "complete", "2006-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc1 = createAccession("Gift", "Complete", "2006-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         acc1.setText1("Ichthyology");
         
         Agent donor =    agents.get(4);
@@ -468,19 +473,19 @@ public class BuildSampleDatabase
         
         List<AccessionAgents> accAgents = new Vector<AccessionAgents>();
         
-        accAgents.add(createAccessionAgent("donor", donor, acc1, null));
-        accAgents.add(createAccessionAgent("receiver", receiver, acc1, null));
-        accAgents.add(createAccessionAgent("reviewer", reviewer, acc1, null));
+        accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
+        accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
+        accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
 
-        Accession acc2 = createAccession("field work", "in process", "2006-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc2 = createAccession("Field Work", "In Process", "2006-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
         Agent reviewer2 = agents.get(1);
         
-        accAgents.add(createAccessionAgent("donor", donor2, acc2, null));
-        accAgents.add(createAccessionAgent("receiver", receiver2, acc2, null));
-        accAgents.add(createAccessionAgent("reviewer", reviewer2, acc2, null));
+        accAgents.add(createAccessionAgent("Donor", donor2, acc2, null));
+        accAgents.add(createAccessionAgent("Receiver", receiver2, acc2, null));
+        accAgents.add(createAccessionAgent("Reviewer", reviewer2, acc2, null));
 
         dataObjects.add(acc1);
         dataObjects.add(acc2);
@@ -597,8 +602,8 @@ public class BuildSampleDatabase
         
         LoanAgents loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
         LoanAgents loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
-        LoanAgents loanAgent3 = createLoanAgent("borrower", closedLoan, agents.get(4));
-        LoanAgents loanAgent4 = createLoanAgent("borrower", overdueLoan, agents.get(4));
+        LoanAgents loanAgent3 = createLoanAgent("Borrower", closedLoan, agents.get(4));
+        LoanAgents loanAgent4 = createLoanAgent("Borrower", overdueLoan, agents.get(4));
         dataObjects.add(loanAgent1);
         dataObjects.add(loanAgent2);
         dataObjects.add(loanAgent3);
@@ -660,6 +665,9 @@ public class BuildSampleDatabase
                 Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
                 sharkVideo.setLoan(closedLoan);
     
+                Attachment sharkVideo2 = createAttachment(sharkVideoPath, "video/mpeg4", 0);
+                sharkVideo2.setCollectingEvent(ce1);
+    
 //                String beakerPath = attachmentFilesLoc + "beaker.jpg";
 //                Attachment beakerAsBeach = createAttachment(beakerPath, "image/jpg", 1);
 //                beakerAsBeach.setAgent(agents.get(1));
@@ -672,6 +680,7 @@ public class BuildSampleDatabase
                 dataObjects.add(giftPDF);
                 dataObjects.add(accPDF);
                 dataObjects.add(sharkVideo);
+                dataObjects.add(sharkVideo2);
                 //dataObjects.add(beakerAsBeach);
             }
             catch (Exception e)
@@ -883,6 +892,7 @@ public class BuildSampleDatabase
         TaxonTreeDefItem defItemLevel2 = createTaxonTreeDefItem(defItemLevel1, taxonTreeDef, "genus", 200);
         defItemLevel2.setIsEnforced(true);
         defItemLevel2.setIsInFullName(true);
+        defItemLevel2.setTextAfter(" ");
         TaxonTreeDefItem defItemLevel3 = createTaxonTreeDefItem(defItemLevel2, taxonTreeDef, "species", 300);
         defItemLevel3.setIsEnforced(true);
         defItemLevel3.setIsInFullName(true);
@@ -907,8 +917,9 @@ public class BuildSampleDatabase
         // 6
         newObjs.add(genus);
 
-        String[] speciesNames = { "asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "platostomus" };
-        List<Object> kids = createTaxonChildren(taxonTreeDef, genus, speciesNames, defItemLevel3.getRankId());
+        String[] speciesNames = { "asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "vivax" };
+        String[] commonNames  = {"Crystal darter", "Naked sand darter", "Florida sand darter", "Western sand darter", "Southern sand darter", "Eastern sand darter", "Scaly sand darter"};
+        List<Object> kids = createTaxonChildren(taxonTreeDef, genus, speciesNames, commonNames, defItemLevel3.getRankId());
         // 7, 8, 9, 10, 11, 12, 13
         newObjs.addAll(kids);
 
@@ -916,7 +927,8 @@ public class BuildSampleDatabase
         // 14
         newObjs.add(genus);
         String[] speciesNames2 = { "bartholomaei", "caballus", "caninus", "crysos", "dentex", "hippos", "latus" };
-        kids = createTaxonChildren(taxonTreeDef, genus, speciesNames2, defItemLevel3.getRankId());
+        String[] commonNames2  = {"Yellow jack", "Green jack", "Pacific crevalle jack", "Blue runner", "White trevally", "Crevalle jack", "Horse-eye jack"};
+        kids = createTaxonChildren(taxonTreeDef, genus, speciesNames2, commonNames2, defItemLevel3.getRankId());
         // 15, 16, 17, 18, 19, 20, 21
         newObjs.addAll(kids);
         
@@ -1041,7 +1053,7 @@ public class BuildSampleDatabase
                                 "jdbc:mysql://" + databaseHost + "/" + databaseName,
                                 userName,
                                 password))
-        {
+        {   
             boolean single = true;
             if (single)
             {
@@ -1055,6 +1067,9 @@ public class BuildSampleDatabase
 
                     AttachmentManagerIface attachMgr;
                     attachMgr = new FileStoreAttachmentManager("demo_files/AttachmentStorage/");
+                    
+                    FileUtils.cleanDirectory(new File("demo_files/AttachmentStorage/originals"));
+                    FileUtils.cleanDirectory(new File("demo_files/AttachmentStorage/thumbnails"));
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);

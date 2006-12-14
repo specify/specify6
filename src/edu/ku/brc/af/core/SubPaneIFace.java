@@ -17,6 +17,7 @@ package edu.ku.brc.af.core;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.forms.MultiView;
 
 
@@ -74,6 +75,11 @@ public interface SubPaneIFace
      */
     public Taskable getTask();
 
+    /**
+     * Returns the recordset contained in this panel, it may return null.
+     * @return the recordset contained in this panel, it may return null.
+     */
+    public RecordSetIFace getRecordSet();
 
     /**
      * Tells the SubPane that it is about to be shown or hidden.

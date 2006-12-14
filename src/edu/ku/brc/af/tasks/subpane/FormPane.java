@@ -10,6 +10,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -31,15 +32,16 @@ import edu.ku.brc.ui.forms.persist.View;
 @SuppressWarnings("serial")
 public class FormPane extends DroppableTaskPane
 {
-    protected String        viewSetName   = null;
-    protected String        viewName      = null;
-    protected Object        data          = null;
+    protected String         viewSetName   = null;
+    protected String         viewName      = null;
+    protected Object         data          = null;
+    protected RecordSetIFace recordSet     = null;
 
-    protected MultiView     multiView     = null;
-    protected FormProcessor formProcessor = null;
+    protected MultiView      multiView     = null;
+    protected FormProcessor  formProcessor = null;
 
-    protected String        cacheDesc     = null;
-    protected ImageIcon     icon          = null;
+    protected String         cacheDesc     = null;
+    protected ImageIcon      icon          = null;
 
     /**
      * Creates a form pane for a task.
@@ -138,6 +140,25 @@ public class FormPane extends DroppableTaskPane
         this.icon = icon;
     }
     
+    
+    /**
+     * Returns the recordset that was used to fill this form.
+     * @return the recordset that was used to fill this form.
+     */
+    public RecordSetIFace getRecordSet()
+    {
+        return recordSet;
+    }
+
+    /**
+     * Sets the recordset that was used to fill this form.
+     * @param recordSet the recordset
+     */
+    public void setRecordSet(RecordSetIFace recordSet)
+    {
+        this.recordSet = recordSet;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#getMultiView()
      */
@@ -152,9 +173,12 @@ public class FormPane extends DroppableTaskPane
     @Override
     public void shutdown()
     {
+        recordSet = null;
+        
         if (multiView != null)
         {
             multiView.shutdown();
+            multiView = null;
         }
         
         super.shutdown(); // closes session

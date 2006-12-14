@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.ui.forms;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -26,6 +29,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.DateWrapper;
 
@@ -155,7 +159,8 @@ public class UIFieldFormatterMgr
 
                     List<?>              fieldsList = formatElement.selectNodes("field");
                     List<FormatterField> fields     = new ArrayList<FormatterField>();
-
+                    boolean              isInc      = false;
+                    
                     for (Object fldObj : fieldsList)
                     {
                         Element fldElement = (Element)fldObj;
@@ -163,6 +168,7 @@ public class UIFieldFormatterMgr
                         int       size    = XMLHelper.getAttr(fldElement, "size", 1);
                         String    value   = fldElement.attributeValue("value");
                         String    typeStr = fldElement.attributeValue("type");
+                        boolean   increm  = XMLHelper.getAttr(fldElement, "inc", false);
                         FieldType type = null;
                         try
                         {
@@ -171,7 +177,11 @@ public class UIFieldFormatterMgr
                         {
                             log.error("["+typeStr+"]"+ex.toString());
                         }
-                        fields.add(new FormatterField(type, size, value));
+                        fields.add(new FormatterField(type, size, value, increm));
+                        if (increm)
+                        {
+                            isInc = true;
+                        }
                     }
                     
                     Class dataClass = null;
@@ -184,7 +194,7 @@ public class UIFieldFormatterMgr
                     }
 
                     boolean   isDate    = StringUtils.isNotEmpty(fType) && fType.equals("date");
-                    Formatter formatter = new Formatter(name, isDate, dataClass, isDefault, fields);
+                    Formatter formatter = new Formatter(name, isDate, dataClass, isDefault, isInc, fields);
                     if (isDate && fields.size() == 0)
                     {
                         addFieldsForDate(formatter);
@@ -225,7 +235,7 @@ public class UIFieldFormatterMgr
                     String s = "";
                     s += c;
                     s += c;
-                    UIFieldFormatterMgr.FormatterField f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 2, s.toUpperCase());
+                    UIFieldFormatterMgr.FormatterField f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 2, s.toUpperCase(), false);
                     formatter.getFields().add(f);
                     currChar = c;
 
@@ -239,10 +249,10 @@ public class UIFieldFormatterMgr
                     UIFieldFormatterMgr.FormatterField f;
                     if (i - start > 2)
                     {
-                        f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 4, "YYYY");
+                        f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 4, "YYYY", false);
                     } else
                     {
-                        f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 2, "YY");
+                        f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 2, "YY", false);
                     }
                     formatter.getFields().add(f);
                     currChar = c;
@@ -251,7 +261,7 @@ public class UIFieldFormatterMgr
                 {
                     String s = "";
                     s += c;
-                    UIFieldFormatterMgr.FormatterField f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.separator, 1, s);
+                    UIFieldFormatterMgr.FormatterField f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.separator, 1, s, false);
                     formatter.getFields().add(f);
                 }
             }
@@ -269,11 +279,13 @@ public class UIFieldFormatterMgr
         protected boolean              isDate;
         protected boolean              isDefault;
         protected List<FormatterField> fields;
+        protected boolean              isIncrementer;
 
         public Formatter(final String  name, 
                          final boolean isDate, 
                          final Class   dataClass,
                          final boolean isDefault,
+                         final boolean isIncrementer,
                          final List<FormatterField> fields)
         {
             this.name      = name;
@@ -281,6 +293,7 @@ public class UIFieldFormatterMgr
             this.isDate    = isDate;
             this.isDefault = isDefault;
             this.fields    = fields;
+            this.isIncrementer = isIncrementer;
         }
 
         public List<FormatterField> getFields()
@@ -308,7 +321,60 @@ public class UIFieldFormatterMgr
             return isDefault;
         }
 
+        public boolean isIncrementer()
+        {
+            return isIncrementer;
+        }
 
+        public void setIncrementer(boolean isIncrementer)
+        {
+            this.isIncrementer = isIncrementer;
+        }
+        
+        /**
+         * This is work in progress.
+         * @return the next formatted ID
+         */
+        public String getNextId()
+        {
+            // For Demo
+            try
+            {
+                Connection conn = DBConnection.getInstance().createConnection();
+                Statement  stmt = conn.createStatement();
+                // MySQL should use Hibernate
+                ResultSet  rs   = stmt.executeQuery("select "+name+" from "+dataClass.getSimpleName()+" order by "+name+" desc limit 0,1");
+                if (rs.first())
+                {
+                    String numStr      = rs.getString(1);
+                    int    offsetStart = 1;
+                    int    offsetEnd   = numStr.length();
+                    for (FormatterField ff : fields)
+                    {
+                        if (!ff.isIncrementer())
+                        {
+                            offsetStart += ff.getSize();
+                        } else
+                        {
+                            offsetEnd = offsetStart + ff.getSize();
+                            break;
+                        }
+                    }
+                    int num = Integer.parseInt(numStr.substring(offsetStart, offsetEnd));
+                    num++;
+                    return String.format("2006-%03d", new Object[] {num});
+                    
+                } else
+                {
+                    return "2006-001";
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            return null;
+        }
     }
 
     public class FormatterField
@@ -316,14 +382,16 @@ public class UIFieldFormatterMgr
         protected FieldType type;
         protected int       size;
         protected String    value;
-
-        public FormatterField(FieldType type, int size, String value)
+        protected boolean   incrementer;
+        
+        public FormatterField(FieldType type, int size, String value, boolean incrementer)
         {
             super();
             // TODO Auto-generated constructor stub
             this.type = type;
             this.size = size;
             this.value = value;
+            this.incrementer = incrementer;
         }
 
         public int getSize()
@@ -339,6 +407,11 @@ public class UIFieldFormatterMgr
         public String getValue()
         {
             return value;
+        }
+
+        public boolean isIncrementer()
+        {
+            return incrementer;
         }
 
     }

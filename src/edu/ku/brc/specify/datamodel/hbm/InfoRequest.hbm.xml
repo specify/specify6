@@ -13,6 +13,11 @@
         <meta attribute="field-description">Versioning TimeStamp</meta>
     </timestamp>
 
+    <property name="number" type="java.lang.String" column="Number" length="32">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
     <property name="firstName" type="java.lang.String" column="Firstname" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
@@ -56,7 +61,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to RecordSet -->
-    <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" cascade="all" not-null="true" outer-join="auto" lazy="false">
+    <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" cascade="save-update" not-null="true" outer-join="auto" lazy="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="RecordSetID"/>

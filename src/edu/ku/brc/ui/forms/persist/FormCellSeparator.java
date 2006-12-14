@@ -23,15 +23,29 @@ package edu.ku.brc.ui.forms.persist;
 public class FormCellSeparator extends FormCell
 {
     protected String label;
+    protected String collapseCompName;
 
-    public FormCellSeparator(final String id, final String name, final String label, final int colspan)
+    public FormCellSeparator(final String id, 
+                             final String name, 
+                             final String label, 
+                             final int    colspan)
     {
-        super(FormCell.CellType.separator, id, name);
-        
-        this.label   = label;
-        this.colspan = colspan;
-        this.ignoreSetGet = true;
-    }
+        this(id, name, label, null, colspan);
+    }    
+    
+    public FormCellSeparator(final String id, 
+                             final String name, 
+                             final String label, 
+                             final String collapseCompName,
+                             final int    colspan)
+     {
+         super(FormCell.CellType.separator, id, name);
+         
+         this.label   = label;
+         this.collapseCompName   = collapseCompName;
+         this.colspan = colspan;
+         this.ignoreSetGet = true;
+     }
 
     public String getLabel()
     {
@@ -41,6 +55,11 @@ public class FormCellSeparator extends FormCell
     public void setLabel(String label)
     {
         this.label = label;
+    }
+
+    public String getCollapseCompName()
+    {
+        return collapseCompName;
     }
     
     

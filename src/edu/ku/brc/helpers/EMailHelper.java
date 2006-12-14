@@ -17,6 +17,7 @@ package edu.ku.brc.helpers;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.Frame;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,10 +39,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.sun.mail.smtp.SMTPTransport;
 
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -208,9 +214,41 @@ public class EMailHelper
               instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
             }
             return false;
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
         return true;
     }
+    
+    /**
+     * Asks for a password.
+     * @param topframe the parent frame
+     * @return the password
+     */
+    public static String askForPassword(final Frame topframe)
+    {
+        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p"));
+        CellConstraints cc        = new CellConstraints();
+        JLabel          label     = new JLabel(getResourceString("password")+":", JLabel.RIGHT);
+        JPasswordField  passField = new JPasswordField(25);
+        
+        label.setFont(UICacheManager.getFont(JLabel.class));
+        passField.setFont(UICacheManager.getFont(JPasswordField.class));
+
+
+        builder.add(label, cc.xy(1,1));
+        builder.add(passField, cc.xy(3,1));
+        JOptionPane.showConfirmDialog(topframe, 
+                builder.getPanel(), 
+                getResourceString("PASSWORD_TITLE"), 
+                JOptionPane.OK_CANCEL_OPTION, 
+                JOptionPane.QUESTION_MESSAGE);
+
+        return new String(passField.getPassword());
+    } 
+
+
 
     /**
      * Returns true if the account type string is "POP3".

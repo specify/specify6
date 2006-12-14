@@ -17,15 +17,22 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,19 +47,28 @@ import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.TableModel2Excel;
+import edu.ku.brc.helpers.EMailHelper;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
@@ -69,8 +85,10 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -88,16 +106,20 @@ public class InteractionsTask extends BaseTask
 
     public static final String     INTERACTIONS        = "Interactions";
     public static final DataFlavor INTERACTIONS_FLAVOR = new DataFlavor(DataEntryTask.class, INTERACTIONS);
-    
+    public static final DataFlavor INFOREQUEST_FLAVOR  = new DataFlavor(InfoRequest.class, INTERACTIONS);
+
     protected static final String InfoRequestName = "InfoRequest";
     protected static final String NEW_LOAN        = "New_Loan";
     protected static final String PRINT_LOAN      = "PrintLoan";
+    protected static final String INFO_REQ_MESSAGE = "Specify Info Request";
+    protected static final String CREATE_MAILMSG   = "CreateMailMsg";
     
     protected final int loanTableId;
     protected final int infoRequestTableId;
     protected final int colObjTableId;
 
     // Data Members
+    protected NavBox              infoRequestNavBox;
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
 
    /**
@@ -112,6 +134,7 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DB_CMD_TYPE, this);
+        CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         
         loanTableId        = DBTableIdMgr.lookupIdByClassName(Loan.class.getName());
         infoRequestTableId = DBTableIdMgr.lookupIdByClassName(InfoRequest.class.getName());
@@ -135,7 +158,9 @@ public class InteractionsTask extends BaseTask
 
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(NEW_LOAN),  "Loan", IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, NEW_LOAN)), null);
+            NavBoxButton roc = (NavBoxButton)addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(NEW_LOAN),  "Loan", IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, NEW_LOAN)), null);
+            roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
+            
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), "Loan", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), "Loan", IconManager.IconSize.Std16));
             addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(InfoRequestName),  InfoRequestName, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, InfoRequestName, this)), null);
@@ -176,6 +201,21 @@ public class InteractionsTask extends BaseTask
                 }
             }
             navBoxes.addElement(navBox);
+            
+            // Load InfoRequests into NavBox
+            infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            
+            List infoRequests = session.getDataList(InfoRequest.class);
+            for (Iterator iter=infoRequests.iterator();iter.hasNext();)
+            {
+                InfoRequest infoRequest = (InfoRequest)iter.next();
+                
+                NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, INTERACTIONS, "Delete", infoRequest);
+                setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+            }      
+            navBoxes.addElement(infoRequestNavBox);
+            session.close();
         }
     }
 
@@ -290,6 +330,19 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * Creates a new loan from a InfoRequest.
+     * @param infoRequest the infoRequest to use to create the loan
+     */
+    protected void createNewLoan(final InfoRequest infoRequest)
+    {   
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        session.attach(infoRequest);
+        RecordSetIFace rs = infoRequest.getRecordSet();
+        session.close();   
+        createNewLoan(rs);
+    }
+    
+    /**
      * Creates a new loan from a RecordSet.
      * @param recordSet the recordset to use to create the loan
      */
@@ -304,6 +357,8 @@ public class InteractionsTask extends BaseTask
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
+        // First we process all the CollectionObjects in the RecordSet
+        // and create a list of Preparations that can be loaned
         String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
         if (StringUtils.isNotBlank(sqlStr))
         {
@@ -311,7 +366,6 @@ public class InteractionsTask extends BaseTask
             loanSelectPrepsDlg.setModal(true);
             
             UIHelper.centerAndShow(loanSelectPrepsDlg);
-            
 
             final Taskable thisTask = this;
             final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
@@ -378,13 +432,76 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * Fixes up the UI as to whether it is a new or existing loan and copies the 
+     * LoanNumber to the ShipmentNumber.
+     * @param formPane the form containing the loan
+     */
+    protected void adjustLoanForm(FormPane formPane)
+    {
+        FormViewObj formViewObj = formPane.getMultiView().getCurrentViewAsFormViewObj();
+        if (formViewObj != null)
+        {
+            boolean     isNewObj    = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
+
+            Component comp = formViewObj.getControlByName("generateInvoice");
+            if (comp instanceof JCheckBox)
+            {
+                //printLoan = ((JCheckBox)comp).isSelected();
+            }
+            comp = formViewObj.getControlByName("ReturnLoan");
+            if (comp instanceof JButton)
+            {
+                comp.setVisible(!isNewObj);
+            }
+            comp = formViewObj.getControlByName("ReturnPartialLoan");
+            if (comp instanceof JButton)
+            {
+                comp.setVisible(!isNewObj);
+            }
+            
+            if (isNewObj)
+            {
+                comp = formViewObj.getControlByName("ReturnPartialLoan");
+                if (comp instanceof JButton)
+                {
+                    comp.setVisible(!isNewObj);
+                }
+                Component shipComp = formViewObj.getControlByName("shipmentNumber");
+                comp = formViewObj.getControlByName("loanNumber");
+                if (comp instanceof JTextField && shipComp instanceof JTextField)
+                {
+                    JTextField loanTxt = (JTextField)comp;
+                    JTextField shipTxt = (JTextField)shipComp;
+                    shipTxt.setText(loanTxt.getText());
+                }
+                
+                //Loan loan = (Loan)formPane.getData();
+                //loan.getShipment().setShipmentNumber(loan.getLoanNumber());
+            }
+
+        }
+    }
+    
+    /**
      * Creates a new InfoRequest from a RecordSet.
      * @param recordSet the recordset to use to create the InfoRequest
      */
     protected void createInfoRequest(final RecordSetIFace recordSet)
     {
-        InfoRequestTask.createInfoRequest(recordSet);
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupByShortClassName(InfoRequest.class.getSimpleName());
+        
+        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        
+        View view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionObjDef.getCurrentCollectionObjDef());
+
+        InfoRequest infoRequest = new InfoRequest();
+        infoRequest.initialize();
+        infoRequest.setRecordSet(recordSet);
+        
+        createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT);
+        //recentFormPane.setIcon(IconManager.getIcon(INTERACTIONS, IconManager.IconSize.Std16));
     }
+
     
     /**
      * @param cmdAction
@@ -429,7 +546,217 @@ public class InteractionsTask extends BaseTask
         }
     }
     
+    /**
+     * Returns whether all the email prefs needed for sending mail have been filled in.
+     * @return whether all the email prefs needed for sending mail have been filled in.
+     */
+    public boolean isEMailPrefsOK(final Hashtable<String, String> emailPrefs)
+    {
+        AppPreferences appPrefs = AppPreferences.getRemote();
+        boolean allOK = true;
+        String[] emailPrefNames = { "servername", "username", "password", "email"};
+        for (String pName : emailPrefNames)
+        {
+            String key   = "settings.email."+pName;
+            String value = appPrefs.get(key, "");
+            //log.info("["+pName+"]["+value+"]");
+            if (StringUtils.isNotEmpty(value) || pName.equals("password"))
+            {
+                emailPrefs.put(pName, value);
+                
+            } else
+            {
+                log.info("Key["+key+"] is empty");
+                allOK = false;
+                
+                // XXX For Demo
+                if (true)
+                {
+                    emailPrefs.put("servername", "imap.ku.edu");
+                    emailPrefs.put("username", "rods");
+                    emailPrefs.put("password", "");
+                    emailPrefs.put("email", "rods@ku.edu");
+                    allOK = true;
+                }
+                break;
+            }
+        }
+        return allOK;
+    }
+    
+    /**
+     * Creates an Excel SpreadSheet or CVS file and attaches it to an email and send it to an agent.
+     * 
+     * @param infoRequest the info request to be sent
+     */
+    public void createAndSendEMail(final SubPaneIFace subPane)
+    {
+        FormViewObj formViewObj = getCurrentFormViewObj();
+        if (formViewObj != null) // Should never happen
+        {
+            InfoRequest infoRequest = (InfoRequest)formViewObj.getDataObj();
+            Agent       toAgent     = infoRequest.getAgent();
+            
+            boolean   sendEMail = true; // default to true
+            Component comp      = formViewObj.getControlByName("sendEMail");
+            if (comp instanceof JCheckBox)
+            {
+                sendEMail = ((JCheckBox)comp).isSelected();
+            }
+            
+            MultiView mv = formViewObj.getSubView("InfoRequestColObj");
+            if (mv != null && sendEMail)
+            {
+                final Viewable viewable = mv.getCurrentView();
+                if (viewable instanceof TableViewObj)
+                {
+                    final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
+                    if (!isEMailPrefsOK(emailPrefs))
+                    {
+                        JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
+                                getResourceString("NO_EMAIL_PREF_INFO"), 
+                                getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    
+                    final File tempExcelFileName = TableModel2Excel.getTempExcelName();
+                    
+                    emailPrefs.put("to", toAgent.getEmail() != null ? toAgent.getEmail() : "");
+                    emailPrefs.put("from", emailPrefs.get("email"));
+                    emailPrefs.put("subject", String.format(getResourceString("INFO_REQUEST_SUBJECT"), new Object[] {infoRequest.getIdentityTitle()}));
+                    emailPrefs.put("bodytext", "");
+                    emailPrefs.put("attachedFileName", tempExcelFileName.getName());
+                    
+                    final Frame topFrame = (Frame)UICacheManager.get(UICacheManager.TOPFRAME);
+                    final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(topFrame,
+                                                  "SystemSetup",
+                                                  "SendMail",
+                                                  null,
+                                                  getResourceString("SEND_MAIL_TITLE"),
+                                                  getResourceString("SEND_BTN"),
+                                                  null, // className,
+                                                  null, // idFieldName,
+                                                  true, // isEdit,
+                                                  0);
+                    dlg.setData(emailPrefs);
+                    dlg.setModal(true);
+                    
+                    dlg.setCloseListener(new PropertyChangeListener()
+                    {
+                        public void propertyChange(PropertyChangeEvent evt)
+                        {
+                            String action = evt.getPropertyName();
+                            if (action.equals("OK"))
+                            {
+                                dlg.getMultiView().getDataFromUI();
+                                
+                                System.out.println("["+emailPrefs.get("bodytext")+"]");
+                                
+                                TableViewObj  tblViewObj = (TableViewObj)viewable;
+                                File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
+                                                                                           getResourceString("CollectionObject"), 
+                                                                                           tblViewObj.getTable().getModel());
+                                StringBuilder sb         = TableModel2Excel.convertToHTML(getResourceString("CollectionObject"), 
+                                                                                          tblViewObj.getTable().getModel());
+                                
+                                //EMailHelper.setDebugging(true);
+                                String text = emailPrefs.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run()
+                                    {
+                                        UICacheManager.displayLocalizedStatusBarText("SENDING_EMAIL");
+                                    }
+                                });
+                                
+                                String password = Encryption.decrypt(emailPrefs.get("password"));
+                                if (StringUtils.isEmpty(password))
+                                {
+                                    password = EMailHelper.askForPassword(topFrame);
+                                }
+                                
+                                if (StringUtils.isNotEmpty(password))
+                                {
+                                    final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
+                                                                               emailPrefs.get("username"), 
+                                                                               password, 
+                                                                               emailPrefs.get("email"), 
+                                                                               emailPrefs.get("to"), 
+                                                                               emailPrefs.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run()
+                                        {
+                                            UICacheManager.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                        }
+                                    });
+                                }
+                            }
+                            else if (action.equals("Cancel"))
+                            {
+                                log.warn("User clicked Cancel");
+                            }
+                        }
+                    });
+    
+                    dlg.setVisible(true);
+                }
+            }
+        } else
+        {
+            log.error("Why doesn't the current SubPane have a main FormViewObj?");
+        }
+    }
+    
+    /**
+     * Delete a InfoRequest..
+     * @param infoRequest the infoRequest to be deleted
+     */
+    protected void deleteInfoRequest(final InfoRequest infoRequest)
+    {
+        // delete from database
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            // ???? session.attach(infoRequest);
+            session.beginTransaction();
+            session.delete(infoRequest);
+            session.commit();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+        session.close();
 
+    }
+    
+    /**
+     * Delete the InfoRequest from the UI, which really means remove the NavBoxItemIFace. 
+     * This method first checks to see if the boxItem is not null and uses that, if
+     * it is null then it looks the box up by name ans used that
+     * @param boxItem the box item to be deleted
+     * @param infoRequest the infoRequest that is "owned" by some UI object that needs to be deleted (used for secodary lookup
+     */
+    protected void deleteInfoRequestFromUI(final NavBoxItemIFace boxItem, final InfoRequest infoRequest)
+    {
+        
+        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByTitle(infoRequest.getIdentityTitle()).getUIComponent(); 
+        if (comp != null)
+        {
+            infoRequestNavBox.remove(comp);
+            
+            // XXX this is pathetic and needs to be generized
+            infoRequestNavBox.invalidate();
+            infoRequestNavBox.setSize(infoRequestNavBox.getPreferredSize());
+            infoRequestNavBox.doLayout();
+            infoRequestNavBox.repaint();
+            NavBoxMgr.getInstance().invalidate();
+            NavBoxMgr.getInstance().doLayout();
+            NavBoxMgr.getInstance().repaint();
+            UICacheManager.forceTopFrameRepaint();
+        }
+    }
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -438,7 +765,49 @@ public class InteractionsTask extends BaseTask
     public void doCommand(CommandAction cmdAction)
     {
         
-        if (cmdAction.isAction("NewInteraction"))
+        if (cmdAction.isType(DB_CMD_TYPE))
+        {
+            if (cmdAction.getData() instanceof InfoRequest)
+            {
+                if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
+                {
+                    //final CommandAction cm = cmdAction;
+                    // Create Specify Application
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            //createAndSendEMail((InfoRequest)cm.getData());  
+                            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
+                        }
+                    });
+                    if (cmdAction.isAction(INSERT_CMD_ACT))
+                    {
+                        InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
+                        NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, INTERACTIONS, "Delete", infoRequest);
+                        setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+                    }
+                }
+            } else if (cmdAction.getData() instanceof Loan)
+            {
+                if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
+                {
+                   checkToPrintLoan(cmdAction);
+                }
+            }
+            
+
+        } else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
+        {
+            if (cmdAction.isAction(DataEntryTask.OPEN_VIEW))
+            {
+                adjustLoanForm((FormPane)cmdAction.getData());
+            }
+            
+        } else if (cmdAction.isAction(CREATE_MAILMSG))
+        {
+            createAndSendEMail((SubPaneIFace)cmdAction.getData());
+            
+        } else if (cmdAction.isAction("NewInteraction"))
         {
             if (cmdAction.getData() instanceof RecordSetIFace)
             {
@@ -476,15 +845,19 @@ public class InteractionsTask extends BaseTask
 
             printLoan(cmdAction.getData());
             
-        } else if (cmdAction.isType(DB_CMD_TYPE))
+        } else if (cmdAction.isAction("CreateInfoRequest") && cmdAction.getData() instanceof RecordSet)
         {
-            if (cmdAction.getData() instanceof Loan)
+            Object data = cmdAction.getData();
+            if (data instanceof RecordSet)
             {
-                if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
-                {
-                   checkToPrintLoan(cmdAction);
-                }
+                createInfoRequest((RecordSetIFace)data);
             }
+            
+        } else if (cmdAction.isAction("Delete") && cmdAction.getData() instanceof InfoRequest)
+        {
+            InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
+            deleteInfoRequest(inforRequest);
+            deleteInfoRequestFromUI(null, inforRequest);
             
         } else 
         {
@@ -495,25 +868,31 @@ public class InteractionsTask extends BaseTask
             }
             
             // These all assume there needs to be a recordsset
-            if (cmdData != null && cmdData instanceof RecordSetIFace)
+            if (cmdData != null)
             {
-                RecordSetIFace rs = (RecordSetIFace)cmdData;
-                
-                if (rs.getDbTableId() == colObjTableId)
+                if (cmdData instanceof RecordSetIFace)
                 {
-                    if (cmdAction.isAction(NEW_LOAN))
-                    {    
-                        createNewLoan(rs);
-                            
-                    } else if (cmdAction.isAction(InfoRequestName))
+                    RecordSetIFace rs = (RecordSetIFace)cmdData;
+                    
+                    if (rs.getDbTableId() == colObjTableId)
                     {
-                        createInfoRequest(rs);    
- 
+                        if (cmdAction.isAction(NEW_LOAN))
+                        {    
+                            createNewLoan(rs);
+                                
+                        } else if (cmdAction.isAction(InfoRequestName))
+                        {
+                            createInfoRequest(rs);    
+     
+                        }
+                    } else
+                    {
+                        log.error("Dropped wrong table type.");
+                        // Error Msg Dialog XXX
                     }
-                } else
+                } else if (cmdData instanceof InfoRequest)
                 {
-                    log.error("Dropped wrong table type.");
-                    // Error Msg Dialog XXX
+                    createNewLoan((InfoRequest)cmdData);
                 }
             }
         }
