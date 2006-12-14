@@ -79,6 +79,8 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -1106,7 +1108,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 file.delete();
             }
             log.debug(lucenePath.delete() ? "deleted" : "not deleted");
-
+            
+            CommandDispatcher.dispatch(new CommandAction("Express_Search", "CheckIndexerPath", null));
+            
         } else
         {
             long minutes = deltaTime / 60000L;
@@ -1146,7 +1150,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     {
                         esipListener.doneIndexing();
                     }
-
+                    CommandDispatcher.dispatch(new CommandAction("Express_Search", "CheckIndexerPath", null));
                 }
             };
             worker.start();

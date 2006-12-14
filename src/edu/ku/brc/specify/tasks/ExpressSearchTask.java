@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
@@ -94,7 +95,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
 
-    public static final String EXPRESSSEARCH = "Express_Search";
+    public static final String EXPRESSSEARCH      = "Express_Search";
+    public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     
     // Static Data Memebers
     protected static WeakReference<TableInfoWeakRef> tableInfo   = null;
@@ -121,6 +123,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         lucenePath = getIndexDirPath(); // must be initialized here
         
         CommandDispatcher.register("App", this);
+        CommandDispatcher.register(EXPRESSSEARCH, this);
         
         instance = this;
     }
@@ -161,6 +164,21 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             }
         }
         return path;
+    }
+    
+    /**
+     * Returns whether there are file sin the lucence directory.
+     * @return whether there are file sin the lucence directory.
+     */
+    public static boolean doesIndexExist()
+    {
+        try
+        {
+            return IndexReader.indexExists(FSDirectory.getDirectory(getIndexDirPath(), false));
+        } catch (IOException ex)
+        {
+        }
+        return false;
     }
     
     /**
@@ -310,9 +328,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      */
     public void checkForIndexer()
     {
-        boolean exists = lucenePath.exists() && lucenePath.list().length > 0;
+        boolean exists = doesIndexExist();
         
-        log.debug(lucenePath.getAbsoluteFile() + " has index " + (lucenePath.list().length > 0));
+        //log.debug(lucenePath.getAbsoluteFile() + " has index " + (lucenePath.list().length > 0));
         
         searchBtn.setEnabled(exists);
         searchText.setEnabled(exists);
@@ -908,13 +926,22 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
+        if (cmdAction.isType(APP_CMD_TYPE))
         {
-            lucenePath = getIndexDirPath(); // must be initialized here (again)
+            if (cmdAction.isAction("Restart"))
+            {
+                lucenePath = getIndexDirPath(); // must be initialized here (again)
+                checkForIndexer();
+            }
             
-            checkForIndexer();
+        } else if (cmdAction.isType(EXPRESSSEARCH))
+        {
+            if (cmdAction.isAction(CHECK_INDEXER_PATH))
+            {
+                lucenePath = getIndexDirPath(); // must be initialized here (again)
+                checkForIndexer();
+            }  
         }
-
     }
     
     //------------------------------------------------

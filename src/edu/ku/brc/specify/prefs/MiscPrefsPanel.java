@@ -24,6 +24,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
@@ -89,6 +91,7 @@ public class MiscPrefsPanel extends JPanel implements PrefsSavable, PrefsPanelIF
         {
             form.getDataFromUI();
         }
+        CommandDispatcher.dispatch(new CommandAction("Express_Search", "CheckIndexerPath", null));
     }
 
      //---------------------------------------------------

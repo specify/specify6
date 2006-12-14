@@ -125,7 +125,10 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
             JComboBox fontNames = fontNamesVCB.getComboBox();
             JComboBox fontSizes = fontSizesVCB.getComboBox();
             
-            UICacheManager.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
+            if (fontNames.isEnabled() && fontSizes.isEnabled())
+            {
+                UICacheManager.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
+            }
         }
     }
 

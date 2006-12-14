@@ -119,11 +119,12 @@ public class LuceneUpdater
     {
         try
         {
-            File lucenePath = ExpressSearchTask.getIndexDirPath();
-            if (lucenePath != null && lucenePath.exists())
+           
+            if (ExpressSearchTask.doesIndexExist())
             {
-                IndexReader   reader   = IndexReader.open(FSDirectory.getDirectory(lucenePath, false));
-                IndexSearcher searcher = new IndexSearcher(reader);
+                File          lucenePath = ExpressSearchTask.getIndexDirPath();
+                IndexReader   reader     = IndexReader.open(FSDirectory.getDirectory(lucenePath, false));
+                IndexSearcher searcher   = new IndexSearcher(reader);
                 
                 Hashtable<String, ExpressResultsTableInfo> tableInfoHash = ExpressSearchTask.getTableInfoHash();
                 for (Enumeration<ExpressResultsTableInfo> e=tableInfoHash.elements();e.hasMoreElements();)
@@ -168,8 +169,6 @@ public class LuceneUpdater
                                         updates++;
                                     }
                                 }
-                                
-                                
     
                                 if (updates > 0 && action == IndexAction.Update)
                                 {
