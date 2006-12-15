@@ -172,11 +172,15 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      */
     public static boolean doesIndexExist()
     {
-        try
+        File path = getIndexDirPath();
+        if (path != null)
         {
-            return IndexReader.indexExists(FSDirectory.getDirectory(getIndexDirPath(), false));
-        } catch (IOException ex)
-        {
+            try
+            {
+                return IndexReader.indexExists(FSDirectory.getDirectory(getIndexDirPath(), false));
+            } catch (IOException ex)
+            {
+            }
         }
         return false;
     }
