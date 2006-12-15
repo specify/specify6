@@ -283,7 +283,6 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
                     if (inx > rgbs.length)
                     {
                         JLabel lbl = new JLabel();
-                        lbl.setFont(UICacheManager.getFont(JLabel.class));
                         gbl.setConstraints(lbl,c);
                         lbl.setSize(dim);
                         lbl.setPreferredSize(dim);
@@ -292,8 +291,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
                         
                     } else
                     {
-                        JButton button = UICacheManager.createButton("");
-                        button.setFont(UICacheManager.getFont(JButton.class));
+                        JButton button = new JButton("");
                         button.setSize(dim);
                         button.setPreferredSize(dim);
                         button.setMinimumSize(dim);
@@ -311,7 +309,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
                 }
 
             }
-            JButton button = UICacheManager.createButton("Other...");
+            JButton button = new JButton("Other...");
             button.setBorder(BorderFactory.createEtchedBorder());
             c.fill = GridBagConstraints.BOTH;
             c.gridx=0;

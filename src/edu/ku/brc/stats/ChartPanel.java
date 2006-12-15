@@ -28,8 +28,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.UICacheManager;
-
 /**
  * This base class implements the Chartable interface
  * that enables derived classes to easily accept and have access to information needed to decorate or describe the chart.
@@ -68,8 +66,6 @@ public class ChartPanel extends JPanel implements Chartable
 
         builder.add(progressBar,                  cc.xy(1,1));
         builder.add(progressLabel = new JLabel(startUpMsg, JLabel.CENTER), cc.xy(1,2));
-        progressBar.setFont(UICacheManager.getFont(JLabel.class));
-        progressLabel.setFont(UICacheManager.getFont(JLabel.class));
 
         PanelBuilder builder2  = new PanelBuilder(new FormLayout("p:g,p,p:g", "p:g,p,p:g"), this);
         builder2.add(builder.getPanel(), cc.xy(2,2));

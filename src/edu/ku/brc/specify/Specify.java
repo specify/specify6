@@ -17,18 +17,12 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-//import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-//import java.awt.MenuItem;
-//import java.awt.PopupMenu;
-//import java.awt.SystemTray;
 import java.awt.Toolkit;
-//import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -166,9 +160,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UICacheManager.getInstance(); // initializes it first thing
         UICacheManager.setAppName("Specify");
         
-        //Font baseFont = UICacheManager.getBaseFont();
-        //UICacheManager.setBaseFont(new Font(baseFont.getFamily(), baseFont.getStyle(), 11));
-
         // Attachment related helpers
         Thumbnailer thumb = new Thumbnailer();
         try
@@ -244,7 +235,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
                 UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                //PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
                 PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
             }
 
@@ -256,6 +246,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
         {
             log.error("Can't change L&F: ", e);
         }
+        
+        // Setup base font AFTER setting Look and Feel
+        UICacheManager.setBaseFont((new JLabel()).getFont());
+
 
         log.info("Creating Database configuration ");
  

@@ -18,12 +18,9 @@
 package edu.ku.brc.ui.forms;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,11 +29,9 @@ import javax.swing.SwingConstants;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellPanel;
@@ -50,17 +45,13 @@ import edu.ku.brc.ui.forms.persist.FormCellSubView;
  * @author rods
  *
  * @code_status Complete
+ * 
+ * Created Date: Oct 02, 2006
  *
  */
 public class PanelViewable extends JPanel implements ViewBuilderIFace
 {
     public enum PanelType {Unknown, Panel, ButtonBar};
-    
-    protected boolean            isCollapsablePanel = true;
-    protected JPanel             innerPanel;
-    protected JCheckBox          moreBtn;
-    protected ImageIcon          forwardImgIcon;
-    protected ImageIcon          downImgIcon;
     
     protected DefaultFormBuilder builder;
     protected CellConstraints    cc = new CellConstraints();
@@ -75,44 +66,14 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     {
         this.parentBuilder = parentBuilder;
         
-        if (isCollapsablePanel)
-        {
-            PanelBuilder panelBldr = new PanelBuilder(new FormLayout("f:p:g", "p:g,2px,f:p:g"), this);
-            forwardImgIcon = IconManager.getIcon("Forward");
-            downImgIcon    = IconManager.getIcon("Down");
-            moreBtn        = new JCheckBox("More", forwardImgIcon);
-            moreBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (innerPanel.isVisible())
-                    {
-                        innerPanel.setVisible(false);
-                        moreBtn.setIcon(forwardImgIcon);
-                    } else
-                    {
-                        innerPanel.setVisible(true);
-                        moreBtn.setIcon(downImgIcon);
-                    }
-                    invalidate();
-                    doLayout();
-                    repaint();
-                }
-             });
-            innerPanel = new JPanel();
-            panelBldr.add(moreBtn, cc.xy(1,1));
-            panelBldr.add(innerPanel, cc.xy(1,3));
-            
-        } else
-        {
-            innerPanel = this;
-        }
-        builder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()), innerPanel);
+        builder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()), this);
        
     }
     
     /**
-     * @param btns
-     * @return
+     * Builds a button bar.
+     * @param btns the buttons for the btn bar
+     * @return the btn bar
      */
     public static JComponent buildButtonBar(final JButton[] btns)
     {
@@ -120,8 +81,9 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     }
     
     /**
-     * @param typeStr
-     * @return
+     * Get the type of the btn bar from a string
+     * @param typeStr the string in question
+     * @return the type
      */
     public static PanelType getType(final String typeStr)
     {
@@ -156,7 +118,6 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     {
         int        titleAlignment  = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
         JComponent titledSeparator = builder.getComponentFactory().createSeparator(title, titleAlignment);
-        FormViewObj.adjustFontForSeparator(titledSeparator);
         return titledSeparator;
     }
 

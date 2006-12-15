@@ -129,7 +129,7 @@ public class DropDownButtonStateful extends DropDownButton
         for (DropDownMenuInfo mi : menuInfoItems)
         {
             
-            JMenuItem menuItem = UICacheManager.createMenuItem(mi.getLabel(), mi.getImageIcon());
+            JMenuItem menuItem = new JMenuItem(mi.getLabel(), mi.getImageIcon());
             menuItem.addActionListener(actionListener);
             menus.add(menuItem);
         }

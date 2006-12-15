@@ -94,15 +94,15 @@ public class HTTPGetter implements Runnable
         // be using the HttpClient.
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
 
-        GetMethod method = new GetMethod(url);
+        GetMethod mthod = new GetMethod(url);
         //method.setQueryString("q=xxx");
 
-        log.debug("getting " + method.getURI());
+        log.debug("getting " + mthod.getURI());
         // execute the method
-        httpClient.executeMethod(method);
+        httpClient.executeMethod(mthod);
         
-        System.err.println("Len: "+method.getResponseContentLength());
-        return iStream = method.getResponseBodyAsStream();
+        System.err.println("Len: "+mthod.getResponseContentLength());
+        return iStream = mthod.getResponseBodyAsStream();
     }
     
     /**
@@ -131,17 +131,17 @@ public class HTTPGetter implements Runnable
         // be using the HttpClient.
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
 
-        GetMethod method = new GetMethod(url);
+        GetMethod mthod = new GetMethod(url);
         try
         {
 
-            log.debug("getting " + method.getURI());
+            log.debug("getting " + mthod.getURI());
             // execute the method
-            httpClient.executeMethod(method);
+            httpClient.executeMethod(mthod);
 
             System.out.println("Get executed");
             // get the response body as an array of bytes
-            bytes = method.getResponseBody();
+            bytes = mthod.getResponseBody();
 
             log.debug(bytes.length + " bytes read");
 
@@ -171,7 +171,7 @@ public class HTTPGetter implements Runnable
         } finally
         {
             // always release the connection after we're done
-            method.releaseConnection();
+            mthod.releaseConnection();
             log.debug("Connection released");
         }
         return bytes;

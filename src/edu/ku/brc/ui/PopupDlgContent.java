@@ -63,8 +63,6 @@ public class PopupDlgContent
         checkbox = new JCheckBox(doNotAgainMessage);
 		values   = new Object[] {message, checkbox};
         
-        message.setFont(UICacheManager.getFont(JLabel.class));
-        checkbox.setFont(UICacheManager.getFont(JCheckBox.class));
 	}
 
 	/**
@@ -76,8 +74,6 @@ public class PopupDlgContent
 		super();
 		checkbox = new JCheckBox(UICacheManager.getResourceString("DONT_ASK_AGAIN"));
 		values   = new Object[] {displayableComponent, checkbox};
-        message.setFont(UICacheManager.getFont(JLabel.class));
-        checkbox.setFont(UICacheManager.getFont(JCheckBox.class));
 	}	
 
 	/**

@@ -126,8 +126,8 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
      */
     protected void createUI()
     {
-        searchText = UICacheManager.createTextField(30);
-        searchBtn  = UICacheManager.createButton(getResourceString("Search"));
+        searchText = new JTextField(30);
+        searchBtn  = new JButton(getResourceString("Search"));
         ActionListener doQuery = new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -204,8 +204,8 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         scrollPane.setPreferredSize(new Dimension(300,200));
 
         // Bottom Button UI
-        cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
-        okBtn = UICacheManager.createButton(getResourceString("OK"));
+        cancelBtn = new JButton(getResourceString("Cancel"));
+        okBtn = new JButton(getResourceString("OK"));
 
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);

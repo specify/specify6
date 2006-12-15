@@ -38,7 +38,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValidationListener;
@@ -148,7 +147,6 @@ public class ResultSetController implements ValidationListener
         recDisp.setOpaque(true);
         recDisp.setBackground(Color.WHITE);
         recDisp.setBorder(enabledBorder);
-        recDisp.setFont(UICacheManager.getFont(JLabel.class));
 
         
         nextBtn  = new JButton(IconManager.getIcon("NextRec"));

@@ -17,8 +17,6 @@ package edu.ku.brc.specify.tests;
 
 import java.awt.Color;
 
-import org.apache.commons.lang.time.FastDateFormat;
-
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
@@ -52,7 +50,7 @@ public class SpecifyAppPrefs
         
         AppPreferences.getRemote().load(); // Loads prefs from the database
         
-        FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
+        //FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
         AppPrefsCache.register(AppPrefsCache.getDefaultDatePattern(), "ui", "formatting", "scrdateformat");
         
         ColorWrapper valtextcolor = new ColorWrapper(Color.RED);

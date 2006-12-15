@@ -56,7 +56,7 @@ public class BasicHibernateMain implements DatabaseLoginListener
         if (!System.getProperty("os.name").equals("Mac OS X"))
         {
             UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-            PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
+            PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
         }
 
         // Name factories

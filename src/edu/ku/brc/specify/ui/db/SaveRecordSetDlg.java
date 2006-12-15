@@ -34,8 +34,6 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.ui.UICacheManager;
-
 /**
  * @code_status Unknown (auto-generated)
  *
@@ -103,12 +101,12 @@ public class SaveRecordSetDlg extends JDialog
             panel.add(splitPane, BorderLayout.CENTER);
    
             // Bottom Button UI
-            selectAllBtn      = UICacheManager.createButton(getResourceString("SelectAll"));
-            deselectAllBtn    = UICacheManager.createButton(getResourceString("DeselectAll"));
-            addAllBtn         = UICacheManager.createButton(getResourceString("AddAll"));
-            addAllSelectedBtn = UICacheManager.createButton(getResourceString("AddAllSelected"));
-            cancelBtn         = UICacheManager.createButton(getResourceString("Cancel"));
-            okBtn             = UICacheManager.createButton(getResourceString("OK"));
+            selectAllBtn      = new JButton(getResourceString("SelectAll"));
+            deselectAllBtn    = new JButton(getResourceString("DeselectAll"));
+            addAllBtn         = new JButton(getResourceString("AddAll"));
+            addAllSelectedBtn = new JButton(getResourceString("AddAllSelected"));
+            cancelBtn         = new JButton(getResourceString("Cancel"));
+            okBtn             = new JButton(getResourceString("OK"));
 
             ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
             //btnBuilder.addGlue();

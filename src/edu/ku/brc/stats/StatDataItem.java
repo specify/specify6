@@ -260,7 +260,7 @@ public class StatDataItem implements QueryResultsListener
                     throw new RuntimeException("Null data that isn't Ignore");
                 } else if (valType == VALUE_TYPE.Description)
                 {
-                    description = dataObj.toString();
+                    description = dataObj != null ?  dataObj.toString() : "";
 
                 } else if (valType == VALUE_TYPE.Value)
                 {

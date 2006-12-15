@@ -105,7 +105,7 @@ public class TableViewObj implements Viewable,
                                      ResultSetControllerListener, 
                                      AppPrefsChangeListener
 {
-    protected static final Logger log = Logger.getLogger(TableViewObj.class);
+    private static final Logger log = Logger.getLogger(TableViewObj.class);
     
     protected static CellConstraints        cc              = new CellConstraints();
 

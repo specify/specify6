@@ -170,7 +170,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         if (label != null)
         {
             popupMenu = new JPopupMenu();
-            JMenuItem renameMenuItem = UICacheManager.createMenuItem(getResourceString("Rename"));
+            JMenuItem renameMenuItem = new JMenuItem(getResourceString("Rename"));
             renameMenuItem.addActionListener(actionListener);
             popupMenu.add(renameMenuItem);
             MouseListener mouseListener = new MouseAdapter() {
@@ -336,8 +336,6 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     {
         super.paint(g);
         
-        g.setFont(UICacheManager.getFont(JLabel.class));
-
         if (!isEditing)
         {
             Insets    insets = getInsets();

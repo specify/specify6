@@ -475,7 +475,7 @@ public final class UIHelper
      */
     protected static JMenuItem createMenu(final String resKey, int virtualKeyCode, String mneu)
     {
-        JMenuItem jmi = UICacheManager.createMenuItem(getResourceString(resKey));
+        JMenuItem jmi = new JMenuItem(getResourceString(resKey));
         if (oSType != OSTYPE.MacOSX)
         {
             jmi.setMnemonic(mneu.charAt(0));
@@ -533,7 +533,7 @@ public final class UIHelper
                                            final boolean        enabled,
                                            final AbstractAction action)
     {
-        JMenuItem mi = UICacheManager.createMenuItem(label);
+        JMenuItem mi = new JMenuItem(label);
         if (menu != null)
         {
             menu.add(mi);
@@ -1048,7 +1048,7 @@ public final class UIHelper
             
 
             // Bottom Button UI
-            JButton okBtn = UICacheManager.createButton(getResourceString("OK"));
+            JButton okBtn = new JButton(getResourceString("OK"));
             builder.add(okBtn, cc.xyw(3, rowIndex, 1));
 
             okBtn.addActionListener(new ActionListener() {

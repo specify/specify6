@@ -3,10 +3,13 @@ package edu.ku.brc.specify.prefs;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
@@ -35,8 +38,11 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
 {
     private static final Logger log  = Logger.getLogger(FormattingPrefsPanel.class);
 
-    protected View         formView = null;
-    protected Viewable     form     = null;
+    protected View         formView  = null;
+    protected Viewable     form      = null;
+    protected JComboBox    fontNames = null;
+    protected JComboBox    fontSizes = null;
+    protected JTextField   testField = null;
 
     /**
      * Constructor.
@@ -72,8 +78,14 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         ValComboBox fontNamesVCB = (ValComboBox)form.getCompById("fontNames");
         ValComboBox fontSizesVCB = (ValComboBox)form.getCompById("fontSizes");
         
-        JComboBox fontNames = fontNamesVCB.getComboBox();
-        JComboBox fontSizes = fontSizesVCB.getComboBox();
+        fontNames = fontNamesVCB.getComboBox();
+        fontSizes = fontSizesVCB.getComboBox();
+        
+        testField = (JTextField)form.getCompById("fontTest");
+        if (testField != null)
+        {
+            testField.setText("This is a Test");
+        }
         
         Hashtable<String, String> namesUsed = new Hashtable<String, String>();
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -95,10 +107,20 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         {
             fontNames.setSelectedItem(baseFont.getFamily());
             fontSizes.setSelectedItem(Integer.toString(baseFont.getSize()));
-        } else
-        {
-            fontNames.setEnabled(false);
-            fontSizes.setEnabled(false);
+            
+            if (testField != null)
+            {
+                ActionListener al = new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        testField.setFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6)); 
+                        form.getUIComponent().validate();
+                    }
+                };
+                fontNames.addActionListener(al);
+                fontSizes.addActionListener(al);
+            }
         }
         
         form.getValidator().validateForm();
@@ -118,17 +140,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         if (form.getValidator() == null || form.getValidator().hasChanged())
         {
             form.getDataFromUI();
-            
-            ValComboBox fontNamesVCB = (ValComboBox)form.getCompById("fontNames");
-            ValComboBox fontSizesVCB = (ValComboBox)form.getCompById("fontSizes");
-            
-            JComboBox fontNames = fontNamesVCB.getComboBox();
-            JComboBox fontSizes = fontSizesVCB.getComboBox();
-            
-            if (fontNames.isEnabled() && fontSizes.isEnabled())
-            {
-                UICacheManager.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
-            }
+            UICacheManager.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
         }
     }
 

@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +22,6 @@ import javax.swing.JTextField;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 /**
  *

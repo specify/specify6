@@ -160,7 +160,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      */
     protected void init(final String label, final ImageIcon icon, String toolTip)
     {
-        mainBtn   = UICacheManager.createButton(label, icon);
+        mainBtn   = new JButton(label, icon);
         
         mainBtn.setBorder(new EmptyBorder(1,4,1,4));
         mainBtn.setIconTextGap(1); 

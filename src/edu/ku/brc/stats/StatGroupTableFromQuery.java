@@ -15,7 +15,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  *
@@ -137,7 +136,6 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
     protected void addNoneAvailableMsg(final String msg)
     {
         JLabel label = new JLabel(noResultsMsg != null ? noResultsMsg : getResourceString("NoneAvail"));
-        label.setFont(UICacheManager.getFont(JLabel.class));
         
         if (useSeparator)
         {

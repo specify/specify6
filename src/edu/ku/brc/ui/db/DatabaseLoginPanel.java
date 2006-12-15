@@ -16,7 +16,6 @@ package edu.ku.brc.ui.db;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

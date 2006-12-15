@@ -34,7 +34,6 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -87,8 +86,6 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
         builder.add(progressBar, cc.xy(1,1));
         builder.add(progressLabel = new JLabel("", SwingConstants.CENTER), cc.xy(1,3));
-        progressLabel.setFont(UICacheManager.getFont(JLabel.class));
-        progressBar.setFont(UICacheManager.getFont(JLabel.class));
 
         PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
         builder2.add(builder.getPanel(), cc.xy(1,1));

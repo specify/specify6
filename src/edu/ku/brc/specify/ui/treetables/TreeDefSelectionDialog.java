@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.renderers.NameableListItemCellRenderer;
 import edu.ku.brc.util.Nameable;
 
@@ -82,7 +81,7 @@ public class TreeDefSelectionDialog extends JDialog
 		this.setTitle("Choose a tree");
 		
 		buttonPanel = new JPanel(new FlowLayout());
-		cancelButton = UICacheManager.createButton("Cancel"); // I18N
+		cancelButton = new JButton("Cancel"); // I18N
 		cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -91,7 +90,7 @@ public class TreeDefSelectionDialog extends JDialog
 				callback.cancelled();
 			}
 		});
-		okButton = UICacheManager.createButton("OK"); // I18N
+		okButton = new JButton("OK"); // I18N
 		okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

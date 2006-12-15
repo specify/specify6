@@ -28,6 +28,7 @@ import javax.swing.JMenuItem;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -42,7 +43,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;

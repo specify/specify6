@@ -132,7 +132,7 @@ public class SpecifyDBConverter
                     if (!System.getProperty("os.name").equals("Mac OS X"))
                     {
                         UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                        PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
+                        PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
                     }
                 }
                 catch (Exception e)

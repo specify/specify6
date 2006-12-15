@@ -56,7 +56,7 @@
 
 		    	</enableRules>
 
-			<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
+			<columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
 			<rowDef dup="14" cell="p" sep="4dlu"/>
 
 			<rows>
@@ -112,7 +112,7 @@
 			
 			<desc><![CDATA[Formatting Preference Form.]]></desc>
 			
-			<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
+			<columnDef>p,2dlu,p,5dlu,p,2dlu,p,2px,p</columnDef>
 			<rowDef auto="true" cell="p" sep="4dlu"/>
 			
 			<rows>
@@ -140,6 +140,7 @@
 					<cell type="field" uitype="combobox" id="fontNames" name="ui.formatting.fontNames" readonly="true" changesonly="true"/>
 					<cell type="label" labelfor="fontSizes" label="Size"/>
 					<cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
+					<cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
 				</row>
 			</rows>
 		</viewdef>

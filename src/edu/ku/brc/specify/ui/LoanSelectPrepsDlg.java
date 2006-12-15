@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -67,7 +66,6 @@ import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -152,8 +150,8 @@ public class LoanSelectPrepsDlg extends JDialog
                 i++;
             }
         }
-        okBtn = UICacheManager.createButton(getResourceString("OK"));
-        JButton cancel = UICacheManager.createButton(getResourceString("Cancel"));
+        okBtn = new JButton(getResourceString("OK"));
+        JButton cancel = new JButton(getResourceString("Cancel"));
         y += 2;
         
         summaryLabel = new JLabel("");

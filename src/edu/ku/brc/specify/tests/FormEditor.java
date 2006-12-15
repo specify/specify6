@@ -39,6 +39,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -63,25 +64,24 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -97,6 +97,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -1036,10 +1037,10 @@ public class FormEditor implements DatabaseLoginListener
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p:g", "c:p"), this);
-            CellConstraints cc      = new CellConstraints();
+            CellConstraints ccc      = new CellConstraints();
             
             
-            pbuilder.add(label = new JLabel(prep.getPrepType().getName()), cc.xy(1,1));
+            pbuilder.add(label = new JLabel(prep.getPrepType().getName()), ccc.xy(1,1));
             label.setOpaque(false);
             
             //JPanel contentPanel = new JPanel();
@@ -1067,13 +1068,13 @@ public class FormEditor implements DatabaseLoginListener
                                            quantityAvailable, //max
                                            1);                //step
                 spinner = new JSpinner(model);
-                pbuilder.add(spinner, cc.xy(3, 1));
-                pbuilder.add(label2 = new JLabel(" of " + Integer.toString(quantityAvailable)), cc.xy(5, 1));
+                pbuilder.add(spinner, ccc.xy(3, 1));
+                pbuilder.add(label2 = new JLabel(" of " + Integer.toString(quantityAvailable)), ccc.xy(5, 1));
                 
                 
             } else
             {
-                pbuilder.add(label2 = new JLabel("(None Available)"), cc.xywh(3, 1, 3, 1));
+                pbuilder.add(label2 = new JLabel("(None Available)"), ccc.xywh(3, 1, 3, 1));
             }
             //pbuilder.add(contentPanel, cc.xy(1,3));
         }
@@ -1130,7 +1131,7 @@ public class FormEditor implements DatabaseLoginListener
             //setBorder(new CurvedBorder(new Color(160,160,160)));
      
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this);
-            CellConstraints cc      = new CellConstraints();
+            CellConstraints ccc      = new CellConstraints();
      
             String taxonName = "";
             for (Determination deter : colObj.getDeterminations())
@@ -1154,7 +1155,7 @@ public class FormEditor implements DatabaseLoginListener
             String descr = String.format("%6.0f - %s", new Object[]{colObj.getCatalogNumber(), taxonName});
             
             
-            pbuilder.add(checkBox = new JCheckBox(descr), cc.xy(1,1));
+            pbuilder.add(checkBox = new JCheckBox(descr), ccc.xy(1,1));
             //builder.add(new JLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
             checkBox.setSelected(true);
             
@@ -1177,7 +1178,7 @@ public class FormEditor implements DatabaseLoginListener
                 contentPanel.add(pp);
                 i++;
             }
-            pbuilder.add(outerPanel, cc.xy(1,3));
+            pbuilder.add(outerPanel, ccc.xy(1,3));
             
             checkBox.addActionListener(new ActionListener()
             {
@@ -1207,6 +1208,7 @@ public class FormEditor implements DatabaseLoginListener
         }
     }
     
+    @SuppressWarnings("unchecked")
     protected void createLoanSelector()
     {
         List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");
@@ -1226,7 +1228,7 @@ public class FormEditor implements DatabaseLoginListener
         //mainPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         
         PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px,", (colObjs.size()*2)-1)), mainPanel);
-        CellConstraints cc      = new CellConstraints();
+        CellConstraints ccc      = new CellConstraints();
 
         //mainPanel.setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), mainPanel.getBorder()));
  
@@ -1236,13 +1238,13 @@ public class FormEditor implements DatabaseLoginListener
         {
             if (i > 0)
             {
-                pbuilder.addSeparator("", cc.xy(1,y));
+                pbuilder.addSeparator("", ccc.xy(1,y));
             }
             y += 2;
             
             ColObjPanel p = new ColObjPanel(co);
             //mainPanel.add(p);
-            pbuilder.add(p, cc.xy(1,y));
+            pbuilder.add(p, ccc.xy(1,y));
             y += 2;
             i++;
             if (i > 2)
@@ -1273,9 +1275,53 @@ public class FormEditor implements DatabaseLoginListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-  /*
-JCollapsiblePane cp = new JCollapsiblePane();
+                if (true)
+                {
+                    
+                    try
+                    {
+                        //System.out.println(System.getProperty("os.name"));
 
+                        if (!System.getProperty("os.name").equals("Mac OS X"))
+                        {
+                            UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                            //PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
+                            PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                        }
+
+                        //UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                        //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                        //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+                    }
+                    catch (Exception e)
+                    {
+                        log.error("Can't change L&F: ", e);
+                    }
+                    
+                    UIManager.LookAndFeelInfo[] info = UIManager.getInstalledLookAndFeels();
+                    for (int i = 0; i < info.length; i++)
+                    {
+                        System.out.println(info[i].toString());
+                    }
+                    
+                    UIDefaults uiDefaults = UIManager.getDefaults();
+                    Enumeration<Object> e = uiDefaults.keys();
+                    while (e.hasMoreElements())
+                    {
+                        Object key = e.nextElement();
+                        Object val = uiDefaults.get(key);
+                        if (key.toString().indexOf("font") > -1)
+                        {
+                            System.out.println("[" + key.toString() + "]  [" +
+                                (null != val ? val.toString() : "(null)") +
+                                "]");
+                        }
+                    } 
+                    //return;
+                }
+                UIManager.put("Button.font", new FontUIResource(new Font("Dialog", Font.BOLD, 14)));
+//JCollapsiblePane cp = new JCollapsiblePane();
+JPanel cp = new JPanel();
 // JCollapsiblePane can be used like any other container
 cp.setLayout(new BorderLayout());
 
@@ -1283,7 +1329,7 @@ cp.setLayout(new BorderLayout());
 JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
 controls.add(new JLabel("Search:"));
 controls.add(new JTextField(10));
-controls.add(UICacheManager.createButton("Refresh"));
+controls.add(new JButton("Refresh"));
 controls.setBorder(new TitledBorder("Filters"));
 cp.add("Center", controls);
 
@@ -1298,13 +1344,13 @@ JScrollPane scroll = new JScrollPane(new JTree());
 frame.add("Center", scroll);
 
 // Show/hide the "Controls"
-JButton toggle = UICacheManager.createButton(cp.getActionMap().get(JCollapsiblePane.TOGGLE_ACTION));
-toggle.setText("Show/Hide Search Panel");
-frame.add("South", toggle);
+//JButton toggle = new JButton(cp.getActionMap().get(JCollapsiblePane.TOGGLE_ACTION));
+//toggle.setText("Show/Hide Search Panel");
+//frame.add("South", toggle);
 
 frame.pack();
 frame.setVisible(true);
-*/
+
                 //FormEditor formEditor = new FormEditor();
                 //formEditor.createLoanSelector();
                 //String text = "<table><tr><td>XXXX</rd></tr></table>";
@@ -1457,8 +1503,8 @@ frame.setVisible(true);
             tree.addMouseListener(ml);
             
             // Bottom Button UI
-            cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
-            okBtn     = UICacheManager.createButton(getResourceString("OK"));
+            cancelBtn = new JButton(getResourceString("Cancel"));
+            okBtn     = new JButton(getResourceString("OK"));
 
             
             okBtn.addActionListener(this);

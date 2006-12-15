@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -169,7 +168,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         if (e.isPopupTrigger())
         {
             JPopupMenu popup = new JPopupMenu();
-            JMenuItem menuItem = UICacheManager.createMenuItem("Configure Carry Forward"); // I18N
+            JMenuItem menuItem = new JMenuItem("Configure Carry Forward"); // I18N
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ex)
                 {

@@ -232,10 +232,6 @@ public class EMailHelper
         CellConstraints cc        = new CellConstraints();
         JLabel          label     = new JLabel(getResourceString("password")+":", JLabel.RIGHT);
         JPasswordField  passField = new JPasswordField(25);
-        
-        label.setFont(UICacheManager.getFont(JLabel.class));
-        passField.setFont(UICacheManager.getFont(JPasswordField.class));
-
 
         builder.add(label, cc.xy(1,1));
         builder.add(passField, cc.xy(3,1));

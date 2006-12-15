@@ -10,7 +10,7 @@
     </section>
     
     <section title="misc">
-        <pref title="Misc." icon="Browse" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
+        <pref title="Misc." icon="Search" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
     </section>
     
 </prefs>

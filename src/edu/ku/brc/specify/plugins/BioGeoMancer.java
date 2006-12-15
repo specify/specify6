@@ -78,7 +78,6 @@ import edu.ku.brc.specify.tasks.services.MapGrabber;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 
@@ -454,9 +453,9 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            builder.add(scrollPane, cc.xywh(1,rowInx, 7, 1));
            rowInx += 2;
 
-           okBtn = UICacheManager.createButton(getResourceString("Save"));
+           okBtn = new JButton(getResourceString("Save"));
            okBtn.setEnabled(false);
-           JButton closeBtn = UICacheManager.createButton(getResourceString("Close"));
+           JButton closeBtn = new JButton(getResourceString("Close"));
            //okBtn.addActionListener(this);
            getRootPane().setDefaultButton(okBtn);
 
@@ -594,7 +593,6 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         CellConstraints cc = new CellConstraints();
         longitude = new JTextField(10);
         longitude.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-        longitude.setFont(UICacheManager.getFont(JTextField.class));
         
         builder.add(longitude, cc.xy(1,1));
 
@@ -603,7 +601,6 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         //builder.add(new JLabel("Latitude:", JLabel.RIGHT), cc.xy(1,3));
         latitude = new JTextField(10);
         latitude.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-        longitude.setFont(UICacheManager.getFont(JTextField.class));
         
         builder.add(latitude, cc.xy(5,1));
 

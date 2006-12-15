@@ -181,7 +181,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		
 		// create north panel widgets
 		defNameLabel = new JLabel();
-		editDefButton = UICacheManager.createButton("Edit");
+		editDefButton = new JButton("Edit");
 		editDefButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
@@ -201,7 +201,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
 		
-		deleteItemButton = UICacheManager.createButton("Delete");
+		deleteItemButton = new JButton("Delete");
 		deleteItemButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
@@ -209,7 +209,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 				deleteItem(defItemsTable.getSelectedRow());
 			}
 		});
-		newItemButton = UICacheManager.createButton("New");
+		newItemButton = new JButton("New");
 		newItemButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)

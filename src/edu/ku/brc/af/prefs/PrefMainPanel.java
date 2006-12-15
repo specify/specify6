@@ -49,7 +49,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.validation.DataChangeListener;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 
@@ -130,7 +129,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         builder.getPanel().setBackground(lighter);
         add(builder.getPanel(), BorderLayout.NORTH);
 
-        okButton = UICacheManager.createButton("OK");
+        okButton = new JButton("OK");
         okButton.setEnabled(false);
 
         JButton cancelButton = new javax.swing.JButton ("Cancel");
@@ -210,7 +209,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p:g, r:p:g", "p"));
         CellConstraints cc         = new CellConstraints();
 
-        JButton showAllBtn = UICacheManager.createButton(getResourceString("showall"));
+        JButton showAllBtn = new JButton(getResourceString("showall"));
 
         builder.add(showAllBtn, cc.xy(1,1));
         builder.add( createSearchPanel(), cc.xy(3,1));
@@ -331,7 +330,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         JPanel     searchPanel = new JPanel(gridbag);
         JLabel     spacer      = new JLabel(" ");
 
-        searchBtn   = UICacheManager.createButton(getResourceString("Search"));
+        searchBtn   = new JButton(getResourceString("Search"));
 
         searchText  = new JTextField("", 10);
         textBGColor = searchText.getBackground();

@@ -20,7 +20,6 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -366,7 +365,7 @@ public class FormViewObj implements Viewable,
         {
             if (!hideSaveBtn)
             {
-                saveBtn = UICacheManager.createButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+                saveBtn = new JButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
                 comps.add(saveBtn);
             }
 
@@ -427,7 +426,7 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        saveBtn = UICacheManager.createButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
+        saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
         saveBtn.setToolTipText(ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle()));
         saveBtn.setMargin(new Insets(1,1,1,1));
         saveBtn.setEnabled(false);
@@ -536,7 +535,7 @@ public class FormViewObj implements Viewable,
                 }
             }
 
-            JButton closeBtn = UICacheManager.createButton("Close");
+            JButton closeBtn = new JButton("Close");
             panelBuilder.add(ButtonBarFactory.buildOKBar(closeBtn), cc.xy(1,3));
             closeBtn.addActionListener(new Closer(dialog, formInfo));
 
@@ -2178,28 +2177,6 @@ public class FormViewObj implements Viewable,
         builder.add(control, cc.xywh(colInx, rowInx, colSpan, rowSpan));
     }
     
-    /**
-     * Adjusts the font for the separator.
-     * @param sep the separator container
-     */
-    public static void adjustFontForSeparator(JComponent sep)
-    {
-        Font labelFont = UICacheManager.getFont(JLabel.class);
-        if (labelFont != null)
-        {
-            for (int i=0;i<sep.getComponentCount();i++)
-            {
-                Component comp = sep.getComponent(i);
-                Font f = comp.getFont();
-                if (f != null && labelFont.getStyle() != f.getStyle())
-                {
-                    f = new Font(labelFont.getFamily(), f.getStyle(), labelFont.getSize());
-                }
-                sep.getComponent(i).setFont(f);    
-            }
-        }
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#createSeparator(java.lang.String)
      */
@@ -2207,7 +2184,6 @@ public class FormViewObj implements Viewable,
     {
         int        titleAlignment  = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
         JComponent titledSeparator = builder.getComponentFactory().createSeparator(title, titleAlignment);
-        adjustFontForSeparator(titledSeparator);
         return titledSeparator;
     }
     
@@ -2220,7 +2196,6 @@ public class FormViewObj implements Viewable,
         draggableRecIdentifier = DraggableRecordIdentifierFactory.getInstance().createDraggableRecordIdentifier(icon);
         
         panelBldr.add(draggableRecIdentifier, cc.xy(1, 1));
-        adjustFontForSeparator(panelBldr.addSeparator(title, cc.xy(3, 1)));
         return panelBldr.getPanel();
     }
 

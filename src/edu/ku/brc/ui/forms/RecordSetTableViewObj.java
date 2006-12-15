@@ -38,11 +38,15 @@ import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.FormValidator;
 
 /**
+ * This class enables the contents of a recordset to be shown as a table. 
+ * Meaning you pass in a recordset and it finds the default form and then loads it as a 
+ * table showing the resiltion of the recordset items.
+ * 
  * @author rods
  *
  * @code_status Alpha
  *
- * Created Date: Nov 19, 2006
+ * Created Date: Nov 21, 2006
  *
  */
 public class RecordSetTableViewObj extends TableViewObj
@@ -50,14 +54,14 @@ public class RecordSetTableViewObj extends TableViewObj
     protected static final Logger log = Logger.getLogger(RecordSetTableViewObj.class);
     
     // UI stuff
-    protected JPanel southPanel;
+    protected JPanel  southPanel;
     protected JButton editButton;
     protected JButton newButton;
     protected JButton deleteButton;
     
     protected boolean dataTypeError;
     
-    protected FormValidator validator;
+    protected FormValidator            validator;
     protected DataProviderSessionIFace tempSession = null;
 
 

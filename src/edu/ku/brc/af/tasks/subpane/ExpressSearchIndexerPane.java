@@ -688,8 +688,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         globalLabel       = new JLabel(getResourceString("Indexing_Descr"), JLabel.RIGHT);
         globalProgressBar = new JProgressBar();
 
-        cancelBtn = UICacheManager.createButton(getResourceString("CancelIndexing"));
-        closeBtn  = UICacheManager.createButton(getResourceString("Close"));
+        cancelBtn = new JButton(getResourceString("CancelIndexing"));
+        closeBtn  = new JButton(getResourceString("Close"));
         closeBtn.setVisible(false);
 
         JLabel label = new JLabel(getResourceString("UpdatingES"), JLabel.CENTER);

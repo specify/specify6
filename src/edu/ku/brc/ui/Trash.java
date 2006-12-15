@@ -107,7 +107,7 @@ public class Trash extends JComponent implements GhostActionable
         
         popupMenu = new JPopupMenu();
         
-        openMenuItem = UICacheManager.createMenuItem(getResourceString("Open"));
+        openMenuItem = new JMenuItem(getResourceString("Open"));
         openMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 openTrashCan();
@@ -115,7 +115,7 @@ public class Trash extends JComponent implements GhostActionable
           });
         popupMenu.add(openMenuItem);
         
-        emptyMenuItem = UICacheManager.createMenuItem(getResourceString("EmptyTrash"));
+        emptyMenuItem = new JMenuItem(getResourceString("EmptyTrash"));
         emptyMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 emptyTrash();

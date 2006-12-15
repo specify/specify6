@@ -574,7 +574,6 @@ public class IconViewObj implements Viewable
                 log.error("Icon view data set contains non-FormDataObjIFace objects.  Item being ignored.");
                 mainComp.removeAll();
                 JLabel lbl = new JLabel(getResourceString("Error"));
-                lbl.setFont(UICacheManager.getFont(JLabel.class));
                 mainComp.add(lbl);
  
                 dataTypeError = true;

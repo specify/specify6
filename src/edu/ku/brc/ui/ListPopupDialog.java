@@ -56,16 +56,13 @@ public class ListPopupDialog extends JDialog
 		cbPanel    = new JPanel();
 		cbPanel.add(optionList);
 		add(cbPanel,BorderLayout.CENTER);
-        optionList.setFont(UICacheManager.getFont(JComboBox.class));
          
         JLabel lbl = new JLabel(message);
-        lbl.setFont(UICacheManager.getFont(JLabel.class));
         
 		add(lbl,BorderLayout.NORTH);
 		
 		buttonPanel  = new JPanel(new FlowLayout());
-		cancelButton = UICacheManager.createButton(getResourceString("Cancel"));
-        cancelButton.setFont(UICacheManager.getFont(JButton.class));
+		cancelButton = new JButton(getResourceString("Cancel"));
 
 		cancelButton.addActionListener(new ActionListener()
 		{
@@ -75,8 +72,7 @@ public class ListPopupDialog extends JDialog
 				callback.cancelled();
 			}
 		});
-		okButton = UICacheManager.createButton(getResourceString("OK"));
-        okButton.setFont(UICacheManager.getFont(JButton.class));
+		okButton = new JButton(getResourceString("OK"));
 
 		okButton.addActionListener(new ActionListener()
 		{

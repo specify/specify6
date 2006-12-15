@@ -398,8 +398,11 @@ public class BioGeoMancerMapper implements TimingTarget
         mapMaxLat -= latChange;
     }
 
-    public void pan(double latChange, double longChange)
+    public void pan(double latChangeArg, double longChangeArg)
     {
+        double latChange  = latChangeArg;
+        double longChange = longChangeArg;
+        
         cacheValid = false;
         if( mapMinLat+latChange<-90 )
         {
@@ -424,11 +427,11 @@ public class BioGeoMancerMapper implements TimingTarget
         mapMaxLong += longChange;
     }
 
-    protected boolean boxIsValid(double minLat, double minLong, double maxLat, double maxLong)
+    protected boolean boxIsValid(double minLatArg, double minLongArg, double maxLatArg, double maxLongArg)
     {
-        if( -90<=minLat&&minLat<maxLat&&maxLat<=90 )
+        if( -90<=minLatArg&&minLatArg<maxLatArg&&maxLatArg<=90 )
         {
-            if( -180<=minLong&&minLong<maxLong&&maxLong<=180 )
+            if( -180<=minLongArg&&minLongArg<maxLongArg&&maxLongArg<=180 )
             {
                 return true;
             }
@@ -541,20 +544,20 @@ public class BioGeoMancerMapper implements TimingTarget
     protected Image getMapFromService(final String host,
                                       final String defaultPathAndParams,
                                       final String layers,
-                                      double minLat,
-                                      double minLong,
-                                      double maxLat,
-                                      double maxLong)   throws HttpException, IOException
+                                      double minLatArg,
+                                      double minLongArg,
+                                      double maxLatArg,
+                                      double maxLongArg)   throws HttpException, IOException
     {
 
         mapGrabber.setHost(host);
         mapGrabber.setDefaultPathAndParams(defaultPathAndParams);
         mapGrabber.setLayers(layers);
 
-        mapGrabber.setMinLat(minLat);
-        mapGrabber.setMaxLat(maxLat);
-        mapGrabber.setMinLong(minLong);
-        mapGrabber.setMaxLong(maxLong);
+        mapGrabber.setMinLat(minLatArg);
+        mapGrabber.setMaxLat(maxLatArg);
+        mapGrabber.setMinLong(minLongArg);
+        mapGrabber.setMaxLong(maxLongArg);
 
         mapGrabber.setMaxHeight(maxMapHeight);
         mapGrabber.setMaxWidth(maxMapWidth);

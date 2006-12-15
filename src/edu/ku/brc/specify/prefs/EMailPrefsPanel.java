@@ -421,7 +421,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         panel.add(builder.getPanel(), BorderLayout.CENTER);
 
         builder = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        closeCheckerBtn = UICacheManager.createButton(getResourceString("Close"));
+        closeCheckerBtn = new JButton(getResourceString("Close"));
         builder.add(closeCheckerBtn, cc.xy(1,1));
         panel.add(builder.getPanel(), BorderLayout.SOUTH);
 

@@ -173,7 +173,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                             final String title)
     {
         searchText = new JTextField(30);
-        searchBtn  = UICacheManager.createButton(getResourceString("Search"));
+        searchBtn  = new JButton(getResourceString("Search"));
         ActionListener doQuery = new ActionListener() 
         {
             public void actionPerformed(ActionEvent e)
@@ -271,8 +271,8 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         scrollPane.setPreferredSize(new Dimension(300,200));
 
         // Bottom Button UI
-        cancelBtn = UICacheManager.createButton(getResourceString("Cancel"));
-        okBtn = UICacheManager.createButton(getResourceString("OK"));
+        cancelBtn = new JButton(getResourceString("Cancel"));
+        okBtn = new JButton(getResourceString("OK"));
 
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);

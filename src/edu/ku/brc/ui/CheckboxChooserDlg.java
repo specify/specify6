@@ -128,7 +128,6 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
         if (desc != null)
         {
             JLabel lbl = new JLabel(desc, SwingConstants.CENTER);
-            lbl.setFont(UICacheManager.getFont(JLabel.class));
             panel.add(lbl, BorderLayout.NORTH);
         }
 
@@ -160,8 +159,8 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
         panel.add(listScroller, BorderLayout.CENTER);
 
         // Bottom Button UI
-        cancelBtn         = UICacheManager.createButton(getResourceString("Cancel"));
-        okBtn             = UICacheManager.createButton(getResourceString("OK"));
+        cancelBtn         = new JButton(getResourceString("Cancel"));
+        okBtn             = new JButton(getResourceString("OK"));
 
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);
