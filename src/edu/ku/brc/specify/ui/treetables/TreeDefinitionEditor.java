@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.ui.treetables;
@@ -16,16 +19,24 @@ import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellEditor;
 
 import org.apache.log4j.Logger;
 
@@ -233,6 +244,30 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		tableModel = new TreeDefEditorTableModel<I>(defItems);
 		defItemsTable = new JTable(tableModel);
 		defItemsTable.setRowHeight(24);
+        TableCellEditor stringCellEditor = new DefaultCellEditor(new JTextField());
+        defItemsTable.setDefaultEditor(String.class, stringCellEditor);
+        TableCellEditor booleanCellEditor = new DefaultCellEditor(new JCheckBox());
+        defItemsTable.setDefaultEditor(Boolean.class, booleanCellEditor);
+        CellEditorListener editListener = new CellEditorListener()
+        {
+            public void editingCanceled(ChangeEvent e)
+            {
+                // ignore this ?
+            }
+            public void editingStopped(ChangeEvent e)
+            {
+                unsavedChanges = true;
+            }
+        };
+        stringCellEditor.addCellEditorListener(editListener);
+        booleanCellEditor.addCellEditorListener(editListener);
+        tableModel.addTableModelListener(new TableModelListener()
+        {
+            public void tableChanged(TableModelEvent e)
+            {
+                System.out.println("table data change detected");
+            }
+        });
 		addSelectionListener();
 		defItemsTable.setRowSelectionAllowed(true);
 		defItemsTable.setColumnSelectionAllowed(false);
@@ -273,6 +308,11 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		defItemsTable.getSelectionModel().addListSelectionListener(sl);
 	}
 	
+//    protected void addEditListener()
+//    {
+//        defItemsTable.add
+//    }
+    
 	protected void enableSelectionSensativeButtons(boolean enable)
 	{
 		deleteItemButton.setEnabled(enable);
