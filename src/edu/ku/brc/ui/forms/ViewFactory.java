@@ -952,7 +952,7 @@ public class ViewFactory
                     // still have compToAdd = null;
                     FormCellSeparator fcs             = (FormCellSeparator)cell;
                     String            collapsableName = fcs.getCollapseCompName();
-                    Component         sep             = viewBldObj.createSeparator(fcs.getLabel(), colInx, rowInx, colspan);
+                    Component         sep             = viewBldObj.createSeparator(fcs.getLabel());
                     if (isNotEmpty(collapsableName))
                     {
                         CollapsableSeparator collapseSep = new CollapsableSeparator(sep);
@@ -963,9 +963,6 @@ public class ViewFactory
                         collapseSepHash.put(collapseSep, collapsableName);
                         sep = collapseSep;
                         
-                    } else
-                    {
-                        sep = viewBldObj.createSeparator(fcs.getLabel(), colInx, rowInx, colspan);
                     }
                     addControl     = cell.getName().length() > 0;
                     compToAdd      = (JComponent)sep;

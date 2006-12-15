@@ -29,9 +29,13 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.ui.IconManager;
 
 /**
+ * A collapsable panel where there is a "more" button that indicates whether the pane
+ * is collapsed or not. Then a component to its right that is a separator and then the panel 
+ * below it.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Dec 13, 2006
  *
@@ -44,7 +48,10 @@ public class CollapsableSeparator extends JPanel
     protected ImageIcon downImgIcon;
 
     /**
-     * @param separator
+     * Create a collapsable panel where there is a "more" button that indicates whether the pane
+     * is collapsed or not. Then a component to its right that is a separator and then the panel 
+     * below it.
+     * @param separator this can be any component but usually it is a separator.
      */
     public CollapsableSeparator(final Component separator)
     {
@@ -59,6 +66,10 @@ public class CollapsableSeparator extends JPanel
         panelBldr.add(separator, cc.xy(3,1));
     }
 
+    /**
+     * Sets the component that will be hidden or collapsed.
+     * @param innerComp the component
+     */
     public void setInnerComp(final Component innerComp)
     {
         if (innerComp != null && this.innerComp == null)

@@ -63,12 +63,9 @@ public interface ViewBuilderIFace
     /**
      * Creates a separator (this is usually some text with a line after it).
      * @param title the title text
-     * @param colInx the column placement in the row
-     * @param rowInx the row it is to be placed on
-     * @param colSpan the number of columns to span
      * @return the separator component (usually a container)
      */
-    public Component createSeparator(String title, int colInx, int rowInx, int colSpan);
+    public Component createSeparator(String title);
     
     /**
      * Creates a special RecordIndentifier UI component with a name and icon. It is intended that

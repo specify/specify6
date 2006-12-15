@@ -879,9 +879,9 @@ public class TableViewObj implements Viewable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSeparator(java.lang.String, int, int, int)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#createSeparator(java.lang.String)
      */
-    public Component createSeparator(String title, int rowInx, int colInx, int colSpan)
+    public Component createSeparator(String title)
     {
         return null;
     }

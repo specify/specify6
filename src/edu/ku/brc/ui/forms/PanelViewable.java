@@ -27,6 +27,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,7 +37,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellPanel;
@@ -150,16 +150,14 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSeparator(java.lang.String, int, int, int)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#createSeparator(java.lang.String)
      */
-    public Component createSeparator(final String title, final int colInx, final int rowInx, final int colSpan)
+    public Component createSeparator(final String title)
     {
-        JComponent jComp = builder.addSeparator(title, cc.xyw(colInx, rowInx, colSpan));
-        for (int i=0;i<jComp.getComponentCount();i++)
-        {
-            jComp.setFont(UICacheManager.getFont(JLabel.class));    
-        }
-        return jComp;
+        int        titleAlignment  = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
+        JComponent titledSeparator = builder.getComponentFactory().createSeparator(title, titleAlignment);
+        FormViewObj.adjustFontForSeparator(titledSeparator);
+        return titledSeparator;
     }
 
     /* (non-Javadoc)

@@ -2201,12 +2201,11 @@ public class FormViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addSeparator(java.lang.String, int, int, int)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#createSeparator(java.lang.String)
      */
-    public Component createSeparator(String title, int colInx, int rowInx, int colSpan)
+    public Component createSeparator(String title)
     {
-        //JComponent titledSeparator = builder.addSeparator(title, cc.xyw(colInx, rowInx, colSpan));
-        int titleAlignment = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
+        int        titleAlignment  = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
         JComponent titledSeparator = builder.getComponentFactory().createSeparator(title, titleAlignment);
         adjustFontForSeparator(titledSeparator);
         return titledSeparator;
