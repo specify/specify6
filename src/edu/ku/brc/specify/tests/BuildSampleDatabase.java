@@ -713,6 +713,7 @@ public class BuildSampleDatabase
         GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
         GeographyTreeDefItem state = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
         state.setIsInFullName(true);
+        state.setTextAfter(" ");
         GeographyTreeDefItem county = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
         county.setIsInFullName(true);
         county.setTextAfter(" Co.");
@@ -832,10 +833,13 @@ public class BuildSampleDatabase
         building.setIsEnforced(true);
         LocationTreeDefItem room = createLocationTreeDefItem(building, locTreeDef, "room", 100);
         room.setIsInFullName(true);
+        room.setTextAfter(" ");
         LocationTreeDefItem freezer = createLocationTreeDefItem(room, locTreeDef, "freezer", 200);
         freezer.setIsInFullName(true);
+        freezer.setTextAfter(" ");
         LocationTreeDefItem shelf = createLocationTreeDefItem(freezer, locTreeDef, "shelf", 300);
         shelf.setIsInFullName(true);
+        shelf.setTextAfter(" ");
 
         // Create the building
         Location dyche = createLocation(locTreeDef, null, "Dyche Hall", building.getRankId());
@@ -896,6 +900,7 @@ public class BuildSampleDatabase
         TaxonTreeDefItem defItemLevel3 = createTaxonTreeDefItem(defItemLevel2, taxonTreeDef, "species", 300);
         defItemLevel3.setIsEnforced(true);
         defItemLevel3.setIsInFullName(true);
+        defItemLevel3.setTextAfter(" ");
 
         // 0
         newObjs.add(defItemLevel0);
