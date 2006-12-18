@@ -991,11 +991,10 @@
                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p,5px,p" rowdef="p" colspan="12">
+                    <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p" colspan="12">
                         <rows>
                             <row>
-                                <cell type="command" id="14" name="ReturnLoan" label="Return Loan" commandtype="" action="" ignore="true"/>
-                                <cell type="command" id="15" name="ReturnPartialLoan" label="Return Partial Loan" commandtype="" action="" ignore="true"/>                                
+                                <cell type="command" id="14" name="ReturnLoan" label="Return Loan" commandtype="Interactions" action="ReturnLoan" ignore="true"/>
                                 <cell type="field" uitype="checkbox" id="13" name="generateInvoice" label="Generate Invoice on Save" ignore="true" default="true"/>
                             </row>
                         </rows>

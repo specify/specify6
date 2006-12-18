@@ -391,8 +391,8 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return ValComboBoxFromQuery
      */
-    protected ValComboBoxFromQuery createQueryComboBox(final FormValidator validator,
-                                                       final FormCellField cellField)
+    public ValComboBoxFromQuery createQueryComboBox(final FormValidator validator,
+                                                    final FormCellField cellField)
     {
         //String cbxName = cellField.getInitialize();
         String cbxName = cellField.getProperty("name");

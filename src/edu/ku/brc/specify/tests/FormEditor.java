@@ -122,6 +122,7 @@ import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
@@ -132,6 +133,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
+import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
@@ -1275,51 +1277,17 @@ public class FormEditor implements DatabaseLoginListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                if (true)
-                {
-                    
-                    try
-                    {
-                        //System.out.println(System.getProperty("os.name"));
-
-                        if (!System.getProperty("os.name").equals("Mac OS X"))
-                        {
-                            UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                            //PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
-                            PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
-                        }
-
-                        //UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                        //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                        //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-                    }
-                    catch (Exception e)
-                    {
-                        log.error("Can't change L&F: ", e);
-                    }
-                    
-                    UIManager.LookAndFeelInfo[] info = UIManager.getInstalledLookAndFeels();
-                    for (int i = 0; i < info.length; i++)
-                    {
-                        System.out.println(info[i].toString());
-                    }
-                    
-                    UIDefaults uiDefaults = UIManager.getDefaults();
-                    Enumeration<Object> e = uiDefaults.keys();
-                    while (e.hasMoreElements())
-                    {
-                        Object key = e.nextElement();
-                        Object val = uiDefaults.get(key);
-                        if (key.toString().indexOf("font") > -1)
-                        {
-                            System.out.println("[" + key.toString() + "]  [" +
-                                (null != val ? val.toString() : "(null)") +
-                                "]");
-                        }
-                    } 
-                    //return;
-                }
-                UIManager.put("Button.font", new FontUIResource(new Font("Dialog", Font.BOLD, 14)));
+                
+                List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");       
+                List<Loan> loans = (List<Loan>)BuildSampleDatabase.getObjectsByClass(dataObjs, Loan.class);
+                int inx = 1;
+                System.out.println(loans.get(inx).getLoanNumber());
+                LoanReturnDlg dlg = new LoanReturnDlg(loans.get(inx));
+                dlg.setModal(true);
+                dlg.setVisible(true);
+                dlg.dispose();
+                
+                /*
 //JCollapsiblePane cp = new JCollapsiblePane();
 JPanel cp = new JPanel();
 // JCollapsiblePane can be used like any other container
@@ -1357,7 +1325,7 @@ frame.setVisible(true);
                 //File excelFile = new File("collection_items_64367.tmp.xls");
                 //EMailHelper.sendMsg("imap.ku.edu", "rods", "Vintage1601*", "rods@ku.edu", "rods@ku.edu", 
                 //        "Info Request", text, EMailHelper.HTML_TEXT, excelFile);
-                
+                */
             }
       });
 

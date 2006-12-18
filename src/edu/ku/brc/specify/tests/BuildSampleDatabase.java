@@ -503,7 +503,8 @@ public class BuildSampleDatabase
         Calendar dateClosed1 = Calendar.getInstance();
         dateClosed1.set(2004, 7, 4);
       
-        List<LoanPhysicalObject> loanPhysObjs = new Vector<LoanPhysicalObject>();
+        List<LoanPhysicalObject>         loanPhysObjs = new Vector<LoanPhysicalObject>();
+        Vector<LoanReturnPhysicalObject> returns      = new Vector<LoanReturnPhysicalObject>();
         
         Loan closedLoan = createLoan("2006-001", loanDate1, currentDueDate1, originalDueDate1, 
                                      dateClosed1, Loan.LOAN, Loan.CLOSED, null);
@@ -517,9 +518,20 @@ public class BuildSampleDatabase
                 i--;
                 continue;
             }
-            int quantity = Math.max(1,rand.nextInt(available));
-            LoanPhysicalObject lpo = DataBuilder.createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, closedLoan);
+            
+            short quantity = (short)Math.max(1, rand.nextInt(available));
+            LoanPhysicalObject lpo = createLoanPhysicalObject(quantity, null, null, null, quantity, (short)0, p, closedLoan);
+            lpo.setIsResolved(true);
             loanPhysObjs.add(lpo);
+            
+            Calendar returnedDate     = Calendar.getInstance();       
+            returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
+            returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
+            
+            LoanReturnPhysicalObject lrpo = createLoanReturnPhysicalObject(returnedDate, quantity, lpo, null, agents.get(0));
+            lpo.addLoanReturnPhysicalObjects(lrpo);
+            returns.add(lrpo);
+
             p.getLoanPhysicalObjects().add(lpo);
         }
         
@@ -534,13 +546,13 @@ public class BuildSampleDatabase
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
             int available = p.getAvailable();
-            if (available<1)
+            if (available < 1 )
             {
                 // retry
                 i--;
                 continue;
             }
-            int quantity = Math.max(1,rand.nextInt(available));
+            int quantity = Math.max(1, rand.nextInt(available));
             LoanPhysicalObject lpo = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, overdueLoan);
             loanPhysObjs.add(lpo);
             p.getLoanPhysicalObjects().add(lpo);
@@ -563,14 +575,14 @@ public class BuildSampleDatabase
             int available = lpo.getPreparation().getAvailable();
             if (available > 0)
             {
-                int quantity = Math.max(1,rand.nextInt(available));
+                int quantity = Math.max(1, rand.nextInt(available));
                 LoanPhysicalObject newLPO = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, lpo.getPreparation(), loan3);
                 newLoanLPOs.add(newLPO);
                 lpo.getPreparation().getLoanPhysicalObjects().add(newLPO);
                 
                 // stop after we put 6 LPOs in the new loan
                 lpoCountInNewLoan++;
-                if(lpoCountInNewLoan==6)
+                if (lpoCountInNewLoan == 6)
                 {
                     break;
                 }
@@ -578,19 +590,27 @@ public class BuildSampleDatabase
         }
         
         // create some LoanReturnPhysicalObjects
-        Vector<LoanReturnPhysicalObject> returns = new Vector<LoanReturnPhysicalObject>();
-        for (int i = 0; i < 5; ++i)
+        int startIndex = returns.size();
+        for (int i=startIndex;i<loanPhysObjs.size();i++)
         {
-            LoanPhysicalObject lpo = getObjectByClass(loanPhysObjs, LoanPhysicalObject.class, rand.nextInt(loanPhysObjs.size()));
-            int quantityReturned = Math.max(1, lpo.getQuantity());
-            Calendar returnedDate = Calendar.getInstance();
+            LoanPhysicalObject lpo = loanPhysObjs.get(i);
+        
+            short    quantityLoaned   = lpo.getQuantity();
+            short    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
+            Calendar returnedDate     = Calendar.getInstance();
+            
             returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
             // make the returned date be a little while after the original loan
             returnedDate.add(Calendar.DAY_OF_YEAR, 72);
-            LoanReturnPhysicalObject lrpo = createLoanReturnPhysicalObject(returnedDate, (short)quantityReturned, lpo, null, agents.get(0));
+            
+            LoanReturnPhysicalObject lrpo = createLoanReturnPhysicalObject(returnedDate, quantityReturned, lpo, null, agents.get(0));
             lpo.addLoanReturnPhysicalObjects(lrpo);
-            lpo.setQuantityReturned(lrpo.getQuantity());
+            
+            lpo.setQuantityReturned(quantityReturned);
+            lpo.setQuantityResolved((short)(quantityLoaned - quantityReturned));
+            lpo.setIsResolved(quantityLoaned == quantityReturned);
             returns.add(lrpo);
+            i++;
         }
 
         dataObjects.add(closedLoan);
@@ -626,7 +646,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
-        if (true)
+        if (false)
         {
             log.info("Creating attachments and attachment metadata");
             try

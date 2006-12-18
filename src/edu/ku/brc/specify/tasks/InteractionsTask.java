@@ -73,10 +73,13 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
+import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -86,6 +89,7 @@ import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
@@ -757,6 +761,118 @@ public class InteractionsTask extends BaseTask
         }
     }
     
+    /**
+     * Starts process to return a loan
+     * @param doPartial true means show dialog and do partial, false means just return the loan
+     */
+    protected void doReturnLoan(final Loan   loan, 
+                                final Agent  agent, 
+                                final List<LoanReturnInfo> returns)
+    {
+        final SwingWorker worker = new SwingWorker()
+        {
+            public Object construct()
+            {
+                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                statusBar.setIndeterminate(true);
+                statusBar.setText(getResourceString("ReturningLoanItems"));
+                
+                for (LoanReturnInfo lri : returns)
+                {   
+                    LoanPhysicalObject       lpo  = lri.getLoanPhysicalObject();
+                    LoanReturnPhysicalObject lrpo = new LoanReturnPhysicalObject();
+                    lrpo.initialize();
+                    lrpo.setAgent(agent);
+                    lrpo.setLastEditedBy(FormHelper.getCurrentUserEditStr());
+                    lrpo.setReturnedDate(Calendar.getInstance());
+                    lrpo.setQuantity(lri.getQuantity());
+                    lrpo.setRemarks(lri.getRemarks());
+                    if (lri.isResolved() != null)
+                    {
+                        lri.getLoanPhysicalObject().setIsResolved(lri.isResolved());
+                    }
+                    lrpo.setLoanPhysicalObject(lpo);
+                    lpo.getLoanReturnPhysicalObjects().add(lrpo);
+                    
+                }
+                /*
+                Shipment shipment = new Shipment();
+                shipment.initialize();
+                
+                loan.setShipment(shipment);
+                shipment.getLoans().add(loan);
+                
+                for (Preparation prep : prepsHash.keySet())
+                {
+                    Integer count = prepsHash.get(prep);
+                    
+                    LoanPhysicalObject lpo = new LoanPhysicalObject();
+                    lpo.initialize();
+                    lpo.setPreparation(prep);
+                    lpo.setQuantity(count.shortValue());
+                    lpo.setLoan(loan);
+                    loan.getLoanPhysicalObjects().add(lpo);
+                }
+                
+                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                if (dataEntryTask != null)
+                {
+                    DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.lookupInfoById(loan.getTableId());
+                    dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                }*/
+                return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            public void finished()
+            {
+                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                statusBar.setIndeterminate(false);
+                statusBar.setText("");
+            }
+        };
+        worker.start();
+    }
+    
+    /**
+     * Starts process to return a loan
+     * @param doPartial true means show dialog and do partial, false means just return the loan
+     */
+    protected void returnLoan()
+    {
+        Loan loan = null;
+        SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
+        if (subPane != null)
+        {
+            MultiView mv = subPane.getMultiView();
+            if (mv != null)
+            {
+                if (mv.getData() instanceof Loan)
+                {
+                    loan = (Loan)mv.getData();
+                }
+            }
+        }
+        
+        if (loan != null)
+        {
+            LoanReturnDlg dlg = new LoanReturnDlg(loan);
+            dlg.setModal(true);
+            dlg.setVisible(true);
+            dlg.dispose();
+            
+            List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
+            if (returns.size() > 0)
+            {
+                doReturnLoan(loan, dlg.getAgent(), returns);
+            }
+            
+        } else
+        {
+            // XXX Show some kind of error dialog
+        }
+    }
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -852,6 +968,10 @@ public class InteractionsTask extends BaseTask
             {
                 createInfoRequest((RecordSetIFace)data);
             }
+            
+        } else if (cmdAction.isAction("ReturnLoan"))
+        {
+            returnLoan();
             
         } else if (cmdAction.isAction("Delete") && cmdAction.getData() instanceof InfoRequest)
         {

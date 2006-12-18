@@ -41,7 +41,7 @@ public class PreparationIconMapper implements ObjectIconMapper
     {
         Preparation p = (Preparation)o;
         String prepTypeName = p.getPrepType().getName();
-        IconSize size = IconSize.Std32;
+        //IconSize size = IconSize.Std32;
         String name = null;
         if(prepTypeName.equalsIgnoreCase("skeleton"))
         {

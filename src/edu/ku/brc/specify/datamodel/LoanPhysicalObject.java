@@ -49,6 +49,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      protected String inComments;
      protected Short quantityResolved;
      protected Short quantityReturned;
+     protected Boolean isResolved;
      protected Preparation preparation;
      protected Loan loan;
      protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
@@ -78,6 +79,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
         inComments = null;
         quantityResolved = null;
         quantityReturned = null;
+        isResolved = false;
         timestampCreated = new Date();
         timestampModified = null;
         lastEditedBy = null;
@@ -181,6 +183,17 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     
     public void setQuantityReturned(Short quantityReturned) {
         this.quantityReturned = quantityReturned;
+    }
+    
+    /**
+     *      * User definable
+     */
+    public Boolean getIsResolved() {
+        return this.isResolved;
+    }
+    
+    public void setIsResolved(Boolean isResolved) {
+        this.isResolved = isResolved;
     }
 
     /**

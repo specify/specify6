@@ -66,7 +66,7 @@ public class DateWrapper
      */
     public String format(final Calendar date)
     {
-        return simpleDateFormat.format(date);
+        return simpleDateFormat.format(date.getTime());
     }
     
 }

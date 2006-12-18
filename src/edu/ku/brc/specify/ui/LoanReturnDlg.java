@@ -24,11 +24,18 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -44,6 +51,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -57,64 +65,79 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 
 /**
  * @author rods
  *
  * @code_status Alpha
  *
- * Created Date: Nov 21, 2006
+ * Created Date: Dec 15, 2006
  *
  */
-public class LoanSelectPrepsDlg extends JDialog
+public class LoanReturnDlg extends JDialog
 {
-    protected List<CollectionObject> colObjs;
+    protected DateWrapper            scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+    protected Loan                   loan;
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
     protected JButton                okBtn;
     protected JLabel                 summaryLabel;
+    protected FormValidator          validator = new FormValidator();
+    protected ValComboBoxFromQuery   agentCBX;
     
     /**
      * @param colObjs
      */
-    public LoanSelectPrepsDlg(List<CollectionObject> colObjs)
+    public LoanReturnDlg(final Loan loan)
     {
-        this.colObjs = colObjs;
+        this.loan = loan;
         
-        setTitle("Create Loan from Preparations"); // I18N
-        
-        //List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");       
-        //List<CollectionObject> colObjs = (List<CollectionObject>)BuildSampleDatabase.getObjectsByClass(dataObjs, CollectionObject.class);
-        
+        setTitle("Loan Return"); // I18N
+         
         JPanel contentPanel = new JPanel(new BorderLayout());
         
         JPanel mainPanel = new JPanel();
         
-        int cntColObj = 0;
-        for (CollectionObject co : colObjs)
+        Hashtable<String, Vector<LoanPhysicalObject>> colObjHash = new Hashtable<String, Vector<LoanPhysicalObject>>();
+        for (LoanPhysicalObject lpo : loan.getLoanPhysicalObjects())
         {
-            if (getCurrentDetermination(co) != null)
+            CollectionObject colObj = lpo.getPreparation().getCollectionObject();
+            Vector<LoanPhysicalObject> list = colObjHash.get(colObj);
+            if (list == null)
             {
-                cntColObj++;
+                list = new Vector<LoanPhysicalObject>();
+                colObjHash.put(colObj.getIdentityTitle(), list);
             }
+            list.add(lpo);
         }
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (cntColObj*2)-1) + ",10px,p";
+        int colObjCnt = colObjHash.size();
+
+        String          rowDef   = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjCnt*2)-1);
         PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
-        CellConstraints cc      = new CellConstraints();
+        CellConstraints cc       = new CellConstraints();
         
         ActionListener al = new ActionListener()
         {
@@ -134,33 +157,41 @@ public class LoanSelectPrepsDlg extends JDialog
  
         int i = 0;
         int y = 1;
-        for (CollectionObject co : colObjs)
+
+        Vector<String> keysList = new Vector<String>(colObjHash.keySet());
+        Collections.sort(keysList);
+        Iterator<String> it = keysList.iterator();
+        while (it.hasNext()) 
         {
-            if (getCurrentDetermination(co) != null)
+
+            if (i > 0)
             {
-                if (i > 0)
-                {
-                    pbuilder.addSeparator("", cc.xy(1,y));
-                }
-                y += 2;
-                
-                ColObjPanel panel = new ColObjPanel(this, co);
-                colObjPanels.add(panel);
-                panel.addActionListener(al, cl);
-                pbuilder.add(panel, cc.xy(1,y));
-                y += 2;
-                i++;
+                pbuilder.addSeparator("", cc.xy(1,y));
             }
+            y += 2;
+            
+            ColObjPanel panel = new ColObjPanel(this, colObjHash.get(it.next()));
+            colObjPanels.add(panel);
+            panel.addActionListener(al, cl);
+            pbuilder.add(panel, cc.xy(1,y));
+            y += 2;
+            i++;
+
         }
+        
         JButton selectAllBtn = new JButton("Select All"); // I18N
         okBtn = new JButton(getResourceString("OK"));
         JButton cancel = new JButton(getResourceString("Cancel"));
-        y += 2;
         
         summaryLabel = new JLabel("");
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
         p.add(summaryLabel, BorderLayout.CENTER);
+        
+        JPanel agentPanel = new JPanel(new BorderLayout());
+        agentPanel.add(new JLabel("Agent:", JLabel.RIGHT), BorderLayout.WEST); // I18N
+        agentPanel.add(agentCBX = createAgentCombobox(), BorderLayout.CENTER);
+        p.add(agentPanel, BorderLayout.EAST); // I18N
         
         contentPanel.add(p, BorderLayout.NORTH);
         contentPanel.add(new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
@@ -208,31 +239,34 @@ public class LoanSelectPrepsDlg extends JDialog
         setSize(size);
     }
     
-    protected Determination getCurrentDetermination(final CollectionObject colObj)
-    {
-        for (Determination d : colObj.getDeterminations())
-        {
-            if (d.getStatus().getDeterminationStatusId() == 1)
-            {
-                return d;
-            }
-        }
-        return null;
-    }
-    
     protected void doEnableOKBtn()
     {
         int count = 0;
         for (ColObjPanel pp : colObjPanels)
         {
-            count += pp.getNewLoanCount();
+            count += pp.getReturnCount();
         }
         okBtn.setEnabled(count > 0);
         //if (count > 0)
         //{
-            summaryLabel.setText(String.format("%d Preparation(s) selected", new Object[] {count}));
+            summaryLabel.setText(String.format("%d items to be returned by", new Object[] {count})); // I18N
         //}
     }
+    
+    /**
+     * @return
+     */
+    protected ValComboBoxFromQuery createAgentCombobox()
+    {
+        FormCellField fcf = new FormCellField(FormCell.CellType.field,
+                                               "1", "agent", FormCellField.FieldType.querycbx, FormCellField.FieldType.querycbx, 
+                                               "", "", "", true,
+                                               1, 1, 1, 1, "Change", null, false);
+        fcf.addProperty("name", "Agent");
+        fcf.addProperty("title", "Agent doing Return"); // I18N
+        return ViewFactory.getInstance().createQueryComboBox(validator, fcf);
+    }
+    
     
     /**
      * Sets all the spinners to there max values.
@@ -249,12 +283,21 @@ public class LoanSelectPrepsDlg extends JDialog
     }
     
     /**
+     * Returns the agent that is doing the return.
+     * @return the agent that is doing the return.
+     */
+    public Agent getAgent()
+    {
+        return (Agent)agentCBX.getValue();
+    }
+    
+    /**
      * Returns a Hastable of Preparation to Count.
      * @return a Hastable of Preparation to Count.
      */
-    public Hashtable<Preparation, Integer> getPreparationCounts()
+    public List<LoanReturnInfo> getLoanReturnInfo()
     {
-        Hashtable<Preparation, Integer> hash = new Hashtable<Preparation, Integer>();
+        List<LoanReturnInfo> returns = new Vector<LoanReturnInfo>();
         
         for (ColObjPanel colObjPanel : colObjPanels)
         {
@@ -262,13 +305,13 @@ public class LoanSelectPrepsDlg extends JDialog
             {
                 if (pp.getCount() > 0)
                 {
-                    hash.put(pp.getPreparation(), pp.getCount());
+                    returns.add(pp.getLoanReturnInfo());
                 }
             }
         }
-        return hash;
+        return returns;
     }
-    
+
     //------------------------------------------------------------------------------------------
     //
     //------------------------------------------------------------------------------------------
@@ -282,11 +325,11 @@ public class LoanSelectPrepsDlg extends JDialog
         /**
          * @param colObj
          */
-        public ColObjPanel(final JDialog dlgParent, final CollectionObject colObj)
+        public ColObjPanel(final JDialog dlgParent, final List<LoanPhysicalObject> lpoList)
         {
             super();
             this.dlgParent = dlgParent;
-            this.colObj    = colObj;
+            this.colObj    = lpoList.get(0).getPreparation().getCollectionObject();
             
             setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
@@ -317,7 +360,9 @@ public class LoanSelectPrepsDlg extends JDialog
             String descr = String.format("%6.0f - %s", new Object[]{colObj.getCatalogNumber(), taxonName});
             descr = StringUtils.stripToEmpty(descr);
             
-            pbuilder.add(checkBox = new JCheckBox(descr), cc.xy(1,1));
+            checkBox = new JCheckBox(descr);
+            //pbuilder.add(checkBox, cc.xy(1,1));
+            pbuilder.add(new JLabel(descr), cc.xy(1,1));
             //builder.add(new JLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
             checkBox.setSelected(true);
             
@@ -332,9 +377,9 @@ public class LoanSelectPrepsDlg extends JDialog
             Color[] colors = new Color[] { new Color(255,255,255), new Color(235,235,255)};
             
             int i = 0;
-            for (Preparation prep : colObj.getPreparations())
+            for (LoanPhysicalObject lpo : lpoList)
             {
-                PrepPanel pp = new PrepPanel(dlgParent, prep);
+                PrepPanel pp = new PrepPanel(dlgParent, lpo);
                 panels.add(pp);
                 pp.setBackground(colors[i % 2]);
                 contentPanel.add(pp);
@@ -350,7 +395,7 @@ public class LoanSelectPrepsDlg extends JDialog
                     {
                         pp.setEnabled(checkBox.isSelected());
                     }
-                    System.out.println(getNewLoanCount());
+                    System.out.println(getReturnCount());
                     repaint();
                 }
             });
@@ -371,7 +416,7 @@ public class LoanSelectPrepsDlg extends JDialog
             return checkBox;
         }
         
-        public int getNewLoanCount()
+        public int getReturnCount()
         {
             int count = 0;
             if (checkBox.isSelected())
@@ -391,63 +436,72 @@ public class LoanSelectPrepsDlg extends JDialog
         
        
     }
-    
+   
     //------------------------------------------------------------------------------------------
     //
     //------------------------------------------------------------------------------------------
     class PrepPanel extends JPanel implements ActionListener
     {
         protected Preparation prep;
+        protected LoanPhysicalObject lpo;
         protected JLabel      label    = null;
         protected JLabel      label2    = null;
         protected JComponent  prepInfoBtn    = null;
         protected JSpinner    spinner; 
         protected JDialog     parent;
+        protected int         quantityReturned;
         protected int         maxValue = 0;
         protected boolean     unknownQuantity;
+        protected JTextField  remarks;
+        protected JCheckBox   resolved;
 
         /**
-         * @param prep
+         * @param parent
+         * @param lpo
          */
-        public PrepPanel(final JDialog parent, final Preparation prep)
+        public PrepPanel(final JDialog parent, final LoanPhysicalObject lpo)
         {
             super();
-            this.prep = prep;
+            this.prep   = lpo.getPreparation();
+            this.lpo    = lpo;
             this.parent = parent;
-
             
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
-            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p:g", "c:p"), this);
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p,2px,p:g", "p,2px,p"), this);
             CellConstraints cc      = new CellConstraints();
             
             
             pbuilder.add(label = new JLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
             
+            boolean allReturned = false;
+            
             if (prep.getCount() !=  null)
             {
-                int count       = prep.getCount() == null ? 0 : prep.getCount();
-                int quantityOut = prep.getQuantityOut();  
+                int quantityLoaned    = lpo.getQuantity();
+                quantityReturned      = lpo.getQuantityReturned();
                 
-                int quantityAvailable = count - quantityOut;
-                if (quantityAvailable > 0)
+                int quantityOut       = quantityLoaned - quantityReturned;
+                
+                if (quantityOut > 0 && !lpo.getIsResolved())
                 {
-                    maxValue = quantityAvailable;
+                    maxValue = quantityLoaned;
                     
-                    SpinnerModel model = new SpinnerNumberModel(0, //initial value
-                                               0, //min
-                                               quantityAvailable, //max
-                                               1);                //step
+                    SpinnerModel model = new SpinnerNumberModel(quantityReturned, //initial value
+                                               quantityReturned, //min
+                                               quantityLoaned,   //max
+                                               1);               //step
                     spinner = new JSpinner(model);
                     pbuilder.add(spinner, cc.xy(3, 1));
+                    
                     //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
-                    String fmtStr = String.format(" of %3d  ", new Object[] {quantityAvailable}); // TODO I18N
+                    String fmtStr = String.format(" of %3d  ", new Object[] {quantityLoaned}); // TODO I18N
                     pbuilder.add(label2 = new JLabel(fmtStr), cc.xy(5, 1));
                     if (quantityOut > 0)
                     {
-                        fmtStr = String.format("(%d on loan)", new Object[] {quantityOut}); // TODO I18N
+                        fmtStr = quantityReturned == 0 ? "Nothing returned" : String.format("[%d returned]", new Object[] {quantityReturned}); // TODO I18N
                         prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
                         //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
@@ -456,8 +510,29 @@ public class LoanSelectPrepsDlg extends JDialog
                     
                 } else
                 {
-                    pbuilder.add(label2 = new JLabel("(None Available)"), cc.xywh(3, 1, 5, 1));// I18N
+                    Calendar lastReturnDate = null;
+                    for (LoanReturnPhysicalObject lrpo : lpo.getLoanReturnPhysicalObjects())
+                    {
+                        Calendar retDate = lrpo.getReturnedDate();
+                        if (retDate != null)
+                        {
+                            if (lastReturnDate == null)
+                            {
+                                lastReturnDate = lrpo.getReturnedDate();
+                            } else if (retDate.after(lastReturnDate))
+                            {
+                                lastReturnDate = retDate;
+                            }
+                        }
+                    }
+                        
+                    String str = lastReturnDate == null ? "All Returned" : // I18N
+                                 String.format("All Returned on %s", new Object[] {scrDateFormat.format(lastReturnDate)});
+                    pbuilder.add(label2 = new JLabel(str), cc.xywh(3, 1, 7, 1));
+                    allReturned = true;
                 }
+
+                
             } else
             {
                 SpinnerModel model = new SpinnerNumberModel(0, //initial value
@@ -470,9 +545,28 @@ public class LoanSelectPrepsDlg extends JDialog
                 unknownQuantity = true;
                 maxValue = 1;
             }
-            //pbuilder.add(contentPanel, cc.xy(1,3));
+
+            if (!allReturned)
+            {
+                resolved = new JCheckBox("Resolved"); // I18N
+                pbuilder.add(resolved, cc.xywh(9, 1, 1, 1));
+
+                remarks = new RemarksText();
+                pbuilder.add(remarks, cc.xywh(1, 3, 9, 1)); // I18N
+            }
+            
+            if (spinner != null)
+            {
+                spinner.addChangeListener(new ChangeListener()
+                {
+                    public void stateChanged(ChangeEvent ae)
+                    {
+                        Integer val = (Integer)spinner.getValue();
+                        resolved.setSelected(val >= maxValue);
+                    }
+                });
+            }
         }
-        
         
         public boolean isUnknownQuantity()
         {
@@ -489,15 +583,12 @@ public class LoanSelectPrepsDlg extends JDialog
                 spinner.setValue(maxValue);
             }
         }
-        
-        /**
-         * @return
-         */
-        public Preparation getPreparation()
+
+        public LoanPhysicalObject getLoanPhysicalObject()
         {
-            return prep;
+            return lpo;
         }
-        
+
         /* (non-Javadoc)
          * @see javax.swing.JComponent#setEnabled(boolean)
          */
@@ -530,9 +621,7 @@ public class LoanSelectPrepsDlg extends JDialog
             {
                 spinner.addChangeListener(cl);
             }
-
         }
-
         
         /**
          * @return
@@ -542,12 +631,20 @@ public class LoanSelectPrepsDlg extends JDialog
             if (spinner != null)
             {
                 Object valObj = spinner.getValue();
-                return valObj == null ? 0 : ((Integer)valObj).intValue();
+               return valObj == null ? 0 : ((Integer)valObj).intValue() - quantityReturned;
                 
             } else
             {
                 return 0;
             }
+        }
+        
+        public LoanReturnInfo getLoanReturnInfo()
+        {
+            return new LoanReturnInfo(lpo, 
+                                      resolved != null ? resolved.isSelected() : null, 
+                                      remarks != null ? remarks.getText() : null,
+                                      (short)getCount());
         }
         
         public void actionPerformed(ActionEvent e)
@@ -588,7 +685,8 @@ public class LoanSelectPrepsDlg extends JDialog
             dlg.setVisible(true);
         }
     }
-    
+
+   
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
@@ -642,6 +740,74 @@ public class LoanSelectPrepsDlg extends JDialog
                     //llb.setCursor(defCursor);
                 }
             });
+        }
+    }
+    
+    public class LoanReturnInfo
+    {
+        protected LoanPhysicalObject lpo;
+        protected Boolean            isResolved;
+        protected String             remarks;
+        protected short              quantity;
+        
+        public LoanReturnInfo(LoanPhysicalObject lpo, Boolean isResolved, String remarks, short quantity)
+        {
+            super();
+            this.lpo = lpo;
+            this.isResolved = isResolved;
+            this.remarks = remarks;
+            this.quantity = quantity;
+        }
+        public Boolean isResolved()
+        {
+            return isResolved;
+        }
+        public LoanPhysicalObject getLoanPhysicalObject()
+        {
+            return lpo;
+        }
+        public short getQuantity()
+        {
+            return quantity;
+        }
+        public String getRemarks()
+        {
+            return remarks;
+        }
+    }
+    
+    class RemarksText extends JTextField
+    {
+        protected Insets inner;
+        protected String bgStr     = "Remarks";  // I18N
+        protected Point  pnt       = null;
+        protected Color  textColor = new Color(0,0,0,64);
+        
+        public RemarksText()
+        {
+            inner = getInsets();
+        }
+        
+        /* (non-Javadoc)
+         * @see java.awt.Component#paint(java.awt.Graphics)
+         */
+        @Override
+        public void paint(Graphics g)
+        {
+            super.paint(g);
+
+            String text = getText();
+
+            if (text == null || text.length() == 0)
+            {
+                FontMetrics fm   = g.getFontMetrics();
+                int          w   = fm.stringWidth("Remarks");
+                pnt = new Point(inner.left, inner.top + fm.getAscent());
+
+                g.setColor(textColor);
+                g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+            }
+
         }
     }
 

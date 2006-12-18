@@ -1660,6 +1660,9 @@ public class DataBuilder
         loanphysicalobject.setInComments(inComments);
         loanphysicalobject.setQuantityResolved(quantityResolved);
         loanphysicalobject.setQuantityReturned(quantityReturned);
+        
+        loan.getLoanPhysicalObjects().add(loanphysicalobject);
+
         persist(loanphysicalobject);
         return loanphysicalobject;
     }
