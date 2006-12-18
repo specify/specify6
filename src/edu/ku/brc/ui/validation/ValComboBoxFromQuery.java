@@ -138,6 +138,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected MultiView             multiView  = null;
 
     protected List<FocusListener> focusListeners = new ArrayList<FocusListener>();
+    
+    protected ActionListener defaultSearchAction;
+    protected ActionListener defaultEditAction;
+    protected ActionListener defaultNewAction;
 
     /**
      *  Constructor.
@@ -165,7 +169,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String formatName,
                                 final String searchDialogName,
                                 final String displayInfoDialogName,
-                                final String objTitle)
+                                final String objTitle )
     {
         //System.err.println("ValComboBoxFromQuery "+Thread.currentThread().getName()+ " "+Thread.currentThread().hashCode());
         if (StringUtils.isEmpty(displayColumn))
@@ -342,11 +346,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         if (hasSearchBtn)
         {
-            searchBtn.addActionListener(new ActionListener()
+            defaultSearchAction = new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(UIHelper.getFrame(searchBtn), searchDialogName);
+                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory()
+                            .createSearchDialog(UIHelper.getFrame(searchBtn), searchDialogName);
                     dlg.getDialog().setVisible(true);
                     if (!dlg.isCancelled())
                     {
@@ -354,24 +359,78 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                         valueHasChanged();
                     }
                 }
-            });
+            };
+            searchBtn.addActionListener(defaultSearchAction);
         }
 
-        editBtn.addActionListener(new ActionListener() {
+        defaultEditAction = new ActionListener()
+        {
             public void actionPerformed(ActionEvent e)
             {
                 currentMode = MODE.Editting;
                 createEditFrame(false);
-            }});
+            }
+        };
+        editBtn.addActionListener(defaultEditAction);
 
-
-        createBtn.addActionListener(new ActionListener() {
+        defaultNewAction = new ActionListener()
+        {
             public void actionPerformed(ActionEvent e)
             {
                 currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
                 createEditFrame(true);
-            }});
+            }
+        };
+        createBtn.addActionListener(defaultNewAction);
+    }
+    
+    public void setEditAction(ActionListener al)
+    {
+        if (editBtn!=null)
+        {
+            removeAllActionListeners(editBtn);
+            if (al!=null)
+            {
+                editBtn.addActionListener(al);
+            }
+        }
+    }
+    
+    public void setSearchAction(ActionListener al)
+    {
+        if (searchBtn!=null)
+        {
+            removeAllActionListeners(searchBtn);
+            if (al!=null)
+            {
+                searchBtn.addActionListener(al);
+            }
+        }
+    }
+    
+    public void setNewAction(ActionListener al)
+    {
+        if (createBtn!=null)
+        {
+            removeAllActionListeners(createBtn);
+            if (al!=null)
+            {
+                createBtn.addActionListener(al);
+            }
+        }
+    }
 
+    protected void removeAllActionListeners(JButton button)
+    {
+        for (ActionListener al: button.getActionListeners())
+        {
+            button.removeActionListener(al);
+        }
+    }
+    
+    public void setEditEnabled(boolean enabled)
+    {
+        editBtn.setEnabled(enabled);
     }
     
     protected void valueHasChanged()
