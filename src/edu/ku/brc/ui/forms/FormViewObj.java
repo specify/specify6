@@ -2194,8 +2194,11 @@ public class FormViewObj implements Viewable,
     {
         PanelBuilder panelBldr = new PanelBuilder(new FormLayout("16px,1px,f:p:g", "p"));
         draggableRecIdentifier = DraggableRecordIdentifierFactory.getInstance().createDraggableRecordIdentifier(icon);
+        //draggableRecIdentifier.setLabel(title);
         
         panelBldr.add(draggableRecIdentifier, cc.xy(1, 1));
+        panelBldr.addSeparator(title, cc.xy(3, 1));
+        
         return panelBldr.getPanel();
     }
 

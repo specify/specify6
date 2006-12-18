@@ -118,29 +118,32 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         shipment        = null;
         attachments     = new HashSet<Attachment>();
         
-        // For Demo
-        try
+        if (true)
         {
-            Connection conn = DBConnection.getInstance().createConnection();
-            if (conn != null)
+            // For Demo
+            try
             {
-                Statement  stmt = conn.createStatement();
-                ResultSet  rs   = stmt.executeQuery("select LoanNumber from Loan order by LoanNumber desc limit 0,1");
-                if (rs.first())
+                Connection conn = DBConnection.getInstance().createConnection();
+                if (conn != null)
                 {
-                    String numStr = rs.getString(1);
-                    int num = Integer.parseInt(numStr.substring(6,8));
-                    num++;
-                    loanNumber = String.format("2006-%03d", new Object[] {num});
-                } else
-                {
-                    loanNumber = "2006-001";
+                    Statement  stmt = conn.createStatement();
+                    ResultSet  rs   = stmt.executeQuery("select LoanNumber from loan order by LoanNumber desc limit 0,1");
+                    if (rs.first())
+                    {
+                        String numStr = rs.getString(1);
+                        int num = Integer.parseInt(numStr.substring(6,8));
+                        num++;
+                        loanNumber = String.format("2006-%03d", new Object[] {num});
+                    } else
+                    {
+                        loanNumber = "2006-001";
+                    }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
 
     }

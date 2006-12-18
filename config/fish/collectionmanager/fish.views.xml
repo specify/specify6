@@ -984,7 +984,7 @@
                     <cell type="separator" label="Preparations To be Loaned" colspan="12"/>
                 </row>
                 <row>
-                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="6"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="12"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="9" label="Attachments"/>
@@ -1025,7 +1025,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Description"/>
-                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="10" valtype="Changed"/>
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="9" valtype="Changed"/>
                 </row>
                 <!-- <row>
                     <cell type="label" labelfor="4" label="Comments"/>
@@ -1035,8 +1035,10 @@
                     <cell type="label" labelfor="5" label="Count"/>
                     <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
                     
+                   <cell type="field" id="8" name="isResolved" uitype="checkbox" label="Resolved" colspan="3"/>
+                    
                     <cell type="label" labelfor="6" label="Storage"/>
-                    <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colspan="6" />
+                    <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colpsan="2"/>
                 </row>              
             </rows>
         </viewdef>

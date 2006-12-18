@@ -79,6 +79,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
     {
         
         imgIcon = icon;
+        this.label = label;
         
         createMouseInputAdapter(); // this makes it draggable
         setData(null);

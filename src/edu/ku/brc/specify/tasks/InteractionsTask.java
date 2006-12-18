@@ -112,15 +112,15 @@ public class InteractionsTask extends BaseTask
     public static final DataFlavor INTERACTIONS_FLAVOR = new DataFlavor(DataEntryTask.class, INTERACTIONS);
     public static final DataFlavor INFOREQUEST_FLAVOR  = new DataFlavor(InfoRequest.class, INTERACTIONS);
 
-    protected static final String InfoRequestName = "InfoRequest";
-    protected static final String NEW_LOAN        = "New_Loan";
-    protected static final String PRINT_LOAN      = "PrintLoan";
-    protected static final String INFO_REQ_MESSAGE = "Specify Info Request";
-    protected static final String CREATE_MAILMSG   = "CreateMailMsg";
+    protected static final String InfoRequestName      = "InfoRequest";
+    protected static final String NEW_LOAN             = "New_Loan";
+    protected static final String PRINT_LOAN           = "PrintLoan";
+    protected static final String INFO_REQ_MESSAGE     = "Specify Info Request";
+    protected static final String CREATE_MAILMSG       = "CreateMailMsg";
     
-    protected final int loanTableId;
-    protected final int infoRequestTableId;
-    protected final int colObjTableId;
+    protected final int           loanTableId;
+    protected final int           infoRequestTableId;
+    protected final int           colObjTableId;
 
     // Data Members
     protected NavBox              infoRequestNavBox;
@@ -443,11 +443,12 @@ public class InteractionsTask extends BaseTask
     protected void adjustLoanForm(FormPane formPane)
     {
         FormViewObj formViewObj = formPane.getMultiView().getCurrentViewAsFormViewObj();
-        if (formViewObj != null)
+        if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
         {
-            boolean     isNewObj    = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
+            Loan      loan     = (Loan)formViewObj.getDataObj();
+            boolean   isNewObj = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
 
-            Component comp = formViewObj.getControlByName("generateInvoice");
+            Component comp     = formViewObj.getControlByName("generateInvoice");
             if (comp instanceof JCheckBox)
             {
                 //printLoan = ((JCheckBox)comp).isSelected();
@@ -456,20 +457,11 @@ public class InteractionsTask extends BaseTask
             if (comp instanceof JButton)
             {
                 comp.setVisible(!isNewObj);
-            }
-            comp = formViewObj.getControlByName("ReturnPartialLoan");
-            if (comp instanceof JButton)
-            {
-                comp.setVisible(!isNewObj);
+                comp.setEnabled(!loan.getIsClosed());
             }
             
             if (isNewObj)
             {
-                comp = formViewObj.getControlByName("ReturnPartialLoan");
-                if (comp instanceof JButton)
-                {
-                    comp.setVisible(!isNewObj);
-                }
                 Component shipComp = formViewObj.getControlByName("shipmentNumber");
                 comp = formViewObj.getControlByName("loanNumber");
                 if (comp instanceof JTextField && shipComp instanceof JTextField)
@@ -478,11 +470,7 @@ public class InteractionsTask extends BaseTask
                     JTextField shipTxt = (JTextField)shipComp;
                     shipTxt.setText(loanTxt.getText());
                 }
-                
-                //Loan loan = (Loan)formPane.getData();
-                //loan.getShipment().setShipmentNumber(loan.getLoanNumber());
             }
-
         }
     }
     
@@ -795,31 +783,6 @@ public class InteractionsTask extends BaseTask
                     lpo.getLoanReturnPhysicalObjects().add(lrpo);
                     
                 }
-                /*
-                Shipment shipment = new Shipment();
-                shipment.initialize();
-                
-                loan.setShipment(shipment);
-                shipment.getLoans().add(loan);
-                
-                for (Preparation prep : prepsHash.keySet())
-                {
-                    Integer count = prepsHash.get(prep);
-                    
-                    LoanPhysicalObject lpo = new LoanPhysicalObject();
-                    lpo.initialize();
-                    lpo.setPreparation(prep);
-                    lpo.setQuantity(count.shortValue());
-                    lpo.setLoan(loan);
-                    loan.getLoanPhysicalObjects().add(lpo);
-                }
-                
-                DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-                if (dataEntryTask != null)
-                {
-                    DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.lookupInfoById(loan.getTableId());
-                    dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
-                }*/
                 return null;
             }
 

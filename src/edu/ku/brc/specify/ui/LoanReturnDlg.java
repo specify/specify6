@@ -12,9 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
@@ -76,6 +73,7 @@ import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -91,15 +89,18 @@ import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 
 /**
+ * Creates a dialog representing all the Preparation objects being returned for a loan.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Dec 15, 2006
  *
  */
 public class LoanReturnDlg extends JDialog
 {
+    protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
     protected DateWrapper            scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
     protected Loan                   loan;
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
@@ -361,9 +362,7 @@ public class LoanReturnDlg extends JDialog
             descr = StringUtils.stripToEmpty(descr);
             
             checkBox = new JCheckBox(descr);
-            //pbuilder.add(checkBox, cc.xy(1,1));
             pbuilder.add(new JLabel(descr), cc.xy(1,1));
-            //builder.add(new JLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
             checkBox.setSelected(true);
             
             JPanel outerPanel = new JPanel();
@@ -456,8 +455,9 @@ public class LoanReturnDlg extends JDialog
         protected JCheckBox   resolved;
 
         /**
-         * @param parent
-         * @param lpo
+         * Constructs a pnale representing the Preparation being returned.
+         * @param parent the parent dialog
+         * @param lpo the LoanPhysicalObject being returned
          */
         public PrepPanel(final JDialog parent, final LoanPhysicalObject lpo)
         {
@@ -469,7 +469,7 @@ public class LoanReturnDlg extends JDialog
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
-            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p,2px,p:g", "p,2px,p"), this);
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p,10px,p:g", "p,2px,p"), this);
             CellConstraints cc      = new CellConstraints();
             
             
@@ -494,6 +494,7 @@ public class LoanReturnDlg extends JDialog
                                                quantityLoaned,   //max
                                                1);               //step
                     spinner = new JSpinner(model);
+                    fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));
                     
                     //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
@@ -526,9 +527,11 @@ public class LoanReturnDlg extends JDialog
                         }
                     }
                         
-                    String str = lastReturnDate == null ? "All Returned" : // I18N
+                    String fmtStr = lastReturnDate == null ? "All Returned" : // I18N
                                  String.format("All Returned on %s", new Object[] {scrDateFormat.format(lastReturnDate)});
-                    pbuilder.add(label2 = new JLabel(str), cc.xywh(3, 1, 7, 1));
+                    prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
+                    pbuilder.add(prepInfoBtn, cc.xywh(3, 1, 7, 1));
+                    //pbuilder.add(label2 = new JLabel(fmtStr), cc.xywh(3, 1, 7, 1));
                     allReturned = true;
                 }
 
@@ -540,6 +543,7 @@ public class LoanReturnDlg extends JDialog
                         10000, //max
                         1);   //step
                 spinner = new JSpinner(model);
+                fixBGOfJSpinner(spinner);
                 pbuilder.add(spinner, cc.xy(3, 1));
                 pbuilder.add(label2 = new JLabel(" (Unknown Number Available)"), cc.xywh(5, 1, 2, 1)); // I18N
                 unknownQuantity = true;
@@ -549,6 +553,8 @@ public class LoanReturnDlg extends JDialog
             if (!allReturned)
             {
                 resolved = new JCheckBox("Resolved"); // I18N
+                resolved.setOpaque(false);
+                //resolved.setBackground(this.getBackground());
                 pbuilder.add(resolved, cc.xywh(9, 1, 1, 1));
 
                 remarks = new RemarksText();
@@ -568,6 +574,27 @@ public class LoanReturnDlg extends JDialog
             }
         }
         
+        /**
+         * Changes the BG color fo the text field in the spinner to the required color.
+         * @param spin the spinner to be changed
+         */
+        protected void fixBGOfJSpinner(final JSpinner spin)
+        {
+            JComponent edComp = spin.getEditor();
+            for (int i=0;i<edComp.getComponentCount();i++)
+            {
+                Component c = edComp.getComponent(i);
+                if (c instanceof JTextField)
+                {
+                    c.setBackground(requiredfieldcolor.getColor());
+                }
+            }
+        }
+        
+        /**
+         * Return whether their is an unknown quantity.
+         * @return whether their is an unknown quantity.
+         */
         public boolean isUnknownQuantity()
         {
             return unknownQuantity;
@@ -584,6 +611,10 @@ public class LoanReturnDlg extends JDialog
             }
         }
 
+        /**
+         * Returns the LoanPhysicalObject for this panel.
+         * @return the LoanPhysicalObject for this panel.
+         */
         public LoanPhysicalObject getLoanPhysicalObject()
         {
             return lpo;
@@ -613,7 +644,8 @@ public class LoanReturnDlg extends JDialog
         }
         
         /**
-         * @param cl
+         * Adds a change listener.
+         * @param cl the change listener
          */
         public void addChangeListener(final ChangeListener cl)
         {
@@ -624,7 +656,8 @@ public class LoanReturnDlg extends JDialog
         }
         
         /**
-         * @return
+         * Returns the count from the spinner, the count of items being returning.
+         * @return the count from the spinner, the count of items being returning.
          */
         public int getCount()
         {
@@ -639,6 +672,10 @@ public class LoanReturnDlg extends JDialog
             }
         }
         
+        /**
+         * Returns the LoanReturnInfo describing the user input for the loan return.
+         * @return the LoanReturnInfo describing the user input for the loan return
+         */
         public LoanReturnInfo getLoanReturnInfo()
         {
             return new LoanReturnInfo(lpo, 
@@ -647,13 +684,16 @@ public class LoanReturnDlg extends JDialog
                                       (short)getCount());
         }
         
+        /* (non-Javadoc)
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
         public void actionPerformed(ActionEvent e)
         {
             List<Loan> loans = new Vector<Loan>();
             
-            for (LoanPhysicalObject lpo : prep.getLoanPhysicalObjects())
+            for (LoanPhysicalObject loanPO : prep.getLoanPhysicalObjects())
             {
-                loans.add(lpo.getLoan());
+                loans.add(loanPO.getLoan());
             }
             
             View view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", CollectionObjDef.getCurrentCollectionObjDef());
@@ -687,6 +727,9 @@ public class LoanReturnDlg extends JDialog
     }
 
    
+    //------------------------------------------------------------------------------------------
+    //
+    //------------------------------------------------------------------------------------------
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
@@ -743,6 +786,9 @@ public class LoanReturnDlg extends JDialog
         }
     }
     
+    //------------------------------------------------------------------------------------------
+    //
+    //------------------------------------------------------------------------------------------
     public class LoanReturnInfo
     {
         protected LoanPhysicalObject lpo;
@@ -800,12 +846,14 @@ public class LoanReturnDlg extends JDialog
 
             if (text == null || text.length() == 0)
             {
-                FontMetrics fm   = g.getFontMetrics();
-                int          w   = fm.stringWidth("Remarks");
-                pnt = new Point(inner.left, inner.top + fm.getAscent());
+                if (pnt == null)
+                {
+                    FontMetrics fm   = g.getFontMetrics();
+                    pnt = new Point(inner.left, inner.top + fm.getAscent());
+                }
 
                 g.setColor(textColor);
-                g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+                g.drawString(bgStr, pnt.x, pnt.y);
             }
 
         }

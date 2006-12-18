@@ -12,9 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
@@ -44,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -57,6 +55,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -65,6 +64,7 @@ import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
@@ -74,15 +74,18 @@ import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
+ * Creates a dialog listing all the Preparations that are available to be loaned.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Nov 21, 2006
  *
  */
 public class LoanSelectPrepsDlg extends JDialog
 {
+    protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
     protected List<CollectionObject> colObjs;
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
     protected JButton                okBtn;
@@ -441,6 +444,7 @@ public class LoanSelectPrepsDlg extends JDialog
                                                quantityAvailable, //max
                                                1);                //step
                     spinner = new JSpinner(model);
+                    fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));
                     //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
                     String fmtStr = String.format(" of %3d  ", new Object[] {quantityAvailable}); // TODO I18N
@@ -465,6 +469,7 @@ public class LoanSelectPrepsDlg extends JDialog
                         10000, //max
                         1);   //step
                 spinner = new JSpinner(model);
+                fixBGOfJSpinner(spinner);
                 pbuilder.add(spinner, cc.xy(3, 1));
                 pbuilder.add(label2 = new JLabel(" (Unknown Number Available)"), cc.xywh(5, 1, 2, 1)); // I18N
                 unknownQuantity = true;
@@ -473,6 +478,18 @@ public class LoanSelectPrepsDlg extends JDialog
             //pbuilder.add(contentPanel, cc.xy(1,3));
         }
         
+        protected void fixBGOfJSpinner(final JSpinner spin)
+        {
+            JComponent edComp = spin.getEditor();
+            for (int i=0;i<edComp.getComponentCount();i++)
+            {
+                Component c = edComp.getComponent(i);
+                if (c instanceof JTextField)
+                {
+                    c.setBackground(requiredfieldcolor.getColor());
+                }
+            }
+        }
         
         public boolean isUnknownQuantity()
         {
