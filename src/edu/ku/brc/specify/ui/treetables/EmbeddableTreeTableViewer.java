@@ -217,6 +217,10 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
         }
         else
         {
+            if (lists==null)
+            {
+                return;
+            }
             lists[0].clearSelection();
         }
     }
