@@ -95,6 +95,7 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.validation.ValFormattedTextField;
 
 /**
  * This task manages Loans, Gifts, Exchanges and provide actions and forms to do the interactions
@@ -466,9 +467,9 @@ public class InteractionsTask extends BaseTask
                 comp = formViewObj.getControlByName("loanNumber");
                 if (comp instanceof JTextField && shipComp instanceof JTextField)
                 {
-                    JTextField loanTxt = (JTextField)comp;
-                    JTextField shipTxt = (JTextField)shipComp;
-                    shipTxt.setText(loanTxt.getText());
+                    ValFormattedTextField loanTxt = (ValFormattedTextField)comp;
+                    ValFormattedTextField shipTxt = (ValFormattedTextField)shipComp;
+                    shipTxt.setTextWithNotify(loanTxt.getText());
                 }
             }
         }

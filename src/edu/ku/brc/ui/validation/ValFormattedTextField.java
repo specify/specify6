@@ -231,6 +231,11 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         return valState == UIValidatable.ErrorType.Valid;
     }
+    
+    public void setTextWithNotify(String text)
+    {
+        super.setText(text);
+    }
 
     //--------------------------------------------------
     //-- UIValidatable Interface

@@ -246,7 +246,7 @@ public class BuildSampleDatabase
         agents.add(createAgent("Mr.", "James", "H", "Beach", "jb"));
         agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk"));
         agents.add(createAgent("Mr.", "Rod", "C", "Spears", "rs"));
-        agents.add(createAgent("Mr.", "Wayne", "J", "Oppenheimer", "wjo"));
+        agents.add(createAgent("Mr.", "Andy", "D", "Bentley", "AB"));
         agents.add(createAgent("Sir", "Dudley", "X", "Simmons", "dxs"));
         agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc"));
         
@@ -278,7 +278,7 @@ public class BuildSampleDatabase
         // Meg
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         // Rod
-        addrs.add(createAddress(agents.get(3), "1335511 Inverness", null, "Lawrence", "KS", "USA", "66047"));
+        addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
         // Wayne Oppenheimer
         addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
         // no address for agent 5 (Dudley Simmons)
@@ -646,7 +646,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
-        if (false)
+        if (true)
         {
             log.info("Creating attachments and attachment metadata");
             try
