@@ -86,7 +86,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected boolean                      editable        = false;
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
-    protected boolean                      dataHasChanged  = false;
     protected boolean                      ignoreDataChanges = false;
 
     protected int                          createOptions   = 0;
@@ -315,8 +314,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void setIsNewForm(final boolean isNewForm, final boolean traverseKids)
     {
-        dataHasChanged = false;
-        
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
             Viewable viewable = e.nextElement();
@@ -342,7 +339,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public boolean hasChanged()
     {
-        if (!ignoreDataChanges && !dataHasChanged)
+        if (!ignoreDataChanges)
         {
             for (FormValidator validator : formValidators)
             {
@@ -351,11 +348,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
             for (FormValidator validator : formValidators)
             {
-                if (validator.getName().equals("Shipment"))
-                {
-                    int x = 0;
-                    x++;
-                }
                 if (validator.hasChanged())
                 {
                     return true;
@@ -382,9 +374,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     return true;
                 }
             }
-            return false;
         }
-        return dataHasChanged;
+        return false;
     }
     
     /**
@@ -735,7 +726,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         
         ignoreDataChanges = false;
-        dataHasChanged = false;
     }
 
     /**

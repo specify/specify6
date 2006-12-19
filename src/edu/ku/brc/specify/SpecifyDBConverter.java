@@ -298,7 +298,7 @@ public class SpecifyDBConverter
         	GenericDBConversion.setShouldCreateMapTables(true);
             GenericDBConversion.setShouldDeleteMapTables(true);
             
-            frame.setOverall(0, 14);
+            frame.setOverall(0, 15);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -405,6 +405,18 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 frame.incOverall();
+                
+                frame.setDesc("Converting doLoanPhysicalObjects Records");
+                boolean doLoanPhysicalObjects = true;
+                if (doLoanPhysicalObjects || doAll)
+                {
+                    conversion.convertLoanPhysicalObjects();
+                    frame.incOverall();
+                    
+                } else
+                {
+                    frame.incOverall();
+                }
 
                 frame.setDesc("Copying Tables");
                 boolean copyTables = false;

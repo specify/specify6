@@ -232,6 +232,10 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         return valState == UIValidatable.ErrorType.Valid;
     }
     
+    /**
+     * Sets the text and notifies the validator of the change. This is used manually callit directly.
+     * @param text the new text (must already be formatted).
+     */
     public void setTextWithNotify(String text)
     {
         super.setText(text);

@@ -95,7 +95,9 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.ValFormattedTextField;
+
 
 /**
  * This task manages Loans, Gifts, Exchanges and provide actions and forms to do the interactions
@@ -448,16 +450,17 @@ public class InteractionsTask extends BaseTask
         {
             Loan      loan     = (Loan)formViewObj.getDataObj();
             boolean   isNewObj = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
+            boolean   isEdit   = formPane.getMultiView().isEditable();
 
             Component comp     = formViewObj.getControlByName("generateInvoice");
             if (comp instanceof JCheckBox)
             {
-                //printLoan = ((JCheckBox)comp).isSelected();
+                ((JCheckBox)comp).setVisible(isEdit);
             }
             comp = formViewObj.getControlByName("ReturnLoan");
             if (comp instanceof JButton)
             {
-                comp.setVisible(!isNewObj);
+                comp.setVisible(!isNewObj && isEdit);
                 comp.setEnabled(!loan.getIsClosed());
             }
             
@@ -804,11 +807,12 @@ public class InteractionsTask extends BaseTask
      */
     protected void returnLoan()
     {
-        Loan loan = null;
+        Loan         loan    = null;
+        MultiView    mv      = null;
         SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
         if (subPane != null)
         {
-            MultiView mv = subPane.getMultiView();
+            mv = subPane.getMultiView();
             if (mv != null)
             {
                 if (mv.getData() instanceof Loan)
@@ -818,17 +822,26 @@ public class InteractionsTask extends BaseTask
             }
         }
         
-        if (loan != null)
+        if (mv != null && loan != null)
         {
             LoanReturnDlg dlg = new LoanReturnDlg(loan);
             dlg.setModal(true);
             dlg.setVisible(true);
             dlg.dispose();
             
-            List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
-            if (returns.size() > 0)
+            if (!dlg.isCancelled())
             {
-                doReturnLoan(loan, dlg.getAgent(), returns);
+                FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
+                fvp.setHasNewData(true);
+                //fvp.getValidator().validateForm();
+                fvp.getValidator().setHasChanged(true);
+                fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
+               
+                List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
+                if (returns.size() > 0)
+                {
+                    doReturnLoan(loan, dlg.getAgent(), returns);
+                }
             }
             
         } else

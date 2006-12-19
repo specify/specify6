@@ -20,6 +20,11 @@
         <meta attribute="field-description"></meta>    
     </property>
     
+    <property name="isLoanable" type="boolean" column="IsLoanable" not-null="true">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Indicates whether this Prep Type can be loaned</meta>
+    </property>
+    
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    

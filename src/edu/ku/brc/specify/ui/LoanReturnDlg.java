@@ -86,7 +86,9 @@ import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
+import edu.ku.brc.ui.validation.ValidationListener;
 
 /**
  * Creates a dialog representing all the Preparation objects being returned for a loan.
@@ -108,6 +110,7 @@ public class LoanReturnDlg extends JDialog
     protected JLabel                 summaryLabel;
     protected FormValidator          validator = new FormValidator();
     protected ValComboBoxFromQuery   agentCBX;
+    protected boolean                isCancelled = true;
     
     /**
      * @param colObjs
@@ -117,6 +120,14 @@ public class LoanReturnDlg extends JDialog
         this.loan = loan;
         
         setTitle("Loan Return"); // I18N
+        
+        validator.addValidationListener(new ValidationListener() {
+            public void wasValidated(UIValidator val)
+            {
+                doEnableOKBtn();
+            }
+        });
+        
          
         JPanel contentPanel = new JPanel(new BorderLayout());
         
@@ -215,6 +226,7 @@ public class LoanReturnDlg extends JDialog
             public void actionPerformed(ActionEvent ae)
             {
                 setVisible(false);
+                isCancelled = false;
             }
         });
         
@@ -247,11 +259,9 @@ public class LoanReturnDlg extends JDialog
         {
             count += pp.getReturnCount();
         }
-        okBtn.setEnabled(count > 0);
-        //if (count > 0)
-        //{
-            summaryLabel.setText(String.format("%d items to be returned by", new Object[] {count})); // I18N
-        //}
+        okBtn.setEnabled(count > 0 && agentCBX.getValue() != null);
+
+        summaryLabel.setText(String.format("%d items to be returned by", new Object[] {count})); // I18N
     }
     
     /**
@@ -262,7 +272,7 @@ public class LoanReturnDlg extends JDialog
         FormCellField fcf = new FormCellField(FormCell.CellType.field,
                                                "1", "agent", FormCellField.FieldType.querycbx, FormCellField.FieldType.querycbx, 
                                                "", "", "", true,
-                                               1, 1, 1, 1, "Change", null, false);
+                                               1, 1, 1, 1, "Changed", null, false);
         fcf.addProperty("name", "Agent");
         fcf.addProperty("title", "Agent doing Return"); // I18N
         return ViewFactory.getInstance().createQueryComboBox(validator, fcf);
@@ -283,6 +293,15 @@ public class LoanReturnDlg extends JDialog
         }
     }
     
+    /**
+     * Returns whether the dialog was cancelled.
+     * @return whether the dialog was cancelled.
+     */
+    public boolean isCancelled()
+    {
+        return isCancelled;
+    }
+
     /**
      * Returns the agent that is doing the return.
      * @return the agent that is doing the return.

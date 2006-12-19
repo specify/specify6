@@ -455,7 +455,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Adds a component (or object) that can be referred to oby name in a validatoin rule
+     * Adds a component (or object) that can be referred to oby name in a validatoin rule.
      * @param id the name of the component
      * @param comp the component
      */
@@ -472,8 +472,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Creates a validator for the control (usually a JTextField) that can have a string as a default value
-     *
+     * Creates a validator for the control (usually a JTextField) that can have a string as a default value.
      * @param comp the component to be validated (MUST implement UIValidatable)
      * @param valType the type of validation to occur
      * @param valStr the default value
@@ -567,7 +566,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Validates all or some of the field
+     * Validates all or some of the field.
      * @param validateAll indicates all field should be validated
      * @param type if validateAll is false, then validate only the fields with a
      * validator of this type.
@@ -623,6 +622,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         // Because we call it manually it will turn off validation notifications
         //validateForm(true, UIValidator.Type.Changed); // second arg doesn't matter
+        
+        validateForm(true);
     }
 
     /**

@@ -673,7 +673,7 @@ public class GenericDBConversion
                                     "Journal",
                                     "Loan",
                                     "LoanAgents",
-                                    "LoanPhysicalObject",
+                                    //"LoanPhysicalObject",
                                     "LoanReturnPhysicalObject",
                                     //"locality",
                                     "LocalityCitation",
@@ -692,7 +692,7 @@ public class GenericDBConversion
        tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
        tableMaps.put("collectors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
        //tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
-       tableMaps.put("loanphysicalobject", createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
+       //tableMaps.put("loanphysicalobject", createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
        tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
        tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1"}));
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
@@ -2410,8 +2410,7 @@ public class GenericDBConversion
     }
 
     /**
-     * Converts all the CollectionObject and CollectionObjectCatalog Records into the new schema CollectionObject table.
-     * All "logical" records are moved to the CollectionObject table and all "physical" records are moved to the Preparation table.
+     * Converts all the Determinations.
      * @return true if no errors
      */
     public boolean convertDeterminationRecords()
@@ -2589,7 +2588,7 @@ public class GenericDBConversion
                 {
                     if (count % 2000 == 0) 
                     {
-                        log.info("CollectionObject Records: "+count);
+                        log.info("Determination Records: "+count);
                     }
                 }
 
@@ -2902,6 +2901,232 @@ public class GenericDBConversion
 
         return true;
     }
+    
+    /**
+     * @param rs
+     * @param columnIndex
+     * @return
+     */
+    protected int getIntValue(final ResultSet rs, final int columnIndex)
+    {
+        try
+        {
+            int val = rs.getInt(columnIndex);
+            return rs.wasNull() ? 0 : val;
+            
+        } catch (Exception ex)
+        {
+            
+        }
+        return 0;
+    }
+
+    /**
+     * Converts all the LoanPhysicalObjects.
+     * @return true if no errors
+     */
+    public boolean convertLoanPhysicalObjects()
+    {
+        deleteAllRecordsFromTable(newDBConn, "loanphysicalobject"); // automatically closes the connection
+        
+        if (BasicSQLUtils.getNumRecords(oldDBConn, "loanphysicalobject") == 0)
+        {
+            return true;
+        }
+       
+        try
+        {
+            Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"});
+
+            Statement     stmt = oldDBConn.createStatement();
+            StringBuilder str  = new StringBuilder();
+
+            List<String> oldFieldNames = new ArrayList<String>();
+
+            StringBuilder sql = new StringBuilder("SELECT ");
+            List<String> names = new ArrayList<String>();
+            getFieldNamesFromSchema(oldDBConn, "loanphysicalobject", names);
+
+            sql.append(buildSelectFieldList(names, "loanphysicalobject"));
+            oldFieldNames.addAll(names);
+
+            sql.append(" FROM loanphysicalobject");
+
+            log.info(sql);
+
+            List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
+            getFieldMetaDataFromSchema(newDBConn, "loanphysicalobject", newFieldMetaData);
+
+            log.info("Number of Fields in New loanphysicalobject "+newFieldMetaData.size());
+            String sqlStr = sql.toString();
+
+            Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
+            int inx = 0;
+            for (String name : oldFieldNames)
+            {
+                oldNameIndex.put(name, inx++);
+            }
+
+            String tableName = "loanphysicalobject";
+
+            int quantityIndex         = oldNameIndex.get("Quantity") + 1;
+            int quantityReturnedIndex = oldNameIndex.get("QuantityReturned") + 1;
+           //int quantityResolvedIndex = oldNameIndex.get("QuantityResolved") + 1;
+                       
+  
+            log.info(sqlStr);
+            ResultSet rs = stmt.executeQuery(sqlStr);
+            
+            if (hasFrame)
+            {
+                if (rs.last())
+                {
+                    setProcess(0, rs.getRow()); 
+                    rs.first();
+                    
+                } else
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;
+                }
+            } else
+            {
+                if (!rs.first())
+                {
+                    rs.close();
+                    stmt.close();
+                    return true;                   
+                }
+            }
+
+            int count = 0;
+            do
+            {
+                int quantity         = getIntValue(rs, quantityIndex);
+                int quantityReturned = getIntValue(rs, quantityReturnedIndex);
+                //int quantityResolved = getIntValue(rs, quantityResolvedIndex);
+                Boolean isResolved   = quantityReturned == quantity;
+                
+                str.setLength(0);
+                str.append("INSERT INTO loanphysicalobject VALUES (");
+                for (int i=0;i<newFieldMetaData.size();i++)
+                {
+                    if (i > 0) str.append(", ");
+
+                    String newFieldName = newFieldMetaData.get(i).getName();
+
+                    if (i == 0)
+                    {
+                        Integer  recId  = count+1;
+                        str.append(getStrValue(recId));
+                        
+                    } else if (newFieldName.equals("IsResolved"))
+                    {
+                        str.append(BasicSQLUtils.getStrValue(isResolved)); 
+
+                    } else
+                    {
+                        Integer index = null;
+                        String  oldMappedColName = colNewToOldMap.get(newFieldName);
+                        if (oldMappedColName != null)
+                        {
+                            index = oldNameIndex.get(oldMappedColName);
+
+                        } else
+                        {
+                            index            = oldNameIndex.get(newFieldName);
+                            oldMappedColName = newFieldName;
+                        }
+                        
+                        if (index == null)
+                        {
+                            log.error("Couldn't find new field name["+newFieldName+"] in old field name in index Map");
+                            stmt.close();
+                            return false;
+                        }
+                        Object data  = rs.getObject(index+1);
+
+                        if (data != null)
+                        {
+                            int idInx = newFieldName.lastIndexOf("ID");
+                            if (idMapperMgr != null && idInx > -1)
+                            {
+                                IdMapperIFace idMapper =  idMapperMgr.get(tableName, oldMappedColName);
+                                if (idMapper != null)
+                                {
+                                    data = idMapper.get(rs.getLong(index+1));
+                                } else
+                                {
+                                    log.error("No Map for ["+tableName+"]["+oldMappedColName+"]");
+                                }
+                            }
+                        }
+                        str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
+                    }
+                }
+                str.append(")");
+                
+                if (hasFrame)
+                {
+                    if (count % 500 == 0) 
+                    {
+                        setProcess(count);
+                    }
+                    
+                } else
+                {
+                    if (count % 2000 == 0) 
+                    {
+                        log.info("LoanPhysicalObject Records: "+count);
+                    }
+                }
+
+                try
+                {
+                    Statement updateStatement = newDBConn.createStatement();
+                    updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                    updateStatement.executeUpdate(str.toString());
+                    updateStatement.clearBatch();
+                    updateStatement.close();
+                    updateStatement = null;
+
+                } catch (SQLException e)
+                {
+                    log.error("Count: "+count);
+                    e.printStackTrace();
+                    log.error(e);
+                    rs.close();
+                    stmt.close();
+                    throw new RuntimeException(e);
+                }
+
+                count++;
+                //if (count > 10) break;
+            } while (rs.next());
+            
+            if (hasFrame)
+            {
+                setProcess(count);
+            } else
+            {
+                log.info("Processed LoanPhysicalObject "+count+" records.");
+            }
+            rs.close();
+
+            stmt.close();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+            throw new RuntimeException(e);
+        }
+
+        return true;
+
+    }
+    
 
 
     /**

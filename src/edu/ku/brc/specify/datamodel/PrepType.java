@@ -49,6 +49,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
 
     protected Long              prepTypeId;
     protected String            name;
+    protected Boolean           isLoanable;
     protected Set<Preparation>  preparations;
     protected Set<AttributeDef> attributeDefs;
 
@@ -70,6 +71,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     {
         prepTypeId = null;
         name = null;
+        isLoanable = true;
         timestampCreated = new Date();
         timestampModified = null;
         lastEditedBy = null;
@@ -122,6 +124,16 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public Boolean getIsLoanable()
+    {
+        return isLoanable;
+    }
+
+    public void setIsLoanable(Boolean isLoanable)
+    {
+        this.isLoanable = isLoanable;
     }
 
     /**

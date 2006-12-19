@@ -354,6 +354,18 @@ public class BuildSampleDatabase
         log.info("Creating a catalog series");
         CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish", collectionObjDef);
         dataObjects.add(catalogSeries);
+        
+        ////////////////////////////////
+        // Determination Status (Must be done here)
+        ////////////////////////////////
+        log.info("Creating determinations status");
+        DeterminationStatus current    = createDeterminationStatus("Current","Test Status");
+        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
+        DeterminationStatus incorrect  = createDeterminationStatus("Incorrect","Test Status");
+        
+        dataObjects.add(current);
+        dataObjects.add(notCurrent);
+        dataObjects.add(incorrect);
 
         ////////////////////////////////
         // collection objects
@@ -384,9 +396,6 @@ public class BuildSampleDatabase
         // determinations (determination status)
         ////////////////////////////////
         log.info("Creating determinations");
-        DeterminationStatus current = createDeterminationStatus("Current","Test Status");
-        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
-        DeterminationStatus incorrect = createDeterminationStatus("Incorrect","Test Status");
 
         List<Determination> determs = new Vector<Determination>();
         Calendar recent = Calendar.getInstance();
@@ -413,9 +422,6 @@ public class BuildSampleDatabase
         determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(19), incorrect, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
-        dataObjects.add(current);
-        dataObjects.add(notCurrent);
-        dataObjects.add(incorrect);
         dataObjects.addAll(determs);
         
         ////////////////////////////////
