@@ -69,6 +69,28 @@ public class TreeFactory
 
 		return t;
 	}
+    
+    @SuppressWarnings("unchecked")
+    public static <T extends Treeable<T,?,?>> T createNewTreeable( T nodeOfSameClass, String name )
+    {
+        if (nodeOfSameClass instanceof Taxon)
+        {
+            return (T)createNewTreeable(Taxon.class,name);
+        }
+        if (nodeOfSameClass instanceof Geography)
+        {
+            return (T)createNewTreeable(Geography.class,name);
+        }
+        if (nodeOfSameClass instanceof GeologicTimePeriod)
+        {
+            return (T)createNewTreeable(GeologicTimePeriod.class,name);
+        }
+        if (nodeOfSameClass instanceof Location)
+        {
+            return (T)createNewTreeable(Location.class,name);
+        }
+        throw new IllegalArgumentException("Provided node must be instance of Geography, GeologicTimePeriod, Location or Taxon");
+    }
 		
 	/**
 	 * Creates a new <code>TreeDefinitionItemIface</code> instance of the class <code>implementingClass</code>.

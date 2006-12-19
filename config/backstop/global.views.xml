@@ -36,6 +36,15 @@
             </altviews>
         </view>
         
+        <view name="Determination"
+            class="edu.ku.brc.specify.datamodel.Determination"
+            resourcelabels="false">
+            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Determination View" viewdef="Determination" label="View" mode="view" validated="false"/>
+                <altview name="Determination Edit" viewdef="Determination" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
         
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
@@ -313,6 +322,51 @@
             </rows>
         </viewdef>
 
+        <viewdef
+            type="form"
+            name="Determination"
+            class="edu.ku.brc.specify.datamodel.Determination"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
+            
+            <rows>
+                <row>
+                    <!--
+                        <cell type="label" labelfor="1" label="Taxon"/>
+                        <cell type="field" id="1" name="taxon" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.FishBase;name=Taxon;title=Taxon" colspan="5"/>
+                    -->
+                    
+                    <cell type="label" labelfor="1" label="Taxon"/>
+                    <cell type="field" id="1" name="taxon" uitype="treequerycbx" initialize="name=Taxon;type=taxon;title=Taxon" colspan="5"/>
+                    
+                    <cell type="label" labelfor="2" label="Status"/>
+                    <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
+                </row>
+                <row>
+                    
+                    <cell type="label" labelfor="3" label="Determiner"/>
+                    <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
+                    
+                    <cell type="label" labelfor="4" label="Confidence"/>
+                    <cell type="field" id="4" name="confidence" uitype="text"/>
+                    
+                    <cell type="label" labelfor="5" label="Date"/>
+                    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="9" cols="50"/>
+                </row>
+            </rows>
+        </viewdef>
+        
         <viewdef
             type="form"
             name="Permit"

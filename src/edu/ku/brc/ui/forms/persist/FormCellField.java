@@ -35,7 +35,7 @@ public final class FormCellField extends FormCell
 {
     // NOTE: textpl is not intended to be defined in the form, it is for internal use only
     public enum FieldType {text, formattedtext, label, dsptextfield, textfieldinfo, image, url, combobox, checkbox, 
-                           password, dsptextarea, textarea, browse, querycbx, list, colorchooser, button, progress, plugin,
+                           password, dsptextarea, textarea, browse, querycbx, treequerycbx, list, colorchooser, button, progress, plugin,
                            textpl}
 
     protected static DateWrapper scrDateFormat = null;

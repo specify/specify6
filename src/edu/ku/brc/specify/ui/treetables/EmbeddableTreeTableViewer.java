@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -61,11 +62,21 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
             @SuppressWarnings("synthetic-access")
             public void run()
             {
-                List<T> matchingNodes = dataService.findByName(treeDef, leafNodeName);
+                final List<T> matchingNodes = dataService.findByName(treeDef, leafNodeName);
 
                 // from these nodes, create a new node tree all the way up to the root
 
+                nodes.clear();
                 final T root = buildTreeFromLeafNodes(matchingNodes);
+                if (root==null)
+                {
+                    EmbeddableTreeTableViewer.this.setSelectedNode(null);
+                    EmbeddableTreeTableViewer.this.removeAll();
+                    EmbeddableTreeTableViewer.this.add(new JLabel("No results found"), BorderLayout.CENTER);
+                    EmbeddableTreeTableViewer.this.revalidate();
+                    EmbeddableTreeTableViewer.this.repaint();
+                    return;
+                }
                 
                 SwingUtilities.invokeLater(new Runnable()
                 {
@@ -76,9 +87,16 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
                         
                         // redo the construction of the actual JTree
                         EmbeddableTreeTableViewer.this.add(scrollers[0], BorderLayout.CENTER);
-                        lists[0].setSelectedValue(root, true);
-                        expandAllDescendantsOfSelection(lists[0]);
-                        repaint();
+                        EmbeddableTreeTableViewer.this.revalidate();
+                        EmbeddableTreeTableViewer.this.repaint();
+                        lists[0].addListSelectionListener(EmbeddableTreeTableViewer.this);
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            public void run()
+                            {
+                                doExpandAllDescendants(root);
+                            }
+                        });
                     }
                 });
             }
@@ -168,7 +186,7 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     protected T duplicateNodeInfo(T node)
     {
-        T newT = (T)TreeFactory.createNewTreeable(node.getClass(), null);
+        T newT = TreeFactory.createNewTreeable(node, null);
         newT.setDefinition(node.getDefinition());
         newT.setDefinitionItem(node.getDefinitionItem());
         newT.setName(node.getName());
@@ -183,12 +201,24 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     public T getSelectedNode()
     {
+        if (lists == null || lists[0] == null)
+        {
+            return null;
+        }
+        
         return (T)lists[0].getSelectedValue();
     }
     
     public void setSelectedNode(T selection)
     {
-        lists[0].setSelectedValue(selection, true);
+        if (selection != null)
+        {
+            lists[0].setSelectedValue(selection, true);
+        }
+        else
+        {
+            lists[0].clearSelection();
+        }
     }
 
     public void valueChanged(ListSelectionEvent e)

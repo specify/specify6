@@ -79,6 +79,19 @@
     </format>
     
     <format
+        name="Taxon"
+        class="edu.ku.brc.specify.datamodel.Taxon"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>fullName</field>
+                <field sep=" - ">commonName</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
         name="PrepType"
         class="edu.ku.brc.specify.datamodel.PrepType"
         default="true"

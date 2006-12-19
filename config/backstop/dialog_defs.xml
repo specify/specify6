@@ -4,6 +4,7 @@
     <dialog type="search" viewset="Search" view="PermitSearch" name="PermitSearch" title="PermitSearchTitle" class="edu.ku.brc.specify.datamodel.Permit" idfield="permitId"/>
     <dialog type="search" viewset="Search" view="AccessionSearch" name="AccessionSearch" title="AccessionSearchTitle" class="edu.ku.brc.specify.datamodel.Accession" idfield="accessionId"/>
     <dialog type="search" viewset="Search" view="GeographySearch" name="GeographySearch" title="GeographySearchTitle" class="edu.ku.brc.specify.datamodel.Geography" idfield="geographyId"/>
+    <dialog type="search" viewset="Search" view="Taxon" name="TaxonSearch" title="TaxonSearchTitle" class="edu.ku.brc.specify.datamodel.Taxon" idfield="taxonId"/>
     
     <dialog type="display" viewset="Global" view="Agent" name="AgentDisplay" title="AgentTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" viewset="Global" view="Permit" name="PermitDisplay" title="PermitTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
@@ -11,6 +12,7 @@
     <dialog type="display" viewset="Global" view="Accession" name="AccessionDisplay" title="AccessionTitle" class="edu.ku.brc.specify.datamodel.Accession"/>
     <dialog type="display" viewset="Global" view="AccessionAgents" name="AccessionAgentsDisplay" title="AccessionAgentsTitle" class="edu.ku.brc.specify.datamodel.AccessionAgents"/>
     <dialog type="display" viewset="Global" view="Geography" name="GeographyDisplay" title="GeographyTitle" class="edu.ku.brc.specify.datamodel.Geography"/>
+    <dialog type="display" viewset="Global" view="Taxon" name="TaxonDisplay" title="TaxonTitle" class="edu.ku.brc.specify.datamodel.Taxon"/>
     <dialog type="display" viewset="Global" view="AttachmentsForm" name="AttachmentsForm" title="Attachment" class="edu.ku.brc.specify.datamodel.Attachment"/>
     <!-- <dialog type="display" viewset="Global" view="PrepType" name="PrepTypeDisplay" title="Preparation Type" class="edu.ku.brc.specify.datamodel.PrepType"/> -->
     

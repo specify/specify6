@@ -617,6 +617,37 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </detailView>
         </table>
         
+        <table id="21" tableid="9" name="Determinations" title="Determinations" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="determination" title="Determination"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM determination]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">DeterminationID</col>
+                    <col pos="2">DeterminedDate</col>
+                    <col pos="3">Confidence</col>
+                    <col pos="4">TypeStatusName</col>
+                    <col pos="5">Remarks</col>
+                </cols>
+            </index>
+            <detailView icon="Determination">
+                <sql>
+                    <![CDATA[SELECT DeterminationID, DeterminedDate, Confidence, TypeStatusName, Remarks FROM determination WHERE DeterminationID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="DeterminationID" text="Determination ID" visible="false"/>
+                    <caption col="DeterminedDate" text="Date Determined"/>
+                    <caption col="Confidence" text="Confidence"/>
+                    <caption col="TypeStatusName" text="Type Status"/>
+                    <caption col="Remarks" text="Remarks"/>
+                </captions>
+                <recordset tabletype="8" col="1"/>
+            </detailView>
+        </table>
+                
     </express>
     
     <!-- ************************************************* -->

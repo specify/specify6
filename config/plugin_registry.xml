@@ -12,8 +12,9 @@
 	    	<service command="Edit" tableid="5" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="6" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="7" tooltip="EditRecordSetTT"/>
-	        <service command="Edit" tableid="8" tooltip="EditRecordSetTT"/>
-	        <service command="Edit" tableid="10" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="8" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="9" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="10" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="41" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="50" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="52" tooltip="EditRecordSetTT"/>

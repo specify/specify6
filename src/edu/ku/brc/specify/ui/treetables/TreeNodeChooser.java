@@ -9,49 +9,57 @@ package edu.ku.brc.specify.ui.treetables;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
-import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  *
  * @code_status Alpha
  * @author jstewart
  */
-public class TreeNodeChooser <T extends Treeable<T,D,I>,
-                                D extends TreeDefIface<T,D,I>,
-                                I extends TreeDefItemIface<T,D,I>>
-                                extends JPanel implements ActionListener
+public class TreeNodeChooser extends JPanel implements ActionListener, ListSelectionListener
 {
-    protected EmbeddableTreeTableViewer<T, D, I> treeViewer;
+    protected EmbeddableTreeTableViewer<?,?,?> treeViewer;
     protected JButton okButton;
     protected JButton cancelButton;
     protected JButton newButton;
     protected JButton searchButton;
     protected JTextField searchBox;
+
+    protected JDialog dialog;
+    protected Object returnValue;
     
-    public TreeNodeChooser(D treeDef)
+    @SuppressWarnings("unchecked")
+    public TreeNodeChooser(TreeDefIface<?,?,?> treeDef)
     {
         super();
         setLayout(new BorderLayout());
         
-        treeViewer = new EmbeddableTreeTableViewer<T, D, I>(treeDef);
+        treeViewer = new EmbeddableTreeTableViewer(treeDef);
+        treeViewer.setMinimumSize(new Dimension(400,200));
+        treeViewer.addListSelectionListener(this);
         
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.X_AXIS));
         
         okButton = new JButton(getResourceString("OK"));
         okButton.addActionListener(this);
+        okButton.setEnabled(false);
         cancelButton = new JButton(getResourceString("Cancel"));
         cancelButton.addActionListener(this);
         newButton = new JButton(getResourceString("New"));
@@ -70,23 +78,39 @@ public class TreeNodeChooser <T extends Treeable<T,D,I>,
         southPanel.add(cancelButton);
         southPanel.add(okButton);
         
-        add(treeViewer,BorderLayout.NORTH);
+        add(treeViewer,BorderLayout.CENTER);
         add(southPanel,BorderLayout.SOUTH);
+        
+        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        dialog = new JDialog(topFrame,"Find and select a node",true);
+        dialog.pack();
+        dialog.setSize(treeViewer.getMinimumSize().width, dialog.getHeight() + treeViewer.getMinimumSize().height);
+        dialog.setLocationRelativeTo(topFrame);
+        dialog.setContentPane(this);
+    }
+    
+    public Object showChooser()
+    {
+        dialog.setVisible(true);
+        return returnValue;
     }
     
     public void doOK()
     {
-        T selection = treeViewer.getSelectedNode();
-        System.out.println(selection + " chosen");
+        Object selection = treeViewer.getSelectedNode();
+        returnValue = selection;
+        dialog.setVisible(false);
     }
     
     public void doCancel()
     {
-        System.out.println("Cancelled");
+        returnValue = null;
+        dialog.setVisible(false);
     }
     
     public void doNew()
     {
+        //TODO: implement this somehow
         System.out.println("New node");
     }
     
@@ -99,8 +123,7 @@ public class TreeNodeChooser <T extends Treeable<T,D,I>,
         }
         
         treeViewer.setLeafNodeName(searchKey);
-        treeViewer.repaint();
-        repaint();
+        dialog.repaint();
     }
 
     /* (non-Javadoc)
@@ -125,5 +148,18 @@ public class TreeNodeChooser <T extends Treeable<T,D,I>,
         {
             doSearch();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+     */
+    public void valueChanged(ListSelectionEvent e)
+    {
+        if (e.getValueIsAdjusting())
+        {
+            return;
+        }
+        
+        okButton.setEnabled((treeViewer.getSelectedNode()==null) ? false : true);
     }
 }

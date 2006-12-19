@@ -105,7 +105,7 @@
 		</table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" id="64"/>
         <table name="edu.ku.brc.specify.datamodel.PrepType" id="65">
-            <display objtitle="Prepartion Type" view="PrepType" searchdlg="PrepTypeSearch" newobjdlg="PrepTypeDisplay"/>
+            <display objtitle="Preparation Type" view="PrepType" searchdlg="PrepTypeSearch" newobjdlg="PrepTypeDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Project" id="66"/>
         <table name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" id="67"/>
@@ -116,7 +116,7 @@
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" id="72"/>
         <table name="edu.ku.brc.specify.datamodel.Stratigraphy" id="73"/>
         <table name="edu.ku.brc.specify.datamodel.Taxon" id="4">
-            <display view="Taxon"/>
+            <display objtitle="Taxon" view="Taxon" dataobjformatter="Taxon" searchdlg="TaxonSearch" newobjdlg="TaxonDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" id="75"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDef" id="76"/>
