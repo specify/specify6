@@ -74,23 +74,23 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<T> findByName(D treeDef, String name)
-	{
-		Vector<T> results = new Vector<T>();
-		Class<T> nodeClass = treeDef.getNodeClass();
-		Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name = :name");
-		q.setParameter("name",name);
-		for( Object o: q.list() )
-		{
-			T t = (T)o;
-			results.add(t);
-		}
-		
-		Collections.sort(results,new TreePathComparator<T,D,I>(true));
-		
-		return results;
-	}
-	
+    public List<T> findByName(D treeDef, String name)
+    {
+        Vector<T> results = new Vector<T>();
+        Class<T> nodeClass = treeDef.getNodeClass();
+        Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name LIKE :name");
+        q.setParameter("name",name);
+        for( Object o: q.list() )
+        {
+            T t = (T)o;
+            results.add(t);
+        }
+        
+        Collections.sort(results,new TreePathComparator<T,D,I>(true));
+        
+        return results;
+    }
+    
 	/**
 	 *
 	 *
