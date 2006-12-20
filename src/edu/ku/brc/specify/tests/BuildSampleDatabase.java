@@ -56,6 +56,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
@@ -103,6 +104,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.UIHelper;
@@ -787,6 +789,8 @@ public class BuildSampleDatabase
         newObjs.addAll(counties);
         
         earth.fixFullNameForAllDescendants();
+        earth.setNodeNumber(1);
+        fixNodeNumbersFromRoot(earth);
 
         return newObjs;
     }
@@ -839,6 +843,8 @@ public class BuildSampleDatabase
         newObjs.add(level3_3);
 
         level0.fixFullNameForAllDescendants();
+        level0.setNodeNumber(1);
+        fixNodeNumbersFromRoot(level0);
         
         return newObjs;
     }
@@ -905,6 +911,8 @@ public class BuildSampleDatabase
         newObjs.add(shelf1);
         
         dyche.fixFullNameForAllDescendants();
+        dyche.setNodeNumber(1);
+        fixNodeNumbersFromRoot(dyche);
         
         return newObjs;
     }
@@ -916,14 +924,14 @@ public class BuildSampleDatabase
 
         Vector<Object> newObjs = new Vector<Object>();
         // Create a Taxon tree definition
-        TaxonTreeDefItem defItemLevel0 = createTaxonTreeDefItem(null, taxonTreeDef, "order", 0);
+        TaxonTreeDefItem defItemLevel0 = createTaxonTreeDefItem(null, taxonTreeDef, "order", 100);
         defItemLevel0.setIsEnforced(true);
-        TaxonTreeDefItem defItemLevel1 = createTaxonTreeDefItem(defItemLevel0, taxonTreeDef, "family", 100);
-        TaxonTreeDefItem defItemLevel2 = createTaxonTreeDefItem(defItemLevel1, taxonTreeDef, "genus", 200);
+        TaxonTreeDefItem defItemLevel1 = createTaxonTreeDefItem(defItemLevel0, taxonTreeDef, "family", 140);
+        TaxonTreeDefItem defItemLevel2 = createTaxonTreeDefItem(defItemLevel1, taxonTreeDef, "genus", 180);
         defItemLevel2.setIsEnforced(true);
         defItemLevel2.setIsInFullName(true);
         defItemLevel2.setTextAfter(" ");
-        TaxonTreeDefItem defItemLevel3 = createTaxonTreeDefItem(defItemLevel2, taxonTreeDef, "species", 300);
+        TaxonTreeDefItem defItemLevel3 = createTaxonTreeDefItem(defItemLevel2, taxonTreeDef, "species", 220);
         defItemLevel3.setIsEnforced(true);
         defItemLevel3.setIsInFullName(true);
         defItemLevel3.setTextAfter(" ");
@@ -964,10 +972,33 @@ public class BuildSampleDatabase
         newObjs.addAll(kids);
         
         order.fixFullNameForAllDescendants();
+        order.setNodeNumber(1);
+        fixNodeNumbersFromRoot(order);
+        
+        for (Object o: newObjs)
+        {
+            if (o instanceof Taxon)
+            {
+                Taxon t = (Taxon)o;
+                t.setAccepted((short)1);
+            }
+        }
         
         return newObjs;
     }
 
+    @SuppressWarnings("unchecked")
+    protected static int fixNodeNumbersFromRoot( Treeable root )
+    {
+        int nextNodeNumber = root.getNodeNumber();
+        for( Treeable child: (Set<Treeable>)root.getChildren() )
+        {
+            child.setNodeNumber(++nextNodeNumber);
+            nextNodeNumber = fixNodeNumbersFromRoot(child);
+        }
+        root.setHighestChildNodeNumber(nextNodeNumber);
+        return nextNodeNumber;
+    }
 
     public static void persist(Object o)
     {
