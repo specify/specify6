@@ -10,6 +10,7 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -20,9 +21,8 @@ import edu.ku.brc.ui.db.DatabaseLoginListener;
 
 /**
  *
- *
+ * @code_status Alpha
  * @author jstewart
- * @version %I% %G%
  */
 public class BasicHibernateMain implements DatabaseLoginListener
 {
@@ -37,8 +37,8 @@ public class BasicHibernateMain implements DatabaseLoginListener
     	SpecifyAppPrefs.initialPrefs();
 
     	// do stuff here
-    	
-    	System.exit(0);
+                
+    	//System.exit(0);
     }
     
     public void cancelled()
@@ -60,8 +60,14 @@ public class BasicHibernateMain implements DatabaseLoginListener
         }
 
         // Name factories
-        System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
-        System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
+        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
+        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and loggin transactions
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
+        System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",           "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl"); // needed for treequerycbx components
 
         IconManager.setApplicationClass(Specify.class);
         UICacheManager.getInstance(); // initializes it first thing
