@@ -97,7 +97,7 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
     
     public void doOK()
     {
-        returnValue = treeViewer.getSelectedNode();;
+        returnValue = treeViewer.getSelectedNode();
         dialog.setVisible(false);
     }
     
