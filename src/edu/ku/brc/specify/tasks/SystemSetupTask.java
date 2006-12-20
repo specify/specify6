@@ -17,6 +17,8 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -26,34 +28,42 @@ import java.util.Vector;
 
 import javax.swing.JMenuItem;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
-import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.persist.View;
 
 
 
 /**
  *
- 
- * @code_status Unknown (auto-generated)
- **
+ * This is used for launching editors for Database Objects that are at the "core" of the data model.
+ * 
+ * @code_status Alpha
+ *
  * @author rods
  *
  */
@@ -102,10 +112,28 @@ public class SystemSetupTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
 
+            // Temporary
+            NavBox sysNavBox = new NavBox("Core Data Objects");
+            sysNavBox.add(NavBox.createBtnWithTT("Prep Type", "PrepType", "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    editPrepTypes();
+                }
+            })); // I18N
+            sysNavBox.add(NavBox.createBtnWithTT("Determination Status", name, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    editDeterminationStatus();
+                }
+            })); // I18N
+            navBoxes.addElement(sysNavBox);
+           
+
+            
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             List pickLists = session.getDataList(PickList.class);
 
-            navBox = new NavBox(getResourceString("picklists"));
+            sysNavBox = new NavBox(getResourceString("picklists"));
 
             addPickList(getResourceString("newpicklist"), null, null, 0);
 
@@ -121,14 +149,50 @@ public class SystemSetupTask extends BaseTask
             for (Iterator iter=pickLists.iterator();iter.hasNext();)
             {
                 PickList pickList = (PickList)iter.next();
-                addPickList(getTitle(pickList), pickList, "DeletePickList", navBox.getItems().size()-1);
+                addPickList(getTitle(pickList), pickList, "DeletePickList", sysNavBox.getItems().size()-1);
 
             }
 
-            navBoxes.addElement(navBox);
+            navBoxes.addElement(sysNavBox);
             
             session.close();
         }
+    }
+    
+    /**
+     * Creates the edit form for Prep Types. 
+     */
+    protected void editPrepTypes()
+    {
+        View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        List prepTypes = session.getDataList(PrepType.class);
+        
+        createFormPanel(session, 
+                        view.getViewSetName(), 
+                        view.getName(), 
+                        "edit", 
+                        prepTypes, 
+                        MultiView.RESULTSET_CONTROLLER,
+                        IconManager.getIcon("PrepType", IconManager.IconSize.Std16));
+     }
+
+    /**
+     * Creates the edit form for Prep Types. 
+     */
+    protected void editDeterminationStatus()
+    {
+        View view = AppContextMgr.getInstance().getView("SystemSetup", "DeterminationStatus");
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        List determinationStatus = session.getDataList(DeterminationStatus.class);
+        
+        createFormPanel(session, 
+                        view.getViewSetName(), 
+                        view.getName(), 
+                        "edit", 
+                        determinationStatus, 
+                        MultiView.RESULTSET_CONTROLLER,
+                        IconManager.getIcon(name, IconManager.IconSize.Std16));
     }
 
     /**
@@ -278,8 +342,13 @@ public class SystemSetupTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        recentFormPane = new FormPane(null, name, this, "");
-        return recentFormPane;
+       // View view = appContextMgr.getView("SystemSetup", CollectionObjDef.getCurrentCollectionObjDef());
+        //createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT);
+
+        //recentFormPane = new FormPane(null, name, this, "");
+        //return recentFormPane;
+        
+        return new SimpleDescPane(SYSTEMSETUPTASK, this, "System Tools");
     }
 
      /*
@@ -305,6 +374,17 @@ public class SystemSetupTask extends BaseTask
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
 
         JMenuItem mi = UIHelper.createMenuItem(null, getResourceString("PickListsMenu"), getResourceString("PickListsMenu"), "", true, null);
+        list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
+        
+        final Taskable thisTask = this;
+        mi = UIHelper.createMenuItem(null, "System Tools", "S", "", true, null);
+        mi.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                thisTask.requestContext();
+            }
+        });
         list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
         return list;
 

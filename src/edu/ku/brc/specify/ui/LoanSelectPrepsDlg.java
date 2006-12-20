@@ -112,7 +112,18 @@ public class LoanSelectPrepsDlg extends JDialog
         {
             if (getCurrentDetermination(co) != null)
             {
-                cntColObj++;
+                int cntLoanablePreps = 0;
+                for (Preparation prep : co.getPreparations())
+                {
+                    if (prep.getPrepType().getIsLoanable())
+                    {
+                        cntLoanablePreps++;
+                    }
+                }
+                if (cntLoanablePreps > 0)
+                {
+                    cntColObj++;
+                }
             }
         }
         String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (cntColObj*2)-1) + ",10px,p";
@@ -337,11 +348,14 @@ public class LoanSelectPrepsDlg extends JDialog
             int i = 0;
             for (Preparation prep : colObj.getPreparations())
             {
-                PrepPanel pp = new PrepPanel(dlgParent, prep);
-                panels.add(pp);
-                pp.setBackground(colors[i % 2]);
-                contentPanel.add(pp);
-                i++;
+                if (prep.getPrepType().getIsLoanable())
+                {
+                    PrepPanel pp = new PrepPanel(dlgParent, prep);
+                    panels.add(pp);
+                    pp.setBackground(colors[i % 2]);
+                    contentPanel.add(pp);
+                    i++;
+                }
             }
             pbuilder.add(outerPanel, cc.xy(1,3));
             

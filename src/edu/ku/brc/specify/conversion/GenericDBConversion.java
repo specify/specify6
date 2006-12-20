@@ -2249,7 +2249,7 @@ public class GenericDBConversion
                         //
                     } else if (newFieldName.equals("Count"))
                     {
-                        Integer value = rs.getInt("Count1");
+                        Integer value = rs.getInt("Count");
                         if (rs.wasNull())
                         {
                             value = null;

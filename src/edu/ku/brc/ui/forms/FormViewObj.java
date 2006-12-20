@@ -1320,7 +1320,7 @@ public class FormViewObj implements Viewable,
             if (rsController.getDelRecBtn() != null)
             {
                 boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToDelete(this.dataObj));// && list != null && list.size() > 0;
-                //log.debug(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
+                log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
                 /*if (!enableDelBtn)
                 {
                     //log.debug("  parentDataObj != null    ["+(parentDataObj != null) + "]");

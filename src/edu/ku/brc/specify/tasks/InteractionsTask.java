@@ -146,8 +146,6 @@ public class InteractionsTask extends BaseTask
         loanTableId        = DBTableIdMgr.lookupIdByClassName(Loan.class.getName());
         infoRequestTableId = DBTableIdMgr.lookupIdByClassName(InfoRequest.class.getName());
         colObjTableId      = DBTableIdMgr.lookupIdByClassName(CollectionObject.class.getName());
-        
-        this.icon = IconManager.getIcon(INTERACTIONS, IconManager.IconSize.Std16);
 
     }
     
@@ -494,7 +492,7 @@ public class InteractionsTask extends BaseTask
         infoRequest.initialize();
         infoRequest.setRecordSet(recordSet);
         
-        createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT);
+        createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
         //recentFormPane.setIcon(IconManager.getIcon(INTERACTIONS, IconManager.IconSize.Std16));
     }
 
