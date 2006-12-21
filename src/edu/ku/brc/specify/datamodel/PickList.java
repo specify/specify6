@@ -51,7 +51,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
 
     protected Long              pickListId;
     protected String            name;
-    protected Integer           type;
+    protected Integer           type;  // see PickListDBAdapterIFace.Type
     protected String            tableName;
     protected String            fieldName;
     protected String            formatter; // dataobj_formatter or uiformatter

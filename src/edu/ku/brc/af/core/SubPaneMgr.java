@@ -16,6 +16,7 @@ package edu.ku.brc.af.core;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -263,6 +264,15 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             }
         }
         return subPane;
+    }
+    
+    /**
+     * Returns a list of the SubPaneIFaces.
+     * @return a list of the SubPaneIFaces.
+     */
+    public Collection<SubPaneIFace> getSubPanes()
+    {
+        return panes.values();
     }
 
     /**

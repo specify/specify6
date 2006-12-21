@@ -241,7 +241,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
             }
         }
 
-        log.debug("["+name+"]------------------------------------------------- Number of Rules: "+formRules.size());
+        log.debug("processFormRules ["+name+"]------------------------------------------------- Number of Rules: "+formRules.size());
         for (FormValidationRuleIFace rule : formRules)
         {
             try
@@ -520,6 +520,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         processRulesAreOK = processFormRules();
 
+        log.debug("checkForValidForm ["+name+"]");
         //log.debug(name+" checkForValidForm -> formValidationState - processFormRules ["+formValidationState+"]");
         if (name.equals("LoanItems"))
         {
@@ -573,6 +574,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void validateForm(boolean validateAll)
     {
+        log.debug("validateForm ["+name+"]");
+        if (name.equals("LoanItems"))
+        {
+            int x = 0;
+            x++;
+        }
         ignoreValidationNotifications = true;
 
         processRulesAreOK = processFormRules();
@@ -613,6 +620,26 @@ public class FormValidator implements ValidationListener, DataChangeListener
         //turnOnOKButton(true);
 
         ignoreValidationNotifications = false;
+    }
+    
+    /**
+     * Sets the DataChangeNotifier to change = true if it has one.
+     * @param comp the component to check
+     */
+    public void setDataChangeInNotifier(final Component comp)
+    {
+        if (comp != null)
+        {
+            hasChanged = true;
+            for (DataChangeNotifier dcn : dcNotifiers.values())
+            {
+                UIValidator uiv = dcn.getUIV();
+                if (uiv != null && uiv.getComp() == comp)
+                {
+                    dcn.setDataChanged(true);
+                }
+            }
+        }
     }
 
     /**
@@ -822,6 +849,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void updateValidationBtnUIState()
     {
+        log.debug("updateValidationBtnUIState ["+name+"]");
+        if (name.equals("LoanItems"))
+        {
+            int x = 0;
+            x++;
+        }
         if (validationInfoBtn != null)
         {
             boolean                 enable = true;
@@ -955,6 +988,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setHasChanged(boolean hasChanged)
     {
+        log.debug("setHasChanged ["+name+"] "+hasChanged);
         this.hasChanged = hasChanged;
     }
 

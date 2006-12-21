@@ -60,7 +60,7 @@
     <set name="attributeDefs" lazy="true" inverse="true" cascade="delete">
         <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectioObjDefID"/>
+            <column name="CollectionObjDefID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.AttributeDef"/>
     </set>

@@ -61,7 +61,6 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -126,17 +125,15 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
     /**
      * The incoming List of Collecting Events is already Sorted by StartDate.
-     * @param session the DB Session to use
-     * @param name the name
+    * @param name the name
      * @param task the owning task
      * @param colEvents sorted list of collecting events
      */
-    public LocalityMapperSubPane(final DataProviderSessionIFace session,
-                                 final String name,
+    public LocalityMapperSubPane(final String name,
                                  final Taskable task,
                                  final List<CollectingEvent> colEvents)
     {
-        super(session, name, task);
+        super(name, task);
         
         this.colEvents = colEvents;
         this.thisPane  = this;
@@ -303,8 +300,6 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 
-        multiView.setSession(session);
-        
         formViewObj = (FormViewObj)multiView.getCurrentView();
         formViewObj.getUIComponent().setBackground(Color.WHITE);
 

@@ -279,8 +279,7 @@ public class InfoRequestTask extends BaseTask
         
         //TaskMgr.getInstance().getTask(INFOREQUEST)
         
-        FormPane formPane = new FormPane(DataProviderFactory.getInstance().createSession(), 
-                                         view.getName(), TaskMgr.getTask(INFOREQUEST), view, "edit", infoRequest, 
+        FormPane formPane = new FormPane(view.getName(), TaskMgr.getTask(INFOREQUEST), view, "edit", infoRequest, 
                                          MultiView.IS_NEW_OBJECT );
         formPane.setIcon(IconManager.getIcon(INFOREQUEST, IconManager.IconSize.Std16));
         
@@ -340,7 +339,7 @@ public class InfoRequestTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        recentFormPane = new FormPane(null, name, this, "");
+        recentFormPane = new FormPane(name, this, "");
         return recentFormPane;
     }
     

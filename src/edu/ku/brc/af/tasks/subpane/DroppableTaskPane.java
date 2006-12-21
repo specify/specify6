@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.UICacheManager;
@@ -63,28 +62,11 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
                              final Taskable task,
                              final String   desc)
     {
-        this(null, name, task, desc);
-    }
-    
-    /**
-     * Constructor.
-     * @param session the DB session to use
-     * @param name the name of the subpane
-     * @param task the owning task
-     * @param desc string displayed in th center of the pane
-     */
-    public DroppableTaskPane(final DataProviderSessionIFace session,
-                             final String name, 
-                             final Taskable task,
-                             final String   desc)
-    {
-        super(session, name, task);
+        super(name, task);
         this.desc = desc;
-        //this.progressLabel.setText(desc);
-        //this.progressBar.setIndeterminate(false);
-        //remove(this.progressBar);
         removeAll();
     }
+
     
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)

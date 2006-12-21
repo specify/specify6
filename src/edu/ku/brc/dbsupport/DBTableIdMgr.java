@@ -278,8 +278,7 @@ public class DBTableIdMgr
 
 	/**
 	 * Creates a Query object for a table from a recordset, it uses an "in" clause.
-     * @param session the DB session to use
-     * @param recordSet the recordset containing the record ids
+    * @param recordSet the recordset containing the record ids
 	 * @return a query object
 	 */
 	public static String getQueryForTable(final RecordSetIFace recordSet)
@@ -304,7 +303,6 @@ public class DBTableIdMgr
 
 	/**
 	 * Creates a Query object for a table from a single Record ID.
-     * @param session the DB session to use
 	 * @param recordId a single Record Id
 	 * @return a query object
 	 */

@@ -20,6 +20,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -35,15 +36,19 @@ import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
+import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -74,8 +79,6 @@ public class SystemSetupTask extends BaseTask
 
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
-
-    public static final String INFO_REQ_MESSAGE = "Specify Info Request";
 
     List<String> pickListNames = new ArrayList<String>();
 
@@ -114,16 +117,28 @@ public class SystemSetupTask extends BaseTask
 
             // Temporary
             NavBox sysNavBox = new NavBox("Core Data Objects");
+            sysNavBox.add(NavBox.createBtnWithTT("Data Type", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(DataType.class, SYSTEMSETUPTASK, "DataType");
+                }
+            })); // I18N
+            sysNavBox.add(NavBox.createBtnWithTT("Collection Obj Def", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(CollectionObjDef.class, SYSTEMSETUPTASK, "CollectionObjDef");
+                }
+            })); // I18N
             sysNavBox.add(NavBox.createBtnWithTT("Prep Type", "PrepType", "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    editPrepTypes();
+                    startEditor(PrepType.class, "PrepType", "PrepType");
                 }
             })); // I18N
             sysNavBox.add(NavBox.createBtnWithTT("Determination Status", name, "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    editDeterminationStatus();
+                    startEditor(DeterminationStatus.class, name, "DeterminationStatus");
                 }
             })); // I18N
             navBoxes.addElement(sysNavBox);
@@ -160,21 +175,120 @@ public class SystemSetupTask extends BaseTask
     }
     
     /**
+     * Searches for a SubPaneIFace that has the same class of data as the argument and then "shows" that Pane and returns true. 
+     * If it can't be found then it shows false.
+     * @param clazz the class of data to be searched for
+     * @return true if found, false if not
+     */
+    protected boolean checkForPaneWithData(final Class clazz)
+    {
+        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
+        {
+            Object uiComp = pane.getUIComponent();
+            if (uiComp instanceof FormPane)
+            {
+                Object dataObj = ((FormPane)uiComp).getData();
+                if (dataObj instanceof Collection<?>)
+                {
+                    Collection<?> collection = (Collection<?>)dataObj;
+                    if (collection.size() > 0)
+                    {
+                        dataObj = collection.iterator().next();
+                    }
+                }
+                if (dataObj.getClass() == clazz)
+                {
+                    SubPaneMgr.getInstance().showPane(pane);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    protected void startEditor(final Class<?> clazz, final String iconName, final String viewName)
+    {
+        if (!checkForPaneWithData(clazz))
+        {
+            DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
+            List<?>                  collection = session.getDataList(clazz);
+            session.close();
+            
+            View view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
+            
+            createFormPanel(view.getViewSetName(), 
+                            view.getName(), 
+                            "edit", 
+                            collection, 
+                            MultiView.RESULTSET_CONTROLLER,
+                            IconManager.getIcon(iconName, IconManager.IconSize.Std16));
+        } 
+    }
+    
+    /**
+     * Creates the edit form for Prep Types. 
+     */
+    protected void editDataTypes()
+    {
+        if (!checkForPaneWithData(DataType.class))
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            List prepTypes = session.getDataList(DataType.class);
+            session.close();
+            
+            View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
+            
+            createFormPanel(view.getViewSetName(), 
+                            view.getName(), 
+                            "edit", 
+                            prepTypes, 
+                            MultiView.RESULTSET_CONTROLLER,
+                            IconManager.getIcon(name, IconManager.IconSize.Std16));
+        }
+     }
+
+    /**
+     * Creates the edit form for Prep Types. 
+     */
+    protected void editCollectionObjDefs()
+    {
+        if (!checkForPaneWithData(CollectionObjDef.class))
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            List prepTypes = session.getDataList(CollectionObjDef.class);
+            session.close();
+            
+            View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
+            
+            createFormPanel(view.getViewSetName(), 
+                            view.getName(), 
+                            "edit", 
+                            prepTypes, 
+                            MultiView.RESULTSET_CONTROLLER,
+                            IconManager.getIcon(name, IconManager.IconSize.Std16));
+        }
+     }
+    
+    /**
      * Creates the edit form for Prep Types. 
      */
     protected void editPrepTypes()
     {
-        View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        List prepTypes = session.getDataList(PrepType.class);
-        
-        createFormPanel(session, 
-                        view.getViewSetName(), 
-                        view.getName(), 
-                        "edit", 
-                        prepTypes, 
-                        MultiView.RESULTSET_CONTROLLER,
-                        IconManager.getIcon("PrepType", IconManager.IconSize.Std16));
+        if (!checkForPaneWithData(DeterminationStatus.class))
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            List prepTypes = session.getDataList(PrepType.class);
+            session.close();
+            
+            View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
+            
+            createFormPanel(view.getViewSetName(), 
+                            view.getName(), 
+                            "edit", 
+                            prepTypes, 
+                            MultiView.RESULTSET_CONTROLLER,
+                            IconManager.getIcon("PrepType", IconManager.IconSize.Std16));
+        }
      }
 
     /**
@@ -182,17 +296,26 @@ public class SystemSetupTask extends BaseTask
      */
     protected void editDeterminationStatus()
     {
-        View view = AppContextMgr.getInstance().getView("SystemSetup", "DeterminationStatus");
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        List determinationStatus = session.getDataList(DeterminationStatus.class);
-        
-        createFormPanel(session, 
-                        view.getViewSetName(), 
-                        view.getName(), 
-                        "edit", 
-                        determinationStatus, 
-                        MultiView.RESULTSET_CONTROLLER,
-                        IconManager.getIcon(name, IconManager.IconSize.Std16));
+        if (!checkForPaneWithData(DeterminationStatus.class))
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            List determinationStatus = session.getDataList(DeterminationStatus.class);
+            session.close();
+            
+            View view = AppContextMgr.getInstance().getView("SystemSetup", "DeterminationStatus");
+            if (view != null)
+            {
+                createFormPanel(view.getViewSetName(), 
+                                view.getName(), 
+                                "edit", 
+                                determinationStatus, 
+                                MultiView.RESULTSET_CONTROLLER,
+                                IconManager.getIcon(name, IconManager.IconSize.Std16));
+            } else
+            {
+                // show error dialog
+            }
+        }
     }
 
     /**

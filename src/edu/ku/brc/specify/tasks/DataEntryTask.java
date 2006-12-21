@@ -196,8 +196,7 @@ public class DataEntryTask extends BaseTask
             DataProviderFactory.getInstance().evict(data.getClass());    
         }
         
-        FormPane formPane = new FormPane(DataProviderFactory.getInstance().createSession(), 
-                                         view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
+        FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
                                          isNewForm ? (MultiView.IS_NEW_OBJECT |  MultiView.RESULTSET_CONTROLLER): 0);
         
         formPane.setIcon(getIconForView(view));
@@ -224,18 +223,19 @@ public class DataEntryTask extends BaseTask
     {
         int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
 
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         String sqlStr = DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
         if (StringUtils.isNotEmpty(sqlStr))
         {
             try
             {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 List data = session.getDataList(sqlStr);
+                session.close();
+                
                 if (data != null && data.size() > 0)
                 {
-                    FormPane formPane = new FormPane(session, 
-                                                     view.getName(), 
+                    FormPane formPane = new FormPane(view.getName(), 
                                                      task, 
                                                      view.getViewSetName(), 
                                                      view.getName(), 
@@ -286,7 +286,6 @@ public class DataEntryTask extends BaseTask
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             
             String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
@@ -295,9 +294,13 @@ public class DataEntryTask extends BaseTask
                 
                 SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                 
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                List<?> list = session.getDataList(sqlStr);
+                session.close();
+                
                 View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
                 
-                formPane = new FormPane(session, name, task, view, null, session.getDataList(sqlStr), MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+                formPane = new FormPane(name, task, view, null, list, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
                 formPane.setIcon(getIconForView(view));
                 formPane.setRecordSet(recordSet);
                 
@@ -542,7 +545,7 @@ public class DataEntryTask extends BaseTask
                                               final Taskable task,
                                               final String   desc)
         {
-            super(null, name, task, desc);
+            super(name, task, desc);
             
             dropFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
             this.createMouseInputAdapter();

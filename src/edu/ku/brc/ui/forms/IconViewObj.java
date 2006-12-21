@@ -560,6 +560,27 @@ public class IconViewObj implements Viewable
      */
     public synchronized void setDataIntoUI()
     {
+        /*
+        if (mvParent == null || mvParent.isRoot())
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+            session = DataProviderFactory.getInstance().createSession();
+            
+            if (mvParent != null && mvParent.isTopLevel())
+            {
+                mvParent.setSession(session);   
+            }
+        } else if (session != null && dataSet != null)
+        {
+            for (Object o: dataSet)
+            {
+                session.attach(o);
+            }
+        }*/
+        
         if (mainComp == null)
         {
             initMainComp();

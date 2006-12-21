@@ -79,12 +79,15 @@ public class LocalityMapperTask extends BaseTask
     public void createMappingInfoFromRecordSet(final RecordSetIFace recordSet)
     {
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
         if (StringUtils.isNotEmpty(sqlStr))
         {
-            LocalityMapperSubPane panel = new LocalityMapperSubPane(session, name, this, (List<CollectingEvent>)session.getDataList(sqlStr));
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            List<CollectingEvent> list = (List<CollectingEvent>)session.getDataList(sqlStr);
+            session.close();
+            
+            LocalityMapperSubPane panel = new LocalityMapperSubPane(name, this, list);
             addSubPaneToMgr(panel);
             
         } else

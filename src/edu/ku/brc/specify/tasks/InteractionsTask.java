@@ -470,7 +470,8 @@ public class InteractionsTask extends BaseTask
                 {
                     ValFormattedTextField loanTxt = (ValFormattedTextField)comp;
                     ValFormattedTextField shipTxt = (ValFormattedTextField)shipComp;
-                    shipTxt.setTextWithNotify(loanTxt.getText());
+                    shipTxt.setValue(loanTxt.getText(), loanTxt.getText());
+                    shipTxt.setChanged(true);
                 }
             }
         }

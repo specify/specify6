@@ -80,7 +80,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Object                       parentDataObj   = null;
     protected CardLayout                   cardLayout      = new CardLayout();
     protected Viewable                     currentViewable = null;
-    protected DataProviderSessionIFace     session         = null;
 
     protected boolean                      specialEditView = false;
     protected boolean                      editable        = false;
@@ -243,26 +242,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             }
         }
     }
-
-    /**
-     * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
-     * the DB object.
-     */
-    public void setSession(final DataProviderSessionIFace session)
-    {
-        this.session = session;
-        
-        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
-        {
-            e.nextElement().setSession(session);
-        }
-        
-        for (MultiView mv : kids)
-        {
-            mv.setSession(session);
-        }
-    }
-
 
     /**
      * Returns the View (the definition).
@@ -584,7 +563,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions);
                     if (viewable != null)
                     {
-                        viewable.setSession(session);
                         if (add(viewable, altViewName))
                         {
                             if (mvParent != null)
@@ -598,7 +576,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                             cardLayout.show(this, altViewName);
                             log.debug("Added Viewable["+altViewName+"]");
                         }
-                        setSession(session);
                     } else
                     {
                         log.error("The Viewable could not be created for some reason View["+newView+"] AltView["+altViewName+"] Options["+createOptions+"]");
@@ -758,6 +735,17 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         return true;
     }
+    
+    /**
+     * Validates all the forms and subforms.
+     */
+    public void validateAll()
+    {
+        for (FormValidator validator : formValidators)
+        {
+            validator.validateForm();
+        }
+    }
 
 
     /**
@@ -861,6 +849,24 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         return createOptions;
     }
+    
+    /**
+     * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
+     * the DB object.
+     */
+    public void setSession(final DataProviderSessionIFace session)
+    {
+        
+        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
+        {
+            e.nextElement().setSession(session);
+        }
+        
+        for (MultiView mv : kids)
+        {
+            mv.setSession(session);
+        }
+    }
 
     /**
      * Tells the MultiView the MV that it is being shutdown to be disposed.
@@ -872,7 +878,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         data          = null;
         parentDataObj = null;
         currentViewable = null;
-        session       = null;
 
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {

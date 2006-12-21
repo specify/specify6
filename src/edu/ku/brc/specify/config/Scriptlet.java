@@ -55,7 +55,7 @@ public class Scriptlet extends JRDefaultScriptlet
     private static final Logger log = Logger.getLogger(Scriptlet.class);
 
 	/**
-     * beforeReportInit
+     * beforeReportInit.
      */
     public void beforeReportInit() throws JRScriptletException
     {
@@ -64,7 +64,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * afterReportInit
+     * afterReportInit.
      */
     public void afterReportInit() throws JRScriptletException
     {
@@ -73,7 +73,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * beforePageInit
+     * beforePageInit.
      */
     public void beforePageInit() throws JRScriptletException
     {
@@ -100,7 +100,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * afterColumnInit
+     * afterColumnInit.
      */
     public void afterColumnInit() throws JRScriptletException
     {
@@ -109,7 +109,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * beforeGroupInit
+     * beforeGroupInit.
      */
     public void beforeGroupInit(String groupName) throws JRScriptletException
     {
@@ -121,7 +121,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * afterGroupInit
+     * afterGroupInit.
      */
     public void afterGroupInit(String groupName) throws JRScriptletException
     {
@@ -146,7 +146,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * beforeDetailEval
+     * beforeDetailEval.
      */
     public void beforeDetailEval() throws JRScriptletException
     {
@@ -155,7 +155,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * afterDetailEval
+     * afterDetailEval.
      */
     public void afterDetailEval() throws JRScriptletException
     {
@@ -163,8 +163,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * Formats a String to a float to a String
-     *
+     * Formats a String to a float to a String.
      * @param floatStr the string with a Float value
      * @return Formats a String to a float to a String
      * @throws JRScriptletException xxx
@@ -190,7 +189,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }*/
 
     /**
-     * Formats a float to a string
+     * Formats a float to a string.
      * @param floatVar the float variable
      * @return Formats a float to a string
      * @throws JRScriptletException
@@ -207,7 +206,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * Formats a float to a string with "N","S","E", "W"
+     * Formats a float to a string with "N","S","E", "W".
      * @param floatVal the float value
      * @param isLat whether it is a lat or lon
      * @return Formats a float to a string with "N","S","E", "W"
@@ -227,7 +226,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * Formats a String as a float with "N","S","E", "W"
+     * Formats a String as a float with "N","S","E", "W".
      * @param floatVal the float value
      * @param isLat whether it is a lat or lon
      * @return Formats a String as a float with "N","S","E", "W"
@@ -242,7 +241,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * Formats a float string into a lat/lon with "N","S","E", "W"
+     * Formats a float string into a lat/lon with "N","S","E", "W".
      * @param floatStr the float to be formatted
      * @param isLat whether itis a lat or lon
      * @return Formats a float string into a lat/lon with "N","S","E", "W"
@@ -279,7 +278,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * Formats a String with a float value as a degrees
+     * Formats a String with a float value as a degrees.
      * @param floatStr
      * @param isLat inidcates whether it is a latitude or a longitude
      * @return Formats a String with a float value as a degrees
@@ -292,7 +291,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     * Formats a Lat,Lon into a single string where the values are separated by a comma
+     * Formats a Lat,Lon into a single string where the values are separated by a comma.
      * @param desc a prefix of a description
      * @param lat the latitude
      * @param lon the longitude
@@ -318,7 +317,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * Formats the Field Number
+     * Formats the Field Number.
      * @param fieldNumber
      * @return the field number
      */
@@ -345,7 +344,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
     
     /**
-     * Builds the shipped to agent's name string
+     * Builds the shipped to agent's name string.
      * @param firstName
      * @param lastName
      * @param middleInitial
@@ -361,7 +360,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
     
     /**
-     * Builds the locality string
+     * Builds the locality string.
      * @param geoName - the geography place name (country, state)
      * @param localityName - the locality name
      * @param latitude - latitude
@@ -380,7 +379,7 @@ public class Scriptlet extends JRDefaultScriptlet
     	{
     		locality += ", " + localityName;
     	}
-    	System.out.println(latitude);
+
     	if (latitude != null && latitude.length() >= 1)
     	{
     		String temp1[] = latitude.split("deg");
@@ -397,7 +396,7 @@ public class Scriptlet extends JRDefaultScriptlet
     }
     
     /**
-     * Create a string representing the difference between two dates
+     * Create a string representing the difference between two dates.
      * @param startDate the start date
      * @param endDate the end date
      */
@@ -425,13 +424,14 @@ public class Scriptlet extends JRDefaultScriptlet
     }
     
     /**
+     * Returns a list of collectors
      * @param colEvId
      * @return
      */
     public String getCollectors(final Long colEvId)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        System.out.println(colEvId);
+        //System.out.println(colEvId);
         
         //DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupByClassName(CollectingEvent.class.getName());
         String collectorsStr = "N/A"; // XXX I18N
@@ -458,11 +458,23 @@ public class Scriptlet extends JRDefaultScriptlet
         return collectorsStr;
     }
     
+    /**
+     * Converts Integer object to int nul -> 0.
+     * @param val the value
+     * @return an int value
+     */
     protected int convertInt(final Integer val)
     {
         return val == null ? 0 : val.intValue();
     }
     
+    /**
+     * Returns the count minus quantityReturned minus quantityResolved to see if any are available.
+     * @param countArg the count of preps
+     * @param QuantityReturnedArg the quant returned
+     * @param QuantityResolvedArg the ones remaining
+     * @return
+     */
     public Integer calcLoanQuantity(final Integer countArg, final Integer QuantityReturnedArg, final Integer QuantityResolvedArg)
     {
         int count            = convertInt(countArg);

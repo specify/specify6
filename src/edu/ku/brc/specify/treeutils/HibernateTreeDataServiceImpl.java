@@ -225,7 +225,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	 * persistent store, using the given <code>Session</code>.
 	 * 
 	 * @param root the root of the subtree to save
-	 * @param session the {@link Session} to use when persisting
 	 */
 	protected void saveOrUpdateTree( T root )
 	{

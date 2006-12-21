@@ -47,8 +47,6 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -385,8 +383,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Looks to see if a form already exists for this request and shows it
      * otherwise it creates a form and add it to the SubPaneMgr.
      */
-    protected FormPane createFormPanel(final DataProviderSessionIFace session, 
-                                       final String viewsetName, 
+    protected FormPane createFormPanel(final String viewsetName, 
                                        final String viewName, 
                                        final String mode, 
                                        final Object data, 
@@ -412,7 +409,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
             } else
             {
-                recentFormPane = new FormPane(session, name, this, viewsetName, viewName, mode, data, options); // not new data object
+                recentFormPane = new FormPane(name, this, viewsetName, viewName, mode, data, options); // not new data object
                 recentFormPane.setIcon(iconImg);
                 //addSubPaneToMgr(recentFormPane);
                 SubPaneMgr.replaceSimplePaneForTask(recentFormPane);
@@ -421,20 +418,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             }
         }
         return fp;
-    }
-
-    /**
-     * Looks to see if a form already exists for this request and shows it
-     * otherwise it creates a form and add it to the SubPaneMgr.
-     */
-    protected FormPane createFormPanel(final String viewsetName, 
-                                       final String viewName, 
-                                       final String mode, 
-                                       final Object data, 
-                                       final int options,
-                                       final ImageIcon paneIcon)
-    {
-        return createFormPanel(DataProviderFactory.getInstance().createSession(), viewsetName, viewName, mode, data, options, paneIcon);
     }
 
     /**

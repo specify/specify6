@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -929,10 +930,11 @@ public class FormViewObj implements Viewable,
     protected void recoverFromStaleObject(final String msgResStr)
     {
         JOptionPane.showMessageDialog(null, getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
-        
-        //session.rollback();
-        
-        session.close();
+
+        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        {
+            session.close();
+        }
         
         session = DataProviderFactory.getInstance().createSession();
         //DataProviderFactory.getInstance().evict(dataObj.getClass()); 
@@ -967,6 +969,13 @@ public class FormViewObj implements Viewable,
      */
     protected void saveObject()
     {
+        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        {
+            session.close();
+        }
+        session = DataProviderFactory.getInstance().createSession();
+        setSession(session);
+        
         //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
         try
         {
@@ -1020,6 +1029,12 @@ public class FormViewObj implements Viewable,
             session.rollback();
         }
         saveBtn.setEnabled(false);
+        
+        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        {
+            session.close();
+            session = null;
+        }
     }
 
     /**
@@ -1027,6 +1042,13 @@ public class FormViewObj implements Viewable,
      */
     protected void removeObject()
     {
+        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        {
+            session.close();
+        }
+        session = DataProviderFactory.getInstance().createSession();
+        setSession(session);
+        
         try
         {
             //log.info(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
@@ -1112,7 +1134,13 @@ public class FormViewObj implements Viewable,
         {
             log.error("******* " + e);
             e.printStackTrace();
-         }
+        }
+        
+        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        {
+            session.close();
+            session = null;
+        }
     }
 
     /**
@@ -1482,6 +1510,41 @@ public class FormViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
+        if (dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
+        {
+            if (mvParent == null || mvParent.isRoot())
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+                
+                session = DataProviderFactory.getInstance().createSession();
+                
+                if (session != null)
+                {
+                    mvParent.setSession(session);   
+                }
+    
+                if (dataObj instanceof Collection<?>)
+                {
+                    int x = 0;
+                    x++;
+                }
+                
+                session.attach(dataObj);
+                
+                if (origDataSet != null)
+                {
+                    for (Object o : origDataSet)
+                    {
+                        session.attach(o);
+                    }
+                }
+                
+            }
+        }
+        
         // Now turn off data change notification and then validate the form
         if (formValidator != null)
         {
@@ -1657,9 +1720,26 @@ public class FormViewObj implements Viewable,
                         continue;
                     }
 
+                    if (session != null)
+                    {
+                        if (dataObj == null)
+                        {
+                            int x = 0;
+                            x++;
+                            
+                        } else
+                        {
+                            if (session.contains(dataObj))
+                            {
+                                int x = 0;
+                                x++;
+                            }
+                        }
+                    }
                     fieldInfo.getSubView().setParentDataObj(dataObj);
                     
                     data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
+                    
                     if (data != null)
                     {
                         if (((FormCellSubView)fieldInfo.getFormCell()).isSingleValueFromSet() && data instanceof Set)
@@ -1688,11 +1768,19 @@ public class FormViewObj implements Viewable,
 
         // Now set all the controls with default values as having been changed
         // this is done because "resetFields" has just set them all to false
-        for (UIValidatable uiv : defaultValueList)
+        if (defaultValueList.size() > 0)
         {
-            uiv.setChanged(true);
+            if (formValidator != null)
+            {
+                formValidator.setHasChanged(true);
+                formValidator.validateForm();
+            }
+            for (UIValidatable uiv : defaultValueList)
+            {
+                uiv.setChanged(true);
+            }
+            defaultValueList.clear();
         }
-        defaultValueList.clear();
 
         if (mvParent != null && mvParent.isRoot() && saveBtn != null && isEditting)
         {
@@ -1700,6 +1788,12 @@ public class FormViewObj implements Viewable,
         }
         
         updateControllerUI();
+        
+        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        {
+            session.close();
+            session = null;
+        }
     }
 
     /* (non-Javadoc)
@@ -1740,6 +1834,12 @@ public class FormViewObj implements Viewable,
                     FormCell fc = fieldInfo.getFormCell();
                     boolean isReadOnly = false;
     
+                    if (fieldInfo.getName().equals("quantityReturned"))
+                    {
+                        int x = 0;
+                        x++;
+                    }
+                    
                     if (fc instanceof FormCellField)
                     {
                         isReadOnly = ((FormCellField)fieldInfo.getFormCell()).isReadOnly();
@@ -1750,6 +1850,7 @@ public class FormViewObj implements Viewable,
                         continue;
                     }
                     log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
+
                     String id = fieldInfo.getFormCell().getId();
                     if (hasFormControlChanged(id))
                     {
@@ -2291,6 +2392,85 @@ public class FormViewObj implements Viewable,
             }
         }
         return fieldInfo != null ? fieldInfo.comp : null;
+    }
+
+    /**
+     * Returns the FormViewObj for the control with the name passed in.
+     * @param name the name of the control
+     * @return the FormViewObj that the control with "name" belongs to.
+     */
+    public FormViewObj getFormViewObjForControlName(final String name)
+    {
+        FieldInfo fieldInfo = controlsByName.get(name);
+        // If it wasn't found in the immediate form then 
+        // recurse through all the SubViews
+        if (fieldInfo == null)
+        {
+            for (MultiView mv : kids)
+            {
+                if (mv != null)
+                {
+                    FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        Component comp = fvo.getControlByName(name);
+                        if (comp != null)
+                        {
+                            return fvo;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * If the Control is found and implements UIValidatable it gets set to be changed;
+     * and if it has a DataChangeNotifier then that is also set.
+     * @param controlName the name of the control
+     */
+    public void setControlChanged(final String controlName)
+    {
+        FieldInfo   fieldInfo   = controlsByName.get(controlName);
+        Component   comp        = null;
+        FormViewObj formViewObj = null;
+        
+        // If it wasn't found in the immediate form then 
+        // recurse through all the SubViews
+        if (fieldInfo == null)
+        {
+            for (MultiView mv : kids)
+            {
+                if (mv != null)
+                {
+                    FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        comp = fvo.getControlByName(controlName);
+                        if (comp != null)
+                        {
+                            formViewObj = fvo;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else
+        {
+            comp        = fieldInfo.getComp();
+            formViewObj = this;
+        }
+        
+        if (comp != null && formViewObj != null)
+        {
+            if (comp instanceof UIValidatable)
+            {
+                ((UIValidatable)comp).setChanged(true);
+                
+            }
+            formViewObj.getValidator().setDataChangeInNotifier(comp);
+        }
     }
 
     

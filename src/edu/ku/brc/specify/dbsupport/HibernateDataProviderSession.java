@@ -233,6 +233,14 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
 
         return null;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#contains(java.lang.Object)
+     */
+    public boolean contains(final Object obj)
+    {
+        return session.contains(obj);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#evict(java.lang.Class)

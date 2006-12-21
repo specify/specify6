@@ -50,6 +50,8 @@ public interface DataProviderSessionIFace
 
     public Object getData(String sqlStr);
     
+    public boolean contains(final Object obj);
+    
     //---------------------------
     // Update Methods
     //---------------------------

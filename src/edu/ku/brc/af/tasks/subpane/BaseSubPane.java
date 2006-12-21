@@ -24,15 +24,12 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import org.apache.log4j.Logger;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.forms.MultiView;
 
@@ -48,7 +45,7 @@ import edu.ku.brc.ui.forms.MultiView;
 @SuppressWarnings("serial")
 public class BaseSubPane extends JPanel implements SubPaneIFace
 {
-    private static final Logger log = Logger.getLogger(BaseSubPane.class);
+    //private static final Logger log = Logger.getLogger(BaseSubPane.class);
 
     protected String            name;
     protected Taskable          task;
@@ -57,8 +54,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     protected JLabel            progressLabel;
     
     protected JPanel			progressBarPanel;
-    
-    protected DataProviderSessionIFace session;
+
 
     /**
      * Constructs a base class that implements the SubPanelIFace interface
@@ -68,11 +64,9 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
      * @param name the name of the subpane
      * @param task the owning task
      */
-    public BaseSubPane(final DataProviderSessionIFace session,
-                       final String name,
+    public BaseSubPane(final String name,
                        final Taskable task)
     {
-        this.session = session;
         this.name    = name;
         this.task    = task;
 
@@ -92,38 +86,6 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
         progressBarPanel = builder2.getPanel();
         add(progressBarPanel, BorderLayout.CENTER);
-    }
-    
-    /**
-     * Constructsa base class that implements the SubPanelIFace interface
-     * which enables derived classes to participate in the main pane.
-     * It also adds the progress indicator and it provide
-     *
-     * @param name the name of the subpane
-     * @param task the owning task
-     */
-    public BaseSubPane(final String name,
-                       final Taskable task)
-    {
-        this(null, name, task);
-    }
-
-    /**
-     * Return the current session.
-     * @return the current session.
-     */
-    public DataProviderSessionIFace getSession()
-    {
-        return session;
-    }
-
-    /**
-     * Sets the current session.
-     * @param session the new session
-     */
-    public void setSession(DataProviderSessionIFace session)
-    {
-        this.session = session;
     }
     
     //----------------------------------
@@ -217,12 +179,5 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
      */
     public void shutdown()
     {
-        if (session != null)
-        {
-            session.close();
-            
-            log.debug("Session Close["+session.hashCode()+"]");
-            session = null;
-        }
     }
 }

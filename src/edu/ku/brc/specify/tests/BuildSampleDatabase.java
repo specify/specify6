@@ -108,6 +108,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -175,10 +176,14 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating picklists");
 
-        //                                 Name                     Table Name         Field       Formatter         R/O  Size
-        dataObjects.add(createPickList("DeterminationStatus", 1, "determinationstatus", null, "DeterminationStatus", true, -1));
-        dataObjects.add(createPickList("Department",          2, "accession",         "text1" ,       null,          true, -1));
-        dataObjects.add(createPickList("AgentTitle",          2, "agent",             "title" ,       null,          true, -1));
+        int tableType      = PickListDBAdapterIFace.Type.Table.ordinal();
+        int tableFieldType = PickListDBAdapterIFace.Type.TableField.ordinal();
+        
+        //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
+        dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1));
+        dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
+        dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
+        dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
         
         String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
         dataObjects.add(createPickList("PermitType", true, types));

@@ -640,9 +640,9 @@ public class GenericDBConversion
 
         //cleanAllTables(); // from DBCOnnection which is the new DB
         
-        String[] tablesToMoveOver2 = {
-                "LoanPhysicalObject"
-        };
+        //String[] tablesToMoveOver2 = {
+        //        "LoanPhysicalObject"
+        //};
         
 
         String[] tablesToMoveOver = {

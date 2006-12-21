@@ -9,7 +9,6 @@ import javax.swing.ImageIcon;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UICacheManager;
@@ -50,17 +49,15 @@ public class FormPane extends DroppableTaskPane
      * @param task the owning task
      * @param desc string displayed in the center of the pane
      */
-    public FormPane(final DataProviderSessionIFace  session,
-                    final String   name,
+    public FormPane(final String   name,
                     final Taskable task,
                     final String   desc)
     {
-        super(session, name, task, desc);
+        super(name, task, desc);
     }
 
     /**
      * Creates a form pane for a task.
-     * @param session the DB session to use
      * @param name the name of the pane
      * @param task the owning task
      * @param viewSetName the name of the view set to use
@@ -68,8 +65,7 @@ public class FormPane extends DroppableTaskPane
      * @param data the data to fill the form
      * @param options the options needed for creating the form
      */
-    public FormPane(final DataProviderSessionIFace session,
-                    final String   name,
+    public FormPane(final String   name,
                     final Taskable task,
                     final String   viewSetName,
                     final String   viewName,
@@ -77,7 +73,7 @@ public class FormPane extends DroppableTaskPane
                     final Object   data,
                     final int      options)
     {
-        this(session, name, task, "");
+        this(name, task, "");
 
         this.viewSetName = viewSetName;
         this.viewName    = viewName;
@@ -88,22 +84,20 @@ public class FormPane extends DroppableTaskPane
 
     /**
      * Creates a form pane for a task.
-     * @param session the DB session to use
      * @param name the name of the pane
      * @param task the owning task
      * @param view the view to use
      * @param data the data to fill the form
      * @param options the options needed for creating the form
      */
-    public FormPane(final DataProviderSessionIFace session,
-                    final String   name,
+    public FormPane(final String   name,
                     final Taskable task,
                     final View     view,
                     final String   mode,
                     final Object   data,
                     final int      options)
     {
-        this(session, name, task, "");
+        this(name, task, "");
 
         this.viewSetName = view.getViewSetName();
         this.viewName    = view.getName();
@@ -272,8 +266,6 @@ public class FormPane extends DroppableTaskPane
             {
                 this.data = dataArg;
                 this.removeAll();
-                
-                multiView.setSession(session);
 
                 multiView.invalidate();
                 add(multiView, BorderLayout.NORTH);
