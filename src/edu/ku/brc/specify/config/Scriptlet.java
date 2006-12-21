@@ -29,6 +29,7 @@
 package edu.ku.brc.specify.config;
 
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -379,17 +380,17 @@ public class Scriptlet extends JRDefaultScriptlet
     	{
     		locality += ", " + localityName;
     	}
-    	
+    	System.out.println(latitude);
     	if (latitude != null && latitude.length() >= 1)
     	{
     		String temp1[] = latitude.split("deg");
-    		locality += ", " + temp1[0] + "� " + temp1[1];
+    		locality += ", " + temp1[0] + temp1[1];
     	}
     	
     	if (longitude != null && longitude.length() >= 1)
     	{
     		String temp2[] = longitude.split("deg");
-    		locality += ", " + temp2[0] + "� " + temp2[1];
+    		locality += ", " + temp2[0] + temp2[1];
     	}
     	
     	return locality;
@@ -397,22 +398,28 @@ public class Scriptlet extends JRDefaultScriptlet
     
     /**
      * Create a string representing the difference between two dates
-     * @param startDate
-     * @param endDate
+     * @param startDate the start date
+     * @param endDate the end date
      */
     public String dateDifference(java.sql.Date startDate, java.sql.Date endDate)
     {
     	String loanLength = "N/A";
         if (startDate != null && endDate != null)
         {
-        	String startString[] = startDate.toString().split("-");
-        	String endString[]   = endDate.toString().split("-");
-        	int    yearDiff      = Integer.parseInt(endString[0]) - Integer.parseInt(startString[0]);
-        	int    monthDiff     = Integer.parseInt(endString[1]) - Integer.parseInt(startString[1]);
-        	
-       		monthDiff = yearDiff * 12 + monthDiff;
+            Calendar startCal = Calendar.getInstance();
+            startCal.setTime(startDate);
+            
+            Calendar endCal = Calendar.getInstance();
+            endCal.setTime(endDate);
+            
+            int monthCount = 0;
+            while (startCal.before(endCal))
+            {
+                startCal.add(Calendar.MONTH, 1);
+                monthCount++;
+            }
        		
-       		loanLength = monthDiff + " months";
+       		loanLength = monthCount + " months"; // I18N
         }
     	return loanLength;
     }
