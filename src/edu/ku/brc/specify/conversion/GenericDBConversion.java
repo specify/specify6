@@ -639,11 +639,11 @@ public class GenericDBConversion
     {
 
         //cleanAllTables(); // from DBCOnnection which is the new DB
-        /*
-        String[] tablesToMoveOver = {
+        
+        String[] tablesToMoveOver2 = {
                 "LoanPhysicalObject"
         };
-        */
+        
 
         String[] tablesToMoveOver = {
                                     "AccessionAgents",
@@ -720,6 +720,16 @@ public class GenericDBConversion
 
            TableStats tblStats = new TableStats(oldDBConn, lowerCaseName, newDBConn, lowerCaseName);
            tableStatHash.put(lowerCaseName, tblStats);
+           
+           if (tableName.equals("LoanPhysicalObject"))
+           {
+               String[] ignoredFields = {"IsResolved"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+               
+           } else
+           {
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
+           }
            
            if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
            {
