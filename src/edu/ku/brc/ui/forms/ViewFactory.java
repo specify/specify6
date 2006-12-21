@@ -32,7 +32,6 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -83,6 +82,7 @@ import edu.ku.brc.ui.validation.DataChangeNotifier;
 import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.ui.validation.UIValidator;
+import edu.ku.brc.ui.validation.ValCheckBox;
 import edu.ku.brc.ui.validation.ValComboBox;
 import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 import edu.ku.brc.ui.validation.ValFormattedTextField;
@@ -863,7 +863,9 @@ public class ViewFactory
                         
                         case checkbox:
                         {
-                            JCheckBox checkbox = new JCheckBox(cellField.getLabel());
+                            ValCheckBox checkbox = new ValCheckBox(cellField.getLabel(), 
+                                                                   cellField.isRequired(), 
+                                                                   cellField.isReadOnly() || mode == AltView.CreationMode.View);
                             if (validator != null)
                             {
                                 DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getId(), checkbox, null);
