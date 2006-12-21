@@ -533,7 +533,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
-                    <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
+                    <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
                     <cell type="label" labelfor="2" label="Title"/>
                     <cell type="field" id="2" name="jobTitle" uitype="text" cols="20"/>
                 </row>

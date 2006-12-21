@@ -106,6 +106,28 @@
             </altviews>
         </view>
         
+        <view name="DataType"
+            class="edu.ku.brc.specify.datamodel.DataType"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules"            
+            resourcelabels="false">
+            <desc><![CDATA[The DataType Object form.]]></desc>
+            <altviews>
+                <altview name="DataType Edit View" viewdef="DataType" label="View" mode="view" validated="false"/>
+                <altview name="DataType Edit" viewdef="DataType" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="CollectionObjDef"
+            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjDefBusRules"            
+            resourcelabels="false">
+            <desc><![CDATA[The DataType Object form.]]></desc>
+            <altviews>
+                <altview name="CollectionObjDef Edit View" viewdef="CollectionObjDef" label="View" mode="view" validated="false"/>
+                <altview name="CollectionObjDef Edit" viewdef="CollectionObjDef" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
     </views>
   
     <viewdefs>
@@ -132,7 +154,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" name="name" isrequired="true" valtype="Changed">
+                    <cell type="field" id="name" name="name" uitype="text" isrequired="true" valtype="Changed">
                         <validation><![CDATA[processor.doEvaluate()]]></validation>
                     </cell>
                 </row>
@@ -142,7 +164,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="sizeLimit" label="Size Limit"/>
-                    <cell type="field" id="sizeLimit" name="sizeLimit" cols="5" isrequired="true"/>
+                    <cell type="field" id="sizeLimit" name="sizeLimit" uitype="text" cols="5" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="items" label="Items"/>
@@ -166,11 +188,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="title" label="Item Title"/>
-                    <cell type="field" id="title" name="title" cols="25" ignore="true" changesonly="true"/>
+                    <cell type="field" id="title" name="title" uitype="text" cols="25" ignore="true" changesonly="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="value" label="Value"/>
-                    <cell type="field" id="value" name="value" cols="25" ignore="true" changesonly="true"/>
+                    <cell type="field" id="value" name="value" uitype="text" cols="25" ignore="true" changesonly="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="value" label="Used In Forms" />
@@ -490,6 +512,59 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="form"
+            name="DataType"
+            class="edu.ku.brc.specify.datamodel.DataType"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[DataType Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,2dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Data Type" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="CollectionObjDef"
+            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[DeterminationStatus Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Collection Object Definition" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Data Type"/>
+                    <cell type="field" id="2" name="dataType" uitype="combobox" picklist="DataType" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Discipline"/>
+                    <cell type="field" id="3" name="discipline" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
         
     </viewdefs>
         
