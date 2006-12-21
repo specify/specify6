@@ -27,17 +27,16 @@
 	<parameter name="itemnum" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="RPT_IMAGE_DIR" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String"/>
-	
-	<queryString><![CDATA[SELECT Expr2.*, address.Address, address.Address2, address.City, address.State, address.PostalCode, address.Country
-FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial
-FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, loan.isGift, shipment.ShipmentMethod, shipment.NumberOfPackages, shipment.ShippedToID
-FROM loan
-INNER JOIN shipment
-ON loan.ShipmentID = shipment.ShipmentID) Expr1
-INNER JOIN agent
-ON Expr1.ShippedToID = agent.AgentID) Expr2
-INNER JOIN address
-ON Expr2.ShippedToID = address.AgentID
+	<queryString><![CDATA[SELECT Expr2.*, address.Address, address.Address2, address.City, address.State, address.PostalCode, address.Country 
+FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial 
+  FROM (SELECT Expr0.*, agent.LastName as prepLastName, agent.FirstName as prepFirstName, agent.MiddleInitial as prepMiddleInitial
+    FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, loan.isGift, shipment.ShipmentMethod, shipment.NumberOfPackages,
+          shipment.ShippedToID, shipment.ShippedByID
+          FROM loan
+          INNER JOIN shipment ON loan.ShipmentID = shipment.ShipmentID) Expr0
+    INNER JOIN agent ON Expr0.ShippedByID = agent.AgentID) Expr1
+  INNER JOIN agent ON Expr1.ShippedToID = agent.AgentID) Expr2 
+INNER JOIN address ON Expr2.ShippedToID = address.AgentID 
 WHERE LoanID $P!{itemnum}]]></queryString>
 
 	<field name="LoanID" class="java.lang.Long"/>
@@ -57,6 +56,9 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 	<field name="State" class="java.lang.String"/>
 	<field name="PostalCode" class="java.lang.String"/>
 	<field name="Country" class="java.lang.String"/>
+	<field name="prepLastName" class="java.lang.String"/>
+	<field name="prepFirstName" class="java.lang.String"/>
+	<field name="prepMiddleInitial" class="java.lang.String"/>
 
 	<variable name="lots" class="java.lang.Integer" resetType="Report" calculation="Count">
 	</variable>
@@ -287,7 +289,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).buildNameString($F{FirstName}, $F{LastName}, $F{MiddleInitial})]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="22"
 						y="123"
@@ -300,7 +302,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{Address}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="22"
 						y="136"
@@ -313,7 +315,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{Address2}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="22"
 						y="149"
@@ -339,7 +341,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{State}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="22"
 						y="162"
@@ -352,7 +354,7 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{PostalCode}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="22"
 						y="175"
@@ -424,19 +426,6 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 				</textField>
 				<staticText>
 					<reportElement
-						x="476"
-						y="111"
-						width="99"
-						height="15"
-						key="staticText-19"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement>
-						<font/>
-					</textElement>
-				<text><![CDATA[Bentley, Andy]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
 						x="156"
 						y="4"
 						width="256"
@@ -455,6 +444,19 @@ Lawrence, Kansas, USA 66045-7561
 Voice: 785-864-3369 Fax: 785-864-5335
 e-mail: ABentley@ku.edu]]></text>
 				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="477"
+						y="112"
+						width="97"
+						height="13"
+						key="textField-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).buildNameString($F{prepFirstName}, $F{prepLastName}, "")]]></textFieldExpression>
+				</textField>
 			</band>
 		</title>
 		<pageHeader>
