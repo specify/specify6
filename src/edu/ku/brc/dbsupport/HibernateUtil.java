@@ -16,6 +16,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.dialect.function.ClassicAvgFunction;
+import org.hibernate.dialect.function.ClassicCountFunction;
+import org.hibernate.dialect.function.ClassicSumFunction;
 
 
 
@@ -175,6 +178,11 @@ public class HibernateUtil {
         //  config.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
         //  config.setProperty("hibernate.connection.driver_class","com.microsoft.jdbc.sqlserver.SQLServerDriver");
         //} 
+        
+        // added to ease the transition from Hibernate 3.1 to 3.2
+        // config.addSqlFunction("count", new ClassicCountFunction());
+        // config.addSqlFunction("avg", new ClassicAvgFunction());
+        // config.addSqlFunction("sum", new ClassicSumFunction());
     }
     
     /**
