@@ -87,8 +87,16 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         
         Collections.sort(results,new TreePathComparator<T,D,I>(true));
-        
         return results;
+    }
+    
+    public Set<T> getChildNodes(T parent)
+    {
+        // TODO: this only works because the parent objects is still associated
+        // with an open session.
+        // Change this impl to reattach parent to a session, then load the children
+        Set<T> children = parent.getChildren();
+        return children;
     }
     
 	/**
