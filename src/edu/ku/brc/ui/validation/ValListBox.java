@@ -33,6 +33,8 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.hibernate.collection.PersistentSet;
+
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
@@ -269,9 +271,9 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         {
             iter = ((Set)value).iterator();
             
-        } else if (value instanceof org.hibernate.collection.PersistentSet)
+        } else if (value instanceof PersistentSet)
         {
-            iter = ((org.hibernate.collection.PersistentSet)value).iterator();
+            iter = ((PersistentSet)value).iterator();
         }
         
         
