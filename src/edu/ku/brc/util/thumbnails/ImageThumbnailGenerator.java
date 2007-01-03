@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) ${year}  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.util.thumbnails;
