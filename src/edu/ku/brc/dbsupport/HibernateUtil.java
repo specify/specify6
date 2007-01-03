@@ -16,9 +16,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.dialect.function.ClassicAvgFunction;
-import org.hibernate.dialect.function.ClassicCountFunction;
-import org.hibernate.dialect.function.ClassicSumFunction;
+//import org.hibernate.dialect.function.ClassicAvgFunction;
+//import org.hibernate.dialect.function.ClassicCountFunction;
+//import org.hibernate.dialect.function.ClassicSumFunction;
 
 
 
