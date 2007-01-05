@@ -23,7 +23,7 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class FormRow
+public class FormRow implements Cloneable
 {
     Vector<FormCell> cells = new Vector<FormCell>();
     
@@ -69,5 +69,19 @@ public class FormRow
     public void setCells(Vector<FormCell> cells)
     {
         this.cells = cells;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormRow formRow = (FormRow)super.clone();
+        
+        for (FormCell cell : cells)
+        {
+            formRow.cells.add((FormCell)cell.clone());
+        }
+        return formRow;      
     }
 }

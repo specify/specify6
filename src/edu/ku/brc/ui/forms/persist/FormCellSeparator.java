@@ -20,7 +20,7 @@ package edu.ku.brc.ui.forms.persist;
  * @author rods
  *
  */
-public class FormCellSeparator extends FormCell
+public class FormCellSeparator extends FormCell implements Cloneable
 {
     protected String label;
     protected String collapseCompName;
@@ -62,5 +62,15 @@ public class FormCellSeparator extends FormCell
         return collapseCompName;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormCellSeparator cellSep = (FormCellSeparator)super.clone();
+        cellSep.label             = label;
+        cellSep.collapseCompName  = collapseCompName;
+        return cellSep;      
+    }
     
 }

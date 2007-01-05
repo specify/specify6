@@ -90,5 +90,16 @@ public class FormCellLabel extends FormCellSeparator
     {
         this.iconName = iconName;
     }
+    
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormCellLabel fcl = (FormCellLabel)super.clone();
 
+        fcl.labelFor  = labelFor;
+        fcl.recordObj = recordObj;
+        fcl.iconName  = iconName;
+        fcl.icon      = icon;
+        
+        return fcl;      
+    }
 }

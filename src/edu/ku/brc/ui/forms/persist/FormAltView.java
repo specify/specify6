@@ -14,13 +14,14 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+
 /*
  * @code_status Beta
  **
  * @author rods
  *
  */
-public class FormAltView
+public class FormAltView implements Cloneable
 {
 
     private int    id;
@@ -66,4 +67,14 @@ public class FormAltView
         this.label = label;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormAltView fav = (FormAltView)super.clone();
+        fav.id = id;
+        fav.label = label;
+        return fav;      
+    }
 }

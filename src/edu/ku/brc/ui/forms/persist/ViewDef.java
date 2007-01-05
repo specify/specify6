@@ -30,7 +30,7 @@ import edu.ku.brc.ui.forms.DataObjectSettableFactory;
  * @author rods
  *
  */
-public class ViewDef
+public class ViewDef implements Cloneable
 {
     private static final Logger log = Logger.getLogger(ViewDef.class);
     
@@ -183,9 +183,17 @@ public class ViewDef
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
-    @Override
-    public ViewDef clone()
+    public Object clone() throws CloneNotSupportedException
     {
-        return new ViewDef(type, name, className, dataGettableName, dataSettableName, desc);
+        ViewDef viewDef = (ViewDef)super.clone();
+        viewDef.type = type;
+        viewDef.name = name;
+        viewDef.className = className;
+        viewDef.dataGettableName = dataGettableName;
+        viewDef.dataSettableName = dataSettableName;
+        viewDef.desc = desc;
+        viewDef.dataGettable = dataGettable;
+        viewDef.dataSettable = dataSettable;
+        return viewDef;      
     }
 }

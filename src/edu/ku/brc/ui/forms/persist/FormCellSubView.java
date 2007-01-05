@@ -106,4 +106,17 @@ public class FormCellSubView extends FormCell
         return description;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormCellSubView subViewDef = (FormCellSubView)super.clone();
+        subViewDef.viewName    = viewName;
+        subViewDef.classDesc   = classDesc;
+        subViewDef.viewSetName = viewSetName;
+        subViewDef.singleValueFromSet = singleValueFromSet;
+        subViewDef.description = description;
+        return subViewDef;      
+    }
 }

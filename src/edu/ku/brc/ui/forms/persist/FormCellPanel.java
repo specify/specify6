@@ -26,7 +26,7 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class FormCellPanel extends FormCell
+public class FormCellPanel extends FormCell implements Cloneable
 {
     protected String colDef;
     protected String rowDef;
@@ -88,4 +88,21 @@ public class FormCellPanel extends FormCell
         return rows;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormCellPanel fcp = (FormCellPanel)super.clone();
+        
+        fcp.panelType    = panelType;
+        fcp.colDef       = colDef;
+        fcp.rowDef       = rowDef;
+        
+        for (FormRow formRow : rows)
+        {
+            fcp.rows.add((FormRow)formRow.clone());
+        }
+        return fcp;      
+    }
 }

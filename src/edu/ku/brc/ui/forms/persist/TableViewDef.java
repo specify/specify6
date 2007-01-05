@@ -23,7 +23,7 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class TableViewDef extends ViewDef
+public class TableViewDef extends ViewDef implements Cloneable
 {
 
     protected Vector<FormColumn> columns = new Vector<FormColumn>();
@@ -77,13 +77,17 @@ public class TableViewDef extends ViewDef
         this.columns = columns;
     }
     
-    @Override
-    public ViewDef clone()
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
     {
-        TableViewDef tvd =  new TableViewDef(name, className, dataGettableName, dataSettableName, desc);
-        tvd.columns      = new Vector<FormColumn>();
-        tvd.columns.addAll(columns);
-        return tvd;
+        TableViewDef tvd = (TableViewDef)super.clone();
+        for (FormColumn formCol : columns)
+        {
+            tvd.columns.add((FormColumn)formCol.clone()); 
+        }
+        return tvd;      
     }
     
     //-------------------------------------------------------------------

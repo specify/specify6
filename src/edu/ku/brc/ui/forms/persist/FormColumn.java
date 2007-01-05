@@ -20,7 +20,7 @@ package edu.ku.brc.ui.forms.persist;
  * @author rods
  *
  */
-public class FormColumn
+public class FormColumn implements Cloneable
 {
 
     protected String name;
@@ -55,5 +55,17 @@ public class FormColumn
     {
         return name;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormColumn formCol = (FormColumn)super.clone();
+        formCol.name   = name;
+        formCol.label  = label;
+        formCol.dataObjFormatter = dataObjFormatter;
+        formCol.format = format;
+        return formCol;      
+    }
  }

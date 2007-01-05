@@ -16,6 +16,7 @@
  import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Definition of an Alternate View which can be an "Edit", "View", "None"
@@ -25,7 +26,7 @@ import java.util.List;
  * @author rods
  *
  */
-public class AltView implements Comparable<AltView>
+public class AltView implements Comparable<AltView>, Cloneable
 {
     public enum CreationMode {None, Edit, View, Search}
     
@@ -139,11 +140,6 @@ public class AltView implements Comparable<AltView>
         return label;
     }
     
-    public AltView clone()
-    {
-        return new AltView(view, name, label, mode, validated, isDefault, viewDef.clone());
-    }
-    
     public String getSelectorName()
     {
         return selectorName;
@@ -192,6 +188,25 @@ public class AltView implements Comparable<AltView>
             }
         }
         return defaultMode;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        AltView altView = (AltView)super.clone();
+        altView.view = view;
+        altView.name = name;
+        altView.label = label;
+        altView.mode = mode;
+        altView.validated = validated;
+        altView.isDefault = isDefault;
+        altView.viewDef = viewDef;
+        altView.selectorName = selectorName;
+        altView.selectorValue = selectorValue;
+        altView.subViews = new Vector<AltView>(subViews);
+        return altView;      
     }
     
     //-------------------------------------

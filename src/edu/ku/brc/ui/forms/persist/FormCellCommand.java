@@ -20,7 +20,7 @@ package edu.ku.brc.ui.forms.persist;
  * @author rods
  *
  */
-public class FormCellCommand extends FormCellSeparator
+public class FormCellCommand extends FormCellSeparator implements Cloneable
 {
     protected String commandType;
     protected String action;
@@ -53,5 +53,15 @@ public class FormCellCommand extends FormCellSeparator
     {
         this.commandType = commandType;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSeparator#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormCellCommand fcc = (FormCellCommand)super.clone();
+        fcc.commandType = commandType;
+        fcc.action      = action;
+        return fcc;      
+    }
 }

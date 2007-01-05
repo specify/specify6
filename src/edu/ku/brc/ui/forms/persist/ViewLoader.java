@@ -175,7 +175,7 @@ public class ViewLoader
             if (view.isSpecialViewAndEdit())
             {
                 // Clones Alt view and ViewDef (Deep Clone)
-                AltView gridAltView = view.getAltViews().get(0).clone();
+                AltView gridAltView = (AltView)view.getAltViews().get(0).clone();
                 gridAltView.getViewDef().setType(ViewDef.ViewType.formTable);
                 gridAltView.getViewDef().setName("Grid");
                 gridAltView.setName("Grid");

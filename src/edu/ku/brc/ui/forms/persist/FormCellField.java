@@ -378,5 +378,33 @@ public final class FormCellField extends FormCell
         return properties;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#clone()
+     */
+    @SuppressWarnings("unchecked")
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormCellField fcf = (FormCellField)super.clone();
+        fcf.uiType = uiType;
+        fcf.dspUIType = dspUIType;
+        fcf.format = format;
+        fcf.formatName = formatName;
+        fcf.uiFieldFormatter = uiFieldFormatter;
+        fcf.isRequired = isRequired;
+        fcf.isReadOnly = isReadOnly;
+        fcf.isEncrypted = isEncrypted;
+        fcf.label = label;
+        fcf.defaultValue = defaultValue;
+        fcf.defaultDateToday = defaultDateToday;
+        fcf.pickListName = pickListName;
+        fcf.cols = cols;
+        fcf.rows = rows;
+        fcf.validationType = validationType;
+        fcf.validationRule = validationRule;
+        fcf.isTextField = isTextField;
+        fcf.isDSPTextField = isDSPTextField;
+        fcf.properties = (Hashtable<String, String>)properties.clone();
+        return fcf;      
+    }
 
 }

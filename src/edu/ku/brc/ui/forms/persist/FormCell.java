@@ -25,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
  * @author rods
  *
  */
-public class FormCell implements Comparable<FormCell>
+public class FormCell implements Comparable<FormCell>, Cloneable
 {
     public enum CellType {separator, field, label, subview, command, panel, statusbar, iconview}
 
@@ -194,6 +194,26 @@ public class FormCell implements Comparable<FormCell>
             return 0;
         }
         return id.compareTo(obj.id);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        FormCell formCell = (FormCell)super.clone();
+        formCell.type = type;
+        formCell.id   = id;
+        formCell.name = name;
+        formCell.isMultiField = isMultiField;
+        formCell.ignoreSetGet       = ignoreSetGet;
+        formCell.changeListenerOnly = changeListenerOnly;
+        formCell.fieldNames         = fieldNames.clone();
+        formCell.colspan = colspan;
+        formCell.rowspan = colspan;
+        
+        return formCell;
+
     }
 
  }

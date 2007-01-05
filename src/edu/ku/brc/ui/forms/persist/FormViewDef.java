@@ -25,7 +25,7 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class FormViewDef extends ViewDef
+public class FormViewDef extends ViewDef implements Cloneable
 {
     protected String        columnDef = "";
     protected String        rowDef    = "";
@@ -155,19 +155,19 @@ public class FormViewDef extends ViewDef
     {
         this.enableRules = enableRules;
     }
-
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.ViewDef#clone()
+     * @see java.lang.Object#clone()
      */
-    @Override
-    public ViewDef clone()
+    public Object clone() throws CloneNotSupportedException
     {
-        FormViewDef fvd =  new FormViewDef(type, name, className, dataGettableName, dataSettableName, desc);
-        
+        FormViewDef fvd = (FormViewDef)super.clone();
         fvd.columnDef = columnDef;
         fvd.rowDef    = rowDef;
-        fvd.rows      = new Vector<FormRow>();
-        fvd.rows.addAll(rows);
-        return fvd;
+        for (FormRow formRow : rows)
+        {
+            fvd.rows.add((FormRow)formRow.clone()); 
+        }
+        return fvd;      
     }
 }
