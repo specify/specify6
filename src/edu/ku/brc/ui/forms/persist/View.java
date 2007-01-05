@@ -93,31 +93,72 @@ public class View implements Comparable<View>
     
     /**
      * Find the default AltView and creates it.
+     * @param altViewType look for a default view for this type of view
+     * @return the default altView
+     */
+    public AltView getDefaultAltView(final String altViewType)
+    {
+        
+        if (StringUtils.isNotEmpty(altViewType))
+        {
+            AltView defAltView = null;
+            boolean isForm     = altViewType.equals("form");
+            for (AltView altView : altViews)
+            {
+                ViewDef.ViewType type = altView.getViewDef().getType();
+                System.out.println("["+type+"]["+altView.getName()+"]");
+                if (isForm  && type == ViewDef.ViewType.form ||
+                    !isForm && type != ViewDef.ViewType.form)
+                {
+                    return altView;
+                }
+                
+                if (altView.isDefault())
+                {
+                    defAltView = altView;
+                }
+            }
+            
+            if (defAltView != null)
+            {
+                return defAltView;
+            }
+            
+        } else
+        {
+            for (AltView altView : altViews)
+            {
+                if (altView.isDefault())
+                {
+                    return altView;
+                }
+            }
+        }
+
+        throw new RuntimeException("No default Alt View in View["+name+"]");
+    }
+    
+    /**
+     * Find the default AltView and creates it.
      * @return the default altView
      */
     public AltView getDefaultAltView()
     {
-        for (AltView altView : altViews)
-        {
-            if (altView.isDefault())
-            {
-                return altView;
-            }
-        }
-        throw new RuntimeException("No default Alt View in View["+name+"]");
+        return getDefaultAltView(null);
     }
 
     /**
      * Find the default AltView for a mode and creates it.
-     * @param editMode the mode to be looked up
+     * @param creationMode the mode to be looked up
+     * @param defAltViewType default Alt View Type
      * @return @return the default altView
      */
-    public AltView getDefaultAltViewWithMode(AltView.CreationMode editMode)
+    public AltView getDefaultAltViewWithMode(final AltView.CreationMode creationMode, final String defAltViewType)
     {
         // First get default AltView and check to see if it's 
         // edit mode matches the desired edit mode
-        AltView defAltView = getDefaultAltView();
-        if (defAltView.getMode() == editMode || altViews.size() == 1)
+        AltView defAltView = getDefaultAltView(defAltViewType);
+        if (defAltView.getMode() == creationMode || altViews.size() == 1)
         {
             return defAltView;
         }

@@ -27,9 +27,10 @@ import java.util.Vector;
  */
 public class FormViewDef extends ViewDef implements Cloneable
 {
-    protected String        columnDef = "";
-    protected String        rowDef    = "";
-    protected List<FormRow> rows      = new Vector<FormRow>(); 
+    protected String        columnDef      = "";
+    protected String        rowDef         = "";
+    protected List<FormRow> rows           = new Vector<FormRow>(); 
+    protected String        definitionName = null;
     
     protected Map<String, String>  enableRules = null;
 
@@ -156,12 +157,23 @@ public class FormViewDef extends ViewDef implements Cloneable
         this.enableRules = enableRules;
     }
     
+    public String getDefinitionName()
+    {
+        return definitionName;
+    }
+
+    public void setDefinitionName(String definitionName)
+    {
+        this.definitionName = definitionName;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
     public Object clone() throws CloneNotSupportedException
     {
         FormViewDef fvd = (FormViewDef)super.clone();
+        fvd.rows      = new Vector<FormRow>(); 
         fvd.columnDef = columnDef;
         fvd.rowDef    = rowDef;
         for (FormRow formRow : rows)

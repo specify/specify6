@@ -205,7 +205,7 @@ public class AltView implements Comparable<AltView>, Cloneable
         altView.viewDef = viewDef;
         altView.selectorName = selectorName;
         altView.selectorValue = selectorValue;
-        altView.subViews = new Vector<AltView>(subViews);
+        altView.subViews = new Vector<AltView>(subViews); // OK not rto clone the references
         return altView;      
     }
     

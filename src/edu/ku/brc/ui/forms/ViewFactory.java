@@ -172,7 +172,7 @@ public class ViewFactory
             return viewable;
 
         } else if (viewDef.getType() == FormViewDef.ViewType.table ||
-                   viewDef.getType() == FormViewDef.ViewType.formTable)
+                   viewDef.getType() == FormViewDef.ViewType.formtable)
         {
             Viewable viewable = buildTableViewable(view, altView, parentView, options);
             this.rootMultiView =  null;
@@ -1033,8 +1033,11 @@ public class ViewFactory
                                     | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT
                                             : 0);
 
-                            MultiView multiView = new MultiView(parent, cellSubView.getName(), subView, parent
-                                    .getCreateWithMode(), options);
+                            MultiView multiView = new MultiView(parent, 
+                                                                cellSubView.getName(), 
+                                                                subView, 
+                                                                parent.getCreateWithMode(), 
+                                                                options);
                             parent.addChild(multiView);
 
                             viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);
@@ -1065,6 +1068,7 @@ public class ViewFactory
                     View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
                     if (subView != null)
                     {
+                        // Check to see this view should be "flatten" meaning we are creating a grid from a form
                         if (!viewBldObj.shouldFlatten())
                         {
                             if (parent != null)
@@ -1076,11 +1080,18 @@ public class ViewFactory
                                                                     cellSubView.getName(),
                                                                     subView,
                                                                     parent.getCreateWithMode(), 
+                                                                    cellSubView.getDefaultAltViewType(),
                                                                     options);
                                 parent.addChild(multiView);
     
                                 viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);                               
                                 viewBldObj.closeSubView(cellSubView);
+                                
+                                Viewable viewable = multiView.getCurrentView();
+                                if (viewable instanceof TableViewObj)
+                                {
+                                    ((TableViewObj)viewable).setVisibleRowCount(cellSubView.getTableRows());
+                                }
                                 curMaxRow = rowInx;
                                 
                             } else
@@ -1091,14 +1102,7 @@ public class ViewFactory
                         {
                             viewBldObj.addSubView(cellSubView, parent, colInx, rowInx, cellSubView.getColspan(), 1); 
                             
-                            AltView  altView;
-                            //if (createWithMode != null)
-                            //{
-                            //    altView = subView.getDefaultAltViewWithMode(createWithMode);
-                            //} else
-                            //{
-                                altView = subView.getDefaultAltView();
-                            //}
+                            AltView  altView = subView.getDefaultAltView();
                             FormViewDef subFormViewDef = (FormViewDef)altView.getViewDef();
                             processRows(parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
                             viewBldObj.closeSubView(cellSubView);

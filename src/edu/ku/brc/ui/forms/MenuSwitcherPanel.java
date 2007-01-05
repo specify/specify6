@@ -175,7 +175,7 @@ public class MenuSwitcherPanel extends JPanel
                     toolTip = getResourceString("ShowEditViewTT");
 
                 } else if (av.getViewDef().getType() == ViewDef.ViewType.table ||
-                           av.getViewDef().getType() == ViewDef.ViewType.formTable)
+                           av.getViewDef().getType() == ViewDef.ViewType.formtable)
                 {
                     imgIcon = IconManager.getImage("Spreadsheet", IconManager.IconSize.Std16);
                     toolTip = getResourceString("ShowSpreadsheetTT");

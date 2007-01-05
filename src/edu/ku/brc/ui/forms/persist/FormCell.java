@@ -208,7 +208,7 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         formCell.isMultiField = isMultiField;
         formCell.ignoreSetGet       = ignoreSetGet;
         formCell.changeListenerOnly = changeListenerOnly;
-        formCell.fieldNames         = fieldNames.clone();
+        formCell.fieldNames         = fieldNames != null ? fieldNames.clone() : null;
         formCell.colspan = colspan;
         formCell.rowspan = colspan;
         

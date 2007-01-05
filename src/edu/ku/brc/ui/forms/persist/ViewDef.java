@@ -34,7 +34,7 @@ public class ViewDef implements Cloneable
 {
     private static final Logger log = Logger.getLogger(ViewDef.class);
     
-    public enum ViewType {form, table, field, formTable, iconview, rstable}
+    public enum ViewType {form, table, field, formtable, iconview, rstable}
     
     protected ViewType             type;
     protected String               name;
@@ -100,6 +100,17 @@ public class ViewDef implements Cloneable
             ex.printStackTrace(); // XXX REMOVE ME
             log.error(ex);
         }
+    }
+    
+    /**
+     * Copy Constructor.
+     * @param sep the ViewDef to be copied
+     */
+    public ViewDef(final ViewDef viewDef)
+    {
+        this(viewDef.type, viewDef.name, viewDef.className, viewDef.dataGettableName, viewDef.dataSettableName, viewDef.desc);
+        dataGettable = viewDef.dataGettable;
+        dataSettable = viewDef.dataSettable;
     }
     
     /**

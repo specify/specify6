@@ -33,6 +33,7 @@ import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.dom4j.Node;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
@@ -115,13 +116,13 @@ public class ViewLoader
             {
                 Element altElement = (Element) i.next();
 
+                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltView.CreationMode.View);
+                
                 String altName      = altElement.attributeValue(NAME);
                 String viewDefName  = altElement.attributeValue("viewdef");
                 String label        = altElement.attributeValue(LABEL);
-                boolean isValidated = getAttr(altElement, "validated", false);
+                boolean isValidated = getAttr(altElement, "validated", mode == AltView.CreationMode.Edit);
                 boolean isDefault   = getAttr(altElement, "default", false);
-
-                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltView.CreationMode.View);
 
                 ViewDef viewDef = viewDefs.get(viewDefName);
                 if (viewDef == null)
@@ -140,6 +141,7 @@ public class ViewLoader
                 if (nameExists == null) // no need to check the boolean
                 {
                     AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
+                    
                     if (StringUtils.isNotEmpty(selectorName))
                     {
                         altView.setSelectorName(selectorName);
@@ -169,98 +171,9 @@ public class ViewLoader
                 }
                 nameCheckHash.clear(); // why not?
             }
-            
-            // Very Special Case
-            // Add a grid view if we have an Edit and a View
-            if (view.isSpecialViewAndEdit())
-            {
-                // Clones Alt view and ViewDef (Deep Clone)
-                AltView gridAltView = (AltView)view.getAltViews().get(0).clone();
-                gridAltView.getViewDef().setType(ViewDef.ViewType.formTable);
-                gridAltView.getViewDef().setName("Grid");
-                gridAltView.setName("Grid");
-                gridAltView.setLabel(getResourceString("Grid"));
-                view.addAltView(gridAltView);
-            }
 
-            /*
-            // iterate through child elements of root with element name "foo"
-            for ( Iterator i = altviews.elementIterator( "altview" ); i.hasNext(); )
-            {
-                Element altElement = (Element) i.next();
-
-                String altName      = altElement.attributeValue(NAME);
-                String viewDefName  = altElement.attributeValue("viewdef");
-                String label        = altElement.attributeValue(LABEL);
-                boolean isValidated = getAttr(altElement, "validated", false);
-                boolean isDefault   = getAttr(altElement, "default", false);
-
-                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltView.CreationMode.View);
-
-
-
-                // Make sure we only have one default view
-                if (defaultAltView != null && isDefault)
-                {
-                    isDefault = false;
-                }
-
-                
-                String selectorName = altElement.attributeValue("selector");
-                if (StringUtils.isNotEmpty(selectorName))
-                {
-                    List subViewList = altElement.elements("subview");
-                    if (subViewList.size() > 0)
-                    {
-                        //List<AltView> subViews = new ArrayList<AltView>(subViewList.size());
-                        for (Object svObj : subViewList)
-                        {
-                            Element sbvElement = (Element)svObj;
-                            altName      = sbvElement.attributeValue(NAME);
-                            viewDefName  = sbvElement.attributeValue("viewdef");
-                            
-                            ViewDef viewDef = viewDefs.get(viewDefName);
-                            if (viewDef == null)
-                            {
-                                throw new RuntimeException("View Name["+name+"] refers to a ViewDef that doesn't exist.");
-                            }
-                            String selectorValue  = sbvElement.attributeValue("selector_value");
-                            AltView subView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
-                            subView.setSelectorName(selectorName);
-                            subView.setSelectorValue(selectorValue);
-                            //subViews.add(subView);
-                            view.addAltView(subView);
-                            if (defaultAltView == null && isDefault)
-                            {
-                                defaultAltView = subView;
-                                isDefault = false;
-                            }
-                        }
-                        //altView.setSelectorName(selectorName);
-                        //altView.setSubViews(subViews);
-                    }
-                } else
-                {
-                    
-                    ViewDef viewDef = viewDefs.get(viewDefName);
-                    if (viewDef == null)
-                    {
-                        throw new RuntimeException("View Name["+name+"] refers to a ViewDef that doesn't exist.");
-                    }
-                    
-                    AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
-
-                    if (defaultAltView == null && isDefault)
-                    {
-                        defaultAltView = altView;
-                    }
-                    view.addAltView(altView);
-                }
-            }
-            */
-
-            // No default Alt View was indicated, so choose the first one
-            if (defaultAltView == null && view.getAltViews() != null)
+            // No default Alt View was indicated, so choose the first one (if there is one)
+            if (defaultAltView == null && view.getAltViews() != null && view.getAltViews().size() > 0)
             {
                 view.getAltViews().get(0).setDefault(true);
             }
@@ -299,7 +212,7 @@ public class ViewLoader
         switch (type)
         {
             case rstable:
-            case formTable :
+            case formtable :
             case form :
                 viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
                 break;
@@ -392,11 +305,34 @@ public class ViewLoader
                 if (viewDefs.get(viewDef.getName()) == null)
                 {
                     viewDefs.put(viewDef.getName(), viewDef);
+                    
                 } else
                 {
                     String msg = "View Set ["+instance.viewSetName+"] ["+viewDef.getName()+"] is not unique.";
                     log.error(msg);
                     throw new ConfigurationException(msg);
+                }
+            }
+            
+            // Now that all the definitions have been read in
+            // cycle thru and have all the tableform objects clone there definitions
+            for (ViewDef viewDef : new Vector<ViewDef>(viewDefs.values()))
+            {
+                if (viewDef.getType() == ViewDef.ViewType.formtable)
+                {
+                    ViewDef actualDef = viewDefs.get(((FormViewDef)viewDef).getDefinitionName());
+                    if (actualDef != null)
+                    {
+                        viewDefs.remove(viewDef.getName());
+                        actualDef = (ViewDef)actualDef.clone();
+                        actualDef.setType(ViewDef.ViewType.formtable);
+                        actualDef.setName(viewDef.getName());
+                        viewDefs.put(actualDef.getName(), actualDef);
+                        
+                    } else
+                    {
+                        throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDef)viewDef).getDefinitionName()+"]");
+                    }
                 }
             }
         }
@@ -746,17 +682,20 @@ public class ViewLoader
                         }
                         case subview:
                         {
-                            String vsName = cellElement.attributeValue("viewsetname");
-                            if (StringUtils.isEmpty(vsName))
+                            String svViewSetName = cellElement.attributeValue("viewsetname");
+                            if (StringUtils.isEmpty(svViewSetName))
                             {
-                                vsName = instance.viewSetName;
+                                svViewSetName = instance.viewSetName;
                             }
 
-                            cell = formRow.addCell(new FormCellSubView(cellId, cellName,
-                                                   vsName,
+                            cell = formRow.addCell(new FormCellSubView(cellId, 
+                                                   cellName,
+                                                   svViewSetName,
                                                    cellElement.attributeValue("viewname"),
                                                    cellElement.attributeValue("class"),
                                                    getAttr(cellElement, "desc", ""),
+                                                   getAttr(cellElement, "defaulttype", null),
+                                                   getAttr(cellElement, "rows", 5),
                                                    colspan,
                                                    rowspan));
 
@@ -823,14 +762,30 @@ public class ViewLoader
     {
         FormViewDef formView = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
-        List<FormRow> rows = formView.getRows();
-        
-        processRows(element, rows);
-        
-        formView.setColumnDef(createDef(element, "columnDef", rows.size()));
-        formView.setRowDef(createDef(element, "rowDef", rows.size()));
-        formView.setEnableRules(getEnableRules(element));
-
+        if (type != ViewDef.ViewType.formtable)
+        {
+            List<FormRow> rows = formView.getRows();
+            
+            processRows(element, rows);
+            
+            formView.setColumnDef(createDef(element, "columnDef", rows.size()));
+            formView.setRowDef(createDef(element, "rowDef", rows.size()));
+            formView.setEnableRules(getEnableRules(element));
+            
+        } else
+        {
+            Node defNode = element.selectSingleNode("definition");
+            if (defNode != null)
+            {
+                String defName = defNode.getText();
+                if (StringUtils.isNotEmpty(defName))
+                {
+                    formView.setDefinitionName(defName);
+                    return formView;
+                }
+            }
+            throw new RuntimeException("formtable is missing or has empty <defintion> node");
+        }
 
         return formView;
     }

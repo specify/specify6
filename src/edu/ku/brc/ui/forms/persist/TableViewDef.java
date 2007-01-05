@@ -83,6 +83,7 @@ public class TableViewDef extends ViewDef implements Cloneable
     public Object clone() throws CloneNotSupportedException
     {
         TableViewDef tvd = (TableViewDef)super.clone();
+        tvd.columns = new Vector<FormColumn>();
         for (FormColumn formCol : columns)
         {
             tvd.columns.add((FormColumn)formCol.clone()); 

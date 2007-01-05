@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
-import java.util.List;
 import java.util.Vector;
 
 /*
@@ -25,7 +24,7 @@ import java.util.Vector;
  */
 public class FormRow implements Cloneable
 {
-    Vector<FormCell> cells = new Vector<FormCell>();
+    protected Vector<FormCell> cells = new Vector<FormCell>();
     
     /**
      * Default Constructor
@@ -58,7 +57,7 @@ public class FormRow implements Cloneable
     /**
      * @return Return the collection of cells
      */
-    public List<FormCell> getCells()
+    public Vector<FormCell> getCells()
     {
         return cells;
     }
@@ -77,7 +76,7 @@ public class FormRow implements Cloneable
     public Object clone() throws CloneNotSupportedException
     {
         FormRow formRow = (FormRow)super.clone();
-        
+        formRow.cells   = new Vector<FormCell>();
         for (FormCell cell : cells)
         {
             formRow.cells.add((FormCell)cell.clone());

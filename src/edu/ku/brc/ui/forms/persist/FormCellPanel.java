@@ -94,11 +94,10 @@ public class FormCellPanel extends FormCell implements Cloneable
     public Object clone() throws CloneNotSupportedException
     {
         FormCellPanel fcp = (FormCellPanel)super.clone();
-        
+        fcp.rows         = new Vector<FormRow>(); 
         fcp.panelType    = panelType;
         fcp.colDef       = colDef;
         fcp.rowDef       = rowDef;
-        
         for (FormRow formRow : rows)
         {
             fcp.rows.add((FormRow)formRow.clone());

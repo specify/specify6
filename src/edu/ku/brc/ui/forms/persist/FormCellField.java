@@ -403,7 +403,7 @@ public final class FormCellField extends FormCell
         fcf.validationRule = validationRule;
         fcf.isTextField = isTextField;
         fcf.isDSPTextField = isDSPTextField;
-        fcf.properties = (Hashtable<String, String>)properties.clone();
+        fcf.properties = properties != null ? (Hashtable<String, String>)properties.clone() : null;
         return fcf;      
     }
 

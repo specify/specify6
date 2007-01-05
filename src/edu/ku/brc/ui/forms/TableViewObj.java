@@ -19,6 +19,7 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -171,8 +172,11 @@ public class TableViewObj implements Viewable,
     /**
      * Constructor with FormView definition.<NOTE: We cannot build the table here because we need all the column
      * information.
-     * 
-     * @param tableViewDef the definition of the form
+     * @param view the view 
+     * @param altView the altview
+     * @param mvParent the parent
+     * @param formValidator the validator
+     * @param options the creation options
      */
     public TableViewObj(final View          view,
                         final AltView       altView,
@@ -295,6 +299,37 @@ public class TableViewObj implements Viewable,
     }
     
     /**
+     * Sizes the table to number of rows using getRowHeight
+     * @param table the table to be sized
+     * @param rows the number of rows
+     */
+    public void setVisibleRowCount(int rows)
+    { 
+        table.setPreferredScrollableViewportSize(new Dimension( 
+                table.getPreferredScrollableViewportSize().width, 
+                rows*table.getRowHeight() 
+        )); 
+    }
+    
+    /**
+     * Sizes the table to number of rows using the height of actual rows.
+     * @param table the table to be sized
+     * @param rows the number of rows
+     */
+    public void setVisibleRowCountForHeight(int rows)
+    { 
+        int height = 0; 
+        for(int row=0; row<rows; row++) 
+            height += table.getRowHeight(row); 
+     
+        table.setPreferredScrollableViewportSize(new Dimension( 
+                table.getPreferredScrollableViewportSize().width, 
+                height 
+        )); 
+    }
+
+    
+    /**
      * Build the table now that we have all the information we need for the columns.
      */
     protected void buildTable()
@@ -305,7 +340,7 @@ public class TableViewObj implements Viewable,
         
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
-
+        
         /*
          
         // This is BROKEN!

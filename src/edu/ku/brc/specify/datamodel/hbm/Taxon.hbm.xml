@@ -5,7 +5,7 @@
 
 <hibernate-mapping>
 
-    <class name="edu.ku.brc.specify.datamodel.Taxon" table="taxon" lazy="true">
+    <class name="edu.ku.brc.specify.datamodel.Taxon" table="taxon">
 
         <id name="taxonId" type="java.lang.Long" column="TaxonID">
             <generator class="native" />
@@ -96,7 +96,7 @@
 
         <!-- bi-directional many-to-one association to Taxon -->
         <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Taxon"
-        	outer-join="true" column="ParentID"/>
+        	outer-join="true" column="ParentID" lazy="false"/>
 
         <!-- bi-directional one-to-many association to Attachment -->
         <set name="attachments" inverse="true" cascade="save-update">

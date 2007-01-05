@@ -8,9 +8,9 @@
               resourcelabels="false">
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
-                <altview name="Accession View" viewdef="Accession" label="View" mode="view"  validated="false" default="true"/>
-                <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"  validated="true"/>
-                <altview name="Accession Icon" viewdef="AccessionIconView" label="IconView " mode="view" validated="false"/>                
+                <altview name="Accession View" viewdef="Accession" label="View" mode="view" default="true"/>
+                <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"/>
+                <altview name="Accession Icon" viewdef="AccessionIconView" label="IconView" mode="view"/>                
             </altviews>
         </view>
 
@@ -20,10 +20,10 @@
               resourcelabels="false">
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="AccessionAgent IconView" viewdef="AccessionAgentIconView" label="IconView " mode="view" validated="false"/>
-                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit" validated="true"/>
-                <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view" validated="false"/>
-                <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AccessionAgent IconView" viewdef="AccessionAgentIconView" label="IconView " mode="view"/>
+                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit"/>
+                <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view"/>
+                <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
 
@@ -33,8 +33,8 @@
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="AccessionAuthorizations View" viewdef="AccessionAuthorizations" label="View" mode="view" validated="false" default="true"/>
-                <altview name="AccessionAuthorizations Edit" viewdef="AccessionAuthorizations" label="Edit" mode="edit" validated="true"/>
+                <altview name="AccessionAuthorizations View" viewdef="AccessionAuthorizations" label="View" mode="view" default="true"/>
+                <altview name="AccessionAuthorizations Edit" viewdef="AccessionAuthorizations" label="Edit" mode="edit"/>
             </altviews>
         </view>
 
@@ -43,8 +43,8 @@
             resourcelabels="false">
             <desc><![CDATA[Address subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="Address View" viewdef="Address" label="View" mode="view" validated="false" default="true"/>
-                <altview name="Address Edit" viewdef="Address" label="Edit" mode="edit" validated="true"/>
+                <altview name="Address View" viewdef="Address" label="View" mode="view" default="true"/>
+                <altview name="Address Edit" viewdef="Address" label="Edit" mode="edit"/>
             </altviews>
         </view>
 
@@ -53,10 +53,10 @@
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
             <altviews defaultmode="view" selector="agentType">
-                <altview name="Organization View" viewdef="Organization" label="View" mode="view" validated="false" selector_value="0"/>
-                <altview name="Agent View"        viewdef="Agent"        label="View" mode="view" validated="false" selector_value="1"/>
-                <altview name="Organization Edit" viewdef="Organization" label="Edit" mode="edit" validated="true" selector_value="0"/>
-                <altview name="Agent Edit"        viewdef="Agent"        label="Edit" mode="edit" validated="true" selector_value="1"/>
+                <altview name="Organization View" viewdef="Organization" label="View" mode="view" selector_value="0"/>
+                <altview name="Agent View"        viewdef="Agent"        label="View" mode="view" selector_value="1"/>
+                <altview name="Organization Edit" viewdef="Organization" label="Edit" mode="edit" selector_value="0"/>
+                <altview name="Agent Edit"        viewdef="Agent"        label="Edit" mode="edit" selector_value="1"/>
             </altviews>
         </view>
         
@@ -65,8 +65,8 @@
              resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
             <altviews>
-                <altview name="AgentForAccessions View" viewdef="AgentForAccessions" label="View" mode="view" validated="false" default="true"/>
-                <altview name="AgentForAccessions Edit" viewdef="AgentForAccessions" label="Edit" mode="edit" validated="true"/>
+                <altview name="AgentForAccessions View" viewdef="AgentForAccessions" label="View" mode="view" default="true"/>
+                <altview name="AgentForAccessions Edit" viewdef="AgentForAccessions" label="Edit" mode="edit"/>
             </altviews>
         </view>
 
@@ -75,8 +75,8 @@
               resourcelabels="false">
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
-                <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true" valtype="Changed"/>                
+                <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" default="true"/>                
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" valtype="Changed"/>                
             </altviews>
         </view>
 
@@ -85,8 +85,8 @@
               resourcelabels="false">
             <desc><![CDATA[The Attachments Icon View.]]></desc>
             <altviews>
-                <altview name="Attachments Icon View" viewdef="AttachmentsIconView" label="IconView" mode="view" validated="false" default="true"/>                
-                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit" validated="true"/>                
+                <altview name="Attachments Icon View" viewdef="AttachmentsIconView" label="IconView" mode="view" default="true"/>                
+                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit"/>                
             </altviews>
         </view>
 
@@ -95,8 +95,8 @@
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
-                <altview name="CollectingEvent View" viewdef="CollectingEvent" label="View" mode="view" validated="false" default="true"/>
-                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" label="Edit" mode="edit" validated="true"/>
+                <altview name="CollectingEvent View" viewdef="CollectingEvent" label="View" mode="view" default="true"/>
+                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" label="Edit" mode="edit"/>
            </altviews>
         </view>
 
@@ -106,8 +106,8 @@
             >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view" validated="false"/>
-                <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view"/>
+                <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" default="true"/>
             </altviews>
             
         </view>
@@ -118,7 +118,7 @@
             >
             <desc><![CDATA[The Collection Object Search form.]]></desc>
             <altviews>
-                <altview name="Collection Object Search" viewdef="Collection Object Search" label="Search" mode="search" validated="false" default="true"/>
+                <altview name="Collection Object Search" viewdef="Collection Object Search" label="Search" mode="search" default="true"/>
             </altviews>
             
         </view>
@@ -128,8 +128,9 @@
               resourcelabels="false">
     	    <desc><![CDATA[Subform within the Collection Object form.]]></desc>
     	    <altviews>
-    	        <altview name="Determination View" viewdef="Determination" label="View" mode="view" validated="false"/>
-    	        <altview name="Determination Edit" viewdef="Determination" label="Edit" mode="edit" validated="true" default="true"/>
+    	        <altview name="Determination View" viewdef="Determination" label="View" mode="view"/>
+    	        <altview name="Determination Edit" viewdef="Determination" label="Edit" mode="edit" default="true"/>
+    	        <altview name="Determination Table" viewdef="Determination Table" label="Grid" mode="view"/>
     	    </altviews>
     	</view>
 
@@ -138,7 +139,7 @@
             resourcelabels="false">
             <desc><![CDATA[FishBase]]></desc>
             <altviews>
-                <altview name="FishBase" viewdef="FishBase" label="View" mode="view" validated="false" default="true"/>
+                <altview name="FishBase" viewdef="FishBase" label="View" mode="view" default="true"/>
             </altviews>
         </view>
         
@@ -148,8 +149,8 @@
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
-                <altview name="Loan View" viewdef="Loan" label="View" mode="view" validated="false" default="true"/>
-                <altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit" validated="true"/>
+                <altview name="Loan View" viewdef="Loan" label="View" mode="view" default="true"/>
+                <altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit"/>
             </altviews>
         </view>
         
@@ -158,8 +159,8 @@
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
-                <altview name="LoanItems View" viewdef="LoanItems" label="View" mode="view" validated="false" default="true"/>
-                <altview name="LoanItems Edit" viewdef="LoanItems" label="Edit" mode="edit" validated="true"/>
+                <altview name="LoanItems View" viewdef="LoanItems" label="View" mode="view" default="true"/>
+                <altview name="LoanItems Edit" viewdef="LoanItems" label="Edit" mode="edit"/>
             </altviews>
         </view>
         
@@ -168,7 +169,7 @@
             resourcelabels="false">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
-                <altview name="Preparation View" viewdef="LoanPreparation" label="View" mode="view" validated="false"/>
+                <altview name="Preparation View" viewdef="LoanPreparation" label="View" mode="view"/>
             </altviews>
         </view>
         
@@ -177,8 +178,8 @@
             resourcelabels="false">
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>
-                <altview name="Locality View" viewdef="Locality" label="View" mode="view" validated="false"/>
-                <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Locality View" viewdef="Locality" label="View" mode="view"/>
+                <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
 
@@ -187,7 +188,7 @@
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent]]></desc>
             <altviews>
-                <altview name="LocalityMapper View" viewdef="LocalityMapper" label="View" mode="view" validated="false" default="true"/>
+                <altview name="LocalityMapper View" viewdef="LocalityMapper" label="View" mode="view" default="true"/>
            </altviews>
         </view>
 
@@ -197,8 +198,8 @@
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews  defaultmode="view">
-                <altview name="Permit View" viewdef="Permit" label="View" mode="view" validated="false"/>
-                <altview name="Permit Edit" viewdef="Permit" label="Edit" mode="edit" validated="true"/>
+                <altview name="Permit View" viewdef="Permit" label="View" mode="view"/>
+                <altview name="Permit Edit" viewdef="Permit" label="Edit" mode="edit"/>
             </altviews>
         </view>
 
@@ -207,8 +208,8 @@
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="PermitForAccessions View" viewdef="PermitForAccessions" label="View" mode="view" validated="false" default="true"/>
-                <altview name="PermitForAccessions Edit" viewdef="PermitForAccessions" label="Edit" mode="edit" validated="true"/>
+                <altview name="PermitForAccessions View" viewdef="PermitForAccessions" label="View" mode="view" default="true"/>
+                <altview name="PermitForAccessions Edit" viewdef="PermitForAccessions" label="Edit" mode="edit"/>
             </altviews>
         </view>
 
@@ -217,10 +218,10 @@
                resourcelabels="false">
     	    <desc><![CDATA[Subform within the Collection Object form.]]></desc>
     	    <altviews>
-    	        <altview name="Preparation View" viewdef="Preparation" label="View" mode="view" validated="false"/>
-    	        <altview name="Preparation Edit" viewdef="Preparation" label="Edit" mode="edit" validated="true" default="true"/>
-    	        <altview name="Preparation IconView" viewdef="PreparationsIconView" label="IconView" mode="view" validated="false"/>
-    	        <altview name="Preparation IconEdit" viewdef="PreparationsIconView" label="IconEdit" mode="edit" validated="true" default="true"/>
+    	        <altview name="Preparation View" viewdef="Preparation" label="View" mode="view"/>
+    	        <altview name="Preparation Edit" viewdef="Preparation" label="Edit" mode="edit" default="true"/>
+    	        <altview name="Preparation IconView" viewdef="PreparationsIconView" label="IconView" mode="view"/>
+    	        <altview name="Preparation IconEdit" viewdef="PreparationsIconView" label="IconEdit" mode="edit" default="true"/>
     		</altviews>
     	</view>
 
@@ -229,8 +230,8 @@
             resourcelabels="false">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
-                <altview name="InfoRequest View" viewdef="InfoRequest" label="View" mode="view" validated="false"/>
-                <altview name="InfoRequest Edit" viewdef="InfoRequest" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="InfoRequest View" viewdef="InfoRequest" label="View" mode="view"/>
+                <altview name="InfoRequest Edit" viewdef="InfoRequest" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -239,8 +240,8 @@
             resourcelabels="false">
             <desc><![CDATA[Subform within the InfoRequestColObj Object form.]]></desc>
             <altviews>
-                <altview name="InfoRequestColObj View" viewdef="InfoRequestColObj" label="View" mode="view" validated="false"/>
-                <altview name="InfoRequestColObj Edit" viewdef="InfoRequestColObj" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="InfoRequestColObj View" viewdef="InfoRequestColObj" label="View" mode="view"/>
+                <altview name="InfoRequestColObj Edit" viewdef="InfoRequestColObj" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -250,8 +251,8 @@
             resourcelabels="false">
             <desc><![CDATA[Shipment Subform within the Loan Object form.]]></desc>
             <altviews>
-                <altview name="Shipment View" viewdef="Shipment" label="View" mode="view" validated="false"/>
-                <altview name="Shipment Edit" viewdef="Shipment" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Shipment View" viewdef="Shipment" label="View" mode="view"/>
+                <altview name="Shipment Edit" viewdef="Shipment" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -697,7 +698,7 @@
     			</row>
 
     			<row>
-    				<cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" defaulttype="table" rows="1"/>
     			</row>
 
     			<row>
@@ -796,16 +797,27 @@
     			-->
             </rows>
         </viewdef>
-
-    	<viewdef
-    	    type="form"
-    	    name="Determination"
-    	    class="edu.ku.brc.specify.datamodel.Determination"
-    	    gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-    	    settable="edu.ku.brc.ui.forms.DataSetterForObj">
-
-    	    <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
-    	    <enableRules/>
+        
+        <viewdef
+            type="formtable"
+            name="Determination Table"
+            class="edu.ku.brc.specify.datamodel.Determination"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
+            <definition>Determination</definition>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Determination"
+            class="edu.ku.brc.specify.datamodel.Determination"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
+            <enableRules/>
 
     		<columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>

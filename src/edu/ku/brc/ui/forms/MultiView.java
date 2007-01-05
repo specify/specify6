@@ -81,7 +81,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected CardLayout                   cardLayout      = new CardLayout();
     protected Viewable                     currentViewable = null;
 
-    protected boolean                      specialEditView = false;
     protected boolean                      editable        = false;
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
@@ -114,6 +113,25 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                      final AltView.CreationMode createWithMode,
                      final int       options)
     {
+        this(mvParent, cellName, view, createWithMode, null, options);
+    }
+    
+    /**
+     * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
+     * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
+     * @param mvParent parent of this MultiView the root MultiView is null
+     * @param view the view to create for
+     * @param createWithMode how the form should be created (Noe, Edit or View mode)
+     * @param defaultAltViewType suggestion as to whether to use a form or a grid
+     * @param options the options needed for creating the form
+     */
+    public MultiView(final MultiView mvParent,
+                     final String    cellName,
+                     final View      view,
+                     final AltView.CreationMode createWithMode,
+                     final String    defaultAltViewType,
+                     final int       options)
+    {
         setLayout(cardLayout);
 
         this.mvParent       = mvParent;
@@ -121,13 +139,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.view           = view;
         this.createWithMode = createWithMode;
         this.createOptions  = options;
-
-        specialEditView = view.isSpecialViewAndEdit();
         
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
 
-        createWithAltView(createDefaultViewable());
+        createWithAltView(createDefaultViewable(defaultAltViewType));
     }
+
 
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
@@ -152,9 +169,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createWithMode = createWithMode;
         this.createOptions  = options;
 
-        specialEditView = view.isSpecialViewAndEdit();
-
-        createWithAltView(altView != null ? altView : createDefaultViewable());
+        createWithAltView(altView != null ? altView : createDefaultViewable(null));
     }
     
     /**
@@ -368,18 +383,19 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     /**
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef.
-      * @return return the default Viewable (ViewDef)
+     * @param defAltViewType should contain values: null, grid, form
+     * @return return the default Viewable (ViewDef)
      */
-    protected AltView createDefaultViewable()
+    protected AltView createDefaultViewable(final String defAltViewType)
     {
         AltView  altView;
         if (createWithMode != null)
         {
-            altView = view.getDefaultAltViewWithMode(createWithMode);
+            altView = view.getDefaultAltViewWithMode(createWithMode, defAltViewType);
 
         } else
         {
-            altView = view.getDefaultAltView();
+            altView = view.getDefaultAltView(defAltViewType);
         }
         return altView;
     }

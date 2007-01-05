@@ -412,7 +412,7 @@ public class FormViewObj implements Viewable,
             for (AltView av : viewArg.getAltViews())
             {
                 ViewDef.ViewType type = av.getViewDef().getType();
-                if (av.getMode() == mode || type == ViewDef.ViewType.table || type == ViewDef.ViewType.formTable)
+                if (av.getMode() == mode || type == ViewDef.ViewType.table || type == ViewDef.ViewType.formtable)
                 {
                     altViewsListArg.add(av);
                 }
