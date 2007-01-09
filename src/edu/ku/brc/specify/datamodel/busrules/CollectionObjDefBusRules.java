@@ -31,6 +31,7 @@ public class CollectionObjDefBusRules extends SimpleBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
+    @Override
     public boolean okToDelete(Object dataObj)
     {
         if (!okToDelete("colobjdef_locality", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))

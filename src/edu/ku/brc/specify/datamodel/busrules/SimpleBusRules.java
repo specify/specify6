@@ -28,12 +28,12 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 public abstract class SimpleBusRules implements BusinessRulesIFace
 {
     private List<String> errorList = new Vector<String>();
-    protected Class      dataClass;
+    protected Class<?>      dataClass;
     
     /**
      * @param dataClass
      */
-    public SimpleBusRules(final Class dataClass)
+    public SimpleBusRules(final Class<?> dataClass)
     {
         this.dataClass = dataClass;
     }
