@@ -45,8 +45,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 							extends BaseTask
 							implements DualViewSearchable
 {
-    protected TreeDataService<T,D,I> dataService;
-    
     protected List<ToolBarItemDesc> toolBarItems;
     protected List<MenuItemDesc> menuItems;
     protected TreeNodeFindWidget finderWidget;
@@ -61,7 +59,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		super(name,title);
         visibleTTVs = new Vector<TreeTableViewer<T,D,I>>();
         visibleTreeDefEditors = new Vector<TreeDefinitionEditor<T,D,I>>();
-        dataService = TreeDataServiceFactory.createService();
         toolBarItems = new Vector<ToolBarItemDesc>();
         menuItems = new Vector<MenuItemDesc>();
 	}
@@ -72,7 +69,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		if(!isInitialized)
 		{
 			isInitialized = true;
-			
+            TreeDataService<T,D,I> dataService = TreeDataServiceFactory.createService();
 			List<D> defs = dataService.getAllTreeDefs(treeDefClass);
 			createMenus(defs);
 			createNavBoxes(defs);
@@ -83,30 +80,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	{
 		NavBox actions = new NavBox(getResourceString("Actions"));
 
-//		ActionListener toggleViewAction = new ActionListener()
-//		{
-//			public void actionPerformed(ActionEvent ae)
-//			{
-//				toggleViewMode();
-//			}
-//		};
-//		String toggleLabel = getResourceString("ToggleViewMode");
-//		String toggleIconName = "TTV_ToggleViewMode";
-//		NavBoxItemIFace toggleViewItem = NavBox.createBtn(toggleLabel,toggleIconName,IconManager.IconSize.Std16,toggleViewAction); 
-//		actions.add(toggleViewItem);
-
-		ActionListener saveTreeAction = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				saveTree();
-			}
-		};
-		String saveLabel = getResourceString("SaveTree");
-		String saveIconName = "Save";
-		NavBoxItemIFace saveTreeItem = NavBox.createBtn(saveLabel,saveIconName,IconManager.IconSize.Std16,saveTreeAction);
-		actions.add(saveTreeItem);
-		
 		NavBox find = new NavBox(getResourceString("FindNode"));
 		finderWidget = new TreeNodeFindWidget(this);
 		find.add((NavBoxItemIFace)(finderWidget));
@@ -200,29 +173,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	public Class<? extends BaseTreeTask> getTaskClass()
     {
         return this.getClass();
-    }
-    
-	public void saveTree()
-    {
-		SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
-		if(subPane instanceof TreeTableViewer)
-		{
-			TreeTableViewer<T,D,I> ttv = (TreeTableViewer<T,D,I>)subPane;
-	    	ttv.commitStructureToDb();
-		}
-		else if(subPane instanceof TreeDefinitionEditor)
-		{
-			TreeDefinitionEditor<T,D,I> defEd = (TreeDefinitionEditor<T,D,I>)subPane;
-			defEd.saveToDb();
-		}
-    }
-    
-    public void toggleViewMode()
-    {
-    	TreeTableViewer<T,D,I> ttv = (TreeTableViewer<T,D,I>)SubPaneMgr.getInstance().getCurrentSubPane();
-    	ttv.toggleViewMode();
-    	ttv.repaint();
-    	UICacheManager.forceTopFrameRepaint();
     }
     
 	/**
