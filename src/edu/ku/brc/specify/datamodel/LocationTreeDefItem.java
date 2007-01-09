@@ -98,6 +98,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Override
     public Class<?> getDataClass()
     {
         return LocationTreeDefItem.class;
@@ -299,4 +300,9 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
         return 60;
     }
 
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }

@@ -338,5 +338,10 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
     {
         return 48;
     }
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 
 }

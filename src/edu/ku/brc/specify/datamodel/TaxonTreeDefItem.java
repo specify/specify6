@@ -297,5 +297,10 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     {
         return 77;
     }
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 
 }

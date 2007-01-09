@@ -300,5 +300,10 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
     {
         return 45;
     }
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 
 }
