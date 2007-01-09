@@ -45,18 +45,18 @@
 
         <!-- bi-directional many-to-one association to LocationTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.LocationTreeDef" 
-        	cascade="none" lazy="false" outer-join="true">
+        	cascade="lock" lazy="false" outer-join="true">
             <column name="LocationTreeDefID"  not-null="true"/>
         </many-to-one>
 
         <!-- bi-directional many-to-one association to LocationTreeDefItem -->
         <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" 
-        	cascade="save-update" lazy="false" outer-join="true">
+        	cascade="save-update,lock" lazy="false" outer-join="true">
             <column name="LocationTreeDefItemID"  not-null="true"/>
         </many-to-one>
 
         <!-- bi-directional many-to-one association to Location -->
-        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update" outer-join="true" lazy="false">
+    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update,lock" outer-join="true" lazy="false">
             <column name="ParentID"/>
         </many-to-one>
 
@@ -72,7 +72,7 @@
             <one-to-many class="edu.ku.brc.specify.datamodel.Container"/>
         </set>
 
-        <set name="children" inverse="true" cascade="save-update">
+        <set name="children" inverse="true" cascade="save-update,lock">
             <key column="ParentId"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>
         </set>

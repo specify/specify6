@@ -29,14 +29,14 @@
 
         <!-- Associations -->
 
-        <set name="treeEntries" table="Location" inverse="true" cascade="save-update"
+        <set name="treeEntries" table="Location" inverse="true" cascade="save-update,lock"
             lazy="true">
             <key column="LocationTreeDefID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Location" />
         </set>
 
         <set name="treeDefItems" table="LocationTreeDefItem"
-            inverse="true" lazy="false" cascade="save-update">
+            inverse="true" lazy="false" cascade="save-update,lock">
             <key column="LocationTreeDefID" />
             <one-to-many
                 class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
