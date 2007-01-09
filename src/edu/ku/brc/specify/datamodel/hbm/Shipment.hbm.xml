@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="shipmentDate" type="calendar_date" column="ShipmentDate">
@@ -94,50 +94,76 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="AgentByShipper" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent not-null="true"-->
+    <many-to-one name="shipper" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">AgentID of agent transporting the material</meta>
-        <column name="ShipperID"/>
+        <column name="ShipperID"  />
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="AgentByShippedTo" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent   not-null="true"-->
+    <many-to-one name="shippedTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">AgentID of agent material is shipped to</meta>
         <column name="ShippedToID"/>
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent not-null="true"-->
+    <many-to-one name="shippedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">AgentID of person approving/initiating the shipment</meta>
-        <column name="ShippedByID"/>
+        <column name="ShippedByID"  />
     </many-to-one>
     
     <!-- this was missing but existing in original mapping file - now replaced -->
     <!-- bi-directional one-to-many association to BorrowShipments -->
-    <set name="borrowShipments" lazy="true" inverse="true" cascade="none">
+    <!-- this was removed and replaced by a many-to-many back to Borrow --> 
+    <!-- <set name="borrowShipments" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ShipmentID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipments"/>
-    </set>
+    </set> -->
+    
+    <!-- bi-directional many-to-many association to Borrow -->
+    <set name="borrows" table="borrow_shipment" inverse="true" lazy="true" cascade="save-update">
+        <key>
+            <column name="ShipmentID"/>
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Borrow" column="BorrowID"/>
+    </set>    
     
     <!-- bi-directional one-to-many association to Loan -->
-    <set name="loans" lazy="true" inverse="true" cascade="none">
+    <!-- <set name="loans" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ShipmentID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Loan"/>
-    </set>
+    </set> -->
     
+    <!-- bi-directional many-to-many association to Loan -->
+    <set name="loans" table="loan_shipment" inverse="true" lazy="true" cascade="save-update">
+        <key>
+            <column name="ShipmentID"/>
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Loan" column="LoanID"/>
+    </set>  
+         
     <!-- bi-directional one-to-many association to ExchangeOut -->
-    <set name="exchangeOuts" lazy="true" inverse="true" cascade="none">
+    <!-- <set name="exchangeOuts" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ShipmentID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
+    </set> -->
+    
+        <!-- bi-directional many-to-many association to ExchangeOut -->
+    <set name="exchangeOuts" table="exchangeout_shipment" lazy="true" inverse="true" cascade="save-update">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="ShipmentID"/>
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.ExchangeOut" column="ExchangeOutID"/>
     </set>
 
 </class>

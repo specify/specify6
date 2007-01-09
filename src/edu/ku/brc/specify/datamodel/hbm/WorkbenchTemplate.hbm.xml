@@ -12,7 +12,7 @@
     
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="name" type="java.lang.String" column="Name" length="64">

@@ -1,3 +1,4 @@
+
 /* This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -37,6 +38,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     private Integer                 ordinal;
     private String                  remarks;
     private String                  attachmentLocation;
+    protected Integer visibility;
+    protected String visibilitySetBy;
     private Set<AttachmentMetadata> metadata;
     private Agent                   agent;
     private CollectionObject        collectionObject;
@@ -46,7 +49,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     private Permit                  permit;
     private Preparation             preparation;
     private Taxon                   taxon;
-
+    private Accession accession;
+    private RepositoryAgreement repositoryAgreement;
     /** default constructor */
     public Attachment()
     {
@@ -279,7 +283,31 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     {
         this.taxon = taxon;
     }
+    /**
+     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     */
+    public Integer getVisibility() 
+    {
+        return this.visibility;
+    }
     
+    public void setVisibility(Integer visibility) 
+    {
+        this.visibility = visibility;
+    }   
+    
+    /**
+     * 
+     */
+    public String getVisibilitySetBy() 
+    {
+        return this.visibilitySetBy;
+    }
+    
+    public void setVisibilitySetBy(String visibilitySetBy) 
+    {
+        this.visibilitySetBy = visibilitySetBy;
+    }   
     @Override
     public void addReference(FormDataObjIFace ref, String refType)
     {
@@ -369,6 +397,37 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         }
     }
 
+    /**
+     * @return the accession
+     */
+    public Accession getAccession()
+    {
+        return this.accession;
+    }
+
+    /**
+     * @param accession the accession to set
+     */
+    public void setAccession(Accession accession)
+    {
+        this.accession = accession;
+    }
+
+    /**
+     * @return the repositoryAgreement
+     */
+    public RepositoryAgreement getRepositoryAgreement()
+    {
+        return this.repositoryAgreement;
+    }
+
+    /**
+     * @param repositoryAgreement the repositoryAgreement to set
+     */
+    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement)
+    {
+        this.repositoryAgreement = repositoryAgreement;
+    }
     @Override
     public void onUpdate()
     {

@@ -113,6 +113,12 @@ public interface FormDataObjIFace
     public Integer getTableId();
     
     /**
+     * Returns whether the viewing of this class is restrictable
+     * @return - boolean whether the viewing of this class is restrictable
+     */
+    public boolean isRestrictable();
+    
+    /**
      * Returns the actual class object befoire being wrapped by ORM tools.
      * @return the actual class object befoire being wrapped by ORM tools.
      */

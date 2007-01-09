@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 88
+    Last Used Id is 89
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -122,6 +122,7 @@
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDef" id="76"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" id="77"/>
         <table name="edu.ku.brc.specify.datamodel.UserGroup" id="78"/>
+        <table name="edu.ku.brc.specify.datamodel.UserPermission" id="89"/>
         <table name="edu.ku.brc.specify.datamodel.ViewSetObj" id="86"/>
         <table name="edu.ku.brc.specify.datamodel.Workbench" id="79"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" id="80"/>

@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_BorrowAgents">
@@ -38,15 +38,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_BorrowAgentsAgentID" unique-key="IX_BorrowAgents">
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent"  cascade="save-update" outer-join="true" index="IX_BorrowAgentsAgentID" unique-key="IX_BorrowAgents">
         <meta attribute="field-description">Address/Organization from which agent participated in the borrow</meta>
-        <column name="AgentID"/>
+        <column name="AgentID" not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Borrow -->
-    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowAgentsBorrowID" unique-key="IX_BorrowAgents">
+    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow"  outer-join="true" cascade="none" index="IX_BorrowAgentsBorrowID" unique-key="IX_BorrowAgents">
         <meta attribute="field-description">ID of borrow in which Agent played role</meta>
-        <column name="BorrowID"/>
+        <column name="BorrowID" not-null="true"/>
     </many-to-one>
 
 </class>

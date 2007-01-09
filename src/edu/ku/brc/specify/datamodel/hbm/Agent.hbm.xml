@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="agentType" type="byte" column="AgentType" not-null="true" length="3">
@@ -84,7 +84,17 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
-
+    
+    <!--@TODO make this field != null> -->
+    <property name="visibility" type="java.lang.Integer" column="Visibility"  length="10">
+      	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Indicates whether this record can be viewed - by owner, by instituion, or by all</meta>  
+    </property>
+    	
+      <property name="visibilitySetBy" type="java.lang.String" column="VisibilitySetBy" length="50" >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>        	
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to Authors -->
@@ -95,7 +105,25 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Authors"/>
     </set>
+    
+    <!-- bi-directional one-to-many association to GroupPersons -->
+    <set name="groups" lazy="true" inverse="true" cascade="all-delete-orphan">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="MemberID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPersons"/>
+    </set>
 
+    <!-- bi-directional one-to-many association to GroupPersons -->
+    <set name="members" lazy="true" inverse="true" cascade="all-delete-orphan" order-by="orderNumber asc">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="GroupID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPersons"/>
+    </set>
+    
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
     <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
@@ -124,7 +152,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to Agent -->
-    <set name="members" lazy="true" inverse="true" cascade="none">
+    <set name="orgMembers" lazy="true" inverse="true" cascade="save-update">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ParentOrganizationID"/>
@@ -132,10 +160,10 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.Agent"/>
     </set>
 
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="organization" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_AgentParentOrganizationID">
+    <!-- bi-directional many-to-one association to Agent  not-null="true"-->
+    <many-to-one name="organization" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true" index="IX_AgentParentOrganizationID">
         <meta attribute="field-description">of organization</meta>
-        <column name="ParentOrganizationID"/>
+        <column name="ParentOrganizationID"  />
     </many-to-one>
 
     <!-- bi-directional one-to-many association to Project -->
@@ -193,7 +221,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to Attachment -->
-    <set name="attachments" inverse="true" cascade="save-update">
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
         <key column="AgentID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>
@@ -267,19 +295,19 @@
     </set>
 
     <!-- bi-directional one-to-many association to Permit -->
-    <set name="permitsByIssuee" lazy="true" inverse="true" cascade="none">
+    <set name="permitsIssuedTo" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
-            <column name="IssueeID"/>
+            <column name="IssuedToID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Permit"/>
     </set>
 
     <!-- bi-directional one-to-many association to Permit -->
-    <set name="permitsByIssuer" lazy="true" inverse="true" cascade="none">
+    <set name="permitsIssuedBy" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
-            <column name="IssuerID"/>
+            <column name="IssuedByID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Permit"/>
     </set>
@@ -310,6 +338,20 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
     </set>
-
+    
+    <!-- bi-directional one-to-many association to SpecifyUser -->
+    <set name="specifyUsers" lazy="true" inverse="true" cascade="all-delete-orphan">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="AgentID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
+    </set>
+    
+    <!-- bi-directional one-to-one association to SpecifyUser -->
+    <!-- <one-to-one name="specifyUser" class="edu.ku.brc.specify.datamodel.SpecifyUser" >
+    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </one-to-one> -->
 </class>
 </hibernate-mapping>

@@ -51,18 +51,19 @@
         <many-to-one name="treeDef"
             column="GeologicTimePeriodTreeDefID"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
-            lazy="false">
+            lazy="false"
+            cascade="save-update">
             <meta attribute="scope-field">protected</meta>
         </many-to-one>
 
         <many-to-one name="parent" column="ParentItemID"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
-            cascade="save-update" lazy="false">
+            cascade="none" lazy="false">
             <meta attribute="scope-field">protected</meta>
         </many-to-one>
 
         <set name="treeEntries" table="GeologicTimePeriod"
-            inverse="true" lazy="false">
+            inverse="true" lazy="false" cascade="all-delete-orphan">
             <meta attribute="scope-field">protected</meta>
             <key column="GeologicTimePeriodTreeDefItemID" />
             <one-to-many
@@ -70,7 +71,7 @@
         </set>
 
         <set name="children" table="GeologicTimePeriodTreeDefItem"
-            inverse="true" lazy="false">
+            inverse="true" lazy="false" cascade="all-delete-orphan">
             <meta attribute="scope-field">protected</meta>
             <key column="ParentItemID" />
             <one-to-many

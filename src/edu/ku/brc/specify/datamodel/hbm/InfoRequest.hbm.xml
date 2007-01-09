@@ -10,7 +10,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="number" type="java.lang.String" column="Number" length="32">
@@ -64,14 +64,13 @@
     <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" cascade="save-update" not-null="true" outer-join="auto" lazy="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="RecordSetID"/>
+        <column name="RecordSetID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" not-null="false" outer-join="auto" lazy="false">
         <meta attribute="field-description"></meta>
-        <column name="AgentID"/>
+        <column name="AgentID"  not-null="false"/>
     </many-to-one>
 
 </class>

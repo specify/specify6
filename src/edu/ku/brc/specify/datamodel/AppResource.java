@@ -63,9 +63,13 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      protected String                  description;
      protected String                  mimeType;
      protected String                  metaData;
+     protected Integer ownerPermissionLevel;
+     protected Integer groupPermissionLevel;
+     protected Integer allPermissionLevel;
      protected Set<AppResourceData>    appResourceDatas;
      protected Set<AppResourceDefault> appResourceDefaults;
-     
+     protected SpecifyUser specifyUser;
+     protected UserGroup group;     
      // Non Persisted Fields
      protected String                    fileName     = null;
      protected Hashtable<String, String> metaDataHash = null;
@@ -97,9 +101,13 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         timestampCreated    = new Date();
         timestampModified   = null;
         lastEditedBy        = null;
+        ownerPermissionLevel = null;
+        groupPermissionLevel = null;
+        allPermissionLevel = null;
         appResourceDefaults = new HashSet<AppResourceDefault>();
         appResourceDatas    = new HashSet<AppResourceData>();
-        
+        specifyUser = null;
+        group = null;       
         fileName = null;
     }
     // End Initializer
@@ -222,6 +230,16 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         this.metaData = metaData;
     }
     
+    /**
+     * 
+     */
+    public Integer getOwnerPermissionLevel() {
+        return this.ownerPermissionLevel;
+    }
+    
+    public void setOwnerPermissionLevel(Integer ownerPermissionLevel) {
+        this.ownerPermissionLevel = ownerPermissionLevel;
+    }  
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getMetaDataMap()
@@ -231,6 +249,28 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         initMetaData();
         
         return metaDataHash;
+    }
+
+    /**
+     * 
+     */
+    public Integer getGroupPermissionLevel() {
+        return this.groupPermissionLevel;
+    }
+    
+    public void setGroupPermissionLevel(Integer groupPermissionLevel) {
+        this.groupPermissionLevel = groupPermissionLevel;
+    }
+
+    /**
+     * 
+     */
+    public Integer getAllPermissionLevel() {
+        return this.allPermissionLevel;
+    }
+    
+    public void setAllPermissionLevel(Integer allPermissionLevel) {
+        this.allPermissionLevel = allPermissionLevel;
     }
 
     /**
@@ -259,6 +299,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         }
     }
 
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getAppResourceDefaults()
      */
@@ -272,7 +313,34 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults) {
         this.appResourceDefaults = appResourceDefaults;
     }
-
+    /**
+     * 
+     */
+    public SpecifyUser getSpecifyUser() {
+        return this.specifyUser;
+    }
+    /**
+     * 
+     */
+    public SpecifyUser getOwner() {
+        return this.specifyUser;
+    }
+    public void setSpecifyUser(SpecifyUser owner) {
+        this.specifyUser = owner;
+    }
+    public void setOwner(SpecifyUser owner) {
+        this.specifyUser = owner;
+    }  
+    /**
+     * 
+     */
+    public UserGroup getGroup() {
+        return this.group;
+    }
+    
+    public void setGroup(UserGroup group) {
+        this.group = group;
+    }
     public String getFileName()
     {
         return fileName;

@@ -142,6 +142,17 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
+    public Workbench getWorkbench() {
+        return this.owner;
+    }
+    
+    public void setWorkbench(Workbench owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * 
+     */
     public Workbench getOwner() {
         return this.owner;
     }
@@ -149,8 +160,6 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     public void setOwner(Workbench owner) {
         this.owner = owner;
     }
-
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

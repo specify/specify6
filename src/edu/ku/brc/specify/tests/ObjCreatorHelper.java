@@ -20,7 +20,7 @@ import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgents;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
-import edu.ku.brc.specify.datamodel.BorrowShipments;
+//import edu.ku.brc.specify.datamodel.BorrowShipments;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -75,6 +75,7 @@ import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.datamodel.UserPermission;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
@@ -147,7 +148,10 @@ public class ObjCreatorHelper
                                                           final String disciplineName,
                                                           final DataType dataType,
                                                           final SpecifyUser user,
-                                                          final TaxonTreeDef taxonTreeDef)
+                                                          final TaxonTreeDef taxonTreeDef,
+                                                          final GeographyTreeDef geographyTreeDef,
+                                                          final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
+                                                          final LocationTreeDef locationTreeDef)
     {
         CollectionObjDef colObjDef = new CollectionObjDef();
         colObjDef.initialize();
@@ -156,8 +160,11 @@ public class ObjCreatorHelper
         colObjDef.setDataType(dataType);
         colObjDef.setSpecifyUser(user);
         colObjDef.setTaxonTreeDef(taxonTreeDef);
-
+        colObjDef.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
+        colObjDef.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
+        colObjDef.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
         taxonTreeDef.setCollObjDef(colObjDef);
+        
 
         if (session != null)
         {
@@ -1009,7 +1016,7 @@ public class ObjCreatorHelper
                                       final Calendar receivedDate,
                                       final Calendar originalDueDate,
                                       final Calendar dateClosed,
-                                      final Short closed,
+                                      final Boolean isClosed,
                                       final Calendar currentDueDate)
     {
         Borrow borrow = new Borrow();
@@ -1021,7 +1028,7 @@ public class ObjCreatorHelper
         borrow.setOriginalDueDate(originalDueDate);
         borrow.setDateClosed(dateClosed);
         borrow.setCurrentDueDate(currentDueDate);
-        borrow.setClosed(closed);
+        borrow.setIsClosed(isClosed);
         if (session != null)
         {
           session.saveOrUpdate(borrow);
@@ -1095,35 +1102,35 @@ public class ObjCreatorHelper
         return borrowreturnmaterial;
     }
 
-    public static BorrowShipments createBorrowShipment(final Shipment shipment,
-                                                      final Borrow borrow)
-    {
-        BorrowShipments borrowshipment = new BorrowShipments();
-        borrowshipment.initialize();
-        borrowshipment.setTimestampCreated(new Date());
-        borrowshipment.setTimestampModified(new Date());
-        borrowshipment.setShipment(shipment);
-        borrowshipment.setBorrow(borrow);
-        if (session != null)
-        {
-          session.saveOrUpdate(borrowshipment);
-        }
-        return borrowshipment;
-    }
+//    public static BorrowShipments createBorrowShipment(final Shipment shipment,
+//                                                      final Borrow borrow)
+//    {
+//        BorrowShipments borrowshipment = new BorrowShipments();
+//        borrowshipment.initialize();
+//        borrowshipment.setTimestampCreated(new Date());
+//        borrowshipment.setTimestampModified(new Date());
+//        borrowshipment.setShipment(shipment);
+//        borrowshipment.setBorrow(borrow);
+//        if (session != null)
+//        {
+//          session.saveOrUpdate(borrowshipment);
+//        }
+//        return borrowshipment;
+//    }
 
     public static CatalogSeries createCatalogSeries(final Boolean isTissueSeries,
                                                     final String seriesName,
-                                                    final String catalogSeriesPrefix,
-                                                    final CatalogSeries tissue)
+                                                    final String catalogSeriesPrefix)//,
+                                                    //final CatalogSeries tissue)
     {
         CatalogSeries catalogseries = new CatalogSeries();
         catalogseries.initialize();
         catalogseries.setTimestampCreated(new Date());
         catalogseries.setTimestampModified(new Date());
-        catalogseries.setIsTissueSeries(isTissueSeries);
+        //catalogseries.setIsTissueSeries(isTissueSeries);
         catalogseries.setSeriesName(seriesName);
         catalogseries.setCatalogSeriesPrefix(catalogSeriesPrefix);
-        catalogseries.setTissue(tissue);
+        //catalogseries.setTissue(tissue);
         if (session != null)
         {
           session.saveOrUpdate(catalogseries);
@@ -1225,7 +1232,7 @@ public class ObjCreatorHelper
                                                           final Calendar catalogedDate,
                                                           final String catalogedDateVerbatim,
                                                           final String guid,
-                                                          final String altCatalogNumber,
+                                                          //final String altCatalogNumber,
                                                           final Integer groupPermittedToView,
                                                           final Boolean deaccessioned,
                                                           final Float catalogNumber,
@@ -1247,7 +1254,7 @@ public class ObjCreatorHelper
         collectionobject.setCatalogedDate(catalogedDate);
         collectionobject.setCatalogedDateVerbatim(catalogedDateVerbatim);
         collectionobject.setGuid(guid);
-        collectionobject.setAltCatalogNumber(altCatalogNumber);
+        //collectionobject.setAltCatalogNumber(altCatalogNumber);
         collectionobject.setGroupPermittedToView(groupPermittedToView);
         collectionobject.setDeaccessioned(deaccessioned);
         collectionobject.setCatalogNumber(catalogNumber);
@@ -1527,8 +1534,8 @@ public class ObjCreatorHelper
         groupperson.setTimestampCreated(new Date());
         groupperson.setTimestampModified(new Date());
         groupperson.setOrderNumber(orderNumber);
-        groupperson.setAgentByGroup(agentByGroup);
-        groupperson.setAgentByMember(agentByMember);
+        groupperson.setGroup(agentByGroup);
+        groupperson.setMember(agentByMember);
         if (session != null)
         {
           session.saveOrUpdate(groupperson);
@@ -1595,7 +1602,8 @@ public class ObjCreatorHelper
         loan.initialize();
         loan.setTimestampCreated(new Date());
         loan.setTimestampModified(new Date());
-        loan.setShipment(shipment);
+        //loan.setShipment(shipment);
+        loan.addShipment(shipment);
         loan.setOriginalDueDate(originalDueDate);
         loan.setDateClosed(dateClosed);
         loan.setCurrentDueDate(currentDueDate);
@@ -1628,12 +1636,12 @@ public class ObjCreatorHelper
         return loanagent;
     }
 
-    public static LoanPhysicalObject createLoanPhysicalObject(final Short quantity,
+    public static LoanPhysicalObject createLoanPhysicalObject(final Integer quantity,
                                                               final String descriptionOfMaterial,
                                                               final String outComments,
                                                               final String inComments,
-                                                              final Short quantityResolved,
-                                                              final Short quantityReturned,
+                                                              final Integer quantityResolved,
+                                                              final Integer quantityReturned,
                                                               final Preparation preparation,
                                                               final Loan loan)
     {
@@ -1657,7 +1665,7 @@ public class ObjCreatorHelper
     }
 
     public static LoanReturnPhysicalObject createLoanReturnPhysicalObject(final Calendar returnedDate,
-                                                                          final Short quantity,
+                                                                          final Integer quantity,
                                                                           final LoanPhysicalObject loanPhysicalObject,
                                                                           final DeaccessionCollectionObject deaccessionCollectionObject,
                                                                           final Agent agent)
@@ -1666,7 +1674,7 @@ public class ObjCreatorHelper
         loanreturnphysicalobject.initialize();
         loanreturnphysicalobject.setTimestampCreated(new Date());
         loanreturnphysicalobject.setTimestampModified(new Date());
-        loanreturnphysicalobject.setAgent(agent);
+        loanreturnphysicalobject.setReceivedBy(agent);
         loanreturnphysicalobject.setReturnedDate(returnedDate);
         loanreturnphysicalobject.setQuantity(quantity);
         loanreturnphysicalobject.setLoanPhysicalObject(loanPhysicalObject);
@@ -1901,7 +1909,7 @@ public class ObjCreatorHelper
         recordset.setTimestampCreated(new Date());
         recordset.setTimestampModified(new Date());
         recordset.setRecordSetId(recordSetID);
-        recordset.setOwner(owner);
+        recordset.setSpecifyUser(owner);
         recordset.setName(name);
         if (session != null)
         {
@@ -1930,7 +1938,7 @@ public class ObjCreatorHelper
                                                     final String pages,
                                                     final String url,
                                                     final String libraryNumber,
-                                                    final Short published,
+                                                    final Boolean isPublished,
                                                     final Journal journal)
     {
         ReferenceWork referencework = new ReferenceWork();
@@ -1945,7 +1953,7 @@ public class ObjCreatorHelper
         referencework.setVolume(volume);
         referencework.setPages(pages);
         referencework.setLibraryNumber(libraryNumber);
-        referencework.setPublished(published);
+        referencework.setIsPublished(isPublished);
         referencework.setJournal(journal);
         referencework.setTitle(title);
         if (session != null)
@@ -1993,15 +2001,15 @@ public class ObjCreatorHelper
         shipment.initialize();
         shipment.setTimestampCreated(new Date());
         shipment.setTimestampModified(new Date());
-        shipment.setAgent(agent);
+        shipment.setShippedBy(agent);
         shipment.setShipmentDate(shipmentDate);
         shipment.setShipmentNumber(shipmentNumber);
         shipment.setShipmentMethod(shipmentMethod);
         shipment.setNumberOfPackages(numberOfPackages);
         shipment.setWeight(weight);
         shipment.setInsuredForAmount(insuredForAmount);
-        shipment.setAgentByShipper(agentAddressByShipper);
-        shipment.setAgentByShippedTo(agentAddressByShippedTo);
+        shipment.setShipper(agentAddressByShipper);
+        shipment.setShippedTo(agentAddressByShippedTo);
         if (session != null)
         {
           session.saveOrUpdate(shipment);
@@ -2009,19 +2017,75 @@ public class ObjCreatorHelper
         return shipment;
     }
 
+//    public static UserPermission createUserPermission(SpecifyUser specifyUser,
+//                                                final boolean dataAccessPrivilege,
+//                                                final boolean adminPrivilege,
+//                                                final CollectionObjDef[] collectionObjDef)
+//    {
+//        UserPermission permission = new UserPermission();
+//        permission.setSpecifyUser(specifyUser);
+//        permission.setDataAccessPrivilege(dataAccessPrivilege);
+//        permission.setAdminPrivilege(adminPrivilege);
+//        //permission.setCollectionObjDef(collectionObjDef);
+//        if(collectionObjDef!=null) {
+//            for(CollectionObjDef objDef : collectionObjDef)
+//            {
+//                permission.addCollectionObjDefs(objDef);
+//                //specifyuser.addUserGroups(permssion);
+//            }
+//        }
+////        SpecifyUser specifyuser = new SpecifyUser();
+////        specifyuser.initialize();
+////        specifyuser.setEmail(email);
+////        specifyuser.setPrivLevel(privLevel);
+////        //specifyuser.setUserGroup(userGroup);
+////        specifyuser.setName(name);
+////        specifyuser.setUserType(userType);
+////        
+//        if (session != null)
+//        {
+//          session.saveOrUpdate(permission);
+//        }
+//        return permission;
+//    }
     public static SpecifyUser createSpecifyUser(final String name,
                                                 final String email,
                                                 final Short privLevel,
-                                                final UserGroup userGroup,
                                                 final String userType)
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
         specifyuser.setEmail(email);
         specifyuser.setPrivLevel(privLevel);
-        specifyuser.setUserGroup(userGroup);
+        //specifyuser.setUserGroup(userGroup);
         specifyuser.setName(name);
         specifyuser.setUserType(userType);
+        
+        if (session != null)
+        {
+          session.saveOrUpdate(specifyuser);
+        }
+        return specifyuser;
+    }
+    public static SpecifyUser createSpecifyUser(final String name,
+                                                final String email,
+                                                final Short privLevel,
+                                                final UserGroup[] userGroups,
+                                                final String userType)
+    {
+        SpecifyUser specifyuser = new SpecifyUser();
+        specifyuser.initialize();
+        specifyuser.setEmail(email);
+        specifyuser.setPrivLevel(privLevel);
+        //specifyuser.setUserGroup(userGroup);
+        specifyuser.setName(name);
+        specifyuser.setUserType(userType);
+        if(userGroups!=null) {
+            for(UserGroup group : userGroups)
+            {
+                specifyuser.addUserGroups(group);
+            }
+        }
         if (session != null)
         {
           session.saveOrUpdate(specifyuser);
@@ -2040,7 +2104,14 @@ public class ObjCreatorHelper
         stratigraphy.initialize();
         stratigraphy.setTimestampCreated(new Date());
         stratigraphy.setTimestampModified(new Date());
-        stratigraphy.setCollectingEvent(collectingEvent);
+        
+        HashSet<CollectingEvent> collectingEvents = new HashSet<CollectingEvent>();
+        if (collectingEvent != null)
+        {
+            collectingEvents.add(collectingEvent);
+            collectingEvent.setStratigraphy(stratigraphy);
+        }
+        stratigraphy.setCollectingEvents(collectingEvents);
         stratigraphy.setSuperGroup(superGroup);
         stratigraphy.setLithoGroup(lithoGroup);
         stratigraphy.setFormation(formation);
@@ -2080,6 +2151,23 @@ public class ObjCreatorHelper
         }
         return usergroup;
     }
+    
+    public static UserPermission createUserPermission(SpecifyUser owner, 
+                                                      CollectionObjDef objDef, 
+                                                      boolean adminPrivilege, 
+                                                      boolean dataAccessPrivilege)
+    {
+        UserPermission permission = new UserPermission();
+        permission.setAdminPrivilege(adminPrivilege);
+        permission.setCollectionObjDef(objDef);
+        permission.setDataAccessPrivilege(dataAccessPrivilege);
+        permission.setSpecifyUser(owner);
+        if (session != null)
+        {
+          session.saveOrUpdate(permission);
+        }
+        return permission;
+    }
 
     public static Workbench createWorkbench(final String name,
     		                                final String remarks,
@@ -2096,7 +2184,7 @@ public class ObjCreatorHelper
     	workbench.setTimestampCreated(new Date());
     	workbench.setTimestampModified(new Date());
     	workbench.setWorkbenchItems(new HashSet<WorkbenchDataItem>());
-    	workbench.setWorkbenchTemplates(workbenchTemplate);
+    	workbench.setWorkbenchTemplate(workbenchTemplate);
     	
         saveOrUpdate(workbench);
 

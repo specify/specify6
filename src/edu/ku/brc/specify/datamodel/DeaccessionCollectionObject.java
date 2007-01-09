@@ -138,6 +138,7 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
         return this.collectionObject;
     }
     
+
     public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
     }

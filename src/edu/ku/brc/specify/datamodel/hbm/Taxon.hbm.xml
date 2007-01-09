@@ -57,12 +57,23 @@
 
         <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50"/>
 
-        <property name="accepted" type="short" column="Accepted"/>
+        <property name="isAccepted" type="boolean" column="IsAccepted"/>
 
         <property name="rankId" type="java.lang.Integer" column="RankID" length="10"/>
 
         <property name="groupNumber" type="java.lang.String" length="20" column="GroupNumber"/>
-
+    
+    	<!--@TODO make this field != null> -->
+    	<property name="visibility" type="java.lang.Integer" column="Visibility"  length="10">
+        	<meta attribute="scope-field">protected</meta>
+        	<meta attribute="field-description">Indicates whether this record can be viewed - by owner, by instituion, or by all</meta>  
+    	</property> 
+ 
+      	<property name="visibilitySetBy" type="java.lang.String" column="VisibilitySetBy" length="50">
+        	<meta attribute="scope-field">protected</meta>
+        	<meta attribute="field-description"></meta>
+     	</property>   
+           	
         <!-- Associations -->
 
         <set name="determinations" inverse="true" cascade="none">
@@ -78,33 +89,33 @@
 
         <!-- bi-directional many-to-one association to Taxon -->
         <many-to-one name="acceptedTaxon" class="edu.ku.brc.specify.datamodel.Taxon"
-            outer-join="true" column="AcceptedID" />
+            outer-join="true" column="AcceptedID" cascade="save-update"/>
 
         <!-- bi-directional one-to-many association to TaxonCitation -->
-        <set name="taxonCitations" inverse="true" cascade="none">
+        <set name="taxonCitations" inverse="true" cascade="all-delete-orphan">
             <key column="TaxonID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.TaxonCitation" />
         </set>
 
         <!-- bi-directional many-to-one association to TaxonTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-            not-null="true" outer-join="true" column="TaxonTreeDefID" />
+            not-null="true" outer-join="true" cascade="none" column="TaxonTreeDefID" />
 
         <!-- bi-directional many-to-one association to TaxonTreeDefItem -->
         <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
-            not-null="true" outer-join="true" column="TaxonTreeDefItemID"/>
+            not-null="true" cascade="save-update" outer-join="true" column="TaxonTreeDefItemID"/>
 
         <!-- bi-directional many-to-one association to Taxon -->
-        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Taxon"
+        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Taxon" cascade="none" 
         	outer-join="true" column="ParentID" lazy="false"/>
 
         <!-- bi-directional one-to-many association to Attachment -->
-        <set name="attachments" inverse="true" cascade="save-update">
+        <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
             <key column="TaxonID"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
         </set>
 
-        <set name="children" inverse="true" cascade="none" fetch="join">
+        <set name="children" inverse="true" cascade="all-delete-orphan" fetch="join">
             <key column="ParentID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
         </set>

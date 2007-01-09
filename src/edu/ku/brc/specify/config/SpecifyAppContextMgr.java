@@ -441,6 +441,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                       final CatalogSeries catSeries,
                                       final CollectionObjDef colObjDef)
     {
+        log.debug("finding AppResourceDefault");
         for (Object obj : appResDefList)
         {
             AppResourceDefault ard = (AppResourceDefault)obj;
@@ -466,6 +467,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected AppResourceDefault createAppResourceDefFromDir(final File dir)
     {
+        log.debug("Creating AppResourceDef from Dir");
         AppResourceDefault appResDef = new AppResourceDefault();
         appResDef.initialize();
 
@@ -524,6 +526,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         strBuf.append(" COD["+(cod != null ? cod.getName() : "null") + "]");
         strBuf.append(" DSP["+appResDef.getDisciplineType() + "]");
         strBuf.append(" UTYP["+appResDef.getUserType() + "]");
+        log.debug("AppResDefAsString - "  + strBuf.toString());
         return strBuf.toString();
     }
 
@@ -534,6 +537,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                      final String userName,
                                      final boolean startingOver)
     {
+        log.debug("setting context - databaseName: " + databaseName + " userName: " + userName);
         this.databaseName = databaseName;
         this.userName     = userName;
         
@@ -652,7 +656,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 AppResourceDefault appResource = createAppResourceDefFromDir(dir);
                 appResource.setDisciplineType(discipline);
                 appResource.setUserType(userType);
-                //log.debug("Adding2 "+getAppResDefAsString(appResource));
+                appResource.setSpecifyUser(user);//added to fix not-null constraints
+                log.debug("Adding2 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
             } else
             {
@@ -669,7 +674,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 AppResourceDefault appResource = createAppResourceDefFromDir(dir);
                 appResource.setDisciplineType(discipline);
-                //log.debug("Adding3 "+getAppResDefAsString(appResource));
+                appResource.setSpecifyUser(user);
+                log.debug("Adding3 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
             } else
             {
@@ -993,6 +999,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                 appRes.setMimeType(mimeType);
                                 appRes.setDescription(desc);
                                 appRes.setMetaData(metaData);
+                                appRes.setSpecifyUser(user);//added to fix not-null constraint issue
 
                                 appRes.setFileName(resFile.getAbsolutePath());
 

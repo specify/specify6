@@ -13,7 +13,7 @@
     
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="containingReferenceWorkId" type="java.lang.Integer" column="ContainingReferenceWorkID" length="10" index="IX_ReferenceWorkContainingReferenceWorkID">
@@ -101,7 +101,7 @@
         <meta attribute="field-description"></meta>
     </property>
     
-    <property name="published" type="short" column="Published">
+    <property name="isPublished" type="boolean" column="IsPublished">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
@@ -121,15 +121,16 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to LocalityCitation -->
-    <set name="localityCitations" lazy="true" inverse="true" cascade="none">
+    <set name="localityCitations" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ReferenceWorkID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.LocalityCitation"/>
     </set>
+    
     <!-- bi-directional one-to-many association to CollectionObjectCitation -->
-    <set name="collectionObjectCitations" lazy="true" inverse="true" cascade="none">
+    <set name="collectionObjectCitations" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ReferenceWorkID"/>
@@ -138,30 +139,32 @@
     </set>
 
     <!-- bi-directional one-to-many association to TaxonCitation -->
-    <set name="taxonCitations" lazy="true" inverse="true" cascade="none">
+    <set name="taxonCitations" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ReferenceWorkID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.TaxonCitation"/>
     </set>
+    
     <!-- bi-directional one-to-many association to DeterminationCitation -->
-    <set name="determinationCitations" lazy="true" inverse="true" cascade="none">
+    <set name="determinationCitations" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ReferenceWorkID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
     </set>
-    <!-- bi-directional many-to-one association to Journal -->
-    <many-to-one name="journal" class="edu.ku.brc.specify.datamodel.Journal" not-null="true" outer-join="true" index="IX_ReferenceWorkJournalID">
+    
+    <!-- bi-directional many-to-one association to Journal not-null="true"-->
+    <many-to-one name="journal" class="edu.ku.brc.specify.datamodel.Journal" cascade="save-update" outer-join="true" index="IX_ReferenceWorkJournalID">
         <meta attribute="field-description">Link to Journal containing the reference (if applicable)</meta>
-        <column name="JournalID"/>
+        <column name="JournalID"  />
     </many-to-one>
 
 
 	    <!-- bi-directional one-to-many association to Authors -->
-    <set name="authors" lazy="true" inverse="true" cascade="delete">
+    <set name="authors" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ReferenceWorkID"/>

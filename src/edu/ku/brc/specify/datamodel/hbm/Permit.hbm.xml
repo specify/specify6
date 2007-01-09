@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="permitNumber" type="java.lang.String" column="PermitNumber" not-null="true" length="50" index="IX_Permit">
@@ -95,7 +95,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->
-    <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="none">
+    <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="save-update">
         <meta attribute="field-description"></meta>
         <key>
             <column name="PermitID"/>
@@ -103,20 +103,20 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"/>
     </set>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="AgentByIssuee" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent not-null="true"-->
+    <many-to-one name="issuedTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">AgentID of Issuee</meta>
-        <column name="IssueeID"/>
+        <column name="IssuedToID"  />
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="AgentByIssuer" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent not-null="true"-->
+    <many-to-one name="issuedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">AgentID of Issuer</meta>
-        <column name="IssuerID"/>
+        <column name="IssuedByID"  />
     </many-to-one>
 
     <!-- bi-directional one-to-many association to Attachment -->
-    <set name="attachments" inverse="true" cascade="save-update">
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
         <key column="PermitID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>

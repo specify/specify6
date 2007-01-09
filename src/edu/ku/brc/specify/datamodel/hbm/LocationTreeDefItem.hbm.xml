@@ -48,7 +48,7 @@
 
         <!-- bi-directional many-to-one association to TreeDef -->
         <many-to-one name="treeDef" column="LocationTreeDefID"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false">
+            class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false" cascade="save-update">
             <meta attribute="scope-field">protected</meta>
         </many-to-one>
 
@@ -59,14 +59,14 @@
         </many-to-one>
 
         <set name="treeEntries" table="location" inverse="true"
-            lazy="true">
+            lazy="true" cascade="save-update">
             <meta attribute="scope-field">protected</meta>
             <key column="LocationTreeDefItemID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Location" />
         </set>
 
         <set name="children" table="locationtreedefitem" inverse="true"
-            lazy="false">
+            lazy="false" cascade="save-update">
             <meta attribute="scope-field">protected</meta>
             <key column="ParentItemID" />
             <one-to-many

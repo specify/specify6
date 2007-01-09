@@ -18,7 +18,7 @@
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50"/>
 
 	<!-- bi-directional many-to-one association to Attachment -->
-    <many-to-one name="attachment" class="edu.ku.brc.specify.datamodel.Attachment" outer-join="true">
+    <many-to-one name="attachment" class="edu.ku.brc.specify.datamodel.Attachment" cascade="none" outer-join="true">
         <column name="AttachmentID"/>
     </many-to-one>
 	

@@ -34,7 +34,10 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparationAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createTaxonTreeDef;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDef;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocationTreeDef;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
@@ -115,10 +118,13 @@ import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -340,12 +346,18 @@ public class FormEditor implements DatabaseLoginListener
     public CollectionObject[] createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         UserGroup        userGroup        = createUserGroup(disciplineName);
-        SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
+        SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
         DataType         dType            = createDataType(disciplineName);
 
 
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("TreeDef");
-        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dType, user, taxonTreeDef);
+        GeographyTreeDef geographyTreeDef = createGeographyTreeDef("GeographyDef");//meg added to allow for not-null constraints
+        GeologicTimePeriodTreeDef geologicTimePeriodTreeDef = createGeologicTimePeriodTreeDef("GeologicTimePeriodTreeDef");//meg added to allow for not-null constraints
+        LocationTreeDef locationTreeDef = createLocationTreeDef("LocationDef");
+        
+        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dType, user, taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef,locationTreeDef);
+       
+        //CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dType, user, taxonTreeDef);
 
         Geography[] geographies = createGeographies(collectionObjDef, "GeoTree");
 

@@ -45,7 +45,9 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
      protected String name;
      protected String remarks;
      protected Set<SpecifyUser> specifyUsers;
-
+     protected Set<RecordSet> recordsets;
+     private Set<Workbench> workbenches;
+     protected Set<AppResource> appResources;
 
     // Constructors
 
@@ -68,6 +70,9 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
         name = null;
         remarks = null;
         specifyUsers = new HashSet<SpecifyUser>();
+        recordsets = new HashSet<RecordSet>();
+        workbenches = new HashSet<Workbench>();
+        appResources = new HashSet<AppResource>();
     }
     // End Initializer
 
@@ -134,26 +139,88 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
         this.specifyUsers = specifyUsers;
     }
 
+    /**
+    *
+    */
+   public Set<RecordSet> getRecordsets() {
+       return this.recordsets;
+   }
 
+   public void setRecordsets(Set<RecordSet> recordSets) {
+       this.recordsets = recordSets;
+   }
 
-
-
+   /**
+    * 
+    */
+   public Set<AppResource> getAppResources() {
+       return this.appResources;
+   }
+   
+   public void setAppResources(Set<AppResource> appResource) {
+       this.appResources = appResource;
+   } 
+   /**
+    * 
+    */
+   public Set getWorkbenches() {
+       return this.workbenches;
+   }
+   
+   public void setWorkbenches(Set workbench) {
+       this.workbenches = workbench;
+   }
     // Add Methods
 
-    public void addSpecifyUsers(final SpecifyUser specifyUser)
+    public void addSpecifyUser(final SpecifyUser specifyUserArg)
     {
-        this.specifyUsers.add(specifyUser);
-        specifyUser.setUserGroup(this);
+        this.specifyUsers.add(specifyUserArg);
+        specifyUserArg.getUserGroup().add(this);
     }
 
+    public void addWorkbench(final Workbench workbench)
+    {
+        this.workbenches.add(workbench);
+        workbench.setGroup(this);
+    }
+    
+    public void addRecordSet(RecordSet recordSet)
+    {
+        this.recordsets.add(recordSet);
+        recordSet.setGroup(this);
+    }
+    
+    public void addAppResource(AppResource appResource)
+    {
+        this.appResources.add(appResource);
+        appResource.setGroup(this);
+    }
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeSpecifyUsers(final SpecifyUser specifyUser)
+    public void removeSpecifyUser(final SpecifyUser specifyUserArg)
     {
-        this.specifyUsers.remove(specifyUser);
-        specifyUser.setUserGroup(null);
+        this.specifyUsers.remove(specifyUserArg);
+        specifyUserArg.getUserGroup().remove(this);
+        //specifyUserArg.setUserGroup(null);
+    }
+    
+    public void removeWorkbench(Workbench workbench)
+    {
+        this.workbenches.remove(workbench);
+        workbench.setGroup(null);
+    }
+    
+    public void removeRecordSet(RecordSet recordSet)
+    {
+        this.recordsets.remove(recordSet);
+        recordSet.setGroup(null);
+    }
+    public void removeAppResource(AppResource appResource)
+    {
+        this.appResources.remove(appResource);
+        appResource.setGroup(null);
     }
 
     // Delete Add Methods
@@ -166,5 +233,9 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     {
         return 78;
     }
-
+    public String getIdentityTitle()
+    { 
+        if(name!=null)return name;
+        return super.getIdentityTitle();
+    }
 }

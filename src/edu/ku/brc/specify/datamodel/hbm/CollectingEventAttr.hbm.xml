@@ -14,7 +14,7 @@
 	
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="strValue" type="java.lang.String" column="StrValue" length="255">
@@ -31,21 +31,23 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
-    
+     	
+ 
+    	 
     <!-- Associations -->
     
     <!-- bi-directional many-to-one association to CollectingEvent -->
-    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" outer-join="true">
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" cascade="none" outer-join="true">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="CollectingEventID"/>
+        <column name="CollectingEventID"  not-null="true"/>
     </many-to-one>
    
     <!-- bi-directional many-to-one association to AttributeDef -->
-    <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" not-null="true" outer-join="true">
+    <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" cascade="save-update" outer-join="true">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="AttributeDefID"/>
+        <column name="AttributeDefID"  not-null="true"/>
     </many-to-one>    
     
 </class>

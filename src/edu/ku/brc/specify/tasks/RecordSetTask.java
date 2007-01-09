@@ -51,6 +51,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -168,7 +169,7 @@ public class RecordSetTask extends BaseTask
         addDraggableDataFlavors(nbi);
         
         recordSet.setTimestampCreated(Calendar.getInstance().getTime());
-
+        recordSet.setOwner(SpecifyUser.getCurrentUser());
         persistRecordSet(recordSet);
         
 

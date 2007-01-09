@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="fieldNumber" type="java.lang.String" column="FieldNumber" length="50" index="IX_CollectionObjectFldNum">
@@ -90,11 +90,6 @@
         <meta attribute="field-description"></meta>
     </property>
 
-    <property name="altCatalogNumber" type="java.lang.String" column="AltCatalogNumber" length="32" index="INX_ALTCATALOGNUMBER">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-    </property>
-
     <property name="groupPermittedToView" type="java.lang.Integer" column="GroupPermittedToView" length="10">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
@@ -120,26 +115,35 @@
         <meta attribute="field-description"></meta>
     </property>
 
-
-    <!-- Associations -->
-
-    <!-- bi-directional many-to-one association to CollectingEvent -->
-    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" outer-join="true" cascade="none" index="IX_CollectionObjectCollectingEventID">
-    <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">BiologicalObject (Bird, Fish, etc)</meta>
-        <column name="CollectingEventID"/>
-    </many-to-one>
-
-    <!-- bi-directional many-to-one association to ContainerItem -->
-    <many-to-one name="containerItem" class="edu.ku.brc.specify.datamodel.ContainerItem" not-null="false" outer-join="auto">
+    <!--@TODO make this field != null> -->
+    <property name="visibility" type="java.lang.Integer" column="Visibility"  length="10">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Indicates whether this record can be viewed - by owner, by instituion, or by all</meta>  
+    </property> 
+    
+    <property name="visibilitySetBy" type="java.lang.String" column="VisibilitySetBy" length="50"  >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="ContainerItemID"/>
+    </property>        
+    <!-- Associations -->
+
+    <!-- bi-directional many-to-one association to CollectingEvent not-null="true"-->
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" cascade="save-update" outer-join="true" index="IX_CollectionObjectCollectingEventID">
+    	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">BiologicalObject (Bird, Fish, etc)</meta>
+        <column name="CollectingEventID"  />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to ContainerItem  not-null="false"-->
+    <many-to-one name="containerItem" class="edu.ku.brc.specify.datamodel.ContainerItem" cascade="all" outer-join="auto">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <column name="ContainerItemID" />
     </many-to-one>
 
     <!-- bi-directional one-to-many association to CollectionObjectCitation -->
-    <set name="collectionObjectCitations" lazy="true" inverse="true" cascade="delete">
-    <meta attribute="scope-field">protected</meta>
+    <set name="collectionObjectCitations" lazy="true" inverse="true" cascade="all">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectionObjectID"/>
@@ -148,8 +152,8 @@
     </set>
 
     <!-- bi-directional one-to-many association to CollectionObjectAttr -->
-    <set name="attrs" lazy="true" inverse="true" cascade="delete">
-    <meta attribute="scope-field">protected</meta>
+    <set name="attrs" lazy="true" inverse="true" cascade="all">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectionObjectID"/>
@@ -177,11 +181,11 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.Determination"/>
     </set>
 
-    <!-- bi-directional many-to-one association to CollectionObjDef -->
-    <many-to-one name="collectionObjDef" class="edu.ku.brc.specify.datamodel.CollectionObjDef" not-null="false" outer-join="auto">
+    <!-- bi-directional many-to-one association to CollectionObjDef  not-null="true"-->
+    <many-to-one name="collectionObjDef" class="edu.ku.brc.specify.datamodel.CollectionObjDef" cascade="none" outer-join="auto">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="CollectionObjDefID"/>
+        <column name="CollectionObjDefID" />
     </many-to-one>
 
 
@@ -209,7 +213,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to OtherIdentifier -->
-    <set name="otherIdentifiers" lazy="true" inverse="true" cascade="delete">
+    <set name="otherIdentifiers" lazy="true" inverse="true" cascade="all">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -219,39 +223,39 @@
     </set>
 
     <!-- bi-directional many-to-one association to CatalogSeries -->
-    <many-to-one name="catalogSeries" class="edu.ku.brc.specify.datamodel.CatalogSeries" not-null="true" outer-join="true">
+    <many-to-one name="catalogSeries" class="edu.ku.brc.specify.datamodel.CatalogSeries" cascade="save-update" outer-join="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="CatalogSeriesID"/>
+        <column name="CatalogSeriesID"  not-null="true"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="true" outer-join="true">
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" cascade="save-update" outer-join="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="AccessionID"/>
+        <column name="AccessionID" />
     </many-to-one>
 
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="cataloger" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="auto">
+    <!-- bi-directional many-to-one association to Agent  not-null="true"-->
+    <many-to-one name="cataloger" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update"  outer-join="auto">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="CatalogerID"/>
+        <column name="CatalogerID" />
     </many-to-one>
 
 
     <!-- bi-directional one-to-many association to Attachment -->
-    <set name="attachments" inverse="true" cascade="save-update">
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
         <key column="CollectionObjectID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>
 
     <!-- bi-directional many-to-one association to Container -->
-    <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
-    <many-to-one name="container" class="edu.ku.brc.specify.datamodel.Container" not-null="false" unique="true" insert="false" update="false" cascade="all" index="IX_CollectionObjectContainerID">
+    <!-- NOTE: We are REALLY modeling a zero/one-to-one  -->
+    <many-to-one name="container" class="edu.ku.brc.specify.datamodel.Container" unique="true" cascade="all" index="IX_CollectionObjectContainerID">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Preparation, Container</meta>
-        <column name="ContainerID"/>
+        <column name="ContainerID"  not-null="false"/>
     </many-to-one>
 
 </class>

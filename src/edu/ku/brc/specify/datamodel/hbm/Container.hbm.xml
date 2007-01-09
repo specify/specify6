@@ -12,10 +12,10 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
-    <property name="collectionObjectId" type="java.lang.Long" column="CollectionObjectID" not-null="false">
+    <property name="collectionObjectId" type="java.lang.Long" column="CollectionObjectID" >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
@@ -51,8 +51,8 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to ContainerItems -->
-    <set name="items" lazy="true" inverse="true" cascade="none">    
-    <meta attribute="scope-field">protected</meta>
+    <set name="items" lazy="true" inverse="true" cascade="all-delete-orphan">    
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta> 
         <key>
             <column name="ContainerID"/>
@@ -60,18 +60,18 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.ContainerItem"/>
     </set>
     
-    <!-- bi-directional many-to-one association to CollectionObject -->
+    <!-- bi-directional many-to-one association to CollectionObject  not-null="false" -->
     <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
-    <many-to-one name="container" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="false" unique="true" insert="false" update="false" cascade="all">
-    <meta attribute="scope-field">protected</meta>
+    <many-to-one name="container" class="edu.ku.brc.specify.datamodel.CollectionObject" insert="false" update="false" unique="true" cascade="none">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="CollectionObjectID"/>
+        <column name="CollectionObjectID" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Location -->
-    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" not-null="false" outer-join="auto">
+    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update" outer-join="auto">
         <meta attribute="field-description"></meta>
-        <column name="LocationID"/>
+        <column name="LocationID"  not-null="false"/>
     </many-to-one>
     
 </class>

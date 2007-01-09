@@ -177,6 +177,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
+
     public Set<WorkbenchTemplateMappingItem> getWorkbenchTemplateMappingItems() 
     {
         return this.workbenchTemplateMappingItems;
@@ -187,7 +188,36 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         this.workbenchTemplateMappingItems = workbenchTemplateMappingItems;
     }
 
-
+    public void addWorkbenchDataItem(Workbench workbench)
+    {
+        workbenches.add(workbench);
+        workbench.setWorkbenchTemplate(this);
+        //item.set
+    }
+    public void addWorkbenches(final Workbench workbench)
+    {
+        this.workbenches.add(workbench);
+        workbench.setWorkbenchTemplate(this);
+    }   
+    /**
+     * @param workbench - 
+     * void
+     */
+    public void removeWorkbenchDataItem(Workbench workbench)
+    {
+        this.workbenches.remove(workbench);
+        workbench.setWorkbenchTemplate(null);
+    } 
+    
+    /**
+     * @param workbench - 
+     * void
+     */
+    public void removeWorkbench(final Workbench workbench)
+    {
+        this.workbenches.remove(workbench);
+        workbench.setWorkbenchTemplate(null);
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
@@ -196,6 +226,10 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     {
         return 81;
     }
-
+    public String getIdentityTitle()
+    { 
+        if(name!=null)return name;
+        return super.getIdentityTitle();
+    }
 
 }

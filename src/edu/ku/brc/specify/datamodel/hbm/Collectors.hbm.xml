@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="orderNumber" type="java.lang.Integer" column="OrderNumber" not-null="true" length="10" unique-key="IX_CollectorsCEOrder">
@@ -35,15 +35,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to CollectingEvent -->
-    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" cascade="none" index="IX_CollectorsCollectingEventID" unique-key="IX_CollectorsCEOrder">
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" cascade="persist,save-update" index="IX_CollectorsCollectingEventID" unique-key="IX_CollectorsCEOrder">
         <meta attribute="field-description">The CollectingEvent the agent participated in</meta>
-        <column name="CollectingEventID"/>
+        <column name="CollectingEventID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_CollectorsAgentID">
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" index="IX_CollectorsAgentID">
         <meta attribute="field-description">Link to Collector's record in Agent table</meta>
-        <column name="AgentID"/>
+        <column name="AgentID"  not-null="true"/>
     </many-to-one>
 
 </class>

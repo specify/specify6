@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="address" type="java.lang.String" column="Address" not-null="false" length="255">
@@ -90,10 +90,11 @@
 
     <!-- Associations -->
 
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none">
+    <!-- bi-directional many-to-one association to Agent not-null="true" for backward compatibility
+    we are not going to enfore that AgentId is not null -->
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="none">
         <meta attribute="field-description">ID of agent at AgentID</meta>
-        <column name="AgentID"/>
+        <column name="AgentID" />
     </many-to-one>
 
 </class>

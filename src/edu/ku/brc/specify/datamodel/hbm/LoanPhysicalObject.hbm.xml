@@ -12,10 +12,10 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
-    <property name="quantity" type="short" column="Quantity">
+    <property name="quantity" type="java.lang.Integer" column="Quantity">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">The total number of specimens  loaned (necessary for lots)</meta>
     </property>
@@ -31,11 +31,11 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Comments on item when returned</meta>
     </property>
-    <property name="quantityResolved" type="short" column="QuantityResolved">
+    <property name="quantityResolved" type="java.lang.Integer" column="QuantityResolved">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)</meta>
     </property>
-    <property name="quantityReturned" type="short" column="QuantityReturned">
+    <property name="quantityReturned" type="java.lang.Integer" column="QuantityReturned">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Number of specimens returned. (necessary for Lots)</meta>
     </property>
@@ -57,20 +57,20 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to Preparation -->
-    <many-to-one name="preparation" class="edu.ku.brc.specify.datamodel.Preparation" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Preparation  not-null="true"-->
+    <many-to-one name="preparation" class="edu.ku.brc.specify.datamodel.Preparation" cascade="none" outer-join="true">
         <meta attribute="field-description"></meta>
-        <column name="PreparationID"/>
+        <column name="PreparationID" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Loan -->
-    <many-to-one name="loan" class="edu.ku.brc.specify.datamodel.Loan" not-null="true" outer-join="true" cascade="none" index="IX_LoanPhysicalObjectLoanID">
+    <many-to-one name="loan" class="edu.ku.brc.specify.datamodel.Loan" outer-join="true" cascade="none" index="IX_LoanPhysicalObjectLoanID">
         <meta attribute="field-description">Loan containing the PhysicalObject</meta>
-        <column name="LoanID"/>
+        <column name="LoanID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
-    <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="delete">
+    <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="save-update">
         <meta attribute="field-description"></meta>
         <key>
             <column name="LoanPhysicalObjectID"/>

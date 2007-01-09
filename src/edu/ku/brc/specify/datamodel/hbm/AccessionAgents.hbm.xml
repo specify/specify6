@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_AccessionAgents">
@@ -38,23 +38,23 @@
     <!-- Associations -->
 
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none" index="IX_AccessionAgentsAgentID" unique-key="IX_AccessionAgents">
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update" index="IX_AccessionAgentsAgentID" unique-key="IX_AccessionAgents">
         <meta attribute="field-description">AgentAdress of agent playing role in Accession</meta>
-        <column name="AgentID"/>
+        <column name="AgentID"  not-null="true"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="true" outer-join="true" cascade="none" index="IX_AccessionAgentsAccessionID" unique-key="IX_AccessionAgents">
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" outer-join="true" cascade="none" index="IX_AccessionAgentsAccessionID" unique-key="IX_AccessionAgents">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Accession in which the Agent played a role</meta>
-        <column name="AccessionID"/>
+        <column name="AccessionID"  not-null="true"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to RepositoryAgreement -->
-    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="true" outer-join="true" cascade="none">
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" outer-join="true" cascade="none">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="RepositoryAgreementID"/>
+        <column name="RepositoryAgreementID" />
     </many-to-one>
 
 </class>

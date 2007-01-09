@@ -20,20 +20,23 @@
 		<property name="fullNameDirection" type="java.lang.Integer" column="FullNameDirection"/>
 
         <!-- Associations -->
-
+		 <!-- bi-directional one-to-many association to Geography -->
         <set name="treeEntries" table="Geography" inverse="true"
-            lazy="true" cascade="save-update">
+            lazy="true" cascade="all-delete-orphan">
             <key column="GeographyTreeDefID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Geography" />
         </set>
 
+		 <!-- bi-directional one-to-many association to GeographyTreeDefItem -->
         <set name="treeDefItems" table="GeographyTreeDefItem"
-            inverse="true" lazy="false" cascade="all-delete-orphan">
+            inverse="true" lazy="false" cascade="save-update">
             <key column="GeographyTreeDefID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" />
         </set>
 
-        <set name="collObjDefs" table="CollectionObjDef"
+
+ 		<!-- bi-directional one-to-many association to CollectionObjDef -->
+        <set name="collObjDefs" table="CollectionObjDef" cascade="none"
             inverse="true">
             <key column="GeographyTreeDefID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef" />

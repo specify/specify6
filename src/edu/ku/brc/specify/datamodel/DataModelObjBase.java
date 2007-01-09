@@ -35,6 +35,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     protected Date timestampModified;
     protected String lastEditedBy;
     
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#initialize()
      */
@@ -102,6 +103,14 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     public void setLastEditedBy(String lastEditedBy)
     {
         this.lastEditedBy = lastEditedBy;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#isRestrictable()
+     */
+    public boolean isRestrictable()
+    {
+        return false;
     }
 
     /* (non-Javadoc)

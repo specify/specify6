@@ -42,6 +42,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
 
      protected Long otherIdentifierId;
      protected String identifier;
+     protected String institution;
      protected String remarks;
      protected CollectionObject collectionObject;
 
@@ -155,6 +156,22 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     public Integer getTableId()
     {
         return 61;
+    }
+
+    /**
+     * @return the institution
+     */
+    public String getInstitution()
+    {
+        return this.institution;
+    }
+
+    /**
+     * @param institution the institution to set
+     */
+    public void setInstitution(String institution)
+    {
+        this.institution = institution;
     }
 
 }

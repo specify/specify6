@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="namedPlace" type="java.lang.String" column="NamedPlace" length="255" index="IX_LocalityNamedPlace">
@@ -236,11 +236,21 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
+    
+    <!--@TODO make this field != null> -->
+    <property name="visibility" type="java.lang.Integer" column="Visibility"  length="10">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Indicates whether this record can be viewed - by owner, by instituion, or by all</meta>  
+    </property>    
 
+      <property name="visibilitySetBy" type="java.lang.String" column="VisibilitySetBy" length="50" >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>      
     <!-- Associations -->
     
     <!-- bi-directional many-to-many association to CollectionObjDef -->
-    <set name="collectionObjDefs" table="colobjdef_locality" lazy="true" cascade="save-update">
+    <set name="collectionObjDefs" table="colobjdef_locality" lazy="true" cascade="none">
         <key>
             <column name="LocalityID"/>
         </key>
@@ -248,10 +258,10 @@
     </set>   
   
     <!-- bi-directional many-to-one association to Geography -->
-    <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" cascade="save-update" not-null="true" outer-join="true" index="IX_LocalityGeographyID">
+    <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" cascade="save-update" outer-join="true" index="IX_LocalityGeographyID"  >
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Link to Country, State, County, WaterBody, Island, IslandGroup ... info</meta>
-        <column name="GeographyID"/>
+        <column name="GeographyID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LocalityCitation -->
@@ -265,7 +275,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to CollectingEvent -->
-    <set name="collectingEvents" lazy="true" inverse="true" cascade="save-update">
+    <set name="collectingEvents" lazy="true" inverse="true" cascade="none">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -275,7 +285,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to Attachment -->
-    <set name="attachments" inverse="true" cascade="save-update">
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
         <key column="LocalityID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>

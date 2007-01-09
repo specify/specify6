@@ -691,7 +691,7 @@ address.State, address.PostalCode, address.Country FROM agent  Left Join address
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
-permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON permit.IssuerID = agent.AgentID) AS newTable WHERE (%s)]]>
+permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON permit.IssuedByID = agent.AgentID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption col="PermitID" text="PermitID"  visible="false"/>

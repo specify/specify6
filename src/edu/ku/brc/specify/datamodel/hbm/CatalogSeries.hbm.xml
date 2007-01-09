@@ -12,13 +12,8 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
-
-    <property name="isTissueSeries" type="boolean" column="IsTissueSeries">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
     
     <property name="seriesName" type="java.lang.String" column="SeriesName" length="50">
         <meta attribute="scope-field">protected</meta>
@@ -55,12 +50,6 @@
         <many-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef" column="CollectionObjDefID"/>
     </set>
     
-    <!-- bi-directional many-to-one association to CatalogSeries -->
-    <many-to-one name="tissue" class="edu.ku.brc.specify.datamodel.CatalogSeries" cascade="save-update" not-null="false" outer-join="true">
-        <meta attribute="field-description"></meta>
-        <column name="TissueID"/>
-    </many-to-one>
-    
     <!-- bi-directional one-to-many association to AppResourceDefault -->
     <set name="appResourceDefaults" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
@@ -70,12 +59,5 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
     </set>
     
-    <!--
-    <set name="vouchers" table="catalogseries" inverse="true">
-        <meta attribute="scope-field">protected</meta>
-        <key column="TissueID"/>
-        <one-to-many class="edu.ku.brc.specify.datamodel.CatalogSeries"/>
-    </set>
-    -->
 </class>
 </hibernate-mapping>

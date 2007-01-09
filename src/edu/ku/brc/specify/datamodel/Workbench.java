@@ -48,9 +48,13 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
      protected String remarks;
      protected Integer formId;
      protected String exportInstitutionName;
-     protected WorkbenchTemplate workbenchTemplates;
+     protected Integer ownerPermissionLevel;
+     protected Integer groupPermissionLevel;
+     protected Integer allPermissionLevel;
+     protected WorkbenchTemplate workbenchTemplate;
      protected Set<WorkbenchDataItem> workbenchItems;
-
+     protected SpecifyUser specifyUser;
+     protected UserGroup group;
 
     // Constructors
 
@@ -72,15 +76,18 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         remarks = null;
         formId = null;
         exportInstitutionName = null;
+        ownerPermissionLevel = null;
+        groupPermissionLevel = null;
+        allPermissionLevel = null;
         timestampCreated = new Date();
         timestampModified = null;
-        workbenchTemplates = null;
-        workbenchItems = new HashSet<WorkbenchDataItem>();
-        
+        workbenchTemplate = null;
+        workbenchItems = new HashSet<WorkbenchDataItem>();       
         timestampCreated = new Date();
         timestampModified = new Date();
         lastEditedBy = null;
-
+        specifyUser = null;
+        group = null;
     }
     // End Initializer
 
@@ -170,16 +177,47 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     public void setExportInstitutionName(String exportInstitutionName) {
         this.exportInstitutionName = exportInstitutionName;
     }
+    /**
+     * 
+     */
+    public Integer getOwnerPermissionLevel() {
+        return this.ownerPermissionLevel;
+    }
+    
+    public void setOwnerPermissionLevel(Integer ownerPermissionLevel) {
+        this.ownerPermissionLevel = ownerPermissionLevel;
+    }
 
     /**
      * 
      */
-    public WorkbenchTemplate getWorkbenchTemplates() {
-        return this.workbenchTemplates;
+    public Integer getGroupPermissionLevel() {
+        return this.groupPermissionLevel;
     }
     
-    public void setWorkbenchTemplates(WorkbenchTemplate workbenchTemplates) {
-        this.workbenchTemplates = workbenchTemplates;
+    public void setGroupPermissionLevel(Integer groupPermissionLevel) {
+        this.groupPermissionLevel = groupPermissionLevel;
+    }
+
+    /**
+     * 
+     */
+    public Integer getAllPermissionLevel() {
+        return this.allPermissionLevel;
+    }
+    
+    public void setAllPermissionLevel(Integer allPermissionLevel) {
+        this.allPermissionLevel = allPermissionLevel;
+    }
+    /**
+     * 
+     */
+    public WorkbenchTemplate getWorkbenchTemplate() {
+        return this.workbenchTemplate;
+    }
+    
+    public void setWorkbenchTemplate(WorkbenchTemplate workbenchTemplates) {
+        this.workbenchTemplate = workbenchTemplates;
     }
 
     /**
@@ -192,7 +230,54 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     public void setWorkbenchItems(Set<WorkbenchDataItem> workbenchItems) {
         this.workbenchItems = workbenchItems;
     }
-
+    /**
+     * 
+     */
+    public SpecifyUser getSpecifyUser() {
+        return this.specifyUser;
+    }
+    
+    public void setSpecifyUser(SpecifyUser owner) {
+        this.specifyUser = owner;
+    }
+    /**
+     * 
+     */
+    public SpecifyUser getOwner() {
+        return this.specifyUser;
+    }
+    
+    public void setOwner(SpecifyUser owner) {
+        this.specifyUser = owner;
+    }  
+    /**
+     * 
+     */
+    public UserGroup getGroup() {
+        return this.group;
+    }
+    
+    public void setGroup(UserGroup group) {
+        this.group = group;
+    }
+    
+    public void addWorkbnechDataItem(WorkbenchDataItem item)
+    {
+        workbenchItems.add(item);
+        item.setWorkbench(this);
+        //item.set
+    }
+    
+    /**
+     * @param item - 
+     * void
+     */
+    public void removeWorkbenchDataItem(final WorkbenchDataItem item)
+    {
+        this.workbenchItems.remove(item);
+        item.setWorkbench(null);
+    }  
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
      */
@@ -200,5 +285,11 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     public Integer getTableId()
     {
         return 79;
+    }
+    
+    public String getIdentityTitle()
+    { 
+        if(name!=null)return name;
+        return super.getIdentityTitle();
     }
 }

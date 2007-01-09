@@ -13,7 +13,7 @@
      
         <timestamp name="timestampModified" column="TimestampModified">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description">Versioning TimeStamp</meta>
+            <meta attribute="field-description">Versioning Timestamp</meta>
         </timestamp>
  
         <property name="level" type="short" column="Level" not-null="true">
@@ -46,8 +46,18 @@
         <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
             <meta attribute="scope-field">protected</meta>            
         </property>
-        
-        
+     
+	    <property name="ownerPermissionLevel" type="java.lang.Integer" column="OwnerPermissionLevel">
+	      <meta attribute="scope-field">protected</meta>
+	    </property>  
+	         
+	    <property name="groupPermissionLevel" type="java.lang.Integer" column="GroupPermissionLevel">
+	      <meta attribute="scope-field">protected</meta>
+	    </property>  
+	
+	    <property name="allPermissionLevel" type="java.lang.Integer" column="AllPermissionLevel">
+	      <meta attribute="scope-field">protected</meta>
+	    </property>  
         
         <!-- Associations -->
         
@@ -63,13 +73,25 @@
         <!-- Although this is specified as a one-to-many it is really just a one-to-one but we do it
         way so there is lazy loading of the XML Blob in the AppResourceData object 
         -->
-        <set name="appResourceDatas" lazy="true" inverse="true" cascade="all">
+        <set name="appResourceDatas" lazy="true" inverse="true" cascade="all-delete-orphan">
             <meta attribute="field-description"></meta>
             <key>
                 <column name="AppResourceID"/>
             </key>
             <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceData"/>
         </set>
-        
+    
+      <!-- many-to-one association to UserGroup -->
+    <many-to-one name="group" class="edu.ku.brc.specify.datamodel.UserGroup" outer-join="true">
+    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <column name="UserGroupID"/>
+    </many-to-one>  
+            <!-- many-to-one association to SpecifyUser -->
+        <many-to-one name="specifyUser" class="edu.ku.brc.specify.datamodel.SpecifyUser" outer-join="true">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>
+            <column name="SpecifyUserID" not-null="true"/>
+        </many-to-one>         
     </class>
 </hibernate-mapping>

@@ -136,13 +136,15 @@ public class PermitBusRules implements BusinessRulesIFace
         Permit permit = (Permit)dataObj;
         List<BusinessRulesDataItem> list = new ArrayList<BusinessRulesDataItem>();
 
-        Agent agent = permit.getAgentByIssuee();
+        //Agent agent = permit.getAgentByIssuee();
+        Agent agent = permit.getIssuedBy();
         if (agent != null&& agent.getAgentId() == null)
         {
            list.add(new PermitBRS(agent));
         }
         
-        agent = permit.getAgentByIssuer();
+        //agent = permit.getAgentByIssuer();
+        agent = permit.getIssuedTo();
         if (agent != null && agent.getAgentId() == null)
         {
             list.add(new PermitBRS(agent));

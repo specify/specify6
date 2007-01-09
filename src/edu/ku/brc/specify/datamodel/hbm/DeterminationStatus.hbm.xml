@@ -16,7 +16,7 @@
 
     <!-- Associations -->
 
-    <!-- bi-directional one-to-many association to DeterminationCitation -->
+    <!-- bi-directional one-to-many association to Determination -->
     <set name="determinations" lazy="true" inverse="true" cascade="none">
         <key>
             <column name="DeterminationStatusID"/>

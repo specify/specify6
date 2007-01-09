@@ -64,6 +64,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      protected Set<AccessionAuthorizations> accessionAuthorizations;
      protected Set<AccessionAgents> accessionAgents;
      protected RepositoryAgreement repositoryAgreement;
+     protected Set<Attachment>          attachments;
 
 
     // Constructors
@@ -340,8 +341,24 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         this.repositoryAgreement = repositoryAgreement;
     }
 
+    public Set<Attachment> getAttachments()
+    {
+        return attachments;
+    }
 
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+    public Set<Attachment> getAttachmentGroups()
+    {
+        return attachments;
+    }
 
+    public void setAttachmentGroups(Set<Attachment> attachmentGroups)
+    {
+        this.attachments = attachmentGroups;
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */

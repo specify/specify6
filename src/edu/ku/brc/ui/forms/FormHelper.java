@@ -279,7 +279,7 @@ public final class FormHelper
                                     PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
                                     Class  classObj = descr.getPropertyType();
                                     Object newObj = classObj.newInstance();
-                                    log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
+                                    log.debug("New Obj ["+newObj+"] of type ["+ classObj +"]being added to ["+dataObj+"]");
                                     if (newObj != null)
                                     {
     
@@ -288,7 +288,7 @@ public final class FormHelper
                                         setter.setFieldValue(dataObj, fieldName, newObj);
                                         data = newObj;
     
-                                        log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
+                                        log.debug("Inserting New Obj ["+newObj+"] at top of new DB ObjCache");
     
                                     }
                                 } catch (NoSuchMethodException ex)
@@ -310,7 +310,7 @@ public final class FormHelper
                             }
                         } else
                         {
-                            log.info("Data Obj ["+newData+" being added to ["+data+"]");
+                            log.info("Data Obj ["+newData+"] being added to ["+data+"]");
                             setter.setFieldValue(data, fieldName, newData);
                         }
                     }

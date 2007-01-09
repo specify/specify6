@@ -19,7 +19,7 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObjDef -->
-    <set name="collectionObjDef" lazy="true" inverse="true" cascade="none">
+    <set name="collectionObjDef" lazy="true" inverse="true" cascade="all">
         <meta attribute="field-description"></meta>
         <key>
             <column name="DataTypeID"/>

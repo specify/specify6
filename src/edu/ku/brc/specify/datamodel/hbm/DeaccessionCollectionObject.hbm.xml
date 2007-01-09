@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="quantity" type="short" column="Quantity">
@@ -38,15 +38,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" unique-key="IX_DeaccessionCollectionObject">
+    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" cascade="none" outer-join="true" unique-key="IX_DeaccessionCollectionObject">
         <meta attribute="field-description">The object being deaccessioned</meta>
-        <column name="CollectionObjectID"/>
+        <column name="CollectionObjectID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Deaccession -->
-    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" not-null="true" outer-join="true" index="IX_DeaccessionCollectionObjectDeaccessionID" unique-key="IX_DeaccessionCollectionObject">
+    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" cascade="save-update" outer-join="true" index="IX_DeaccessionCollectionObjectDeaccessionID" unique-key="IX_DeaccessionCollectionObject">
         <meta attribute="field-description">The deaccession</meta>
-        <column name="DeaccessionID"/>
+        <column name="DeaccessionID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->

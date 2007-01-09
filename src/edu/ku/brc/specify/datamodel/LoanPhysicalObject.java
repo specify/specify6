@@ -43,12 +43,12 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     // Fields    
 
      protected Long loanPhysicalObjectId;
-     protected Short quantity;
+     protected Integer quantity;
      protected String descriptionOfMaterial;
      protected String outComments;
      protected String inComments;
-     protected Short quantityResolved;
-     protected Short quantityReturned;
+     protected Integer quantityResolved;
+     protected Integer quantityReturned;
      protected Boolean isResolved;
      protected Preparation preparation;
      protected Loan loan;
@@ -122,11 +122,11 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * The total number of specimens  loaned (necessary for lots)
      */
-    public Short getQuantity() {
+    public Integer getQuantity() {
         return this.quantity;
     }
     
-    public void setQuantity(Short quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -166,22 +166,22 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)
      */
-    public Short getQuantityResolved() {
+    public Integer getQuantityResolved() {
         return this.quantityResolved;
     }
     
-    public void setQuantityResolved(Short quantityResolved) {
+    public void setQuantityResolved(Integer quantityResolved) {
         this.quantityResolved = quantityResolved;
     }
 
     /**
      *      * Number of specimens returned. (necessary for Lots)
      */
-    public Short getQuantityReturned() {
+    public Integer getQuantityReturned() {
         return this.quantityReturned;
     }
     
-    public void setQuantityReturned(Short quantityReturned) {
+    public void setQuantityReturned(Integer quantityReturned) {
         this.quantityReturned = quantityReturned;
     }
     

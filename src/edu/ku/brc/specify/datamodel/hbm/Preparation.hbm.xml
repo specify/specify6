@@ -12,7 +12,7 @@
 	
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <!--
@@ -82,7 +82,7 @@
     </set>
   
     <!-- bi-directional one-to-many association to PreparationAttr -->
-    <set name="attrs" lazy="true" inverse="true" cascade="all">
+    <set name="attrs" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -92,32 +92,32 @@
     </set>
     
     <!-- bi-directional many-to-one association to PrepType -->
-    <many-to-one name="prepType" class="edu.ku.brc.specify.datamodel.PrepType" not-null="true" outer-join="true">
+    <many-to-one name="prepType" class="edu.ku.brc.specify.datamodel.PrepType" cascade="save-update" outer-join="true">
         <meta attribute="field-description"></meta>
-        <column name="PrepTypeID"/>
+        <column name="PrepTypeID"  not-null="true"/>
     </many-to-one>
   
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" cascade="none">
+    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" outer-join="true" cascade="none">
         <meta attribute="field-description"></meta>
-        <column name="CollectionObjectID"/>
+        <column name="CollectionObjectID"  not-null="true"/>
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="preparedByAgent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent  not-null="true"-->
+    <many-to-one name="preparedByAgent" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description"></meta>
-        <column name="PreparedByID"/>
+        <column name="PreparedByID" />
     </many-to-one>
         
     <!-- bi-directional many-to-one association to Location -->
-    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" not-null="false" outer-join="auto">
+    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update" outer-join="auto">
         <meta attribute="field-description"></meta>
-        <column name="LocationID"/>
+        <column name="LocationID"  not-null="false"/>
     </many-to-one>
         
     
     <!-- bi-directional one-to-many association to Attachment -->
-    <set name="attachments" inverse="true" cascade="save-update">
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
         <key column="PreparationID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>

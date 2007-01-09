@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="tablename" type="java.lang.String" column="TableName" length="64">
@@ -54,10 +54,10 @@
     <!-- Associations -->
     
     <!-- bi-directional many-to-one association to WorkbenchTemplate -->
-    <many-to-one name="workbenchTemplates" class="edu.ku.brc.specify.datamodel.WorkbenchTemplate" not-null="true">
+    <many-to-one name="workbenchTemplates" class="edu.ku.brc.specify.datamodel.WorkbenchTemplate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="WorkbenchTemplateID"/>
+        <column name="WorkbenchTemplateID"  not-null="true"/>
     </many-to-one>    
     
 </class>

@@ -23,7 +23,7 @@
                   <![CDATA[create temporary table Families1 select TaxonID from determination where DeterminationStatusID = 1]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Families2 select DISTINCT tax.TaxonID,tax.nodenumber from Families1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Families1.TaxonID]]>
+                  <![CDATA[create temporary table Families2 select DISTINCT tax.TaxonID,tax.nodenumber from Families1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Families1.TaxonID]]>
                 </statement>
                <statement>
                   <![CDATA[create temporary table Families3 select DISTINCT tx.TaxonID from Families2, taxon as tx where tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
@@ -48,7 +48,7 @@
                   <![CDATA[create temporary table Genera1 select TaxonID from determination where DeterminationStatusID = 1]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Genera2 select DISTINCT tax.TaxonID,tax.nodenumber from Genera1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
+                  <![CDATA[create temporary table Genera2 select DISTINCT tax.TaxonID,tax.nodenumber from Genera1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
                 </statement>
                <statement>
                   <![CDATA[create temporary table Genera3 select DISTINCT tx.TaxonID from Genera2, taxon as tx where tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
@@ -73,7 +73,7 @@
                   <![CDATA[create temporary table Species1 select TaxonID from determination where DeterminationStatusID = 1]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Species2 select DISTINCT tax.TaxonID,tax.nodenumber from Species1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
+                  <![CDATA[create temporary table Species2 select DISTINCT tax.TaxonID,tax.nodenumber from Species1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
                 </statement>
                <statement>
                   <![CDATA[create temporary table Species3 select DISTINCT tx.TaxonID from Species2, taxon as tx where tx.rankid = 220 and Species2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>

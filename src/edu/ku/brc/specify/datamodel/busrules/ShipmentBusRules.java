@@ -80,7 +80,8 @@ public class ShipmentBusRules implements BusinessRulesIFace
         
         Shipment shipment = (Shipment)dataObj;
         
-        Agent agent = shipment.getAgentByShippedTo();
+        //Agent agent = shipment.getAgentByShippedTo();
+        Agent agent = shipment.getShippedTo();
         if (agent != null)
         {
             Set<Address> addr = agent.getAddresses();

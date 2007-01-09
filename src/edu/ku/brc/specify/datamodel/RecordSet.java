@@ -47,13 +47,16 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace {
 
     // Fields
-
      protected Long                    recordSetId;
      protected String                  name;
      protected Integer                 dbTableId;
      protected String                  remarks;
      protected Set<RecordSetItemIFace> items;
-     protected SpecifyUser             owner;
+     protected SpecifyUser             specifyUser;
+     protected Integer ownerPermissionLevel;
+     protected Integer groupPermissionLevel;
+     protected Integer allPermissionLevel;
+     protected UserGroup group;
 
 
      // Non-Database Memebers
@@ -92,10 +95,14 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         //name = null;
         //tableId = null;
         remarks = null;
+        ownerPermissionLevel = null;
+        groupPermissionLevel = null;
+        allPermissionLevel = null;
         timestampModified = null;
         timestampCreated = new Date();
         items = new HashSet<RecordSetItemIFace>();
-        owner = null;
+        specifyUser = null;
+        group = null;
     }
     // End Initializer
 
@@ -177,21 +184,30 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         this.items = items;
     }
 
+    /**
+     * 
+     */
+    public SpecifyUser getSpecifyUser() {
+        return this.specifyUser;
+    }
+    
+    public void setSpecifyUser(SpecifyUser owner) {
+        this.specifyUser = owner;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getOwner()
      */
     public SpecifyUser getOwner() {
-        return this.owner;
+        return this.specifyUser;
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#setOwner(edu.ku.brc.specify.datamodel.SpecifyUser)
      */
     public void setOwner(SpecifyUser owner) {
-        this.owner = owner;
+        this.specifyUser = owner;
     }
-
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getRemarks()
      */
@@ -199,7 +215,16 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     {
         return remarks;
     }
-
+    /**
+     * 
+     */
+    public UserGroup getGroup() {
+        return this.group;
+    }
+    
+    public void setGroup(UserGroup group) {
+        this.group = group;
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#setRemarks(java.lang.String)
      */
@@ -207,7 +232,38 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     {
         this.remarks = remarks;
     }
+    /**
+     * 
+     */
+    public Integer getOwnerPermissionLevel() {
+        return this.ownerPermissionLevel;
+    }
+    
+    public void setOwnerPermissionLevel(Integer ownerPermissionLevel) {
+        this.ownerPermissionLevel = ownerPermissionLevel;
+    }
 
+    /**
+     * 
+     */
+    public Integer getGroupPermissionLevel() {
+        return this.groupPermissionLevel;
+    }
+    
+    public void setGroupPermissionLevel(Integer groupPermissionLevel) {
+        this.groupPermissionLevel = groupPermissionLevel;
+    }
+
+    /**
+     * 
+     */
+    public Integer getAllPermissionLevel() {
+        return this.allPermissionLevel;
+    }
+    
+    public void setAllPermissionLevel(Integer allPermissionLevel) {
+        this.allPermissionLevel = allPermissionLevel;
+    }
     // Add Methods
 
 

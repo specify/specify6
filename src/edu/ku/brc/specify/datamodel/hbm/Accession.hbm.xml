@@ -12,7 +12,7 @@
     
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="type" type="java.lang.String" column="Type" length="32">
@@ -100,7 +100,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to CollectionObject -->
-    <set name="collectionObjects" lazy="true" inverse="true" cascade="none">
+    <set name="collectionObjects" lazy="true" inverse="true" cascade="save-update">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -129,14 +129,20 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAgents"/>
     </set>
     
-    <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="false" outer-join="true" cascade="none" index="IX_RepositoryAgreementAccessionID" unique-key="IX_AccessionAgents">
+    <!-- bi-directional many-to-one association to RepositoryAgreement -->
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" 
+    	outer-join="true" cascade="none" index="IX_RepositoryAgreementAccessionID" 
+    	unique-key="IX_AccessionAgents">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">RepositoryAgreement for this Accession</meta>
-        <column name="RepositoryAgreementID"/>
+        <column name="RepositoryAgreementID"  not-null="false"/>
     </many-to-one>
     
-    
+     <!-- bi-directional one-to-many association to Attachment -->
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
+        <key column="AccessionID"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
+    </set>   
     
 </class>
 </hibernate-mapping>

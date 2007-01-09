@@ -813,7 +813,7 @@ public class LoanReturnDlg extends JDialog
         protected LoanPhysicalObject lpo;
         protected Boolean            isResolved;
         protected String             remarks;
-        protected short              quantity;
+        protected int              quantity;
         
         public LoanReturnInfo(LoanPhysicalObject lpo, Boolean isResolved, String remarks, short quantity)
         {
@@ -831,7 +831,7 @@ public class LoanReturnDlg extends JDialog
         {
             return lpo;
         }
-        public short getQuantity()
+        public int getQuantity()
         {
             return quantity;
         }

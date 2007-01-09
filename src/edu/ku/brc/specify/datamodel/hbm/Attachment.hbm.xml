@@ -26,8 +26,18 @@
     
     <property name="lastEditedBy" type="java.lang.String" length="50" column="LastEditedBy"/>
     
+     <!--@TODO make this field != null> -->
+    <property name="visibility" type="java.lang.Integer" column="Visibility"  length="10">
+      	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Indicates whether this record can be viewed - by owner, by instituion, or by all</meta>  
+    </property>
+    	
+      <property name="visibilitySetBy" type="java.lang.String" column="VisibilitySetBy" length="50" >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>       
     <!-- bi-directional one-to-many association to AttachmentMetadata -->
-    <set name="metadata" inverse="true" cascade="save-update">
+    <set name="metadata" inverse="true" cascade="all-delete-orphan">
         <key column="AttachmentID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.AttachmentMetadata"/>
     </set>	
@@ -50,5 +60,8 @@
 
     <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" column="TaxonID" cascade="none"/>
     
+     <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" column="AccessionID" cascade="none"/>
+  
+  	<many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" column="RepositoryAgreementID" cascade="none"/>  
 </class>
 </hibernate-mapping>

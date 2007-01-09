@@ -57,10 +57,11 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      protected Float number2;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Agent agentByShipper;
-     protected Agent agentByShippedTo;
-     protected Agent agent;
-     protected Set<BorrowShipments> borrowShipments;
+     protected Agent shipper;
+     protected Agent shippedTo;
+     protected Agent shippedBy;
+     //protected Set<BorrowShipments> borrowShipments;
+     protected Set<Borrow> borrows;
      protected Set<Loan> loans;
      protected Set<ExchangeOut> exchangeOuts;
 
@@ -99,10 +100,11 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        agentByShipper = null;
-        agentByShippedTo = null;
-        agent = null;
-        borrowShipments = new HashSet<BorrowShipments>();
+        shipper = null;
+        shippedTo = null;
+        shippedBy = null;
+        //borrowShipments = new HashSet<BorrowShipments>();
+        borrows = new HashSet<Borrow>();
         loans = new HashSet<Loan>();
         exchangeOuts = new HashSet<ExchangeOut>();
     }
@@ -284,47 +286,56 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * AgentID of agent transporting the material
      */
-    public Agent getAgentByShipper() {
-        return this.agentByShipper;
+    public Agent getShipper() {
+        return this.shipper;
     }
     
-    public void setAgentByShipper(Agent agentByShipper) {
-        this.agentByShipper = agentByShipper;
+    public void setShipper(Agent agentByShipper) {
+        this.shipper = agentByShipper;
     }
 
     /**
      *      * AgentID of agent material is shipped to
      */
-    public Agent getAgentByShippedTo() {
-        return this.agentByShippedTo;
+    public Agent getShippedTo() {
+        return this.shippedTo;
     }
     
-    public void setAgentByShippedTo(Agent agentByShippedTo) {
-        this.agentByShippedTo = agentByShippedTo;
+    public void setShippedTo(Agent agentByShippedTo) {
+        this.shippedTo = agentByShippedTo;
     }
 
     /**
      *      * AgentID of person approving/initiating the shipment
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getShippedBy() {
+        return this.shippedBy;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setShippedBy(Agent agent) {
+        this.shippedBy = agent;
     }
 
     /**
      * 
      */
-    public Set<BorrowShipments> getBorrowShipments() {
-        return this.borrowShipments;
+//    public Set<BorrowShipments> getBorrowShipments() {
+//        return this.borrowShipments;
+//    }
+//    
+//    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
+//        this.borrowShipments = borrowShipments;
+//    }
+    /**
+     * 
+     */
+    public Set<Borrow> getBorrows() {
+        return this.borrows;
     }
     
-    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
-        this.borrowShipments = borrowShipments;
+    public void setBorrows(Set<Borrow> borrows) {
+        this.borrows = borrows;
     }
-
     /**
      * 
      */
@@ -353,44 +364,53 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
 
     // Add Methods
 
-    public void addBorrowShipments(final BorrowShipments borrowShipment)
-    {
-        this.borrowShipments.add(borrowShipment);
-        borrowShipment.setShipment(this);
-    }
-
+//    public void addBorrowShipments(final BorrowShipments borrowShipment)
+//    {
+//        this.borrowShipments.add(borrowShipment);
+//        borrowShipment.setShipment(this);
+//    }
+  public void addBorrows(final Borrow borrow)
+  {
+      this.borrows.add(borrow);
+      borrow.getShipments().add(this);
+  }
     public void addLoans(final Loan loan)
     {
         this.loans.add(loan);
-        loan.setShipment(this);
+        loan.getShipments().add(this);
     }
 
     public void addExchangeOuts(final ExchangeOut exchangeOut)
     {
         this.exchangeOuts.add(exchangeOut);
-        exchangeOut.setShipment(this);
+        //exchangeOut.setShipments(this);
+        exchangeOut.getShipments().add(this);
     }
 
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeBorrowShipments(final BorrowShipments borrowShipment)
-    {
-        this.borrowShipments.remove(borrowShipment);
-        borrowShipment.setShipment(null);
-    }
-
-    public void removeLoans(final Loan loan)
+//    public void removeBorrowShipments(final BorrowShipments borrowShipment)
+//    {
+//        this.borrowShipments.remove(borrowShipment);
+//        borrowShipment.setShipment(null);
+//    }
+  public void removeBorrow(final Borrow borrow)
+  {
+      this.borrows.remove(borrow);
+      borrow.removeShipment(this);
+  }
+    public void removeLoan(final Loan loan)
     {
         this.loans.remove(loan);
-        loan.setShipment(null);
+        loan.removeShipment(this);
     }
 
     public void removeExchangeOuts(final ExchangeOut exchangeOut)
     {
         this.exchangeOuts.remove(exchangeOut);
-        exchangeOut.setShipment(null);
+        exchangeOut.setShipments(null);
     }
 
     // Delete Add Methods

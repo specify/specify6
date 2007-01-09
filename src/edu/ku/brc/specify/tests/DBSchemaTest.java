@@ -186,7 +186,7 @@ public class DBSchemaTest extends TestCase
             UserGroup userGroup = ObjCreatorHelper.createUserGroup("Fish");
             assertNotNull(userGroup);
     
-            SpecifyUser user = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
+            SpecifyUser user = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
             assertNotNull(user);
             
             HibernateUtil.commitTransaction();

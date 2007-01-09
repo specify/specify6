@@ -12,7 +12,7 @@
     
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
@@ -22,20 +22,20 @@
 
     <!-- Associations -->
 
-   <!-- bi-directional many-to-one association to Container -->
-   <many-to-one name="container" class="edu.ku.brc.specify.datamodel.Container" not-null="true" outer-join="true">
-    <meta attribute="scope-field">protected</meta>
+   	<!-- bi-directional many-to-one association to Container -->
+   	<many-to-one name="container" class="edu.ku.brc.specify.datamodel.Container" cascade="none" outer-join="true">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="ContainerID"/>
+        <column name="ContainerID"  not-null="true"/>
     </many-to-one>
 
     
     <!-- bi-directional one-to-many association to CollectionObject -->
     <set name="collectionObjects" lazy="true" inverse="true" cascade="none">
-    <meta attribute="scope-field">protected</meta>
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
-            <column name="ContainerID"/>
+            <column name="ContainerItemID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     </set>

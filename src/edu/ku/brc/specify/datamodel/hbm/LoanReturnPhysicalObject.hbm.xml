@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="returnedDate" type="calendar_date" column="ReturnedDate">
@@ -20,7 +20,7 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="quantity" type="short" column="Quantity">
+    <property name="quantity" type="java.lang.Integer" column="Quantity">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Quantity of items returned (necessary for lots)</meta>
     </property>
@@ -43,21 +43,21 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to LoanPhysicalObject -->
-    <many-to-one name="loanPhysicalObject" class="edu.ku.brc.specify.datamodel.LoanPhysicalObject" not-null="true" outer-join="true" cascade="none" index="IX_LoanReturnPhysicalObjectLoanPhysicalObjectID">
+    <many-to-one name="loanPhysicalObject" class="edu.ku.brc.specify.datamodel.LoanPhysicalObject" outer-join="true" cascade="none" index="IX_LoanReturnPhysicalObjectLoanPhysicalObjectID">
         <meta attribute="field-description">Link to LoanPhysicalObject table</meta>
-        <column name="LoanPhysicalObjectID"/>
+        <column name="LoanPhysicalObjectID"  not-null="true"/>
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to DeaccessionCollectionObject -->
-    <many-to-one name="deaccessionCollectionObject" class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to DeaccessionCollectionObject not-null="true"-->
+    <many-to-one name="deaccessionCollectionObject" class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" cascade="none" outer-join="true">
         <meta attribute="field-description">ID of associated (if present) DeaccessionPhysicalObject record</meta>
-        <column name="DeaccessionPhysicalObjectID"/>
+        <column name="DeaccessionPhysicalObjectID"  />
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent  not-null="true"-->
+    <many-to-one name="receivedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">Person processing the loan return</meta>
-        <column name="ReceivedByID"/>
+        <column name="ReceivedByID" />
     </many-to-one>
 
 </class>

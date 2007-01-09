@@ -71,9 +71,11 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	protected String				environmentalProtectionStatus;
 	protected Integer				nodeNumber;
 	protected Integer				highestChildNodeNumber;
-	protected Short					accepted;
+	protected Boolean					isAccepted;
 	protected Integer				rankId;
 	protected String				groupNumber;
+    protected Integer visibility;
+    protected String visibilitySetBy;
 	protected Set<Taxon>			acceptedChildren;
 	protected Taxon					acceptedTaxon;
 	protected Set<Determination>	determinations;
@@ -137,9 +139,10 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		timestampCreated = new Date();
         timestampModified = null;
 		lastEditedBy = null;
-		accepted = null;
+		isAccepted = null;
 		rankId = null;
 		groupNumber = null;
+        visibility = null;
 		acceptedChildren = new HashSet<Taxon>();
 		determinations = new HashSet<Determination>();
 		acceptedTaxon = null;
@@ -390,14 +393,14 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-	public Short getAccepted()
+	public Boolean getIsAccepted()
 	{
-		return this.accepted;
+		return this.isAccepted;
 	}
 
-	public void setAccepted(Short accepted)
+	public void setIsAccepted(Boolean accepted)
 	{
-		this.accepted = accepted;
+		this.isAccepted = accepted;
 	}
 
 	public Integer getRankId()
@@ -419,7 +422,32 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	{
 		this.groupNumber = groupNumber;
 	}
-
+    /**
+     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     */
+    public Integer getVisibility() {
+        return this.visibility;
+    }
+    
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
+    
+    public boolean isRestrictable()
+    {
+        return true;
+    }
+    /**
+     * 
+     */
+    public String getVisibilitySetBy() {
+        return this.visibilitySetBy;
+    }
+    
+    public void setVisibilitySetBy(String visibilitySetBy) {
+        this.visibilitySetBy = visibilitySetBy;
+    }
+    
 	public Set<Taxon> getAcceptedChildren()
 	{
 		return this.acceptedChildren;
@@ -524,7 +552,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     {
         this.attachments = attachments;
     }
-
+    
     public void addChild(Taxon child)
 	{
 		Taxon oldParent = child.getParent();

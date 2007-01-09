@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="projectName" type="java.lang.String" column="ProjectName" not-null="true" length="50">
@@ -79,13 +79,14 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent not-null="true"-->
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent"  cascade="save-update" outer-join="true">
         <meta attribute="field-description">Agent record for project</meta>
-        <column name="ProjectAgentID"/>
+        <column name="ProjectAgentID" />
     </many-to-one>
+    
     <!-- bi-directional one-to-many association to ProjectCollectionObject -->
-    <set name="projectCollectionObjects" lazy="true" inverse="true" cascade="delete">
+    <set name="projectCollectionObjects" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ProjectID"/>

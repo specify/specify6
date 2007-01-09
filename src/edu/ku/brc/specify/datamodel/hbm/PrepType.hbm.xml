@@ -39,7 +39,7 @@
     
     <!-- bi-directional one-to-many association to Preparation -->
     <set name="preparations" lazy="true" inverse="true" cascade="none">
-    <meta attribute="scope-field">protected</meta>
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="PrepTypeID"/>
@@ -48,8 +48,8 @@
     </set>
 
     <!-- bi-directional one-to-many association to AttributeDef -->
-    <set name="attributeDefs" lazy="true" inverse="true" cascade="delete">
-    <meta attribute="scope-field">protected</meta>
+    <set name="attributeDefs" lazy="true" inverse="true" cascade="all-delete-orphan">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="PrepTypeID"/>

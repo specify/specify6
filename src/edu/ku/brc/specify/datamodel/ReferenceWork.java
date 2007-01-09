@@ -58,7 +58,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Short published;
+     protected Boolean isPublished;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<LocalityCitation> localityCitations;
@@ -105,7 +105,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         timestampCreated = new Date();
         timestampModified = null;
         lastEditedBy = null;
-        published = null;
+        isPublished = null;
         yesNo1 = null;
         yesNo2 = null;
         localityCitations = new HashSet<LocalityCitation>();
@@ -315,12 +315,12 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
-    public Short getPublished() {
-        return this.published;
+    public Boolean getIsPublished() {
+        return this.isPublished;
     }
     
-    public void setPublished(Short published) {
-        this.published = published;
+    public void setIsPublished(Boolean published) {
+        this.isPublished = published;
     }
 
     /**

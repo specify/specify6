@@ -61,7 +61,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      protected Set<AccessionAuthorizations> repositoryAgreementAuthorizations;
      protected Set<AccessionAgents>         repositoryAgreementAgents;
      protected Set<Accession>               accessions;
-
+     protected Set<Attachment>          attachments;
      protected Agent originator;
 
 
@@ -312,7 +312,25 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     public void setRepositoryAgreementAgents(Set<AccessionAgents> repositoryAgreementAgents) {
         this.repositoryAgreementAgents = repositoryAgreementAgents;
     }
+    public Set<Attachment> getAttachments()
+    {
+        return attachments;
+    }
 
+    public void setAttachments(Set<Attachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+    
+    public Set<Attachment> getAttachmentGroups()
+    {
+        return attachments;
+    }
+
+    public void setAttachmentGroups(Set<Attachment> attachmentGroups)
+    {
+        this.attachments = attachmentGroups;
+    }
     /**
      *
      */

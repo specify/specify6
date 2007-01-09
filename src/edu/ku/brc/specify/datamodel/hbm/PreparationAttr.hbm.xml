@@ -13,7 +13,7 @@
 	
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="strValue" type="java.lang.String" column="StrValue" length="255">
@@ -35,16 +35,16 @@
     <!-- Associations -->
 
     <!-- bi-directional many-to-one association to AttributeDef -->
-    <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" not-null="true" outer-join="true">
-    <meta attribute="scope-field">protected</meta>
+    <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" cascade="none" outer-join="true">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="AttributeDefID"/>
+        <column name="AttributeDefID"  not-null="true"/>
     </many-to-one>    
         
     <!-- bi-directional many-to-one association to Preparation -->
-    <many-to-one name="preparation" class="edu.ku.brc.specify.datamodel.Preparation" not-null="true" outer-join="true">
+    <many-to-one name="preparation" class="edu.ku.brc.specify.datamodel.Preparation" cascade="none" outer-join="true">
         <meta attribute="field-description"></meta>
-        <column name="PreparationId"/>
+        <column name="PreparationId"  not-null="true"/>
     </many-to-one>    
 
 </class>

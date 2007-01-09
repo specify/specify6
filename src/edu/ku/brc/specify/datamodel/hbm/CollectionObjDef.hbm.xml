@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="name" type="java.lang.String" column="Name" length="64">
@@ -35,14 +35,14 @@
     <!-- Associations -->
 
     <!-- many-to-one association to DataType -->
-    <many-to-one name="dataType" class="edu.ku.brc.specify.datamodel.DataType" not-null="true" outer-join="true" cascade="save-update">
-    <meta attribute="scope-field">protected</meta>
+    <many-to-one name="dataType" class="edu.ku.brc.specify.datamodel.DataType" outer-join="true" cascade="save-update">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="DataTypeID"/>
+        <column name="DataTypeID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-many association to CatalogSeries -->
-    <set name="catalogSeries" table="catseries_colobjdef" lazy="true" inverse="true" cascade="save-update">
+    <set name="catalogSeries" table="catseries_colobjdef" lazy="true" inverse="true" cascade="all-delete-orphan">
         <key>
             <column name="CollectionObjDefID"/>
         </key>
@@ -50,14 +50,14 @@
     </set>
         
     <!-- many-to-one association to SpecifyUser -->
-    <many-to-one name="specifyUser" class="edu.ku.brc.specify.datamodel.SpecifyUser" not-null="true" outer-join="true" cascade="save-update">
-    <meta attribute="scope-field">protected</meta>
+    <many-to-one name="specifyUser" class="edu.ku.brc.specify.datamodel.SpecifyUser" outer-join="true" cascade="save-update">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="SpecifyUserID"/>
+        <column name="SpecifyUserID"  not-null="true"/>
     </many-to-one>   
     
     <!-- bi-directional one-to-many association to AttributeDef -->
-    <set name="attributeDefs" lazy="true" inverse="true" cascade="delete">
+    <set name="attributeDefs" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectionObjDefID"/>
@@ -66,25 +66,25 @@
     </set>
     
     <!-- bi-directional many-to-one association to GeographyTreeDef -->
-    <many-to-one name="geographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef" not-null="true" outer-join="true" cascade="save-update">
+    <many-to-one name="geographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef" outer-join="true" cascade="save-update">
         <meta attribute="field-description"></meta>
-        <column name="GeographyTreeDefID"/>
+        <column name="GeographyTreeDefID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-    <many-to-one name="geologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" not-null="true" outer-join="true" cascade="save-update">
+    <many-to-one name="geologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" outer-join="true" cascade="save-update">
         <meta attribute="field-description"></meta>
-        <column name="GeologicTimePeriodTreeDefID"/>
+        <column name="GeologicTimePeriodTreeDefID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to LocationTreeDef -->
-    <many-to-one name="locationTreeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef" not-null="true" outer-join="true" cascade="save-update">
+    <many-to-one name="locationTreeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef" outer-join="true" cascade="save-update">
         <meta attribute="field-description"></meta>
-        <column name="LocationTreeDefID"/>
+        <column name="LocationTreeDefID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional one-to-one association to TaxonTreeDef -->
-    <one-to-one name="taxonTreeDef" class="edu.ku.brc.specify.datamodel.TaxonTreeDef" cascade="save-update">
+    <one-to-one name="taxonTreeDef" class="edu.ku.brc.specify.datamodel.TaxonTreeDef" cascade="all">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">@hibernate.one-to-one</meta>
     </one-to-one>
@@ -104,25 +104,25 @@
             <column name="CollectionObjDefID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
-    </set>
-    
+    </set>    
     
     <!-- bi-directional one-to-many association to CollectionObject -->
-    <!-- Currently we don't to bring all the CollectionObjects when accessing the CollectionObjDef -->
-    <!--
-        <set name="collectionObjects"
-        lazy="true"
-        inverse="true"
-        cascade="save-update"
-        >
+	<set name="collectionObjects" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
-        <column name="CollectioObjDefID" />
+        	<column name="CollectionObjDefID" />
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
-        </set>
-    -->
-    
+    </set>
+ 
+    <!-- bi-directional one-to-many association to UserPermission -->
+    <set name="userPermissions" lazy="true" inverse="true" cascade="all-delete-orphan">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="CollectionObjDefID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.UserPermission"/>
+    </set> 
+          
 </class>
-
 </hibernate-mapping>

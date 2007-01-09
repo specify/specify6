@@ -85,6 +85,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
      protected String island;
      protected String waterBody;
      protected String drainage;
+     protected Integer visibility;
+     protected String visibilitySetBy;
      protected Set<CollectionObjDef> collectionObjDefs;
      protected Geography geography;
      protected Set<LocalityCitation> localityCitations;
@@ -157,6 +159,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
         island = null;
         waterBody = null;
         drainage = null;
+        visibility = null;
         collectionObjDefs = new HashSet<CollectionObjDef>();
         geography = null;
         localityCitations = new HashSet<LocalityCitation>();
@@ -656,7 +659,34 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     public void setDrainage(String drainage) {
         this.drainage = drainage;
     }
-
+    
+    /**
+     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     */
+    public Integer getVisibility() {
+        return this.visibility;
+    }
+    
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
+    
+    public boolean isRestrictable()
+    {
+        return true;
+    }  
+    
+    /**
+     * 
+     */
+    public String getVisibilitySetBy() {
+        return this.visibilitySetBy;
+    }
+    
+    public void setVisibilitySetBy(String visibilitySetBy) {
+        this.visibilitySetBy = visibilitySetBy;
+    }
+    
     /**
      * 
      */
@@ -710,8 +740,6 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     public void setCollectingEvents(Set<CollectingEvent> collectingEvents) {
         this.collectingEvents = collectingEvents;
     }
-
-
 
     // Add Methods
 

@@ -56,7 +56,6 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public static final Boolean OPEN   = false;
     
     // Fields    
-
      protected Long loanId;
      protected String loanNumber;
      protected Calendar loanDate;
@@ -74,7 +73,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      protected Boolean yesNo2;
      protected Set<LoanAgents> loanAgents;
      protected Set<LoanPhysicalObject> loanPhysicalObjects;
-     protected Shipment shipment;
+     //protected Shipment shipment;
+     protected Set<Shipment> shipments;
      protected Set<Attachment> attachments;
 
 
@@ -100,6 +100,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         loanDate        = null;
         currentDueDate  = null;
         originalDueDate = null;
+
         dateClosed      = null;
         isGift          = null;
         remarks         = null;
@@ -107,16 +108,20 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         text2           = null;
         number1         = null;
         number2         = null;
+
         timestampCreated = new Date();
         timestampModified = null;
+
         lastEditedBy    = null;
         isClosed        = OPEN;
         yesNo1          = null;
         yesNo2          = null;
         loanAgents      = new HashSet<LoanAgents>();
+
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
-        shipment        = null;
-        attachments     = new HashSet<Attachment>();
+        shipments = new HashSet<Shipment>();
+        attachments = new HashSet<Attachment>();
+
         
         if (true)
         {
@@ -167,7 +172,10 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     {
         return this.loanId;
     }
-
+   
+    public void setLoanId(Long loanId) {
+        this.loanId = loanId;
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
@@ -175,11 +183,6 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     {
         return Loan.class;
     }
-    
-    public void setLoanId(Long loanId) {
-        this.loanId = loanId;
-    }
-
     /**
      *      * Invoice number
      */
@@ -242,6 +245,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         return this.isGift;
     }
     
+
     public void setIsGift(Boolean isGift) {
         this.isGift = isGift;
     }
@@ -307,7 +311,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public Boolean getIsClosed() {
         return this.isClosed;
     }
-    
+   
     public void setIsClosed(Boolean isClosed) {
         this.isClosed = isClosed;
     }
@@ -359,14 +363,23 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Link to Shipment table
      */
-    public Shipment getShipment() {
-        return this.shipment;
+//    public Shipment getShipment() {
+//        return this.shipment;
+//    }
+//    
+//    public void setShipment(Shipment shipment) {
+//        this.shipment = shipment;
+//    }
+    /**
+     * 
+     */
+    public Set<Shipment> getShipments() {
+        return this.shipments;
     }
     
-    public void setShipment(Shipment shipment) {
-        this.shipment = shipment;
+    public void setShipments(Set<Shipment> shipments) {
+        this.shipments = shipments;
     }
-
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -393,7 +406,12 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     // Done Add Methods
 
     // Delete Methods
-
+    public void removeShipment(final Shipment shipment)
+    {
+        if(shipment==null)return;
+        this.shipments.remove(shipment);
+        shipment.removeLoan(this);
+    }
     public void removeLoanAgents(final LoanAgents loanAgent)
     {
         this.loanAgents.remove(loanAgent);
@@ -405,7 +423,15 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         this.loanPhysicalObjects.remove(loanPhysicalObject);
         loanPhysicalObject.setLoan(null);
     }
-   
+
+    // Delete Add Methods
+    public void addShipment(final Shipment shipment)
+    {
+        if(shipment==null)return;
+        this.shipments.add(shipment);
+        shipment.getLoans().add(this);
+    } 
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

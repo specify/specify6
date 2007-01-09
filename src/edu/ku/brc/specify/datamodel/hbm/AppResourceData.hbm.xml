@@ -22,16 +22,16 @@
         
         <!-- Associations -->
         
-        <!-- bi-directional many-to-one association to ViewSetObj -->
-        <many-to-one name="appResource" class="edu.ku.brc.specify.datamodel.AppResource" not-null="true" outer-join="true" 
+        <!-- bi-directional many-to-one association to AppResource -->
+        <many-to-one name="appResource" class="edu.ku.brc.specify.datamodel.AppResource" outer-join="true" 
             cascade="none" index="IX_AppResourceDataAppResource_ID">
-            <column name="AppResourceID"/>
+            <column name="AppResourceID" not-null="true" />
         </many-to-one>
         
         <!-- bi-directional many-to-one association to ViewSetObj -->
-        <many-to-one name="viewSetObj" class="edu.ku.brc.specify.datamodel.ViewSetObj" not-null="true" outer-join="true" 
+        <many-to-one name="viewSetObj" class="edu.ku.brc.specify.datamodel.ViewSetObj"  outer-join="true" 
                      cascade="none" index="IX_AppResourceDataViewSetObj_ID">
-            <column name="ViewSetObjID"/>
+            <column name="ViewSetObjID" />
         </many-to-one>
         
         <!-- <one-to-one name="appResource" class="edu.ku.brc.specify.datamodel.AppResource" property-ref="data" /> -->

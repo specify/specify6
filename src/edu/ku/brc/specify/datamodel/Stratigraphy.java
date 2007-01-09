@@ -55,7 +55,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
      protected Float number2;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected CollectingEvent collectingEvent;
+     protected Set<CollectingEvent> collectingEvents;
      protected GeologicTimePeriod geologicTimePeriod;
      protected Set<GeologicTimePeriod> children;
 
@@ -93,7 +93,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        collectingEvent = null;
+        collectingEvents = null;
         geologicTimePeriod = null;
         children = new HashSet<GeologicTimePeriod>();
     }
@@ -264,12 +264,12 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
-    public CollectingEvent getCollectingEvent() {
-        return this.collectingEvent;
+    public Set<CollectingEvent> getCollectingEvents() {
+        return this.collectingEvents;
     }
 
-    public void setCollectingEvent(CollectingEvent collectingEvent) {
-        this.collectingEvent = collectingEvent;
+    public void setCollectingEvents(Set<CollectingEvent> collectingEvents) {
+        this.collectingEvents = collectingEvents;
     }
 
     public GeologicTimePeriod getGeologicTimePeriod()

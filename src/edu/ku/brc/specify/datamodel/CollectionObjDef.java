@@ -28,11 +28,11 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-
+import edu.ku.brc.specify.datamodel.UserPermission;
 
 
 /**
@@ -58,6 +58,9 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      protected TaxonTreeDef taxonTreeDef;
      protected Set<Locality> localities;
      protected Set<AppResourceDefault> appResourceDefaults;
+     private Set<CollectionObject> collectionObjects;
+     private Set<UserPermission> userPermissions;
+     
 
     // Constructors
 
@@ -89,6 +92,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         dataType = null;
         timestampModified = null;
         timestampCreated = new Date();
+        userPermissions = null;
         catalogSeries = new HashSet<CatalogSeries>();
         specifyUser = null;
         attributeDefs = new HashSet<AttributeDef>();
@@ -97,6 +101,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         locationTreeDef = null;
         taxonTreeDef = null;
         localities = new HashSet<Locality>();
+        collectionObjects = new HashSet<CollectionObject>();
         appResourceDefaults = new HashSet<AppResourceDefault>();
     }
     // End Initializer
@@ -263,7 +268,15 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     {
         this.appResourceDefaults = appResourceDefaults;
     }
-
+    public Set<UserPermission> getUserPermissions() 
+    {
+        return this.userPermissions;
+    }
+    
+    public void setUserPermissions(Set<UserPermission> userPermissions) 
+    {
+        this.userPermissions = userPermissions;
+    }
 /**
 	 * toString
 	 * @return String
@@ -300,7 +313,17 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         this.localities.add(localitiesArg);
         localitiesArg.getCollectionObjDefs().add(this);
     }
-
+    
+    public void addCollectionObject(final CollectionObject collectionObject)
+    {
+        this.collectionObjects.add(collectionObject);
+        collectionObject.setCollectionObjDef(this);
+    }
+    public void addUserPermission(final UserPermission userPermission)
+    {
+        this.userPermissions.add(userPermission);
+        userPermission.setCollectionObjDef(this);
+    }
     // Done Add Methods
 
     // Delete Methods
@@ -316,13 +339,22 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         this.attributeDefs.remove(attributeDef);
         attributeDef.setCollectionObjDef(null);
     }
-
+    public void removeCollectionObject(final CollectionObject collectionObject)
+    {
+        this.collectionObjects.remove(collectionObject);
+        collectionObject.setCollectionObjDef(null);
+    }
+    
     public void removeLocalities(final Locality localitiesArg)
     {
         this.localities.remove(localitiesArg);
         localitiesArg.getCollectionObjDefs().remove(this);
     }
-
+    public void removeUserPermission(final UserPermission userPermission)
+    {
+        this.userPermissions.remove(userPermission);
+        userPermission.setCollectionObjDef(null);
+    }
     // Delete Add Methods
     
     /* (non-Javadoc)
@@ -332,6 +364,22 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     public Integer getTableId()
     {
         return 26;
+    }
+
+    /**
+     * @return the collectionObjects
+     */
+    public Set<CollectionObject> getCollectionObjects()
+    {
+        return this.collectionObjects;
+    }
+
+    /**
+     * @param collectionObjects the collectionObjects to set
+     */
+    public void setCollectionObjects(Set<CollectionObject> collectionObjects)
+    {
+        this.collectionObjects = collectionObjects;
     }
 
 }

@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="remarks" type="text" column="Remarks">
@@ -31,21 +31,21 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Permit -->
-    <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" not-null="true" outer-join="true" index="IX_AccessionAuthorizationsPermitID" unique-key="IX_AccessionAuthorizations">
+    <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" outer-join="true" cascade="save-update" index="IX_AccessionAuthorizationsPermitID" unique-key="IX_AccessionAuthorizations">
         <meta attribute="field-description">Permit authorizing accession</meta>
-        <column name="PermitID"/>
+        <column name="PermitID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="false" outer-join="true" cascade="none" index="IX_AccessionAuthorizationsAccessionID" unique-key="IX_AccessionAuthorizations">
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" outer-join="true" cascade="none" index="IX_AccessionAuthorizationsAccessionID" unique-key="IX_AccessionAuthorizations">
         <meta attribute="field-description">Accession authorized by permit</meta>
-        <column name="AccessionID"/>
+        <column name="AccessionID" not-null="false" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to RepositoryAgreement -->
-    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="false" outer-join="true" cascade="none" index="IX_RepAccessionAuthorizationsAccessionID" unique-key="IX_RepAccessionAuthorizations">
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" outer-join="true" cascade="none" index="IX_RepAccessionAuthorizationsAccessionID" unique-key="IX_RepAccessionAuthorizations">
         <meta attribute="field-description"></meta>
-        <column name="RepositoryAgreementID"/>
+        <column name="RepositoryAgreementID" not-null="false"/>
     </many-to-one>
     
 </class>

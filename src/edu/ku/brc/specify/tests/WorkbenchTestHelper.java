@@ -14,15 +14,23 @@
  */
 package edu.ku.brc.specify.tests;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-
+import edu.ku.brc.ui.UIHelper;
+import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
+import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -48,8 +56,26 @@ public class WorkbenchTestHelper {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+//        String databaseName = "fish";
+//        // This will log us in and return true/false
+//        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/", "rods", "rods"))
+//        {
+//            throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
+//        }Connection connection = DBConnection.getInstance().createConnection();
+//        //UIHelper.
+//        try
+//        {
+//            Statement stmt = connection.createStatement();
+//        } catch (SQLException e)
+//        {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        BasicSQLUtils.setDBConnection(connection);
+//        BasicSQLUtils.deleteAllRecordsFromTable("workbenchdataitem");
+//        BasicSQLUtils.deleteAllRecordsFromTable("workbenchtemplatemapping");
+//        BasicSQLUtils.deleteAllRecordsFromTable("workbench");
+//        BasicSQLUtils.deleteAllRecordsFromTable("workbenchtemplate");
 	}
     /**
      * @param templateId
@@ -57,8 +83,9 @@ public class WorkbenchTestHelper {
      */
     public static boolean isTemplateInDB(int templateId) {
     	log.info("isTemplateInDB");
-		boolean templateIsFound = false;		
-		Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(WorkbenchTemplate.class);
+		boolean templateIsFound = false;	
+        
+		Criteria criteria = startHibernateTransaction().createCriteria(WorkbenchTemplate.class);//HibernateUtil.getCurrentSession().createCriteria(WorkbenchTemplate.class);
 		java.util.List list = criteria.list();
 
 		// make sure that the template that was just created is in teh database
@@ -67,6 +94,7 @@ public class WorkbenchTestHelper {
 			if (template.getWorkbenchTemplateId() == templateId) 
 				templateIsFound = true;
 		}
+        //shutdownHibernateTransaction();
 		return templateIsFound;
 	}
     
@@ -76,7 +104,7 @@ public class WorkbenchTestHelper {
      */
     public static boolean isTemplateMappingItemInDB(int templateMappingId) {
 		boolean mappingItemIsFound = false;		
-		Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(WorkbenchTemplateMappingItem.class);
+		Criteria criteria = startHibernateTransaction().createCriteria(WorkbenchTemplateMappingItem.class);////HibernateUtil.getCurrentSession().createCriteria(WorkbenchTemplateMappingItem.class);
 		java.util.List list = criteria.list();
 
 		// make sure that the template that was just created is in teh database
@@ -85,6 +113,7 @@ public class WorkbenchTestHelper {
 			if (item.getWorkbenchTemplateMappingItemId() == templateMappingId) 
 				mappingItemIsFound = true;
 		}
+        //shutdownHibernateTransaction();
 		return mappingItemIsFound;
 	}    
         
@@ -94,7 +123,7 @@ public class WorkbenchTestHelper {
      */
     public static boolean isWorkbenchInDB(int workbenchId) {
 		boolean mappingItemIsFound = false;		
-		Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Workbench.class);
+		Criteria criteria = startHibernateTransaction().createCriteria(Workbench.class);//HibernateUtil.getCurrentSession().createCriteria(Workbench.class);
 		java.util.List list = criteria.list();
 
 		// make sure that the template that was just created is in teh database
@@ -103,6 +132,7 @@ public class WorkbenchTestHelper {
 			if (workbench.getWorkbenchId() == workbenchId) 
 				mappingItemIsFound = true;
 		}
+        //shutdownHibernateTransaction();
 		return mappingItemIsFound;
 	}    
  
@@ -113,10 +143,11 @@ public class WorkbenchTestHelper {
     public static boolean deleteTemplateFromDB(int templateId) {
     	boolean isTemplateDeleted = false;
     	try {
-			Session session = HibernateUtil.getCurrentSession();
-			ObjCreatorHelper.setSession(session);
-			HibernateUtil.beginTransaction();
-			Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(WorkbenchTemplate.class);
+			Session session = startHibernateTransaction();
+            //Session session = HibernateUtil.getCurrentSession();
+			//ObjCreatorHelper.setSession(session);
+			//HibernateUtil.beginTransaction();
+			Criteria criteria = session.createCriteria(WorkbenchTemplate.class);
 			java.util.List list = criteria.list();
 			
 			//make sure that the template that was just created is in teh database
@@ -127,8 +158,7 @@ public class WorkbenchTestHelper {
 					isTemplateDeleted = true;					
 				}
 			}
-			HibernateUtil.commitTransaction();
-			HibernateUtil.closeSession();
+            stopHibernateTransaction();
 			return isTemplateDeleted;
 		} catch (Exception ex) {
 			log.error("******* " + ex);
@@ -146,9 +176,10 @@ public class WorkbenchTestHelper {
     public static boolean deleteMappingItemFromDB(int mappingItemId) {
     	boolean isTemplateDeleted = false;
     	try {
-			Session session = HibernateUtil.getCurrentSession();
-			ObjCreatorHelper.setSession(session);
-			HibernateUtil.beginTransaction();
+            //Session session = HibernateUtil.getCurrentSession();
+			Session session = startHibernateTransaction();
+			//ObjCreatorHelper.setSession(session);
+			//HibernateUtil.beginTransaction();
 			Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(WorkbenchTemplateMappingItem.class);
 			java.util.List list = criteria.list();
 			
@@ -160,8 +191,7 @@ public class WorkbenchTestHelper {
 					isTemplateDeleted = true;					
 				}
 			}
-			HibernateUtil.commitTransaction();
-			HibernateUtil.closeSession();
+            stopHibernateTransaction();
 			return isTemplateDeleted;
 		} catch (Exception ex) {
 			log.error("******* " + ex);
@@ -178,9 +208,10 @@ public class WorkbenchTestHelper {
     public static boolean deleteWorkbenchFromDB(int workbenchId) {
     	boolean isWorkbenchDeleted = false;
     	try {
-			Session session = HibernateUtil.getCurrentSession();
-			ObjCreatorHelper.setSession(session);
-			HibernateUtil.beginTransaction();
+			Session session = startHibernateTransaction();
+			//ObjCreatorHelper.setSession(session);
+			//HibernateUtil.beginTransaction();
+            
 			Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Workbench.class);
 			java.util.List list = criteria.list();
 			
@@ -192,8 +223,7 @@ public class WorkbenchTestHelper {
 					isWorkbenchDeleted = true;					
 				}
 			}
-			HibernateUtil.commitTransaction();
-			HibernateUtil.closeSession();
+            stopHibernateTransaction();
 			return isWorkbenchDeleted;
 		} catch (Exception ex) {
 			log.error("******* " + ex);
@@ -206,17 +236,17 @@ public class WorkbenchTestHelper {
     /**
      * 
      */
-    public static void startHibernateTransaction() {
-		Session session = HibernateUtil.getCurrentSession();
-		ObjCreatorHelper.setSession(session);			
-        HibernateUtil.beginTransaction();
-    }
+//    public static void startHibernateTransaction() {
+//		Session session = HibernateUtil.getCurrentSession();
+//		ObjCreatorHelper.setSession(session);			
+//        HibernateUtil.beginTransaction();
+//    }
     
     /**
      * 
      */
-    public static void shutdownHibernateTransaction() {
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();  
-    } 
+//    public static void shutdownHibernateTransaction() {
+//        HibernateUtil.commitTransaction();
+//        HibernateUtil.closeSession();  
+//    } 
 }

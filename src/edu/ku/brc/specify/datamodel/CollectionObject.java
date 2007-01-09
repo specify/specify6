@@ -64,10 +64,12 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      protected Calendar catalogedDate;
      protected String catalogedDateVerbatim;
      protected String guid;
-     protected String altCatalogNumber;
+     //protected String altCatalogNumber;
      protected Integer groupPermittedToView;
      protected Boolean deaccessioned;
      protected Float catalogNumber;
+     protected Integer visibility;;
+     protected String visibilitySetBy;
      protected CollectingEvent collectingEvent;
      protected ContainerItem containerItem;
      protected Set<CollectionObjectCitation> collectionObjectCitations;
@@ -120,13 +122,15 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         catalogedDate = null;
         catalogedDateVerbatim = null;
         guid = null;
-        altCatalogNumber = null;
+        //altCatalogNumber = null;
         groupPermittedToView = null;
         timestampCreated = new Date();
         timestampModified = null;
         lastEditedBy = null;
         deaccessioned = null;
         catalogNumber = null;
+        visibility = null;
+        visibilitySetBy = null; 
         collectingEvent = null;
         containerItem = null;
         collectionObjectCitations = new HashSet<CollectionObjectCitation>();
@@ -352,16 +356,16 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.guid = guid;
     }
 
-    /**
-     *
-     */
-    public String getAltCatalogNumber() {
-        return this.altCatalogNumber;
-    }
-
-    public void setAltCatalogNumber(String altCatalogNumber) {
-        this.altCatalogNumber = altCatalogNumber;
-    }
+//    /**
+//     *
+//     */
+//    public String getAltCatalogNumber() {
+//        return this.altCatalogNumber;
+//    }
+//
+//    public void setAltCatalogNumber(String altCatalogNumber) {
+//        this.altCatalogNumber = altCatalogNumber;
+//    }
 
     /**
      *
@@ -395,7 +399,33 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public void setCatalogNumber(Float catalogNumber) {
         this.catalogNumber = catalogNumber;
     }
+    
+    /**
+     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     */
+    public Integer getVisibility() {
+        return this.visibility;
+    }
+    
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
 
+    public boolean isRestrictable()
+    {
+        return true;
+    }   
+    /**
+     * 
+     */
+    public String getVisibilitySetBy() {
+        return this.visibilitySetBy;
+    }
+    
+    public void setVisibilitySetBy(String visibilitySetBy) {
+        this.visibilitySetBy = visibilitySetBy;
+    }
+    
     /**
      *      * BiologicalObject (Bird, Fish, etc)
      */
@@ -561,6 +591,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.container = container;
     }
 
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
@@ -654,6 +685,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
             throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
         }
     }
+
     
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
@@ -665,6 +697,12 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     @Override
     public String getIdentityTitle()
     {
+
+        //first conditional required for when collection object table is empty??
+        if(catalogNumber==null)
+        {
+            return super.getIdentityTitle();
+        }
         String title = null;
         if (StringUtils.isNotEmpty(title))
         {

@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="exchangeDate" type="calendar_date" column="ExchangeDate">
@@ -80,15 +80,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentReceivedFrom" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <many-to-one name="agentReceivedFrom" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">Agent ID of organization that sent material</meta>
-        <column name="ReceivedFromOrganizationID"/>
+        <column name="ReceivedFromOrganizationID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentCatalogedBy" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <many-to-one name="agentCatalogedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">Agent ID of person recording the exchange</meta>
-        <column name="CatalogedByID"/>
+        <column name="CatalogedByID" not-null="true"/>
     </many-to-one>
 
 </class>

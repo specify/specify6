@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="exchangeDate" type="calendar_date" column="ExchangeDate">
@@ -78,22 +78,30 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentSentTo" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <many-to-one name="agentSentTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">Agent ID of organization material was sent to</meta>
-        <column name="SentToOrganizationID"/>
+        <column name="SentToOrganizationID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentCatalogedBy" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <many-to-one name="agentCatalogedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
         <meta attribute="field-description">Agent ID of person who recorded  the exchange</meta>
-        <column name="CatalogedByID"/>
+        <column name="CatalogedByID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Shipment -->
-    <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" outer-join="true" index="IX_ExchangeOutShipmentID">
+    <!-- <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment"  outer-join="true" index="IX_ExchangeOutShipmentID">
         <meta attribute="field-description">Shipment information for the exchange</meta>
         <column name="ShipmentID"/>
-    </many-to-one>
+    </many-to-one> -->
+    
+    <!-- bi-directional many-to-many association to Shipment -->
+    <set name="shipments" table="exchangeout_shipment" inverse="true" lazy="true" cascade="save-update">
+        <key>
+            <column name="ExchangeOutID"/>
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Shipment" column="ShipmentID"/>
+    </set>  
 
 </class>
 </hibernate-mapping>

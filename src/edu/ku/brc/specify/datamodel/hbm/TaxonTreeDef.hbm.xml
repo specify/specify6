@@ -32,10 +32,10 @@
         <!-- Associations -->
 
         <one-to-one name="collObjDef"
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            class="edu.ku.brc.specify.datamodel.CollectionObjDef" cascade="all"
             constrained="true" />
 
-        <set name="treeEntries" table="Taxon" inverse="true"
+        <set name="treeEntries" table="Taxon" inverse="true"  cascade="all-delete-orphan"
             lazy="extra">
             <key column="TaxonTreeDefID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />

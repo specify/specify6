@@ -343,6 +343,7 @@ public final class UIHelper
      */
     public static <T> Object convertDataFromString(final String dataStr, final Class<T> cls)
     {
+        log.debug("Trying to convertDataFromString dataStr [" + dataStr + "] of class[" + cls + "]");
         if (cls == Integer.class)
         {
             return Integer.parseInt(dataStr);

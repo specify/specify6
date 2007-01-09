@@ -51,30 +51,30 @@
         <!-- Associations -->
         
         <!-- bi-directional one-to-many association to Locality -->
-        <set name="localities" lazy="true" inverse="true" cascade="save-update" >
+        <set name="localities" lazy="true" inverse="true" cascade="none" >
             <key column="GeographyID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Locality" />
         </set>
         
         <!-- bi-directional many-to-one association to GeographyTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
-        	lazy="false" not-null="true" outer-join="true" cascade="save-update" >
-            <column name="GeographyTreeDefID" />
+        	lazy="false" not-null="true" outer-join="true" cascade="none" >
+            <column name="GeographyTreeDefID"  not-null="true"/>
         </many-to-one>
         
         <!-- bi-directional many-to-one association to GeographyTreeDefItem -->
         <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
             lazy="false" not-null="true" outer-join="true" cascade="save-update" >
-            <column name="GeographyTreeDefItemID" />
+            <column name="GeographyTreeDefItemID" not-null="true"/>
         </many-to-one>
         
         <!-- bi-directional many-to-one association to Geography -->
         <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Geography"
-            outer-join="true" cascade="save-update" lazy="false">
-            <column name="ParentID" />
+            outer-join="true" cascade="none" lazy="false">
+            <column name="ParentID" not-null="false"/>
         </many-to-one>
         
-        <set name="children" inverse="true" cascade="none">
+        <set name="children" inverse="true" cascade="all-delete-orphan">
             <key column="ParentId"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.Geography"/>
         </set>

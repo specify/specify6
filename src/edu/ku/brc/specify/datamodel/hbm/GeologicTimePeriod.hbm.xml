@@ -46,23 +46,23 @@
 
         <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
-            not-null="true" lazy="false" outer-join="true">
-            <column name="GeologicTimePeriodTreeDefID" />
+             lazy="false" outer-join="true" cascade="none">
+            <column name="GeologicTimePeriodTreeDefID" not-null="true"/>
         </many-to-one>
 
         <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDefItem -->
         <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
-            lazy="false" not-null="true" outer-join="true">
-            <column name="GeologicTimePeriodTreeDefItemID"/>
+            lazy="false" outer-join="true" cascade="save-update">
+            <column name="GeologicTimePeriodTreeDefItemID"  not-null="true"/>
         </many-to-one>
 
         <!-- bi-directional many-to-one association to GeologicTimePeriod -->
         <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            outer-join="true" lazy="false">
+            outer-join="true" lazy="false" cascade="none">
             <column name="ParentID"/>
         </many-to-one>
 
-        <set name="children" inverse="true" cascade="none">
+        <set name="children" inverse="true" cascade="all-delete-orphan">
             <key column="ParentID"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
         </set>

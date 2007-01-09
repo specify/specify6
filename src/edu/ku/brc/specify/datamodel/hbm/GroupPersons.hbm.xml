@@ -12,7 +12,7 @@
     
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_GroupPersonsOrder">
@@ -38,15 +38,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentByGroup" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" cascade="none" unique-key="IX_GroupPersonsOrder">
+    <many-to-one name="group" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" unique-key="IX_GroupPersonsOrder">
         <meta attribute="field-description">AgentID of group</meta>
-        <column name="GroupID"/>
+        <column name="GroupID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentByMember" class="edu.ku.brc.specify.datamodel.Agent" not-null="true">
+    <many-to-one name="member" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update">
         <meta attribute="field-description">AgentID of member (member must be of type Person)</meta>
-        <column name="MemberID"/>
+        <column name="MemberID"  not-null="true"/>
     </many-to-one>
 
 </class>

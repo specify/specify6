@@ -1,3 +1,4 @@
+
 /**
  * Copyright (C) 2006 The University of Kansas
  * 
@@ -104,16 +105,17 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
-
 /**
  * 
  * @code_status Alpha
@@ -123,7 +125,7 @@ public class BuildSampleDatabase
 {
     private static final Logger log      = Logger.getLogger(BuildSampleDatabase.class);
     protected static Calendar   calendar = Calendar.getInstance();
-    protected static Session    session;
+    protected static Session session;
     protected static Random     rand = new Random(12345678L);
     
     public static Session getSession()
@@ -135,7 +137,7 @@ public class BuildSampleDatabase
     {
         session = s;
     }
-
+    
     public static List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         log.info("Creating single discipline database: " + disciplineName);
@@ -149,14 +151,25 @@ public class BuildSampleDatabase
         SpecifyUser user = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
         DataType dataType = createDataType(disciplineName);
         TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
+        GeographyTreeDef geographyTreeDef = createGeographyTreeDef("Sample Geography Tree Def");
+        GeographyTreeDefItem geoRoot = createGeographyTreeDefItem(null, geographyTreeDef, "GeoRoot", 0);//meg added
+        GeologicTimePeriodTreeDef geologicTimePeriodTreeDef = createGeologicTimePeriodTreeDef("Geological Time Period Tree Def");
+        GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(
+                null, geologicTimePeriodTreeDef, "Level 0", 0);
+        LocationTreeDef locationTreeDef = createLocationTreeDef("Location Tree Def");
+        LocationTreeDefItem building = createLocationTreeDefItem(null, locationTreeDef, "building", 0);
+        building.setIsEnforced(true);
         CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user,
-                taxonTreeDef);
-
+                taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef, locationTreeDef);
+        //dataType.addCollectionObjDef(collectionObjDef);
         dataObjects.add(collectionObjDef);
         dataObjects.add(userGroup);
         dataObjects.add(user);
         dataObjects.add(dataType);
         dataObjects.add(taxonTreeDef);
+        dataObjects.add(geoRoot);
+        dataObjects.add(defItemLevel0);
+        dataObjects.add(locationTreeDef);
         
         ////////////////////////////////
         // build the trees
@@ -229,12 +242,18 @@ public class BuildSampleDatabase
         forestStream.setLongitude1(-94.984867);
 
         Locality lake   = createLocality("Deep, dark lake", (Geography)geos.get(18));
+
         lake.setLat1text("41.548842 deg N");
         lake.setLatitude1(41.548842);
         lake.setLong1text("93.732129 deg W");
         lake.setLongitude1(-93.732129);
         
         Locality farmpond = createLocality("Farm pond", (Geography)geos.get(22));
+        farmpond.setLat1text("41.642187 deg N");
+        farmpond.setLatitude1(41.642187);
+        farmpond.setLong1text("100.403163 deg W");
+        farmpond.setLongitude1(-100.403163);
+
         farmpond.setLat1text("41.642187 deg N");
         farmpond.setLatitude1(41.642187);
         farmpond.setLong1text("100.403163 deg W");
@@ -311,10 +330,10 @@ public class BuildSampleDatabase
         ce1.setStartDateVerbatim("19 Mar 1993, 11:56 AM");
         calendar.set(1993, 3, 19, 13, 03, 00);
         ce1.setEndDate(calendar);
-        ce1.setEndDateVerbatim("19 Mar 1993, 1:03 PM");
+        ce1.setEndDateVerbatim("19 Mar 1993, 1:03 PM");   
         ce1.setMethod(collMethods[1]);
         
-        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
+        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionObjDef, null);//meg added cod
         CollectingEventAttr cevAttr = createCollectingEventAttr(ce1, cevAttrDef, "Sleepy Hollow", null);
 
         Collectors collectorMeg = createCollector(agents.get(2), 1);
@@ -351,8 +370,8 @@ public class BuildSampleDatabase
         Calendar endDate = Calendar.getInstance();
         endDate.set(1993, 5, 30);
         Permit permit = createPermit("1993-FISH-0001", "US Dept Fish and Wildlife", issuedDate, startDate, endDate, null);
-        permit.setAgentByIssuee(ku);
-        permit.setAgentByIssuer(agents.get(4));
+        permit.setIssuedTo(ku);
+        permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
         
         ////////////////////////////////
@@ -393,7 +412,7 @@ public class BuildSampleDatabase
         collObjs.add(createCollectionObject(106.0f, "RCS106", agents.get(2), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
         collObjs.add(createCollectionObject(107.0f, "RCS107", agents.get(3), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
         
-        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
+        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", cod, null);//meg added cod
         CollectionObjectAttr colObjAttr = createCollectionObjectAttr(collObjs.get(0), colObjAttrDef, "Full", null);
         dataObjects.addAll(collObjs);
         dataObjects.add(colObjAttrDef);
@@ -409,7 +428,7 @@ public class BuildSampleDatabase
         recent.set(2006, 10, 27, 13, 44, 00);
         Calendar longAgo = Calendar.getInstance();
         longAgo.set(1976, 01, 29, 8, 12, 00);
-        Calendar whileBack = Calendar.getInstance();
+        Calendar whileBack = Calendar.getInstance(); 
         whileBack.set(2002, 7, 4, 9, 33, 12);
         determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get( 8), current, recent));
         determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get( 9), current, recent));
@@ -531,9 +550,9 @@ public class BuildSampleDatabase
                 i--;
                 continue;
             }
+            int quantity = Math.max(1,rand.nextInt(available));
+            LoanPhysicalObject lpo = DataBuilder.createLoanPhysicalObject(quantity, null, null, null, 0, 0, p, closedLoan);
             
-            short quantity = (short)Math.max(1, rand.nextInt(available));
-            LoanPhysicalObject lpo = createLoanPhysicalObject(quantity, null, null, null, quantity, (short)0, p, closedLoan);
             lpo.setIsResolved(true);
             loanPhysObjs.add(lpo);
             
@@ -566,7 +585,7 @@ public class BuildSampleDatabase
                 continue;
             }
             int quantity = Math.max(1, rand.nextInt(available));
-            LoanPhysicalObject lpo = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, overdueLoan);
+            LoanPhysicalObject lpo = createLoanPhysicalObject(quantity, null, null, null, 0, 0, p, overdueLoan);
             loanPhysObjs.add(lpo);
             p.getLoanPhysicalObjects().add(lpo);
         }
@@ -589,7 +608,7 @@ public class BuildSampleDatabase
             if (available > 0)
             {
                 int quantity = Math.max(1, rand.nextInt(available));
-                LoanPhysicalObject newLPO = createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, lpo.getPreparation(), loan3);
+                LoanPhysicalObject newLPO = createLoanPhysicalObject(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
                 newLoanLPOs.add(newLPO);
                 lpo.getPreparation().getLoanPhysicalObjects().add(newLPO);
                 
@@ -608,19 +627,18 @@ public class BuildSampleDatabase
         {
             LoanPhysicalObject lpo = loanPhysObjs.get(i);
         
-            short    quantityLoaned   = lpo.getQuantity();
-            short    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
+            int    quantityLoaned   = lpo.getQuantity();
+            int    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
             Calendar returnedDate     = Calendar.getInstance();
             
             returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
             // make the returned date be a little while after the original loan
             returnedDate.add(Calendar.DAY_OF_YEAR, 72);
-            
             LoanReturnPhysicalObject lrpo = createLoanReturnPhysicalObject(returnedDate, quantityReturned, lpo, null, agents.get(0));
             lpo.addLoanReturnPhysicalObjects(lrpo);
             
             lpo.setQuantityReturned(quantityReturned);
-            lpo.setQuantityResolved((short)(quantityLoaned - quantityReturned));
+            lpo.setQuantityResolved((quantityLoaned - quantityReturned));
             lpo.setIsResolved(quantityLoaned == quantityReturned);
             returns.add(lrpo);
             i++;
@@ -650,9 +668,10 @@ public class BuildSampleDatabase
         ship2Date.set(2005, 11, 24);
         Shipment loan2Ship = createShipment(ship2Date, "2006-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
         
-        closedLoan.setShipment(loan1Ship);
-        overdueLoan.setShipment(loan2Ship);
-        
+        //closedLoan.setShipment(loan1Ship);
+        //overdueLoan.setShipment(loan2Ship);
+        closedLoan.getShipments().add(loan1Ship);
+        overdueLoan.getShipments().add(loan2Ship);
         dataObjects.add(loan1Ship);
         dataObjects.add(loan2Ship);
 
@@ -727,6 +746,7 @@ public class BuildSampleDatabase
     }
 
 
+
     public static List<Object> createSimpleGeography(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createSimpleGeography " + treeDefName);
@@ -750,6 +770,7 @@ public class BuildSampleDatabase
         GeographyTreeDefItem county = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
         county.setIsInFullName(true);
         county.setTextAfter(" Co.");
+
         // 1
         newObjs.add(root);
         // 2
@@ -985,7 +1006,8 @@ public class BuildSampleDatabase
             if (o instanceof Taxon)
             {
                 Taxon t = (Taxon)o;
-                t.setAccepted((short)1);
+                t.setIsAccepted(true);
+                //t.setAccepted((short)1);
             }
         }
         
@@ -1172,4 +1194,73 @@ public class BuildSampleDatabase
             }
         }
     }
+    
+    public static LocationTreeDef buildSampleLocationTreeDef()
+    {
+        // empty out any pre-existing tree definitions
+        //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "locationtreedef");
+        //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "locationtreedefitem");
+
+        log.info("Creating a sample location tree definition");
+        
+        Session session = HibernateUtil.getCurrentSession();
+        HibernateUtil.beginTransaction();
+        
+        LocationTreeDef locDef = TreeFactory.createStdLocationTreeDef("Sample location tree", null);
+        locDef.setRemarks("This definition is merely for demonstration purposes.  Consult documentation or support staff for instructions on creating one tailored for an institutions specific needs.");
+        locDef.setFullNameDirection(TreeDefIface.FORWARD);
+        session.save(locDef);
+        
+        // get the root def item
+        LocationTreeDefItem rootItem = locDef.getTreeDefItems().iterator().next();
+        rootItem.setFullNameSeparator(", ");
+        session.save(rootItem);
+        
+        Location rootNode = rootItem.getTreeEntries().iterator().next();
+        session.save(rootNode);
+        
+        LocationTreeDefItem building = new LocationTreeDefItem();
+        building.initialize();
+        building.setRankId(100);
+        building.setName("Building");
+        building.setIsEnforced(false);
+        building.setIsInFullName(false);
+        building.setTreeDef(locDef);
+        building.setFullNameSeparator(", ");
+        session.save(building);
+
+        LocationTreeDefItem room = new LocationTreeDefItem();
+        room.initialize();
+        room.setRankId(200);
+        room.setName("Room");
+        room.setIsEnforced(true);
+        room.setIsInFullName(true);
+        room.setTreeDef(locDef);
+        room.setFullNameSeparator(", ");
+        session.save(room);
+        
+        LocationTreeDefItem freezer = new LocationTreeDefItem();
+        freezer.initialize();
+        freezer.setRankId(300);
+        freezer.setName("Freezer");
+        freezer.setIsEnforced(true);
+        freezer.setIsInFullName(true);
+        freezer.setTreeDef(locDef);
+        freezer.setFullNameSeparator(", ");
+        session.save(freezer);
+        
+        rootItem.setChild(building);
+        building.setChild(room);
+        room.setChild(freezer);
+        
+        locDef.addTreeDefItem(building);
+        locDef.addTreeDefItem(room);
+        locDef.addTreeDefItem(freezer);
+        
+        HibernateUtil.commitTransaction();
+        HibernateUtil.closeSession();
+
+        return locDef;
+    }
 }
+

@@ -43,11 +43,11 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
 
      protected Long loanReturnPhysicalObjectId;
      protected Calendar returnedDate;
-     protected Short quantity;
+     protected Integer quantity;
      protected String remarks;
      protected LoanPhysicalObject loanPhysicalObject;
      protected DeaccessionCollectionObject deaccessionCollectionObject;
-     protected Agent agent;
+     protected Agent receivedBy;
 
 
     // Constructors
@@ -76,7 +76,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
         lastEditedBy = null;
         loanPhysicalObject = null;
         deaccessionCollectionObject = null;
-        agent = null;
+        receivedBy = null;
     }
     // End Initializer
 
@@ -124,11 +124,11 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     /**
      *      * Quantity of items returned (necessary for lots)
      */
-    public Short getQuantity() {
+    public Integer getQuantity() {
         return this.quantity;
     }
     
-    public void setQuantity(Short quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -168,12 +168,12 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     /**
      *      * Person processing the loan return
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getReceivedBy() {
+        return this.receivedBy;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setReceivedBy(Agent agent) {
+        this.receivedBy = agent;
     }
 
 

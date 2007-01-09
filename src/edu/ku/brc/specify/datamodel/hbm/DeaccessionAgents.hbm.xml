@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_DeaccessionAgents">
@@ -38,15 +38,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_DeaccessionAgentsAgentID" unique-key="IX_DeaccessionAgents">
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update"  outer-join="true" index="IX_DeaccessionAgentsAgentID" unique-key="IX_DeaccessionAgents">
         <meta attribute="field-description">AgentID for agent</meta>
-        <column name="AgentID"/>
+        <column name="AgentID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Deaccession -->
-    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" not-null="true" outer-join="true" cascade="none" index="IX_DeaccessionAgentsDeaccessionID" unique-key="IX_DeaccessionAgents">
+    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" outer-join="true" cascade="none" index="IX_DeaccessionAgentsDeaccessionID" unique-key="IX_DeaccessionAgents">
         <meta attribute="field-description">Deaccession agent played role in</meta>
-        <column name="DeaccessionID"/>
+        <column name="DeaccessionID"  not-null="true"/>
     </many-to-one>
 
 </class>

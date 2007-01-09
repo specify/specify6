@@ -515,12 +515,27 @@ public class CreateTestDatabases
             Session session = HibernateUtil.getCurrentSession();
             setSession(session);
             HibernateUtil.beginTransaction();
+            GeographyTreeDef geoTreeDef = createGeographyTreeDef("testtreeDefName");
+            GeographyTreeDefItem planet = createGeographyTreeDefItem(null, geoTreeDef, "Planet", 0);
+            GeographyTreeDefItem cont   = createGeographyTreeDefItem(planet, geoTreeDef, "Continent", 100);
 
-            Locality locality = createLocality("This is the place", (Geography)getDBObject(Geography.class, 6));
+            GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
+            GeographyTreeDefItem state   = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
+            GeographyTreeDefItem county  = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
+
+            // Create the planet Earth.
+            // That seems like a big task for 5 lines of code.
+            Geography earth        = createGeography(geoTreeDef, null, "Earth", planet.getRankId());
+            Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
+            
+            HibernateUtil.commitTransaction();
+            HibernateUtil.beginTransaction();
+            
+            Locality locality = createLocality("This is the place", northAmerica);
             list.add(locality);
             session.save(locality);
 
-            locality = createLocality("My Private Forest", (Geography)getDBObject(Geography.class, 10));
+            locality = createLocality("My Private Forest", northAmerica);
             list.add(locality);
             session.save(locality);
 
@@ -542,6 +557,7 @@ public class CreateTestDatabases
      */
     public static Address[] createAddresses(Agent[] agents)
     {
+        log.info("Create Addresses in memory");
         String[] addresses = {"101 High Street.",  "St. Charles",  "Kent", "Great Britain", "AE00939",
                 "Harvard Square",     "Cambridge",   "MA",   "USA",           "009391",
                 "99 East Street.",    "Lawrence",    "KS",   "USA",         "66045",
@@ -570,7 +586,7 @@ public class CreateTestDatabases
      */
     public static boolean createMultipleAgents()
     {
-        log.info("Create Agents");
+        log.info("Create Multiple Agents");
         try
         {
             Session session = HibernateUtil.getCurrentSession();
@@ -590,6 +606,7 @@ public class CreateTestDatabases
             Agent[] agents = new Agent[values.length/5];
             for (int i=0;i<values.length;i+=5)
             {
+                log.info("createAgent");
                 agents[i/5] = createAgent(values[i], values[i+1], values[i+2], values[i+3], values[i+4]);
             }
 
@@ -608,7 +625,7 @@ public class CreateTestDatabases
 
             // Add an extra address for one of them
             //Address addr = createAddress(agents[0], "34 Vintage Drive", "", "San Diego", "CA",   "USA", "92129");
-
+            log.info("MEG -  getting read to commit");
             HibernateUtil.commitTransaction();
 
             return true;
@@ -629,7 +646,7 @@ public class CreateTestDatabases
      */
     public static Agent[] createAgentsInMemory()
     {
-        log.info("Create Agents");
+        log.info("Create Agents in memory");
 
         setSession(null);
 
@@ -659,6 +676,7 @@ public class CreateTestDatabases
      */
     public static Accession[] createAccessionsInMemory()
     {
+        log.info("Create Accessions in memory");
         setSession(null);
 
         Agent[]   agents    = createAgentsInMemory();
@@ -697,6 +715,7 @@ public class CreateTestDatabases
 
             // Make as many permits as the position of the accession in the array
             agentsInx = 0;
+            
             for (int j=0;j<i+1;j++)
             {
                 Permit permit = createPermit(permitNumbers[j], permitType[1],
@@ -705,9 +724,9 @@ public class CreateTestDatabases
                         Calendar.getInstance(), // endDate
                         Calendar.getInstance());// renewalDate
 
-                permit.setAgentByIssuee(i == 1 && j == 0 ? null : agents[agentsInx % agents.length]);
+                permit.setIssuedTo(i == 1 && j == 0 ? null : agents[agentsInx % agents.length]);
                 agentsInx++;
-                permit.setAgentByIssuer(agents[agentsInx % agents.length]);
+                permit.setIssuedBy(agents[agentsInx % agents.length]);
                 agentsInx++;
 
                 AccessionAuthorizations accessionAuthorizations = createAccessionAuthorizations(permit, accessions[i], null);
@@ -733,22 +752,42 @@ public class CreateTestDatabases
         try
         {
             Session session = HibernateUtil.getCurrentSession();
-
+            setSession(session);
+            HibernateUtil.beginTransaction();
             TaxonTreeDef taxonTreeDef = new TaxonTreeDef();
             taxonTreeDef.setName("Taxon for "+name);
             taxonTreeDef.setTreeDefItems(new HashSet<TaxonTreeDefItem>());
             taxonTreeDef.setTreeEntries(new HashSet<Taxon>());
 
-            setSession(session);
-
+            //meg added to support not-null constraints
+            GeographyTreeDef geographyTreeDef = new GeographyTreeDef();
+            geographyTreeDef.setName("Geography for" + name);
+            geographyTreeDef.setTreeDefItems(new HashSet<GeographyTreeDefItem>());
+            geographyTreeDef.setTreeEntries(new HashSet<Geography>());
+            
+            //meg added to support not-null constraints
+            GeologicTimePeriodTreeDef geologicTimePeriodTreeDef = new GeologicTimePeriodTreeDef();
+            geologicTimePeriodTreeDef.setName("GeologicTimePeriod for" + name);
+            geologicTimePeriodTreeDef.setTreeDefItems(new HashSet<GeologicTimePeriodTreeDefItem>());
+            geologicTimePeriodTreeDef.setTreeEntries(new HashSet<GeologicTimePeriod>());
+            
+            //meg added to support not-null constraints
+            LocationTreeDef locationTreeDef = new LocationTreeDef();
+            locationTreeDef.setName("Locatoin for" + name);
+            locationTreeDef.setTreeDefItems(new HashSet<LocationTreeDefItem>());
+            locationTreeDef.setTreeEntries(new HashSet<Location>());
+            
             HibernateUtil.beginTransaction();
-
+            session.saveOrUpdate(geographyTreeDef);
+            session.saveOrUpdate(geologicTimePeriodTreeDef);
+            session.saveOrUpdate(locationTreeDef);
+            
             // Create Collection Object Definition
-            CollectionObjDef colObjDef = ObjCreatorHelper.createCollectionObjDef(name, disciplineName, dataType, user, taxonTreeDef);
+            CollectionObjDef colObjDef = ObjCreatorHelper.createCollectionObjDef(name, disciplineName, dataType, user, taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef, locationTreeDef);
             session.save(colObjDef);
 
             // Update the SpecifyUser to own the ColObjDef
-            user.getCollectionObjDef().add(colObjDef);
+            user.getCollectionObjDefs().add(colObjDef);
             session.saveOrUpdate(user);
 
             HibernateUtil.commitTransaction();
@@ -774,24 +813,30 @@ public class CreateTestDatabases
     {
         BasicSQLUtils.cleanAllTables();
 
+        log.info("Creating Single Discipline");
         try
         {
             Session session = HibernateUtil.getCurrentSession();
             setSession(session);
             HibernateUtil.beginTransaction();
 
+            log.info("createUserGroup");
             UserGroup        userGroup        = createUserGroup(disciplineName);
-            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
+            log.info("createSpecifyUser");
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
+            log.info("createDataType");
             DataType         dataType         = createDataType(disciplineName);
 
             createMultipleLocalities();
 
             HibernateUtil.commitTransaction();
 
-
+            log.info("createCollectionObjDef");
             CollectionObjDef collectionObjDef = createCollectionObjDef(dataType, user, colObjDefName, disciplineName); // creates TaxonTreeDef
 
+            log.info("createCollectionObjDef");
             createSimpleGeography(collectionObjDef, "Geography");
+            log.info("createSimpleTaxon");
             createSimpleTaxon(collectionObjDef.getTaxonTreeDef());
             createSimpleLocation(collectionObjDef, "Location");
 
@@ -935,8 +980,8 @@ public class CreateTestDatabases
              Session session = HibernateUtil.getCurrentSession();
              setSession(session);
              UserGroup        userGroup  = createUserGroup("NHM");
-             SpecifyUser      rods       = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "Collection Manager");
-             SpecifyUser      josh       = createSpecifyUser("josh", "jds@ku.edu",  (short)0, userGroup, "Collection Manager");
+             SpecifyUser      rods       = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "Collection Manager");
+             SpecifyUser      josh       = createSpecifyUser("josh", "jds@ku.edu",  (short)0, new UserGroup[] {userGroup}, "Collection Manager");
              DataType         dataType   = createDataType(dataTypeStr);
 
              List<CatalogSeries>                 catalogSeriesList = new ArrayList<CatalogSeries>();
@@ -1142,8 +1187,11 @@ public class CreateTestDatabases
      */
     public static Agent getAgentByLastName(final String lastName)
     {
+        log.info("getAgentByLastName");
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Agent.class);
+        log.info(criteria.toString());
         criteria.add(Restrictions.eq("lastName", lastName));
+        log.info(criteria.toString());
         List<?> list = criteria.list();
         if (list.size() == 0)
         {
@@ -1168,7 +1216,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup("MyGroup");
-            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
             DataType         dataType         = createDataType("Animal");
 
             createMultipleLocalities();
@@ -1306,7 +1354,7 @@ public class CreateTestDatabases
 
             UserGroup        userGroup        = createUserGroup(name);
             @SuppressWarnings("unused")
-            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
 
             createMultipleAgents();
 
@@ -1355,7 +1403,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(disciplineName);
-            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
             DataType         dataType         = createDataType(disciplineName);
 
             List<Locality> localities = createMultipleLocalities();

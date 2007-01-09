@@ -291,11 +291,11 @@ public class SpecifyDBConverter
         }
 
         HibernateUtil.getCurrentSession();
-
         IdMapperMgr idMapperMgr = null;
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(true);
+
             GenericDBConversion.setShouldDeleteMapTables(true);
             
             frame.setOverall(0, 15);
@@ -314,8 +314,10 @@ public class SpecifyDBConverter
                                                                          "jdbc:mysql://localhost/"+oldDatabaseName,
                                                                          "rods",
                                                                          "rods");
+
                 conversion.setFrame(frame);
                 
+
                 idMapperMgr = IdMapperMgr.getInstance();
                 idMapperMgr.setDBs(conversion.getOldDBConnection(), conversion.getNewDBConnection());
 
@@ -351,6 +353,7 @@ public class SpecifyDBConverter
                 	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
                 	conversion.convertGTP(treeDef);
                 }
+
                 frame.incOverall();
 
                 frame.setDesc("Mapping Tables.");
@@ -366,7 +369,9 @@ public class SpecifyDBConverter
                     conversion.mapIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
+
                 frame.incOverall();
+
 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 boolean convertCatalogSeriesDef = false;
@@ -382,8 +387,6 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("CollectionObjectType", "CollectionObjectTypeID");
                 }
                 frame.incOverall();
-
-
                 frame.setDesc("Converting USYS Tables.");
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
@@ -424,7 +427,9 @@ public class SpecifyDBConverter
                 {
                     conversion.copyTables();
                 }
+
                 frame.incOverall();
+
 
                 frame.setDesc("Converting CollectionObjects");
                 boolean doCollectionObjects = false;
@@ -441,12 +446,11 @@ public class SpecifyDBConverter
                     frame.incOverall();
 
                     
-                } else
+                }  else
                 {
                     frame.incOverall();
                     frame.incOverall();
                 }
-
                 frame.setDesc("Converting Taxonomy");
                 boolean doTaxonomy = false;
                 if( doTaxonomy || doAll )
@@ -522,13 +526,13 @@ public class SpecifyDBConverter
                 {
 
                     BasicSQLUtils.deleteAllRecordsFromTable("datatype");
-                    BasicSQLUtils.deleteAllRecordsFromTable("user");
+                    BasicSQLUtils.deleteAllRecordsFromTable("specifyuser");
                     BasicSQLUtils.deleteAllRecordsFromTable("usergroup");
                     BasicSQLUtils.deleteAllRecordsFromTable("collectionobjdef");
 
                     DataType          dataType  = ObjCreatorHelper.createDataType("Animal");
                     UserGroup         userGroup = ObjCreatorHelper.createUserGroup("Fish");
-                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
+                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
 
 
 
@@ -549,7 +553,7 @@ public class SpecifyDBConverter
                             if (catalogSeriesList.size() == 0)
                             {
                                 voucherSeries = new CatalogSeries();
-                                voucherSeries.setIsTissueSeries(false);
+                               // voucherSeries.setIsTissueSeries(false);
                                 voucherSeries.setTimestampCreated(new Date());
                                 voucherSeries.setTimestampModified(new Date());
                                 voucherSeries.setCatalogSeriesId(100L);
@@ -565,7 +569,7 @@ public class SpecifyDBConverter
                             if (voucherSeries != null)
                             {
                                 CatalogSeries tissueSeries = new CatalogSeries();
-                                tissueSeries.setIsTissueSeries(true);
+                               // tissueSeries.setIsTissueSeries(true);
                                 tissueSeries.setTimestampCreated(new Date());
                                 tissueSeries.setTimestampModified(new Date());
                                 tissueSeries.setCatalogSeriesId(101L);
@@ -573,7 +577,7 @@ public class SpecifyDBConverter
                                 tissueSeries.setSeriesName("Fish Tissue");
                                 session.saveOrUpdate(tissueSeries);
 
-                                voucherSeries.setTissue(tissueSeries);
+                                //voucherSeries.setTissue(tissueSeries);
                                 session.saveOrUpdate(voucherSeries);
 
                                 HibernateUtil.commitTransaction();

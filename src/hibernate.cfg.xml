@@ -57,7 +57,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Borrow.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowMaterial.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowReturnMaterial.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowShipments.hbm.xml"/>
+		
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CatalogSeries.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEvent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEventAttr.hbm.xml"/>
@@ -113,6 +113,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserGroup.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserPermission.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/ViewSetObj.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchDataItem.hbm.xml"/>

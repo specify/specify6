@@ -46,21 +46,21 @@
 
         <!-- Associations -->
 
-        <many-to-one name="treeDef" column="TaxonTreeDefID"
+        <many-to-one name="treeDef" column="TaxonTreeDefID" cascade="none" 
             class="edu.ku.brc.specify.datamodel.TaxonTreeDef">
         </many-to-one>
 
-        <set name="treeEntries" table="Taxon" inverse="true">
+        <set name="treeEntries" table="Taxon" inverse="true" cascade="all-delete-orphan">
             <key column="TaxonTreeDefItemID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
         </set>
 
         <many-to-one name="parent" column="ParentItemID"
             class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
-            cascade="save-update">
+            cascade="none">
         </many-to-one>
 
-        <set name="children" table="TaxonTreeDefItem" inverse="true" lazy="false">
+        <set name="children" table="TaxonTreeDefItem" inverse="true" cascade="all-delete-orphan" lazy="false">
             <key column="ParentItemID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
         </set>

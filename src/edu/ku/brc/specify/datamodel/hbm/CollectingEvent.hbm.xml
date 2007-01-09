@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="stationFieldNumber" type="java.lang.String" column="StationFieldNumber" length="50" index="IX_CollectingEventStatFldNo">
@@ -85,6 +85,16 @@
         <meta attribute="field-description">Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).</meta>
     </property>
     
+     <!--@TODO make this field != null> -->
+    <property name="visibility" type="java.lang.Integer" column="Visibility"  length="10">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Indicates whether this record can be viewed - by owner, by instituion, or by all</meta>  
+        <meta attribute="default-value">0</meta>
+    </property>  
+      <property name="visibilitySetBy" type="java.lang.String" column="VisibilitySetBy" length="50"  >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>       
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
@@ -98,8 +108,8 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObject -->
-    <set name="collectionObjects" lazy="true" inverse="true" cascade="none">    
-    <meta attribute="scope-field">protected</meta>
+    <set name="collectionObjects" lazy="true" inverse="true" cascade="save-update">    
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta> 
         <key>
             <column name="CollectingEventID"/>
@@ -108,7 +118,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to Collectors -->
-    <set name="collectors" lazy="true" inverse="true" cascade="all-delete-orphan" order-by="orderNumber asc">
+    <set name="collectors" lazy="true" inverse="true" cascade="save-update" order-by="orderNumber asc">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectingEventID"/>
@@ -117,26 +127,25 @@
     </set>
     
     <!-- bi-directional many-to-one association to Locality -->
-    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" cascade="save-update" not-null="true" outer-join="true" index="IX_CollectingEventLocalityID">
-    <meta attribute="scope-field">protected</meta>
+    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" cascade="save-update" outer-join="true" index="IX_CollectingEventLocalityID">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Locality where collection took place</meta>
-        <column name="LocalityID"/>
+        <column name="LocalityID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to CollectingTrip -->
-    <many-to-one name="collectingTrip" class="edu.ku.brc.specify.datamodel.CollectingTrip" outer-join="true">
+    <many-to-one name="collectingTrip" class="edu.ku.brc.specify.datamodel.CollectingTrip" cascade="save-update" outer-join="true">
         <column name="CollectingTripID"/>
     </many-to-one>
     
-    <!-- bi-directional one-to-one association to Stratigraphy -->
-    <one-to-one name="stratigraphy" class="edu.ku.brc.specify.datamodel.Stratigraphy" cascade="save-update">
-    <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>
-    </one-to-one>
+    <!-- bi-directional many-to-one association to Stratigraphy -->
+    <many-to-one name="stratigraphy" class="edu.ku.brc.specify.datamodel.Stratigraphy" cascade="all">
+        <column name="StratigraphyID"/>
+    </many-to-one>
     
     <!-- bi-directional one-to-many association to CollectingEventAttr -->
-    <set name="attrs" lazy="true" inverse="true" cascade="delete">
-    <meta attribute="scope-field">protected</meta>
+    <set name="attrs" lazy="true" inverse="true" cascade="all-delete-orphan">
+    	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectingEventAttrID"/>
@@ -145,7 +154,7 @@
     </set>    
         
     <!-- bi-directional one-to-many association to Attachment -->
-    <set name="attachments" inverse="true" cascade="save-update">
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
         <key column="CollectingEventID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>

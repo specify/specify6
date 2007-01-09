@@ -61,6 +61,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      protected String verbatimLocality;
      protected Integer groupPermittedToView;
      protected String remarks;
+     protected Integer visibility;
+     protected String visibilitySetBy;
      protected Set<CollectionObject> collectionObjects;
      protected Set<Collectors> collectors;
      protected Locality locality;
@@ -104,6 +106,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         verbatimLocality = null;
         groupPermittedToView = null;
         remarks = null;
+        visibility = null;
         timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
@@ -299,7 +302,33 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
-
+    /**
+     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     */
+    public Integer getVisibility() {
+        return this.visibility;
+    }
+    
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
+     
+    /**
+     * 
+     */
+    public String getVisibilitySetBy() {
+        return this.visibilitySetBy;
+    }
+    
+    public void setVisibilitySetBy(String visibilitySetBy) {
+        this.visibilitySetBy = visibilitySetBy;
+    }
+    
+    public boolean isRestrictable()
+    {
+        return true;
+    }
+    
     /**
      * 
      */

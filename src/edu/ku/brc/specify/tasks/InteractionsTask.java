@@ -394,7 +394,8 @@ public class InteractionsTask extends BaseTask
                         Shipment shipment = new Shipment();
                         shipment.initialize();
                         
-                        loan.setShipment(shipment);
+                        //loan.setShipment(shipment);//changed to support many-to-many
+                        loan.addShipment(shipment);
                         shipment.getLoans().add(loan);
                         
                         for (Preparation prep : prepsHash.keySet())
@@ -404,7 +405,7 @@ public class InteractionsTask extends BaseTask
                             LoanPhysicalObject lpo = new LoanPhysicalObject();
                             lpo.initialize();
                             lpo.setPreparation(prep);
-                            lpo.setQuantity(count.shortValue());
+                            lpo.setQuantity(count);
                             lpo.setLoan(loan);
                             loan.getLoanPhysicalObjects().add(lpo);
                         }
@@ -773,7 +774,8 @@ public class InteractionsTask extends BaseTask
                     LoanPhysicalObject       lpo  = lri.getLoanPhysicalObject();
                     LoanReturnPhysicalObject lrpo = new LoanReturnPhysicalObject();
                     lrpo.initialize();
-                    lrpo.setAgent(agent);
+                    //lrpo.setAgent(agent);
+                    lrpo.setReceivedBy(agent);
                     lrpo.setLastEditedBy(FormHelper.getCurrentUserEditStr());
                     lrpo.setReturnedDate(Calendar.getInstance());
                     lrpo.setQuantity(lri.getQuantity());
@@ -854,7 +856,7 @@ public class InteractionsTask extends BaseTask
     //-------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public void doCommand(CommandAction cmdAction)
+   public void doCommand(CommandAction cmdAction)
     {
         
         if (cmdAction.isType(DB_CMD_TYPE))

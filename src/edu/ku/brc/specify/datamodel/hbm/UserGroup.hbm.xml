@@ -10,7 +10,7 @@
       <generator class="native"/>
     </id>
     
-    <property name="name" type="java.lang.String" column="Name" length="64">
+    <property name="name" type="java.lang.String" column="Name" unique="true" length="64" not-null="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
@@ -21,15 +21,40 @@
     </property>
     
     <!-- Associations -->
-  
-    <!-- bi-directional one-to-many association to SpecifyUser -->
-    <set name="specifyUsers" lazy="true" inverse="true" cascade="none">
+
+    <!-- bi-directional many-to-many association to SpecifyUser -->
+    <set name="specifyUsers" table="sp_usergroup" inverse="true" >
+    	<meta attribute="field-description"></meta>
+    	<key column="UserGroupID"/>
+    	<many-to-many column="SpecifyUserID" class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
+    </set>
+      
+    <!-- bi-directional one-to-many association to Workbench -->
+    <set name="workbenches" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="UserGroupID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
-    </set>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Workbench"/>
+    </set>     
     
+    <!-- bi-directional one-to-many association to RecordSet -->
+    <set name="recordsets" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="UserGroupID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.RecordSet"/>
+    </set> 
+     
+    <!-- bi-directional one-to-many association to AppResource -->
+    <set name="appResources" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="UserGroupID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AppResource"/>
+    </set> 
+          
 </class>
 </hibernate-mapping>

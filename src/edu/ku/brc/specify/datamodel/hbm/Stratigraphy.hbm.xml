@@ -12,7 +12,7 @@
     
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="superGroup" type="java.lang.String" column="SuperGroup" length="50">
@@ -88,11 +88,17 @@
 
 
     <!-- Associations -->
-  
-    <!-- bi-directional one-to-one association to CollectingEvent -->
-    <one-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" outer-join="auto" constrained="true" cascade="delete">
-        <meta attribute="field-description"></meta>    
-    </one-to-one>
+    
+    <!-- bi-directional one-to-many association to CollectingEvent 
+    	 This is the zero/one side of the zero/one-to-one -->
+    <set name="collectingEvents" lazy="true" inverse="true" cascade="none">
+    	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="StratigraphyID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
+    </set>     
     
     <!-- bi-directional one-to-many association to GeologicTimePeriod -->
     <many-to-one name="geologicTimePeriod"

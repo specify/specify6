@@ -60,8 +60,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<AccessionAuthorizations> accessionAuthorizations;
-     protected Agent agentByIssuee;
-     protected Agent agentByIssuer;
+     protected Agent issuedTo;
+     protected Agent issuedBy;
      protected Set<Attachment>          attachments;
 
 
@@ -101,8 +101,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         yesNo1 = null;
         yesNo2 = null;
         accessionAuthorizations = new HashSet<AccessionAuthorizations>();
-        agentByIssuee = null;
-        agentByIssuer = null;
+        issuedTo = null;
+        issuedBy = null;
         attachments = new HashSet<Attachment>();
     }
     // End Initializer
@@ -294,23 +294,23 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * AgentID of Issuee
      */
-    public Agent getAgentByIssuee() {
-        return this.agentByIssuee;
+    public Agent getIssuedTo() {
+        return this.issuedTo;
     }
 
-    public void setAgentByIssuee(Agent agentByIssuee) {
-        this.agentByIssuee = agentByIssuee;
+    public void setIssuedTo(Agent agentByIssuee) {
+        this.issuedTo = agentByIssuee;
     }
 
     /**
      *      * AgentID of Issuer
      */
-    public Agent getAgentByIssuer() {
-        return this.agentByIssuer;
+    public Agent getIssuedBy() {
+        return this.issuedBy;
     }
 
-    public void setAgentByIssuer(Agent agentByIssuer) {
-        this.agentByIssuer = agentByIssuer;
+    public void setIssuedBy(Agent agentByIssuer) {
+        this.issuedBy = agentByIssuer;
     }
 
     public Set<Attachment> getAttachments()

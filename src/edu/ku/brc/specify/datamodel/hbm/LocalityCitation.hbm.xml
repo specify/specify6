@@ -12,7 +12,7 @@
     
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="remarks" type="text" column="Remarks">
@@ -33,15 +33,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
-    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" outer-join="true" index="IX_LocalityCitationReferenceWorkID" unique-key="IX_LocalityCitation">
+    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" cascade="save-update" outer-join="true" index="IX_LocalityCitationReferenceWorkID" unique-key="IX_LocalityCitation">
         <meta attribute="field-description">ID of work citing locality</meta>
-        <column name="ReferenceWorkID"/>
+        <column name="ReferenceWorkID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Locality -->
-    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" not-null="true" outer-join="true" cascade="none" index="IX_LocalityCitationLocalityID" unique-key="IX_LocalityCitation">
+    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" outer-join="true" cascade="none" index="IX_LocalityCitationLocalityID" unique-key="IX_LocalityCitation">
         <meta attribute="field-description">ID of locality cited</meta>
-        <column name="LocalityID"/>
+        <column name="LocalityID"  not-null="true"/>
     </many-to-one>
 
 </class>

@@ -60,16 +60,18 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected String                        abbreviation;
     protected String                        name;
     protected String                        remarks;
+    protected Integer                       visibility;
+    protected String                        visibilitySetBy;
     protected Set<Authors>                   authors;
     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
     protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
     protected Set<ExchangeIn>               exchangeInCatalogedBys;
-    protected Set<Agent>                    members;
+    protected Set<Agent>                    orgMembers;
     protected Agent                         organization;
     protected Set<Project>                  projects;
     protected Set<Preparation>              preparations;
-    protected Set<GroupPersons>              groupPersonsByGroup;
-    protected Set<GroupPersons>              groupPersonsByMember;
+    protected Set<GroupPersons>              groups;
+    protected Set<GroupPersons>              members;
     protected Set<Determination>            determinations;
     protected Set<Agent>                    agentsByOrganization;
     protected Set<Agent>                    agentsByAgent;
@@ -90,11 +92,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<Shipment>                 shipmentsByShippedTo;
     protected Set<DeaccessionAgents>         deaccessionAgents;
     protected Set<ExchangeIn>               exchangeInFromOrganizations;
-    protected Set<Permit>                   permitsByIssuee;
-    protected Set<Permit>                   permitsByIssuer;
+    protected Set<Permit>                   permitsIssuedTo;
+    protected Set<Permit>                   permitsIssuedBy;
     protected Set<BorrowAgents>              borrowAgents;
     protected Set<AccessionAgents>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
+    protected Set<SpecifyUser> specifyUsers;
 
     // Constructors
 
@@ -125,16 +128,17 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
+        visibility = null;
         authors = new HashSet<Authors>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
         exchangeInCatalogedBys = new HashSet<ExchangeIn>();
-        members = new HashSet<Agent>();
+        orgMembers = new HashSet<Agent>();
         organization = null;
         projects = new HashSet<Project>();
         preparations = new HashSet<Preparation>();
-        groupPersonsByGroup = new HashSet<GroupPersons>();
-        groupPersonsByMember = new HashSet<GroupPersons>();
+        groups = new HashSet<GroupPersons>();
+        members = new HashSet<GroupPersons>();
         determinations = new HashSet<Determination>();
         agentsByOrganization = new HashSet<Agent>();
         agentsByAgent = new HashSet<Agent>();
@@ -158,8 +162,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         shipmentsByShippedTo = new HashSet<Shipment>();
         deaccessionAgents = new HashSet<DeaccessionAgents>();
         exchangeInFromOrganizations = new HashSet<ExchangeIn>();
-        permitsByIssuee = new HashSet<Permit>();
-        permitsByIssuer = new HashSet<Permit>();
+        permitsIssuedTo = new HashSet<Permit>();
+        permitsIssuedBy = new HashSet<Permit>();
         borrowAgents = new HashSet<BorrowAgents>();
         accessionAgents = new HashSet<AccessionAgents>();
         exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
@@ -338,7 +342,33 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
-
+    /**
+     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     */
+    public Integer getVisibility() {
+        return this.visibility;
+    }
+    
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
+    
+    public boolean isRestrictable()
+    {
+        return true;
+    }
+    
+    /**
+     * 
+     */
+    public String getVisibilitySetBy() {
+        return this.visibilitySetBy;
+    }
+    
+    public void setVisibilitySetBy(String visibilitySetBy) {
+        this.visibilitySetBy = visibilitySetBy;
+    }
+    
     /**
      *
      */
@@ -386,12 +416,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
-    public Set<Agent> getMembers() {
-        return this.members;
+    public Set<Agent> getOrgMembers() {
+        return this.orgMembers;
     }
 
-    public void setMembers(Set<Agent> members) {
-        this.members = members;
+    public void setOrgMembers(Set<Agent> members) {
+        this.orgMembers = members;
     }
 
     /**
@@ -430,23 +460,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
-    public Set<GroupPersons> getGroupPersonsByGroup() {
-        return this.groupPersonsByGroup;
+    public Set<GroupPersons> getGroups() {
+        return this.groups;
     }
 
-    public void setGroupPersonsByGroup(Set<GroupPersons> groupPersonsByGroup) {
-        this.groupPersonsByGroup = groupPersonsByGroup;
+    public void setGroups(Set<GroupPersons> groupPersonsByGroup) {
+        this.groups = groupPersonsByGroup;
     }
 
     /**
      *
      */
-    public Set<GroupPersons> getGroupPersonsByMember() {
-        return this.groupPersonsByMember;
+    public Set<GroupPersons> getMembers() {
+        return this.members;
     }
 
-    public void setGroupPersonsByMember(Set<GroupPersons> groupPersonsByMember) {
-        this.groupPersonsByMember = groupPersonsByMember;
+    public void setMembers(Set<GroupPersons> groupPersonsByMember) {
+        this.members = groupPersonsByMember;
     }
 
     /**
@@ -633,23 +663,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
-    public Set<Permit> getPermitsByIssuee() {
-        return this.permitsByIssuee;
+    public Set<Permit> getPermitsIssuedTo() {
+        return this.permitsIssuedTo;
     }
 
-    public void setPermitsByIssuee(Set<Permit> permitsByIssuee) {
-        this.permitsByIssuee = permitsByIssuee;
+    public void setPermitsIssuedTo(Set<Permit> permitsByIssuee) {
+        this.permitsIssuedTo = permitsByIssuee;
     }
 
     /**
      *
      */
-    public Set<Permit> getPermitsByIssuer() {
-        return this.permitsByIssuer;
+    public Set<Permit> getPermitsIssuedBy() {
+        return this.permitsIssuedBy;
     }
 
-    public void setPermitsByIssuer(Set<Permit> permitsByIssuer) {
-        this.permitsByIssuer = permitsByIssuer;
+    public void setPermitsIssuedBy(Set<Permit> permitsByIssuer) {
+        this.permitsIssuedBy = permitsByIssuer;
     }
 
     /**
@@ -695,7 +725,16 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }
+    /**
+     * 
+     */
+    public Set<SpecifyUser> getSpecifyUsers() {
+        return this.specifyUsers;
+    }
     
+    public void setSpecifyUsers(Set<SpecifyUser> specifyUser) {
+        this.specifyUsers = specifyUser;
+    }  
 
 
     // Add Methods
@@ -709,7 +748,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     public void addLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setAgent(this);
+        loanReturnPhysicalObject.setReceivedBy(this);
     }
 
     public void addBorrowReturnMaterials(final BorrowReturnMaterial borrowReturnMaterial)
@@ -718,10 +757,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         borrowReturnMaterial.setAgent(this);
     }
 
-    public void addMembers(final Agent member)
+    public void addOrgMembers(final Agent orgMember)
     {
-        this.members.add(member);
-        member.getMembers().add(this);
+        this.orgMembers.add(orgMember);
+        orgMember.getOrgMembers().add(this);
     }
 
     public void addProjects(final Project project)
@@ -742,10 +781,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeMembers(final Agent member)
+    public void removeOrgMembers(final Agent orgMember)
     {
-        this.members.remove(member);
-        member.getMembers().remove(this);
+        this.orgMembers.remove(orgMember);
+        orgMember.getOrgMembers().remove(this);
     }
 
     public void removeProjects(final Project project)

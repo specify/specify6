@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="typeStatusName" type="java.lang.String" column="TypeStatusName" length="50">
@@ -87,28 +87,29 @@
 
     <!-- Associations -->
   
+
     <!-- bi-directional many-to-one association to DeterminationStatus -->
     <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" outer-join="true" cascade="save-update">
         <meta attribute="scope-field">protected</meta>
         <column name="DeterminationStatusID" not-null="true" />
     </many-to-one>
 
-    <!-- bi-directional many-to-one association to Taxon -->
-    <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Taxon  not-null="true"-->
+    <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" outer-join="true" cascade="save-update">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="TaxonID"/>
+        <column name="TaxonID" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" cascade="none">
+    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" outer-join="true" cascade="none">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="CollectionObjectID"/>
+        <column name="CollectionObjectID"  not-null="true"/>
     </many-to-one>    
 
     <!-- bi-directional one-to-many association to DeterminationCitation -->
-    <set name="determinationCitations" lazy="true" inverse="true" cascade="delete">
+    <set name="determinationCitations" lazy="true" inverse="true" cascade="all">
         <meta attribute="field-description"></meta>
         <key>
             <column name="DeterminationID"/>
@@ -116,10 +117,10 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
     </set>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="determiner" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent not-null="true" -->
+    <many-to-one name="determiner" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update">
         <meta attribute="field-description">id of the Person making the determination</meta>
-        <column name="DeterminerID"/>
+        <column name="DeterminerID"  />
     </many-to-one>
 
 </class>

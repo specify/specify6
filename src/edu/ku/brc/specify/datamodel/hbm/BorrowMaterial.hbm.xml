@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="materialNumber" type="java.lang.String" column="MaterialNumber" not-null="true" length="50">
@@ -68,9 +68,9 @@
     </set>
     
     <!-- bi-directional many-to-one association to Borrow -->
-    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowMaterialBorrowID">
+    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow"  outer-join="true" cascade="none" index="IX_BorrowMaterialBorrowID">
         <meta attribute="field-description">ID of the Borrow containing the Prep</meta>
-        <column name="BorrowID"/>
+        <column name="BorrowID" not-null="true"/>
     </many-to-one>
 
 </class>

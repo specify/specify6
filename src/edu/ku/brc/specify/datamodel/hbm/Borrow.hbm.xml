@@ -12,7 +12,7 @@
 	
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
     
     <property name="invoiceNumber" type="java.lang.String" column="InvoiceNumber" not-null="true" length="50" index="IX_BorrowInvoice">
@@ -57,9 +57,10 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="closed" type="short" column="Closed">
+    <property name="isClosed" type="boolean" column="IsClosed">
         <meta attribute="field-description">False until all material has been returned</meta>
     </property>
+    
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
@@ -75,15 +76,25 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to BorrowShipments -->
-    <set name="borrowShipments" lazy="true" inverse="true" cascade="delete">
+    <!-- Removed and replaced with many-to-many -->
+   <!-- <set name="borrowShipments" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="BorrowID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipments"/>
-    </set>
+    </set> -->
+    
+    <!-- bi-directional many-to-many association to Shipment -->
+    <set name="shipments" table="borrow_shipment" inverse="true" lazy="true" cascade="save-update">
+        <key>
+            <column name="BorrowID"/>
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Shipment" column="ShipmentID"/>
+    </set>  
+     
     <!-- bi-directional one-to-many association to BorrowAgents -->
-    <set name="borrowAgents" lazy="true" inverse="true" cascade="delete">
+    <set name="borrowAgents" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="BorrowID"/>
@@ -92,7 +103,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to BorrowMaterial -->
-    <set name="borrowMaterials" lazy="true" inverse="true" cascade="delete">
+    <set name="borrowMaterials" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="BorrowID"/>

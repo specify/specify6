@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="loanNumber" type="java.lang.String" column="LoanNumber" not-null="true" length="50">
@@ -79,7 +79,7 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Login name of the user who last edited the record</meta>
     </property>
-    
+   
     <property name="IsClosed" type="boolean" column="IsClosed">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">'No' until all preparations in the loan have been returned/resolved.</meta>
@@ -100,7 +100,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to LoanAgents -->
-    <set name="loanAgents" lazy="true" inverse="true" cascade="delete">
+    <set name="loanAgents" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="LoanID"/>
@@ -118,13 +118,21 @@
     </set>
     
     <!-- bi-directional many-to-one association to Shipment -->
-    <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" cascade="all" not-null="true" outer-join="true" index="IX_LoanShipmentID">
+    <!-- <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" cascade="save-update" outer-join="true" index="IX_LoanShipmentID">
         <meta attribute="field-description">Link to Shipment table</meta>
-        <column name="ShipmentID"/>
-    </many-to-one>
+        <column name="ShipmentID"  not-null="true"/>
+    </many-to-one> -->
 
+    <!-- bi-directional many-to-many association to Shipment -->
+    <set name="shipments" table="loan_shipment" inverse="true" lazy="true" cascade="save-update">
+        <key>
+            <column name="LoanID"/>
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Shipment" column="ShipmentID"/>
+    </set>  
+    
     <!-- bi-directional one-to-many association to Attachment -->
-    <set name="attachments" inverse="true" cascade="save-update">
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
         <key column="LoanID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>

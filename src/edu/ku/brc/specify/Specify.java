@@ -199,7 +199,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
-        localPrefs.load();
+        //localPrefs.load(); moved to end for not-null constraint
         
         FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
 
@@ -263,7 +263,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
 
         dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
-
+        localPrefs.load();
     }
 
     /**
@@ -846,6 +846,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         
         AppPreferences.shutdownRemotePrefs();
+        //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
+        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         SpecifyAppPrefs.initialPrefs();
 
         
@@ -853,9 +855,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //CollectionObjDef.setCurrentCollectionObjDef(null);
         
         // "false" means that it should use any cached values it can find to automatically initialize itself
-        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
+        //AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
-        {  
+        { 
             if (firstTime)
             {
                 GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();

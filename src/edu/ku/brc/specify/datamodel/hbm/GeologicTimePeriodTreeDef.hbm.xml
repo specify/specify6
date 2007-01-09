@@ -30,21 +30,21 @@
         <!-- Associations -->
 
         <set name="treeEntries" table="GeologicTimePeriod"
-            inverse="true" lazy="true">
+            inverse="true" lazy="true" cascade="all-delete-orphan">
             <key column="GeologicTimePeriodTreeDefID" />
             <one-to-many
                 class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
         </set>
 
         <set name="treeDefItems" table="GeologicTimePeriodTreeDefItem"
-            inverse="true" lazy="false" cascade="all-delete-orphan">
+            inverse="true" lazy="false" cascade="save-update">
             <key column="GeologicTimePeriodTreeDefID" />
             <one-to-many
                 class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" />
         </set>
 
         <set name="collObjDefs" table="CollectionObjDef"
-            inverse="true">
+            inverse="true" cascade="none">
             <key column="GeologicTimePeriodTreeDefID" />
             <one-to-many
                 class="edu.ku.brc.specify.datamodel.CollectionObjDef" />

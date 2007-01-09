@@ -199,7 +199,7 @@ public class BasicSQLUtils
         } catch (Exception ex)
         {
             //e.printStackTrace();
-            log.error(ex);
+            log.error(ex.getStackTrace().toString());
             log.error(cmdStr+"\n");
             ex.printStackTrace();
             throw new RuntimeException(ex);
@@ -619,6 +619,45 @@ public class BasicSQLUtils
                                     final Map<String, String> colNewToOldMap,
                                     final Map<String, String> verbatimDateMapper)
     {
+        //String[] ignoredFields = {"Remarks"};
+        
+        if(fromTableName.toLowerCase().equals("accessionagents")) 
+        {
+            String[] ignoredFields = {"RepositoryAgreementID"};
+            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+        }
+        else if(fromTableName.toLowerCase().equals("accession")) 
+        {
+            String[] ignoredFields = {"RepositoryAgreementID"};
+            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+        }
+        else if(fromTableName.toLowerCase().equals("attachment")) 
+        {
+            String[] ignoredFields = {"Visibility", "VisibilitySetBy"};
+            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+        }
+        else if(fromTableName.toLowerCase().equals("collectingevent")) 
+        {
+            String[] ignoredFields = {"Visibility", "VisibilitySetBy", "CollectingTripID", "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim", "StartDatePrecision"};
+            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+        }
+        else if(fromTableName.toLowerCase().equals("determination"))
+        {
+            String[] ignoredFields = {"DeterminationStatusID"};
+            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+        }
+        else if(fromTableName.toLowerCase().equals("otheridentifier"))
+        {
+            String[] ignoredFields = {"Institution"};
+            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+        }
+        
+//      if(fromTableName.toLowerCase().equals("catalogseries")) 
+//      {
+//          System.out.println("meg processing catalogseries");
+//          String[] ignoredFields = {"IsTissueSeries", "TissueID"};
+//          BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+//      }
         IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
 
         if (frame != null)
@@ -754,6 +793,7 @@ public class BasicSQLUtils
                     String colName          = fieldMetaData.getName();
                     String oldMappedColName = null;
 
+                    //log.info("meg processing new columnName: " + colName);
                     // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);
                     
@@ -784,7 +824,8 @@ public class BasicSQLUtils
                             IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
                             {
-                            	long oldPrimaryKeyId = rs.getLong(columnIndex);
+
+                                long oldPrimaryKeyId = rs.getLong(columnIndex);
                                 
                                 //if (oldPrimaryKeyId == -159020476 && fromTableName.equals("loanphysicalobject"))
                                 if (oldMappedColName.equals("PhysicalObjectID") && fromTableName.equals("loanphysicalobject"))
@@ -793,26 +834,26 @@ public class BasicSQLUtils
                                     x++;
                                 }
 
-                            	// if the value was null, getInt() returns 0
-                            	// use wasNull() to distinguish real 0 from a null return
-                            	if( rs.wasNull())
-                            	{
-                            		dataObj = null;
+                                // if the value was null, getInt() returns 0
+                                // use wasNull() to distinguish real 0 from a null return
+                                if( rs.wasNull())
+                                {
+                                    dataObj = null;
                                     
                                     if (showMappingError)
                                     {
                                         log.info("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]");
                                     }
-                            	}
-                            	else
-                            	{
-                            		dataObj = idMapper.get(oldPrimaryKeyId);
+                                }
+                                else
+                                {
+                                    dataObj = idMapper.get(oldPrimaryKeyId);
                                     
                                     if (dataObj == null)
                                     {
                                         log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
                                     }
-                            	}
+                                }
                                 
 
                                 /*if (rs.getObject(columnIndex) != null)
@@ -896,6 +937,8 @@ public class BasicSQLUtils
 
                     } else
                     {
+                        //System.out.println("ignoreMappingFieldNames" + ignoreMappingFieldNames);
+                        //System.out.println("ignoreMappingFieldNames.get(colName)" + ignoreMappingFieldNames.get(colName));
                         if (showMappingError &&
                             (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                         {
@@ -958,6 +1001,7 @@ public class BasicSQLUtils
             log.error(ex);
             log.error("ID: " + id);
         }
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);//meg added
         return true;
     }
 

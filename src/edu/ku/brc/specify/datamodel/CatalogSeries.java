@@ -44,12 +44,12 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     // Fields
 
      protected Long catalogSeriesId;
-     protected Boolean isTissueSeries;
+     //protected Boolean isTissueSeries;
      protected String seriesName;
      protected String catalogSeriesPrefix;
      protected String remarks;
      protected Set<CollectionObjDef> collectionObjDefItems;
-     protected CatalogSeries tissue;
+     // CatalogSeries tissue;
      protected Set<AppResourceDefault> appResourceDefaults;
      
 
@@ -86,7 +86,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     public void initialize()
     {
         catalogSeriesId = null;
-        isTissueSeries = null;
+        //isTissueSeries = null;
         seriesName = null;
         catalogSeriesPrefix = null;
         remarks = null;
@@ -94,7 +94,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
         timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjDefItems = new HashSet<CollectionObjDef>();
-        tissue = null;
+        //tissue = null;
         appResourceDefaults = new HashSet<AppResourceDefault>();
     }
     // End Initializer
@@ -129,16 +129,16 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
         this.catalogSeriesId = catalogSeriesId;
     }
 
-    /**
-     *
-     */
-    public Boolean getIsTissueSeries() {
-        return this.isTissueSeries;
-    }
-
-    public void setIsTissueSeries(Boolean isTissueSeries) {
-        this.isTissueSeries = isTissueSeries;
-    }
+//    /**
+//     *
+//     */
+//    public Boolean getIsTissueSeries() {
+//        return this.isTissueSeries;
+//    }
+//
+//    public void setIsTissueSeries(Boolean isTissueSeries) {
+//        this.isTissueSeries = isTissueSeries;
+//    }
 
     /**
      *      * Textual name for Catalog series. E.g. Main specimen collection
@@ -185,16 +185,16 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
         this.collectionObjDefItems = collectionObjDefItems;
     }
 
-    /**
-     *
-     */
-    public CatalogSeries getTissue() {
-        return this.tissue;
-    }
-
-    public void setTissue(CatalogSeries tissue) {
-        this.tissue = tissue;
-    }
+//    /**
+//     *
+//     */
+//    public CatalogSeries getTissue() {
+//        return this.tissue;
+//    }
+//
+//    public void setTissue(CatalogSeries tissue) {
+//        this.tissue = tissue;
+//    }
     
     public Set<AppResourceDefault> getAppResourceDefaults()
     {

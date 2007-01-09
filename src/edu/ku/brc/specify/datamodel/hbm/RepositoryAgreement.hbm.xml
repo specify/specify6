@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="number" type="java.lang.String" column="Number" not-null="true" length="60">
@@ -95,7 +95,7 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to Accessions -->
-    <set name="accessions" lazy="true" inverse="true" cascade="all">
+    <set name="accessions" lazy="true" inverse="true" cascade="save-update">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -105,7 +105,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->
-    <set name="repositoryAgreementAuthorizations" lazy="true" inverse="true" cascade="all">
+    <set name="repositoryAgreementAuthorizations" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -115,7 +115,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to AccessionAgents -->
-    <set name="repositoryAgreementAgents" lazy="true" inverse="true" cascade="delete">
+    <set name="repositoryAgreementAgents" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -125,11 +125,15 @@
     </set>
 
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="originator" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none">
+    <many-to-one name="originator" class="edu.ku.brc.specify.datamodel.Agent"  outer-join="true" cascade="save-update">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="AgentID"/>
+        <column name="AgentID" not-null="true"/>
     </many-to-one>
-    
+      <!-- bi-directional one-to-many association to Attachment -->
+    <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
+        <key column="RepositoryAgreementID"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
+    </set>     
 </class>
 </hibernate-mapping>

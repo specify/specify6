@@ -10,7 +10,7 @@
       <generator class="native"/>
     </id>
 
-    <property name="name" type="java.lang.String" column="Name" length="64" not-null="true">
+    <property name="name" type="java.lang.String" column="Name" length="64" not-null="true" unique="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
@@ -33,13 +33,22 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObjDef -->
-    <set name="collectionObjDef" lazy="true" inverse="true" cascade="none">
+    <set name="collectionObjDefs" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="SpecifyUserID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
     </set>
+    
+    <!-- bi-directional one-to-many association to Workbench -->
+    <set name="workbenches" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="SpecifyUserID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Workbench"/>
+    </set>    
 
     <!-- bi-directional one-to-many association to RecordSet -->
     <set name="recordSets" lazy="true" inverse="true" cascade="delete">
@@ -51,11 +60,23 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.RecordSet"/>
     </set>
     
-    <!-- bi-directional many-to-one association to UserGroup -->
-    <many-to-one name="userGroup" class="edu.ku.brc.specify.datamodel.UserGroup" not-null="true" outer-join="true" cascade="save-update">
+     <!-- bi-directional one-to-many association to AppResource -->
+    <set name="appResources" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
-        <column name="UserGroupID"/>
-    </many-to-one>
+        <key>
+            <column name="SpecifyUserID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AppResource"/>
+    </set>   
+
+    
+     <!-- bi-directional many-to-many association to UserGroup -->
+    <set name="userGroup" table="sp_usergroup" cascade="save-update" outer-join="true"  >
+    	<meta attribute="field-description"></meta>
+    	<key column="SpecifyUserID"/>
+    	<many-to-many column="UserGroupID" class="edu.ku.brc.specify.datamodel.UserGroup"/>
+    </set>
     
     <!-- bi-directional one-to-many association to AppResourceDefault -->
     <set name="appResourceDefaults" lazy="true" inverse="true" cascade="none">
@@ -66,5 +87,26 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
     </set>
 
+    <!-- bi-directional one-to-one association to Agent -->
+    <!-- <one-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" >
+    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </one-to-one> -->
+
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update">
+        <meta attribute="field-description"></meta>
+        <column name="AgentID"  />
+    </many-to-one>
+    
+    <!-- bi-directional one-to-many association to UserPermission -->
+    <set name="userPermissions" lazy="true" inverse="true" cascade="all-delete-orphan">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="SpecifyUserID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.UserPermission"/>
+    </set>    
+    
 </class>
 </hibernate-mapping>

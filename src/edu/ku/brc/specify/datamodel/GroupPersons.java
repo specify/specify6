@@ -43,8 +43,8 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
      protected Long groupPersonsId;
      protected Short orderNumber;
      protected String remarks;
-     protected Agent agentByGroup;
-     protected Agent agentByMember;
+     protected Agent group;
+     protected Agent member;
 
 
     // Constructors
@@ -70,8 +70,8 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
         timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
-        agentByGroup = null;
-        agentByMember = null;
+        group = null;
+        member = null;
     }
     // End Initializer
 
@@ -130,23 +130,23 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     /**
      *      * AgentID of group
      */
-    public Agent getAgentByGroup() {
-        return this.agentByGroup;
+    public Agent getGroup() {
+        return this.group;
     }
     
-    public void setAgentByGroup(Agent agentByGroup) {
-        this.agentByGroup = agentByGroup;
+    public void setGroup(Agent agentByGroup) {
+        this.group = agentByGroup;
     }
 
     /**
      *      * AgentID of member (member must be of type Person)
      */
-    public Agent getAgentByMember() {
-        return this.agentByMember;
+    public Agent getMember() {
+        return this.member;
     }
     
-    public void setAgentByMember(Agent agentByMember) {
-        this.agentByMember = agentByMember;
+    public void setMember(Agent agentByMember) {
+        this.member = agentByMember;
     }
 
 

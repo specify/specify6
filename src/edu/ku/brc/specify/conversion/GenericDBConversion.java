@@ -49,6 +49,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
+//import edu.ku.brc.af.core.SecurityMgr.SECURITY_LEVEL;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -106,6 +107,8 @@ public class GenericDBConversion
         private short ord;
         public short getType() { return ord; }
     }
+    //public enum VISIBILITY_LEVEL {All, Institution}
+    public static int defaultVisibilityLevel = 0;//User/Security changes
     
     protected static final int D_STATUS_CURRENT = 1;
     protected static final int D_STATUS_UNKNOWN = 2;
@@ -305,7 +308,7 @@ public class GenericDBConversion
         "BorrowAgents",
         "BorrowMaterial",
         "BorrowReturnMaterial",
-        "BorrowShipments",
+        //"BorrowShipments",
         "CatalogSeries",
         "CatalogSeriesDefinition",
         "CollectingEvent",
@@ -409,7 +412,7 @@ public class GenericDBConversion
         }
 
 
-
+        //When you run in to this table1.field, go to that table2 and look up the id
         String[] mappings = {
             "BorrowReturnMaterial", "BorrowMaterialID", "BorrowMaterial", "BorrowMaterialID",
             "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
@@ -472,8 +475,8 @@ public class GenericDBConversion
 
             "BorrowMaterial",  "BorrowID", "Borrow", "BorrowID",
 
-            "BorrowShipments", "BorrowID", "Borrow", "BorrowID",
-            "BorrowShipments", "ShipmentID", "Shipment", "ShipmentID",
+            //"BorrowShipments", "BorrowID", "Borrow", "BorrowID",
+            //"BorrowShipments", "ShipmentID", "Shipment", "ShipmentID",
 
             "BorrowAgents",    "BorrowID", "Borrow", "BorrowID",
             "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
@@ -492,13 +495,16 @@ public class GenericDBConversion
 
             //"CollectingEvent", "BiologicalObjectTypeCollectedID", "BiologicalObjectTypeCollected", "BiologicalObjectTypeCollectedID",
             "CollectingEvent", "LocalityID", "Locality", "LocalityID",
+            "CollectingEvent", "StratigraphyID", "Stratigraphy", "StratigraphyID",
             //"CollectingEvent", "MethodID", "Method", "MethodID",
 
             "Collectors", "CollectingEventID", "CollectingEvent", "CollectingEventID",
             "Collectors", "AgentID", "Agent", "AgentID",
 
-            "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
-            "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
+            //"Permit", "IssuerID", "AgentAddress", "AgentAddressID",
+            //"Permit", "IssueeID", "AgentAddress", "AgentAddressID",
+            "Permit", "IssuedByID", "AgentAddress", "AgentAddressID",
+            "Permit", "IssuedToID", "AgentAddress", "AgentAddressID",
             //"Permit", "TypeID", "Type", "TypeID",
 
             "Sound", "RecordedByID", "Agent", "AgentID",
@@ -507,6 +513,7 @@ public class GenericDBConversion
             "TaxonCitation", "TaxonNameID", "TaxonName", "TaxonNameID",
 
             "Determination", "DeterminerID",           "Agent", "AgentID",
+            //"Determination", "TaxonNameID",            "Taxon", "TaxonID",???
             "Determination", "TaxonNameID",            "TaxonName", "TaxonNameID",
             "Determination", "BiologicalObjectID",     "CollectionObject", "CollectionObjectID",
             
@@ -657,7 +664,7 @@ public class GenericDBConversion
                                     "BorrowAgents",
                                     "BorrowMaterial",
                                     "BorrowReturnMaterial",
-                                    "BorrowShipments",
+                                    //"BorrowShipments",
                                     "CatalogSeries",
                                     "CollectingEvent",
                                     "CollectionObjectCitation",
@@ -689,38 +696,40 @@ public class GenericDBConversion
 
        Map<String, Map<String, String>> tableMaps = new Hashtable<String, Map<String, String>>();
        tableMaps.put("authors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
+       tableMaps.put("borrow", createFieldNameMap(new String[] {"IsClosed", "Closed"}));
        tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
        tableMaps.put("collectors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
        //tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
-       //tableMaps.put("loanphysicalobject", createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
-       tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
-       tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1"}));
+       //tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
+       tableMaps.put("loanphysicalobject", createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
+       tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
+       tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1", "IsPublished", "Published"}));
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
-
+       tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
        tableMaps.put("accessionagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("borrowagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("deaccessionagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("loanagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("loan", createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
 
-
+       tableMaps.put("deaccession", createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
+       tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] {"ProjectCollectionObjectID", "ProjectCollectionObjectsID"}));
        Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
        tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
-
+       tableMaps.put("permit", createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
 
 
-       BasicSQLUtils.setShowMappingError(false);
+       BasicSQLUtils.setShowMappingError(true);//TODO meg change back to false
        for (String tableName : tablesToMoveOver)
        {
            String lowerCaseName = tableName.toLowerCase();
-
            deleteAllRecordsFromTable(lowerCaseName);
 
            TableStats tblStats = new TableStats(oldDBConn, lowerCaseName, newDBConn, lowerCaseName);
            tableStatHash.put(lowerCaseName, tblStats);
-           
+           log.info("Getting ready to copy table: " + lowerCaseName);
            if (tableName.equals("LoanPhysicalObject"))
            {
                String[] ignoredFields = {"IsResolved"};
@@ -887,6 +896,7 @@ public class GenericDBConversion
      */
     public long createDefaultUser(final String userName, final String userType)
     {
+        //TODO: rewrite the following table descriptions
         /*
          describe usergroup;
             +-------------+-------------+------+-----+---------+----------------+
@@ -918,7 +928,7 @@ public class GenericDBConversion
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "usergroup");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "specifyuser");
 
-            updateStatement.executeUpdate("INSERT INTO usergroup VALUES (null,'admin', '')");
+            updateStatement.executeUpdate("INSERT INTO usergroup VALUES (null,'admin2', '')");
             updateStatement.clearBatch();
             updateStatement.close();
             updateStatement = null;
@@ -930,11 +940,12 @@ public class GenericDBConversion
             strBuf.append("INSERT INTO specifyuser VALUES (");
             strBuf.append("NULL,");
             strBuf.append("'"+userName+"',");
-            strBuf.append("'',");
+            strBuf.append("'"+"email@email.edu"+"',");
             strBuf.append("'"+userType+"',");
             strBuf.append("0,");
-            strBuf.append(userGroupId+")");
-
+            strBuf.append("NULL");
+            //strBuf.append(userGroupId+")");
+            strBuf.append(")");
             updateStatement.executeUpdate(strBuf.toString());
             updateStatement.clearBatch();
             updateStatement.close();
@@ -1094,7 +1105,7 @@ public class GenericDBConversion
                 strBuf2.append("1,"); // GeographyTreeDefID
                 strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
                 strBuf2.append("1)"); // LocationTreeDefID
-
+                //strBuf2.append("NULL)");//  UserPermissionID//User/Security changes
                 log.info(strBuf2.toString());
                 
                 updateStatement.executeUpdate(strBuf2.toString());
@@ -1367,7 +1378,7 @@ public class GenericDBConversion
                         count++;
                     } else
                     {
-                        log.error("Discarding duplicate picklist value["+val+"]");
+                        log.info("Discarding duplicate picklist value["+val+"]");
                     }
                 }
             } while (rs.next());
@@ -2765,11 +2776,17 @@ public class GenericDBConversion
                                 newFieldName.equals("GUID") ||
                                 newFieldName.equals("RepositoryAgreementID") ||
                                 newFieldName.equals("GroupPermittedToView") ||        // this may change when converting Specify 5.x
-                                newFieldName.equals("CollectionObjectID"))
+                                newFieldName.equals("CollectionObjectID")||
+                                newFieldName.equals("VisibilitySetBy"))
                     {
                         str.append("NULL");
 
-                    } else if (newFieldName.equals("CollectionObjDefID"))
+                    } 
+                    else if(newFieldName.equals("Visibility")) //User/Security changes
+                    {
+                        str.append(defaultVisibilityLevel);
+                    }
+                    else if (newFieldName.equals("CollectionObjDefID"))
                     {
                         try
                         {
@@ -3217,7 +3234,7 @@ public class GenericDBConversion
 
             HashSet<CollectionObjDef> set = new HashSet<CollectionObjDef>();
             set.add(colObjDef);
-            user.setCollectionObjDef(set);
+            user.setCollectionObjDefs(set);
             session.saveOrUpdate(user);
 
             HibernateUtil.commitTransaction();
@@ -3527,9 +3544,11 @@ public class GenericDBConversion
     	newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
     	newToOldColMap.put("Name", "TaxonName");
     	newToOldColMap.put("FullName", "FullTaxonName");
+        newToOldColMap.put("IsAccepted", "Accepted");
 
-    	String[] ignoredFields = {"GUID"};
-    	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+    	String[] ignoredFields = {"GUID", "Visibility, VisibilitySetBy"};//User/Security changes
+    	//log.error(arg0)
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
         
         // AcceptedID is typically NULL unless they are using synonimies
         boolean showMappingErrors = false;
@@ -4341,6 +4360,7 @@ public class GenericDBConversion
       IdMapperIFace agentIDMapper     = idMapperMgr.addTableMapper("agent", "AgentID");
       IdMapperIFace addrIDMapper      = idMapperMgr.addTableMapper("address", "AddressID");
       IdMapperIFace agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
+      
 
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "agent");
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "address");
@@ -4393,6 +4413,8 @@ public class GenericDBConversion
                "agent.Remarks",
                "agent.TimestampCreated",
                "agent.LastEditedBy",
+               "agent.Visibility",
+               "agent.VisibilitySetBy",//User/Security changes
                "agent.ParentOrganizationID"};
 
        // See comments for agent Columns
@@ -4543,7 +4565,15 @@ public class GenericDBConversion
                                 sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                             }
 
-                        } else
+                        } 
+                        else if(agentColumns[i].equals("agent.Visibility"))//User/Security changes
+                        {
+                            sqlStr.append(defaultVisibilityLevel);
+                        }
+                        else if(agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
+                        {
+                            sqlStr.append("null");
+                        }else
                         {
                             inx = indexFromNameMap.get(agentColumns[i]);
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
@@ -4853,7 +4883,13 @@ public class GenericDBConversion
                             sqlStr.append(newAgentId);
 
 
-                        } else
+                        }else if(agentColumns[i].equals("agent.Visibility"))//User/Security changes
+                        {
+                            sqlStr.append(defaultVisibilityLevel);
+                        }else if(agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
+                        {
+                            sqlStr.append("null");
+                        }else
                         {
                             inx = indexFromNameMap.get(agentColumns[i]);
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
@@ -4968,7 +5004,7 @@ public class GenericDBConversion
                }
                sqlStr.append(")");
 
-               String[] ignoredFields = {"JobTitle", "Email", "URL"};
+               String[] ignoredFields = {"JobTitle", "Email", "URL", "Visibility", "VisibilitySetBy"};//User/Security changes
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                copyTable(oldDBConn, newDBConn, sqlStr.toString(), "agent", "agent", null, null);
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);

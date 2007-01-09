@@ -122,7 +122,8 @@ public class DatamodelGenerator
         {
             // Throw exception if there is an HBM we don't have meta data for
 			log.error("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className);
-            throw new RuntimeException("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className);
+            throw new RuntimeException("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className 
+                    + " check to see if table is listed in the file: " + DatamodelHelper.getTableIdFilePath());
         }
         
 		return new Table(className, 

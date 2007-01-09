@@ -24,7 +24,7 @@ import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgents;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
-import edu.ku.brc.specify.datamodel.BorrowShipments;
+//import edu.ku.brc.specify.datamodel.BorrowShipments;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -150,12 +150,14 @@ public class DataBuilder
                                               
     public static AttributeDef createAttributeDef(final AttributeIFace.FieldType type,
                                                   final String name,
+                                                  final CollectionObjDef collectionObjDef,
                                                   final PrepType prepType)
     {
         AttributeDef attrDef = new AttributeDef();
         attrDef.setDataType(type.getType());
         attrDef.setFieldName(name);
         attrDef.setPrepType(prepType);
+        attrDef.setCollectionObjDef(collectionObjDef);
         return attrDef;
     }
 
@@ -163,7 +165,10 @@ public class DataBuilder
                                                           final String disciplineName,
                                                           final DataType dataType,
                                                           final SpecifyUser user,
-                                                          final TaxonTreeDef taxonTreeDef)
+                                                          final TaxonTreeDef taxonTreeDef,
+                                                          final GeographyTreeDef geographyTreeDef,
+                                                          final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
+                                                          final LocationTreeDef locationTreeDef)
     {
         CollectionObjDef colObjDef = new CollectionObjDef();
         colObjDef.initialize();
@@ -172,7 +177,9 @@ public class DataBuilder
         colObjDef.setDataType(dataType);
         colObjDef.setSpecifyUser(user);
         colObjDef.setTaxonTreeDef(taxonTreeDef);
-
+        colObjDef.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
+        colObjDef.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
+        colObjDef.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
         taxonTreeDef.setCollObjDef(colObjDef);
 
         persist(colObjDef);
@@ -216,8 +223,8 @@ public class DataBuilder
         {
             for (Collectors c: collectors)
             {
-                collectorsSet.add(c);
                 c.setCollectingEvent(colEv);
+                collectorsSet.add(c);
             }
         }
         colEv.setCollectors(collectorsSet);
@@ -1102,7 +1109,7 @@ public class DataBuilder
                                       final Calendar receivedDate,
                                       final Calendar originalDueDate,
                                       final Calendar dateClosed,
-                                      final Short closed,
+                                      final Boolean isClosed,
                                       final Calendar currentDueDate)
     {
         Borrow borrow = new Borrow();
@@ -1114,7 +1121,7 @@ public class DataBuilder
         borrow.setOriginalDueDate(originalDueDate);
         borrow.setDateClosed(dateClosed);
         borrow.setCurrentDueDate(currentDueDate);
-        borrow.setClosed(closed);
+        borrow.setIsClosed(isClosed);
         persist(borrow);
         return borrow;
     }
@@ -1174,31 +1181,31 @@ public class DataBuilder
         return borrowreturnmaterial;
     }
 
-    public static BorrowShipments createBorrowShipment(final Shipment shipment, final Borrow borrow)
-    {
-        BorrowShipments borrowshipment = new BorrowShipments();
-        borrowshipment.initialize();
-        borrowshipment.setTimestampCreated(new Date());
-        borrowshipment.setTimestampModified(new Date());
-        borrowshipment.setShipment(shipment);
-        borrowshipment.setBorrow(borrow);
-        persist(borrowshipment);
-        return borrowshipment;
-    }
+//    public static BorrowShipments createBorrowShipment(final Shipment shipment, final Borrow borrow)
+//    {
+//        BorrowShipments borrowshipment = new BorrowShipments();
+//        borrowshipment.initialize();
+//        borrowshipment.setTimestampCreated(new Date());
+//        borrowshipment.setTimestampModified(new Date());
+//        borrowshipment.setShipment(shipment);
+//        borrowshipment.setBorrow(borrow);
+//        persist(borrowshipment);
+//        return borrowshipment;
+//    }
 
     public static CatalogSeries createCatalogSeries(final Boolean isTissueSeries,
                                                     final String seriesName,
-                                                    final String catalogSeriesPrefix,
-                                                    final CatalogSeries tissue)
+                                                    final String catalogSeriesPrefix)//,
+                                                    //final CatalogSeries tissue)
     {
         CatalogSeries catalogseries = new CatalogSeries();
         catalogseries.initialize();
         catalogseries.setTimestampCreated(new Date());
         catalogseries.setTimestampModified(new Date());
-        catalogseries.setIsTissueSeries(isTissueSeries);
+        //catalogseries.setIsTissueSeries(isTissueSeries);
         catalogseries.setSeriesName(seriesName);
         catalogseries.setCatalogSeriesPrefix(catalogSeriesPrefix);
-        catalogseries.setTissue(tissue);
+        //catalogseries.setTissue(tissue);
         persist(catalogseries);
         return catalogseries;
     }
@@ -1288,7 +1295,7 @@ public class DataBuilder
                                                           final Calendar catalogedDate,
                                                           final String catalogedDateVerbatim,
                                                           final String guid,
-                                                          final String altCatalogNumber,
+                                                          //final String altCatalogNumber,
                                                           final Integer groupPermittedToView,
                                                           final Boolean deaccessioned,
                                                           final Float catalogNumber,
@@ -1310,7 +1317,7 @@ public class DataBuilder
         collectionobject.setCatalogedDate(catalogedDate);
         collectionobject.setCatalogedDateVerbatim(catalogedDateVerbatim);
         collectionobject.setGuid(guid);
-        collectionobject.setAltCatalogNumber(altCatalogNumber);
+        //collectionobject.setAltCatalogNumber(altCatalogNumber);
         collectionobject.setGroupPermittedToView(groupPermittedToView);
         collectionobject.setDeaccessioned(deaccessioned);
         collectionobject.setCatalogNumber(catalogNumber);
@@ -1554,8 +1561,8 @@ public class DataBuilder
         groupperson.setTimestampCreated(new Date());
         groupperson.setTimestampModified(new Date());
         groupperson.setOrderNumber(orderNumber);
-        groupperson.setAgentByGroup(agentByGroup);
-        groupperson.setAgentByMember(agentByMember);
+        groupperson.setGroup(agentByGroup);
+        groupperson.setMember(agentByMember);
         persist(groupperson);
         return groupperson;
     }
@@ -1612,7 +1619,8 @@ public class DataBuilder
         loan.initialize();
         loan.setTimestampCreated(new Date());
         loan.setTimestampModified(new Date());
-        loan.setShipment(shipment);
+        //loan.setShipment(shipment);
+        loan.addShipment(shipment);
         loan.setOriginalDueDate(originalDueDate);
         loan.setDateClosed(dateClosed);
         loan.setCurrentDueDate(currentDueDate);
@@ -1620,7 +1628,6 @@ public class DataBuilder
         loan.setLoanDate(loanDate);
         loan.setIsGift(isGift);
         loan.setIsClosed(isClosed);
-        
         persist(loan);
         return loan;
     }
@@ -1638,13 +1645,13 @@ public class DataBuilder
         persist(loanAgent);
         return loanAgent;
     }
-
-    public static LoanPhysicalObject createLoanPhysicalObject(final Short quantity,
+//createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, closedLoan);
+    public static LoanPhysicalObject createLoanPhysicalObject(final Integer quantity,
                                                               final String descriptionOfMaterial,
                                                               final String outComments,
                                                               final String inComments,
-                                                              final Short quantityResolved,
-                                                              final Short quantityReturned,
+                                                              final Integer quantityResolved,
+                                                              final Integer quantityReturned,
                                                               final Preparation preparation,
                                                               final Loan loan)
     {
@@ -1668,7 +1675,7 @@ public class DataBuilder
     }
 
     public static LoanReturnPhysicalObject createLoanReturnPhysicalObject(final Calendar returnedDate,
-                                                                          final Short quantity,
+                                                                          final Integer quantity,
                                                                           final LoanPhysicalObject loanPhysicalObject,
                                                                           final DeaccessionCollectionObject deaccessionCollectionObject,
                                                                           final Agent agent)
@@ -1677,7 +1684,7 @@ public class DataBuilder
         loanreturnphysicalobject.initialize();
         loanreturnphysicalobject.setTimestampCreated(new Date());
         loanreturnphysicalobject.setTimestampModified(new Date());
-        loanreturnphysicalobject.setAgent(agent);
+        loanreturnphysicalobject.setReceivedBy(agent);
         loanreturnphysicalobject.setReturnedDate(returnedDate);
         loanreturnphysicalobject.setQuantity(quantity);
         loanreturnphysicalobject.setLoanPhysicalObject(loanPhysicalObject);
@@ -1904,7 +1911,7 @@ public class DataBuilder
                                                     final String pages,
                                                     final String url,
                                                     final String libraryNumber,
-                                                    final Short published,
+                                                    final Boolean isPublished,
                                                     final Journal journal)
     {
         ReferenceWork referencework = new ReferenceWork();
@@ -1919,7 +1926,7 @@ public class DataBuilder
         referencework.setVolume(volume);
         referencework.setPages(pages);
         referencework.setLibraryNumber(libraryNumber);
-        referencework.setPublished(published);
+        referencework.setIsPublished(isPublished);
         referencework.setJournal(journal);
         referencework.setTitle(title);
         persist(referencework);
@@ -1961,15 +1968,15 @@ public class DataBuilder
         shipment.initialize();
         shipment.setTimestampCreated(new Date());
         shipment.setTimestampModified(new Date());
-        shipment.setAgent(agent);
+        shipment.setShippedBy(agent);
         shipment.setShipmentDate(shipmentDate);
         shipment.setShipmentNumber(shipmentNumber);
         shipment.setShipmentMethod(shipmentMethod);
         shipment.setNumberOfPackages(numberOfPackages);
         shipment.setWeight(weight);
         shipment.setInsuredForAmount(insuredForAmount);
-        shipment.setAgentByShipper(shipper);
-        shipment.setAgentByShippedTo(shippedTo);
+        shipment.setShipper(shipper);
+        shipment.setShippedTo(shippedTo);
         persist(shipment);
         return shipment;
     }
@@ -1984,7 +1991,8 @@ public class DataBuilder
         specifyuser.initialize();
         specifyuser.setEmail(email);
         specifyuser.setPrivLevel(privLevel);
-        specifyuser.setUserGroup(userGroup);
+        //specifyuser.setU
+        //specifyuser.setUserGroup(userGroup);
         specifyuser.setName(name);
         specifyuser.setUserType(userType);
         persist(specifyuser);
@@ -2002,7 +2010,14 @@ public class DataBuilder
         stratigraphy.initialize();
         stratigraphy.setTimestampCreated(new Date());
         stratigraphy.setTimestampModified(new Date());
-        stratigraphy.setCollectingEvent(collectingEvent);
+        
+        HashSet<CollectingEvent> collectingEvents = new HashSet<CollectingEvent>();
+        if (collectingEvent != null)
+        {
+            collectingEvents.add(collectingEvent);
+            collectingEvent.setStratigraphy(stratigraphy);
+        }
+        stratigraphy.setCollectingEvents(collectingEvents);
         stratigraphy.setSuperGroup(superGroup);
         stratigraphy.setLithoGroup(lithoGroup);
         stratigraphy.setFormation(formation);
@@ -2046,7 +2061,8 @@ public class DataBuilder
         workbench.setTimestampCreated(new Date());
         workbench.setTimestampModified(new Date());
         workbench.setWorkbenchItems(new HashSet<WorkbenchDataItem>());
-        workbench.setWorkbenchTemplates(workbenchTemplate);
+        //workbench.setW
+        workbench.setWorkbenchTemplate(workbenchTemplate);
 
         persist(workbench);
 

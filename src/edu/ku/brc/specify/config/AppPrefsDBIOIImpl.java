@@ -26,12 +26,14 @@ import java.util.prefs.BackingStoreException;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AppResource;
 import edu.ku.brc.specify.datamodel.AppResourceData;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 
 /**
  * This class is responsible for performing the "database" based IO for the prefs.
@@ -104,8 +106,10 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
      */
     public void load()
     {
+        log.debug("loading AppPrefsDBIOIImpl");
         if (appResource == null && appPrefsMgr != null)
         {
+            log.debug("loading creating Properties");
             Properties properties = new Properties(); // must be done fist thing
             appPrefsMgr.setProperties(properties);
 
@@ -118,12 +122,15 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     List list = session.getDataList(AppResource.class, "name", PREF_NAME);
                     if (list.size() == 0)
                     {
+                        log.debug("creating AppResource");
                         appResource = new AppResource();
                         appResource.initialize();
                         
                         appResource.setName(PREF_NAME);
                         appResource.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
-                        
+                        SpecifyUser user = SpecifyUser.getCurrentUser();
+                        appResource.setSpecifyUser(user);
+
                         AppResourceData appData = new AppResourceData();
                         appData.initialize();
                         appData.setAppResource(appResource);

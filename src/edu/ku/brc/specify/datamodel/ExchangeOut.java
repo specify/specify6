@@ -30,6 +30,8 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 
@@ -54,7 +56,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
      protected Boolean yesNo2;
      protected Agent agentSentTo;
      protected Agent agentCatalogedBy;
-     protected Shipment shipment;
+     protected Set<Shipment> shipments;
 
 
     // Constructors
@@ -90,7 +92,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         yesNo2 = null;
         agentSentTo = null;
         agentCatalogedBy = null;
-        shipment = null;
+        shipments = new HashSet<Shipment>();
     }
     // End Initializer
 
@@ -259,12 +261,12 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Shipment information for the exchange
      */
-    public Shipment getShipment() {
-        return this.shipment;
+    public Set<Shipment> getShipments() {
+        return this.shipments;
     }
     
-    public void setShipment(Shipment shipment) {
-        this.shipment = shipment;
+    public void setShipments(Set<Shipment> shipments) {
+        this.shipments = shipments;
     }
 
 

@@ -53,11 +53,12 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Short closed;
+     protected Boolean isClosed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Calendar currentDueDate;
-     protected Set<BorrowShipments> borrowShipments;
+     //protected Set<BorrowShipments> borrowShipments;
+     protected Set<Shipment> shipments;
      protected Set<BorrowAgents> borrowAgents;
      protected Set<BorrowMaterial> borrowMaterials;
 
@@ -92,11 +93,12 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
         timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
-        closed = null;
+        isClosed = null;
         yesNo1 = null;
         yesNo2 = null;
         currentDueDate = null;
-        borrowShipments = new HashSet<BorrowShipments>();
+        shipments = new HashSet<Shipment>();
+       // borrowShipments = new HashSet<BorrowShipments>();
         borrowAgents = new HashSet<BorrowAgents>();
         borrowMaterials = new HashSet<BorrowMaterial>();
     }
@@ -235,12 +237,12 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * False until all material has been returned
      */
-    public Short getClosed() {
-        return this.closed;
+    public Boolean getIsClosed() {
+        return this.isClosed;
     }
     
-    public void setClosed(Short closed) {
-        this.closed = closed;
+    public void setIsClosed(Boolean closed) {
+        this.isClosed = closed;
     }
 
     /**
@@ -279,14 +281,23 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-    public Set<BorrowShipments> getBorrowShipments() {
-        return this.borrowShipments;
+//    public Set<BorrowShipments> getBorrowShipments() {
+//        return this.borrowShipments;
+//    }
+//    
+//    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
+//        this.borrowShipments = borrowShipments;
+//    }
+    /**
+     * 
+     */
+    public Set<Shipment> getShipments() {
+        return this.shipments;
     }
     
-    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
-        this.borrowShipments = borrowShipments;
+    public void setShipments(Set<Shipment> shipments) {
+        this.shipments = shipments;
     }
-
     /**
      * 
      */
@@ -315,12 +326,18 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     // Add Methods
 
-    public void addBorrowShipments(final BorrowShipments borrowShipment)
+//    public void addBorrowShipments(final BorrowShipments borrowShipment)
+//    {
+//        this.borrowShipments.add(borrowShipment);
+//        borrowShipment.setBorrow(this);
+//    }
+    public void addShipment(final Shipment shipment)
     {
-        this.borrowShipments.add(borrowShipment);
-        borrowShipment.setBorrow(this);
-    }
-
+        if(shipment==null)return;
+        this.shipments.add(shipment);
+        shipment.getBorrows().add(this);
+    } 
+    
     public void addBorrowAgents(final BorrowAgents borrowAgent)
     {
         this.borrowAgents.add(borrowAgent);
@@ -337,12 +354,17 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeBorrowShipments(final BorrowShipments borrowShipment)
-    {
-        this.borrowShipments.remove(borrowShipment);
-        borrowShipment.setBorrow(null);
-    }
-
+//    public void removeBorrowShipments(final BorrowShipments borrowShipment)
+//    {
+//        this.borrowShipments.remove(borrowShipment);
+//        borrowShipment.setBorrow(null);
+//    }
+  public void removeShipment(final Shipment shipment)
+  {
+      if(shipment==null)return;
+      this.shipments.remove(shipment);
+      shipment.removeBorrow(this);
+  }
     public void removeBorrowAgents(final BorrowAgents borrowAgent)
     {
         this.borrowAgents.remove(borrowAgent);

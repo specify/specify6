@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_AuthorsRefOrder">
@@ -38,15 +38,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
-    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" cascade="none" index="IX_AuthorsReferenceWorkID" unique-key="IX_AuthorsRefOrder">
+    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork"  cascade="none" index="IX_AuthorsReferenceWorkID" unique-key="IX_AuthorsRefOrder">
         <meta attribute="field-description">Reference record the Agent authored</meta>
-        <column name="ReferenceWorkID"/>
+        <column name="ReferenceWorkID" not-null="true"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_AuthorsAgentID">
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" index="IX_AuthorsAgentID">
         <meta attribute="field-description">Agent record representing the Author</meta>
-        <column name="AgentID"/>
+        <column name="AgentID" not-null="true"/>
     </many-to-one>
 
 </class>

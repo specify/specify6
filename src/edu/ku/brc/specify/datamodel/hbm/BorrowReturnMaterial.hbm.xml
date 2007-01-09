@@ -12,7 +12,7 @@
 
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Versioning TimeStamp</meta>
+        <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
     <property name="returnedDate" type="calendar_date" column="ReturnedDate">
@@ -41,16 +41,16 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <!-- bi-directional many-to-one association to Agent not-null="true"-->
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" outer-join="true">
         <meta attribute="field-description">person processing the  return</meta>
-        <column name="ReturnedByID"/>
+        <column name="ReturnedByID"  />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to BorrowMaterial -->
-    <many-to-one name="borrowMaterial" class="edu.ku.brc.specify.datamodel.BorrowMaterial" not-null="true" outer-join="true" cascade="none" index="IX_BorrowReturnMaterialBorrowMaterialID">
+    <many-to-one name="borrowMaterial" class="edu.ku.brc.specify.datamodel.BorrowMaterial" outer-join="true" cascade="none" index="IX_BorrowReturnMaterialBorrowMaterialID">
         <meta attribute="field-description">Borrowed preparation returned</meta>
-        <column name="BorrowMaterialID"/>
+        <column name="BorrowMaterialID"  not-null="true"/>
     </many-to-one>
 
 </class>
