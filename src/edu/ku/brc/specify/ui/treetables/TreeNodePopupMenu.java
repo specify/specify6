@@ -39,7 +39,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 		this.ttv = owner;
 		
 		JMenuItem subtree = new JMenuItem("Subtree");
-		JMenuItem expand = new JMenuItem("Expand all descendants");
+//		JMenuItem expand = new JMenuItem("Expand all descendants");
 		JMenuItem find = new JMenuItem("Find next");
 		JMenuItem edit = new JMenuItem("Edit...");
 		JMenuItem delete = new JMenuItem("Delete");
@@ -53,13 +53,13 @@ public class TreeNodePopupMenu extends JPopupMenu
 			}
 		});
 
-		expand.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				ttv.expandAllDescendantsOfSelection(list);
-			}
-		});
+//		expand.addActionListener(new ActionListener()
+//		{
+//			public void actionPerformed(ActionEvent ae)
+//			{
+//				ttv.expandAllDescendantsOfSelection(list);
+//			}
+//		});
 
 		find.addActionListener(new ActionListener()
 		{
@@ -100,7 +100,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 		});
 		
 		this.add(subtree);
-		this.add(expand);
+//		this.add(expand);
 		this.add(find);
 		this.add(edit);
 		this.add(delete);
