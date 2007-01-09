@@ -12,6 +12,11 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.datamodel.busrules.GeographyBusRules;
+import edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules;
+import edu.ku.brc.specify.datamodel.busrules.LocationBusRules;
+import edu.ku.brc.specify.datamodel.busrules.TaxonBusRules;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -237,6 +242,31 @@ public class TreeFactory
 		
 		return def;
 	}
+    
+    public static BusinessRulesIFace createBusinessRules(Object node)
+    {
+        if( node instanceof Geography )
+        {
+            return new GeographyBusRules();
+        }
+
+        if( node instanceof GeologicTimePeriod )
+        {
+            return new GeologicTimePeriodBusRules();
+        }
+
+        if( node instanceof Location )
+        {
+            return new LocationBusRules();
+        }
+
+        if( node instanceof Taxon )
+        {
+            return new TaxonBusRules();
+        }
+        
+        return null;
+    }
 
 	@SuppressWarnings("unused")
 	private Object[][] stdLocItems = {
