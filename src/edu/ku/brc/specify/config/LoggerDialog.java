@@ -34,6 +34,8 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -58,7 +60,7 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class LoggerDialog extends JDialog implements ActionListener
 {
-    protected final Level[] levelsList = {Level.ALL, Level.DEBUG, Level.ERROR, Level.FATAL, Level.INFO, Level.OFF, Level.TRACE, Level.WARN};
+    protected final Level[] levelsList = {Level.OFF, Level.FATAL, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE, Level.ALL};
 
 
     protected JButton        cancelBtn;
@@ -81,7 +83,7 @@ public class LoggerDialog extends JDialog implements ActionListener
     protected void createUI()
     {
         int cnt = 0;
-        for (Enumeration e=LogManager.getCurrentLoggers(); e.hasMoreElements();)
+        for (Enumeration<?> e=LogManager.getCurrentLoggers(); e.hasMoreElements();)
         {
             Logger    logger = (Logger)e.nextElement();
             JComboBox cbx    = createCBX(logger.getLevel());
@@ -138,7 +140,7 @@ public class LoggerDialog extends JDialog implements ActionListener
         builder.getPanel().setPreferredSize(size);
         
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p:g", "min(400px;p):g,10px,p"));
-        outerPanel.add(new JScrollPane(builder.getPanel(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,1));
+        outerPanel.add(new JScrollPane(builder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,1));
         outerPanel.add(btnBuilder.getPanel(), cc.xy(1, 3));
         outerPanel.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setContentPane(outerPanel.getPanel());
@@ -146,7 +148,7 @@ public class LoggerDialog extends JDialog implements ActionListener
         setTitle("Configure Log Levels");
         
         //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         pack();
     }
     
