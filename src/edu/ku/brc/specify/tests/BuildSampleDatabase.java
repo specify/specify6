@@ -909,6 +909,16 @@ public class BuildSampleDatabase
         Location shelf2 = createLocation(locTreeDef, freezerA, "Shelf 2", shelf.getRankId());
         Location shelf1 = createLocation(locTreeDef, freezerA, "Shelf 1", shelf.getRankId());
 
+        Location rm701 = createLocation(locTreeDef, dyche, "Room 701", room.getRankId());
+        Location freezerA_701 = createLocation(locTreeDef, rm701, "Freezer A", freezer.getRankId());
+        Location shelf1_701 = createLocation(locTreeDef, freezerA_701, "Shelf 1", shelf.getRankId());
+        
+        Location rm703 = createLocation(locTreeDef, dyche, "Room 703", room.getRankId());
+        Location freezerA_703 = createLocation(locTreeDef, rm703, "Freezer A", freezer.getRankId());
+        Location shelf1_703 = createLocation(locTreeDef, freezerA_703, "Shelf 1", shelf.getRankId());
+        Location shelf2_703 = createLocation(locTreeDef, freezerA_703, "Shelf 2", shelf.getRankId());
+        Location shelf3_703 = createLocation(locTreeDef, freezerA_703, "Shelf 3", shelf.getRankId());
+        
         // 0
         newObjs.add(locTreeDef);
         // 1
@@ -935,6 +945,22 @@ public class BuildSampleDatabase
         newObjs.add(shelf2);
         // 12
         newObjs.add(shelf1);
+        // 13
+        newObjs.add(rm701);
+        // 14
+        newObjs.add(freezerA_701);
+        // 15
+        newObjs.add(shelf1_701);
+        // 16
+        newObjs.add(rm703);
+        // 17
+        newObjs.add(freezerA_703);
+        // 18
+        newObjs.add(shelf1_703);
+        // 19
+        newObjs.add(shelf2_703);
+        // 20
+        newObjs.add(shelf3_703);
         
         dyche.fixFullNameForAllDescendants();
         dyche.setNodeNumber(1);
