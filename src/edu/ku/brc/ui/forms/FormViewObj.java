@@ -967,7 +967,7 @@ public class FormViewObj implements Viewable,
     /**
      * Save any changes to the current object
      */
-    protected void saveObject()
+    public void saveObject()
     {
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
         {
@@ -1028,7 +1028,10 @@ public class FormViewObj implements Viewable,
             e.printStackTrace();
             session.rollback();
         }
-        saveBtn.setEnabled(false);
+        if (saveBtn!=null)
+        {
+            saveBtn.setEnabled(false);
+        }
         
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
         {
