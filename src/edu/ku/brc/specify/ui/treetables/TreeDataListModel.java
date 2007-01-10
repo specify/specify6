@@ -484,10 +484,26 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
         }
         hideChildren(newParent);
         dataService.moveTreeNode(node, newParent);
-        showChildren(newParent);
-        if (oldParentShowingChildren)
+
+        // we have to make sure to re-show the children in the correct order
+        // in case one of the parents is a descendant of the other parent
+        Integer newParentRank = newParent.getRankId();
+        Integer oldParentRank = oldParent.getRankId();
+        if (newParentRank.compareTo(oldParentRank) < 0)
         {
-            showChildren(oldParent);
+            showChildren(newParent);
+            if (oldParentShowingChildren)
+            {
+                showChildren(oldParent);
+            }
+        }
+        else
+        {
+            if (oldParentShowingChildren)
+            {
+                showChildren(oldParent);
+            }
+            showChildren(newParent);
         }
 		return true;
 	}
