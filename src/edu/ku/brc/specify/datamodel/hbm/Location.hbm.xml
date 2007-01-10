@@ -43,36 +43,31 @@
 
         <!-- Associations -->
 
+    	<!-- bi-directional one-to-many association to Preparation -->
+    	<set name="preparations" lazy="true" inverse="true" cascade="none">
+    		<key column="LocationID"/>
+    		<one-to-many class="edu.ku.brc.specify.datamodel.Preparation"/>
+    	</set>
+    	
+    	<!-- bi-directional one-to-many association to Container -->
+    	<set name="containers" lazy="true" inverse="true" cascade="none">
+    		<key column="LocationID"/>
+    		<one-to-many class="edu.ku.brc.specify.datamodel.Container"/>
+    	</set>
+    	
         <!-- bi-directional many-to-one association to LocationTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.LocationTreeDef" 
-        	cascade="lock" lazy="false" outer-join="true">
-            <column name="LocationTreeDefID"  not-null="true"/>
-        </many-to-one>
+        	cascade="lock" lazy="false" column="LocationTreeDefID" not-null="true" outer-join="true"/>
 
         <!-- bi-directional many-to-one association to LocationTreeDefItem -->
         <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" 
-        	cascade="save-update,lock" lazy="false" outer-join="true">
-            <column name="LocationTreeDefItemID"  not-null="true"/>
-        </many-to-one>
+        	cascade="save-update,lock" lazy="false" column="LocationTreeDefItemID" not-null="true" outer-join="true"/>
 
         <!-- bi-directional many-to-one association to Location -->
-    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update,lock" outer-join="true" lazy="false">
-            <column name="ParentID"/>
-        </many-to-one>
+    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Location"
+    		cascade="save-update,lock" lazy="false" column="ParentID" outer-join="true" />
 
-        <!-- bi-directional one-to-many association to Preparation -->
-        <set name="preparations" lazy="true" inverse="true" cascade="none">
-            <key column="LocationID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.Preparation"/>
-        </set>
-
-        <!-- bi-directional one-to-many association to Container -->
-        <set name="containers" lazy="true" inverse="true" cascade="none">
-            <key column="LocationID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.Container"/>
-        </set>
-
-    	<set name="children"  lazy="true" inverse="true" cascade="save-update,lock">
+    	<set name="children" cascade="all" lazy="true" inverse="true">
             <key column="ParentId"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>
         </set>

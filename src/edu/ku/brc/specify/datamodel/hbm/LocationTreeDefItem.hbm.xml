@@ -45,31 +45,20 @@
 
         <!-- Associations -->
 
-        <!-- bi-directional many-to-one association to TreeDef -->
-        <many-to-one name="treeDef" column="LocationTreeDefID"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false" cascade="save-update,lock">
-            <meta attribute="scope-field">protected</meta>
-        </many-to-one>
+    	<many-to-one name="treeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef" 
+    		cascade="save-update,lock" lazy="false" column="LocationTreeDefID" not-null="true"/>
+        
+    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+    		cascade="save-update,lock" lazy="false" column="ParentItemID"/>
 
-        <many-to-one name="parent" column="ParentItemID"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
-            cascade="save-update,lock" lazy="false">
-            <meta attribute="scope-field">protected</meta>
-        </many-to-one>
-
-        <set name="treeEntries" table="location" inverse="true"
-            lazy="true" cascade="save-update,lock">
-            <meta attribute="scope-field">protected</meta>
+    	<set name="treeEntries" lazy="true" inverse="true" cascade="save-update,lock">
             <key column="LocationTreeDefItemID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Location" />
         </set>
 
-        <set name="children" table="locationtreedefitem" inverse="true"
-            lazy="false" cascade="save-update,lock">
-            <meta attribute="scope-field">protected</meta>
+        <set name="children" inverse="true" lazy="false" cascade="save-update,lock">
             <key column="ParentItemID" />
-            <one-to-many
-                class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
         </set>
 
     </class>

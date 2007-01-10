@@ -29,25 +29,19 @@
 
         <!-- Associations -->
 
-        <set name="treeEntries" table="GeologicTimePeriod"
-            inverse="true" lazy="true" cascade="all-delete-orphan">
+    	<set name="treeEntries" cascade="save-update,lock" lazy="true" inverse="true">
             <key column="GeologicTimePeriodTreeDefID" />
-            <one-to-many
-                class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
         </set>
 
-        <set name="treeDefItems" table="GeologicTimePeriodTreeDefItem"
-            inverse="true" lazy="false" cascade="save-update">
+    	<set name="treeDefItems" cascade="save-update,lock" lazy="false" inverse="true">
             <key column="GeologicTimePeriodTreeDefID" />
-            <one-to-many
-                class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" />
         </set>
 
-        <set name="collObjDefs" table="CollectionObjDef"
-            inverse="true" cascade="none">
+    	<set name="collObjDefs" cascade="none" lazy="true" inverse="true">
             <key column="GeologicTimePeriodTreeDefID" />
-            <one-to-many
-                class="edu.ku.brc.specify.datamodel.CollectionObjDef" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef" />
         </set>
 
     </class>

@@ -47,37 +47,22 @@
 
         <!-- Associations -->
 
-        <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-        <many-to-one name="treeDef"
-            column="GeologicTimePeriodTreeDefID"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
-            lazy="false"
-            cascade="save-update">
-            <meta attribute="scope-field">protected</meta>
-        </many-to-one>
-
-        <many-to-one name="parent" column="ParentItemID"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
-            cascade="none" lazy="false">
-            <meta attribute="scope-field">protected</meta>
-        </many-to-one>
-
-        <set name="treeEntries" table="GeologicTimePeriod"
-            inverse="true" lazy="false" cascade="all-delete-orphan">
-            <meta attribute="scope-field">protected</meta>
-            <key column="GeologicTimePeriodTreeDefItemID" />
-            <one-to-many
-                class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
-        </set>
-
-        <set name="children" table="GeologicTimePeriodTreeDefItem"
-            inverse="true" lazy="false" cascade="all-delete-orphan">
-            <meta attribute="scope-field">protected</meta>
-            <key column="ParentItemID" />
-            <one-to-many
-                class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" />
-        </set>
-
+    	<many-to-one name="treeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" 
+    		cascade="save-update,lock" lazy="false" column="GeologicTimePeriodTreeDefID" not-null="true"/>
+    	
+    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+    		cascade="save-update,lock" lazy="false" column="ParentItemID"/>
+    	
+    	<set name="treeEntries" lazy="true" inverse="true" cascade="save-update,lock">
+    		<key column="GeologicTimePeriodTreeDefItemID" />
+    		<one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
+    	</set>
+    	
+    	<set name="children" inverse="true" lazy="false" cascade="save-update,lock">
+    		<key column="ParentItemID" />
+    		<one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" />
+    	</set>
+    	
     </class>
 
 </hibernate-mapping>

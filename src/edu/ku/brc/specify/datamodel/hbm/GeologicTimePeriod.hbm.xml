@@ -44,34 +44,28 @@
 
         <!-- Associations -->
 
-        <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-        <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
-             lazy="false" outer-join="true" cascade="none">
-            <column name="GeologicTimePeriodTreeDefID" not-null="true"/>
-        </many-to-one>
-
-        <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDefItem -->
-        <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
-            lazy="false" outer-join="true" cascade="save-update">
-            <column name="GeologicTimePeriodTreeDefItemID"  not-null="true"/>
-        </many-to-one>
-
-        <!-- bi-directional many-to-one association to GeologicTimePeriod -->
-        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            outer-join="true" lazy="false" cascade="none">
-            <column name="ParentID"/>
-        </many-to-one>
-
-        <set name="children" inverse="true" cascade="all-delete-orphan">
-            <key column="ParentID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
-        </set>
-
-        <!-- bi-directional many-to-one association to Stratigraphy -->
-        <set name="stratigraphies" lazy="true" inverse="true" cascade="none">
-            <key column="GeologicTimePeriodID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.Stratigraphy"/>
-        </set>
-        
+    	<!-- bi-directional many-to-one association to Stratigraphy -->
+    	<set name="stratigraphies" lazy="true" inverse="true" cascade="none">
+    		<key column="GeologicTimePeriodID"/>
+    		<one-to-many class="edu.ku.brc.specify.datamodel.Stratigraphy"/>
+    	</set>
+    	
+    	<!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
+    	<many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" 
+    		cascade="lock" lazy="false" column="GeologicTimePeriodTreeDefID" not-null="true" outer-join="true"/>
+    	
+    	<!-- bi-directional many-to-one association to GeologicTimePeriodTreeDefItem -->
+    	<many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" 
+    		cascade="save-update,lock" lazy="false" column="GeologicTimePeriodTreeDefItemID" not-null="true" outer-join="true"/>
+    	
+    	<!-- bi-directional many-to-one association to GeologicTimePeriod -->
+    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+    		cascade="save-update,lock" lazy="false" column="ParentID" outer-join="true" />
+    	
+    	<set name="children" cascade="all" lazy="true" inverse="true">
+    		<key column="ParentId"/>
+    		<one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
+    	</set>
+    	
     </class>
 </hibernate-mapping>

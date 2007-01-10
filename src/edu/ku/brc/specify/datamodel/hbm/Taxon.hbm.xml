@@ -97,28 +97,28 @@
             <one-to-many class="edu.ku.brc.specify.datamodel.TaxonCitation" />
         </set>
 
-        <!-- bi-directional many-to-one association to TaxonTreeDef -->
-        <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-            not-null="true" outer-join="true" cascade="none" column="TaxonTreeDefID" />
-
-        <!-- bi-directional many-to-one association to TaxonTreeDefItem -->
-        <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
-            not-null="true" cascade="save-update" outer-join="true" column="TaxonTreeDefItemID"/>
-
-        <!-- bi-directional many-to-one association to Taxon -->
-        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Taxon" cascade="none" 
-        	outer-join="true" column="ParentID" lazy="false"/>
-
-        <!-- bi-directional one-to-many association to Attachment -->
-        <set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
-            <key column="TaxonID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
-        </set>
-
-        <set name="children" inverse="true" cascade="all-delete-orphan" fetch="join">
-            <key column="ParentID" />
-            <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
-        </set>
+    	<!-- bi-directional one-to-many association to Attachment -->
+    	<set name="attachments" inverse="true" cascade="all-delete-orphan" order-by="Ordinal ASC, TimestampCreated DESC">
+    		<key column="TaxonID"/>
+    		<one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
+    	</set>
+    	
+    	<!-- bi-directional many-to-one association to TaxonTreeDef -->
+    	<many-to-one name="definition" class="edu.ku.brc.specify.datamodel.TaxonTreeDef" 
+    		cascade="lock" lazy="false" column="TaxonTreeDefID" not-null="true" outer-join="true"/>
+    	
+    	<!-- bi-directional many-to-one association to TaxonTreeDefItem -->
+    	<many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" 
+    		cascade="save-update,lock" lazy="false" column="TaxonTreeDefItemID" not-null="true" outer-join="true"/>
+    	
+    	<!-- bi-directional many-to-one association to Taxon -->
+    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Taxon"
+    		cascade="save-update,lock" lazy="false" column="ParentID" outer-join="true" />
+    	
+    	<set name="children" cascade="all" lazy="true" inverse="true">
+    		<key column="ParentId"/>
+    		<one-to-many class="edu.ku.brc.specify.datamodel.Taxon"/>
+    	</set>
 
     </class>
 

@@ -46,25 +46,22 @@
 
         <!-- Associations -->
 
-        <many-to-one name="treeDef" column="TaxonTreeDefID" cascade="none" 
-            class="edu.ku.brc.specify.datamodel.TaxonTreeDef">
-        </many-to-one>
-
-        <set name="treeEntries" table="Taxon" inverse="true" cascade="all-delete-orphan">
-            <key column="TaxonTreeDefItemID" />
-            <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
-        </set>
-
-        <many-to-one name="parent" column="ParentItemID"
-            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
-            cascade="none">
-        </many-to-one>
-
-        <set name="children" table="TaxonTreeDefItem" inverse="true" cascade="all-delete-orphan" lazy="false">
-            <key column="ParentItemID" />
-            <one-to-many class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
-        </set>
-
+    	<many-to-one name="treeDef" class="edu.ku.brc.specify.datamodel.TaxonTreeDef" 
+    		cascade="save-update,lock" lazy="false" column="TaxonTreeDefID" not-null="true"/>
+    	
+    	<many-to-one name="parent" class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+    		cascade="save-update,lock" lazy="false" column="ParentItemID"/>
+    	
+    	<set name="treeEntries" lazy="true" inverse="true" cascade="save-update,lock">
+    		<key column="TaxonTreeDefItemID" />
+    		<one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
+    	</set>
+    	
+    	<set name="children" inverse="true" lazy="false" cascade="save-update,lock">
+    		<key column="ParentItemID" />
+    		<one-to-many class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
+    	</set>
+    	
     </class>
 
 </hibernate-mapping>

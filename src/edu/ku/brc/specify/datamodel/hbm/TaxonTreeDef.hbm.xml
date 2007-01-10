@@ -31,22 +31,19 @@
 
         <!-- Associations -->
 
-        <one-to-one name="collObjDef"
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef" cascade="all"
-            constrained="true" />
-
-        <set name="treeEntries" table="Taxon" inverse="true"  cascade="all-delete-orphan"
-            lazy="extra">
+    	<set name="treeEntries" cascade="save-update,lock" lazy="true" inverse="true">
             <key column="TaxonTreeDefID" />
             <one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
         </set>
 
-        <set name="treeDefItems" table="TaxonTreeDefItem" inverse="true"
-            lazy="false" cascade="all-delete-orphan">
+    	<set name="treeDefItems" cascade="save-update,lock" lazy="false" inverse="true">
             <key column="TaxonTreeDefID" />
-            <one-to-many
-                class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
+            <one-to-many class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
         </set>
+
+    	<one-to-one name="collObjDef"
+    		class="edu.ku.brc.specify.datamodel.CollectionObjDef" cascade="all"
+    		constrained="true" />
 
     </class>
 
