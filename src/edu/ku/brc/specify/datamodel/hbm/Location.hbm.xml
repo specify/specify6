@@ -5,7 +5,7 @@
 
 <hibernate-mapping>
 
-    <class name="edu.ku.brc.specify.datamodel.Location" table="location" lazy="true">
+    <class name="edu.ku.brc.specify.datamodel.Location" table="location">
 
         <id name="locationId" type="java.lang.Long" column="LocationID">
             <generator class="native"/>
@@ -72,7 +72,7 @@
             <one-to-many class="edu.ku.brc.specify.datamodel.Container"/>
         </set>
 
-        <set name="children" inverse="true" cascade="save-update,lock">
+    	<set name="children"  lazy="true" inverse="true" cascade="save-update,lock">
             <key column="ParentId"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>
         </set>

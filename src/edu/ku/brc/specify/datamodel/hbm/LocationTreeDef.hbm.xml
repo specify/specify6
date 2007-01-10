@@ -5,8 +5,7 @@
 
 <hibernate-mapping>
 
-    <class name="edu.ku.brc.specify.datamodel.LocationTreeDef"
-        table="locationtreedef" lazy="true">
+    <class name="edu.ku.brc.specify.datamodel.LocationTreeDef" table="locationtreedef">
         <meta attribute="class-description" inherit="false" />
 
         <id name="locationTreeDefId" type="java.lang.Long"

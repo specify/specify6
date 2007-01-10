@@ -9,6 +9,7 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.FontMetrics;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -20,6 +21,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeDataService;
+import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -41,16 +44,20 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
     protected T root;
     protected T visibleRoot;
     protected Comparator<? super T> comparator;
+    
+    protected TreeDataService<T,D,I> dataService;
 
-	public TreeDataListModel( T root )
+	public TreeDataListModel(D treeDef)
 	{
 		visibleNodes = new Vector<T>();
 		childrenWereShowing = new Hashtable<T, Boolean>();
-		this.root = root;
 		this.visibleRoot = root;
+        
+        this.dataService = TreeDataServiceFactory.createService();
+        this.treeDef = treeDef;
+        this.root = dataService.getRootNode(treeDef);
+        
 		comparator = root.getComparator();
-		
-		treeDef = root.getDefinition();
 		
 		makeNodeVisible(root);
 		showChildren(root);
@@ -77,8 +84,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		
-		for(T child: t.getChildren())
+		for(T child: dataService.getChildNodes(t))
 		{
 			if(!visibleNodes.contains(child))
 			{
@@ -114,19 +120,11 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		}
 	}
 	
-	public void showDescendants( T t )
-	{
-		showChildren(t);
-		for( T child: t.getChildren() )
-		{
-			showDescendants(child);
-		}
-	}
-	
 	protected void showChildren(T t)
 	{
 		if( allChildrenAreVisible(t) )
 		{
+            // nothing needs to be done
 			return;
 		}
 
@@ -140,10 +138,11 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	{
 		if( !allChildrenAreVisible(t) )
 		{
+            // nothing needs to be done
 			return;
 		}
 		
-		for( T child: t.getChildren() )
+		for( T child: dataService.getChildNodes(t) )
 		{
 			setNodeVisible(child, false);
 		}
@@ -191,8 +190,12 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	 */
 	protected int makeNodeVisible( T t )
 	{
-		// if this is the first node to ever be made visible...
-		if( visibleNodes.isEmpty() )
+        // TODO: is this the right place for this?
+        // make sure the children of all visible nodes are loaded, allowing for retrieving their counts
+        dataService.getChildNodes(t);
+
+        // if this is the first node to ever be made visible...
+		if(visibleNodes.isEmpty())
 		{
 			visibleNodes.add(t);
 			if( childrenWereShowing(t) )
@@ -316,18 +319,6 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		}
 	}
 	
-	protected void insertNode( T node, T parent )
-	{
-		// basic algorithm here...
-		// 1. hide children of new parent
-		// 2. insert new child
-		// 3. show children of new parent
-		
-		hideChildren(parent);
-		parent.addChild(node);
-		showChildren(parent);
-	}
-	
 	public SortedSet<Integer> getVisibleRanks()
 	{
 		TreeSet<Integer> usedRanks = new TreeSet<Integer>();
@@ -444,6 +435,36 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		return visibleNodes.size();
 	}
 	
+    public int getDescendantCount(T node)
+    {
+        return dataService.getDescendantCount(node);
+    }
+    
+    public boolean canAddChildToNode(T node)
+    {
+        if (node==null)
+        {
+            return false;
+        }
+        
+        return dataService.canAddChildToNode(node);
+    }
+    
+    public boolean canDeleteNode(T node)
+    {
+        if (node==null)
+        {
+            return false;
+        }
+        
+        return dataService.canDeleteNode(node);
+    }
+    
+    public void deleteNode(T node)
+    {
+        dataService.deleteTreeNode(node);
+    }
+    
 	public boolean reparent( T node, T newParent )
 	{
 		if( node.getParent() == newParent )
@@ -451,17 +472,24 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 			return false;
 		}
 		
-		this.removeNode(node);
-		this.insertNode(node, newParent);
-		node.fixFullNameForAllDescendants();
+        T oldParent = node.getParent();
+        boolean oldParentShowingChildren = false;
+        if (oldParent!=null)
+        {
+            oldParentShowingChildren = visibleNodes.contains(node);
+            if (oldParentShowingChildren)
+            {
+                hideChildren(oldParent);
+            }
+        }
+        hideChildren(newParent);
+        dataService.moveTreeNode(node, newParent);
+        showChildren(newParent);
+        if (oldParentShowingChildren)
+        {
+            showChildren(oldParent);
+        }
 		return true;
-	}
-
-	public void addChild( T child, T parent )
-	{
-		parent.addChild(child);
-		child.setParent(parent);
-		showChildren(parent);
 	}
 
 	public void nodeValuesChanged(T node)
@@ -480,4 +508,10 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		makeNodeVisible(visibleRoot);
 		showChildren(visibleRoot);
 	}
+
+    // to allow the TTV to perform searches without having a data service
+    public List<T> findByName(String nodeName)
+    {
+        return dataService.findByName(treeDef, nodeName);
+    }
 }

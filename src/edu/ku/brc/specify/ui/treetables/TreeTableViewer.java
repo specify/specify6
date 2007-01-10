@@ -6,8 +6,6 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -20,11 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
@@ -33,7 +27,6 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -42,21 +35,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
-import edu.ku.brc.specify.treeutils.TreeDataService;
-import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
@@ -64,8 +53,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.RankBasedComparator;
-import edu.ku.brc.util.Rankable;
 
 /**
  * The TreeTableViewer is a SubPaneIface implementation that provides a
@@ -102,14 +89,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	protected TreeDataListHeader[] listHeaders;
 	
 	protected JPanel[] treeListPanels;
+    
+    protected JButton[] addButtons;
+    protected JButton[] deleteButtons;
 	
 	protected D treeDef;
-	
-	/** Collection of all nodes deleted by user that have not yet been deleted from the DB. */
-	protected SortedSet<T> deletedNodes;
-	
-	/** Collection of all nodes added by user that have not yet been committed to the DB. */
-	protected SortedSet<T> addedNodes;
 	
 	// to track name changes by the user
 	protected String nameBeforeEditDialogShown;
@@ -117,7 +101,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     /** Logger for all messages emitted. */
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
     
-    protected TreeDataService<T,D,I> dataService;
+    //protected TreeDataService<T,D,I> dataService;
     
     protected String findName;
     protected int resultsIndex;
@@ -130,9 +114,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
     protected boolean busy;
     protected String busyReason;
-    
-    protected boolean unsavedChanges;
-    protected boolean redoNodeNumbers;
     
     protected List<AbstractButton> allButtons;
     
@@ -150,15 +131,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		super(name,task);
 		this.treeDef = treeDef;
 		allButtons = new Vector<AbstractButton>();
-		dataService = TreeDataServiceFactory.createService();
-		Comparator<Rankable> reverseComp = Collections.reverseOrder(new RankBasedComparator());
-		deletedNodes = new TreeSet<T>(reverseComp);
-		addedNodes = new TreeSet<T>(reverseComp);
 		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
 		popupMenu = new TreeNodePopupMenu(this);
-		
-		unsavedChanges = false;
-		redoNodeNumbers = false;
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
 		
@@ -210,54 +184,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
     }
     
+    /**
+     * Calls showTree().  Simply provides an easy override point for subclasses.
+     */
+    protected void initTreeLists()
+    {
+        showTree();
+    }
+    
 	/**
-	 * Initialize the tree display component with the tree defined by the given
-	 * {@link TreeDefIface}.
-	 *
-	 * @param treeDef the tree definition
+	 * Initialize and show the tree display component.
 	 */
-	protected void initTreeLists()
+	protected void showTree()
 	{
-		// setup a thread to load the objects from the DB
-		Runnable runnable = new Runnable()
-		{
-			public void run()
-			{
-				final T root = dataService.getRootNode(treeDef);
-				
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						showTree(root);
-					}
-				});
-			}
-		};
-		
-		Thread t = new Thread(runnable);
-		t.start();
-	}
-	
-	/**
-	 * Performs finalization work after {@link #initTreeList(TreeDefIface)}
-	 * successfully initializes a new tree display.
-	 *
-	 * @param root the root node of the new tree
-	 */
-	protected void showTree( T root )
-	{
-		if(root==null)
-		{
-			String error = "Error while initializing tree editor: No root node found";
-			log.error(error);
-			setStatusBarText(error);
-			SubPaneMgr.getInstance().closeCurrent();
-			return;
-		}
-		
-		log.debug("Successfully initialized tree editor");
-
 		MouseListener mouseListener = new MouseAdapter()
 		{
 			@Override
@@ -267,7 +206,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			@Override
 			public void mouseReleased(MouseEvent e){mouseButtonReleased(e);}
 		};
-		listModel = new TreeDataListModel<T,D,I>(root);
+		listModel = new TreeDataListModel<T,D,I>(treeDef);
 		Color[] bgs = new Color[2];
 		bgs[0] = new Color(202,238,255);
 		bgs[1] = new Color(151,221,255);
@@ -285,7 +224,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		scrollers = new JScrollPane[2];
 		listHeaders = new TreeDataListHeader[2];
 		treeListPanels = new JPanel[2];
-		
+        addButtons = new JButton[2];
+		deleteButtons = new JButton[2];
+        
 		lists[0] = new TreeDataGhostDropJList(listModel,this);
 		lists[0].addMouseListener(mouseListener);
 		lists[0].setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -311,22 +252,331 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		scrollers[1].setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollers[1].setColumnHeaderView(listHeaders[1]);
 		
+        // icons for buttons
+        Icon icon_subtree    = IconManager.getIcon("TTV_Subtree",   IconManager.IconSize.Std16);
+        Icon icon_wholeTree  = IconManager.getIcon("TTV_WholeTree", IconManager.IconSize.Std16);
+//        Icon icon_allDescend = IconManager.getIcon("TTV_AllDescend",IconManager.IconSize.Std16);
+        Icon icon_syncViews  = IconManager.getIcon("TTV_SyncViews", IconManager.IconSize.Std16);
+        Icon icon_newChild   = IconManager.getIcon("TTV_NewChild",  IconManager.IconSize.Std16);
+        Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
+        Icon icon_delNode    = IconManager.getIcon("TTV_DelNode",   IconManager.IconSize.Std16);
+        Icon icon_toParent   = IconManager.getIcon("TTV_ToParent",  IconManager.IconSize.Std16);
+        Icon icon_toggle     = IconManager.getIcon("TTV_ToggleViewMode", IconManager.IconSize.Std16);
+        
+        // button panel for top tree list
+        JPanel buttonPanel0 = new JPanel();
+        buttonPanel0.setLayout(new BoxLayout(buttonPanel0,BoxLayout.PAGE_AXIS));
+        
+        JButton subtree0 = new JButton(icon_subtree);
+        subtree0.setSize(20,20);
+        subtree0.setToolTipText("View Subtree");
+        subtree0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showSubtreeOfSelection(lists[0]);
+            }
+        });
+        
+        JButton wholeTree0 = new JButton(icon_wholeTree);
+        wholeTree0.setSize(20,20);
+        wholeTree0.setToolTipText("View Whole Tree");
+        wholeTree0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showWholeTree(lists[0]);
+            }
+        });
+
+        JButton toParent0 = new JButton(icon_toParent);
+        toParent0.setSize(20,20);
+        toParent0.setToolTipText("Go To Parent");
+        toParent0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                selectParentOfSelection(lists[0]);
+            }
+        });
+        
+        JButton toggle0 = new JButton(icon_toggle);
+        toggle0.setSize(20,20);
+        toggle0.setToolTipText("Toggle View Mode");
+        toggle0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                toggleViewMode();
+            }
+        });
+
+//        JButton showDescend0 = new JButton(icon_allDescend);
+//        showDescend0.setSize(20,20);
+//        showDescend0.setToolTipText("Show All Descendants");
+//        showDescend0.addActionListener(new ActionListener()
+//        {
+//            public void actionPerformed(ActionEvent ae)
+//            {
+//                expandAllDescendantsOfSelection(lists[0]);
+//            }
+//        });
+        
+        JButton syncViews0 = new JButton(icon_syncViews);
+        syncViews0.setSize(20,20);
+        syncViews0.setToolTipText("Sync w/ Other View");
+        syncViews0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                syncViewWithOtherView(lists[0]);
+            }
+        });
+        
+        JButton newChild0 = new JButton(icon_newChild);
+        newChild0.setSize(20,20);
+        newChild0.setToolTipText("Add Child to Selection");
+        newChild0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                addChildToSelectedNode(lists[0]);
+            }
+        });
+        addButtons[0] = newChild0;
+
+        JButton editNode0 = new JButton(icon_editNode);
+        editNode0.setSize(20,20);
+        editNode0.setToolTipText("Edit Selected Node");
+        editNode0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                editSelectedNode(lists[0]);
+            }
+        });
+
+        JButton deleteNode0 = new JButton(icon_delNode);
+        deleteNode0.setSize(20,20);
+        deleteNode0.setToolTipText("Delete Selected Node");
+        deleteNode0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                deleteSelectedNode(lists[0]);
+            }
+        });
+        deleteButtons[0] = deleteNode0;
+
+        // view manipulation buttons
+        JLabel viewLabel0 = new JLabel("View");
+        viewLabel0.setSize(32,viewLabel0.getHeight());
+        buttonPanel0.add(viewLabel0);
+        viewLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(subtree0);
+        subtree0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(wholeTree0);
+        wholeTree0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(toParent0);
+        toParent0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(toggle0);
+        toggle0.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        buttonPanel0.add(showDescend0);
+//        showDescend0.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        buttonPanel0.add(Box.createRigidArea(new Dimension(20,20)));
+        
+        // tree editing buttons
+        JLabel editLabel0 = new JLabel("Edit");
+        editLabel0.setSize(32,editLabel0.getHeight());
+        buttonPanel0.add(editLabel0);
+        editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(newChild0);
+        newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(editNode0);
+        editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(deleteNode0);
+        deleteNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        buttonPanel0.add(Box.createVerticalGlue());
+        buttonPanel0.add(syncViews0);
+        syncViews0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        allButtons.add(subtree0);
+        allButtons.add(wholeTree0);
+        allButtons.add(toParent0);
+        allButtons.add(toggle0);
+//        allButtons.add(showDescend0);
+        allButtons.add(newChild0);
+        allButtons.add(editNode0);
+        allButtons.add(deleteNode0);
+ 
 		treeListPanels[0] = new JPanel();
 		treeListPanels[0].setLayout(new BorderLayout());
 		treeListPanels[0].add(scrollers[0], BorderLayout.CENTER);
-		treeListPanels[0].add(setupButtonPanel(lists[0]),BorderLayout.EAST);
+		treeListPanels[0].add(buttonPanel0,BorderLayout.EAST);
 		
+        
+        // button panel for bottom tree list
+        JPanel buttonPanel1 = new JPanel();
+        buttonPanel1.setLayout(new BoxLayout(buttonPanel1,BoxLayout.PAGE_AXIS));
+        
+        JButton subtree1 = new JButton(icon_subtree);
+        subtree1.setSize(20,20);
+        subtree1.setToolTipText("View Subtree");
+        subtree1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showSubtreeOfSelection(lists[0]);
+            }
+        });
+        
+        JButton wholeTree1 = new JButton(icon_wholeTree);
+        wholeTree1.setSize(20,20);
+        wholeTree1.setToolTipText("View Whole Tree");
+        wholeTree1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showWholeTree(lists[0]);
+            }
+        });
+
+        JButton toParent1 = new JButton(icon_toParent);
+        toParent1.setSize(20,20);
+        toParent1.setToolTipText("Go To Parent");
+        toParent1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                selectParentOfSelection(lists[0]);
+            }
+        });
+        
+        JButton toggle1 = new JButton(icon_toggle);
+        toggle1.setSize(20,20);
+        toggle1.setToolTipText("Toggle View Mode");
+        toggle1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                toggleViewMode();
+            }
+        });
+
+//        JButton showDescend1 = new JButton(icon_allDescend);
+//        showDescend1.setSize(20,20);
+//        showDescend1.setToolTipText("Show All Descendants");
+//        showDescend1.addActionListener(new ActionListener()
+//        {
+//            public void actionPerformed(ActionEvent ae)
+//            {
+//                expandAllDescendantsOfSelection(lists[0]);
+//            }
+//        });
+        
+        JButton syncViews1 = new JButton(icon_syncViews);
+        syncViews1.setSize(20,20);
+        syncViews1.setToolTipText("Sync w/ Other View");
+        syncViews1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                syncViewWithOtherView(lists[0]);
+            }
+        });
+        
+        JButton newChild1 = new JButton(icon_newChild);
+        newChild1.setSize(20,20);
+        newChild1.setToolTipText("Add Child to Selection");
+        newChild1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                addChildToSelectedNode(lists[0]);
+            }
+        });
+        addButtons[1] = newChild1;
+        
+        JButton editNode1 = new JButton(icon_editNode);
+        editNode1.setSize(20,20);
+        editNode1.setToolTipText("Edit Selected Node");
+        editNode1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                editSelectedNode(lists[0]);
+            }
+        });
+
+        JButton deleteNode1 = new JButton(icon_delNode);
+        deleteNode1.setSize(20,20);
+        deleteNode1.setToolTipText("Delete Selected Node");
+        deleteNode1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                deleteSelectedNode(lists[0]);
+            }
+        });
+        deleteButtons[1] = deleteNode1;
+
+        // view manipulation buttons
+        JLabel viewLabel1 = new JLabel("View");
+        viewLabel1.setSize(32,viewLabel1.getHeight());
+        buttonPanel1.add(viewLabel1);
+        viewLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(subtree1);
+        subtree1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(wholeTree1);
+        wholeTree1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(toParent1);
+        toParent1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(toggle1);
+        toggle1.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        buttonPanel1.add(showDescend1);
+//        showDescend1.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        buttonPanel1.add(Box.createRigidArea(new Dimension(20,20)));
+        
+        // tree editing buttons
+        JLabel editLabel1 = new JLabel("Edit");
+        editLabel1.setSize(32,editLabel1.getHeight());
+        buttonPanel1.add(editLabel1);
+        editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(newChild1);
+        newChild1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(editNode1);
+        editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(deleteNode1);
+        deleteNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        buttonPanel1.add(Box.createVerticalGlue());
+        buttonPanel1.add(syncViews1);
+        syncViews1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        allButtons.add(subtree1);
+        allButtons.add(wholeTree1);
+        allButtons.add(toParent1);
+        allButtons.add(toggle1);
+//        allButtons.add(showDescend1);
+        allButtons.add(newChild1);
+        allButtons.add(editNode1);
+        allButtons.add(deleteNode1);
+ 
 		treeListPanels[1] = new JPanel();
 		treeListPanels[1].setLayout(new BorderLayout());
 		treeListPanels[1].add(scrollers[1], BorderLayout.CENTER);
-		treeListPanels[1].add(setupButtonPanel(lists[1]),BorderLayout.EAST);
+		treeListPanels[1].add(buttonPanel1,BorderLayout.EAST);
 		
 		setViewMode(SINGLE_VIEW_MODE);
         
         UICacheManager.forceTopFrameRepaint();
 	}
 	
-	protected void setBusy(boolean busy,String statusText)
+	@SuppressWarnings("unchecked")
+    protected void setBusy(boolean busy,String statusText)
 	{
 		if (busy)
 		{
@@ -337,10 +587,32 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 		
+        // enable/disable all the buttons
 		for (AbstractButton ab: allButtons)
 		{
 			ab.setEnabled(!busy);
 		}
+        
+        // now fix the add/delete buttons to be disabled if addition/deletion isn't possible
+		if (lists != null)
+        {
+            int index = -1;
+            if (lists[0] != null)
+            {
+                index = 0;
+            }
+            if (lists[1] != null)
+            {
+                index = 1;
+            }
+            
+            if (index!=-1)
+            {
+                T node = (T)lists[index].getSelectedValue();
+                deleteButtons[index].setEnabled(listModel.canDeleteNode(node));
+                addButtons[index].setEnabled(listModel.canAddChildToNode(node));
+            }
+        }
 
 		this.busy = busy;
 		busyReason = statusText;
@@ -350,8 +622,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             statusBar.setIndeterminate(busy);
         }
 	}
+    
 	
-	public void toggleViewMode()
+	protected void toggleViewMode()
 	{
 		if(checkBusy())
 		{
@@ -370,6 +643,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		repaint();
     	UICacheManager.forceTopFrameRepaint();
 	}
+    
 	
 	protected void setViewMode(int newMode)
 	{
@@ -387,169 +661,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		repaint();
 	}
-	
-	protected JPanel setupButtonPanel(final JList list)
-	{
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.PAGE_AXIS));
-		
-		Icon icon_subtree    = IconManager.getIcon("TTV_Subtree",   IconManager.IconSize.Std16);
-		Icon icon_wholeTree  = IconManager.getIcon("TTV_WholeTree", IconManager.IconSize.Std16);
-		Icon icon_allDescend = IconManager.getIcon("TTV_AllDescend",IconManager.IconSize.Std16);
-		Icon icon_syncViews  = IconManager.getIcon("TTV_SyncViews", IconManager.IconSize.Std16);
-		Icon icon_newChild   = IconManager.getIcon("TTV_NewChild",  IconManager.IconSize.Std16);
-		Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
-		Icon icon_delNode    = IconManager.getIcon("TTV_DelNode",   IconManager.IconSize.Std16);
-		Icon icon_toParent   = IconManager.getIcon("TTV_ToParent",  IconManager.IconSize.Std16);
-		Icon icon_toggle     = IconManager.getIcon("TTV_ToggleViewMode", IconManager.IconSize.Std16);
-		
-		// TODO: externalize these strings
-		
-		JButton subtree = new JButton(icon_subtree);
-		subtree.setSize(20,20);
-		subtree.setToolTipText("View Subtree");
-		subtree.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				showSubtreeOfSelection(list);
-			}
-		});
-		
-		JButton wholeTree = new JButton(icon_wholeTree);
-		wholeTree.setSize(20,20);
-		wholeTree.setToolTipText("View Whole Tree");
-		wholeTree.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				showWholeTree(list);
-			}
-		});
-
-		JButton toParent = new JButton(icon_toParent);
-		toParent.setSize(20,20);
-		toParent.setToolTipText("Go To Parent");
-		toParent.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				selectParentOfSelection(list);
-			}
-		});
-		
-		JButton toggle = new JButton(icon_toggle);
-		toggle.setSize(20,20);
-		toggle.setToolTipText("Toggle View Mode");
-		toggle.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				toggleViewMode();
-			}
-		});
-
-		JButton showDescend = new JButton(icon_allDescend);
-		showDescend.setSize(20,20);
-		showDescend.setToolTipText("Show All Descendants");
-		showDescend.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				expandAllDescendantsOfSelection(list);
-			}
-		});
-		
-		JButton syncViews = new JButton(icon_syncViews);
-		syncViews.setSize(20,20);
-		syncViews.setToolTipText("Sync w/ Other View");
-		syncViews.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				syncViewWithOtherView(list);
-			}
-		});
-		
-		JButton newChild = new JButton(icon_newChild);
-		newChild.setSize(20,20);
-		newChild.setToolTipText("Add Child to Selection");
-		newChild.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				addChildToSelectedNode(list);
-			}
-		});
-
-		JButton editNode = new JButton(icon_editNode);
-		editNode.setSize(20,20);
-		editNode.setToolTipText("Edit Selected Node");
-		editNode.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				editSelectedNode(list);
-			}
-		});
-
-		JButton deleteNode = new JButton(icon_delNode);
-		deleteNode.setSize(20,20);
-		deleteNode.setToolTipText("Delete Selected Node");
-		deleteNode.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				deleteSelectedNode(list);
-			}
-		});
-
-		// view manipulation buttons
-		JLabel viewLabel = new JLabel("View");
-		viewLabel.setSize(32,viewLabel.getHeight());
-		buttonPanel.add(viewLabel);
-		viewLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(subtree);
-		subtree.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(wholeTree);
-		wholeTree.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(toParent);
-		toParent.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(toggle);
-		toggle.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(showDescend);
-		showDescend.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		buttonPanel.add(Box.createRigidArea(new Dimension(20,20)));
-		
-		// tree editing buttons
-		JLabel editLabel = new JLabel("Edit");
-		editLabel.setSize(32,editLabel.getHeight());
-		buttonPanel.add(editLabel);
-		editLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(newChild);
-		newChild.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(editNode);
-		editNode.setAlignmentX(Component.CENTER_ALIGNMENT);
-		buttonPanel.add(deleteNode);
-		deleteNode.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		buttonPanel.add(Box.createVerticalGlue());
-		buttonPanel.add(syncViews);
-		syncViews.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		allButtons.add(subtree);
-		allButtons.add(wholeTree);
-		allButtons.add(toParent);
-		allButtons.add(toggle);
-		allButtons.add(showDescend);
-		allButtons.add(newChild);
-		allButtons.add(editNode);
-		allButtons.add(deleteNode);
-		
-		return buttonPanel;
-	}
-	
+    
 	protected void syncViewWithOtherView(JList list)
 	{
 		if(list == lists[0])
@@ -595,16 +707,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 
-		T newT = (T)TreeFactory.createNewTreeable(parent.getClass(),"New Node");
-		
-		// only set the parent pointer to point 'upstream'
-		// if it also points 'downstream' from the parent,
-		// the renderer might try to render the new node immediately
-		newT.setParent(parent);
+		T newT = (T)TreeFactory.createNewTreeable(parent.getClass(),"");
+		newT.setDefinitionItem(parentDefItem.getChild());
 		newT.setDefinition(parent.getDefinition());
 
 		// display a form for filling in child data
-		showNewTreeableForm(newT);
+		showNewTreeableForm(newT,parent);
 	}
 
 	/**
@@ -612,13 +720,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 *
 	 * @param newNode the new node for which the user must enter data
 	 */
-	protected void showNewTreeableForm(T newNode)
+	protected void showNewTreeableForm(final T newNode, final T parent)
 	{
 		EditDialogCallback<T> callback = new EditDialogCallback<T>()
 		{
 			public void editCompleted(T dataObj)
 			{
-				newNodeEntryComplete(dataObj);
+				newNodeEntryComplete(dataObj,parent);
 			}
 			public void editCancelled(T dataObj)
 			{
@@ -638,25 +746,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 *
 	 * @param node the new node
 	 */
-	public void newNodeEntryComplete(T node)
+	public void newNodeEntryComplete(T node, T parent)
 	{
 		// set the 'downstream' pointers from the parent and parent def items
 		
-		listModel.hideChildren(node.getParent());
-		node.getParent().addChild(node);
+		listModel.reparent(node, parent);
 		
 		// Don't do the following line because it will cause TONS of nodes to get loaded
 		//node.getDefItem().getTreeEntries().add(node);
 		
-		node.setTimestampsToNow();
 		String fullname = node.getFullName();
 		node.setFullName(fullname);
 		
-		listModel.showChildren(node.getParent());
-		
-		addedNodes.add(node);
-		unsavedChanges = true;
-		redoNodeNumbers = true;
+		listModel.showChildren(parent);
 	}
 
 	/**
@@ -675,17 +777,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 		node.setParent(null);
 		
-		D def = node.getDefinition();
-		if( def != null )
-		{
-			def.getTreeDefItems().remove(node);
-		}
-		
-		I defItem = node.getDefinitionItem();
-		if( defItem != null )
-		{
-			defItem.getTreeEntries().remove(node);
-		}
+		node.setDefinition(null);
+        node.setDefinitionItem(null);
 	}
 
 	/**
@@ -708,69 +801,24 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		
         // unchecked cast, unavoidable
-		T node = (T)selection;
-		if( node.canBeDeleted() )
-		{
-			Integer nodeNum = node.getNodeNumber();
-			Integer highChild = node.getHighestChildNodeNumber();
-			int numNodesToDelete = 0;
-			if(nodeNum==null || highChild==null)
-			{
-				// this must be a newly created node
-				numNodesToDelete = node.getDescendantCount() + 1;
-			}
-			else
-			{
-				numNodesToDelete = node.getHighestChildNodeNumber() - node.getNodeNumber() + 1;
-			}
-			int userChoice = JOptionPane.OK_OPTION;
-			if( numNodesToDelete > 1 )
-			{
-				userChoice = JOptionPane.showConfirmDialog(this,"This operation will delete " + numNodesToDelete + " nodes","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-			}
-			if(userChoice == JOptionPane.OK_OPTION)
-			{
-				T parent = node.getParent();
-				listModel.hideChildren(parent);
-				parent.removeChild(node);
-				listModel.showChildren(parent);
-				deletedNodes.add(node);
-				deleteAllDescendants(node);
-				
-				redoNodeNumbers = true;
-				unsavedChanges = true;
-				
-				log.info("Deleted node");
-                setStatusBarText("Node deleted");
-			}
-		}
-		else
-		{
-			setStatusBarText("Selected node cannot be deleted");
-			log.info("Selected node cannot be deleted");
-		}
+        T node = (T)selection;
+        int numNodesToDelete = listModel.getDescendantCount(node)+1;
+        int userChoice = JOptionPane.OK_OPTION;
+        if (numNodesToDelete > 1)
+        {
+            userChoice = JOptionPane.showConfirmDialog(this, "This operation will delete "
+                    + numNodesToDelete + " nodes", "Continue?", JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        if (userChoice == JOptionPane.OK_OPTION)
+        {
+            T parent = node.getParent();
+            listModel.hideChildren(parent);
+            listModel.deleteNode(node);
+            listModel.showChildren(parent);
+            setStatusBarText(numNodesToDelete + " node(s) deleted");
+        }
 	}
-	
-	/**
-	 * Deletes all descendants of the given node.  Deletion is only persisted
-	 * if the user then chooses to commit the modified tree structure to the DB.
-	 *
-	 * @param parent the node for which to delete all descendant nodes
-	 */
-	protected void deleteAllDescendants(T parent)
-	{
-		List<T> descendants = parent.getAllDescendants();
-		for( T node: descendants )
-		{
-			T p = node.getParent();
-			if( p != null )
-			{
-				p.removeChild(node);
-			}
-			deletedNodes.add(node);
-		}
-	}
-
 	
 	/**
 	 * Display a form for editing the data in the currently selected node.
@@ -806,7 +854,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		showEditDialog(selectedNode, "Edit Node Values", callback);
 	}
 
-	
 	/**
 	 * Performs finalization of node data editing process.  This
 	 * method also signals the tree display widget to update its
@@ -816,8 +863,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	protected void editSelectedNodeOK(T node)
 	{
-		log.info("User selected 'OK' from edit node dialog");
-		
 		boolean nameChanged = !node.getName().equals(nameBeforeEditDialogShown);
 		Boolean levelIsInFullName = node.getDefinitionItem().getIsInFullName();
 		
@@ -826,53 +871,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         	node.fixFullNameForAllDescendants();
         }
 
-        node.updateModifiedTimeAndUser();
 		listModel.nodeValuesChanged(node);
-		
-		unsavedChanges = true;
-	}
-	
-	/**
-	 * Commit the current tree structure to the database.  This also reassigns the nodeNumber
-	 * and highestChildNodeNumber fields to be consistent with the current tree layout.
-	 * 
-	 * @return true on success, false on failure
-	 */
-	public void commitStructureToDb()
-	{
-		if(checkBusy())
-		{
-			return;
-		}
-
-		int userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-		if(userChoice == JOptionPane.OK_OPTION)
-		{
-			Thread t = new Thread(new Runnable()
-			{
-				public void run()
-				{
-					doCommitToDb();
-				}
-			});
-			
-			t.start();
-		}
-	}
-	
-	protected void doCommitToDb()
-	{
-		setBusy(true,"Committing DB changes");
-		T root = listModel.getRoot();
-		if(unsavedChanges)
-		{
-			dataService.saveTree(root,redoNodeNumbers,addedNodes,deletedNodes);
-		}
-		setBusy(false,"Tree saved to DB");
-		unsavedChanges = false;
-		redoNodeNumbers = false;
-		deletedNodes.clear();
-		addedNodes.clear();
 	}
 	
 	/**
@@ -899,7 +898,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 		list.setSelectedValue(node,true);
 	}
-	
 	
 	/**
 	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
@@ -940,65 +938,48 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		list.setSelectedValue(parent,true);
 	}
 	
-	/** 
-	 * Expands all of the nodes below the currently selected node.
+//	/** 
+//	 * Expands all of the nodes below the currently selected node.
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public void expandAllDescendantsOfSelection(JList list)
+//	{
+//		if(checkBusy())
+//		{
+//			return;
+//		}
+//
+//		Object selection = list.getSelectedValue();
+//		if( selection == null )
+//		{
+//			return;
+//		}
+//		final T node = (T)selection;
+//
+//		int userChoice = JOptionPane.OK_OPTION;
+//		
+//		int descCnt = listModel.getDescendantCount(node);
+//		if (descCnt > 30)
+//		{
+//			userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+//		}
+//		if(userChoice == JOptionPane.OK_OPTION)
+//		{
+//            doExpandAllDescendants(node);
+//		}
+//	}
+//	
+//	protected void doExpandAllDescendants(final T node)
+//	{
+//		setBusy(true,"Expanding all descendants of " + node.getName());
+//        listModel.loadAllDescendants(node);
+//        listModel.showDescendants(node);
+//        setBusy(false,null);
+//	}
+		
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#find(java.lang.String, int, boolean)
 	 */
-	@SuppressWarnings("unchecked")
-	public void expandAllDescendantsOfSelection(JList list)
-	{
-		if(checkBusy())
-		{
-			return;
-		}
-
-		Object selection = list.getSelectedValue();
-		if( selection == null )
-		{
-			return;
-		}
-		final T node = (T)selection;
-
-		int userChoice = JOptionPane.OK_OPTION;
-		
-		Integer nodeNum = node.getNodeNumber();
-		Integer highChild = node.getHighestChildNodeNumber();
-		if(nodeNum == null || highChild == null || highChild - nodeNum > 10 )
-		{
-			userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-		}
-		if(userChoice == JOptionPane.OK_OPTION)
-		{
-			Thread t = new Thread(new Runnable()
-			{
-				public void run()
-				{
-					doExpandAllDescendants(node);
-				}
-			});
-			
-			t.start();
-		}
-	}
-	
-	protected void doExpandAllDescendants(final T node)
-	{
-		setBusy(true,"Loading descendant nodes of " + node.getName());
-		System.out.println("Loading descendants");
-		dataService.loadAllDescendants(node);
-		System.out.println("Done loading descendants");
-		setBusy(false,null);
-		
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				System.out.println("Showing descendants");
-				listModel.showDescendants(node);
-			}
-		});
-	}
-	
-	
 	public void find(String nodeName,int where,boolean wrap)
 	{
 		if(checkBusy())
@@ -1007,7 +988,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 
 		findName = nodeName;
-		findResults = dataService.findByName(treeDef,findName);
+		findResults = listModel.findByName(findName);
 		if(findResults.isEmpty())
 		{
 			//TODO: notify the user that no results were found
@@ -1057,7 +1038,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#findNext(java.lang.String, int, boolean)
+	 */
 	public void findNext(String key,int where,boolean wrap)
 	{
 		if(checkBusy())
@@ -1106,7 +1089,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void findNext(int where,boolean wrap,T current)
 	{
-		List<T> matches = dataService.findByName(treeDef,current.getName());
+		List<T> matches = listModel.findByName(current.getName());
 		if(matches.size()==1)
 		{
 			setStatusBarText("No more matches");
@@ -1168,7 +1151,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return true;
 	}
 	
-	
 	/**
 	 * Display the form for editing node data.
 	 *
@@ -1185,7 +1167,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		editDialog.setData(node);
 		editDialog.setVisible(true);
 	}
-
 	
 	/**
 	 * Returns the top-level UI component of the tree viewer.
@@ -1198,7 +1179,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 		return this;
 	}
-
 	
 	/**
 	 * Updates the status bar text to display the full name of the currently
@@ -1218,8 +1198,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		
 		setStatusBarText(t.getFullName());
+
+        JButton addButton = null;
+        JButton deleteButton = null;
+        if (sourceList == lists[0])
+        {
+            addButton = addButtons[0];
+            deleteButton = deleteButtons[0];
+        }
+        else
+        {
+            addButton = addButtons[1];
+            deleteButton = deleteButtons[1];
+        }
+        deleteButton.setEnabled(listModel.canDeleteNode(t));
+        addButton.setEnabled(listModel.canAddChildToNode(t));
 	}
-	
 
 	/**
 	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
@@ -1254,6 +1248,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			// for Taxon: setup new TaxonomicRelationship
 			// for Geog:  setup new GeographyNameRelationship
 			// for ?
+            
+            // maybe this should be a pluggable interface?
+            // have something like 'public boolean NodeRelationshipManager.createRelationship(T node1, T node2)'
+            // that would allow for plugins to handle Taxon and Geography without implementing any for Location and GTP
+            // something like...
+            // if (pluginMgr != null)
+            //{
+            //  do stuff to create a relationship    
+            //}
+            
 			log.warn("User requested new relationship be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
 			return true;
 		}
@@ -1269,14 +1273,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 			
 			boolean changed = listModel.reparent(child,newParent);
-            redoNodeNumbers = true;
-            unsavedChanges = true;
 			return changed;
 		}
 		return false;
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.DragDropCallback#dropAcceptable(java.lang.Object, java.lang.Object, int)
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean dropAcceptable( Object dragged, Object droppedOn, int dropAction )
 	{
@@ -1344,7 +1348,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 	}
-	
 	
 	@SuppressWarnings("unchecked")
 	protected boolean clickIsOnText(MouseEvent e)
@@ -1415,21 +1418,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		T t = (T)listModel.getElementAt(index);
 
-		if( clickIsOnExpansionIcon(e) )
+        // if the user clicked an expansion handle, expand the child nodes
+		if( clickIsOnExpansionIcon(e) || (e.getClickCount()==2 && clickIsOnText(e)) )
 		{
-			// mouse press is on anchor area
+			// toggle the state of child node visibility
 			boolean visible = listModel.allChildrenAreVisible(t);
 			listModel.setChildrenVisible(t, !visible);
 		}
-		else if( clickIsOnText(e) )
-		{
-			// mouse press is on text area
-			if( e.getClickCount() == 2 )
-			{
-				boolean visible = listModel.allChildrenAreVisible(t);
-				listModel.setChildrenVisible(t, !visible);
-			}
-		}
+        // otherwise, ignore the click
 		else
 		{
 			e.consume();
@@ -1485,38 +1481,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 		
-		if(!unsavedChanges)
-		{
-			return true;
-		}
-		
-		// show a popup to ask user about unsaved changes
-		String save = getResourceString("Save");
-		String discard = getResourceString("Discard");
-		String cancel = getResourceString("Cancel");
-		JOptionPane popup = new JOptionPane("Save changes before closing?",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_CANCEL_OPTION,null,new String[] {cancel,discard,save});
-		JDialog dialog = popup.createDialog(this,"Unsaved Changes");
-		SubPaneMgr.getInstance().showPane(this);
-		dialog.setVisible(true);
-		Object userOpt = popup.getValue();
-		if(userOpt == save)
-		{
-			doCommitToDb();
-			return true;
-		}
-		else if(userOpt == cancel)
-		{
-			return false;
-		}
-
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#shutdown()
+	 */
 	@Override
 	public void shutdown()
 	{
 		super.shutdown();
-		dataService.fini();
 	}
 	
 	@SuppressWarnings("unchecked")

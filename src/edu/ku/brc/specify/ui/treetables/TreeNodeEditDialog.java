@@ -16,15 +16,10 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.validation.ValComboBox;
 
 /**
- * Comments must be updated.  Most of this code, including comments, was taken from DBObjDisplayDialog.java
+ * This is a dialog to be used when editing a tree node.
  * 
- * This is a "generic" or more specifically "configurable" search dialog class. This enables you to specify a form to be used to enter the search criteria
- * and then the search definition it is to use to do the search and display the results as a table in the dialog. The resulting class is to be passed in
- * on construction so the results of the search can actually yield a Hibernate object.
-
- * @code_status Code Freeze
- * @author rods, jstewart
- *
+ * @code_status Beta
+ * @author jstewart
  */
 @SuppressWarnings("serial")
 public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
@@ -37,7 +32,6 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
     public TreeNodeEditDialog(String viewSetName, String viewName, String title, EditDialogCallback<T> callback) throws HeadlessException
 	{
 		super(viewSetName,viewName,title,callback);
-		// TODO Auto-generated constructor stub
 	}
     
     /**
@@ -49,69 +43,79 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
 	public void setData(final T dataObj)
     {
     	T node = dataObj;
+        
+        // get the appropriate set of def items for the combobox
     	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
     	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
-    	T parent = node.getParent();
     	
-    	// if we are editing the root node, just put one def item in
-    	// the item selection box
-    	if( parent == null )
-    	{
-    		model.addElement(node.getDefinitionItem().getName());
-    		cb.setEnabled(false);
-    		form.setDataObj(node);
-    		return;
-    	}
-    	
-    	I parentDefItem = parent.getDefinitionItem();
-    	I defaultItem = null;
+        // this is the highest rank the edited item can possibly be
+        I topItem = null;
+        I bottomItem = null;
+        if (node.getParent()!=null)
+        {
+            // grab all the def items from just below the parent's item all the way to the next enforced level
+            // or to the level of the highest ranked child
+            topItem = node.getParent().getDefinitionItem().getChild();
+        }
+        else
+        {
+            // this node has no parent, so it's current rank is the highest we can go
+            topItem = node.getDefinitionItem();
+        }
+        
+        // find the child with the highest rank and set that child's def item as the bottom of the range
+        if (!node.getChildren().isEmpty())
+        {
+            for (T child: node.getChildren())
+            {
+                if (bottomItem==null || child.getRankId()>bottomItem.getRankId())
+                {
+                    bottomItem = child.getDefinitionItem().getParent();
+                }
+            }
+        }
+        
+    	I defaultItem = node.getDefinitionItem();
+        
+        I item = topItem;
     	boolean done = false;
-    	while( !done )
+    	while (!done)
     	{
-    		I item = parentDefItem.getChild();
-    		if( item != null )
-    		{
-    			model.addElement(item.getName());
-    			if( node.getDefinitionItem() == item )
-    			{
-    				cb.setValue(item.getName(), null);
-    			}
-    			if( item.getIsEnforced() != null && item.getIsEnforced().booleanValue() == true )
-    			{
-    				defaultItem = item;
-    				done = true;
-    			}
-    			parentDefItem = item;
-    		}
-    		else
-    		{
-    			done = true;
-    		}
+            model.addElement(item);
+    		
+            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
+            {
+                done = true;
+            }
+            item = item.getChild();
     	}
-    	if(node.getDefinitionItem()==null && defaultItem!=null)
-    	{
-    		cb.setValue(defaultItem.getName(),null);
-    	}
+        
+        for ( int i = 0; i < model.getSize(); ++i )
+        {
+            System.out.println("Model element: " + model.getElementAt(i));
+        }
+        
+        System.out.println("setting combobox value to " + defaultItem);
+        cb.setValue(defaultItem, null);
         form.setDataObj(node);
     }
-
-    protected void setDefItemByName( T node, String defItemName )
-    {
-    	I item = node.getDefinition().getDefItemByName(defItemName);
-    	node.setDefinitionItem(item);
-    	node.setRankId(item.getRankId());
-    }
+    
+//    protected void setDefItemByName( T node, String defItemName )
+//    {
+//    	I item = node.getDefinition().getDefItemByName(defItemName);
+//    	node.setDefinitionItem(item);
+//    	node.setRankId(item.getRankId());
+//    }
 
     @SuppressWarnings("unchecked")
 	@Override
 	protected void getData()
     {
-    	super.getData();
-    	
         ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
-        String defItemName = (String)cb.getValue();
+        TreeDefItemIface defItem = (TreeDefItemIface)cb.getValue();
         T node = (T)form.getDataObj();
+        node.setDefinitionItem((I)defItem);
         
-        setDefItemByName(node, defItemName);
+        super.getData();
     }
 }

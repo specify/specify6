@@ -171,7 +171,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	public void shutdown()
 	{
 		super.shutdown();
-		dataService.fini();
 	}
 
 	protected void initUI()

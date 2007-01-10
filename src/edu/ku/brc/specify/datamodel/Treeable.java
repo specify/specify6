@@ -189,8 +189,6 @@ public interface Treeable<N,D,I> extends Rankable, Nameable
 	public List<N> getAllAncestors();
 	public void fixFullNameForAllDescendants();
 	
-	public void setTimestampsToNow();
-	public void updateModifiedTimeAndUser();
 	public boolean isDescendantOf(N node);
 	
 	public Comparator<? super N> getComparator();

@@ -19,6 +19,8 @@ import javax.swing.event.ListSelectionListener;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeDataService;
+import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 
 /**
@@ -62,6 +64,7 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
             @SuppressWarnings("synthetic-access")
             public void run()
             {
+                TreeDataService<T,D,I> dataService = TreeDataServiceFactory.createService();
                 final List<T> matchingNodes = dataService.findByName(treeDef, leafNodeName);
 
                 // from these nodes, create a new node tree all the way up to the root
@@ -83,7 +86,7 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
                     @SuppressWarnings("synthetic-access")
                     public void run()
                     {
-                        showTree(root);
+                        showTree();
                         
                         // redo the construction of the actual JTree
                         EmbeddableTreeTableViewer.this.add(scrollers[0], BorderLayout.CENTER);
@@ -94,7 +97,7 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
                         {
                             public void run()
                             {
-                                doExpandAllDescendants(root);
+                                //doExpandAllDescendants(root);
                             }
                         });
                     }

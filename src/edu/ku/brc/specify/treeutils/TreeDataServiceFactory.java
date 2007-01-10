@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.treeutils;
@@ -20,7 +23,6 @@ public class TreeDataServiceFactory
 	I extends TreeDefItemIface<T,D,I>> TreeDataService<T,D,I> createService()
 	{
 		TreeDataService<T,D,I> service = new HibernateTreeDataServiceImpl<T,D,I>();
-		service.init();
 		return service;
 	}
 }

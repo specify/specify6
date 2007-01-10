@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
@@ -180,6 +181,8 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
         setVisible(false);
         
         getData();
+        
+        ((FormViewObj)form).saveObject();
         
         callback.editCompleted((T)form.getDataObj());
     }

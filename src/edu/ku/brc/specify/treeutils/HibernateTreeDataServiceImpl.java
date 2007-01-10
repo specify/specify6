@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.treeutils;
@@ -10,7 +13,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
+import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -19,6 +22,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
 /**
  * An implementation of @see {@link TreeDataService} that uses Hibernate
@@ -26,7 +30,6 @@ import edu.ku.brc.specify.datamodel.Treeable;
  *
  * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 											D extends TreeDefIface<T,D,I>,
@@ -39,45 +42,20 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
 
-	protected Session session;
+	//protected Session session;
 	
 	public HibernateTreeDataServiceImpl()
 	{
 		// do nothing
 	}
 	
-	public void setSession(Session session)
-	{
-		this.session = session;
-	}
-	
-	public Session getSession()
-	{
-		return session;
-	}
-	
-	public void init()
-	{
-		session = HibernateUtil.getSessionFactory().openSession();
-	}
-	
-	public void fini()
-	{
-		try
-		{
-			session.close();
-		}
-		catch( Exception ex )
-		{
-			log.warn("Exception caught while closing Hibernate session", ex);
-		}
-	}
-	
 	@SuppressWarnings("unchecked")
-    public List<T> findByName(D treeDef, String name)
+    public synchronized List<T> findByName(D treeDef, String name)
     {
         Vector<T> results = new Vector<T>();
         Class<T> nodeClass = treeDef.getNodeClass();
+        
+        Session session = getNewSession();
         Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name LIKE :name");
         q.setParameter("name",name);
         for( Object o: q.list() )
@@ -87,15 +65,17 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         
         Collections.sort(results,new TreePathComparator<T,D,I>(true));
+        session.close();
         return results;
     }
     
-    public Set<T> getChildNodes(T parent)
+    public synchronized Set<T> getChildNodes(T parent)
     {
-        // TODO: this only works because the parent objects is still associated
-        // with an open session.
-        // Change this impl to reattach parent to a session, then load the children
+        Session session = getNewSession(parent);
         Set<T> children = parent.getChildren();
+        // to force Set loading
+        children.size();
+        session.close();
         return children;
     }
     
@@ -107,72 +87,26 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public T getRootNode(D treeDef)
+	public synchronized T getRootNode(D treeDef)
 	{
 		Class<T> nodeClass = treeDef.getNodeClass();
 		T root = null;
 		
-		Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.parent IS NULL AND node.definition = :def");
+        Session session = getNewSession(treeDef);
+        Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.rankId = 0 AND node.definition = :def");
 		q.setParameter("def",treeDef);
 		root = (T)q.uniqueResult();
+        // force loading of the def and items
+        root.getDefinition().getTreeDefItems().size();
+        session.close();
 		return root;
 	}
 
-	/**
-	 *
-	 *
-	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getTreeNodes(edu.ku.brc.specify.datamodel.TreeDefItemIface)
-	 * @param defItem
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public Set<T> getTreeNodes(I defItem)
+	public synchronized void saveTreeDef(D treeDef, List<I> deletedItems)
 	{
-		Hibernate.initialize(defItem.getTreeEntries());
-		return defItem.getTreeEntries();
-	}
+        Session session = getNewSession(treeDef);
 
-	/**
-	 * Persists the current subtree structure, rooted at <code>root</code> to the
-	 * persistent store.  Also deletes all nodes found in <code>deletedNodes</code>.
-	 * 
-	 * @param root the root of the subtree to save
-	 * @param deletedNodes the <code>Set</code> of nodes to delete
-	 */
-	public void saveTree(T rootNode, boolean fixNodeNumbers, Set<T> addedNodes, Set<T> deletedNodes)
-	{
-		if(fixNodeNumbers)
-		{
-			rootNode.setNodeNumber(1);
-			fixNodeNumbersFromRoot(rootNode);
-		}
-		Transaction tx = session.beginTransaction();
-		saveOrUpdateTree(rootNode);
-		for( T node: deletedNodes )
-		{
-			if( node.getParent() != null )
-			{
-				node.setParent(null);
-			}
-            if (node.getTreeId()!=null)
-            {
-                session.delete(node);
-            }
-		}
-		try
-		{
-			tx.commit();
-		}
-		catch( Exception ex )
-		{
-			log.error("Failed to save tree data to DB",ex);
-			tx.rollback();
-		}
-	}
-	
-	public void saveTreeDef(D treeDef, List<I> deletedItems)
-	{
-		Transaction tx = session.beginTransaction();
+        Transaction tx = session.beginTransaction();
 		
 		// save the TreeDefinitionIface object itself
 		session.saveOrUpdate(treeDef);
@@ -183,9 +117,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 			session.saveOrUpdate(o);
 		}
 		
-//		// save all of the nodes
-//		saveOrUpdateTree(rootNode);
-
 		// delete all of the tree def items that were deleted by the user
 		for(I item: deletedItems)
 		{
@@ -206,6 +137,13 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 			log.error("Failed to save tree data to DB",ex);
 			tx.rollback();
 		}
+        finally
+        {
+            if (session.isOpen())
+            {
+                session.close();
+            }
+        }
 	}
 
 	/**
@@ -216,46 +154,26 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	 * @param root the top of the tree to be renumbered
 	 * @return the highest node number value present in the subtree rooted at <code>root</code>
 	 */
-	protected int fixNodeNumbersFromRoot( T root )
+	protected synchronized int fixNodeNumbersFromRoot( T root, Session session )
 	{
-		int nextNodeNumber = root.getNodeNumber();
+        session.lock(root,LockMode.NONE);
+        int nextNodeNumber = root.getNodeNumber();
 		for( T child: root.getChildren() )
 		{
 			child.setNodeNumber(++nextNodeNumber);
-			nextNodeNumber = fixNodeNumbersFromRoot(child);
+			nextNodeNumber = fixNodeNumbersFromRoot(child,session);
 		}
 		root.setHighestChildNodeNumber(nextNodeNumber);
 		return nextNodeNumber;
 	}
 
-	/**
-	 * Persists the current subtree structure, rooted at <code>root</code> to the
-	 * persistent store, using the given <code>Session</code>.
-	 * 
-	 * @param root the root of the subtree to save
-	 */
-	protected void saveOrUpdateTree( T root )
-	{
-		session.saveOrUpdate(root);
-		if( Hibernate.isInitialized(root.getChildren()) )
-		{
-			for( T child: root.getChildren() )
-			{
-				saveOrUpdateTree(child);
-			}
-		}
-	}
-
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getAllTreeDefs(java.lang.Class)
-	 * @param treeDefClass
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<D> getAllTreeDefs(Class<D> treeDefClass)
+	public synchronized List<D> getAllTreeDefs(Class<D> treeDefClass)
 	{
+        Session session = getNewSession();
 		Criteria crit = session.createCriteria(treeDefClass);
 		List<?> results = crit.list();
 		Vector<D> defs = new Vector<D>(results.size());
@@ -264,47 +182,202 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 			D def = (D)o;
 			defs.add(def);
 		}
+        session.close();
 		return defs;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getTreeDef(java.lang.Class, long)
+	 */
 	@SuppressWarnings("unchecked")
-	public D getTreeDef(Class<D> defClass, long defId)
+	public synchronized D getTreeDef(Class<D> defClass, long defId)
 	{
+        Session session = getNewSession();
 		String className = defClass.getSimpleName();
 		String idFieldName = className.toLowerCase().substring(0,1) + className.substring(1) + "Id";
 		Query query = session.createQuery("FROM " + className + " WHERE " + idFieldName + "=:defId");
 		query.setParameter("defId",defId);
 		D def = (D)query.uniqueResult();
+        
+        def.getTreeDefItems().size();
+        session.close();
 		return def;
 	}
 
-	public void loadAllDescendants(T node)
-	{
-		// This was the old, 'dumb' implementation
-//		for(Treeable child: node.getChildNodes())
-//		{
-//			loadAllDescendants(child);
-//		}
-		
-		// This impl loads more efficiently, I think
-		String className = node.getClass().getSimpleName();
-		Integer nodeNum = node.getNodeNumber();
-		Integer highChild = node.getHighestChildNodeNumber();
-		if( nodeNum == null || highChild == null )
-		{
-			// have to do this the inefficient way
-			for(T child: node.getChildren())
-			{
-				loadAllDescendants(child);
-			}
-			return;
-		}
-		
-		Query descend = session.createQuery("FROM " + className + " WHERE nodeNumber > " + nodeNum + " AND nodeNumber < " + highChild );
-		int i = 0;
-		for(@SuppressWarnings("unused")	Object o: descend.list())
-		{
-			i++;
-		}
-	}
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#canDeleteNode(edu.ku.brc.specify.datamodel.Treeable)
+     */
+    public synchronized boolean canDeleteNode(T node)
+    {
+        Session session = getNewSession(node);
+        BusinessRulesIFace busRules = TreeFactory.createBusinessRules(node);
+        boolean ok = busRules.okToDelete(node);
+        session.close();
+        return ok;
+    }
+    
+    public synchronized boolean canAddChildToNode(T node)
+    {
+        if (node.getDefinitionItem().getChild() != null)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public synchronized int getDescendantCount(T node)
+    {
+        Session session = getNewSession(node);
+        //session.refresh(node);
+        Integer nodeNum = node.getNodeNumber();
+        Integer highChild = node.getHighestChildNodeNumber();
+        
+        int descCnt = 0;
+        if (nodeNum!=null && highChild!=null)
+        {
+            descCnt = highChild-nodeNum;
+        }
+        
+        session.close();
+        return descCnt;
+   }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#deleteTreeNode(edu.ku.brc.specify.datamodel.Treeable)
+     */
+    @SuppressWarnings("null")
+    public synchronized void deleteTreeNode(T node)
+    {
+        Session session = getNewSession(node);
+
+        // refresh the node data so we have correct information for the following calculation
+        session.refresh(node);
+
+        Transaction tx = session.beginTransaction();
+        
+        // save the original nodeNumber and highestChildNodeNumber values
+        Integer nodeNumberStart = node.getNodeNumber();
+        Integer nodeNumberEnd = node.getHighestChildNodeNumber();
+        
+        doDeleteSubtree(node, session);
+
+        boolean doNodeNumberUpdate = true;
+        if (nodeNumberStart==null || nodeNumberEnd==null)
+        {
+            doNodeNumberUpdate = false;
+        }
+        
+        if (doNodeNumberUpdate)
+        {
+            int nodesDeleted = nodeNumberEnd-nodeNumberStart+1;
+            
+            String className = node.getClass().getName();
+            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-" + nodesDeleted + " WHERE nodeNumber > " + nodeNumberStart;
+            Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
+            int nodesUpdated = fixNodeNumQuery.executeUpdate();
+            
+            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-" + nodesDeleted + " WHERE highestChildNodeNumber >= " + nodeNumberStart;
+            Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
+            int highChildNodesUpdated = fixHighChildQuery.executeUpdate();
+
+            System.out.println("UPDATE queries to fix node number issues:");
+            System.out.println(updateNodeNumbersQueryStr);
+            System.out.println(updateHighChildQueryStr);
+            System.out.println("Nodes updated: " + nodesUpdated + " and " + highChildNodesUpdated);
+        }
+        
+        commitTransaction(session, tx);
+    }
+    
+    protected synchronized void doDeleteSubtree(T topNode, Session session)
+    {
+        T parent = topNode.getParent();
+        if (parent!=null)
+        {
+            parent.removeChild(topNode);
+        }
+
+        for (T child: topNode.getChildren())
+        {
+            doDeleteSubtree(child, session);
+        }
+        
+        session.delete(topNode);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#moveTreeNode(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
+     */
+    public synchronized void moveTreeNode(T node, T newParent)
+    {
+        // TODO: add node number change support to this method
+
+        Session session = getNewSession(node,newParent);
+        Transaction tx = session.beginTransaction();
+        
+        T oldParent = node.getParent();
+        if (oldParent!=null)
+        {
+            oldParent.removeChild(node);
+        }
+        newParent.addChild(node);
+        
+        session.saveOrUpdate(node);
+        if (oldParent!=null)
+        {
+            session.saveOrUpdate(oldParent);
+        }
+        commitTransaction(session, tx);
+    }
+    
+    /**
+     * Creates a new Hibernate session and associates the given objects with it.
+     * 
+     * @param objects the objects to associate with the new session
+     * @return the newly created session
+     */
+    private Session getNewSession(Object... objects )
+    {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        for (Object o: objects)
+        {
+            if (o!=null)
+            {
+                session.lock(o, LockMode.NONE);
+            }
+        }
+        return session;
+    }
+    
+    /**
+     * Commits the given Hibernate transaction on the given session.  A rollback
+     * is performed, and false is returned, on failure.
+     * 
+     * @param session the session
+     * @param tx the transaction
+     * @return true on success
+     */
+    private boolean commitTransaction(Session session, Transaction tx)
+    {
+        boolean result = true;
+        try
+        {
+            tx.commit();
+        }
+        catch (Exception ex)
+        {
+            result = false;
+            log.error("Error while committing transaction to DB");
+            tx.rollback();
+            log.error(ex);
+        }
+        finally
+        {
+            if (session.isOpen())
+            {
+                session.close();
+            }
+        }
+        return result;
+    }
 }

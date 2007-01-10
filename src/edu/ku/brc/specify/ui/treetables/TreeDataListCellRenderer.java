@@ -38,7 +38,7 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 {
 	protected TreeDataListModel<T,D,I> model;
 	protected JList list;
-	protected TreeNodeUI<T> nodeUI;
+	protected TreeNodeUI<T,D,I> nodeUI;
 	protected boolean lengthsValid;
 	protected SortedMap<Integer,Pair<Integer,Integer>> rankBoundsMap;
 	protected int leadTextOffset;
@@ -53,8 +53,8 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 	protected T currentTreeable;
 	
 	protected Color bgs[];
-	
-	public TreeDataListCellRenderer(TreeDataListModel<T,D,I> listModel, Color[] backgroundColors )
+    
+	public TreeDataListCellRenderer(TreeDataListModel<T,D,I> listModel, Color[] backgroundColors)
 	{
 		bgs = new Color[2];
 		bgs[0] = backgroundColors[0];
@@ -63,7 +63,7 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 		leadTextOffset = 24;
 		tailTextOffset = 8;
 		
-		nodeUI = new TreeNodeUI<T>(listModel);
+		nodeUI = new TreeNodeUI<T,D,I>(listModel);
 		
 		this.whitespace = 5;
 		model = listModel;
@@ -188,18 +188,20 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 		return longest;
 	}
 
-	public class TreeNodeUI<N extends Treeable<N,?,?>> extends JPanel
+	public class TreeNodeUI<Q extends Treeable<Q,R,S>,
+                            R extends TreeDefIface<Q,R,S>,
+                            S extends TreeDefItemIface<Q,R,S>> extends JPanel
 	{
 		@SuppressWarnings("hiding")
 		protected JList list;
 		@SuppressWarnings("hiding")
-		protected TreeDataListModel<N,?,?> model;
-		protected N treeable;
+		protected TreeDataListModel<Q,?,?> model;
+		protected Q treeable;
 		protected int index;
 		protected boolean selected;
 		protected boolean hasFocus;
-
-		public TreeNodeUI(TreeDataListModel<N,?,?> model)
+        
+		public TreeNodeUI(TreeDataListModel<Q,?,?> model)
 		{
 			this.model = model;
 			setOpaque(true);
@@ -268,7 +270,7 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 		 *
 		 * @param treeable the treeable
 		 */
-		public void setTreeable(N treeable)
+		public void setTreeable(Q treeable)
 		{
 			this.treeable = treeable;
 			this.setToolTipText(treeable.getFullName());
@@ -335,8 +337,8 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 		
 		private void drawNodeAnchors(Graphics g)
 		{
-			N node = treeable;
-			N parent = node.getParent();
+			Q node = treeable;
+			Q parent = node.getParent();
 			int cellHeight = list.getFixedCellHeight();
 			int midCell = cellHeight/2;
 
@@ -368,8 +370,8 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 			// if not, draw an L-shape
 			// if so, draw a T-shape
 
-			N node = treeable;
-			N parent = node.getParent();
+			Q node = treeable;
+			Q parent = node.getParent();
 			int cellHeight = list.getFixedCellHeight();
 
 			while( node != model.getVisibleRoot() && parent != null )
@@ -397,7 +399,7 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 			{
 				return;
 			}
-			
+            
 			Icon openClose = null;
 			if( !model.allChildrenAreVisible(treeable) )
 			{
