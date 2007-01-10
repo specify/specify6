@@ -826,13 +826,6 @@ public class BasicSQLUtils
                             {
 
                                 long oldPrimaryKeyId = rs.getLong(columnIndex);
-                                
-                                //if (oldPrimaryKeyId == -159020476 && fromTableName.equals("loanphysicalobject"))
-                                if (oldMappedColName.equals("PhysicalObjectID") && fromTableName.equals("loanphysicalobject"))
-                                {
-                                    int x = 0;
-                                    x++;
-                                }
 
                                 // if the value was null, getInt() returns 0
                                 // use wasNull() to distinguish real 0 from a null return
@@ -854,15 +847,7 @@ public class BasicSQLUtils
                                         log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
                                     }
                                 }
-                                
 
-                                /*if (rs.getObject(columnIndex) != null)
-                                {
-                                    System.out.println("["+((Integer)dataObj).intValue()+"]["+rs.getInt(columnIndex)+"]");
-                                } else
-                                {
-                                    System.out.println(oldMappedColName+" was null");
-                                }*/
                             } else
                             {
                                 if (ignoreMappingFieldIDs != null && ignoreMappingFieldIDs.get(oldMappedColName) == null)

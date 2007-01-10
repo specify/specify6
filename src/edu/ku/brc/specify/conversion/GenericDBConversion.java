@@ -49,7 +49,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-//import edu.ku.brc.af.core.SecurityMgr.SECURITY_LEVEL;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -718,6 +717,7 @@ public class GenericDBConversion
        Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
        tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
        tableMaps.put("permit", createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
+       tableMaps.put("collectingevent", createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID"}));
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
 
 
@@ -3603,7 +3603,7 @@ public class GenericDBConversion
     	def.setName("Default Geography Definition");
     	def.setRemarks("A simple continent/country/state/county geography tree");
         def.setFullNameDirection(TreeDefIface.REVERSE);
-    	session.save(def);
+    	//session.save(def);
 
 		GeographyTreeDefItem planet = new GeographyTreeDefItem();
 		planet.initialize();
@@ -3611,14 +3611,14 @@ public class GenericDBConversion
 		planet.setRankId(0);
 		planet.setIsEnforced(true);
         planet.setFullNameSeparator(", ");
-		session.save(planet);
+		//session.save(planet);
 
 		GeographyTreeDefItem cont = new GeographyTreeDefItem();
 		cont.initialize();
 		cont.setName("Continent");
 		cont.setRankId(100);
         cont.setFullNameSeparator(", ");
-		session.save(cont);
+		//session.save(cont);
 
 		GeographyTreeDefItem country = new GeographyTreeDefItem();
 		country.initialize();
@@ -3626,7 +3626,7 @@ public class GenericDBConversion
 		country.setRankId(200);
 		country.setIsInFullName(true);
         country.setFullNameSeparator(", ");
-		session.save(country);
+		//session.save(country);
 
 		GeographyTreeDefItem state = new GeographyTreeDefItem();
 		state.initialize();
@@ -3634,7 +3634,7 @@ public class GenericDBConversion
 		state.setRankId(300);
 		state.setIsInFullName(true);
         state.setFullNameSeparator(", ");
-		session.save(state);
+		//session.save(state);
 
 		GeographyTreeDefItem county = new GeographyTreeDefItem();
 		county.initialize();
@@ -3642,7 +3642,7 @@ public class GenericDBConversion
 		county.setRankId(400);
 		county.setIsInFullName(true);
         county.setFullNameSeparator(", ");
-		session.save(county);
+		//session.save(county);
 
 		// setup parents
 		county.setParent(state);
@@ -3663,6 +3663,8 @@ public class GenericDBConversion
 		defItems.add(country);
 		defItems.add(state);
 		defItems.add(county);
+        
+        session.save(def);
 
 		HibernateUtil.commitTransaction();
 		HibernateUtil.closeSession();
