@@ -54,6 +54,15 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
     public void deleteTreeNode(T node);
 
     /**
+     * Adds the given child node to the DB as a child of the given parent node.  The parent
+     * node must already exist in the DB.
+     * 
+     * @param parent the parent node
+     * @param child the new child node
+     */
+    public void addNewChild(T parent, T child);
+    
+    /**
      * Moves the given node from its current parent to the given new parent node.  This can
      * also be used to attach a new node to a parent.  The node to be moved doesn't not need
      * to have a non-null parent before the call.

@@ -260,53 +260,91 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         Transaction tx = session.beginTransaction();
         
         // save the original nodeNumber and highestChildNodeNumber values
-        Integer nodeNumberStart = node.getNodeNumber();
-        Integer nodeNumberEnd = node.getHighestChildNodeNumber();
+        Integer delNodeNN = node.getNodeNumber();
+        Integer delNodeHC = node.getHighestChildNodeNumber();
         
-        doDeleteSubtree(node, session);
-
+        // detach from the parent node
+        if (node.getParent()!=null)
+        {
+            node.getParent().removeChild(node);
+        }
+        // let Hibernate delete the subtree
+        session.delete(node);
+        
+        // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
         boolean doNodeNumberUpdate = true;
-        if (nodeNumberStart==null || nodeNumberEnd==null)
+        if (delNodeNN==null || delNodeHC==null)
         {
             doNodeNumberUpdate = false;
         }
         
         if (doNodeNumberUpdate)
         {
-            int nodesDeleted = nodeNumberEnd-nodeNumberStart+1;
+            int nodesDeleted = delNodeHC-delNodeNN+1;
             
             String className = node.getClass().getName();
-            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-" + nodesDeleted + " WHERE nodeNumber > " + nodeNumberStart;
+            TreeDefIface<T,D,I> def = node.getDefinition();
+            
+            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-" + nodesDeleted + " WHERE nodeNumber > " + delNodeNN + " AND definition=:def";
             Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
+            fixNodeNumQuery.setParameter("def", def);
+            System.out.println(fixNodeNumQuery.getQueryString());
             int nodesUpdated = fixNodeNumQuery.executeUpdate();
             
-            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-" + nodesDeleted + " WHERE highestChildNodeNumber >= " + nodeNumberStart;
+            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-" + nodesDeleted + " WHERE highestChildNodeNumber > " + delNodeHC + " AND definition=:def";
             Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
+            fixHighChildQuery.setParameter("def", def);
+            System.out.println(fixHighChildQuery.getQueryString());
             int highChildNodesUpdated = fixHighChildQuery.executeUpdate();
-
-            System.out.println("UPDATE queries to fix node number issues:");
-            System.out.println(updateNodeNumbersQueryStr);
-            System.out.println(updateHighChildQueryStr);
-            System.out.println("Nodes updated: " + nodesUpdated + " and " + highChildNodesUpdated);
         }
         
         commitTransaction(session, tx);
     }
     
-    protected synchronized void doDeleteSubtree(T topNode, Session session)
+    @SuppressWarnings("null")
+    public synchronized void addNewChild(T parent, T child)
     {
-        T parent = topNode.getParent();
-        if (parent!=null)
+        Session session = getNewSession(parent,child);
+        Transaction tx = session.beginTransaction();
+        
+        session.refresh(parent);
+        
+        parent.addChild(child);
+        
+        boolean doNodeNumberUpdate = true;
+        
+        // node number info from parent node
+        Integer parentNN = parent.getNodeNumber();
+        if (parentNN==null)
         {
-            parent.removeChild(topNode);
-        }
-
-        for (T child: topNode.getChildren())
-        {
-            doDeleteSubtree(child, session);
+            doNodeNumberUpdate = false;
         }
         
-        session.delete(topNode);
+        if (doNodeNumberUpdate)
+        {
+            String className = parent.getClass().getName();
+            TreeDefIface<T,D,I> def = parent.getDefinition();
+            
+            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber > " + parentNN + " AND definition=:def";
+            Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
+            fixNodeNumQuery.setParameter("def", def);
+            System.out.println(fixNodeNumQuery.getQueryString());
+            int nodesUpdated = fixNodeNumQuery.executeUpdate();
+            
+            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+1 WHERE highestChildNodeNumber >= " + parentNN + " AND definition=:def";
+            Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
+            fixHighChildQuery.setParameter("def", def);
+            System.out.println(fixHighChildQuery.getQueryString());
+            int highChildNodesUpdated = fixHighChildQuery.executeUpdate();
+
+            child.setNodeNumber(parentNN+1);
+            child.setHighestChildNodeNumber(parentNN+1);
+        }
+
+        session.saveOrUpdate(parent);
+        session.save(child);
+        
+        commitTransaction(session, tx);
     }
     
     /* (non-Javadoc)
