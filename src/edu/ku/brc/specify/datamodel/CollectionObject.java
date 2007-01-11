@@ -78,7 +78,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      protected Set<Determination> determinations;
      protected CollectionObjDef collectionObjDef;
      protected Set<ProjectCollectionObject> projectCollectionObjects;
-     protected Set<DeaccessionCollectionObject> deaccessionCollectionObjects;
+    // protected Set<DeaccessionPreparation> deaccessionPreparations;
      protected Set<OtherIdentifier> otherIdentifiers;
      protected CatalogSeries catalogSeries;
      protected Accession accession;
@@ -139,7 +139,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         determinations = new HashSet<Determination>();
         collectionObjDef = null;
         projectCollectionObjects = new HashSet<ProjectCollectionObject>();
-        deaccessionCollectionObjects = new HashSet<DeaccessionCollectionObject>();
+        //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         otherIdentifiers = new HashSet<OtherIdentifier>();
         catalogSeries = null;
         accession = null;
@@ -514,16 +514,16 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.projectCollectionObjects = projectCollectionObjects;
     }
 
-    /**
-     *
-     */
-    public Set<DeaccessionCollectionObject> getDeaccessionCollectionObjects() {
-        return this.deaccessionCollectionObjects;
-    }
-
-    public void setDeaccessionCollectionObjects(Set<DeaccessionCollectionObject> deaccessionCollectionObjects) {
-        this.deaccessionCollectionObjects = deaccessionCollectionObjects;
-    }
+//    /**
+//     *
+//     */
+//    public Set<DeaccessionPreparation> getDeaccessionPreparations() {
+//        return this.deaccessionPreparations;
+//    }
+//
+//    public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
+//        this.deaccessionPreparations = deaccessionPreparations;
+//    }
 
     /**
      *
@@ -623,12 +623,13 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
             projectCollectionObjects.add((ProjectCollectionObject)ref);
             ((ProjectCollectionObject)ref).setCollectionObject(this);
             
-        } else if (ref instanceof DeaccessionCollectionObject)
-        {
-            deaccessionCollectionObjects.add((DeaccessionCollectionObject)ref);
-            ((DeaccessionCollectionObject)ref).setCollectionObject(this);
-            
-        } else if (ref instanceof OtherIdentifier)
+        } //else if (ref instanceof DeaccessionPreparation)
+//        {
+//            deaccessionPreparations.add((DeaccessionPreparation)ref);
+//            ((DeaccessionPreparation)ref).setCollectionObject(this);
+//            
+//        } 
+            else if (ref instanceof OtherIdentifier)
         {
             otherIdentifiers.add((OtherIdentifier)ref);
             ((OtherIdentifier)ref).setCollectionObject(this);
@@ -670,12 +671,14 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
             projectCollectionObjects.remove(ref);
             ((ProjectCollectionObject)ref).setCollectionObject(null);
             
-        } else if (ref instanceof DeaccessionCollectionObject)
-        {
-            deaccessionCollectionObjects.remove(ref);
-            ((DeaccessionCollectionObject)ref).setCollectionObject(null);
-            
-        } else if (ref instanceof OtherIdentifier)
+        } 
+//        else if (ref instanceof DeaccessionPreparation)
+//        {
+//            deaccessionPreparations.remove(ref);
+//            ((DeaccessionPreparation)ref).setCollectionObject(null);
+//            
+//        } 
+        else if (ref instanceof OtherIdentifier)
         {
             otherIdentifiers.remove(ref);
             ((OtherIdentifier)ref).setCollectionObject(null);

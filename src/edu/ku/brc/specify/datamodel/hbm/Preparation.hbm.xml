@@ -121,6 +121,14 @@
         <key column="PreparationID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.Attachment"/>
     </set>
-    
+ 
+    <set name="deaccessionPreparations" lazy="true" inverse="true" cascade="none">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="PreparationID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"/>
+    </set>    
 </class>
 </hibernate-mapping>

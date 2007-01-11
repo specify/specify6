@@ -49,10 +49,16 @@
     </many-to-one>
     
     <!-- bi-directional many-to-one association to DeaccessionCollectionObject not-null="true"-->
-    <many-to-one name="deaccessionCollectionObject" class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" cascade="none" outer-join="true">
+    <!-- <many-to-one name="deaccessionCollectionObject" class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" cascade="none" outer-join="true">
         <meta attribute="field-description">ID of associated (if present) DeaccessionPhysicalObject record</meta>
         <column name="DeaccessionPhysicalObjectID"  />
-    </many-to-one>
+    </many-to-one> -->
+    
+     <!-- bi-directional many-to-one association to DeaccessionPreparation not-null="true"-->
+    <many-to-one name="deaccessionPreparation" class="edu.ku.brc.specify.datamodel.DeaccessionPreparation" cascade="none" outer-join="true">
+        <meta attribute="field-description">ID of associated (if present) DeaccessionPhysicalObject record</meta>
+        <column name="DeaccessionPhysicalObjectID"  />
+    </many-to-one>   
     
     <!-- bi-directional many-to-one association to Agent  not-null="true"-->
     <many-to-one name="receivedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">

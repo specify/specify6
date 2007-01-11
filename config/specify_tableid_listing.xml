@@ -57,7 +57,7 @@
         <table name="edu.ku.brc.specify.datamodel.DataType" id="33"/>
         <table name="edu.ku.brc.specify.datamodel.Deaccession" id="34"/>
         <table name="edu.ku.brc.specify.datamodel.DeaccessionAgents" id="35"/>
-        <table name="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" id="36"/>
+        <table name="edu.ku.brc.specify.datamodel.DeaccessionPreparation" id="36"/>
         <table name="edu.ku.brc.specify.datamodel.Determination" id="9">
             <display view="Determination"/>
         </table>

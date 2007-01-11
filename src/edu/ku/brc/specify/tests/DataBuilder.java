@@ -39,7 +39,7 @@ import edu.ku.brc.specify.datamodel.ContainerItem;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Deaccession;
 import edu.ku.brc.specify.datamodel.DeaccessionAgents;
-import edu.ku.brc.specify.datamodel.DeaccessionCollectionObject;
+import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -1450,19 +1450,19 @@ public class DataBuilder
         return deaccessionagent;
     }
 
-    public static DeaccessionCollectionObject createDeaccessionCollectionObject(final Short quantity,
+    public static DeaccessionPreparation createDeaccessionPreparation(final Short quantity,
                                                                                 final CollectionObject collectionObject,
                                                                                 final Deaccession deaccession)
     {
-        DeaccessionCollectionObject deaccessioncollectionobject = new DeaccessionCollectionObject();
-        deaccessioncollectionobject.initialize();
-        deaccessioncollectionobject.setTimestampCreated(new Date());
-        deaccessioncollectionobject.setTimestampModified(new Date());
-        deaccessioncollectionobject.setQuantity(quantity);
-        deaccessioncollectionobject.setDeaccession(deaccession);
-        deaccessioncollectionobject.setCollectionObject(collectionObject);
-        persist(deaccessioncollectionobject);
-        return deaccessioncollectionobject;
+        DeaccessionPreparation deaccessionpreparation = new DeaccessionPreparation();
+        deaccessionpreparation.initialize();
+        deaccessionpreparation.setTimestampCreated(new Date());
+        deaccessionpreparation.setTimestampModified(new Date());
+        deaccessionpreparation.setQuantity(quantity);
+        deaccessionpreparation.setDeaccession(deaccession);
+        deaccessionpreparation.setCollectionObject(collectionObject);
+        persist(deaccessionpreparation);
+        return deaccessionpreparation;
     }
 
     public static Determination createDetermination(final DeterminationStatus status,
@@ -1677,7 +1677,7 @@ public class DataBuilder
     public static LoanReturnPhysicalObject createLoanReturnPhysicalObject(final Calendar returnedDate,
                                                                           final Integer quantity,
                                                                           final LoanPhysicalObject loanPhysicalObject,
-                                                                          final DeaccessionCollectionObject deaccessionCollectionObject,
+                                                                          final DeaccessionPreparation deaccessionPreparation,
                                                                           final Agent agent)
     {
         LoanReturnPhysicalObject loanreturnphysicalobject = new LoanReturnPhysicalObject();
@@ -1688,7 +1688,7 @@ public class DataBuilder
         loanreturnphysicalobject.setReturnedDate(returnedDate);
         loanreturnphysicalobject.setQuantity(quantity);
         loanreturnphysicalobject.setLoanPhysicalObject(loanPhysicalObject);
-        loanreturnphysicalobject.setDeaccessionCollectionObject(deaccessionCollectionObject);
+        loanreturnphysicalobject.setDeaccessionPreparation(deaccessionPreparation);
         persist(loanreturnphysicalobject);
         return loanreturnphysicalobject;
     }

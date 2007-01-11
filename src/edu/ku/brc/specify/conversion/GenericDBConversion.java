@@ -378,7 +378,8 @@ public class GenericDBConversion
         idMapper  = idMapperMgr.addTableMapper("collectionobject", "CollectionObjectID");
         if (shouldCreateMapTables)
         {
-            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID");
+            //idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID");
+            idMapper.mapAllIds("select CollectionObjectID from collectionobject  order by CollectionObjectID");
         }
 
         // Map all the Physical IDs
@@ -481,8 +482,8 @@ public class GenericDBConversion
             "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"BorrowAgents",    "RoleID", "Role", "RoleID",
 
-            "DeaccessionCollectionObject", "DeaccessionID", "Deaccession", "DeaccessionID",
-            "DeaccessionCollectionObject", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
+            "DeaccessionPreparation", "DeaccessionID", "Deaccession", "DeaccessionID",
+            "DeaccessionPreparation", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
 
             "CollectionObjectCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "CollectionObjectCitation", "BiologicalObjectID", "CollectionObject", "CollectionObjectID",
@@ -670,7 +671,7 @@ public class GenericDBConversion
                                     "Collectors",
                                     "Deaccession",
                                     "DeaccessionAgents",
-                                    "DeaccessionCollectionObject",
+                                    //"DeaccessionPreparation",
                                     //"Determination",
                                     "DeterminationCitation",
                                     "ExchangeIn",
@@ -736,24 +737,57 @@ public class GenericDBConversion
                String[] ignoredFields = {"IsResolved"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                
-           } else if (tableName.equals("Accession") || tableName.equals("AccessionAuthorizations"))
+           } else if (tableName.equals("Accession") || 
+                       tableName.equals("AccessionAuthorizations"))
            {
                String[] ignoredFields = {"RepositoryAgreementID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                
-           } else if (tableName.equals("BorrowReturnMaterial") || 
-                      tableName.equals("LoanReturnPhysicalObject") ||
-                      tableName.equals("ReferenceWork") ||
-                      tableName.equals("Shipment") ||
-                      tableName.equals("Stratigraphy"))
+           } 
+           else if(tableName.toLowerCase().equals("accessionagents")) 
            {
-               BasicSQLUtils.setShowMappingError(false);
-               
-           } else
+               String[] ignoredFields = {"RepositoryAgreementID"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+           }
+           else if(tableName.toLowerCase().equals("accession")) 
+           {
+               String[] ignoredFields = {"RepositoryAgreementID"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+           }
+           else if(tableName.toLowerCase().equals("attachment")) 
+           {
+               String[] ignoredFields = {"Visibility", "VisibilitySetBy"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+           }
+           else if(tableName.toLowerCase().equals("collectingevent")) 
+           {
+               String[] ignoredFields = {"Visibility", "VisibilitySetBy", "CollectingTripID", "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim", "StartDatePrecision"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+           }
+           else if(tableName.toLowerCase().equals("determination"))
+           {
+               String[] ignoredFields = {"DeterminationStatusID"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+           }
+           else if(tableName.toLowerCase().equals("otheridentifier"))
+           {
+               String[] ignoredFields = {"Institution"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+           }      
+            else
            {
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
            }
            
+           if (tableName.equals("BorrowReturnMaterial") || 
+                   tableName.equals("LoanReturnPhysicalObject") ||
+                   tableName.equals("ReferenceWork") ||
+                   tableName.equals("Shipment") ||
+                   tableName.equals("Stratigraphy"))
+           {
+               BasicSQLUtils.setShowMappingError(false);
+
+           }           
            if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
            {
                log.error("Table ["+tableName+"] didn't copy correctly.");
@@ -3686,6 +3720,31 @@ public class GenericDBConversion
 		return def;
     }
 
+    public void convertDeaccessionCollectionObject()
+    {
+        
+        // Ignore these field names from new table schema when mapping IDs
+        //BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID"});
+
+        BasicSQLUtils.deleteAllRecordsFromTable("deaccessionpreparation");
+
+        //boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
+        BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with National Parks
+
+        //String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
+
+        
+        
+        if (copyTable(oldDBConn, newDBConn, "deaccessioncollectionobject", "deaccessionpreparation", null, null))
+        {
+            log.info("deaccessionpreparation copied ok.");
+        } else
+        {
+            log.error("problems coverting deaccessionpreparation");
+        }
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
+        //BasicSQLUtils.setShowMappingError(showMappingErrors);       
+    }
     /**
      *
      */

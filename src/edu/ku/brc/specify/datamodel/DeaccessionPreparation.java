@@ -38,11 +38,11 @@ import java.util.Set;
 /**
 
  */
-public class DeaccessionCollectionObject extends DataModelObjBase implements java.io.Serializable {
+public class DeaccessionPreparation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long deaccessionCollectionObjectId;
+     protected Long deaccessionPreparationId;
      protected Short quantity;
      protected String remarks;
      protected CollectionObject collectionObject;
@@ -53,12 +53,12 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
     // Constructors
 
     /** default constructor */
-    public DeaccessionCollectionObject() {
+    public DeaccessionPreparation() {
     }
     
     /** constructor with id */
-    public DeaccessionCollectionObject(Long deaccessionCollectionObjectId) {
-        this.deaccessionCollectionObjectId = deaccessionCollectionObjectId;
+    public DeaccessionPreparation(Long deaccessionPreparationId) {
+        this.deaccessionPreparationId = deaccessionPreparationId;
     }
    
     
@@ -67,7 +67,7 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
     // Initializer
     public void initialize()
     {
-        deaccessionCollectionObjectId = null;
+        deaccessionPreparationId = null;
         quantity = null;
         remarks = null;
         timestampModified = null;
@@ -84,8 +84,8 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
     /**
      *      * Primary key
      */
-    public Long getDeaccessionCollectionObjectId() {
-        return this.deaccessionCollectionObjectId;
+    public Long getDeaccessionPreparationId() {
+        return this.deaccessionPreparationId;
     }
 
     /**
@@ -94,7 +94,7 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
      */
     public Long getId()
     {
-        return this.deaccessionCollectionObjectId;
+        return this.deaccessionPreparationId;
     }
 
     /* (non-Javadoc)
@@ -102,11 +102,11 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
      */
     public Class<?> getDataClass()
     {
-        return DeaccessionCollectionObject.class;
+        return DeaccessionPreparation.class;
     }
     
-    public void setDeaccessionCollectionObjectId(Long deaccessionCollectionObjectId) {
-        this.deaccessionCollectionObjectId = deaccessionCollectionObjectId;
+    public void setDeaccessionPreparationId(Long deaccessionPreparationId) {
+        this.deaccessionPreparationId = deaccessionPreparationId;
     }
 
     /**
@@ -174,7 +174,7 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
     public void addLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setDeaccessionCollectionObject(this);
+        loanReturnPhysicalObject.setDeaccessionPreparation(this);
     }
 
     // Done Add Methods
@@ -184,7 +184,7 @@ public class DeaccessionCollectionObject extends DataModelObjBase implements jav
     public void removeLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setDeaccessionCollectionObject(null);
+        loanReturnPhysicalObject.setDeaccessionPreparation(null);
     }
 
     // Delete Add Methods

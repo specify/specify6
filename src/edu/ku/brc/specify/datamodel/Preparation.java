@@ -59,6 +59,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      protected Agent preparedByAgent;
      protected Location location;
      protected Set<Attachment>          attachments;
+     protected Set<DeaccessionPreparation> deaccessionPreparations;
 
 
     // Constructors
@@ -97,6 +98,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         preparedByAgent = null;
         location = null;
         attachments = new HashSet<Attachment>();
+        deaccessionPreparations = new HashSet<DeaccessionPreparation>();
     }
     // End Initializer
 
@@ -293,7 +295,16 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         this.location = location;
     }
 
- 
+    /**
+    *
+    */
+   public Set<DeaccessionPreparation> getDeaccessionPreparations() {
+       return this.deaccessionPreparations;
+   }
+
+   public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
+       this.deaccessionPreparations = deaccessionPreparations;
+   }
 
     // Add Methods
 

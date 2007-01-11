@@ -55,7 +55,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<DeaccessionAgents> deaccessionAgents;
-     protected Set<DeaccessionCollectionObject> deaccessionCollectionObjects;
+     protected Set<DeaccessionPreparation> deaccessionPreparations;
 
 
     // Constructors
@@ -90,7 +90,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         yesNo1 = null;
         yesNo2 = null;
         deaccessionAgents = new HashSet<DeaccessionAgents>();
-        deaccessionCollectionObjects = new HashSet<DeaccessionCollectionObject>();
+        deaccessionPreparations = new HashSet<DeaccessionPreparation>();
     }
     // End Initializer
 
@@ -248,12 +248,12 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    public Set<DeaccessionCollectionObject> getDeaccessionCollectionObjects() {
-        return this.deaccessionCollectionObjects;
+    public Set<DeaccessionPreparation> getDeaccessionPreparations() {
+        return this.deaccessionPreparations;
     }
     
-    public void setDeaccessionCollectionObjects(Set<DeaccessionCollectionObject> deaccessionCollectionObjects) {
-        this.deaccessionCollectionObjects = deaccessionCollectionObjects;
+    public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
+        this.deaccessionPreparations = deaccessionPreparations;
     }
 
 
@@ -268,10 +268,10 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         deaccessionAgent.setDeaccession(this);
     }
 
-    public void addDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
+    public void addDeaccessionPreparations(final DeaccessionPreparation deaccessionPreparation)
     {
-        this.deaccessionCollectionObjects.add(deaccessionCollectionObject);
-        deaccessionCollectionObject.setDeaccession(this);
+        this.deaccessionPreparations.add(deaccessionPreparation);
+        deaccessionPreparation.setDeaccession(this);
     }
 
     // Done Add Methods
@@ -284,10 +284,10 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         deaccessionAgent.setDeaccession(null);
     }
 
-    public void removeDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
+    public void removeDeaccessionPreparations(final DeaccessionPreparation deaccessionPreparation)
     {
-        this.deaccessionCollectionObjects.remove(deaccessionCollectionObject);
-        deaccessionCollectionObject.setDeaccession(null);
+        this.deaccessionPreparations.remove(deaccessionPreparation);
+        deaccessionPreparation.setDeaccession(null);
     }
 
     // Delete Add Methods

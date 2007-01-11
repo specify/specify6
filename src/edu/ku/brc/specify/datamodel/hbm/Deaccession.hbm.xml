@@ -88,14 +88,22 @@
     </set>
     
     <!-- bi-directional one-to-many association to DeaccessionCollectionObject -->
-    <set name="deaccessionCollectionObjects" lazy="true" inverse="true" cascade="all">
+    <!-- <set name="deaccessionCollectionObjects" lazy="true" inverse="true" cascade="all">
         <meta attribute="field-description"></meta>
         <key>
             <column name="DeaccessionID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"/>
-    </set>
+    </set> -->
     
+     <!-- bi-directional one-to-many association to DeaccessionPreparation -->
+    <set name="deaccessionPreparations" lazy="true" inverse="true" cascade="all">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="DeaccessionID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"/>
+    </set>   
 
 </class>
 </hibernate-mapping>

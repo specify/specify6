@@ -72,7 +72,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DataType.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Deaccession.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionAgents.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionCollectionObject.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionPreparation.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Determination.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationStatus.hbm.xml"/>

@@ -203,14 +203,14 @@
     </set>
 
     <!-- bi-directional one-to-many association to DeaccessionCollectionObject -->
-    <set name="deaccessionCollectionObjects" lazy="true" inverse="true" cascade="none">
+    <!-- <set name="deaccessionCollectionObjects" lazy="true" inverse="true" cascade="none">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectionObjectID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"/>
-    </set>
+    </set> -->
 
     <!-- bi-directional one-to-many association to OtherIdentifier -->
     <set name="otherIdentifiers" lazy="true" inverse="true" cascade="all">

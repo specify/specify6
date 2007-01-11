@@ -296,7 +296,7 @@ public class SpecifyDBConverter
         {
         	GenericDBConversion.setShouldCreateMapTables(true);
 
-            GenericDBConversion.setShouldDeleteMapTables(true);
+            GenericDBConversion.setShouldDeleteMapTables(false);
             
             frame.setOverall(0, 15);
             SwingUtilities.invokeLater(new Runnable() {
@@ -326,6 +326,7 @@ public class SpecifyDBConverter
 
 
                 frame.setDesc("Converting Agents.");
+                log.info("Converting Agents.");
 
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress
@@ -345,6 +346,7 @@ public class SpecifyDBConverter
                 frame.incOverall();
 
                 frame.setDesc("Converting Geologic Time Period.");
+                log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
                 boolean doGTP = false;
@@ -357,6 +359,7 @@ public class SpecifyDBConverter
                 frame.incOverall();
 
                 frame.setDesc("Mapping Tables.");
+                log.info("Mapping Tables.");
                 boolean mapTables = true;
                 if (mapTables || doAll)
                 {
@@ -374,6 +377,7 @@ public class SpecifyDBConverter
 
 
                 frame.setDesc("Converting CollectionObjectDefs.");
+                log.info("Converting CollectionObjectDefs.");
                 boolean convertCatalogSeriesDef = false;
                 if (convertCatalogSeriesDef || doAll)
                 {
@@ -388,6 +392,7 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
                 frame.setDesc("Converting USYS Tables.");
+                log.info("Converting USYS Tables.");
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
@@ -396,6 +401,7 @@ public class SpecifyDBConverter
                 frame.incOverall();
 
                 frame.setDesc("Converting Determinations Records");
+                log.info("Converting Determinations Records");
                 boolean doDeterminations = true;
                 if (doDeterminations || doAll)
                 {
@@ -410,6 +416,7 @@ public class SpecifyDBConverter
                 frame.incOverall();
                 
                 frame.setDesc("Converting doLoanPhysicalObjects Records");
+                log.info("Converting doLoanPhysicalObjects Records");
                 boolean doLoanPhysicalObjects = true;
                 if (doLoanPhysicalObjects || doAll)
                 {
@@ -422,6 +429,7 @@ public class SpecifyDBConverter
                 }
 
                 frame.setDesc("Copying Tables");
+                log.info("Copying Tables");
                 boolean copyTables = false;
                 if (copyTables || doAll)
                 {
@@ -430,8 +438,19 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
 
+                
+                frame.setDesc("Converting DeaccessionCollectionObject");
+                log.info("Converting DeaccessionCollectionObject");
+                boolean doDeaccessionCollectionObject = false;
+                if (copyTables || doAll)
+                {
+                    conversion.convertDeaccessionCollectionObject();
+                }
+
+                frame.incOverall();                
 
                 frame.setDesc("Converting CollectionObjects");
+                log.info("Converting CollectionObjects");
                 boolean doCollectionObjects = false;
                 if (doCollectionObjects || doAll)
                 {
@@ -452,6 +471,7 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 frame.setDesc("Converting Taxonomy");
+                log.info("Converting Taxonomy");
                 boolean doTaxonomy = false;
                 if( doTaxonomy || doAll )
                 {
@@ -497,6 +517,7 @@ public class SpecifyDBConverter
                 frame.incOverall();
 
                 frame.setDesc("Converting Geography");
+                log.info("Converting Geography");
                 boolean doGeography = false;
                 if (!databaseName.startsWith("accessions") && (doGeography || doAll))
                 {
@@ -512,6 +533,7 @@ public class SpecifyDBConverter
                 }
 
                 frame.setDesc("Creating Location");
+                log.info("Creating Location");
                 boolean doLocation = false;
                 if( doLocation || doAll )
                 {

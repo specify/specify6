@@ -130,7 +130,7 @@
     <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" cascade="save-update" outer-join="true" index="IX_CollectingEventLocalityID">
     	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Locality where collection took place</meta>
-        <column name="LocalityID"  not-null="true"/>
+        <column name="LocalityID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to CollectingTrip -->

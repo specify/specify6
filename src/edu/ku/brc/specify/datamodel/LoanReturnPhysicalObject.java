@@ -46,7 +46,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
      protected Integer quantity;
      protected String remarks;
      protected LoanPhysicalObject loanPhysicalObject;
-     protected DeaccessionCollectionObject deaccessionCollectionObject;
+     protected DeaccessionPreparation deaccessionPreparation;
      protected Agent receivedBy;
 
 
@@ -75,7 +75,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
         timestampModified = null;
         lastEditedBy = null;
         loanPhysicalObject = null;
-        deaccessionCollectionObject = null;
+        deaccessionPreparation = null;
         receivedBy = null;
     }
     // End Initializer
@@ -157,12 +157,12 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     /**
      *      * ID of associated (if present) DeaccessionPhysicalObject record
      */
-    public DeaccessionCollectionObject getDeaccessionCollectionObject() {
-        return this.deaccessionCollectionObject;
+    public DeaccessionPreparation getDeaccessionPreparation() {
+        return this.deaccessionPreparation;
     }
     
-    public void setDeaccessionCollectionObject(DeaccessionCollectionObject deaccessionCollectionObject) {
-        this.deaccessionCollectionObject = deaccessionCollectionObject;
+    public void setDeaccessionPreparation(DeaccessionPreparation deaccessionPreparation) {
+        this.deaccessionPreparation = deaccessionPreparation;
     }
 
     /**

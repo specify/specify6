@@ -579,7 +579,25 @@ public class BasicSQLUtils
     {
         return copyTable(fromConn, toConn, "select * from " + tableName, tableName, tableName, colNewToOldMap, verbatimDateMapper);
     }
-
+    /**
+     * Copies a table to a new table of a different name (same schema) within the same DB Connection
+     * @param conn a connection to copy from one table to another in the same database
+     * @param fromTableName the table name its coming from
+     * @param toTableName the table name it is going to
+     * @param colNewToOldMap a map of new file names toold file names
+     * @param verbatimDateMapper a map from the new Vertbatim Date Field to the new date column name it is associated with
+     * @return true if successful
+     */
+    public static boolean copyTable(final Connection fromConn,
+                                    final Connection toConn,
+                                    final String     fromTableName,
+                                    final String     toTableName,
+                                    final Map<String, String> colNewToOldMap,
+                                    final Map<String, String> verbatimDateMapper)
+    {
+        return copyTable(fromConn, toConn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap, verbatimDateMapper);
+    }
+    
     /**
      * Copies a table to a new table of a different name (same schema) within the same DB Connection
      * @param conn a connection to copy from one table to another in the same database
@@ -619,45 +637,7 @@ public class BasicSQLUtils
                                     final Map<String, String> colNewToOldMap,
                                     final Map<String, String> verbatimDateMapper)
     {
-        //String[] ignoredFields = {"Remarks"};
-        
-        if(fromTableName.toLowerCase().equals("accessionagents")) 
-        {
-            String[] ignoredFields = {"RepositoryAgreementID"};
-            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
-        }
-        else if(fromTableName.toLowerCase().equals("accession")) 
-        {
-            String[] ignoredFields = {"RepositoryAgreementID"};
-            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
-        }
-        else if(fromTableName.toLowerCase().equals("attachment")) 
-        {
-            String[] ignoredFields = {"Visibility", "VisibilitySetBy"};
-            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
-        }
-        else if(fromTableName.toLowerCase().equals("collectingevent")) 
-        {
-            String[] ignoredFields = {"Visibility", "VisibilitySetBy", "CollectingTripID", "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim", "StartDatePrecision"};
-            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
-        }
-        else if(fromTableName.toLowerCase().equals("determination"))
-        {
-            String[] ignoredFields = {"DeterminationStatusID"};
-            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
-        }
-        else if(fromTableName.toLowerCase().equals("otheridentifier"))
-        {
-            String[] ignoredFields = {"Institution"};
-            BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
-        }
-        
-//      if(fromTableName.toLowerCase().equals("catalogseries")) 
-//      {
-//          System.out.println("meg processing catalogseries");
-//          String[] ignoredFields = {"IsTissueSeries", "TissueID"};
-//          BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
-//      }
+
         IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
 
         if (frame != null)
