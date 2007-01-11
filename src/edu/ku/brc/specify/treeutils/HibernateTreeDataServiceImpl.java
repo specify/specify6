@@ -228,7 +228,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     public synchronized int getDescendantCount(T node)
     {
         Session session = getNewSession(node);
-        //session.refresh(node);
+        session.refresh(node);
         Integer nodeNum = node.getNodeNumber();
         Integer highChild = node.getHighestChildNodeNumber();
         
@@ -236,6 +236,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         if (nodeNum!=null && highChild!=null)
         {
             descCnt = highChild-nodeNum;
+        }
+        else
+        {
+        	descCnt = node.getDescendantCount();
         }
         
         session.close();
