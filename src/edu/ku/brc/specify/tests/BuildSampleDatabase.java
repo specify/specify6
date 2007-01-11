@@ -106,11 +106,9 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
-import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
@@ -152,25 +150,14 @@ public class BuildSampleDatabase
         SpecifyUser user = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
         DataType dataType = createDataType(disciplineName);
         TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
-        GeographyTreeDef geographyTreeDef = createGeographyTreeDef("Sample Geography Tree Def");
-        GeographyTreeDefItem geoRoot = createGeographyTreeDefItem(null, geographyTreeDef, "GeoRoot", 0);//meg added
-        GeologicTimePeriodTreeDef geologicTimePeriodTreeDef = createGeologicTimePeriodTreeDef("Geological Time Period Tree Def");
-        GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(
-                null, geologicTimePeriodTreeDef, "Level 0", 0);
-        LocationTreeDef locationTreeDef = createLocationTreeDef("Location Tree Def");
-        LocationTreeDefItem building = createLocationTreeDefItem(null, locationTreeDef, "building", 0);
-        building.setIsEnforced(true);
         CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user,
-                taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef, locationTreeDef);
+                taxonTreeDef, null, null, null);
         //dataType.addCollectionObjDef(collectionObjDef);
         dataObjects.add(collectionObjDef);
         dataObjects.add(userGroup);
         dataObjects.add(user);
         dataObjects.add(dataType);
         dataObjects.add(taxonTreeDef);
-        dataObjects.add(geoRoot);
-        dataObjects.add(defItemLevel0);
-        dataObjects.add(locationTreeDef);
         
         ////////////////////////////////
         // build the trees
@@ -1241,74 +1228,6 @@ public class BuildSampleDatabase
                 }
             }
         }
-    }
-    
-    public static LocationTreeDef buildSampleLocationTreeDef()
-    {
-        // empty out any pre-existing tree definitions
-        //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "locationtreedef");
-        //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "locationtreedefitem");
-
-        log.info("Creating a sample location tree definition");
-        
-        Session session = HibernateUtil.getCurrentSession();
-        HibernateUtil.beginTransaction();
-        
-        LocationTreeDef locDef = TreeFactory.createStdLocationTreeDef("Sample location tree", null);
-        locDef.setRemarks("This definition is merely for demonstration purposes.  Consult documentation or support staff for instructions on creating one tailored for an institutions specific needs.");
-        locDef.setFullNameDirection(TreeDefIface.FORWARD);
-        session.save(locDef);
-        
-        // get the root def item
-        LocationTreeDefItem rootItem = locDef.getTreeDefItems().iterator().next();
-        rootItem.setFullNameSeparator(", ");
-        session.save(rootItem);
-        
-        Location rootNode = rootItem.getTreeEntries().iterator().next();
-        session.save(rootNode);
-        
-        LocationTreeDefItem building = new LocationTreeDefItem();
-        building.initialize();
-        building.setRankId(100);
-        building.setName("Building");
-        building.setIsEnforced(false);
-        building.setIsInFullName(false);
-        building.setTreeDef(locDef);
-        building.setFullNameSeparator(", ");
-        session.save(building);
-
-        LocationTreeDefItem room = new LocationTreeDefItem();
-        room.initialize();
-        room.setRankId(200);
-        room.setName("Room");
-        room.setIsEnforced(true);
-        room.setIsInFullName(true);
-        room.setTreeDef(locDef);
-        room.setFullNameSeparator(", ");
-        session.save(room);
-        
-        LocationTreeDefItem freezer = new LocationTreeDefItem();
-        freezer.initialize();
-        freezer.setRankId(300);
-        freezer.setName("Freezer");
-        freezer.setIsEnforced(true);
-        freezer.setIsInFullName(true);
-        freezer.setTreeDef(locDef);
-        freezer.setFullNameSeparator(", ");
-        session.save(freezer);
-        
-        rootItem.setChild(building);
-        building.setChild(room);
-        room.setChild(freezer);
-        
-        locDef.addTreeDefItem(building);
-        locDef.addTreeDefItem(room);
-        locDef.addTreeDefItem(freezer);
-        
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();
-
-        return locDef;
     }
 }
 
