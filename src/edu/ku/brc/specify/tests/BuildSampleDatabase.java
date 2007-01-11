@@ -54,6 +54,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -1189,8 +1190,23 @@ public class BuildSampleDatabase
                     AttachmentManagerIface attachMgr;
                     attachMgr = new FileStoreAttachmentManager("demo_files/AttachmentStorage/");
                     
-                    FileUtils.cleanDirectory(new File("demo_files/AttachmentStorage/originals"));
-                    FileUtils.cleanDirectory(new File("demo_files/AttachmentStorage/thumbnails"));
+                    File origDir = new File("demo_files/AttachmentStorage/originals");
+                    File thumbDir = new File("demo_files/AttachmentStorage/thumbnails");
+                    
+                    // clean out the originals and thumbnails directories without deleting the .svn subdir
+                    Collection<?> files = FileUtils.listFiles(origDir, null, false);
+                    for (Object o: files)
+                    {
+                        File f = (File)o;
+                        FileUtils.forceDelete(f);
+                    }
+                    
+                    files = FileUtils.listFiles(thumbDir, null, false);
+                    for (Object o: files)
+                    {
+                        File f = (File)o;
+                        FileUtils.forceDelete(f);
+                    }
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);
