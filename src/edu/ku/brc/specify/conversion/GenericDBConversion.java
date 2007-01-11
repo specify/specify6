@@ -735,6 +735,11 @@ public class GenericDBConversion
                String[] ignoredFields = {"IsResolved"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                
+           } else if (tableName.equals("Accession") || tableName.equals("AccessionAuthorizations"))
+           {
+               String[] ignoredFields = {"RepositoryAgreementID"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+               
            } else
            {
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
