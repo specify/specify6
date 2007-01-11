@@ -465,6 +465,18 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
         dataService.deleteTreeNode(node);
     }
     
+    public void addNewChild(T parent, T child)
+    {
+        if (parent==null || child==null)
+        {
+            throw new NullPointerException("Both arguments must be non-null");
+        }
+        
+        hideChildren(parent);
+        dataService.addNewChild(parent, child);
+        showChildren(parent);
+    }
+    
 	public boolean reparent( T node, T newParent )
 	{
 		if( node.getParent() == newParent )

@@ -748,15 +748,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void newNodeEntryComplete(T node, T parent)
 	{
-		// set the 'downstream' pointers from the parent and parent def items
-		
-		listModel.reparent(node, parent);
-		
-		// Don't do the following line because it will cause TONS of nodes to get loaded
-		//node.getDefItem().getTreeEntries().add(node);
-		
-		String fullname = node.getFullName();
-		node.setFullName(fullname);
+        listModel.addNewChild(parent, node);
 		
 		listModel.showChildren(parent);
 	}
