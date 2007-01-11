@@ -726,6 +726,7 @@ public class GenericDBConversion
        {
            String lowerCaseName = tableName.toLowerCase();
            deleteAllRecordsFromTable(lowerCaseName);
+           BasicSQLUtils.setShowMappingError(true);
 
            TableStats tblStats = new TableStats(oldDBConn, lowerCaseName, newDBConn, lowerCaseName);
            tableStatHash.put(lowerCaseName, tblStats);
@@ -739,6 +740,14 @@ public class GenericDBConversion
            {
                String[] ignoredFields = {"RepositoryAgreementID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+               
+           } else if (tableName.equals("BorrowReturnMaterial") || 
+                      tableName.equals("LoanReturnPhysicalObject") ||
+                      tableName.equals("ReferenceWork") ||
+                      tableName.equals("Shipment") ||
+                      tableName.equals("Stratigraphy"))
+           {
+               BasicSQLUtils.setShowMappingError(false);
                
            } else
            {
