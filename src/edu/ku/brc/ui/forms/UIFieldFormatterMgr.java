@@ -141,11 +141,9 @@ public class UIFieldFormatterMgr
      */
     public void load()
     {
-
         try
         {
-            Element root  = AppContextMgr.getInstance().getResourceAsDOM("Nessie1601" +
-                    "");
+            Element root  = AppContextMgr.getInstance().getResourceAsDOM("UIFormatters");
             if (root != null)
             {
                 List<?> formats = root.selectNodes("/formats/format");
