@@ -6,6 +6,7 @@
  */
 
 package edu.ku.brc.specify.plugins.latlon;
+import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.stripZeroes;
 import javax.swing.JLabel;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +36,15 @@ public class DDMMSSPanel extends DDMMMMPanel
      */
     public DDMMSSPanel()
     {
+        // nothing to do
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.DDMMMMPanel#init()
+     */
+    @Override
+    public void init()
+    {
         PanelBuilder builder = createUI("p, p, p, p, p, p, p, 2px, p", 3, 3, 9);
         
         latitudeSS   = createTextField(6);
@@ -60,18 +70,48 @@ public class DDMMSSPanel extends DDMMMMPanel
     {
         if (latitude != null)
         {
+            latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
             String[] parts = StringUtils.split(LatLonConverter.convertToDDMMSS(latitude));
-            latitudeDD.setText(parts[0]);
-            latitudeMM.setText(parts[1]);
-            latitudeSS.setText(parts[2]);
+            latitudeDD.setText(stripZeroes(parts[0]));
+            latitudeMM.setText(stripZeroes(parts[1]));
+            latitudeSS.setText(stripZeroes(parts[2]));
+            
+            if (latitudeDirTxt != null)
+            {
+                latitudeDirTxt.setText(latitudeDir.getSelectedItem().toString());
+            }
+        } else
+        {
+            latitudeDD.setText("");
+            latitudeMM.setText("");
+            latitudeSS.setText("");
+            if (latitudeDirTxt != null)
+            {
+                latitudeDirTxt.setText("");
+            }
         }
         
         if (longitude != null)
         {
             String[] parts = StringUtils.split(LatLonConverter.convertToDDMMSS(longitude));
-            longitudeDD.setText(parts[0]);
-            longitudeMM.setText(parts[1]);  
-            longitudeSS.setText(parts[2]);
+            longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
+            longitudeDD.setText(stripZeroes(parts[0]));
+            longitudeMM.setText(stripZeroes(parts[1]));  
+            longitudeSS.setText(stripZeroes(parts[2]));
+            
+            if (longitudeDirTxt != null)
+            {
+                longitudeDirTxt.setText(longitudeDir.getSelectedItem().toString());
+            }
+        } else
+        {
+            longitudeDD.setText("");
+            longitudeMM.setText("");
+            longitudeSS.setText("");
+            if (latitudeDirTxt != null)
+            {
+                longitudeDirTxt.setText("");
+            }    
         }
             
     }

@@ -231,6 +231,7 @@ public class BuildSampleDatabase
         log.info("Creating localities");
         Locality forestStream = createLocality("Unnamed forest stream", (Geography)geos.get(13));
         forestStream.setLatLongType(POINT);
+        forestStream.setOriginalLatLongUnit(0);
         forestStream.setLat1text("38.925467 deg N");
         forestStream.setLatitude1(new BigDecimal(38.925467));
         forestStream.setLong1text("94.984867 deg W");
@@ -238,6 +239,7 @@ public class BuildSampleDatabase
 
         Locality lake   = createLocality("Deep, dark lake", (Geography)geos.get(18));
         lake.setLatLongType(RECT);
+        lake.setOriginalLatLongUnit(1);
         lake.setLat1text("41.548842 deg N");
         lake.setLatitude1(new BigDecimal(41.548842));
         lake.setLong1text("93.732129 deg W");
@@ -250,15 +252,16 @@ public class BuildSampleDatabase
         
         Locality farmpond = createLocality("Farm pond", (Geography)geos.get(22));
         farmpond.setLatLongType(LINE);
+        farmpond.setOriginalLatLongUnit(2);
         farmpond.setLat1text("41.642187 deg N");
         farmpond.setLatitude1(new BigDecimal(41.642187));
         farmpond.setLong1text("100.403163 deg W");
         farmpond.setLongitude1(new BigDecimal(-100.403163));
 
-        farmpond.setLat2text("41.642187 deg N");
-        farmpond.setLatitude2(new BigDecimal(41.642187));
-        farmpond.setLong2text("100.403163 deg W");
-        farmpond.setLongitude2(new BigDecimal(-100.403163));
+        farmpond.setLat2text("49.647435 deg N");
+        farmpond.setLatitude2(new BigDecimal(49.647435));
+        farmpond.setLong2text("-55.112163 deg W");
+        farmpond.setLongitude2(new BigDecimal(-55.112163));
 
         dataObjects.add(forestStream);
         dataObjects.add(lake);

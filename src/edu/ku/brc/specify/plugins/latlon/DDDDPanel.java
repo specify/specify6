@@ -14,8 +14,10 @@ import java.math.BigDecimal;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +26,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.validation.DataChangeListener;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 import edu.ku.brc.ui.validation.UIValidatable;
@@ -44,6 +47,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
 {
     protected BigDecimal     minusOne      = new BigDecimal("-1.0");
 
+    protected boolean        isViewMode = false;
     protected ValTextField   latitudeDD; 
     protected ValTextField   longitudeDD;
     
@@ -52,6 +56,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     
     protected JComboBox      latitudeDir;
     protected JComboBox      longitudeDir;
+    protected JTextField     latitudeDirTxt;
+    protected JTextField     longitudeDirTxt;
     
     protected boolean        hasChanged = false;
     protected boolean        isRequired = false;
@@ -65,6 +71,14 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      * Constrcutor. 
      */
     public DDDDPanel()
+    {
+        // nothing
+    }
+    
+    /**
+     * Creates and initializes the UI.
+     */
+    public void init()
     {
         createUI("p, 2px, p, 2px, p", 10, 10, 5);
     }
@@ -87,21 +101,41 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
 
         PanelBuilder    builder    = new PanelBuilder(new FormLayout(colDef, "p, 1px, p, c:p:g"), this);
         CellConstraints cc         = new CellConstraints();
+        
+        latitudeDir  = createDirComboxbox(true);
+        longitudeDir = createDirComboxbox(false);
+        
+        JComponent latDir;
+        JComponent lonDir;
+        if (isViewMode)
+        {
+            latitudeDirTxt  = new JTextField(2);
+            longitudeDirTxt = new JTextField(2);
+            ViewFactory.changeTextFieldUIForDisplay(latitudeDirTxt);
+            ViewFactory.changeTextFieldUIForDisplay(longitudeDirTxt);
+            latDir = latitudeDirTxt;
+            lonDir = longitudeDirTxt;   
+            
+        } else
+        {
+            latDir = latitudeDir;
+            lonDir = longitudeDir;
+        }
 
         builder.add(new JLabel("Latitude:", JLabel.RIGHT), cc.xy(1, 1));
         builder.add(latitudeDD, cc.xy(3, 1));
-        builder.add(latitudeDir = createDirComboxbox(true), cc.xy(cbxIndex, 1));
+        builder.add(latDir, cc.xy(cbxIndex, 1));
         
         builder.add(new JLabel("Longitude:", JLabel.RIGHT), cc.xy(1, 3));
         builder.add(longitudeDD, cc.xy(3, 3));
-        builder.add(longitudeDir = createDirComboxbox(false), cc.xy(cbxIndex, 3));
+        builder.add(lonDir, cc.xy(cbxIndex, 3));
         
      
         return builder;
     }
     
     /**
-     * Creates a combox for selecting direction
+     * Creates a combox for selecting direction.
      * @param forNorthSouth true N,S, false E,W
      * @return cbx
      */
@@ -113,7 +147,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     }
     
     /**
-     * set the data into the UI 
+     * set the data into the U.
      */
     protected void setDataIntoUI()
     {
@@ -121,13 +155,36 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         if (latitude != null)
         {
             latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
-            latitudeDD.setText(LatLonConverter.format(latitude.abs()));   
+            latitudeDD.setText(LatLonConverter.format(latitude.abs()));
+            
+            if (latitudeDirTxt != null)
+            {
+                latitudeDirTxt.setText(latitudeDir.getSelectedItem().toString());
+            }
+        } else
+        {
+            latitudeDD.setText("");
+            if (latitudeDirTxt != null)
+            {
+                latitudeDirTxt.setText("");
+            }
         }
         
         if (longitude != null)
         {
             longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
             longitudeDD.setText(LatLonConverter.format(longitude.abs()));
+            if (longitudeDirTxt != null)
+            {
+                longitudeDirTxt.setText(longitudeDir.getSelectedItem().toString());
+            }
+        } else
+        {
+            longitudeDD.setText("");
+            if (latitudeDirTxt != null)
+            {
+                longitudeDirTxt.setText("");
+            }    
         }
  
     }
@@ -170,14 +227,24 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     protected ValTextField createTextField(final int columns)
     {
-        ValTextField textField = new ValTextField(columns);
-        textField.setRequired(isRequired);
         
-        DataChangeNotifier dcn = new DataChangeNotifier(null, textField, null);
-        dcn.addDataChangeListener(this);
-        dcNotifiers.add(dcn);
+        ValTextField textField = new ValTextField(columns);
+        
+        if (isViewMode)
+        {
 
-        textField.getDocument().addDocumentListener(dcn);
+            ViewFactory.changeTextFieldUIForDisplay(textField);
+
+        } else
+        {
+            textField.setRequired(isRequired);
+            
+            DataChangeNotifier dcn = new DataChangeNotifier(null, textField, null);
+            dcn.addDataChangeListener(this);
+            dcNotifiers.add(dcn);
+    
+            textField.getDocument().addDocumentListener(dcn);
+        }
         
         textFields.add(textField);
 
@@ -197,6 +264,14 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#setViewMode(boolean)
+     */
+    public void setViewMode(boolean isViewModeArg)
+    {
+        this.isViewMode = isViewModeArg;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#getDataFromUI()
      */
@@ -324,6 +399,9 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     // DataChangedListener Interface
     //--------------------------------------------------------
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.validation.DataChangeNotifier)
+     */
     public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {
         doDataChanged();
@@ -332,6 +410,10 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     //--------------------------------------------------------
     // ItemListener Interface
     //--------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+     */
     public void itemStateChanged(ItemEvent e)
     {
         doDataChanged();

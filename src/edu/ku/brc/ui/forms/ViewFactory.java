@@ -511,7 +511,7 @@ public class ViewFactory
      * Makes adjusts to the border and the colors to make it "flat" for diaply mode.
      * @param textField the text field to be flattened
      */
-    protected void changeTextFieldUIForDisplay(final JTextField textField)
+    public static void changeTextFieldUIForDisplay(final JTextField textField)
     {
         Insets insets = textField.getBorder().getBorderInsets(textField);
         textField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));

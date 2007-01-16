@@ -26,6 +26,17 @@ public interface LatLonUIIFace
 {
     public enum LatLonType {LLPoint, LLLine, LLRect}
     
+    /**
+     * Creates and initializes the UI.
+     */
+    public void init();
+    
+    /**
+     * Sets whether it is in "view" mode or "edit" mode.
+     * @param isViewMode t/f
+     */
+    public void setViewMode(boolean isViewMode);
+    
     public void set(final BigDecimal latitude, 
                     final BigDecimal longitude);
     

@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
+ * Helper for methods for convert to and from various different formats to Decimal Degrees.
+ * 
  * @author rods
  *
  * @code_status Beta
@@ -23,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class LatLonConverter
 {
+    private static boolean useDB = false;
     public static DecimalFormat decFormatter = new DecimalFormat("#0.0000000000#");
     
     protected static DecimalFormat decFormatter2 = new DecimalFormat("#0");
@@ -30,9 +33,13 @@ public class LatLonConverter
     protected static BigDecimal    sixty = new BigDecimal("60.0");
 
     
+    /**
+     * Converts BigDecimal to Degrees, Minutes and Deimal Seconds.
+     * @param bc the DigDeimal to be converted.
+     * @return a 3 piece string
+     */
     public static String convertToDDMMSS(final BigDecimal bc)
     {
-        boolean useDB = false;
         if (useDB)
         {
             BigDecimal remainder = bc.remainder(one);
@@ -58,15 +65,17 @@ public class LatLonConverter
             double secondsFraction = minutes - minutesWhole;
             double seconds = secondsFraction * 60.0;
             
-            //System.out.println("["+whole+"]["+String.format("%10.10f", new Object[] {minutes})+"]");
             return whole + " " + minutesWhole + " " + StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0");
         }
     }
     
+    /**
+     * Converts BigDecimal to Degrees and Deimal Minutes.
+     * @param bc the DigDeimal to be converted.
+     * @return a 2 piece string
+     */
     public static String convertToDDMMMM(final BigDecimal bc)
     {
-        
-        boolean useDB = false;
         if (useDB)
         {
             BigDecimal remainder = bc.remainder(one);
@@ -91,6 +100,11 @@ public class LatLonConverter
         
     }
     
+    /**
+     * Converts Degrees, Minutes and Deimal Seconds to BigDecimal.
+     * @param bc the DigDeimal to be converted.
+     * @return a BigDecimal
+     */
     public static BigDecimal convertDDMMSSToDDDD(final String str)
     {
         String[] parts = StringUtils.split(str);
@@ -102,6 +116,11 @@ public class LatLonConverter
         return val;
     }
     
+    /**
+     * Converts Degrees decimal Minutes to BigDecimal.
+     * @param bc the DigDeimal to be converted.
+     * @return a BigDecimal
+     */
     public static BigDecimal convertDDMMMMToDDDD(final String str)
     {
         String[] parts = StringUtils.split(str);
@@ -113,30 +132,39 @@ public class LatLonConverter
         BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
 
         return val;
-        
-        /*
-        String[] parts = StringUtils.split(str);
-        BigDecimal p0 = new BigDecimal(parts[0]);
-        BigDecimal p1 = new BigDecimal(parts[1]);
-        BigDecimal p2 = new BigDecimal(parts[2], );
-        
-        BigDecimal x = p1.divide(sixty);
-        
-        p0 = p0.add(p1.divide(sixty));
-        p0 = p0.add(p2.divide(sixty));
-        return p0;*/
     }
     
+    /**
+     * Strinps any zeros at end of string, but will append a zero if string would end in a decimal.
+     * @param str the string to be converted
+     * @return the new string
+     */
+    public static String stripZeroes(final String str)
+    {
+        if (str.indexOf('.') == -1)
+        {
+            return str;
+            
+        }
+        // else
+        String newStr = StringUtils.strip(str, "0");
+        if (newStr.endsWith("."))
+        {
+            return newStr + "0";
+        }
+        return newStr;
+    }
+    
+    /**
+     * Returns a formatted string using the class level formatter and then strips any extra zeroes.
+     * @param bd the BigDecimal to be formatted.
+     * @return the formatted string
+     */
     public static String format(final BigDecimal bd)
     {
-        return StringUtils.strip(decFormatter.format(bd), "0");
+        return stripZeroes(decFormatter.format(bd));
     }
-    
-    protected static String strip(final String valStr)
-    {
-        String str = StringUtils.strip(valStr, "0");
-        return StringUtils.strip(str, ".");
-    }
+
     
     public static void main(String[] args)
     {
