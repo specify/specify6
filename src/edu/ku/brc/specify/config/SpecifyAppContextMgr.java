@@ -429,7 +429,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /**
-     * Finds a AppResourceDefault from an "object" list where it matches the user, CatSeries and ColObjdef
+     * Finds a AppResourceDefault from an "object" list where it matches the user, CatSeries and ColObjdef.
      * @param appResDefList the list to search
      * @param userArg the Specify user
      * @param catSeries the CatalogSeries

@@ -570,6 +570,14 @@ public class TableViewObj implements Viewable,
             table.tableChanged(new TableModelEvent(model));
         }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setRecordSet(edu.ku.brc.dbsupport.RecordSetIFace)
+     */
+    public void setRecordSet(RecordSetIFace recordSet)
+    {
+        
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getDataObj()

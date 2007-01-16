@@ -37,7 +37,7 @@ public class PopupDlgContent
     protected JLabel    message;
     protected JCheckBox checkbox;
     
-	Object[] values = new Object[] {message, checkbox};
+    protected Object[]  values;
 
 
 	/**

@@ -700,11 +700,11 @@ public class LocalityMapper implements TimingTarget
 	 */
 	private Pair<Double, Double> getLatLong(Locality loc)
 	{
-		Double lat1 = loc.getLatitude1();
-		Double lat2 = loc.getLatitude2();
-		Double long1 = loc.getLongitude1();
-		Double long2 = loc.getLongitude2();
-		if( lat2!=null&&long2!=null )
+        Double lat1 = loc.getLatitude1().doubleValue();
+        Double lat2 = loc.getLatitude2().doubleValue();
+        Double long1 = loc.getLongitude1().doubleValue();
+        Double long2 = loc.getLongitude2().doubleValue();
+		if( lat2 != null && long2 != null )
 		{
 			return centerOfBBox(lat1,lat2,long1,long2);
 		}

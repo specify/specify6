@@ -47,6 +47,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
@@ -84,7 +85,7 @@ import edu.ku.brc.ui.UIPluginable;
 /**
  * BioGeoMancer plugin For SPNHC Demo.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  *
@@ -583,9 +584,9 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.UIPluginable#initialize(java.util.Map)
+     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Map, boolean)
      */
-    public void initialize(Map<String, String> properties)
+    public void initialize(final Map<String, String> properties, final boolean isViewMode)
     {
 
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,1px,p,1px,p,1px,p", "p"), this);
@@ -646,6 +647,14 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             return geo.getName();
         }
         return "";
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
+     */
+    public JComponent getUIComponent()
+    {
+        return this;
     }
 
     protected void getBioGeoMancerData()
@@ -721,6 +730,33 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         return locality;
     }
 
+
+    /* (non-Javadoc)
+	 * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
+	 */
+	public void setCellName(String cellName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
+	 */
+	public void setChangeListener(ChangeListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.UIPluginable#setIsDisplayOnly(boolean)
+	 */
+	public void setIsDisplayOnly(boolean isDisplayOnly) {
+		// TODO Auto-generated method stub
+		
+    } 
+    
     //--------------------------------------------------------
     // PropertyChangeListener
     //--------------------------------------------------------

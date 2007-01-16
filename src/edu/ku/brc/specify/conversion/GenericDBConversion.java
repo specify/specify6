@@ -378,15 +378,15 @@ public class GenericDBConversion
         idMapper  = idMapperMgr.addTableMapper("collectionobject", "CollectionObjectID");
         if (shouldCreateMapTables)
         {
-            //idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID");
-            idMapper.mapAllIds("select CollectionObjectID from collectionobject  order by CollectionObjectID");
+            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.CollectionObjectTypeID = 10 order by CollectionObjectID");
+            //idMapper.mapAllIds("select CollectionObjectID from collectionobject order by CollectionObjectID");
         }
 
         // Map all the Physical IDs
         idMapper = idMapperMgr.addTableMapper("preparation", "PreparationID");
         if (shouldCreateMapTables)
         {
-            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where not (collectionobject.DerivedFromID Is Null) order by CollectionObjectID");
+            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.CollectionObjectTypeID = 22 order by CollectionObjectID");
         }
 
         // Map all the Physical IDs
@@ -482,8 +482,10 @@ public class GenericDBConversion
             "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"BorrowAgents",    "RoleID", "Role", "RoleID",
 
-            "DeaccessionPreparation", "DeaccessionID", "Deaccession", "DeaccessionID",
-            "DeaccessionPreparation", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
+            "DeaccessionCollectionObject", "DeaccessionID",            "Deaccession",                 "DeaccessionID",
+            "DeaccessionCollectionObject", "DeaccessionPreparationID", "DeaccessionCollectionObject", "DeaccessionCollectionObjectID",
+            "DeaccessionCollectionObject", "CollectionObjectID",       "CollectionObject",            "CollectionObjectID", // not sure this is needed
+            "DeaccessionCollectionObject", "PreparationID",            "Preparation",                 "PreparationID",
 
             "CollectionObjectCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "CollectionObjectCitation", "BiologicalObjectID", "CollectionObject", "CollectionObjectID",
@@ -2744,7 +2746,7 @@ public class GenericDBConversion
             sql.append(buildSelectFieldList(names, "collectionobjectcatalog"));
             oldFieldNames.addAll(names);
 
-            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.DerivedFromID Is Null");
+            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.CollectionObjectTypeID = 10");
 
             log.info(sql);
 
@@ -3720,22 +3722,21 @@ public class GenericDBConversion
 		return def;
     }
 
-    public void convertDeaccessionCollectionObject()
+    public boolean convertDeaccessionCollectionObject()
     {
-        
-        // Ignore these field names from new table schema when mapping IDs
-        //BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID"});
-
         BasicSQLUtils.deleteAllRecordsFromTable("deaccessionpreparation");
 
-        //boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
+        if (BasicSQLUtils.getNumRecords(oldDBConn, "deaccessioncollectionobject") == 0)
+        {
+            return true;
+        }
+        boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
+        
         BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with National Parks
-
-        //String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
-
         
+        Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {"PreparationID", "CollectionObjectID", "DeaccessionPreparationID", "DeaccessionCollectionObjectID"});        
         
-        if (copyTable(oldDBConn, newDBConn, "deaccessioncollectionobject", "deaccessionpreparation", null, null))
+        if (copyTable(oldDBConn, newDBConn, "deaccessioncollectionobject", "deaccessionpreparation", colNewToOldMap, null))
         {
             log.info("deaccessionpreparation copied ok.");
         } else
@@ -3743,8 +3744,11 @@ public class GenericDBConversion
             log.error("problems coverting deaccessionpreparation");
         }
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
-        //BasicSQLUtils.setShowMappingError(showMappingErrors);       
+        
+        BasicSQLUtils.setShowMappingError(showMappingErrors);   
+        return true;
     }
+    
     /**
      *
      */

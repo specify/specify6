@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <icons>
-	<icon name="Save"       file="filesave.png" sizes="all"/>
+    <icon name="Save"       file="filesave.png" sizes="all"/>
 
     <icon name="Configure"  file="configure.gif" sizes="all"/>
     <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
@@ -18,8 +18,8 @@
     <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
     <icon name="Record_Set" file="recordset.gif" sizes="all"/>
     <icon name="Agent"      file="agent.gif" sizes="all"/>
-    <icon name="Person"		file="emblem-personal.png" sizes="all"/>
-    <icon name="People"		file="emblem-people.png" sizes="all"/>
+    <icon name="Person"        file="emblem-personal.png" sizes="all"/>
+    <icon name="People"        file="emblem-people.png" sizes="all"/>
     <icon name="Determination"       file="agent.gif" sizes="all"/>
     <icon name="AccessionAgent"      file="agent.gif" sizes="all"/>
     <icon name="CollectionObject"    file="catobj_fish32x32.gif" sizes="all"/>
@@ -74,8 +74,8 @@
     <icon name="NewRec"   file="newrec.gif"  sizes="NonStd"/>
     <!--
     <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>
-	-->
-	
+    -->
+    
     <icon name="EditIcon" file="edit_icon.gif"  sizes="NonStd"/>
     <icon name="EditForm" file="editicon2_16.png" sizes="16"/>
     <icon name="Spreadsheet" file="spreadsheet.gif" sizes="all"/>
@@ -130,28 +130,38 @@
     <icon name="GeoTimePeriod_Tree" file="clock.png"    sizes="all"/>
     <icon name="Taxon_Tree"         file="taxon.gif"    sizes="all"/>
 
-	<icon name="TreeDefEditor"		file="taxon.gif"	sizes="all"/>
-	
-	<!-- MIME type icons -->
-	<icon name="audio"				file="audio.png"	sizes="all"/>
-	<icon name="video"				file="video.png"	sizes="all"/>
-	<icon name="image"				file="image.png"	sizes="all"/>
-    <icon name="unknown"			file="binary.png"	sizes="all"/>
-    <icon name="text"			    file="text.png"	    sizes="all"/>
-    <icon name="pdf"			    file="pdf.png"	    sizes="all"/>
-    <icon name="html"			    file="html.png"	    sizes="all"/>
-    <icon name="spreadsheet"		file="spreadsheet.png"	sizes="all"/>
+    <icon name="TreeDefEditor"      file="taxon.gif"    sizes="all"/>
     
-	<!-- sorting button icons -->
-	<icon name="move_to_start"		file="start.png"		sizes="all"/>
-	<icon name="move_left"			file="1leftarrow.png"	sizes="all"/>
-	<icon name="move_right"			file="1rightarrow.png"	sizes="all"/>
-	<icon name="move_to_end"		file="finish.png"		sizes="all"/>
-	
-	<!-- prep type icons -->
-    <icon name="skeleton"			file="fishskel.png"     sizes="all"/>
-    <icon name="xray"				file="xray.png"			sizes="all"/>
-    <icon name="etoh"				file="fishinjar.png"	sizes="all"/>
-    <icon name="cs"					file="fishskeljar.png"  sizes="all"/>
-	
+    <!-- MIME type icons -->
+    <icon name="audio"              file="audio.png"    sizes="all"/>
+    <icon name="video"              file="video.png"    sizes="all"/>
+    <icon name="image"              file="image.png"    sizes="all"/>
+    <icon name="unknown"            file="binary.png"    sizes="all"/>
+    <icon name="text"               file="text.png"        sizes="all"/>
+    <icon name="pdf"                file="pdf.png"        sizes="all"/>
+    <icon name="html"               file="html.png"        sizes="all"/>
+    <icon name="spreadsheet"        file="spreadsheet.png"    sizes="all"/>
+    
+    <!-- sorting button icons -->
+    <icon name="move_to_start"      file="start.png"        sizes="all"/>
+    <icon name="move_left"          file="1leftarrow.png"   sizes="all"/>
+    <icon name="move_right"         file="1rightarrow.png"  sizes="all"/>
+    <icon name="move_to_end"        file="finish.png"       sizes="all"/>
+    
+    <!-- prep type icons -->
+    <icon name="skeleton"            file="fishskel.png"     sizes="all"/>
+    <icon name="xray"                file="xray.png"         sizes="all"/>
+    <icon name="etoh"                file="fishinjar.png"    sizes="all"/>
+    <icon name="cs"                  file="fishskeljar.png"  sizes="all"/>
+    
+    <!-- LatLon PluginUI -->
+    <icon name="LatLonPoint"           file="LatLonPoint.gif"           sizes="all"/>
+    <icon name="LatLonLine"            file="LatLonLine.gif"            sizes="all"/>
+    <icon name="LatLonRect"            file="LatLonRect.gif"            sizes="all"/>
+    <icon name="LatLonLineLeft"        file="LatLonLineLeft.gif"        sizes="all"/>
+    <icon name="LatLonLineRight"       file="LatLonLineRight.gif"       sizes="all"/>
+    <icon name="LatLonRectTopLeft"     file="LatLonRectTopLeft.gif"     sizes="all"/>
+    <icon name="LatLonRectBottomRight" file="LatLonRectBottomRight.gif" sizes="all"/>
+    
+    
 </icons>

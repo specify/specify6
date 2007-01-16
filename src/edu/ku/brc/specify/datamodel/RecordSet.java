@@ -270,25 +270,30 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#addItem(java.lang.Long)
      */
-    public void addItem(final Long recordId)
+    public RecordSetItemIFace addItem(final Long recordId)
     {
-        this.items.add(new RecordSetItem(recordId));
+        RecordSetItemIFace rsi = new RecordSetItem(recordId);
+        this.items.add(rsi);
+        return rsi;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#addItem(java.lang.String)
      */
-    public void addItem(final String recordId)
+    public RecordSetItemIFace addItem(final String recordId)
     {
-        this.items.add(new RecordSetItem(recordId));
+        RecordSetItemIFace rsi = new RecordSetItem(recordId);
+        this.items.add(rsi);
+        return rsi;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#addItems(edu.ku.brc.specify.datamodel.RecordSetItemIFace)
      */
-    public void addItems(final RecordSetItemIFace item)
+    public RecordSetItemIFace addItem(final RecordSetItemIFace item)
     {
         this.items.add(item);
+        return item;
     }
 
     // Done Add Methods

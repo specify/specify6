@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Vector;
 
 import javax.swing.Icon;
@@ -138,8 +139,8 @@ public class LocalityMapperTestMain implements MapperListener
 		{
 			Locality l = new Locality();
 			l.initialize();
-			l.setLatitude1(locationArray[i]);
-			l.setLongitude1(locationArray[i+1]);
+			l.setLatitude1(new BigDecimal(locationArray[i]));
+			l.setLongitude1(new BigDecimal(locationArray[i+1]));
 			localities.add(l);
 			labels.add(labelArray[i/2]);
 		}

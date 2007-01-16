@@ -3,6 +3,7 @@ package edu.ku.brc.specify.tasks.services;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -139,8 +140,8 @@ public class KeyholeMarkupGenerator
 
 		// get location information
 		Locality loc = ce.getLocality();
-		Double lat = loc.getLatitude1();
-		Double lon = loc.getLongitude1();
+        BigDecimal lat = loc.getLatitude1();
+        BigDecimal lon = loc.getLongitude1();
 
 		// get event times
 		Calendar start = ce.getStartDate();
@@ -260,18 +261,18 @@ public class KeyholeMarkupGenerator
 		sb.append("</table>]]></description>\n");
 		sb.append("<LookAt>\n");
 		sb.append("<latitude>");
-		sb.append(lat);
+		sb.append(lat.doubleValue());
 		sb.append("</latitude>\n");
 		sb.append("<longitude>");
-		sb.append(lon);
+		sb.append(lon.doubleValue());
 		sb.append("</longitude>\n");
 		sb.append("<range>300000.00</range>\n");
 		sb.append("</LookAt>\n");
 		sb.append("<Point>\n");
 		sb.append("<coordinates>");
-		sb.append(lon);
+		sb.append(lon.doubleValue());
 		sb.append(",");
-		sb.append(lat);
+		sb.append(lat.doubleValue());
 		sb.append("</coordinates>\n");
 		sb.append("</Point>\n");
 		sb.append("</Placemark>\n\n\n");

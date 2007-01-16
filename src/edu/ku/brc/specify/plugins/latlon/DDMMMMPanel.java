@@ -1,0 +1,138 @@
+/**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
+
+package edu.ku.brc.specify.plugins.latlon;
+import javax.swing.JLabel;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+
+import edu.ku.brc.ui.validation.ValTextField;
+
+/**
+ * Used for entering lat/lon data in the Degrees and Decimal Minutes.
+ * 
+ * @author rods
+ *
+ * @code_status Beta
+ *
+ * Created Date: Jan 8, 2007
+ *
+ */
+public class DDMMMMPanel extends DDDDPanel
+{
+    protected static final Logger log = Logger.getLogger(DDMMMMPanel.class);
+    
+    protected ValTextField   latitudeMM;
+    protected ValTextField   longitudeMM;
+    
+    
+    /**
+     * Constructor. 
+     */
+    public DDMMMMPanel()
+    {
+        createUI("p, p, p, p, p, 2px, p", 3, 3, 7);
+    }
+    
+    /* (non-Javadoc)
+     * @see DDDDPanel#createUI(java.lang.String, int, int, int)
+     */
+    @Override
+    protected PanelBuilder createUI(final String colDef, 
+                                    final int latCols,
+                                    final int lonCols,
+                                    final int cbxIndex)
+    {
+        PanelBuilder    builder = super.createUI(colDef, latCols, lonCols, cbxIndex);
+        CellConstraints cc      = new CellConstraints();
+
+        latitudeMM   = createTextField(8);
+        longitudeMM  = createTextField(8);
+
+        builder.add(new JLabel(" "), cc.xy(4,1));
+        builder.add(latitudeMM, cc.xy(5,1));
+
+        builder.add(new JLabel(" "), cc.xy(4,3));
+        builder.add(longitudeMM, cc.xy(5,3));
+
+        
+        return builder;
+    }
+    
+    /* (non-Javadoc)
+     * @see DDDDPanel#setDataIntoUI()
+     */
+    @Override
+    protected void setDataIntoUI()
+    {
+        if (latitude != null)
+        {
+            System.out.println("BD:["+latitude.abs()+"] text["+LatLonConverter.convertToDDMMMM(latitude.abs())+"]");
+            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(latitude.abs()));
+            latitudeDD.setText(StringUtils.strip(parts[0], "0"));
+            latitudeMM.setText(StringUtils.strip(parts[1], "0"));
+        }
+        
+        if (longitude != null)
+        {
+            System.out.println("BD:["+longitude+"] text["+LatLonConverter.convertToDDMMMM(longitude.abs())+"]");
+            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(longitude.abs()));
+            longitudeDD.setText(StringUtils.strip(parts[0], "0"));
+            longitudeMM.setText(StringUtils.strip(parts[1], "0"));
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see DDDDPanel#getDataFromUI(boolean)
+     */
+    @Override
+    protected void getDataFromUI(final boolean doLatitude)
+    {
+        if (doLatitude)
+        {
+            double oldVal = latitude.doubleValue();
+            String str = latitudeDD.getText() + " " + latitudeMM.getText();
+            if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
+            {
+                latitude = LatLonConverter.convertDDMMMMToDDDD(str).abs();
+                System.out.println("Old["+oldVal+"] New["+latitude.doubleValue()+"]["+str+"]");
+                if (latitudeDir.getSelectedIndex() == 0)
+                {
+                    latitude = latitude.multiply(minusOne);
+                }
+            }
+        } else
+        {
+            double oldVal = longitude.doubleValue();
+            String str = longitudeDD.getText() + " " + longitudeMM.getText();
+            if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
+            {
+                longitude =  LatLonConverter.convertDDMMMMToDDDD(str).abs();
+                System.out.println("Old["+oldVal+"] New["+longitude.doubleValue()+"]["+str+"]");
+                if (longitudeDir.getSelectedIndex() == 0)
+                {
+                    longitude = longitude.multiply(minusOne);
+                }
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see DDDDPanel#getDataFromUI()
+     */
+    @Override
+    public void getDataFromUI()
+    {
+        getDataFromUI(true);
+        getDataFromUI(false);
+    }
+    
+}

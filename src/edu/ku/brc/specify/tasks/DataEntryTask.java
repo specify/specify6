@@ -278,38 +278,38 @@ public class DataEntryTask extends BaseTask
         SubPaneIFace subPane = SubPaneMgr.getSubPaneWithRecordSet(recordSet);
         if (subPane == null)
         {
-            DBTableIdMgr.getInClause(recordSet);
+            //DBTableIdMgr.getInClause(recordSet);
     
             String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getDbTableId());
             
-            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+            //DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
             
-            DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
+            //DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
             
-            String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
-            if (StringUtils.isNotBlank(sqlStr))
-            {
+            //String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+            //if (StringUtils.isNotBlank(sqlStr))
+            //{
                 // "null" ViewSet name means it should use the default
                 
                 SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                 
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List<?> list = session.getDataList(sqlStr);
-                session.close();
+                //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                //List<?> list = session.getDataList(sqlStr);
+                //session.close();
                 
                 View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
                 
-                formPane = new FormPane(name, task, view, null, list, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+                formPane = new FormPane(name, task, view, null, null, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
                 formPane.setIcon(getIconForView(view));
                 formPane.setRecordSet(recordSet);
                 
                 CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, OPEN_VIEW, formPane));
                 
-            } else
-            {
-                log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
-            }
+            //} else
+            //{
+            //    log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
+            //}
             
         } else
         {

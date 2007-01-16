@@ -151,6 +151,8 @@ public class FormPane extends DroppableTaskPane
     public void setRecordSet(RecordSetIFace recordSet)
     {
         this.recordSet = recordSet;
+        
+        multiView.getCurrentView().setRecordSet(recordSet);
     }
 
     /* (non-Javadoc)

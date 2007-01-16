@@ -19,8 +19,6 @@ import java.security.PrivilegedAction;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.forms.persist.View;
-
 
 /**
  * 

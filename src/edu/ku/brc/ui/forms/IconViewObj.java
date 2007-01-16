@@ -37,6 +37,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -525,7 +526,15 @@ public class IconViewObj implements Viewable
         
         setDataIntoUI();
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setRecordSet(edu.ku.brc.dbsupport.RecordSetIFace)
+     */
+    public void setRecordSet(RecordSetIFace recordSet)
+    {
+        
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getDataObj()
      */

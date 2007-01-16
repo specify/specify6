@@ -16,9 +16,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-//import org.hibernate.dialect.function.ClassicAvgFunction;
-//import org.hibernate.dialect.function.ClassicCountFunction;
-//import org.hibernate.dialect.function.ClassicSumFunction;
 
 
 
@@ -249,7 +246,7 @@ public class HibernateUtil {
     public static Session getNewSession()
     {
         Session session = getSessionFactory().openSession();
-        log.debug("Session Created["+session.hashCode()+"]");
+        //log.debug("Session Created["+session.hashCode()+"]");
         return session;
     }
 
@@ -269,7 +266,7 @@ public class HibernateUtil {
         String sfName = configuration.getProperty(Environment.SESSION_FACTORY_NAME);
         if (sfName != null)
         {
-            log.debug("Looking up SessionFactory in JNDI.");
+            //log.debug("Looking up SessionFactory in JNDI.");
             try
             {
                 sf = (SessionFactory) new InitialContext().lookup(sfName);
@@ -301,7 +298,7 @@ public class HibernateUtil {
         {
             //log.info("************************** Shutdown ["+Thread.currentThread().hashCode()+"]");
             
-            log.debug("Shutting down Hibernate.");
+            //log.debug("Shutting down Hibernate.");
             
             // Close caches and connection pools
             getSessionFactory().close();
@@ -328,7 +325,7 @@ public class HibernateUtil {
      */
      public static void rebuildSessionFactory() 
      {
-        log.debug("Using current Configuration for rebuild.");
+        //log.debug("Using current Configuration for rebuild.");
         rebuildSessionFactory(configuration);
      }
 
@@ -343,7 +340,7 @@ public class HibernateUtil {
      */
      public static void rebuildSessionFactory(Configuration cfg)
     {
-        log.debug("Rebuilding the SessionFactory from given Configuration.");
+        //log.debug("Rebuilding the SessionFactory from given Configuration.");
         synchronized (sessionFactory)
         {
             if (sessionFactory != null && !sessionFactory.isClosed())
@@ -379,7 +376,7 @@ public class HibernateUtil {
             Session s = (Session) threadSession.get();
             if (s == null)
             {
-                log.debug("Opening new Session for this thread.");
+                //log.debug("Opening new Session for this thread.");
                 s = getSessionFactory().openSession();
                 threadSession.set(s);
             }
@@ -417,7 +414,7 @@ public class HibernateUtil {
             
             if (s != null && s.isOpen())
             {
-                log.debug("Closing Session of this thread.");
+                //log.debug("Closing Session of this thread.");
                 s.close();
             }
         } else
@@ -442,7 +439,7 @@ public class HibernateUtil {
             Transaction tx = (Transaction) threadTransaction.get();
             if (tx == null)
             {
-                log.debug("Starting new database transaction in this thread.");
+                //log.debug("Starting new database transaction in this thread.");
                 tx = getCurrentSession().beginTransaction();
                 threadTransaction.set(tx);
             }
@@ -469,7 +466,7 @@ public class HibernateUtil {
             {
                 if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack())
                 {
-                    log.debug("Committing database transaction of this thread.");
+                    //log.debug("Committing database transaction of this thread.");
                     tx.commit();
                 }
                 threadTransaction.set(null);
@@ -503,9 +500,9 @@ public class HibernateUtil {
                 threadTransaction.set(null);
                 if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack())
                 {
-                    log.debug("Tyring to rollback database transaction of this thread.");
+                    //log.debug("Tyring to rollback database transaction of this thread.");
                     tx.rollback();
-                    log.debug("Database transaction rolled back.");
+                    //log.debug("Database transaction rolled back.");
                 }
             } catch (RuntimeException ex)
             {
@@ -531,7 +528,7 @@ public class HibernateUtil {
     {
         if (useThreadLocal)
         {
-            log.debug("Reconnecting Session to this thread.");
+            //log.debug("Reconnecting Session to this thread.");
             session.reconnect(DBConnection.getInstance().getConnection());
             threadSession.set(session);
         } else
@@ -556,7 +553,7 @@ public class HibernateUtil {
             threadSession.set(null);
             if (session.isConnected() && session.isOpen())
             {
-                log.debug("Disconnecting Session from this thread.");
+                //log.debug("Disconnecting Session from this thread.");
                 session.disconnect();
             }
             return session;
@@ -581,7 +578,7 @@ public class HibernateUtil {
      */
     public static void registerInterceptorAndRebuild(Interceptor interceptor)
     {
-        log.debug("Setting new global Hibernate interceptor and restarting.");
+        //log.debug("Setting new global Hibernate interceptor and restarting.");
         configuration.setInterceptor(interceptor);
         rebuildSessionFactory();
     }

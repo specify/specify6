@@ -105,22 +105,22 @@
         <meta attribute="field-description">The type of area described by the lat long data (Point,Line,Rectangle)</meta>
     </property>
     
-    <property name="latitude1" type="java.lang.Double" column="Latitude1" index="IX_LocalityLat1">
+    <property name="latitude1" precision="12" scale="10" column="Latitude1" index="IX_LocalityLat1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Latitude of first point</meta>
     </property>
     
-    <property name="longitude1" type="java.lang.Double" column="Longitude1" index="IX_LocalityLong1">
+    <property name="longitude1" precision="13" scale="10" column="Longitude1" index="IX_Locality1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Longitude of first point</meta>
     </property>
     
-    <property name="latitude2" type="java.lang.Double" column="Latitude2" index="IX_LocalityLat2">
+    <property name="latitude2" precision="12" scale="10" column="Latitude2" index="IX_LocalityLat2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Latitude of second point</meta>
     </property>
     
-    <property name="longitude2" type="java.lang.Double" column="Longitude2" index="IX_LocalityLong2">
+    <property name="longitude2" precision="13" scale="10"  column="Longitude2" index="IX_Locality2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Longitude of second point</meta>
     </property>

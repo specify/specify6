@@ -13,8 +13,8 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
 import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
+import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;

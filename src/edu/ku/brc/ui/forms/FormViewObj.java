@@ -70,8 +70,11 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
@@ -163,7 +166,7 @@ public class FormViewObj implements Viewable,
     protected JScrollPane                   scrollPane      = null;
     protected ControlBarPanel               controlPanel    = null;
     protected ResultSetController           rsController    = null;
-    protected List<Object>                  list            = null;
+    protected Vector<Object>                list            = null;
     protected boolean                       ignoreSelection = false;
     protected JButton                       saveBtn         = null;
     protected boolean                       wasNull         = false;
@@ -185,6 +188,11 @@ public class FormViewObj implements Viewable,
     protected CarryForwardInfo              carryFwdInfo    = null;
     protected boolean                       doCarryForward  = false;
     protected Object                        carryFwdDataObj = null;
+    
+    // RecordSet Management
+    protected RecordSetIFace                recordSet         = null;
+    protected List<RecordSetItemIFace>      recordSetItemList = null;  
+    protected DBTableIdMgr.TableInfo        tableInfo         = null;
 
     /**
      * Constructor with FormView definition
@@ -907,8 +915,15 @@ public class FormViewObj implements Viewable,
         if (list != null)
         {
             list.add(obj);
-            rsController.setLength(list.size());
-            rsController.setIndex(list.size()-1);
+            int len = list.size();
+            rsController.setLength(len);
+            rsController.setIndex(len-1);
+        }
+        
+        if (recordSetItemList != null)
+        {
+            RecordSetItemIFace recordSetItem = recordSet.addItem(-1L);
+            recordSetItemList.add(recordSetItem);
         }
         
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
@@ -1107,7 +1122,12 @@ public class FormViewObj implements Viewable,
                     
                     if (list != null)
                     {
-                        list.remove(dataObj); // remove from list
+                        list.remove(currInx); // remove from list
+                    }
+                    
+                    if (recordSetItemList != null)
+                    {
+                        recordSetItemList.remove(currInx); // remove from list
                     }
                     
                     rsController.setLength(newLen); // set new len for controller
@@ -1341,13 +1361,54 @@ public class FormViewObj implements Viewable,
     }
     
     /**
+     * @param index
+     * @return
+     */
+    protected Object getDataObjectViaRecordSet(final int index)
+    {
+        log.debug("Loading["+recordSetItemList.get(index).getRecordId()+"]");
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        Object dObj = tmpSession.get(tableInfo.getClassObj(), recordSetItemList.get(index).getRecordId());
+        tmpSession.close();
+        return dObj;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setRecordSet(edu.ku.brc.dbsupport.RecordSetIFace)
+     */
+    public void setRecordSet(final RecordSetIFace recordSet)
+    {
+        recordSetItemList = new Vector<RecordSetItemIFace>(recordSet.getItems());
+        
+        tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+        // XXX Check for Error here
+        
+        Object       firstDataObj = getDataObjectViaRecordSet(0);
+        Vector<Object> tmpList      = new Vector<Object>(recordSetItemList.size()+5);
+        tmpList.add(firstDataObj);
+        for (int i=1;i<recordSetItemList.size();i++)
+        {
+            tmpList.add(null); 
+        }
+        
+        if (mvParent != null)
+        {
+            mvParent.setData(tmpList);
+            
+        } else
+        {
+            setDataObj(tmpList);
+        }
+    }
+    
+    /**
      * Updates the enabled state of the New and delete buttons in the controller
      */
     protected void updateControllerUI()
     {
         if (rsController != null)
         {
-            log.debug("----------------- "+formViewDef.getName()+"----------------- ");
+            //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
             if (rsController.getDelRecBtn() != null)
             {
                 boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToDelete(this.dataObj));// && list != null && list.size() > 0;
@@ -1430,11 +1491,16 @@ public class FormViewObj implements Viewable,
                 fieldInfo.getSubView().setParentDataObj(null);
             }
         }
+        
+        if (data instanceof List && !(data instanceof Vector))
+        {
+            list = new Vector<Object>((List)data);
+        }
 
         // if we do have a list then get the first object or null
-        if (data instanceof List)
+        if (data instanceof Vector)
         {
-            list = (List)data;
+            list = (Vector)data;
             if (list.size() > 0)
             {
                 this.dataObj = list.get(0);
@@ -1488,7 +1554,7 @@ public class FormViewObj implements Viewable,
      */
     public Object getDataObj()
     {
-        log.debug("getDataObj " + this.getView().getName());
+        //log.debug("getDataObj " + this.getView().getName());
         return dataObj;
     }
 
@@ -1649,7 +1715,7 @@ public class FormViewObj implements Viewable,
                     boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
 
                     boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
-                    log.debug("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
+                    //log.debug("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
 
                     if (useFormatName)
                     {
@@ -1673,16 +1739,21 @@ public class FormViewObj implements Viewable,
                     } else
                     {
                         Object[] values;
-                        if (fieldInfo.getFormCell().isIgnoreSetGet())
+                        if (((FormCellField)fieldInfo.getFormCell()).useThisData())
+                        {
+                            values = new Object[] {dataObj};
+                            
+                        } else if (fieldInfo.getFormCell().isIgnoreSetGet())
                         {
                             defaultDataArray[0] = defaultValue;
                             values = defaultDataArray;
+                            
                         } else
                         {
                             values = UIHelper.getFieldValues(cellField, dataObj, dg);
                         }
 
-                        if( values != null && values.length > 0 )
+                        if (values != null && values.length > 0)
                         {
                             String   format = cellField.getFormat();
                             if (isNotEmpty(format))
@@ -1843,21 +1914,38 @@ public class FormViewObj implements Viewable,
                         x++;
                     }
                     
+                    boolean useThisData; // meaning the control is using the same data object as what is in the form
+                                         // so we don't need to go get the data (skip it)
                     if (fc instanceof FormCellField)
                     {
-                        isReadOnly = ((FormCellField)fieldInfo.getFormCell()).isReadOnly();
+                        FormCellField fcf = (FormCellField)fc;
+                        isReadOnly  = fcf.isReadOnly();
+                        useThisData = fcf.useThisData();
+                        
+                    } else
+                    {
+                        useThisData = false;
                     }
     
                     if (isReadOnly || fc.isIgnoreSetGet())
                     {
-                        continue;
+                        
                     }
+                    
                     log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
 
                     String id = fieldInfo.getFormCell().getId();
                     if (hasFormControlChanged(id))
                     {
-                        log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
+                        // this ends up calling the getData on the GetSetValueIFace 
+                        // which enables the control to set data into the data object
+                        if (useThisData)
+                        {
+                            getDataFromUIComp(id); 
+                            continue;
+                        }
+                            
+                       log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
                         Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
                         if (uiData != null)
                         {
@@ -2164,7 +2252,7 @@ public class FormViewObj implements Viewable,
      */
     public void setSession(final DataProviderSessionIFace session)
     {
-        log.debug("setSession "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
+        //log.debug("setSession "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         this.session = session;
     }
 
@@ -2508,7 +2596,17 @@ public class FormViewObj implements Viewable,
             getDataFromUI();
         }
         
-        dataObj = list.get(newIndex);
+        Object listDO = list.get(newIndex);
+        if (recordSetItemList != null && listDO == null)
+        {
+            dataObj = getDataObjectViaRecordSet(newIndex);
+            list.remove(newIndex);
+            list.insertElementAt(dataObj, newIndex);
+            
+        } else
+        {
+            dataObj = list.get(newIndex);    
+        }       
 
         setDataIntoUI();
 

@@ -16,12 +16,12 @@ package edu.ku.brc.specify.tests;
 
 import java.io.File;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-
-import junit.framework.TestCase;
 
 /**
  * 

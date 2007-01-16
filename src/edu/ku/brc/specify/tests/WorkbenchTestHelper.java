@@ -14,23 +14,17 @@
  */
 package edu.ku.brc.specify.tests;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
+import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.ui.UIHelper;
-import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
-import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
 
 /*
  * @code_status Unknown (auto-generated)

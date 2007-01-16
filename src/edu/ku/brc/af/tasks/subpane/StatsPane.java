@@ -127,7 +127,7 @@ public class StatsPane extends BaseSubPane
             int preferredWidth = PREFERREDWIDTH;
             int spacing        = SPACING;
 
-            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:max("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString());
+            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString());
             //FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p):g", "p:g", maxCols), rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
@@ -186,17 +186,24 @@ public class StatsPane extends BaseSubPane
                                 linkStr = link.getTextTrim();
                                 colId   = Integer.parseInt(link.attributeValue("colid"));
                             }
-                            StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"),
-                                                                                        new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")},
+                            try
+                            {
+                                StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"),
+                                                                                        new String[] {getAttr(boxElement, "desctitle", " "),
+                                                                                                      getAttr(boxElement, "valtitle", " ")},
                                                                                         sqlElement.getText(),
                                                                                         descCol,
                                                                                         valCol,
                                                                                         useSeparatorTitles,
                                                                                         getAttr(boxElement, "noresults", null));
-                            group.setLinkInfo(linkStr, colId);
-                            comp = group;
-
-                            group.relayout();
+                                group.setLinkInfo(linkStr, colId);
+                                comp = group;
+    
+                                group.relayout();
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                            }
                             //log.debug("After Relayout: "+group.getPreferredSize()+" "+group.getSize()+" "+group.getComponentCount());
 
                         } else

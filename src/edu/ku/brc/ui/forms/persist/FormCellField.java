@@ -48,6 +48,7 @@ public final class FormCellField extends FormCell
     protected boolean   isRequired     = false;
     protected boolean   isReadOnly     = false;
     protected boolean   isEncrypted    = false;
+    protected boolean   useThisData    = false; // this means the field uses the entire data object to do something special with
     protected String    label          = null;
     protected String    defaultValue   = null;
     
@@ -82,6 +83,8 @@ public final class FormCellField extends FormCell
                             final int               rowspan)
     {
         super(type, id, name, colspan, rowspan);
+        
+        useThisData = name.equals("this");
     }
 
     /**
@@ -247,6 +250,11 @@ public final class FormCellField extends FormCell
     public boolean isRequired()
     {
         return isRequired;
+    }
+
+    public boolean useThisData()
+    {
+        return useThisData;
     }
 
     public String getDefaultValue()

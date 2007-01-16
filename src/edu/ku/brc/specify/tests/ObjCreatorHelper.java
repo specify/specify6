@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.tests;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -20,7 +21,6 @@ import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgents;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
-//import edu.ku.brc.specify.datamodel.BorrowShipments;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -1704,10 +1704,10 @@ public class ObjCreatorHelper
                                           final Double elevationAccuracy,
                                           final Integer originalLatLongUnit,
                                           final String latLongType,
-                                          final Double latitude1,
-                                          final Double longitude1,
-                                          final Double latitude2,
-                                          final Double longitude2,
+                                          final BigDecimal latitude1,
+                                          final BigDecimal longitude1,
+                                          final BigDecimal latitude2,
+                                          final BigDecimal longitude2,
                                           final String latLongMethod,
                                           final Double latLongAccuracy,
                                           final String datum,

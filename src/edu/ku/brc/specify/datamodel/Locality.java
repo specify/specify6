@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,10 +62,10 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
      protected Double elevationAccuracy;
      protected Integer originalLatLongUnit;
      protected String latLongType;
-     protected Double latitude1;
-     protected Double longitude1;
-     protected Double latitude2;
-     protected Double longitude2;
+     protected BigDecimal latitude1;
+     protected BigDecimal longitude1;
+     protected BigDecimal latitude2;
+     protected BigDecimal longitude2;
      protected String latLongMethod;
      protected Double latLongAccuracy;
      protected String datum;
@@ -399,44 +400,44 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Latitude of first point
      */
-    public Double getLatitude1() {
+    public BigDecimal getLatitude1() {
         return this.latitude1;
     }
     
-    public void setLatitude1(Double latitude1) {
+    public void setLatitude1(BigDecimal latitude1) {
         this.latitude1 = latitude1;
     }
 
     /**
      *      * Longitude of first point
      */
-    public Double getLongitude1() {
+    public BigDecimal getLongitude1() {
         return this.longitude1;
     }
     
-    public void setLongitude1(Double longitude1) {
+    public void setLongitude1(BigDecimal longitude1) {
         this.longitude1 = longitude1;
     }
 
     /**
      *      * Latitude of second point
      */
-    public Double getLatitude2() {
+    public BigDecimal getLatitude2() {
         return this.latitude2;
     }
     
-    public void setLatitude2(Double latitude2) {
+    public void setLatitude2(BigDecimal latitude2) {
         this.latitude2 = latitude2;
     }
 
     /**
      *      * Longitude of second point
      */
-    public Double getLongitude2() {
+    public BigDecimal getLongitude2() {
         return this.longitude2;
     }
     
-    public void setLongitude2(Double longitude2) {
+    public void setLongitude2(BigDecimal longitude2) {
         this.longitude2 = longitude2;
     }
 

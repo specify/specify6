@@ -63,13 +63,14 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      protected String                  description;
      protected String                  mimeType;
      protected String                  metaData;
-     protected Integer ownerPermissionLevel;
-     protected Integer groupPermissionLevel;
-     protected Integer allPermissionLevel;
+     protected Integer                 ownerPermissionLevel;
+     protected Integer                 groupPermissionLevel;
+     protected Integer                 allPermissionLevel;
      protected Set<AppResourceData>    appResourceDatas;
      protected Set<AppResourceDefault> appResourceDefaults;
-     protected SpecifyUser specifyUser;
-     protected UserGroup group;     
+     protected SpecifyUser             specifyUser;
+     protected UserGroup               group;
+     
      // Non Persisted Fields
      protected String                    fileName     = null;
      protected Hashtable<String, String> metaDataHash = null;

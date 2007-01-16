@@ -698,7 +698,7 @@
     			</row>
 
     			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" defaulttype="table" rows="1"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" defaulttype="table" rows="5"/>
     			</row>
 
     			<row>
@@ -1100,15 +1100,21 @@
                 <row>
                     <cell type="separator" label="Locality Information" colspan="7"/>
                 </row>
+                <!-- 
                 <row>
                     <cell type="label" labelfor="3" label="Type"/>
                     <cell type="field" id="3" name="latLongType" uitype="text" cols="10"/>
                 </row>
+                -->
                 <row>
+                    <!--
                     <cell type="label" labelfor="4" label="Latitude"/>
                     <cell type="field" id="4" name="latitude1" uitype="text" cols="20" format="%8.4f"/>
                     <cell type="label" labelfor="5" label="Longitude"/>
                     <cell type="field" id="5" name="longitude1" uitype="text" cols="20" format="%8.4f"/>
+                    -->
+                    <cell type="label" labelfor="4" label="Lat/Lon"/>
+                    <cell type="field" id="4" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.latlon.LatLonUI" colspan="4"/>                    
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Name"/>

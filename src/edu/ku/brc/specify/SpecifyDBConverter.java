@@ -442,11 +442,10 @@ public class SpecifyDBConverter
                 frame.setDesc("Converting DeaccessionCollectionObject");
                 log.info("Converting DeaccessionCollectionObject");
                 boolean doDeaccessionCollectionObject = false;
-                if (copyTables || doAll)
+                if (doDeaccessionCollectionObject || doAll)
                 {
                     conversion.convertDeaccessionCollectionObject();
                 }
-
                 frame.incOverall();                
 
                 frame.setDesc("Converting CollectionObjects");

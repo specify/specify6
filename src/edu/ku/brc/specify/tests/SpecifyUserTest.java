@@ -13,24 +13,22 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserPermission;
+import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
+import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAgent;
-import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserPermissionInDB;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserPermission;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteSpecifyUserDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserGroupFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserPermissionFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isSpecifyUserInDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserGroupInDB;
-import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
-import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
+import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserPermissionInDB;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.UserPermission;

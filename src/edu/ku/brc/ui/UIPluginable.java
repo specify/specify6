@@ -16,6 +16,9 @@ package edu.ku.brc.ui;
 
 import java.util.Map;
 
+import javax.swing.JComponent;
+import javax.swing.event.ChangeListener;
+
 /*
  * @code_status Beta
  **
@@ -27,7 +30,28 @@ public interface UIPluginable
     /**
      * Sets the property list into the plugin control
      * @param properties the map of properties
+     * @param isViewMode indicates whether the plugin is being created to be vewed or is in edit mode.
      */
-    public void initialize(Map<String, String> properties);
+    public void initialize(Map<String, String> properties, boolean isViewMode);
+    
+    /**
+     * Sets the name of the cell that this represents.
+     * @param cellName the name
+     */
+    public void setCellName(String cellName);
+    
+    /**
+     * Indicates this is for display and NOT editting, or it is for editting.
+     * @param isDisplayOnly true - display, false - editting
+     */
+    public void setIsDisplayOnly(boolean isDisplayOnly);
+    
+    /**
+     * Sets a single ChangeListener.
+     * @param listener the listener
+     */
+    public void setChangeListener(ChangeListener listener);
+    
+    public JComponent getUIComponent();
 
 }

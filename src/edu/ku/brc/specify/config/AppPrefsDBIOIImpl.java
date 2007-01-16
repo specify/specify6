@@ -26,7 +26,6 @@ import java.util.prefs.BackingStoreException;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;

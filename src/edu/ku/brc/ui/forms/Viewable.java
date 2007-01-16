@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
@@ -99,6 +100,12 @@ public interface Viewable
      * @return Returns the data object for the form
      */
     public Object getDataObj();
+    
+    /**
+     * Sets in the RecordSet the form needs to traverse over.
+     * @param recordSet the recordset of items
+     */
+    public void setRecordSet(RecordSetIFace recordSet);
 
     /**
      * Sets the Parent Data Object into the Viewable. This is usually when the form will manage a list (Set)

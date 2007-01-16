@@ -196,7 +196,7 @@ public class SystemSetupTask extends BaseTask
                         dataObj = collection.iterator().next();
                     }
                 }
-                if (dataObj.getClass() == clazz)
+                if (dataObj != null && dataObj.getClass() == clazz)
                 {
                     SubPaneMgr.getInstance().showPane(pane);
                     return true;

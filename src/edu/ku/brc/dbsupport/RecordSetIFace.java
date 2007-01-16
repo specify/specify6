@@ -39,11 +39,11 @@ public interface RecordSetIFace
 
     public abstract void setRemarks(String remarks);
 
-    public abstract void addItem(final Long recordId);
+    public abstract RecordSetItemIFace addItem(final Long recordId);
 
-    public abstract void addItem(final String recordId);
+    public abstract RecordSetItemIFace addItem(final String recordId);
 
-    public abstract void addItems(final RecordSetItemIFace item);
+    public abstract RecordSetItemIFace addItem(final RecordSetItemIFace item);
 
     public abstract ImageIcon getDataSpecificIcon();
 

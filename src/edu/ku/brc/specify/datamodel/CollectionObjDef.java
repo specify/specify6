@@ -32,7 +32,6 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import edu.ku.brc.specify.datamodel.UserPermission;
 
 
 /**

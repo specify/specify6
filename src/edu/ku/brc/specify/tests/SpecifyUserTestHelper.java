@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.specify.tests;
 
+import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
+import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -22,9 +25,6 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.UserPermission;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
-import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
-import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
 /**
  * 
  * @code_status Unknown

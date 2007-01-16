@@ -43,14 +43,14 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
 
     // Fields
 
-     protected Long appResourceDefaultId;
-     protected CatalogSeries catalogSeries;
+     protected Long             appResourceDefaultId;
+     protected CatalogSeries    catalogSeries;
      protected CollectionObjDef collectionObjDef;
-     protected SpecifyUser specifyUser;
+     protected SpecifyUser      specifyUser;
      protected Set<AppResource> appResources;
-     protected Set<ViewSetObj> viewSets;
-     protected String userType;
-     protected String disciplineType;
+     protected Set<ViewSetObj>  viewSets;
+     protected String           userType;
+     protected String           disciplineType;
 
     // Constructors
 

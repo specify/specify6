@@ -26,11 +26,13 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeListener;
 
 import org.dom4j.Element;
 
@@ -168,7 +170,10 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     //-- UIPluginable
     //--------------------------------------------------------
 
-    public void initialize(Map<String, String> properties)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Map, boolean)
+     */
+    public void initialize(final Map<String, String> properties, final boolean isViewMode)
     {
         textField = new JTextField();
         Insets insets = textField.getBorder().getBorderInsets(textField);
@@ -209,6 +214,44 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
                 });
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
+     */
+    public void setCellName(String cellName)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
+     */
+    public void setChangeListener(ChangeListener listener)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#setIsDisplayOnly(boolean)
+     */
+    public void setIsDisplayOnly(boolean isDisplayOnly)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
+     */
+    public JComponent getUIComponent()
+    {
+        return this;
+    }
+    
     //--------------------------------------------------------
     //-- GetSetValueIFace
     //--------------------------------------------------------

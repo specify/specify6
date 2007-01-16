@@ -52,6 +52,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -115,6 +116,7 @@ import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
+
 /**
  * 
  * @code_status Alpha
@@ -222,30 +224,41 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // localities
         ////////////////////////////////
+        String POINT = "Point";
+        String LINE  = "Line";
+        String RECT  = "Rectangle";
+        
         log.info("Creating localities");
         Locality forestStream = createLocality("Unnamed forest stream", (Geography)geos.get(13));
+        forestStream.setLatLongType(POINT);
         forestStream.setLat1text("38.925467 deg N");
-        forestStream.setLatitude1(38.925467);
+        forestStream.setLatitude1(new BigDecimal(38.925467));
         forestStream.setLong1text("94.984867 deg W");
-        forestStream.setLongitude1(-94.984867);
+        forestStream.setLongitude1(new BigDecimal(-94.984867));
 
         Locality lake   = createLocality("Deep, dark lake", (Geography)geos.get(18));
-
+        lake.setLatLongType(RECT);
         lake.setLat1text("41.548842 deg N");
-        lake.setLatitude1(41.548842);
+        lake.setLatitude1(new BigDecimal(41.548842));
         lake.setLong1text("93.732129 deg W");
-        lake.setLongitude1(-93.732129);
+        lake.setLongitude1(new BigDecimal(-93.732129));
+        
+        lake.setLat2text("41.642195 deg N");
+        lake.setLatitude2(new BigDecimal(41.642195));
+        lake.setLong2text("100.403180 deg W");
+        lake.setLongitude2(new BigDecimal(-100.403180));
         
         Locality farmpond = createLocality("Farm pond", (Geography)geos.get(22));
+        farmpond.setLatLongType(LINE);
         farmpond.setLat1text("41.642187 deg N");
-        farmpond.setLatitude1(41.642187);
+        farmpond.setLatitude1(new BigDecimal(41.642187));
         farmpond.setLong1text("100.403163 deg W");
-        farmpond.setLongitude1(-100.403163);
+        farmpond.setLongitude1(new BigDecimal(-100.403163));
 
-        farmpond.setLat1text("41.642187 deg N");
-        farmpond.setLatitude1(41.642187);
-        farmpond.setLong1text("100.403163 deg W");
-        farmpond.setLongitude1(-100.403163);
+        farmpond.setLat2text("41.642187 deg N");
+        farmpond.setLatitude2(new BigDecimal(41.642187));
+        farmpond.setLong2text("100.403163 deg W");
+        farmpond.setLongitude2(new BigDecimal(-100.403163));
 
         dataObjects.add(forestStream);
         dataObjects.add(lake);

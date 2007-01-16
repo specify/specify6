@@ -81,6 +81,7 @@ import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
+import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValCheckBox;
 import edu.ku.brc.ui.validation.ValComboBox;
@@ -666,7 +667,9 @@ public class ViewFactory
      * @param mode indicates whether in Edit or View mode
      * @return the control
      */
-    protected JComponent createPlugin(final FormCellField cellField)
+    protected JComponent createPlugin(final FormValidator validator, 
+                                      final FormCellField cellField,
+                                      final boolean       isViewMode)
     {
         String classNameStr = cellField.getProperty("class");
         if (StringUtils.isEmpty(classNameStr))
@@ -683,10 +686,30 @@ public class ViewFactory
                 throw new RuntimeException("Plugin of class["+classNameStr+"] doesn't implement the GetSetValueIFace!");
             }
             
+            // This needs to be done before the initialize.
+            if (uiObj instanceof UIValidatable)
+            {
+                ((UIValidatable)uiObj).setRequired(cellField.isRequired());
+            }
+            
             if (uiObj instanceof UIPluginable)
             {
-                ((UIPluginable)uiObj).initialize(cellField.getProperties());
+                UIPluginable uip = (UIPluginable)uiObj;
+                uip.initialize(cellField.getProperties(), isViewMode);
+                
+                if (validator != null && (cellField.isChangeListenerOnly() || 
+                                          cellField.isRequired() || 
+                                          isNotEmpty(cellField.getValidationRule())))
+                {
+                    DataChangeNotifier dcn = validator.hookupComponent(uiObj, 
+                                                                       cellField.getId(),
+                                                                       parseValidationType(cellField.getValidationType()), 
+                                                                       cellField.getValidationRule(), 
+                                                                       cellField.isChangeListenerOnly());
+                    uip.setChangeListener(dcn);
+                }
             }
+
             return uiObj;
             
         } catch (Exception ex)
@@ -967,7 +990,7 @@ public class ViewFactory
                             break;
                         
                         case plugin:
-                            compToAdd = createPlugin(cellField);
+                            compToAdd = createPlugin(validator, cellField, mode == AltView.CreationMode.View);
                             break;
 
                         case textpl:

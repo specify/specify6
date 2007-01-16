@@ -28,16 +28,16 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDeterminationStatus;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDef;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocationTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparationAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createTaxonTreeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocationTreeDef;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
@@ -51,6 +51,7 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -97,6 +98,8 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -131,9 +134,11 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
+import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -203,7 +208,7 @@ public class FormEditor implements DatabaseLoginListener
         List<Object> dbOBjs = BuildSampleDatabase.get(objects, CollectionObject.class);
         */
         
-        /*
+        
         System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
         System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
         
@@ -216,7 +221,7 @@ public class FormEditor implements DatabaseLoginListener
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
         localPrefs.load();
-        */
+        
         
         FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
 
@@ -1282,7 +1287,7 @@ public class FormEditor implements DatabaseLoginListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                
+                /*
                 List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");       
                 List<Loan> loans = (List<Loan>)BuildSampleDatabase.getObjectsByClass(dataObjs, Loan.class);
                 int inx = 1;
@@ -1291,6 +1296,51 @@ public class FormEditor implements DatabaseLoginListener
                 dlg.setModal(true);
                 dlg.setVisible(true);
                 dlg.dispose();
+                */
+                
+                System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
+                System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+                
+                UICacheManager.getInstance(); // initializes it first thing
+                UICacheManager.setAppName("Specify");
+                IconManager.setApplicationClass(Specify.class);
+                
+                
+                // Load Local Prefs
+                AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+                localPrefs.load();
+                
+                AppPrefsCache.reset();
+                
+                //FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
+                AppPrefsCache.register(AppPrefsCache.getDefaultDatePattern(), "ui", "formatting", "scrdateformat");
+                
+                ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
+                AppPrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
+                
+                ColorWrapper requiredFieldColor = new ColorWrapper(215, 230, 253);
+                AppPrefsCache.register(requiredFieldColor, "ui", "formatting", "requiredfieldcolor");
+               
+                ColorWrapper viewFieldColor = new ColorWrapper(250, 250, 250);
+                AppPrefsCache.register(viewFieldColor, "ui", "formatting", "viewfieldcolor");
+                
+                
+                FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
+                
+                JFrame frame = new JFrame();
+                LatLonUI latLonUI = new LatLonUI();
+                latLonUI.initialize(null, false);
+                
+                frame.setContentPane(latLonUI);
+
+                Locality locality = new Locality();
+                locality.initialize();
+                locality.setLatitude1(new BigDecimal("34.5678"));
+                locality.setLongitude1(new BigDecimal("-95.12345"));
+                latLonUI.setValue(locality, null);
+                frame.pack();
+                frame.setVisible(true);
                 
                 /*
 //JCollapsiblePane cp = new JCollapsiblePane();

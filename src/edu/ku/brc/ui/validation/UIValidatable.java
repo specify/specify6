@@ -85,7 +85,7 @@ public interface UIValidatable
 
 
     /**
-     * Asks it to vaidate itself.
+     * Asks it to validate itself.
      * @return the result of the validation
      */
     public ErrorType validateState();

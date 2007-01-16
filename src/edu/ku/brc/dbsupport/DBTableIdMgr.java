@@ -166,7 +166,7 @@ public class DBTableIdMgr
 			log.error(ex);
 			ex.printStackTrace();
 		}
-
+        log.debug("Done Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath());
 	}
 
 	/**
