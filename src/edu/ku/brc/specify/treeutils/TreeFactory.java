@@ -231,6 +231,8 @@ public class TreeFactory
 		rootNode.setName("Root");
         rootNode.setFullName("Root");
 		rootNode.setRankId(0);
+        rootNode.setNodeNumber(1);
+        rootNode.setHighestChildNodeNumber(1);
 		
 		// tie everything together
 		defItem.setTreeDef(def);
