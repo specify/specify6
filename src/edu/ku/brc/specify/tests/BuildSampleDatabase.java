@@ -1178,7 +1178,7 @@ public class BuildSampleDatabase
                                 "jdbc:mysql://" + databaseHost + "/" + databaseName,
                                 userName,
                                 password))
-        {   
+        {
             boolean single = true;
             if (single)
             {
@@ -1243,6 +1243,10 @@ public class BuildSampleDatabase
                     }
                 }
             }
+        }
+        else
+        {
+            log.error("Login failed");
         }
     }
 }
