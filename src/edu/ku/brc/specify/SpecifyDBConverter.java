@@ -30,7 +30,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
@@ -92,7 +92,7 @@ public class SpecifyDBConverter
      */
     public SpecifyDBConverter()
     {
-
+        //
     }
 
     /**
@@ -165,6 +165,7 @@ public class SpecifyDBConverter
             
             final SwingWorker worker = new SwingWorker()
             {
+                @Override
                 public Object construct()
                 {
                     try
@@ -181,6 +182,7 @@ public class SpecifyDBConverter
                 }
 
                 //Runs on the event-dispatching thread.
+                @Override
                 public void finished()
                 {
                     processDB();
@@ -558,8 +560,8 @@ public class SpecifyDBConverter
 
 
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
-                    criteria.add(Expression.eq("catalogSeriesId", new Integer(0)));
-                    java.util.List catalogSeriesList = criteria.list();
+                    criteria.add(Restrictions.eq("catalogSeriesId", new Integer(0)));
+                    List<?> catalogSeriesList = criteria.list();
 
                     boolean doAddTissues = false;
                     if (doAddTissues)
@@ -722,7 +724,7 @@ public class SpecifyDBConverter
             do
             {
                 long start = System.currentTimeMillis();
-                List list = pager.getList();
+                List<?> list = pager.getList();
                 if (pageNo % 100 == 0)
                 {
                     log.info("******************** Page "+pageNo+" "+(System.currentTimeMillis() - start) / 1000.0);
@@ -809,17 +811,24 @@ public class SpecifyDBConverter
                 
                 final SwingWorker worker = new SwingWorker()
                 {
+                    @Override
                     public Object construct()
                     {
                         try
                         {
                             Thread.sleep(10000); // 10 seconds
                             
-                        } catch (Exception ex) {}
+                        }
+                        catch (Exception ex)
+                        {
+                            // ignore
+                        }
                         return null;
                     }
 
                     //Runs on the event-dispatching thread.
+                    @SuppressWarnings("synthetic-access")
+                    @Override
                     public void finished()
                     {
                         if (list.getSelectedIndex() != -1)
