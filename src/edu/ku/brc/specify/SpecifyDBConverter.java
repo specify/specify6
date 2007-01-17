@@ -25,9 +25,6 @@ import javax.swing.UIManager;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -40,7 +37,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
@@ -59,6 +55,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
+import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -282,8 +279,10 @@ public class SpecifyDBConverter
             stmt.close();
             connection.close();
             
-            writeHibPropFile(databaseName);
-            doGenSchema();
+//            writeHibPropFile(databaseName);
+//            doGenSchema();
+            SpecifySchemaGenerator schGen = new SpecifySchemaGenerator();
+            schGen.generateSchema("localhost", databaseName);
         }
         
         // This will log us in and return true/false
@@ -860,7 +859,6 @@ public class SpecifyDBConverter
             sb.append(Integer.toString(inx));
         }
         props.put(selKey, sb.toString());
-        //log.info("["+selKey+"]["+sb.toString()+"]");
         
         try
         {
@@ -873,58 +871,4 @@ public class SpecifyDBConverter
         
         return dlg.getSelectedObjects();
     }
-
-    /**
-     * @throws Exception
-     */
-    protected static void doGenSchema() throws Exception
-    {
-        log.info("Starting up ANT for genschema task.");
-
-        // Create a new project, and perform some default initialization
-        Project project = new Project();
-        try
-        {
-            project.init();
-            project.setBasedir(".");
-
-            ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
-
-            project.executeTarget("genschema");
-
-        } catch (BuildException e)
-        {
-            throw new Exception(e);
-        }
-    }
-
-
-    /**
-     * @param databaseName
-     */
-    protected static void writeHibPropFile(final String databaseName)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append("hibernate.dialect=org.hibernate.dialect.MySQLDialect\n");
-        sb.append("hibernate.connection.driver_class=com.mysql.jdbc.Driver\n");
-        sb.append("hibernate.connection.url=jdbc:mysql://localhost/"+databaseName+"\n");
-        sb.append("hibernate.connection.username=rods\n");
-        sb.append("hibernate.connection.password=rods\n");
-        sb.append("hibernate.max_fetch_depth=3\n");
-        sb.append("hibernate.connection.pool_size=5\n");
-        sb.append("hibernate.cglib.use_reflection_optimizer=true\n");
-
-        try
-        {
-            XMLHelper.setContents(new File("src" + File.separator + "hibernate.properties"), sb.toString());
-
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    
-    
-
 }
