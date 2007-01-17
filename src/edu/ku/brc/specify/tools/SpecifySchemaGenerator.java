@@ -113,6 +113,19 @@ public class SpecifySchemaGenerator
         {
             throw new Exception(e);
         }
+        
+//        Configuration hibCfg = new Configuration();
+//        hibCfg.configure();
+//        SchemaExport schemaExporter = new SchemaExport(hibCfg);
+//        log.error("Generating schema");
+//        schemaExporter.execute(false, true, false, false);
+//        List<?> exceptions = schemaExporter.getExceptions();
+//        for (Object o: exceptions)
+//        {
+//            Exception e = (Exception)o;
+//            log.error(e.getMessage());
+//        }
+
     }
     
     public static void main(String[] args) throws Exception
