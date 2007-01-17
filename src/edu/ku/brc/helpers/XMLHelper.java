@@ -248,6 +248,7 @@ public class XMLHelper
        {
            output = new BufferedWriter(new FileWriter(outFile));
            output.write(contents);
+           output.flush();
            
        } finally
        {
