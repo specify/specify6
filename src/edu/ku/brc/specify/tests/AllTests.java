@@ -31,7 +31,6 @@ public class AllTests
     {
         TestSuite suite = new TestSuite("Test for edu.ku.brc.specify.tests");
         //$JUnit-BEGIN$
-        suite.addTestSuite(HibernateSchemaTest.class);
         suite.addTestSuite(PopupDlgTests.class);
         suite.addTestSuite(AppResourceTest.class);
         suite.addTestSuite(WorkbenchTest.class);
