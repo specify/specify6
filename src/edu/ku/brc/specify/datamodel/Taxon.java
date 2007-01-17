@@ -433,6 +433,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         this.visibility = visibility;
     }
     
+    @Override
     public boolean isRestrictable()
     {
         return true;
@@ -505,11 +506,11 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
 	public void setDefinitionItem(TaxonTreeDefItem definitionItem)
 	{
-		this.definitionItem = definitionItem;
-		if( this.definitionItem!=null )
-		{
-			this.rankId = this.definitionItem.getRankId();
-		}
+        this.definitionItem = definitionItem;
+        if (definitionItem!=null && definitionItem.getRankId()!=null)
+        {
+            this.rankId = this.definitionItem.getRankId();
+        }
 	}
 
 	public Taxon getParent()

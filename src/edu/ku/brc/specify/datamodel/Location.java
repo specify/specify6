@@ -278,11 +278,11 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 
 	public void setDefinitionItem(LocationTreeDefItem definitionItem)
 	{
-		this.definitionItem = definitionItem;
-		if( this.definitionItem!=null )
-		{
-			this.rankId = this.definitionItem.getRankId();
-		}
+        this.definitionItem = definitionItem;
+        if (definitionItem!=null && definitionItem.getRankId()!=null)
+        {
+            this.rankId = this.definitionItem.getRankId();
+        }
 	}
 
 	public Location getParent()

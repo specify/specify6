@@ -381,7 +381,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	public void setDefinitionItem(GeographyTreeDefItem definitionItem)
 	{
 		this.definitionItem = definitionItem;
-		if( this.definitionItem!=null )
+		if (definitionItem!=null && definitionItem.getRankId()!=null)
 		{
 			this.rankId = this.definitionItem.getRankId();
 		}
