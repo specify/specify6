@@ -10,7 +10,7 @@
             <altviews>
                 <altview name="Accession View" viewdef="Accession" label="View" mode="view" default="true"/>
                 <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"/>
-                <altview name="Accession Table" viewdef="Accession Grid" label="Grid" mode="view"/>
+                <altview name="Accession Table" viewdef="Accession Table" label="Grid" mode="view"/>
                 <altview name="Accession Icon" viewdef="AccessionIconView" label="IconView" mode="view"/>                
             </altviews>
         </view>
@@ -110,7 +110,16 @@
         </view>
 
     </views>
-
+    
+    <!-- =======================================================================
+        ========================================================================
+        ========================================================================
+        ViewDefs
+        ========================================================================
+        ========================================================================
+        ========================================================================
+    -->
+    
     <viewdefs>
         <viewdef
             type="iconview"
@@ -214,7 +223,7 @@
             class="edu.ku.brc.specify.datamodel.Accession"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Accession Grid.]]></desc>
+            <desc><![CDATA[The Accession Table.]]></desc>
             <definition>Accession</definition>
         </viewdef>
             
