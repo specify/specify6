@@ -1492,16 +1492,18 @@ public class FormViewObj implements Viewable,
                 fieldInfo.getSubView().setParentDataObj(null);
             }
         }
-        
-        if (data instanceof List && !(data instanceof Vector))
-        {
-            list = new Vector<Object>((List)data);
-        }
 
         // if we do have a list then get the first object or null
-        if (data instanceof Vector)
+        if (data instanceof List)
         {
-            list = (Vector)data;
+            if (!(data instanceof Vector))
+            {
+                list = new Vector<Object>((List)data);
+            } else
+            {
+                list = (Vector)data;
+            }
+            
             if (list.size() > 0)
             {
                 this.dataObj = list.get(0);
