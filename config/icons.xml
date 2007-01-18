@@ -84,7 +84,9 @@
     <icon name="ViewForm" file="viewform16.gif" sizes="16"/>
     <icon name="ViewForm" file="viewform.gif" sizes="32"/>
 
-    <icon name="BGImage"  file="splash.jpg" sizes="NonStd"/>
+    <icon name="BGImage"    file="splash.jpg" sizes="NonStd"/>
+    <icon name="Close"      file="close.gif" sizes="NonStd"/>
+    <icon name="CloseHover" file="closeHover.gif" sizes="NonStd"/>
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
 
     <icon name="ValidationValid"   file="validation-valid.gif" sizes="NonStd"/>

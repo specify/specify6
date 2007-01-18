@@ -14,19 +14,27 @@
  */
 package edu.ku.brc.af.core;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * Manages all the SubPanes that are in the main Tabbed pane. It notifies listeners when SubPanes are added, removed or Shown.
@@ -117,9 +125,40 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
         panes.put(title, pane); // this must be done before adding it
         addTab(title, pane.getIcon(), pane.getUIComponent());
+        
+        JPanel tabPanel = new JPanel(new BorderLayout());
+        tabPanel.add(new JLabel(title, pane.getIcon(), JLabel.RIGHT), BorderLayout.WEST);
+        tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
+
+        final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
+        closeBtn.setBorder(null);
+
+        closeBtn.setOpaque(false);
+        closeBtn.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e)
+            {
+                closeCurrent();
+            }
+            public void mouseEntered(MouseEvent e)
+            {
+                closeBtn.setIcon(IconManager.getIcon("CloseHover"));
+                closeBtn.repaint();
+            }
+
+            public void mouseExited(MouseEvent e)
+            {
+                closeBtn.setIcon(IconManager.getIcon("Close"));
+                closeBtn.repaint();
+            }
+        });
+
+        tabPanel.add(closeBtn, BorderLayout.EAST);
+        
+        setTabComponentAt(getTabCount()-1, tabPanel);
+        
         notifyListeners(NotificationType.Added, pane);
 
-        this.setSelectedIndex(this.getComponentCount()-1);
+        this.setSelectedIndex(getTabCount()-1);
 
         // XXX Are these needed??
         pane.getUIComponent().invalidate();
