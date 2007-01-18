@@ -26,7 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -1447,15 +1446,6 @@ public class FormViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
-        // We really shouldn't get here.
-        // This condition is true only if a new Object (record) was being entered and some how the user was
-        // able to go to a previous or next record before saving or discarding the new info
-        //if (formIsInNewDataMode)
-        //{
-        //    setAsNewForm(false);
-        //    throw new RuntimeException("Shouldn't have gotten here! Why wasn't the object saved or discarded?");
-        //}
-
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
         if (!alreadyInTheList)
@@ -1550,6 +1540,7 @@ public class FormViewObj implements Viewable,
                 updateControllerUI();
             }
         }
+
     }
 
     /* (non-Javadoc)
@@ -1597,12 +1588,6 @@ public class FormViewObj implements Viewable,
                 {
                     mvParent.setSession(session);   
                 }
-    
-                if (dataObj instanceof Collection<?>)
-                {
-                    int x = 0;
-                    x++;
-                }
                 
                 session.attach(dataObj);
                 
@@ -1621,6 +1606,7 @@ public class FormViewObj implements Viewable,
         if (formValidator != null)
         {
             formValidator.setDataChangeNotification(false);
+            formValidator.setEnabled(dataObj != null);
         }
 
         boolean weHaveData = true;
@@ -1797,22 +1783,6 @@ public class FormViewObj implements Viewable,
                         continue;
                     }
 
-                    if (session != null)
-                    {
-                        if (dataObj == null)
-                        {
-                            int x = 0;
-                            x++;
-                            
-                        } else
-                        {
-                            if (session.contains(dataObj))
-                            {
-                                int x = 0;
-                                x++;
-                            }
-                        }
-                    }
                     fieldInfo.getSubView().setParentDataObj(dataObj);
                     
                     data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
@@ -1910,13 +1880,6 @@ public class FormViewObj implements Viewable,
                 {
                     FormCell fc = fieldInfo.getFormCell();
                     boolean isReadOnly = false;
-    
-                    if (fieldInfo.getName().equals("quantityReturned"))
-                    {
-                        int x = 0;
-                        x++;
-                    }
-                    
                     boolean useThisData; // meaning the control is using the same data object as what is in the form
                                          // so we don't need to go get the data (skip it)
                     if (fc instanceof FormCellField)

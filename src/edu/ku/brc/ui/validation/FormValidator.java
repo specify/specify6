@@ -67,6 +67,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected Hashtable<String, Component>          fields      = new Hashtable<String, Component>();
     protected Hashtable<String, JLabel>             labels      = new Hashtable<String, JLabel>();
 
+    protected boolean                               enabled     = false;
     protected boolean                               hasChanged  = false;
     protected boolean                               isNewObj    = false;
     protected boolean                               isFirstTime = false;
@@ -120,11 +121,14 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setFormValidationState(UIValidatable.ErrorType formValidationState)
     {
-        if (this.formValidationState != formValidationState)
+        if (enabled)
         {
-            updateValidationBtnUIState();
+            if (this.formValidationState != formValidationState)
+            {
+                updateValidationBtnUIState();
+            }
+            this.formValidationState = formValidationState;
         }
-        this.formValidationState = formValidationState;
     }
 
     /**
@@ -134,6 +138,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public UIValidatable.ErrorType getState()
     {
+        UIValidatable.ErrorType val = !hasChanged && isNewObj && isFirstTime ? UIValidatable.ErrorType.Valid : processRulesAreOK ? formValidationState : UIValidatable.ErrorType.Error;
+        log.info(name+" ["+val+"]["+hasChanged+"]["+isNewObj+"]["+isFirstTime+"] "+formValidationState);
         return !hasChanged && isNewObj && isFirstTime ? UIValidatable.ErrorType.Valid : processRulesAreOK ? formValidationState : UIValidatable.ErrorType.Error;
     }
 
@@ -179,18 +185,50 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setAllUIValidatorsToNew(boolean isNew)
     {
-        this.hasChanged = false;
-        for (UIValidator uiv : validators)
+        if (enabled)
         {
-            uiv.setAsNew(isNew);
+            this.hasChanged = false;
+            for (UIValidator uiv : validators)
+            {
+                uiv.setAsNew(isNew);
+            }
+            updateValidationBtnUIState();
         }
-        updateValidationBtnUIState();
     }
     
     public void setFirstTime(boolean isFirstTime)
     {
-        this.isFirstTime = isFirstTime;
-        updateValidationBtnUIState();
+        if (enabled)
+        {
+            this.isFirstTime = isFirstTime;
+            updateValidationBtnUIState();
+        }
+    }
+
+    /**
+     * Return true if validaot ris registering changes.
+     * @return true if validaot ris registering changes.
+     */
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    /**
+     * Sets whether validator should except changes, this also sets the the Validated state to Valid
+     * and set the hasChanged to false when disabling.
+     * @param enabled true to enable it false to disable it.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        if (!enabled)
+        {
+            hasChanged          = false;
+            isFirstTime         = true;
+            formValidationState = UIValidatable.ErrorType.Valid;
+            resetFields();
+        }
+        this.enabled = enabled;        
     }
 
     /**
@@ -201,25 +239,28 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void reset(final boolean isNewObjArg)
     {
-        setHasChanged(false);
-
-        resetFields();
-
-        setDataChangeNotification(true); // this doesn't effect validation notifications
-
-        if (isNewObjArg)
+        if (enabled)
         {
-            isNewObj = isNewObjArg;
-            isFirstTime = true;
-            //setFormValidationState(UIValidatable.ErrorType.Valid); 
+            setHasChanged(false);
+    
+            resetFields();
+    
+            setDataChangeNotification(true); // this doesn't effect validation notifications
+    
+            if (isNewObjArg)
+            {
+                isNewObj = isNewObjArg;
+                isFirstTime = true;
+                //setFormValidationState(UIValidatable.ErrorType.Valid); 
+                
+            } else 
+            {
+                isFirstTime = false;
+                validateForm();    
+            }
             
-        } else 
-        {
-            isFirstTime = false;
-            validateForm();    
+            updateValidationBtnUIState();
         }
-        
-        updateValidationBtnUIState();
     }
 
     /**
@@ -649,8 +690,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         // Because we call it manually it will turn off validation notifications
         //validateForm(true, UIValidator.Type.Changed); // second arg doesn't matter
-        
-        validateForm(true);
+        if (enabled)
+        {
+            validateForm(true);
+        }
     }
 
     /**
@@ -658,14 +701,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void resetFields()
     {
-        for (Enumeration<DataChangeNotifier> e=dcNotifiers.elements();e.hasMoreElements();)
+        if (enabled)
         {
-            DataChangeNotifier dcn = e.nextElement();
-            //UIValidator        uiv = dcn.getUIV();
-            //if (uiv != null && uiv.getType() == UIValidator.Type.OK)
-            //{
+            for (Enumeration<DataChangeNotifier> e=dcNotifiers.elements();e.hasMoreElements();)
+            {
+                DataChangeNotifier dcn = e.nextElement();
                 dcn.reset();
-            //}
+            }
         }
     }
 
