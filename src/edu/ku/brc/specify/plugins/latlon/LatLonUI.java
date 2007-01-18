@@ -61,12 +61,12 @@ import edu.ku.brc.ui.validation.UIValidatable;
  */
 public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, UIValidatable, ChangeListener
 {
-    protected final static String[] formatClass = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
-    protected final static String[] formats     = new String[] {"DDD.DDD", "DD:MM.MM", "DD MM SS"};
+    protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
+    protected final static String[] formats                 = new String[] {"DDD.DDD", "DD:MM.MM", "DD MM SS"};
 
-    protected final static String[] pointNames    = {"LatLonPoint", "LatLonLineLeft", "LatLonLineRight", "LatLonRectTopLeft", "LatLonRectBottomRight"};
-    protected final static String[] typeNames     = {"LatLonPoint", "LatLonLine", "LatLonRect"};
-    protected final static String[] typeNamesKeys = {"Point", "Line", "Rect"};
+    protected final static String[] pointNames              = {"LatLonPoint", "LatLonLineLeft", "LatLonLineRight", "LatLonRectTopLeft", "LatLonRectBottomRight"};
+    protected final static String[] typeNames               = {"LatLonPoint", "LatLonLine", "LatLonRect"};
+    protected final static String[] typeNamesKeys           = {"Point", "Line", "Rect"};
     protected final static LatLonUIIFace.LatLonType[] types = {LatLonUIIFace.LatLonType.LLPoint, LatLonUIIFace.LatLonType.LLLine, LatLonUIIFace.LatLonType.LLRect};
     protected final static String[] typeStrs                = {"Point",                          "Line",                          "Rectangle"};
     

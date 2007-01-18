@@ -44,7 +44,9 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * A JTextField (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
@@ -79,8 +81,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected JFormattedDoc           document;
     protected String                  defaultValue = null;
 
-    protected UIFieldFormatterMgr.Formatter            formatter;
-    protected List<UIFieldFormatterMgr.FormatterField> fields = null;
+    protected UIFieldFormatter            formatter;
+    protected List<UIFieldFormatterField> fields = null;
 
     //---
     protected String bgStr     = null;
@@ -111,7 +113,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         fields = formatter.getFields();
 
         StringBuilder strBuf = new StringBuilder(32);
-        for (UIFieldFormatterMgr.FormatterField field : fields)
+        for (UIFieldFormatterField field : fields)
         {
             requiredLength += field.getSize();
             strBuf.append(field.getValue());
@@ -461,8 +463,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         protected int limit;
         protected ValFormattedTextField textField;
-        protected UIFieldFormatterMgr.Formatter docFormatter;
-        protected UIFieldFormatterMgr.FormatterField[] docFields;
+        protected UIFieldFormatter docFormatter;
+        protected UIFieldFormatterField[] docFields;
 
         /**
          * CReate a special formatted document
@@ -470,15 +472,15 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
          * @param formatter the formatter
          * @param limit the lengthof the format
          */
-        public JFormattedDoc(ValFormattedTextField textField, UIFieldFormatterMgr.Formatter formatter, int limit)
+        public JFormattedDoc(ValFormattedTextField textField, UIFieldFormatter formatter, int limit)
         {
             super();
             this.textField    = textField;
             this.docFormatter = formatter;
             this.limit        = limit;
-            docFields = new UIFieldFormatterMgr.FormatterField[limit];
+            docFields = new UIFieldFormatterField[limit];
             int inx = 0;
-            for (UIFieldFormatterMgr.FormatterField f : docFormatter.getFields())
+            for (UIFieldFormatterField f : docFormatter.getFields())
             {
                 for (int i=0;i<f.getSize();i++)
                 {
@@ -493,17 +495,17 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
          * @param str the str to be checked
          * @returntrue char matches the type of input, false it is in error
          */
-        protected boolean isCharOK(final UIFieldFormatterMgr.FormatterField field, final String str)
+        protected boolean isCharOK(final UIFieldFormatterField field, final String str)
         {
-            if (field.getType() == UIFieldFormatterMgr.FieldType.alpha && !StringUtils.isAlpha(str))
+            if (field.getType() == UIFieldFormatterField.FieldType.alpha && !StringUtils.isAlpha(str))
             {
                 return false;
 
-            } else if (field.getType() == UIFieldFormatterMgr.FieldType.alphanumeric && !StringUtils.isAlphanumeric(str))
+            } else if (field.getType() == UIFieldFormatterField.FieldType.alphanumeric && !StringUtils.isAlphanumeric(str))
             {
                 return false;
 
-            } else if (field.getType() == UIFieldFormatterMgr.FieldType.numeric && !StringUtils.isNumeric(str))
+            } else if (field.getType() == UIFieldFormatterField.FieldType.numeric && !StringUtils.isNumeric(str))
             {
                 return false;
 
@@ -522,7 +524,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             for (int i=0;i<len;i++)
             {
                 char c = str.charAt(i);
-                if (docFields[i].getType() == UIFieldFormatterMgr.FieldType.separator)
+                if (docFields[i].getType() == UIFieldFormatterField.FieldType.separator)
                 {
                     if (c != docFields[i].getValue().charAt(0))
                     {
@@ -593,7 +595,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             int len = getLength() + str.length();
             if (len <= limit)
             {
-                UIFieldFormatterMgr.FormatterField field =  docFields[offset];
+                UIFieldFormatterField field =  docFields[offset];
                 if (!isCharOK(field, str))
                 {
                     getToolkit().beep();
@@ -603,7 +605,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     return;
                 }
 
-                if (field.getType() == UIFieldFormatterMgr.FieldType.separator)
+                if (field.getType() == UIFieldFormatterField.FieldType.separator)
                 {
                     if (str.charAt(0) != field.getValue().charAt(0))
                     {

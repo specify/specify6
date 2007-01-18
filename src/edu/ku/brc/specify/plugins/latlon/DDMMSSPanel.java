@@ -127,7 +127,7 @@ public class DDMMSSPanel extends DDMMMMPanel
             String str = latitudeDD.getText() + " " + latitudeMM.getText() + " " + latitudeSS.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                latitude =  LatLonConverter.convertDDMMSSToDDDD(str);
+                latitude =  LatLonConverter.convertDDMMSSToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
             }
 
         } else
@@ -135,7 +135,7 @@ public class DDMMSSPanel extends DDMMMMPanel
             String str = longitudeDD.getText() + " " + longitudeMM.getText() + " " + longitudeSS.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                longitude = LatLonConverter.convertDDMMSSToDDDD(str);
+                longitude = LatLonConverter.convertDDMMSSToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
             }
         }
     }

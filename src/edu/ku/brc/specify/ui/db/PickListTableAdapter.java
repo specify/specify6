@@ -28,7 +28,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
-import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  * @author rods

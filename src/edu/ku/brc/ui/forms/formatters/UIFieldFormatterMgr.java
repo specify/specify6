@@ -12,11 +12,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui.forms;
+package edu.ku.brc.ui.forms.formatters;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -29,7 +26,6 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.DateWrapper;
 
@@ -42,12 +38,12 @@ import edu.ku.brc.ui.DateWrapper;
  */
 public class UIFieldFormatterMgr
 {
-    public enum FieldType {numeric, alphanumeric, alpha, separator}
+    
 
     private static final Logger log = Logger.getLogger(UIFieldFormatterMgr.class);
     protected static UIFieldFormatterMgr instance = new UIFieldFormatterMgr();
 
-    protected Hashtable<String, Formatter> hash = new Hashtable<String, Formatter>();
+    protected Hashtable<String, UIFieldFormatter> hash = new Hashtable<String, UIFieldFormatter>();
 
 
     /**
@@ -72,7 +68,7 @@ public class UIFieldFormatterMgr
      * @param name the name of the format
      * @return return a formatter if it is there, returns null if it isn't
      */
-    public static Formatter getFormatter(final String name)
+    public static UIFieldFormatter getFormatter(final String name)
     {
         return instance.hash.get(name);
 
@@ -84,12 +80,12 @@ public class UIFieldFormatterMgr
      * @param clazz the class of the data tghat the formatter is used for.
      * @return return a formatter if it is there, returns null if it isn't
      */
-    public static Formatter getFormatter(final Class clazz)
+    public static UIFieldFormatter getFormatter(final Class clazz)
     {
-        Formatter formatter = null;
-        for (Enumeration<Formatter> e=instance.hash.elements();e.hasMoreElements();)
+        UIFieldFormatter formatter = null;
+        for (Enumeration<UIFieldFormatter> e=instance.hash.elements();e.hasMoreElements();)
         {
-            Formatter f = e.nextElement();
+            UIFieldFormatter f = e.nextElement();
             if (clazz == f.getDataClass())
             {
                 if (f.isDefault())
@@ -110,13 +106,13 @@ public class UIFieldFormatterMgr
      * @param clazz the class of the data tghat the formatter is used for.
      * @return return a list of formatters that match the class
      */
-    public static List<Formatter> getFormatterList(final Class clazz)
+    public static List<UIFieldFormatter> getFormatterList(final Class clazz)
     {
-        Vector<Formatter> list = new Vector<Formatter>();
-        Formatter defFormatter = null;
-        for (Enumeration<Formatter> e=instance.hash.elements();e.hasMoreElements();)
+        Vector<UIFieldFormatter> list = new Vector<UIFieldFormatter>();
+        UIFieldFormatter defFormatter = null;
+        for (Enumeration<UIFieldFormatter> e=instance.hash.elements();e.hasMoreElements();)
         {
-            Formatter f = e.nextElement();
+            UIFieldFormatter f = e.nextElement();
             if (clazz == f.getDataClass())
             {
                 if (f.isDefault())
@@ -157,7 +153,7 @@ public class UIFieldFormatterMgr
                     boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
 
                     List<?>              fieldsList = formatElement.selectNodes("field");
-                    List<FormatterField> fields     = new ArrayList<FormatterField>();
+                    List<UIFieldFormatterField> fields     = new ArrayList<UIFieldFormatterField>();
                     boolean              isInc      = false;
                     
                     for (Object fldObj : fieldsList)
@@ -168,15 +164,15 @@ public class UIFieldFormatterMgr
                         String    value   = fldElement.attributeValue("value");
                         String    typeStr = fldElement.attributeValue("type");
                         boolean   increm  = XMLHelper.getAttr(fldElement, "inc", false);
-                        FieldType type = null;
+                        UIFieldFormatterField.FieldType type = null;
                         try
                         {
-                            type  = FieldType.valueOf(typeStr);
+                            type  = UIFieldFormatterField.FieldType.valueOf(typeStr);
                         } catch (Exception ex)
                         {
                             log.error("["+typeStr+"]"+ex.toString());
                         }
-                        fields.add(new FormatterField(type, size, value, increm));
+                        fields.add(new UIFieldFormatterField(type, size, value, increm));
                         if (increm)
                         {
                             isInc = true;
@@ -189,11 +185,11 @@ public class UIFieldFormatterMgr
                         dataClass = Class.forName(dataClassName);
                     } catch (Exception ex)
                     {
-                        log.error("Couldn't load class ["+dataClassName+"]");
+                        log.error("Couldn't load class ["+dataClassName+"] for ["+name+"]");
                     }
 
                     boolean   isDate    = StringUtils.isNotEmpty(fType) && fType.equals("date");
-                    Formatter formatter = new Formatter(name, isDate, dataClass, isDefault, isInc, fields);
+                    UIFieldFormatter formatter = new UIFieldFormatter(name, isDate, dataClass, isDefault, isInc, fields);
                     if (isDate && fields.size() == 0)
                     {
                         addFieldsForDate(formatter);
@@ -218,7 +214,7 @@ public class UIFieldFormatterMgr
      * for the date from the dat preference
      * @param formatter the formatter to be augmented
      */
-    protected void addFieldsForDate(UIFieldFormatterMgr.Formatter formatter)
+    protected void addFieldsForDate(UIFieldFormatter formatter)
     {
         DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
@@ -234,7 +230,7 @@ public class UIFieldFormatterMgr
                     String s = "";
                     s += c;
                     s += c;
-                    UIFieldFormatterMgr.FormatterField f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 2, s.toUpperCase(), false);
+                    UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 2, s.toUpperCase(), false);
                     formatter.getFields().add(f);
                     currChar = c;
 
@@ -245,13 +241,13 @@ public class UIFieldFormatterMgr
                     {
                         i++;
                     }
-                    UIFieldFormatterMgr.FormatterField f;
+                    UIFieldFormatterField f;
                     if (i - start > 2)
                     {
-                        f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 4, "YYYY", false);
+                        f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 4, "YYYY", false);
                     } else
                     {
-                        f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.numeric, 2, "YY", false);
+                        f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 2, "YY", false);
                     }
                     formatter.getFields().add(f);
                     currChar = c;
@@ -260,7 +256,7 @@ public class UIFieldFormatterMgr
                 {
                     String s = "";
                     s += c;
-                    UIFieldFormatterMgr.FormatterField f = new UIFieldFormatterMgr.FormatterField(UIFieldFormatterMgr.FieldType.separator, 1, s, false);
+                    UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, s, false);
                     formatter.getFields().add(f);
                 }
             }
@@ -271,148 +267,5 @@ public class UIFieldFormatterMgr
     // Inner Classes
     //---------------------------------------------------------
 
-    public class Formatter
-    {
-        protected String               name;
-        protected Class                dataClass;
-        protected boolean              isDate;
-        protected boolean              isDefault;
-        protected List<FormatterField> fields;
-        protected boolean              isIncrementer;
-
-        public Formatter(final String  name, 
-                         final boolean isDate, 
-                         final Class   dataClass,
-                         final boolean isDefault,
-                         final boolean isIncrementer,
-                         final List<FormatterField> fields)
-        {
-            this.name      = name;
-            this.dataClass = dataClass;
-            this.isDate    = isDate;
-            this.isDefault = isDefault;
-            this.fields    = fields;
-            this.isIncrementer = isIncrementer;
-        }
-
-        public List<FormatterField> getFields()
-        {
-            return fields;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public boolean isDate()
-        {
-            return isDate;
-        }
-
-        public Class getDataClass()
-        {
-            return dataClass;
-        }
-
-        public boolean isDefault()
-        {
-            return isDefault;
-        }
-
-        public boolean isIncrementer()
-        {
-            return isIncrementer;
-        }
-
-        public void setIncrementer(boolean isIncrementer)
-        {
-            this.isIncrementer = isIncrementer;
-        }
-        
-        /**
-         * This is work in progress.
-         * @return the next formatted ID
-         */
-        public String getNextId()
-        {
-            // For Demo
-            try
-            {
-                Connection conn = DBConnection.getInstance().createConnection();
-                Statement  stmt = conn.createStatement();
-                // MySQL should use Hibernate
-                ResultSet  rs   = stmt.executeQuery("select "+name+" from "+dataClass.getSimpleName()+" order by "+name+" desc limit 0,1");
-                if (rs.first())
-                {
-                    String numStr      = rs.getString(1);
-                    int    offsetStart = 1;
-                    int    offsetEnd   = numStr.length();
-                    for (FormatterField ff : fields)
-                    {
-                        if (!ff.isIncrementer())
-                        {
-                            offsetStart += ff.getSize();
-                        } else
-                        {
-                            offsetEnd = offsetStart + ff.getSize();
-                            break;
-                        }
-                    }
-                    int num = Integer.parseInt(numStr.substring(offsetStart, offsetEnd));
-                    num++;
-                    return String.format("2006-%03d", new Object[] {num});
-                    
-                } else
-                {
-                    return "2006-001";
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-            return null;
-        }
-    }
-
-    public class FormatterField
-    {
-        protected FieldType type;
-        protected int       size;
-        protected String    value;
-        protected boolean   incrementer;
-        
-        public FormatterField(FieldType type, int size, String value, boolean incrementer)
-        {
-            super();
-            // TODO Auto-generated constructor stub
-            this.type = type;
-            this.size = size;
-            this.value = value;
-            this.incrementer = incrementer;
-        }
-
-        public int getSize()
-        {
-            return size;
-        }
-
-        public FieldType getType()
-        {
-            return type;
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-
-        public boolean isIncrementer()
-        {
-            return incrementer;
-        }
-
-    }
 
 }

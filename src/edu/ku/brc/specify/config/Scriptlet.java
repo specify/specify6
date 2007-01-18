@@ -42,7 +42,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collectors;
-import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /*
  * @code_status Unknown (auto-generated)

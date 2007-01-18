@@ -33,8 +33,8 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  *

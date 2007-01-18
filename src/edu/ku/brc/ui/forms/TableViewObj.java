@@ -68,6 +68,7 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;

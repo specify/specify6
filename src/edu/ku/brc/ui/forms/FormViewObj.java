@@ -86,6 +86,7 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItemIFace;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;

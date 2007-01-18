@@ -52,8 +52,8 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
-import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 
 /**

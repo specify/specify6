@@ -162,7 +162,37 @@
             </fields>
         </switch>
     </format>
-   
+    
+    <format
+        name="LocalityLatitude"
+        class="edu.ku.brc.specify.datamodel.Locality"
+        default="true"
+        >
+        <switch single="true">
+            <external class="edu.ku.brc.specify.ui.LatLonFormatter">
+                <param name="type">latitude</param>
+                <param name="dir">symbol</param>
+                <param name="format">DDDDDD</param>
+                <param name="which">1</param>
+            </external>
+        </switch>
+    </format>
+    
+    <format
+        name="LocalityLongitude"
+        class="edu.ku.brc.specify.datamodel.Locality"
+        default="true"
+        >
+        <switch single="true">
+            <external class="edu.ku.brc.specify.ui.LatLonFormatter">
+                <param name="type">longitude</param>
+                <param name="dir">symbol</param>
+                <param name="format">DDDDDD</param>
+                <param name="which">1</param>
+            </external>
+        </switch>
+    </format>
+    
     <aggregators>
         <aggregator name="AccessionAuthorizations" class="edu.ku.brc.specify.datamodel.AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations" default="true"/>
         <aggregator name="AccessionAgents"         class="edu.ku.brc.specify.datamodel.AccessionAgents" separator="; " count="" ending="" format="AccessionAgents" default="true"/>   

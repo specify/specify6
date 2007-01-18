@@ -68,12 +68,12 @@ import edu.ku.brc.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
-import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 
 /**

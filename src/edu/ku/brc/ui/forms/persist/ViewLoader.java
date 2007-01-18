@@ -36,8 +36,8 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.UIFieldFormatterMgr.Formatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
 
 /**
@@ -127,7 +127,7 @@ public class ViewLoader
                 ViewDef viewDef = viewDefs.get(viewDefName);
                 if (viewDef == null)
                 {
-                    throw new RuntimeException("View Name["+name+"] refers to a ViewDef that doesn't exist.");
+                    throw new RuntimeException("View Name["+name+"] refers to a ViewDef ["+viewDefName+"] that doesn't exist.");
                 }
 
                 // Make sure we only have one default view
@@ -302,6 +302,7 @@ public class ViewLoader
             {
                 Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
                 ViewDef  viewDef = createViewDef(element);
+                log.debug("Loaded ViewDef["+viewDef.getName()+"]");
                 if (viewDefs.get(viewDef.getName()) == null)
                 {
                     viewDefs.put(viewDef.getName(), viewDef);
@@ -589,7 +590,7 @@ public class ViewLoader
                                     dspUITypeStr   = getAttr(cellElement, "dspuitype", "dsptextfield");
                                     if (isNotEmpty(uiFieldFormatter))
                                     {
-                                        Formatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
+                                        UIFieldFormatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
                                         if (formatter == null)
                                         {
                                             log.error("Couldn't find formatter["+uiFieldFormatter+"]");

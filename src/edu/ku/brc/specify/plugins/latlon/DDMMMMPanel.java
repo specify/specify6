@@ -139,29 +139,17 @@ public class DDMMMMPanel extends DDDDPanel
     {
         if (doLatitude)
         {
-            double oldVal = latitude.doubleValue();
             String str = latitudeDD.getText() + " " + latitudeMM.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                latitude = LatLonConverter.convertDDMMMMToDDDD(str).abs();
-                System.out.println("Old["+oldVal+"] New["+latitude.doubleValue()+"]["+str+"]");
-                if (latitudeDir.getSelectedIndex() == 0)
-                {
-                    latitude = latitude.multiply(minusOne);
-                }
+                latitude = LatLonConverter.convertDDMMMMToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
             }
         } else
         {
-            double oldVal = longitude.doubleValue();
             String str = longitudeDD.getText() + " " + longitudeMM.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                longitude =  LatLonConverter.convertDDMMMMToDDDD(str).abs();
-                System.out.println("Old["+oldVal+"] New["+longitude.doubleValue()+"]["+str+"]");
-                if (longitudeDir.getSelectedIndex() == 0)
-                {
-                    longitude = longitude.multiply(minusOne);
-                }
+                longitude =  LatLonConverter.convertDDMMMMToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
             }
         }
     }

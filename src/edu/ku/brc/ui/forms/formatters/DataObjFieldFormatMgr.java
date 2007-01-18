@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.ui.forms;
+package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
@@ -31,34 +31,43 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.DataObjectGettable;
+import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 
 
-/*
- * @code_status Beta
- **
+/**
  * @author rods
+ *
+ * @code_status Beta
+ *
+ * Created Date: Jan 17, 2007
  *
  */
 public class DataObjFieldFormatMgr
 {
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
+    
     protected static DataObjFieldFormatMgr  instance = new DataObjFieldFormatMgr();
 
 
-    protected Hashtable<String, SwitchFormatter> formatHash      = new Hashtable<String, SwitchFormatter>();
-    protected Hashtable<Class, SwitchFormatter>  formatClassHash = new Hashtable<Class, SwitchFormatter>();
-    protected Hashtable<String, Aggregator>      aggHash         = new Hashtable<String, Aggregator>();
-    protected Hashtable<Class, Aggregator>       aggClassHash    = new Hashtable<Class, Aggregator>();
-    protected Object[]                           args            = new Object[2]; // start with two slots
+    protected Hashtable<String, DataObjSwitchFormatter> formatHash      = new Hashtable<String, DataObjSwitchFormatter>();
+    protected Hashtable<Class, DataObjSwitchFormatter>  formatClassHash = new Hashtable<Class, DataObjSwitchFormatter>();
+    protected Hashtable<String, DataObjAggregator>      aggHash         = new Hashtable<String, DataObjAggregator>();
+    protected Hashtable<Class, DataObjAggregator>       aggClassHash    = new Hashtable<Class, DataObjAggregator>();
+    protected Object[]                                  args            = new Object[2]; // start with two slots
     
-    protected Hashtable<String, Class<?>>        typeHash   = new Hashtable<String, Class<?>>();
+    protected Hashtable<String, Class<?>>               typeHash        = new Hashtable<String, Class<?>>();
     
     /**
      * Protected Constructor
      */
     protected DataObjFieldFormatMgr()
     {
-        Object[] initTypeData = {"string", String.class, "int", Integer.class, "float", Float.class, "double", Double.class, "boolean", Boolean.class};
+        Object[] initTypeData = {"string", String.class, 
+                                "int",     Integer.class, 
+                                "float",   Float.class, 
+                                "double",  Double.class, 
+                                "boolean", Boolean.class};
         for (int i=0;i<initTypeData.length;i++)
         {
             typeHash.put((String)initTypeData[i], (Class)initTypeData[i+1]);
@@ -111,7 +120,7 @@ public class DataObjFieldFormatMgr
                         boolean  isSingle     = getAttr(switchElement, "single", false);
                         String   switchField  = getAttr(switchElement, "field", null);
                         
-                        SwitchFormatter switchFormatter = new SwitchFormatter(name, isSingle, isDefault, dataClass, switchField);
+                        DataObjSwitchFormatter switchFormatter = new DataObjSwitchFormatter(name, isSingle, isDefault, dataClass, switchField);
                         
                         if (formatHash.get(name) == null)
                         {
@@ -122,39 +131,74 @@ public class DataObjFieldFormatMgr
                             throw new RuntimeException("Duplicate formatter name["+name+"]");
                         }
                         
-                        SwitchFormatter sf = formatClassHash.get(dataClass);
+                        DataObjSwitchFormatter sf = formatClassHash.get(dataClass);
                         if (sf == null || isDefault)
                         {
                             formatClassHash.put(dataClass, switchFormatter);
                         }
                         
-                        List<?> fieldsElements = switchElement.selectNodes("fields");
-                        for (Object fieldsObj : fieldsElements)
+                        Element external = (Element)switchElement.selectSingleNode("external");
+                        if (external != null)
                         {
-                            Element fieldsElement = (Element)fieldsObj;
-                            String   valueStr  = getAttr(fieldsElement, "value", null);
-                            
-                            List<?> fldList = fieldsElement.selectNodes("field");
-                            DataField[] fields = new DataField[fldList.size()];
-                            int inx = 0;
-                            for (Object fldObj : fldList)
+                            String externalClassName = getAttr(external, "class", (String)null);
+                            if (StringUtils.isNotEmpty(externalClassName))
                             {
-                                Element  fieldElement  = (Element)fldObj;
-                                String   fieldName     = fieldElement.getTextTrim();
-                                String   dataTypeStr   = getAttr(fieldElement, "type", "string");
-                                String   formatStr     = getAttr(fieldElement, "format", null);
-                                String   sepStr        = getAttr(fieldElement, "sep", null);
-                                String   formatterName = getAttr(fieldElement, "formatter", null);
+                                Hashtable<String, String> props = new Hashtable<String, String>();
                                 
-                                Class<?> classObj      = typeHash.get(dataTypeStr);
-                                if (classObj == null)
+                                List<?> paramElements = switchElement.selectNodes("param");
+                                for (Object param : paramElements)
                                 {
-                                    log.error("Couldn't map standard type["+dataTypeStr+"]");
+                                    String typeStr = getAttr((Element)param, "type", null);
+                                    String val     = StringUtils.deleteWhitespace(((Element)param).getTextTrim());
+                                    if (StringUtils.isNotEmpty(typeStr) && StringUtils.isNotEmpty(val))
+                                    {
+                                        props.put(typeStr, val);
+                                    }
+                                    try 
+                                    {
+                                        DataObjDataFieldFormatIFace fmt = Class.forName(name).asSubclass(DataObjDataFieldFormatIFace.class).newInstance();
+                                        fmt.init(name, props);
+                                        switchFormatter.add(fmt);
+                                        
+                                    } catch (Exception ex)
+                                    {
+                                        log.error(ex);
+                                    }
                                 }
-                                fields[inx] = new DataField(fieldName, classObj, formatStr, sepStr, formatterName);
-                                inx++;
+                            } else
+                            {
+                                throw new RuntimeException("The 'class' attribute cannot be empty for an external formatter! ["+name+"]");
                             }
-                            switchFormatter.add(new DataFieldFormat(name, dataClass, isDefault, format, valueStr, fields));
+                        } else
+                        {
+                            List<?> fieldsElements = switchElement.selectNodes("fields");
+                            for (Object fieldsObj : fieldsElements)
+                            {
+                                Element fieldsElement = (Element)fieldsObj;
+                                String   valueStr  = getAttr(fieldsElement, "value", null);
+                                
+                                List<?> fldList = fieldsElement.selectNodes("field");
+                                DataObjDataField[] fields = new DataObjDataField[fldList.size()];
+                                int inx = 0;
+                                for (Object fldObj : fldList)
+                                {
+                                    Element  fieldElement  = (Element)fldObj;
+                                    String   fieldName     = fieldElement.getTextTrim();
+                                    String   dataTypeStr   = getAttr(fieldElement, "type", "string");
+                                    String   formatStr     = getAttr(fieldElement, "format", null);
+                                    String   sepStr        = getAttr(fieldElement, "sep", null);
+                                    String   formatterName = getAttr(fieldElement, "formatter", null);
+                                    
+                                    Class<?> classObj      = typeHash.get(dataTypeStr);
+                                    if (classObj == null)
+                                    {
+                                        log.error("Couldn't map standard type["+dataTypeStr+"]");
+                                    }
+                                    fields[inx] = new DataObjDataField(fieldName, classObj, formatStr, sepStr, formatterName);
+                                    inx++;
+                                }
+                                switchFormatter.add(new DataObjDataFieldFormat(name, dataClass, isDefault, format, valueStr, fields));
+                            }
                         }
                     } else
                     {
@@ -193,7 +237,7 @@ public class DataObjFieldFormatMgr
                     }
                     
                     // TODO check for duplicates!
-                    aggHash.put(name, new Aggregator(name, dataClass, isDefault, separator, count, ending, format));
+                    aggHash.put(name, new DataObjAggregator(name, dataClass, isDefault, separator, count, ending, format));
                 }
                     
             } else
@@ -213,9 +257,9 @@ public class DataObjFieldFormatMgr
      * @param formatName the name of the formatter to use
      * @return the string result of the format
      */
-    protected DataFieldFormat getDataFormatter(final Object dataObj, final String formatName)
+    protected DataObjDataFieldFormatIFace getDataFormatter(final Object dataObj, final String formatName)
     {
-        SwitchFormatter switcherFormatter = formatHash.get(formatName);
+        DataObjSwitchFormatter switcherFormatter = formatHash.get(formatName);
         if (switcherFormatter != null)
         {
             return getDataFormatter(dataObj, switcherFormatter);
@@ -234,9 +278,9 @@ public class DataObjFieldFormatMgr
      * @param switcherFormatter the switch formatter
      * @return the string result of the format
      */
-    protected DataFieldFormat getDataFormatter(final Object dataObj, final SwitchFormatter switcherFormatter)
+    protected DataObjDataFieldFormatIFace getDataFormatter(final Object dataObj, final DataObjSwitchFormatter switcherFormatter)
     {
-        if (switcherFormatter.isSingle)
+        if (switcherFormatter.isSingle())
         {
             return switcherFormatter.getFormatterForValue(null); // null is ignored
         }
@@ -245,7 +289,7 @@ public class DataObjFieldFormatMgr
 
         Object[]        values = UIHelper.getFieldValues(new String[] {switcherFormatter.getFieldName()}, dataObj, getter);
         String          value  = values[0] != null ? values[0].toString() : "null";
-        DataFieldFormat dff    = switcherFormatter.getFormatterForValue(value);
+        DataObjDataFieldFormatIFace dff    = switcherFormatter.getFormatterForValue(value);
         if (dff == null)
         {
             log.error("Couldn't find a switchable data formatter for ["+switcherFormatter.getName()+"] field["+switcherFormatter.getFieldName()+"] value["+value+"]");
@@ -258,17 +302,22 @@ public class DataObjFieldFormatMgr
      * @param dataObj the data object for which fields will be formatted for it
      * @return the string result of the format
      */
-    protected String formatInternal(final DataFieldFormat format, final Object dataObj)
+    protected String formatInternal(final DataObjDataFieldFormatIFace format, final Object dataObj)
     {
         if (format != null)
         {
+            if (format.isDirectFormatter())
+            {
+                return format.format(dataObj);
+            }
+            
             // XXX FIXME this shouldn't be hard coded here
             DataObjectGettable getter = DataObjectGettableFactory.get(format.getDataClass().getName(), 
                                                                       "edu.ku.brc.ui.forms.DataGetterForObj");
             if (getter != null)
             {
                 StringBuilder strBuf = new StringBuilder(128);
-                for (DataField field : format.getFields())
+                for (DataObjDataField field : format.getFields())
                 {
                     Object[] values = UIHelper.getFieldValues(new String[]{field.getName()}, dataObj, getter);
                     
@@ -276,9 +325,9 @@ public class DataObjFieldFormatMgr
                     Object value = values != null ? values[0] : null;//getter.getFieldValue(dataObj, field.getName());
                     if (value != null)
                     {
-                        if (field.getFormmatterName() != null )
+                        if (field.getFormatterName() != null )
                         {
-                            String fmtStr = formatInternal(getDataFormatter(value, field.getFormmatterName()), value);
+                            String fmtStr = formatInternal(getDataFormatter(value, field.getFormatterName()), value);
                             if (fmtStr != null)
                             {
                                 strBuf.append(fmtStr);
@@ -326,7 +375,7 @@ public class DataObjFieldFormatMgr
      * @param dataObj the data object for which fields will be formatted for it
      * @return the string result of the format
      */
-    protected String formatInternal(final DataFieldFormat format, final Object[] dataObjs)
+    protected String formatInternal(final DataObjDataFieldFormat format, final Object[] dataObjs)
     {
         if (format != null)
         {
@@ -340,15 +389,15 @@ public class DataObjFieldFormatMgr
                 if (dataObjs.length == format.getFields().length)
                 {
                     int inx = 0;
-                    for (DataField field : format.getFields())
+                    for (DataObjDataField field : format.getFields())
                     {
                         Object value = dataObjs[inx++];
                         if (value != null)
                         {
                             
-                            if (field.getFormmatterName() != null )
+                            if (field.getFormatterName() != null )
                             {
-                                String fmtStr = formatInternal(getDataFormatter(value, field.getFormmatterName()), value);
+                                String fmtStr = formatInternal(getDataFormatter(value, field.getFormatterName()), value);
                                 if (fmtStr != null)
                                 {
                                     strBuf.append(fmtStr);
@@ -395,7 +444,7 @@ public class DataObjFieldFormatMgr
      * @param aggName the name of the aggregator to use
      * @return a string representing a collection of all the objects 
      */
-    protected String aggregateInternal(final Collection<?> items, final Aggregator agg)
+    protected String aggregateInternal(final Collection<?> items, final DataObjAggregator agg)
     {
         if (agg != null)
         {
@@ -437,21 +486,21 @@ public class DataObjFieldFormatMgr
      */
     public static String format(final Object dataObj, final String formatName)
     {
-        SwitchFormatter sf = instance.formatHash.get(formatName);
+        DataObjSwitchFormatter sf = instance.formatHash.get(formatName);
         if (sf != null)
         {
-            DataFieldFormat dff = instance.getDataFormatter(dataObj, sf);
+            DataObjDataFieldFormatIFace dff = instance.getDataFormatter(dataObj, sf);
             if (dff != null)
             {
                 return instance.formatInternal(dff, dataObj);
                 
             } else
             {
-                log.error("Couldn't find DataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
+                log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
             }
         } else
         {
-            log.error("Couldn't find SwitchFormatter for class ["+formatName+"]"); 
+            log.error("Couldn't find DataObjSwitchFormatter for class ["+formatName+"]"); 
         }
         return null;
     }
@@ -464,21 +513,21 @@ public class DataObjFieldFormatMgr
      */
     public static String format(final Object dataObj, final Class dataClass)
     {
-        SwitchFormatter sf = instance.formatClassHash.get(dataClass);
+        DataObjSwitchFormatter sf = instance.formatClassHash.get(dataClass);
         if (sf != null)
         {
-            DataFieldFormat dff = instance.getDataFormatter(dataObj, sf);
+            DataObjDataFieldFormatIFace dff = instance.getDataFormatter(dataObj, sf);
             if (dff != null)
             {
                 return instance.formatInternal(dff, dataObj);
                 
             } else
             {
-                log.error("Couldn't find DataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
+                log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
             }
         } else
         {
-            log.error("Couldn't find SwitchFormatter for class ["+dataClass.getName()+"]"); 
+            log.error("Couldn't find DataObjSwitchFormatter for class ["+dataClass.getName()+"]"); 
         }
         return null;
     }
@@ -505,7 +554,7 @@ public class DataObjFieldFormatMgr
     {
         if (items != null && items.size() > 0)
         {
-            Aggregator agg = instance.aggHash.get(aggName);
+            DataObjAggregator agg = instance.aggHash.get(aggName);
             if (agg != null)
             {
                 return instance.aggregateInternal(items, agg);
@@ -528,15 +577,15 @@ public class DataObjFieldFormatMgr
      */
     public static String aggregate(final Collection<?> items, final Class dataClass)
     {
-        Aggregator defAgg = null;
+        DataObjAggregator defAgg = null;
         if (dataClass == Determination.class)
         {
             int x = 0;
             x++;
         }
-        for (Enumeration<Aggregator> e=instance.aggHash.elements();e.hasMoreElements();)
+        for (Enumeration<DataObjAggregator> e=instance.aggHash.elements();e.hasMoreElements();)
         {
-            Aggregator agg = e.nextElement();
+            DataObjAggregator agg = e.nextElement();
             if (dataClass == agg.getDataClass())
             {
                 if (agg.isDefault())
@@ -561,265 +610,4 @@ public class DataObjFieldFormatMgr
         }
         return "";
     }
-
-    //----------------------------------------------------------------
-    // Inner Classes
-    //----------------------------------------------------------------
-
-    protected class SwitchFormatter
-    {
-        protected String          name;
-        protected boolean         isSingle;
-        protected boolean         isDefault;
-        protected Class           dataClass;
-        protected String          fieldName;
-        protected DataFieldFormat single     = null;
-        
-        protected Hashtable<String, DataFieldFormat> formatsHashtable= null;
-        
-        public SwitchFormatter(final String  name, 
-                               final boolean isSingle, 
-                               final boolean isDefault, 
-                               final Class   dataClass, 
-                               final String  fieldName)
-        {
-            this.name      = name;
-            this.isSingle  = isSingle;
-            this.isDefault = isDefault;
-            this.dataClass = dataClass;
-            this.fieldName = fieldName;
-        }
-        
-        public void add(final DataFieldFormat dff)
-        {
-            if (isSingle)
-            {
-                single = dff;
-                
-            } else
-            {
-                if (formatsHashtable == null)
-                {
-                    formatsHashtable = new Hashtable<String, DataFieldFormat>();
-                }
-                
-                if (StringUtils.isNotEmpty(dff.getValue()))
-                {
-                    formatsHashtable.put(dff.getValue(), dff);
-                    
-                } else
-                {
-                    log.error("Data formatter's 'value' attribute is empty for ["+dff.getName()+"]");
-                }
-            }
-        }
-        
-        public DataFieldFormat getFormatterForValue(final String value)
-        {
-            if (isSingle)
-            {
-                return single;
-                
-            }
-            return formatsHashtable.get(value);
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getFieldName()
-        {
-            return fieldName;
-        }
-
-        public boolean isSingle()
-        {
-            return isSingle;
-        }
-
-        public Class getDataClass()
-        {
-            return dataClass;
-        }
-
-        public boolean isDefault()
-        {
-            return isDefault;
-        }
-
-        public DataFieldFormat getSingle()
-        {
-            return single;
-        }
-    }
-    
-    /**
-     * A field formatter
-     */
-    protected class DataFieldFormat
-    {
-        protected String      name;
-        protected Class<?>    dataClass;
-        protected boolean     isDefault;
-        protected String      format;
-        protected String      value;
-        protected DataField[] fields;
-        protected Class<?>    classObj;
-
-        public DataFieldFormat(String name, Class<?> dataClass, boolean isDefault, String format, String value, DataField[] fields)
-        {
-            this.name       = name;
-            this.dataClass  = dataClass;
-            this.isDefault  = isDefault;
-            this.format     = format;
-            this.value      = value;
-            this.fields     = fields;
-        }
-
-        public Class<?> getDataClass()
-        {
-            return dataClass;
-        }
-
-        public DataField[] getFields()
-        {
-            return fields;
-        }
-
-        public String getFormat()
-        {
-            return format;
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public Class<?> getClassObj()
-        {
-            return classObj;
-        }
-
-        public boolean isDefault()
-        {
-            return isDefault;
-        }
-        
-    }
-
-    /**
-     * A individual part of the formatter.
-     *
-     */
-    protected class DataField
-    {
-        protected String   name;
-        protected Class<?> type;
-        protected String   format;
-        protected String   sep;
-        protected String   formmatterName;
-        
-        public DataField(String name, Class<?> type, String format, String sep, String formmatterName)
-        {
-            super();
-            
-            this.name = name;
-            this.type = type;
-            this.format = format;
-            this.sep = sep;
-            this.formmatterName = formmatterName;
-        }
-        public String getFormat()
-        {
-            return format;
-        }
-        public String getName()
-        {
-            return name;
-        }
-        public String getSep()
-        {
-            return sep;
-        }
-        public Class<?> getType()
-        {
-            return type;
-        }
-        public String getFormmatterName()
-        {
-            return formmatterName;
-        }
-    }
-    
-    
-    /**
-     * @author rods
-     *
-     */
-    protected class Aggregator
-    {
-        protected String          name;
-        protected Class           dataClass;
-        protected boolean         isDefault;
-        protected String          separator;
-        protected Integer         count      = null;
-        protected String          ending;
-        protected String          formatName;
-        
-        public Aggregator(String name, Class dataClass, boolean isDefault, String separator, Integer count, String ending, String formatName)
-        {
-            super();
-            this.name = name;
-            this.isDefault = isDefault;
-            this.dataClass = dataClass;
-            this.separator = separator;
-            this.count = count;
-            this.ending = ending;
-            this.formatName = formatName;
-        }
-
-        public boolean isDefault()
-        {
-            return isDefault;
-        }
-
-        public Class getDataClass()
-        {
-            return dataClass;
-        }
-
-        public Integer getCount()
-        {
-            return count;
-        }
-
-        public String getEnding()
-        {
-            return ending;
-        }
-
-        public String getFormatName()
-        {
-            return formatName;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getSeparator()
-        {
-            return separator;
-        }
-    }
-
 }

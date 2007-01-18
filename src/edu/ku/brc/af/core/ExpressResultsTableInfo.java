@@ -232,15 +232,16 @@ public class ExpressResultsTableInfo
     {
         cleanUp();
     }
-
+    
     /**
-     * Returns an array with the column name mappined, return null if all columns are to be shown.
-     * @return Returns an array with the column name mappined, return null if all columns are to be shown
+     * Helper to map an array to the visiable columns of the array.
+     * @param array the array to be mapped
+     * @return a new array that is mapped or the same array
      */
-    public String[] getColNames()
+    protected String[] getMappedArray(final String[] array)
     {
         String[] mappedColNames = null;
-        if (visColCount < colNames.length)
+        if (visColCount < array.length)
         {
             mappedColNames = new String[visColCount];
             int j = 0;
@@ -248,13 +249,22 @@ public class ExpressResultsTableInfo
             {
                 if (visCols[i])
                 {
-                    mappedColNames[j++] = colNames[i];
+                    mappedColNames[j++] = array[i];
                 }
             }
             return mappedColNames;
         }
 
-        return colNames;
+        return array;  
+    }
+
+    /**
+     * Returns an array with the column name mappined, return null if all columns are to be shown.
+     * @return Returns an array with the column name mappined, return null if all columns are to be shown
+     */
+    public String[] getColNames()
+    {
+        return getMappedArray(colNames);
     }
 
     /**
@@ -263,22 +273,7 @@ public class ExpressResultsTableInfo
      */
     public String[] getColLabels()
     {
-        String[] mappedColLabels = null;
-        if (visColCount < colLabels.length)
-        {
-            mappedColLabels = new String[visColCount];
-            int j = 0;
-            for (int i=0;i<visCols.length;i++)
-            {
-                if (visCols[i])
-                {
-                    mappedColLabels[j++] = colLabels[i];
-                }
-            }
-            return mappedColLabels;
-        }
-
-        return colLabels;
+        return getMappedArray(colLabels);
     }
 
     /**

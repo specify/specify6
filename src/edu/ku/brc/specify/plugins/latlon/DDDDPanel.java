@@ -7,6 +7,8 @@
 
 package edu.ku.brc.specify.plugins.latlon;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -45,6 +47,12 @@ import edu.ku.brc.ui.validation.UIValidatable.ErrorType;
  */
 public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListener, ItemListener
 {
+    protected static final   String[] NORTH_SOUTH = {"N", "S"};
+    protected static final   String[] EAST_WEST   = {"E", "W"};
+    
+    protected static String[] northSouth  = null;
+    protected static String[] eastWest    = null;
+          
     protected BigDecimal     minusOne      = new BigDecimal("-1.0");
 
     protected boolean        isViewMode = false;
@@ -72,7 +80,16 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public DDDDPanel()
     {
-        // nothing
+        if (northSouth == null)
+        {
+            northSouth = new String[] {getResourceString(NORTH_SOUTH[0]), getResourceString(NORTH_SOUTH[1])};
+        }
+
+        if (eastWest == null)
+        {
+            eastWest = new String[] {getResourceString(EAST_WEST[0]), getResourceString(EAST_WEST[1])};
+        }
+
     }
     
     /**
@@ -141,7 +158,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public JComboBox createDirComboxbox(final boolean forNorthSouth)
     {
-        JComboBox cbx =  new JComboBox(forNorthSouth ? new String[] {"N", "S"} : new String[] {"E", "W"} ); // I18N
+        JComboBox cbx =  new JComboBox(forNorthSouth ? northSouth : eastWest );
         cbx.addItemListener(this);
         return cbx;
     }
@@ -200,22 +217,14 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             String str = latitudeDD.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                latitude = new BigDecimal(str).abs();
-                if (latitudeDir.getSelectedIndex() == 0)
-                {
-                    latitude = latitude.multiply(minusOne);
-                }
+                latitude = LatLonConverter.convertDDDDToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
             }
         } else
         {
             String str = longitudeDD.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                longitude = new BigDecimal(str).abs();
-                if (longitudeDir.getSelectedIndex() == 0)
-                {
-                    longitude = longitude.multiply(minusOne);
-                }
+                longitude = LatLonConverter.convertDDDDToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
             }
         }
     }
@@ -232,7 +241,6 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         
         if (isViewMode)
         {
-
             ViewFactory.changeTextFieldUIForDisplay(textField);
 
         } else
@@ -317,7 +325,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     public String getLatitudeDir()
     {
         getDataFromUI(true);
-        return latitude.doubleValue() > 0 ? "N" : "S"; // I18N
+        return latitude.doubleValue() >= 0 ? northSouth[0] : northSouth[1];
     }
     
     /* (non-Javadoc)
@@ -326,7 +334,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     public String getLongitudeDir()
     {
         getDataFromUI(false);
-        return longitude.doubleValue() > 0 ? "W" : "E"; // I18N
+        return longitude.doubleValue() >= 0 ? eastWest[0] : eastWest[1];
     }
 
     /* (non-Javadoc)
