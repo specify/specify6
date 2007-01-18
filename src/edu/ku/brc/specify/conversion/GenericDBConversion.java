@@ -790,10 +790,11 @@ public class GenericDBConversion
            {
                BasicSQLUtils.setShowMappingError(false);
 
-           }           
+           }
+           
            if(tableName.toLowerCase().equals("accessionagent"))
            {
-               copyTable(oldDBConn, newDBConn, "select * from " + tableName + "s", tableName + "s", tableName, tableMaps.get(lowerCaseName), null);
+               copyTable(oldDBConn, newDBConn, "select * from accessionagents", "accessionagents", "accessionagent", tableMaps.get(lowerCaseName), null);
                
            }           
            else if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
