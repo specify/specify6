@@ -297,7 +297,7 @@ public class SpecifyDBConverter
         {
         	GenericDBConversion.setShouldCreateMapTables(true);
 
-            GenericDBConversion.setShouldDeleteMapTables(false);
+            GenericDBConversion.setShouldDeleteMapTables(true);
             
             frame.setOverall(0, 15);
             SwingUtilities.invokeLater(new Runnable() {
