@@ -126,36 +126,6 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         panes.put(title, pane); // this must be done before adding it
         addTab(title, pane.getIcon(), pane.getUIComponent());
         
-        JPanel tabPanel = new JPanel(new BorderLayout());
-        tabPanel.add(new JLabel(title, pane.getIcon(), JLabel.RIGHT), BorderLayout.WEST);
-        tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
-
-        final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
-        closeBtn.setBorder(null);
-
-        closeBtn.setOpaque(false);
-        closeBtn.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e)
-            {
-                closeCurrent();
-            }
-            public void mouseEntered(MouseEvent e)
-            {
-                closeBtn.setIcon(IconManager.getIcon("CloseHover"));
-                closeBtn.repaint();
-            }
-
-            public void mouseExited(MouseEvent e)
-            {
-                closeBtn.setIcon(IconManager.getIcon("Close"));
-                closeBtn.repaint();
-            }
-        });
-
-        tabPanel.add(closeBtn, BorderLayout.EAST);
-        
-        setTabComponentAt(getTabCount()-1, tabPanel);
-        
         notifyListeners(NotificationType.Added, pane);
 
         this.setSelectedIndex(getTabCount()-1);

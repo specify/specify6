@@ -1,18 +1,24 @@
 package edu.ku.brc.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.MouseInputAdapter;
 
 /**
- * Temporary Class until Mustang ships, it places an "X" in the bottom right of the TabbedPane for closing tabs.
+ * Adds a close "X" in the bottom right of the TabbedPane for closing tabs and adds a Close btn to each tab.
  *
- * @code_status Beta
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -37,7 +43,7 @@ public class ExtendedTabbedPane extends JTabbedPane
 
     /**
      * Constructor.
-     * @param tabPlacement
+     * @param tabPlacement tabLayoutPolicy
      */
     public ExtendedTabbedPane(int tabPlacement)
     {
@@ -46,8 +52,9 @@ public class ExtendedTabbedPane extends JTabbedPane
     }
 
     /**
-     * @param tabPlacement
-     * @param tabLayoutPolicy
+     * Constructor.
+     * @param tabPlacement tabPlacement
+     * @param tabLayoutPolicy tabLayoutPolicy
      */
     public ExtendedTabbedPane(int tabPlacement, int tabLayoutPolicy)
     {
@@ -56,7 +63,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     }
     
     /**
-     * 
+     * Hooks up listeners for painting the hover state of the close "X".
      */
     protected void init()
     {
@@ -107,20 +114,113 @@ public class ExtendedTabbedPane extends JTabbedPane
     }
     
     /**
-     * 
+     * Adds a Close Btn to the Tab.
+     * @param index the index of the tab
+     * @param title the title of the tab
+     * @param icon the icon for the tab (can be null)
+     */
+    protected void adjustTab(final int index, final String title, final Icon icon)
+    {
+        final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
+        closeBtn.setBorder(null);
+
+        closeBtn.setOpaque(false);
+        closeBtn.addMouseListener(new MouseAdapter() 
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                closeCurrent();
+            }
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                closeBtn.setIcon(IconManager.getIcon("CloseHover"));
+                closeBtn.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                closeBtn.setIcon(IconManager.getIcon("Close"));
+                closeBtn.repaint();
+            }
+        });
+
+        JPanel tabPanel = new JPanel(new BorderLayout());
+        if (icon != null)
+        {
+            tabPanel.add(new JLabel(title, icon, JLabel.RIGHT), BorderLayout.WEST);
+            tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
+        }
+        tabPanel.add(closeBtn, BorderLayout.EAST);
+        
+        setTabComponentAt(getTabCount()-1, tabPanel);
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JTabbedPane#addTab(java.lang.String, java.awt.Component)
+     */
+    @Override
+    public void addTab(String title, Component component)
+    {
+        // TODO Auto-generated method stub
+        super.addTab(title, component);
+        
+        adjustTab(getTabCount()-1, title, null);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTabbedPane#addTab(java.lang.String, javax.swing.Icon, java.awt.Component, java.lang.String)
+     */
+    @Override
+    public void addTab(String title, Icon icon, Component component, String tip)
+    {
+        // TODO Auto-generated method stub
+        super.addTab(title, icon, component, tip);
+        
+        adjustTab(getTabCount()-1, title, icon);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTabbedPane#addTab(java.lang.String, javax.swing.Icon, java.awt.Component)
+     */
+    @Override
+    public void addTab(String title, Icon icon, Component component)
+    {
+        // TODO Auto-generated method stub
+        super.addTab(title, icon, component);
+        
+        adjustTab(getTabCount()-1, title, icon);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTabbedPane#insertTab(java.lang.String, javax.swing.Icon, java.awt.Component, java.lang.String, int)
+     */
+    @Override
+    public void insertTab(String title, Icon icon, Component component, String tip, int index)
+    {
+        // TODO Auto-generated method stub
+        super.insertTab(title, icon, component, tip, index);
+        
+        adjustTab(index, title, icon);
+    }
+
+    /**
+     * Clsoes the current tab.
      */
     protected void closeCurrent()
     {
-        
         this.remove(this.getSelectedComponent());
     }
     
     /**
-     * @param g
-     * @param x
-     * @param y
-     * @param w
-     * @param h
+     *  Draws the close "X" 
+     * @param g f
+     * @param x x
+     * @param y y
+     * @param w w
+     * @param h h
      */
     protected void drawCloser(final Graphics g, final int x, final int y, final int w, final int h)
     {
@@ -131,12 +231,12 @@ public class ExtendedTabbedPane extends JTabbedPane
     }
 
     /* (non-Javadoc)
-     * @see java.awt.Component#paint(java.awt.Graphics)
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     @Override
-    public void paint(Graphics g)
+    public void paintComponent(Graphics g)
     {
-        super.paint(g);
+        super.paintComponent(g);
         
         if (this.getTabCount() > 0)
         {

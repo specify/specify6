@@ -15,6 +15,8 @@
 
 package edu.ku.brc.dbsupport;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -77,24 +79,29 @@ public class DBConnection
         Connection con = null;
         try
         {
-            if (StringUtils.isEmpty(dbDriver))
+            if (StringUtils.isEmpty(dbConnectionStr))
             {
-                errMsg = "Driver Class name is empty.";
+                errMsg = getResourceString("NO_DB_NAME");
                 return null;
             }
             if (StringUtils.isEmpty(dbConnectionStr))
             {
-                errMsg = "The Connection String is empty.";
+                errMsg = getResourceString("NO_DB_CONN_STR");
                 return null;
             }
             if (StringUtils.isEmpty(dbUsername))
             {
-                errMsg = "The Username is empty.";
+                errMsg = getResourceString("NO_DB_USERNAME");//"The Username is empty.";
                 return null;
             }
             if (StringUtils.isEmpty(dbPassword))
             {
-                errMsg = "The Password is empty.";
+                errMsg = getResourceString("NO_DB_PASSWORD");//"The Password is empty.";
+                return null;
+            }
+            if (StringUtils.isEmpty(dbDriver))
+            {
+                errMsg = getResourceString("NO_DB_DRIVER");
                 return null;
             }
             Class.forName(dbDriver); // load driver

@@ -49,6 +49,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -84,7 +85,7 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class DatabaseLoginPanel extends JPanel
 {
-    //private static final Logger log  = Logger.getLogger(DatabaseLoginPanel.class);
+    private static final Logger log  = Logger.getLogger(DatabaseLoginPanel.class);
 
     // Form Stuff
 
@@ -509,7 +510,7 @@ public class DatabaseLoginPanel extends JPanel
         if (dbDriverCBX.getSelectedIndex() == -1)
         {
             shouldEnable = false;
-            setMessage(getResourceString("missingdriver"), true);
+            setMessage(getResourceString("MISSING_DRIVER"), true);
             if (!extraPanel.isVisible())
             {
                 moreBtn.doClick();
@@ -607,6 +608,26 @@ public class DatabaseLoginPanel extends JPanel
     {
         this.isAutoClose = isAutoClose;
     }
+    
+    /**
+     * Helper to enable all the UI components.
+     * @param enable true or false
+     */
+    protected void enableUI(final boolean enable)
+    {
+        cancelBtn.setEnabled(enable);
+        loginBtn.setEnabled(enable);
+        helpBtn.setEnabled(enable);
+
+        username.setEnabled(enable);
+        password.setEnabled(enable);
+        databases.setEnabled(enable);
+        servers.setEnabled(enable);
+        rememberUsernameCBX.setEnabled(enable);
+        rememberPasswordCBX.setEnabled(enable);
+        autoLoginCBX.setEnabled(enable);
+        moreBtn.setEnabled(enable);
+    }
 
     /**
      * Performs a login on a separate thread and then notifies the dialog if it was successful.
@@ -618,18 +639,7 @@ public class DatabaseLoginPanel extends JPanel
         save();
 
         statusBar.setIndeterminate(true);
-        cancelBtn.setEnabled(false);
-        loginBtn.setEnabled(false);
-        helpBtn.setEnabled(false);
-
-        username.setEnabled(false);
-        password.setEnabled(false);
-        databases.setEnabled(false);
-        servers.setEnabled(false);
-        rememberUsernameCBX.setEnabled(false);
-        rememberPasswordCBX.setEnabled(false);
-        autoLoginCBX.setEnabled(false);
-        moreBtn.setEnabled(false);
+        enableUI(false);
 
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] {getDatabaseName()}), false);
 
@@ -666,12 +676,23 @@ public class DatabaseLoginPanel extends JPanel
                 isLoggedIn = UIHelper.tryLogin(getDriverClassName(), getDialectClassName(), getDatabaseName(),
                                                getConnectionStr(), getUserName(), getPassword());
 
-                // Note: this doesn't happen on the GUI thread
-                DataProviderFactory.getInstance().shutdown();
-                
-                // This restarts the System
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                session.close();
+                if (isLoggedIn)
+                {
+                    // Note: this doesn't happen on the GUI thread
+                    DataProviderFactory.getInstance().shutdown();
+                    
+                    // This restarts the System
+                    try
+                    {
+                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                        session.close();
+                        
+                    } catch (Exception ex)
+                    {
+                        log.warn(ex);
+                        finished();
+                    }
+                }
                 
                 return null;
             }
@@ -695,6 +716,7 @@ public class DatabaseLoginPanel extends JPanel
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     session.close();
                 }
+                
                 long endTime = System.currentTimeMillis();
                 eTime = (endTime - eTime) / 1000;
                 timeOK = true;
@@ -707,21 +729,10 @@ public class DatabaseLoginPanel extends JPanel
                 isLoggingIn = false;
                 statusBar.setIndeterminate(false);
                 
+                enableUI(true);
+                
                 if (isAutoClose)
                 {
-                    cancelBtn.setEnabled(true);
-                    loginBtn.setEnabled(true);
-                    helpBtn.setEnabled(true);
-    
-                    username.setEnabled(true);
-                    password.setEnabled(true);
-                    databases.setEnabled(true);
-                    servers.setEnabled(true);
-                    rememberUsernameCBX.setEnabled(true);
-                    rememberPasswordCBX.setEnabled(true);
-                    autoLoginCBX.setEnabled(true);
-                    moreBtn.setEnabled(true);
-
                     updateUIControls();
                 }
 
