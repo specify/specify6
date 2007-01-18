@@ -998,7 +998,7 @@ public class FormViewObj implements Viewable,
             this.getDataFromUI();
 
             traverseToGetDataFromForms(mvParent);
-            
+            log.debug("saveObject checking businessrules for [" + (dataObj != null ? dataObj.getClass(): "null") + "]");
             if (businessRules != null && businessRules.processBusinessRules(dataObj) == BusinessRulesIFace.STATUS.Error)
             {
                 StringBuilder strBuf = new StringBuilder();

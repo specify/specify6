@@ -57,7 +57,7 @@
         </view>
 
         <view name="AccessionAgent"
-              class="edu.ku.brc.specify.datamodel.AccessionAgents"
+              class="edu.ku.brc.specify.datamodel.AccessionAgent"
               resourcelabels="false">
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
@@ -491,7 +491,7 @@
         <viewdef
             type="form"
             name="AccessionAgent"
-            class="edu.ku.brc.specify.datamodel.AccessionAgents"
+            class="edu.ku.brc.specify.datamodel.AccessionAgent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>

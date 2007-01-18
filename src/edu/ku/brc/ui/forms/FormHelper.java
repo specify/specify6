@@ -39,6 +39,7 @@ public final class FormHelper
      */
     public static boolean updateLastEdittedInfo(final Object dataObj)
     {
+        log.debug("updateLastEdittedInfo for [" + dataObj.getClass() + "]");
         if (dataObj != null)
         {
             try
@@ -76,6 +77,7 @@ public final class FormHelper
                 ex.printStackTrace();
             } 
         }
+        log.debug("updateLastEdittedInfo object is NULL");
         return false;
     }
 

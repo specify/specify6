@@ -14,7 +14,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgents;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -103,9 +103,9 @@ public class DataBuilder
         DataBuilder.session = session;
     }
 
-    public static AccessionAgents createAccessionAgent(Accession accession, Agent agent)
+    public static AccessionAgent createAccessionAgent(Accession accession, Agent agent)
     {
-        AccessionAgents accessionAgent = new AccessionAgents();
+        AccessionAgent accessionAgent = new AccessionAgent();
 
         accessionAgent.setTimestampCreated(new Date());
         accessionAgent.setTimestampModified(new Date());
@@ -1016,12 +1016,12 @@ public class DataBuilder
         return accession;
     }
 
-    public static AccessionAgents createAccessionAgent(final String role,
+    public static AccessionAgent createAccessionAgent(final String role,
                                                        final Agent agent,
                                                        final Accession accession,
                                                        final RepositoryAgreement repositoryAgreement)
     {
-        AccessionAgents accessionagent = new AccessionAgents();
+        AccessionAgent accessionagent = new AccessionAgent();
         accessionagent.initialize();
         accessionagent.setTimestampCreated(new Date());
         accessionagent.setTimestampModified(new Date());

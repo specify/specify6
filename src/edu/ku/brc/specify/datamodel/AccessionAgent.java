@@ -38,11 +38,11 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
 
  */
-public class AccessionAgents extends DataModelObjBase implements java.io.Serializable {
+public class AccessionAgent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long accessionAgentsId;
+     protected Long accessionAgentId;
      protected String role;
      protected String remarks;
      protected Agent agent;
@@ -53,15 +53,15 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     // Constructors
 
     /** default constructor */
-    public AccessionAgents()
+    public AccessionAgent()
     {
         // do nothing
     }
     
     /** constructor with id */
-    public AccessionAgents(Long accessionAgentsId)
+    public AccessionAgent(Long accessionAgentId)
     {
-        this.accessionAgentsId = accessionAgentsId;
+        this.accessionAgentId = accessionAgentId;
     }
    
     
@@ -71,7 +71,7 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     @Override
     public void initialize()
     {
-        accessionAgentsId = null;
+        accessionAgentId = null;
         role = null;
         remarks = null;
         timestampModified = null;
@@ -88,8 +88,8 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
-    public Long getAccessionAgentsId() {
-        return this.accessionAgentsId;
+    public Long getAccessionAgentId() {
+        return this.accessionAgentId;
     }
 
     /**
@@ -99,7 +99,7 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
     @Override
     public Long getId()
     {
-        return this.accessionAgentsId;
+        return this.accessionAgentId;
     }
 
     /* (non-Javadoc)
@@ -107,11 +107,11 @@ public class AccessionAgents extends DataModelObjBase implements java.io.Seriali
      */
     public Class<?> getDataClass()
     {
-        return AccessionAgents.class;
+        return AccessionAgent.class;
     }
     
-    public void setAccessionAgentsId(Long accessionAgentsId) {
-        this.accessionAgentsId = accessionAgentsId;
+    public void setAccessionAgentId(Long accessionAgentId) {
+        this.accessionAgentId = accessionAgentId;
     }
 
     /**

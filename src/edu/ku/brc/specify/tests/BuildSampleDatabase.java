@@ -69,7 +69,7 @@ import org.hibernate.Session;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgents;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -507,7 +507,7 @@ public class BuildSampleDatabase
         Agent receiver = agents.get(1);
         Agent reviewer = agents.get(2);
         
-        List<AccessionAgents> accAgents = new Vector<AccessionAgents>();
+        List<AccessionAgent> accAgents = new Vector<AccessionAgent>();
         
         accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
         accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));

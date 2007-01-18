@@ -354,7 +354,7 @@
                 <cell type="separator" label="Accession Agent"/>
             </row>
             <row>
-                <cell type="field" name="accessionAgentsId" label="Accession Agents Id"/>
+                <cell type="field" name="accessionAgentId" label="Accession Agent Id"/>
                 <cell type="field" name="role" label="role"/>
             </row>
             <row>

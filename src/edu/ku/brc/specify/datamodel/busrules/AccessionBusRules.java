@@ -34,7 +34,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgents;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
@@ -147,7 +147,7 @@ public class AccessionBusRules implements BusinessRulesIFace
         List<BusinessRulesDataItem> list = new ArrayList<BusinessRulesDataItem>();
         Accession accession = (Accession)dataObj;
         
-        for (AccessionAgents accAgent : accession.getAccessionAgents())
+        for (AccessionAgent accAgent : accession.getAccessionAgents())
         {
             Agent agent = accAgent.getAgent();
             if (agent != null && agent.getAgentId() == null)

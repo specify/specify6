@@ -321,13 +321,13 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgents"/>
     </set>
 
-    <!-- bi-directional one-to-many association to AccessionAgents -->
+    <!-- bi-directional one-to-many association to AccessionAgent -->
     <set name="accessionAgents" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="AgentID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAgents"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
     </set>
 
     <!-- bi-directional one-to-many association to ExchangeOut -->

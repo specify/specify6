@@ -29,6 +29,7 @@ import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.UserPermission;
@@ -292,7 +293,7 @@ public class SpecifyUserTest extends TestCase
         //UserPermission permission = createUserPermission(null, null, true, true); 
         //assertNotNull("UserPermission is null", permission);
         
-        //AccessionAgents aa = createAccessionAgent("doror", null, null, null);
+        //AccessionAgent aa = createAccessionAgent("doror", null, null, null);
         //assertNull(aa);
     }
     

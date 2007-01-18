@@ -206,8 +206,8 @@
             <index>
                 <sql>
                     <![CDATA[select ColFieldsDef From accession 
-Inner Join accessionagents ON accessionagents.AccessionID = accession.AccessionID 
-Inner Join agent ON agent.AgentID = accessionagents.AgentID 
+Inner Join accessionagent ON accessionagent.AccessionID = accession.AccessionID 
+Inner Join agent ON agent.AgentID = accessionagent.AgentID 
 ]]>
                 </sql>
                 <cols>
@@ -219,7 +219,7 @@ Inner Join agent ON agent.AgentID = accessionagents.AgentID
                     <col pos="6">DateReceived</col>
                     <col pos="7">FirstName</col>
                     <col pos="8">LastName</col>
-                    <join pos="9" tableid="12">accessionagents.AccessionID</join>
+                    <join pos="9" tableid="12">accessionagent.AccessionID</join>
                     <join pos="10" tableid="5">agent.AgentID</join>
                 </cols>
             </index>
@@ -235,8 +235,8 @@ DateReceived,
 FirstName, 
 LastName 
 From accession 
-Inner Join accessionagents ON accessionagents.AccessionID = accession.AccessionID 
-Inner Join agent ON agent.AgentID = accessionagents.AgentID 
+Inner Join accessionagent ON accessionagent.AccessionID = accession.AccessionID 
+Inner Join agent ON agent.AgentID = accessionagent.AgentID 
 where accession.AccessionID in (%s) Order By accession.Number Asc]]>
                 </sql>
                 <captions>

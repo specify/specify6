@@ -17,7 +17,7 @@
 
         <view name="AccessionAgent"
               objtitle="Accession Agent"
-              class="edu.ku.brc.specify.datamodel.AccessionAgents"
+              class="edu.ku.brc.specify.datamodel.AccessionAgent"
               resourcelabels="false">
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
@@ -127,16 +127,16 @@
             class="edu.ku.brc.specify.datamodel.Accession"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Accession Agents Icon Viewer]]></desc>
+            <desc><![CDATA[The Accession Agent Icon Viewer]]></desc>
         </viewdef>
         
         <viewdef
             type="iconview"
             name="AccessionAgentIconView"
-            class="edu.ku.brc.specify.datamodel.AccessionAgents"
+            class="edu.ku.brc.specify.datamodel.AccessionAgent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Accession Agents Icon Viewer]]></desc>
+            <desc><![CDATA[The Accession Agent Icon Viewer]]></desc>
         </viewdef>
         
         <viewdef
@@ -184,7 +184,7 @@
                 </row>
                 
                 <row>
-                    <cell type="separator" label="Accession Agents" colspan="12"/>
+                    <cell type="separator" label="Accession Agent" colspan="12"/>
                 </row>
 
 
@@ -231,7 +231,7 @@
         <viewdef
             type="form"
             name="AccessionAgent"
-            class="edu.ku.brc.specify.datamodel.AccessionAgents"
+            class="edu.ku.brc.specify.datamodel.AccessionAgent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
@@ -410,11 +410,11 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Permit"/>
-                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true" valtype="Focus"/>
+                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3"  valtype="Changed"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3"/>
                 </row>
 
             </rows>

@@ -10,7 +10,7 @@ import java.io.File;
 
 import javax.swing.ImageIcon;
 
-import edu.ku.brc.specify.datamodel.AccessionAgents;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.BorrowAgents;
@@ -44,9 +44,9 @@ public class AgentIconMapper implements ObjectIconMapper
         {
             a = ((BorrowAgents)o).getAgent();
         }
-        if (o instanceof AccessionAgents)
+        if (o instanceof AccessionAgent)
         {
-            a = ((AccessionAgents)o).getAgent();
+            a = ((AccessionAgent)o).getAgent();
         }
         if (o instanceof Collectors)
         {
@@ -114,7 +114,7 @@ public class AgentIconMapper implements ObjectIconMapper
         Class[] mappedClasses = new Class[6];
         mappedClasses[0] = Agent.class;
         mappedClasses[1] = BorrowAgents.class;
-        mappedClasses[2] = AccessionAgents.class;
+        mappedClasses[2] = AccessionAgent.class;
         mappedClasses[3] = Collectors.class;
         mappedClasses[4] = DeaccessionAgents.class;
         mappedClasses[5] = LoanAgents.class;

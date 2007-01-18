@@ -54,8 +54,8 @@
     </format>
     
     <format
-        name="AccessionAgents"
-        class="edu.ku.brc.specify.datamodel.AccessionAgents"
+        name="AccessionAgent"
+        class="edu.ku.brc.specify.datamodel.AccessionAgent"
         default="true"
         >
         <switch single="true">
@@ -195,7 +195,7 @@
     
     <aggregators>
         <aggregator name="AccessionAuthorizations" class="edu.ku.brc.specify.datamodel.AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations" default="true"/>
-        <aggregator name="AccessionAgents"         class="edu.ku.brc.specify.datamodel.AccessionAgents" separator="; " count="" ending="" format="AccessionAgents" default="true"/>   
+        <aggregator name="AccessionAgent"         class="edu.ku.brc.specify.datamodel.AccessionAgent" separator="; " count="" ending="" format="AccessionAgent" default="true"/>   
         <aggregator name="Preparation"             class="edu.ku.brc.specify.datamodel.Preparation" separator="; " count="" ending="" format="Preparation" default="true"/>   
         <aggregator name="Determination"           class="edu.ku.brc.specify.datamodel.Determination" separator="; " count="1" ending="" format="Determination" default="true"/>   
         <aggregator name="Collectors"              class="edu.ku.brc.specify.datamodel.Collectors" separator="; " count="" ending="" format="Collector" default="true"/>   

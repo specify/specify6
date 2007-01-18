@@ -565,9 +565,9 @@ public class GenericDBConversion
             "AccessionAuthorizations", "AccessionID", "Accession", "AccessionID",
             "AccessionAuthorizations", "PermitID", "Permit", "PermitID",
 
-            "AccessionAgents", "AccessionID", "Accession", "AccessionID",
-            "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-            //"AccessionAgents", "RoleID", "Role", "RoleID",
+            "AccessionAgent", "AccessionID", "Accession", "AccessionID",
+            "AccessionAgent", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            //"AccessionAgent", "RoleID", "Role", "RoleID",
 
             "DeterminationCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "DeterminationCitation", "DeterminationID", "Determination", "DeterminationID",
@@ -655,7 +655,7 @@ public class GenericDBConversion
         
 
         String[] tablesToMoveOver = {
-                                    "AccessionAgents",
+                                    "AccessionAgent",
                                     "Accession",
                                     "AccessionAuthorizations",
                                     //"Address",
@@ -709,12 +709,13 @@ public class GenericDBConversion
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
        tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
-       tableMaps.put("accessionagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
+       tableMaps.put("accessionagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "AccessionAgentID", "AccessionAgentsID"}));
        tableMaps.put("borrowagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("deaccessionagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("loanagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
        tableMaps.put("loan", createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
-
+       
+       
        tableMaps.put("deaccession", createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
        tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] {"ProjectCollectionObjectID", "ProjectCollectionObjectsID"}));
        Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
@@ -722,7 +723,7 @@ public class GenericDBConversion
        tableMaps.put("permit", createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
        tableMaps.put("collectingevent", createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID"}));
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
-
+       
 
        BasicSQLUtils.setShowMappingError(true);//TODO meg change back to false
        for (String tableName : tablesToMoveOver)
@@ -746,7 +747,7 @@ public class GenericDBConversion
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                
            } 
-           else if(tableName.toLowerCase().equals("accessionagents")) 
+           else if(tableName.toLowerCase().equals("accessionagent")) 
            {
                String[] ignoredFields = {"RepositoryAgreementID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
@@ -790,12 +791,18 @@ public class GenericDBConversion
                BasicSQLUtils.setShowMappingError(false);
 
            }           
-           if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
+           if(tableName.toLowerCase().equals("accessionagent"))
+           {
+               copyTable(oldDBConn, newDBConn, "select * from " + tableName + "s", tableName + "s", tableName, tableMaps.get(lowerCaseName), null);
+               
+           }           
+           else if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
            {
                log.error("Table ["+tableName+"] didn't copy correctly.");
                break;
                
            }
+
            // else
            
            tblStats.collectStats();

@@ -95,7 +95,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<Permit>                   permitsIssuedTo;
     protected Set<Permit>                   permitsIssuedBy;
     protected Set<BorrowAgents>              borrowAgents;
-    protected Set<AccessionAgents>           accessionAgents;
+    protected Set<AccessionAgent>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
     protected Set<SpecifyUser> specifyUsers;
 
@@ -165,7 +165,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         permitsIssuedTo = new HashSet<Permit>();
         permitsIssuedBy = new HashSet<Permit>();
         borrowAgents = new HashSet<BorrowAgents>();
-        accessionAgents = new HashSet<AccessionAgents>();
+        accessionAgents = new HashSet<AccessionAgent>();
         exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
         organization = null;
     }
@@ -696,11 +696,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
-    public Set<AccessionAgents> getAccessionAgents() {
+    public Set<AccessionAgent> getAccessionAgents() {
         return this.accessionAgents;
     }
 
-    public void setAccessionAgents(Set<AccessionAgents> accessionAgents) {
+    public void setAccessionAgents(Set<AccessionAgent> accessionAgents) {
         this.accessionAgents = accessionAgents;
     }
 
@@ -839,9 +839,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
             addr.setAgent(this);
             return;
         }
-        if (ref instanceof AccessionAgents)
+        if (ref instanceof AccessionAgent)
         {
-            AccessionAgents aa = (AccessionAgents)ref;
+            AccessionAgent aa = (AccessionAgent)ref;
             accessionAgents.add(aa);
             aa.setAgent(this);
             return;

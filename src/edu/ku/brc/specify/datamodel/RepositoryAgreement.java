@@ -59,7 +59,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      protected Boolean yesNo2;
      protected Set<CollectionObject>        collectionObjects;
      protected Set<AccessionAuthorizations> repositoryAgreementAuthorizations;
-     protected Set<AccessionAgents>         repositoryAgreementAgents;
+     protected Set<AccessionAgent>         repositoryAgreementAgents;
      protected Set<Accession>               accessions;
      protected Set<Attachment>          attachments;
      protected Agent originator;
@@ -101,7 +101,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         yesNo2 = null;
         collectionObjects                 = new HashSet<CollectionObject>();
         repositoryAgreementAuthorizations = new HashSet<AccessionAuthorizations>();
-        repositoryAgreementAgents         = new HashSet<AccessionAgents>();
+        repositoryAgreementAgents         = new HashSet<AccessionAgent>();
         accessions                        = new HashSet<Accession>();
         originator = null;
     }
@@ -305,11 +305,11 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
-    public Set<AccessionAgents> getRepositoryAgreementAgents() {
+    public Set<AccessionAgent> getRepositoryAgreementAgents() {
         return this.repositoryAgreementAgents;
     }
 
-    public void setRepositoryAgreementAgents(Set<AccessionAgents> repositoryAgreementAgents) {
+    public void setRepositoryAgreementAgents(Set<AccessionAgent> repositoryAgreementAgents) {
         this.repositoryAgreementAgents = repositoryAgreementAgents;
     }
     public Set<Attachment> getAttachments()

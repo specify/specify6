@@ -74,7 +74,7 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgents;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -708,7 +708,7 @@ public class CreateTestDatabases
 
             for (int j=0;j<roles.length;j++)
             {
-                AccessionAgents accessionAgent = createAccessionAgent(roles[j],  agents[agentsInx % agents.length], accessions[i], null);
+                AccessionAgent accessionAgent = createAccessionAgent(roles[j],  agents[agentsInx % agents.length], accessions[i], null);
                 agentsInx++;
                 accessions[i].getAccessionAgents().add(accessionAgent);
             }
