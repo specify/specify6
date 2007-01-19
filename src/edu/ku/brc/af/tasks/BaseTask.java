@@ -72,8 +72,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     // Static Data Members
     private static final Logger log = Logger.getLogger(BaseTask.class);
     
-    protected static final String APP_CMD_TYPE   = "App";
-    protected static final String DB_CMD_TYPE    = "Database";
+    protected static final String APP_CMD_TYPE    = "App";
+    protected static final String APP_RESTART_ACT = "Restart";
+    protected static final String DB_CMD_TYPE     = "Database";
+
     
     protected static final String SAVE_CMD_ACT   = "Save";
     protected static final String INSERT_CMD_ACT = "Insert";
