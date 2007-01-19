@@ -28,10 +28,9 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 
 /**
- * Taxon Tree Task.
+ * Task that handles the UI for viewing taxonomy data.
  * 
  * @code_status Beta
- * 
  * @author jstewart
  */
 public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefItem>

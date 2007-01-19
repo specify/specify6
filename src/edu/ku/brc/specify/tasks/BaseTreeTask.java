@@ -35,10 +35,10 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
- * Base Class for Tree Tasks.
+ * A base task that provides functionality in common to all tasks
+ * the handle UI for tree-structured data.
  *
  * @code_status Beta
- * 
  * @author jstewart
  */
 public class BaseTreeTask <T extends Treeable<T,D,I>,

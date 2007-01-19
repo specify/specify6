@@ -23,10 +23,9 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 
 /**
- * Geography Task.
+ * Task that handles the UI for viewing geography data.
  * 
  * @code_status Beta
- * 
  * @author jstewart
  */
 public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,GeographyTreeDefItem>
