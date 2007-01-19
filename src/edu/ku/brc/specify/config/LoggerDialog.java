@@ -65,6 +65,7 @@ public class LoggerDialog extends JDialog implements ActionListener
 
     protected JButton        cancelBtn;
     protected JButton        okBtn;
+    protected JComboBox      setAllCBX;
     
     protected List<LoggerInfo> loggers = new Vector<LoggerInfo>();
     
@@ -131,17 +132,31 @@ public class LoggerDialog extends JDialog implements ActionListener
                 setVisible(false);
             }
         });
-
+        
+        setAllCBX = new JComboBox(levelsList);
+        setAllCBX.setSelectedIndex(-1);
+        setAllCBX.addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent e)
+           {
+               Level level = (Level)((JComboBox)e.getSource()).getSelectedItem();
+               for (LoggerInfo logInfo : loggers)
+               {
+                   logInfo.getCbx().setSelectedItem(level);
+               }
+           }
+        });
  
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
         Dimension size = builder.getPanel().getPreferredSize();
         size.width  += 15;
         builder.getPanel().setPreferredSize(size);
-        
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p:g", "min(400px;p):g,10px,p"));
-        outerPanel.add(new JScrollPane(builder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,1));
-        outerPanel.add(btnBuilder.getPanel(), cc.xy(1, 3));
+        JScrollPane  scroller   = new JScrollPane(builder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,2px,p,p:g", "min(400px;p):g,5px,p,10px,p"));
+        outerPanel.add(scroller, cc.xywh(1, 1, 4, 1));
+        outerPanel.add(new JLabel("Set All To:"), cc.xy(1, 3));
+        outerPanel.add(setAllCBX, cc.xy(3, 3));
+        outerPanel.add(btnBuilder.getPanel(), cc.xywh(1, 5, 4, 1));
         outerPanel.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setContentPane(outerPanel.getPanel());
         
