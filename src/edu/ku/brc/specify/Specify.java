@@ -47,7 +47,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
-import org.hibernate.cfg.Configuration;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -117,7 +116,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     protected  boolean          hasChanged         = false;
 
-    protected Configuration     hibernateConfig    = null;
     protected String            currentDatabaseName = null;
     protected DatabaseLoginPanel dbLoginPanel       = null;
     protected String             databaseName       = null;
