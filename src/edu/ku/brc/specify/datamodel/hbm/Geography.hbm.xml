@@ -26,9 +26,9 @@
         
         <property name="rankId" type="java.lang.Integer" column="RankID" length="10" not-null="true"/>
         
-        <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10"/>
+        <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10" update="false"/>
         
-        <property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10"/>
+    	<property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10" update="false"/>
         
         <property name="abbrev" type="java.lang.String" column="Abbrev" length="16"/>
         

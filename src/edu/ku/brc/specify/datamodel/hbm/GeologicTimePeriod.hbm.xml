@@ -22,9 +22,9 @@
 
         <property name="remarks" type="java.lang.String" column="Remarks" length="255"/>
         
-        <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10" index="IX_GTP_NodeNumber"/>
+    	<property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10" update="false"/>
 
-        <property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10"/>
+    	<property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10" update="false"/>
 
         <property name="standard" type="java.lang.String" column="Standard" length="64"/>
 

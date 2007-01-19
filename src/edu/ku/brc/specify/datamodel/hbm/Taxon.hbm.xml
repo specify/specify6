@@ -49,9 +49,9 @@
 
         <property name="environmentalProtectionStatus" type="java.lang.String" column="EnvironmentalProtectionStatus" length="64"/>
 
-        <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10" index="IX_TXN_NodeNumber"/>
+    	<property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10" update="false"/>
 
-        <property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10" index="IX_TXN_HighestChildNodeNumber"/>
+    	<property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10" update="false"/>
 
         <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23"/>
 
