@@ -320,7 +320,14 @@ public class SpecifyDBConverter
                 
 
                 idMapperMgr = IdMapperMgr.getInstance();
-                idMapperMgr.setDBs(conversion.getOldDBConnection(), conversion.getNewDBConnection());
+                Connection oldConn = conversion.getOldDBConnection();
+                Connection newConn = conversion.getNewDBConnection();
+                if (oldConn==null || newConn==null)
+                {
+                	log.error("One of the DB connections is null.  Cannot proceed.  Check your DB install to make sure both DBs exist.");
+                	System.exit(-1);
+                }
+                idMapperMgr.setDBs(oldConn, newConn);
 
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
