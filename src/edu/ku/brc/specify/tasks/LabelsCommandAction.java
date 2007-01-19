@@ -18,6 +18,8 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.ui.CommandAction;
 
 /**
+ * Labels Command Action.
+ * 
  * @author rods
  *
  * @code_status Alpha

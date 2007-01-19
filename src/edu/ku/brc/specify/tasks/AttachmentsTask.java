@@ -20,8 +20,10 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.ui.CommandAction;
 
 /**
- *
+ * Processes Attachments.
+ * 
  * @code_status Alpha
+ * 
  * @author jstewart
  */
 public class AttachmentsTask extends BaseTask
@@ -90,22 +92,21 @@ public class AttachmentsTask extends BaseTask
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.getType()!=ATTACHMENTS)
+        if (!cmdAction.isType(ATTACHMENTS))
         {
             // not a format I recognize, maybe it's for somebody else
             return;
         }
         
-        String action = cmdAction.getAction();
-        if (action.equals(NEW_ATTACHMENT_ACTION))
+        if (cmdAction.isAction(NEW_ATTACHMENT_ACTION))
         {
             // TODO: implement this
         }
-        else if (action.equals(GET_ATTACHMENT_INFO_ACTION))
+        else if (cmdAction.isAction(GET_ATTACHMENT_INFO_ACTION))
         {
             // TODO: implement this
         }
-        else if (action.equals(OPEN_ATTACHMENT_ACTION))
+        else if (cmdAction.isAction(OPEN_ATTACHMENT_ACTION))
         {
             // TODO: implement this
         }

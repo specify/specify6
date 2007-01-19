@@ -23,8 +23,10 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 
 /**
- *
+ * Geography Task.
+ * 
  * @code_status Beta
+ * 
  * @author jstewart
  */
 public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,GeographyTreeDefItem>

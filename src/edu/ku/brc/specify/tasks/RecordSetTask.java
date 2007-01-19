@@ -65,9 +65,9 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
- 
- * @code_status Unknown (auto-generated)
- **
+ *
+ * @code_status Alpha
+ *
  * @author rods
  *
  */
@@ -91,7 +91,7 @@ public class RecordSetTask extends BaseTask
         super(RECORD_SET, getResourceString(RECORD_SET));
         
         CommandDispatcher.register(RECORD_SET, this);
-        CommandDispatcher.register("App", this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
     }
 
 
@@ -336,11 +336,12 @@ public class RecordSetTask extends BaseTask
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+    
+    /**
+     * Processes all Commands of type RECORD_SET.
+     * @param cmdAction the command to be processed
      */
-    public void doCommand(CommandAction cmdAction)
+    protected void processRecordSetCommands(final CommandAction cmdAction)
     {
         if (cmdAction.isAction("Save"))
         {
@@ -383,7 +384,7 @@ public class RecordSetTask extends BaseTask
             deleteRecordSet(recordSet);
             deleteRecordSetFromUI(null, recordSet);
 
-        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Dropped"))
+        } else if (cmdAction.isAction("Dropped"))
         {
             Object srcObj = cmdAction.getSrcObj();
             Object dstObj = cmdAction.getDstObj();
@@ -438,7 +439,19 @@ public class RecordSetTask extends BaseTask
 
                 }
             }
-        } else if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+     */
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(RecordSetTask.RECORD_SET))
+        {
+            processRecordSetCommands(cmdAction);
+            
+        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {
             isInitialized = false;
             this.initialize();

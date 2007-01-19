@@ -22,7 +22,7 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
  * This pane will be responsible for creating form for Gift/Exchanges and loans. We may end up
  * getting rid of this and just using the Data Entry Pane 
  
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  * 

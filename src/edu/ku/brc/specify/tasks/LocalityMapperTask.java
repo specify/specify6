@@ -35,11 +35,12 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+
 /**
- * The LocalityMapperTask is responsible gettng and displaying all various idfferent kinds of stats
- 
- * @code_status Unknown (auto-generated)
- **
+ * The LocalityMapperTask show a special screen for examining Locality Infor with Collection info.
+ *
+ * @code_status Alpha
+ *
  * @author rods
  *
  */
@@ -60,6 +61,7 @@ public class LocalityMapperTask extends BaseTask
     public LocalityMapperTask()
     {
         super(LOCALITYMAPPER, getResourceString(LOCALITYMAPPER));
+        
         CommandDispatcher.register(LOCALITYMAPPER, this);
     }
 
@@ -138,12 +140,15 @@ public class LocalityMapperTask extends BaseTask
     @Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isAction("DoLocalityMap"))
+        if (cmdAction.isType(LOCALITYMAPPER))
         {
-            if (cmdAction.getData() instanceof RecordSet)
+            if (cmdAction.isAction("DoLocalityMap"))
             {
-                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-                createMappingInfoFromRecordSet(recordSet);
+                if (cmdAction.getData() instanceof RecordSet)
+                {
+                    RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+                    createMappingInfoFromRecordSet(recordSet);
+                }
             }
         }
     }

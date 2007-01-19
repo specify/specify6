@@ -84,9 +84,9 @@ import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 /**
  * This task will enable the user to index the database and preform express searches. This is where the Express Search starts.
- 
+ *
  * @code_status Complete
- **
+ *
  * @author rods
  *
  */
@@ -122,7 +122,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
 
         lucenePath = getIndexDirPath(); // must be initialized here
         
-        CommandDispatcher.register("App", this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(EXPRESSSEARCH, this);
         
         instance = this;
@@ -932,7 +932,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     {
         if (cmdAction.isType(APP_CMD_TYPE))
         {
-            if (cmdAction.isAction("Restart"))
+            if (cmdAction.isAction(APP_RESTART_ACT))
             {
                 lucenePath = getIndexDirPath(); // must be initialized here (again)
                 checkForIndexer();

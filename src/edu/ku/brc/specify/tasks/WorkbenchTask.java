@@ -19,8 +19,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.List;
@@ -34,21 +32,23 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
+import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
- * PLaceholder for additional work
- 
- * @code_status Unknown (auto-generated)
- **
+ * Placeholder for additional work.
+ *
+ * @code_status Alpha
+ *
  * @author meg
  *
  */
@@ -56,15 +56,23 @@ public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
 	public static final DataFlavor WORKBENCH_FLAVOR = new DataFlavor(WorkbenchTask.class, "Workbench");
-	public static final String WORKBENCH = "Workbench";
+    
+    public static final String WORKBENCH = "Workbench";
+    public static final String IMPORT_FIELD_NOTEBOOK = "Import Field Note Book";
+    
 
     protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>          menus  = new Vector<JComponent>();
 
+	/**
+	 * Constructor. 
+	 */
 	public WorkbenchTask() 
     {
 		super(WORKBENCH, getResourceString(WORKBENCH));
-		CommandDispatcher.register(WORKBENCH, this);
+        
+		CommandDispatcher.register(WORKBENCH, this);        
+        CommandDispatcher.register(APP_CMD_TYPE, this);
 
 	}
 
@@ -83,7 +91,7 @@ public class WorkbenchTask extends BaseTask
             navBoxes.addElement(navBox);
             //
             navBox = new NavBox(getResourceString("Templates"));
-            navBox.add(NavBox.createBtn(getResourceString("Field_Book_Entry"),  name, IconManager.IconSize.Std16, new ImportFieldBookAction()));
+            navBox.add(NavBox.createBtn(getResourceString("Field_Book_Entry"),  name, IconManager.IconSize.Std16, new NavBoxAction(WORKBENCH, IMPORT_FIELD_NOTEBOOK)));
             navBox.add(NavBox.createBtn(getResourceString("Label_Entry"), name, IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
 
@@ -95,6 +103,9 @@ public class WorkbenchTask extends BaseTask
     }
 
 
+    /**
+     * IMports a Field Notebook. 
+     */
     protected void importFieldNotebook()
     {
         if (false)
@@ -162,14 +173,6 @@ public class WorkbenchTask extends BaseTask
         }
     }
 
-    public class ImportFieldBookAction implements ActionListener
-    {
-		public void actionPerformed(ActionEvent e)
-		{
-			importFieldNotebook();
-		}
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.BaseTask#getStarterPane()
      */
@@ -177,7 +180,7 @@ public class WorkbenchTask extends BaseTask
     {
         return new WorkbenchPane(name, this,null);
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
@@ -208,7 +211,6 @@ public class WorkbenchTask extends BaseTask
         return list;
     }
 
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
@@ -216,6 +218,33 @@ public class WorkbenchTask extends BaseTask
     {
         return this.getClass();
     }
-
-
+    
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+    
+    /**
+     * Processes all Commands of type DATA_ENTRY.
+     * @param cmdAction the command to be processed
+     */
+    protected void processWorkbenchCommands(final CommandAction cmdAction)
+    {
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(WORKBENCH))
+        {
+            processWorkbenchCommands(cmdAction);
+            
+        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
+        {
+            //viewsNavBox.clear();
+            //initializeViewsNavBox();
+        }
+    }
 }

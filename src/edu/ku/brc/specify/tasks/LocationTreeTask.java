@@ -23,8 +23,10 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 
 /**
- *
+ * Location Tree Task.
+ * 
  * @code_status Beta
+ * 
  * @author jstewart
  */
 public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,LocationTreeDefItem>

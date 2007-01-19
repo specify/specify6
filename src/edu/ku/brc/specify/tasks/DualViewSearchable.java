@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks;
  * areas.
  *
  * @code_status Complete
+ * 
  * @author jstewart
  */
 public interface DualViewSearchable

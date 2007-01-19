@@ -82,7 +82,7 @@ import edu.ku.brc.ui.forms.persist.View;
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  * 
  * @author rods
  *
@@ -518,30 +518,13 @@ public class InfoRequestTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+    /**
+     * Processes all Commands of type INFOREQUEST.
+     * @param cmdAction the command to be processed
      */
-    public void doCommand(CommandAction cmdAction)
+    protected void processInfoRequestCommands(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(DB_CMD_TYPE))
-        {
-            if (cmdAction.getData() instanceof InfoRequest)
-            {
-                if (cmdAction.isAction(INSERT_CMD_ACT))
-                {
-                    //final CommandAction cm = cmdAction;
-                    // Create Specify Application
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run()
-                        {
-                            //createAndSendEMail((InfoRequest)cm.getData());  
-                            CommandDispatcher.dispatch(new CommandAction(INFOREQUEST, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
-                        }
-                    });
-                }
-            }
-            
-        } else if (cmdAction.isAction(CREATE_MAILMSG))
+        if (cmdAction.isAction(CREATE_MAILMSG))
         {
             createAndSendEMail((SubPaneIFace)cmdAction.getData());
             
@@ -577,6 +560,44 @@ public class InfoRequestTask extends BaseTask
             //InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
             //createInfoRequest(inforRequest);
 
+        }
+    }
+    
+    /**
+     * Processes all Commands of type DB_CMD_TYPE.
+     * @param cmdAction the command to be processed
+     */
+    protected void processDatabaseCommands(final CommandAction cmdAction)
+    {
+        if (cmdAction.getData() instanceof InfoRequest)
+        {
+            if (cmdAction.isAction(INSERT_CMD_ACT))
+            {
+                //final CommandAction cm = cmdAction;
+                // Create Specify Application
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        //createAndSendEMail((InfoRequest)cm.getData());  
+                        CommandDispatcher.dispatch(new CommandAction(INFOREQUEST, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
+                    }
+                });
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+     */
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(DB_CMD_TYPE))
+        {
+            processDatabaseCommands(cmdAction);
+            
+        } else if (cmdAction.isType(INFOREQUEST))
+        {
+            processInfoRequestCommands(cmdAction);
         }
     }
     

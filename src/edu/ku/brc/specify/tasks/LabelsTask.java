@@ -76,10 +76,10 @@ import edu.ku.brc.ui.dnd.GhostActionableDropManager;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
- * A task to manage Labels and response to Label Commands
- 
- * @code_status Unknown (auto-generated)
- **
+ * A task to manage Labels and response to Label Commands.
+ *
+ * @code_status Alpha
+ *
  * @author rods
  *
  */
@@ -114,7 +114,7 @@ public class LabelsTask extends BaseTask
         
         CommandDispatcher.register(LABELS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
-        CommandDispatcher.register("App", this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
     }
 
    /**
@@ -441,8 +441,31 @@ public class LabelsTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
 
-    public void doCommand(final CommandAction cmdAction)
+    /**
+     * Processes all Commands of type RECORD_SET.
+     * @param cmdAction the command to be processed
+     */
+    protected void processRecordSetCommands(final CommandAction cmdAction)
     {
+        if (cmdAction.isAction("Clicked"))
+        {
+            Object srcObj = cmdAction.getSrcObj();
+            Object dstObj = cmdAction.getDstObj();
+            Object data   = cmdAction.getData();
+            
+            log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
+             
+            createLabelFromSelectedRecordSet(srcObj);
+        }
+    }
+    
+    /**
+     * Processes all Commands of type LABELS.
+     * @param cmdAction the command to be processed
+     */
+    protected void processLabelCommands(final CommandAction cmdAction)
+    {
+        
         //---------------------------------------------------------------------------
         // This Code here needs to be refactored and moved to the NavBoxAction
         // so it can happen in a single generic place (Each task has this code)
@@ -455,6 +478,7 @@ public class LabelsTask extends BaseTask
                 return;
             }
         }*/
+        
         
         if (cmdAction.isAction(DOLABELS_ACTION))
         {
@@ -530,18 +554,25 @@ public class LabelsTask extends BaseTask
                     }
                 }
             }
-        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) &&
-                   cmdAction.isAction("Clicked"))
+        } 
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    public void doCommand(final CommandAction cmdAction)
+    {
+        
+        if (cmdAction.isType(LABELS))
         {
-            Object srcObj = cmdAction.getSrcObj();
-            Object dstObj = cmdAction.getDstObj();
-            Object data   = cmdAction.getData();
+            processLabelCommands(cmdAction);
             
-            log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
+        } else if (cmdAction.isType(RecordSetTask.RECORD_SET))
+        {
+            processRecordSetCommands(cmdAction);
             
-            createLabelFromSelectedRecordSet(srcObj);
-            
-        } else if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
+        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {
             isInitialized = false;
             this.initialize();

@@ -61,8 +61,6 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
 
-
-
 /**
  *
  * This is used for launching editors for Database Objects that are at the "core" of the data model.
@@ -525,13 +523,13 @@ public class SystemSetupTask extends BaseTask
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+    
+    /**
+     * Processes all Commands of type LABELS.
+     * @param cmdAction the command to be processed
      */
-    public void doCommand(CommandAction cmdAction)
+    protected void processSysSetupCommands(final CommandAction cmdAction)
     {
-
         Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
 
         if (data instanceof PickList)
@@ -576,8 +574,18 @@ public class SystemSetupTask extends BaseTask
                 {
                     pickListNames.remove(inx);
                 }
-
             }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+     */
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(SYSTEMSETUPTASK))
+        {
+            processSysSetupCommands(cmdAction);
         }
     }
 

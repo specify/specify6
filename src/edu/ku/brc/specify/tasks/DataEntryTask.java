@@ -64,10 +64,10 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
- * This task controls the data entry forms
- 
+ * This task controls the data entry forms.
+ *
  * @code_status Alpha
- **
+ *
  * @author rods
  *
  */
@@ -95,7 +95,7 @@ public class DataEntryTask extends BaseTask
         super(DATA_ENTRY, getResourceString(DATA_ENTRY));
         
         CommandDispatcher.register(DATA_ENTRY, this);
-        CommandDispatcher.register("App", this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
         
         // Do this here instead of in initialize because the static method will need to access the icon mapping first
         viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
@@ -451,11 +451,12 @@ public class DataEntryTask extends BaseTask
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+    
+    /**
+     * Processes all Commands of type DATA_ENTRY.
+     * @param cmdAction the command to be processed
      */
-    public void doCommand(CommandAction cmdAction)
+    protected void processDataEntryCommands(final CommandAction cmdAction)
     {
         if (cmdAction.isAction("Edit"))
         {
@@ -492,8 +493,19 @@ public class DataEntryTask extends BaseTask
                 String idStr = (String)dataList[2];
                 openView(this, view, mode, idStr);
             }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(DATA_ENTRY))
+        {
+            processDataEntryCommands(cmdAction);
             
-        } else if (cmdAction.isType("App") && cmdAction.isAction("Restart"))
+        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {
             viewsNavBox.clear();
             //initializeViewsNavBox();

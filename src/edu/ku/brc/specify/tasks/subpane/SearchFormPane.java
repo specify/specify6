@@ -15,7 +15,7 @@ import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 
 /*
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  *

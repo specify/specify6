@@ -100,7 +100,7 @@ import edu.ku.brc.ui.validation.ValFormattedTextField;
 
 
 /**
- * This task manages Loans, Gifts, Exchanges and provide actions and forms to do the interactions
+ * This task manages Loans, Gifts, Exchanges and provide actions and forms to do the interactions.
  *
  * @code_status Beta
  *
@@ -855,49 +855,48 @@ public class InteractionsTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
-   public void doCommand(CommandAction cmdAction)
+    /**
+     * Processes all Commands of type DB_CMD_TYPE.
+     * @param cmdAction the command to be processed
+     */
+    protected void processDatabaseCommands(final CommandAction cmdAction)
     {
-        
-        if (cmdAction.isType(DB_CMD_TYPE))
+        if (cmdAction.getData() instanceof InfoRequest)
         {
-            if (cmdAction.getData() instanceof InfoRequest)
+            if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
             {
-                if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
-                {
-                    //final CommandAction cm = cmdAction;
-                    // Create Specify Application
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run()
-                        {
-                            //createAndSendEMail((InfoRequest)cm.getData());  
-                            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
-                        }
-                    });
-                    if (cmdAction.isAction(INSERT_CMD_ACT))
+                // Create Specify Application
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
                     {
-                        InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
-                        NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, INTERACTIONS, "Delete", infoRequest);
-                        setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+                        CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
                     }
-                }
-            } else if (cmdAction.getData() instanceof Loan)
-            {
-                if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
+                });
+                
+                if (cmdAction.isAction(INSERT_CMD_ACT))
                 {
-                   checkToPrintLoan(cmdAction);
+                    InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
+                    NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, INTERACTIONS, "Delete", infoRequest);
+                    setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                 }
             }
-            
-
-        } else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
+        } else if (cmdAction.getData() instanceof Loan)
         {
-            if (cmdAction.isAction(DataEntryTask.OPEN_VIEW))
+            if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
             {
-                adjustLoanForm((FormPane)cmdAction.getData());
+               checkToPrintLoan(cmdAction);
             }
-            
-        } else if (cmdAction.isAction(CREATE_MAILMSG))
+        }
+
+    }
+    
+    /**
+     * Processes all Commands of type INTERACTIONS.
+     * @param cmdAction the command to be processed
+     */
+    protected void processInteractionsCommands(final CommandAction cmdAction)
+    {
+        if (cmdAction.isAction(CREATE_MAILMSG))
         {
             createAndSendEMail((SubPaneIFace)cmdAction.getData());
             
@@ -993,6 +992,32 @@ public class InteractionsTask extends BaseTask
                     createNewLoan((InfoRequest)cmdData);
                 }
             }
+        }
+    }
+
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @SuppressWarnings("unchecked")
+    public void doCommand(final CommandAction cmdAction)
+    {
+        log.debug("Processing Command ["+cmdAction.getType()+"][ "+cmdAction.getAction()+"]");
+        
+        if (cmdAction.isType(DB_CMD_TYPE))
+        {
+            processDatabaseCommands(cmdAction);
+
+        } else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
+        {
+            if (cmdAction.isAction(DataEntryTask.OPEN_VIEW))
+            {
+                adjustLoanForm((FormPane)cmdAction.getData());
+            }
+            
+        } else if (cmdAction.isType(INTERACTIONS))
+        {
+            processInteractionsCommands(cmdAction);
         }
     }
 }

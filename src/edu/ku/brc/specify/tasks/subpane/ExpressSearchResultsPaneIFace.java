@@ -22,7 +22,7 @@ import edu.ku.brc.af.core.ExpressSearchResults;
 /**
  * Interface for objects that can display the results of a search.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  * 
  * @author rods
  *

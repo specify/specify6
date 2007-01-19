@@ -23,8 +23,10 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 
 /**
- *
+ * Geo Time Period Task.
+ * 
  * @code_status Beta
+ * 
  * @author jstewart
  */
 public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>

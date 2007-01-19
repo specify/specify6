@@ -46,7 +46,7 @@ import edu.ku.brc.ui.forms.Viewable;
 /**
  * The process for the pick list "editor" form
  
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  *
