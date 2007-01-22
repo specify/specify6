@@ -62,11 +62,6 @@ public class RepresentativeIconFactory implements ObjectIconMapper
         return instance;
     }
     
-    public synchronized void registerClassToIconMapping(Class<?> clazz, ImageIcon icon)
-    {
-        classToIconMap.put(clazz, icon);
-    }
-    
     public synchronized ImageIcon getIcon(Object o)
     {
         ObjectIconMapper subMapper = subMappers.get(o.getClass());
