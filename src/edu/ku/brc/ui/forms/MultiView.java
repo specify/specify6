@@ -16,7 +16,6 @@ package edu.ku.brc.ui.forms;
 
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -68,6 +67,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public static final int VIEW_SWITCHER        = 2;  // Add a View Switch in the bottom right
     public static final int IS_NEW_OBJECT        = 4;  // Indicates the form will contain a brand new data object
     public static final int HIDE_SAVE_BTN        = 8;  // Hide the Save Button
+    public static final int IS_EDITTING          = 16; // Whether the MultiView is in Edit mode.
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -138,7 +138,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.createOptions  = options;
+        this.createOptions  = options | (createWithMode == AltView.CreationMode.Edit ? IS_EDITTING : 0);
         
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
 
@@ -167,7 +167,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.createOptions  = options;
+        this.createOptions  = options | (createWithMode == AltView.CreationMode.Edit ? IS_EDITTING : 0);
 
         createWithAltView(altView != null ? altView : createDefaultViewable(null));
     }
@@ -380,6 +380,24 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         return mvParent == null;
     }
+    
+    /**
+     * Returns the Top MultiView.
+     * @return the Top MultiView.
+     */
+    public MultiView getTopLevel()
+    {
+        if (mvParent == null)
+        {
+            return this;
+        }
+        MultiView top = mvParent;
+        while (top != null && top.getMultiViewParent() != null)
+        {
+            top = top.mvParent;
+        }
+        return top;
+    }
 
     /**
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef.
@@ -567,14 +585,16 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
                     String altViewName = altView.getName();
                     
-                    Dimension size = currentViewable.getUIComponent().getSize();
+                    //Dimension size = currentViewable.getUIComponent().getSize();
                     
                     currentViewable.aboutToShow(false);
                     removeFormValidator(currentViewable.getValidator());
                     
+                    
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode = altView.getMode();
                     
+                    //printCreateOptions("Create Sub View "+altViewName, createOptions);
                     //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
                     viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions);
                     if (viewable != null)
@@ -583,15 +603,20 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                         {
                             if (mvParent != null)
                             {
-                                viewable.getUIComponent().setSize(size);
-                                viewable.getUIComponent().setPreferredSize(size);
+                                //viewable.getUIComponent().setSize(size);
+                                //viewable.getUIComponent().setPreferredSize(size);
                                 viewable.getUIComponent().validate();
                                 viewable.getUIComponent().doLayout();
                             }
                             viewable.aboutToShow(true);
                             cardLayout.show(this, altViewName);
                             log.debug("Added Viewable["+altViewName+"]");
+                            
+                            validate();
+                            invalidate();
+                            doLayout();
                         }
+                    
                     } else
                     {
                         log.error("The Viewable could not be created for some reason View["+newView+"] AltView["+altViewName+"] Options["+createOptions+"]");
@@ -786,17 +811,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         return parentDataObj;
     }
-
-
-    /**
-     * Returns whether this MulitView is the very top MultiView which typically contains the save UI.
-     * @return whether this MulitView is the very top MultiView
-     */
-    public boolean isRoot()
-    {
-        return this.mvParent == null;
-    }
-
 
     /**
      * Registers "display" window for display "sub object" information.

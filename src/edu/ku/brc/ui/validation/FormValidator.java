@@ -138,8 +138,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public UIValidatable.ErrorType getState()
     {
-        UIValidatable.ErrorType val = !hasChanged && isNewObj && isFirstTime ? UIValidatable.ErrorType.Valid : processRulesAreOK ? formValidationState : UIValidatable.ErrorType.Error;
-        log.info(name+" ["+val+"]["+hasChanged+"]["+isNewObj+"]["+isFirstTime+"] "+formValidationState);
+        //UIValidatable.ErrorType val = !hasChanged && isNewObj && isFirstTime ? UIValidatable.ErrorType.Valid : processRulesAreOK ? formValidationState : UIValidatable.ErrorType.Error;
+        //log.info(name+" ["+val+"]["+hasChanged+"]["+isNewObj+"]["+isFirstTime+"] "+formValidationState);
         return !hasChanged && isNewObj && isFirstTime ? UIValidatable.ErrorType.Valid : processRulesAreOK ? formValidationState : UIValidatable.ErrorType.Error;
     }
 
@@ -891,7 +891,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void updateValidationBtnUIState()
     {
-        log.debug("updateValidationBtnUIState ["+name+"]");
+        //log.debug("updateValidationBtnUIState ["+name+"]");
         if (name.equals("LoanItems"))
         {
             int x = 0;
@@ -930,13 +930,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void turnOnOKButton(final boolean itsOKToEnable)
     {
-        if (name.equals("Shipment"))
-        {
-            int x = 0;
-            x++;
-        }
         //log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
-        log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
+        //log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
         if (okBtn != null)
         {

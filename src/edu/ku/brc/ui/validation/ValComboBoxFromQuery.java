@@ -276,7 +276,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         boolean hasSearchBtn = StringUtils.isNotEmpty(searchDialogName);
 
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);
         CellConstraints cc         = new CellConstraints();
 
         builder.add(comboBox, cc.xy(1,1));

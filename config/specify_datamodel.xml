@@ -736,7 +736,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="receivedBy" columnname="ReceivedByID"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true">
-      <display view="Locality"/>
+      <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
       <field column="NamedPlace" name="namedPlace" type="java.lang.String" length="255"/>
       <field column="RelationToNamedPlace" name="relationToNamedPlace" type="java.lang.String" length="120"/>
       <field column="LocalityName" name="localityName" type="java.lang.String" length="255"/>

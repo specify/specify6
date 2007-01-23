@@ -195,7 +195,7 @@
     	<view name="Preparation"
               class="edu.ku.brc.specify.datamodel.Preparation"
                resourcelabels="false">
-    	    <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+    	    <desc><![CDATA[Preparation Subform within the Collection Object form.]]></desc>
     	    <altviews>
     	        <altview name="Preparation View" viewdef="Preparation" label="View" mode="view" validated="false"/>
     	        <altview name="Preparation Edit" viewdef="Preparation" label="Edit" mode="edit" validated="true" default="true"/>
@@ -624,55 +624,32 @@
     			    <cell type="label" labelfor="1" label="Catalog Number"/>
     				<cell type="field" id="1" name="catalogNumber" uitype="text" format="%.0f"/>
 
-                    <cell type="label" labelfor="2" label="Catalog Series"/>
+    			    <cell type="label" labelfor="2" label="Catalog Series"/>
     			    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="text"/>
+    			    
+    			    <cell type="label" labelfor="3" label="Prev Exchg"/>
+    			    <cell type="field" id="3" name="fieldNumber" uitype="text"/>
     			</row>
+    		    
     			<row>
-                 <cell type="label" labelfor="3" label="Accession #"/>
-    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false" valtype="Changed"/>
+                    <cell type="label" labelfor="4" label="Accession #"/>
+    			    <cell type="field" id="4" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false" valtype="Changed"/>
 
-                 <cell type="label" labelfor="4" label="Cataloger"/>
-    			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
+                    <cell type="label" labelfor="5" label="Cataloger"/>
+    			    <cell type="field" id="5" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 
-                    <cell type="label" labelfor="5" label="Date"/>
-    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="6" label="Date"/>
+    			    <cell type="field" id="6" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
     			</row>
+    		    
      			<row>
     				<cell type="separator" label="Determination" colspan="12"/>
     			</row>
 
     			<row>
-    				<cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
+    				<cell type="subview" viewname="Determination" id="7" name="determinations" colspan="12"/>
     			</row>
 
-    			<row>
-    				<cell type="separator" label="Locality" colspan="12"/>
-    			</row>
-    			<row>
-                 <cell type="label" labelfor="7" label="Field No"/>
-    			    <cell type="field" id="7" name="fieldNumber" uitype="text"/>
-
-                 <cell type="label" labelfor="8" label="Locality"/>
-    			    <cell type="field" id="8" name="collectingEvent.locality.localityName" uitype="text" cols="41" colspan="6"/>
-    			</row>
-
-    			<row>
-    				<cell type="separator" label="Preparations" colspan="12"/>
-    			</row>
-    			<row>
-    			    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
-    			</row>
-
-    			<row>
-    				<cell type="separator" label="" colspan="12"/>
-    			</row>
-    			<row>
-                    <cell type="label" labelfor="10" label="Edited By"/>
-    			    <cell type="field" id="10" name="lastEditedBy" readonly="true" uitype="text"/>
-
-                    <cell type="label" labelfor="11" label="Last Edited"/>
-    			    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
-    			</row>
     		</rows>
     	</viewdef>
 

@@ -54,6 +54,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -70,8 +71,10 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
+import edu.ku.brc.specify.ui.CollectorActionListener;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -193,6 +196,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         AttachmentUtils.setThumbnailer(thumb);
         ActionListener attachmentDisplayer = AttachmentUtils.getAttachmentDisplayer();
         DefaultClassActionHandler.getInstance().registerActionHandler(Attachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(Collectors.class, new CollectorActionListener());
+        
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -233,8 +238,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
-                UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
             }
 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel());

@@ -89,13 +89,13 @@
   
 
     <!-- bi-directional many-to-one association to DeterminationStatus -->
-    <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" outer-join="true" cascade="save-update">
+    <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" outer-join="true" cascade="save-update,lock,merge">
         <meta attribute="scope-field">protected</meta>
         <column name="DeterminationStatusID" not-null="true" />
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Taxon  not-null="true"-->
-    <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" outer-join="true" cascade="save-update">
+    <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" outer-join="true" cascade="save-update,lock,merge">
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="TaxonID" />
@@ -118,7 +118,7 @@
     </set>
     
     <!-- bi-directional many-to-one association to Agent not-null="true" -->
-    <many-to-one name="determiner" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update">
+    <many-to-one name="determiner" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update,lock,merge">
         <meta attribute="field-description">id of the Person making the determination</meta>
         <column name="DeterminerID"  />
     </many-to-one>

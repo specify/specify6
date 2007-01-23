@@ -87,7 +87,7 @@
         <table name="edu.ku.brc.specify.datamodel.LoanPhysicalObject" id="54"/>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" id="55"/>
         <table name="edu.ku.brc.specify.datamodel.Locality" id="2">
-            <display view="Locality"/>
+            <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" id="57"/>
         <table name="edu.ku.brc.specify.datamodel.Location" id="58"/>

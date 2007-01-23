@@ -1098,7 +1098,7 @@ public class ViewFactory
                             {
                                 int options = (cellSubView.isSingleValueFromSet() ? 0 : MultiView.RESULTSET_CONTROLLER) | MultiView.VIEW_SWITCHER |
                                               (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
-                                    
+                                MultiView.printCreateOptions("SUBVIEW", options);
                                 MultiView multiView = new MultiView(parent, 
                                                                     cellSubView.getName(),
                                                                     subView,

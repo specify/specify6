@@ -17,6 +17,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -49,7 +51,9 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -60,6 +64,7 @@ import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -452,13 +457,42 @@ public class DataEntryTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
     
+    protected void adjustColObjForm(final FormPane formPane)
+    {
+        FormViewObj formViewObj = formPane.getMultiView().getCurrentViewAsFormViewObj();
+        if (formViewObj != null && formViewObj.getDataObj() instanceof CollectionObject)
+        {
+            CollectionObject      colObj     = (CollectionObject)formViewObj.getDataObj();
+            //boolean   isNewObj = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
+            //boolean   isEdit   = formPane.getMultiView().isEditable();
+            if (colObj != null)
+            {
+                if (colObj.getCatalogSeries() == null)
+                {
+                    CatalogSeries catSeries = CatalogSeries.getCurrentCatalogSeries().get(0);
+                    colObj.setCatalogSeries(catSeries); 
+                    Component comp     = formViewObj.getControlByName("catalogSeries.seriesName");
+                    if (comp instanceof JTextField)
+                    {
+                        ((JTextField)comp).setText(catSeries.getSeriesName());
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * Processes all Commands of type DATA_ENTRY.
      * @param cmdAction the command to be processed
      */
     protected void processDataEntryCommands(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction("Edit"))
+    
+        if (cmdAction.isAction(DataEntryTask.OPEN_VIEW))
+        {
+            adjustColObjForm((FormPane)cmdAction.getData());
+            
+        } else if (cmdAction.isAction("Edit"))
         {
             if (cmdAction.getData() instanceof RecordSet)
             {

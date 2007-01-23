@@ -21,6 +21,7 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTa
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getStrValue;
+import static edu.ku.brc.specify.tests.DataBuilder.createPickList;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -79,6 +80,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.Pair;
 
@@ -1466,6 +1468,15 @@ public class GenericDBConversion
      */
     public boolean convertUSYSTables()
     {
+        log.info("Creating picklists");
+
+        int tableType      = PickListDBAdapterIFace.Type.Table.ordinal();
+        //int tableFieldType = PickListDBAdapterIFace.Type.TableField.ordinal();
+        
+        //                 Name                Type           Table Name           Field       Formatter          R/O  Size
+        createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1);
+        createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1);
+
         log.info("Converting USYS Tables.");
 
         BasicSQLUtils.deleteAllRecordsFromTable("picklist");

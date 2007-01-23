@@ -124,7 +124,7 @@ public class ViewLoader
                 boolean isValidated = getAttr(altElement, "validated", mode == AltView.CreationMode.Edit);
                 boolean isDefault   = getAttr(altElement, "default", false);
 
-                log.debug("Trying to get viewDef ["+ viewDefName + "]");
+                //log.debug("Trying to get viewDef ["+ viewDefName + "]");
                 ViewDef viewDef = viewDefs.get(viewDefName);
                 if (viewDef == null)
                 {
@@ -303,7 +303,7 @@ public class ViewLoader
             {
                 Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
                 ViewDef  viewDef = createViewDef(element);
-                log.debug("Loaded ViewDef["+viewDef.getName()+"]");
+                //log.debug("Loaded ViewDef["+viewDef.getName()+"]");
                 if (viewDefs.get(viewDef.getName()) == null)
                 {
                     viewDefs.put(viewDef.getName(), viewDef);
@@ -573,6 +573,7 @@ public class ViewLoader
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextarea");
                                     break;
                                 
+                                case  treequerycbx:
                                 case  querycbx:
                                 {
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");

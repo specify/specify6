@@ -247,10 +247,12 @@ public class TableViewObj implements Viewable,
                 // so it thinks we are in edit mode (at this time Tables are ALWAYS in View mode)
                 // so we temporarily set the mode of the Table's AltView to Edit create the switcher
                 // and then set it back to View.
-                boolean isNewObj = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+                boolean overrideViewMode = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) || MultiView.isOptionOn(options, MultiView.IS_EDITTING);
+                
                 AltView.CreationMode tempMode = null;
-                if (isNewObj && altView.getMode() == AltView.CreationMode.View)
-                {
+                //if (isNewObj && altView.getMode() == AltView.CreationMode.View)
+                if (overrideViewMode && altView.getMode() == AltView.CreationMode.View)
+                                       {
                     tempMode = altView.getMode();
                     altView.setMode(AltView.CreationMode.Edit);
                 }

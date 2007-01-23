@@ -193,6 +193,18 @@
         </switch>
     </format>
     
+    <format
+        name="Locality"
+        class="edu.ku.brc.specify.datamodel.Locality"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>localityName</field>
+            </fields>
+        </switch>
+    </format>
+    
     <aggregators>
         <aggregator name="AccessionAuthorizations" class="edu.ku.brc.specify.datamodel.AccessionAuthorizations" separator="; " count="" ending="" format="AccessionAuthorizations" default="true"/>
         <aggregator name="AccessionAgent"         class="edu.ku.brc.specify.datamodel.AccessionAgent" separator="; " count="" ending="" format="AccessionAgent" default="true"/>   

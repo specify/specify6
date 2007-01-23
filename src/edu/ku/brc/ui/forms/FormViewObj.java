@@ -75,6 +75,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
@@ -284,7 +285,7 @@ public class FormViewObj implements Viewable,
         mainComp    = mainBuilder.getPanel();
         mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         
-        if (mvParent != null && mvParent.isRoot())
+        if (mvParent != null && mvParent.isTopLevel())
         {
             scrollPane = new JScrollPane(mainComp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         }
@@ -354,7 +355,10 @@ public class FormViewObj implements Viewable,
                         saveWasAdded = true;
     
                     }
-                    comps.add(switcherUI);
+                    if (switcherUI != null)
+                    {
+                        comps.add(switcherUI);
+                    }
                 }
             }
             
@@ -427,7 +431,7 @@ public class FormViewObj implements Viewable,
             }
         }
         
-        return new MenuSwitcherPanel(mvParentArg, viewArg, altViewArg, altViewsListArg);
+        return altViewsListArg.size() > 1 ? new MenuSwitcherPanel(mvParentArg, viewArg, altViewArg, altViewsListArg) : null;
     }
     
     /**
@@ -982,6 +986,7 @@ public class FormViewObj implements Viewable,
     /**
      * Save any changes to the current object
      */
+    @SuppressWarnings("unchecked")
     public void saveObject()
     {
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
@@ -1013,9 +1018,25 @@ public class FormViewObj implements Viewable,
             FormHelper.updateLastEdittedInfo(dataObj);
             
             session.beginTransaction();
-            session.saveOrUpdate(dataObj);
+            Object dObj = session.merge(dataObj);
+            session.saveOrUpdate(dObj);
             session.commit();
             session.flush();
+            
+            if (list != null)
+            {
+                int index = list.indexOf(dataObj);
+                list.remove(dataObj);
+                list.indexOf(dObj, index);
+            }
+            
+            if (origDataSet != null)
+            {
+                origDataSet.remove(dataObj);
+                origDataSet.add(dObj);
+            }
+            
+            dataObj = dObj;
             
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
             
@@ -1428,6 +1449,7 @@ public class FormViewObj implements Viewable,
             if (rsController.getNewRecBtn() != null)
             {
                 boolean enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
+                log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
                 /*if (isEditting)
                 {
                     log.debug(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
@@ -1446,6 +1468,11 @@ public class FormViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
+        if (dataObj instanceof Locality)
+        {
+            int x = 0;
+            x++;
+        }
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
         if (!alreadyInTheList)
@@ -1558,6 +1585,7 @@ public class FormViewObj implements Viewable,
     public void setParentDataObj(Object parentDataObj)
     {
         this.parentDataObj = parentDataObj;
+        updateControllerUI();
     }
 
     /* (non-Javadoc)
@@ -1575,7 +1603,7 @@ public class FormViewObj implements Viewable,
     {
         if (dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
         {
-            if (mvParent == null || mvParent.isRoot())
+            if (mvParent == null || mvParent.isTopLevel())
             {
                 if (session != null)
                 {
@@ -1785,7 +1813,9 @@ public class FormViewObj implements Viewable,
 
                     fieldInfo.getSubView().setParentDataObj(dataObj);
                     
-                    data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
+                    Object[] values = UIHelper.getFieldValues(fieldInfo.getFormCell(), dataObj, dg);
+                    data = values[0];
+                    //data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
                     
                     if (data != null)
                     {
@@ -1829,7 +1859,7 @@ public class FormViewObj implements Viewable,
             defaultValueList.clear();
         }
 
-        if (mvParent != null && mvParent.isRoot() && saveBtn != null && isEditting)
+        if (mvParent != null && mvParent.isTopLevel() && saveBtn != null && isEditting)
         {
             saveBtn.setEnabled(false);
         }

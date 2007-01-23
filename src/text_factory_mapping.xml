@@ -1,5 +1,3 @@
 <TextFactoryMapping>
-	<!-- 
-		<SubMapper class="edu.ku.brc.specify.ui.AgentTextMapper" />	
-	-->
+		<SubMapper class="edu.ku.brc.specify.ui.AgentIconTextMapper" />	
 </TextFactoryMapping>

@@ -15,6 +15,7 @@ import javax.swing.JList;
 import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.ui.RepresentativeIconFactory;
+import edu.ku.brc.specify.ui.RepresentativeTextFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
@@ -46,16 +47,15 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
         JLabel l = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if(value instanceof FormDataObjIFace)
         {
-            FormDataObjIFace dataObj = (FormDataObjIFace)value;
-            String text = dataObj.getIdentityTitle();
+            String text = RepresentativeTextFactory.getInstance().getString(value);
             l.setText(text);
             ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value);
             l.setIcon(icon);
         }
-        
+       
         l.setHorizontalTextPosition(SwingConstants.CENTER);
         l.setHorizontalAlignment(SwingConstants.CENTER);
-        
+       
         return l;
     }
 }

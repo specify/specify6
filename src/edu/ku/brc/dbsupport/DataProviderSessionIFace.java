@@ -62,6 +62,8 @@ public interface DataProviderSessionIFace
     
     public void attach(Object dataObj);
     
+    public Object merge(Object dataObj);
+    
     public boolean save(Object dataObj) throws Exception;
     
     public boolean refresh(Object dataObj) throws Exception;

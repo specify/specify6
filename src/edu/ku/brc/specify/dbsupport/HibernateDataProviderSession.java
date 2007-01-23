@@ -99,6 +99,19 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         deleteList.add(dataObj);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
+     */
+    public Object merge(Object dataObj)
+    {
+        if (session != null)
+        {
+            return session.merge(dataObj);
+        }
+        log.error("Session was null.");
+        return null;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.String)

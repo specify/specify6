@@ -4,5 +4,5 @@
 	<ClassIcon class="edu.ku.brc.specify.datamodel.CollectionObject" iconname="CollectionObject" />
 	<SubMapper class="edu.ku.brc.specify.ui.AttachmentIconMapper" />
 	<SubMapper class="edu.ku.brc.specify.ui.PreparationIconMapper" />
-	<SubMapper class="edu.ku.brc.specify.ui.AgentIconMapper" />
+	<SubMapper class="edu.ku.brc.specify.ui.AgentIconTextMapper" />
 </IconFactoryMapping>

@@ -21,6 +21,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
  *
  * @code_status Alpha
+ * 
  * @author jstewart
  */
 public class RepresentativeTextFactory implements ObjectTextMapper
@@ -29,10 +30,18 @@ public class RepresentativeTextFactory implements ObjectTextMapper
 
     protected static RepresentativeTextFactory instance;
     
+    /**
+     * Protected constructor. 
+     */
     protected RepresentativeTextFactory()
     {
         subMappers = new Hashtable<Class<?>, ObjectTextMapper>();
     }
+    
+    /**
+     * Return the singleton.
+     * @return the singleton.
+     */
     public synchronized static RepresentativeTextFactory getInstance()
     {
         if (instance == null)
@@ -40,7 +49,7 @@ public class RepresentativeTextFactory implements ObjectTextMapper
             instance = new RepresentativeTextFactory();
             try
             {
-                //instance.readMappingFile();
+                instance.readMappingFile();
             }
             catch (Exception e)
             {

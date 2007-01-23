@@ -41,6 +41,16 @@
                 <altview name="GeographySearch" viewdef="GeographySearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
+        
+        <view 
+            name="LocalitySearch"
+            class="edu.ku.brc.specify.datamodel.Locality"
+            resourcelabels="false">
+            <desc><![CDATA[The Locality Search Form]]></desc>
+            <altviews>
+                <altview name="LocalitySearch" viewdef="LocalitySearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
     </views>
     
     <viewdefs>
@@ -181,7 +191,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
-            <desc><![CDATA[The Accession Search Form]]></desc>
+            <desc><![CDATA[The Geography Search Form]]></desc>
             <enableRules/>
             
             <columnDef>p,3dlu,p</columnDef>
@@ -189,8 +199,28 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="5" label="Name"/>
-                    <cell type="field" id="5" name="geography.Name" isrequired="true" uitype="text" valtype="Focus"/>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="geography.Name" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="LocalitySearch"
+            class="edu.ku.brc.specify.datamodel.Locality"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Locality Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="locality.LocalityName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

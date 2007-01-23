@@ -202,7 +202,10 @@ public class IconViewObj implements Viewable
         builder.add(newButton, cc.xy(4,1));
         builder.add(deleteButton, cc.xy(6,1));
         builder.add(validationInfoBtn, cc.xy(8,1));
-        builder.add(switcherUI, cc.xy(10,1));
+        if (switcherUI != null)
+        {
+            builder.add(switcherUI, cc.xy(10,1));
+        }
         southPanel = builder.getPanel();
 
         mainComp.add(iconTray,BorderLayout.CENTER);
@@ -215,7 +218,7 @@ public class IconViewObj implements Viewable
         ActionListener listener = DefaultClassActionHandler.getInstance().getDefaultClassActionHandler(selection.getClass());
         if (listener!=null)
         {
-            listener.actionPerformed(new ActionEvent(selection,0,"double-click"));
+            listener.actionPerformed(new IconViewActionEvent(selection, 0, "double-click", this));
         }
         else
         {
@@ -416,6 +419,11 @@ public class IconViewObj implements Viewable
     //-------------------------------------------------
     // Viewable
     //-------------------------------------------------
+
+    public int getViewOptions()
+    {
+        return viewOptions;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getName()
@@ -768,5 +776,44 @@ public class IconViewObj implements Viewable
     {
         mvParent      = null;
         mainComp      = null;
+    }
+    
+    //-----------------------------------------------------------------------------------------------
+    //-- Inner Classes
+    //-----------------------------------------------------------------------------------------------
+    
+    public class IconViewActionEvent extends ActionEvent
+    {
+        protected IconViewObj icIconViewObj;
+
+        public IconViewActionEvent(Object      source, 
+                                   int         id, 
+                                   String      command,
+                                   IconViewObj icIconViewObj)
+        {
+            super(source, id, command);
+            
+            this.icIconViewObj = icIconViewObj;
+        }
+
+        public AltView getAltView()
+        {
+            return icIconViewObj.getAltView();
+        }
+
+        public IconViewObj getIconViewObj()
+        {
+            return icIconViewObj;
+        }
+
+        public View getView()
+        {
+            return icIconViewObj.getView();
+        }
+
+        public ViewDef getViewDef()
+        {
+            return icIconViewObj.getViewDef();
+        }
     }
 }

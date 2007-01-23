@@ -287,12 +287,19 @@ public class DataObjFieldFormatMgr
 
         DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
 
-        Object[]        values = UIHelper.getFieldValues(new String[] {switcherFormatter.getFieldName()}, dataObj, getter);
-        String          value  = values[0] != null ? values[0].toString() : "null";
-        DataObjDataFieldFormatIFace dff    = switcherFormatter.getFormatterForValue(value);
-        if (dff == null)
+        DataObjDataFieldFormatIFace dff = null;
+        Object[] values = UIHelper.getFieldValues(new String[] {switcherFormatter.getFieldName()}, dataObj, getter);
+        if (values != null)
         {
-            log.error("Couldn't find a switchable data formatter for ["+switcherFormatter.getName()+"] field["+switcherFormatter.getFieldName()+"] value["+value+"]");
+            String value = values[0] != null ? values[0].toString() : "null";
+            dff = switcherFormatter.getFormatterForValue(value);
+            if (dff == null)
+            {
+                log.error("Couldn't find a switchable data formatter for ["+switcherFormatter.getName()+"] field["+switcherFormatter.getFieldName()+"] value["+value+"]");
+            }
+        } else
+        {
+            log.error("Values Array was null for Class["+dataObj.getClass().getSimpleName()+"] couldn't find field["+switcherFormatter.getFieldName()+"] (you probably passed in the wrong type of object)");
         }
         return dff;
     }

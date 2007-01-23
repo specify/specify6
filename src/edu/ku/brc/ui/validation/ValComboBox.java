@@ -534,7 +534,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         {
             if (comboBox.hasAdapter())
             {
-                return selectedObj instanceof PickListItem? ((PickListItem)selectedObj).getValue() : selectedObj;
+                return selectedObj instanceof PickListItemIFace ? ((PickListItem)selectedObj).getValueObject() : selectedObj;
             }
         }
         return selectedObj;
