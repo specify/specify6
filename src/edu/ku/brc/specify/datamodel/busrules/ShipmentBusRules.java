@@ -55,7 +55,7 @@ public class ShipmentBusRules implements BusinessRulesIFace
      */
     public ShipmentBusRules()
     {
-        
+        //
     }
     
     /* (non-Javadoc)

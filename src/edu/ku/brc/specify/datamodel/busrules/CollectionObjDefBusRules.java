@@ -59,6 +59,7 @@ public class CollectionObjDefBusRules extends SimpleBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#deleteMsg(java.lang.Object)
      */
+    @Override
     public String getDeleteMsg(final Object dataObj)
     {
         if (dataObj instanceof DataType)

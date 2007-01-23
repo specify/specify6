@@ -54,7 +54,7 @@ public class PermitBusRules implements BusinessRulesIFace
      */
     public PermitBusRules()
     {
-        
+        //
     }
     
     /* (non-Javadoc)
@@ -88,7 +88,7 @@ public class PermitBusRules implements BusinessRulesIFace
             if (id != null)
             {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List                     permits = session.getDataList(Permit.class, "permitId", id);
+                List<?>                  permits = session.getDataList(Permit.class, "permitId", id);
                 if (permits.size() == 1)
                 {
                     Permit oldPermit = (Permit)permits.get(0);
@@ -106,7 +106,7 @@ public class PermitBusRules implements BusinessRulesIFace
             if (checkPermitNumberForDuplicates)
             {
                 DataProviderSessionIFace session       = DataProviderFactory.getInstance().createSession();
-                List                     permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
+                List<?>                  permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
                 if (permitNumbers.size() > 0)
                 {
                     errorList.add("Permit Number is already in use."); // I18N
@@ -218,7 +218,7 @@ public class PermitBusRules implements BusinessRulesIFace
      */
     public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon)
     {
-        
+        //
     }
     
     //-----------------------------------------------------------------
@@ -231,6 +231,7 @@ public class PermitBusRules implements BusinessRulesIFace
             super(data);
         }
         
+        @Override
         public String toString()
         {
             if (data instanceof Agent)

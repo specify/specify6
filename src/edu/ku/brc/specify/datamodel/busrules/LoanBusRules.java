@@ -52,7 +52,7 @@ public class LoanBusRules implements BusinessRulesIFace
      */
     public LoanBusRules()
     {
-        
+        //
     }
     
     /* (non-Javadoc)

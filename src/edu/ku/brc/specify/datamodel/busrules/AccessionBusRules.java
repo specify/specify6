@@ -63,7 +63,7 @@ public class AccessionBusRules implements BusinessRulesIFace
      */
     public AccessionBusRules()
     {
-        
+        //
     }
     
     /* (non-Javadoc)
@@ -95,8 +95,8 @@ public class AccessionBusRules implements BusinessRulesIFace
             Long id = accession.getAccessionId();
             if (id != null)
             {
-                DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
-                List                     accessions = session.getDataList(Accession.class, "accessionId", id);
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                List<?> accessions = session.getDataList(Accession.class, "accessionId", id);
                 if (accessions.size() == 1)
                 {
                     Accession oldAccession       = (Accession)accessions.get(0);
@@ -114,8 +114,8 @@ public class AccessionBusRules implements BusinessRulesIFace
             // If the accession has not changed then we shouldn't check for duplicates
             if (checkAccessionNumberForDuplicates)
             {
-                DataProviderSessionIFace session          = DataProviderFactory.getInstance().createSession();
-                List                     accessionNumbers = session.getDataList(Accession.class, "number", accessionNumber);
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                List <?> accessionNumbers        = session.getDataList(Accession.class, "number", accessionNumber);
                 if (accessionNumbers.size() > 0)
                 {
                     errorList.add("Accession Number is already in use."); // I18N
@@ -300,6 +300,7 @@ public class AccessionBusRules implements BusinessRulesIFace
             super(data);
         }
         
+        @Override
         public String toString()
         {
             if (data instanceof Agent)
