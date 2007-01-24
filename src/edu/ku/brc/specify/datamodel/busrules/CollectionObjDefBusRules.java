@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -64,7 +65,7 @@ public class CollectionObjDefBusRules extends SimpleBusRules
     {
         if (dataObj instanceof DataType)
         {
-            return "Collection Object Definition "+((CollectionObjDef)dataObj).getName() + " was deleted."; // I18N
+            return getLocalizedMessage("COLLECTIONOBJDEF_DELETED", ((CollectionObjDef)dataObj).getName());
         }
         return null;
     }

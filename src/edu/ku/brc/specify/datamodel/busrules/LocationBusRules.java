@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import edu.ku.brc.specify.datamodel.Location;
 
 /**
@@ -28,7 +29,7 @@ public class LocationBusRules extends SimpleBusRules
     {
         if (dataObj instanceof Location)
         {
-            return "Location "+((Location)dataObj).getName() + " was deleted."; // I18N
+            return getLocalizedMessage("LOCATION_DELETED", ((Location)dataObj).getName());
         }
         return null;
     }

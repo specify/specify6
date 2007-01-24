@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -25,7 +27,6 @@ import java.util.Vector;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
@@ -50,17 +51,8 @@ public class PrepTypeBusRules implements BusinessRulesIFace
     {
         if (dataObj instanceof PrepType)
         {
-            return "Preparation Type "+((PrepType)dataObj).getName() + " was deleted."; // I18N
+            return getLocalizedMessage("PREPTYPE_DELETED", ((PrepType)dataObj).getName());
         }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getStandAloneDataItems(java.lang.Object)
-     */
-    public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj)
-    {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -125,15 +117,6 @@ public class PrepTypeBusRules implements BusinessRulesIFace
             return STATUS.Error;
         }       
         return STATUS.OK;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#saveStandAloneData(java.lang.Object, java.util.List)
-     */
-    public void saveStandAloneData(Object dataObj, List<BusinessRulesDataItem> list)
-    {
-        // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)

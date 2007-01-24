@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -44,7 +45,7 @@ public class DataTypeBusRules extends SimpleBusRules
     {
         if (dataObj instanceof DataType)
         {
-            return "Data Type "+((DataType)dataObj).getName() + " was deleted."; // I18N
+            return getLocalizedMessage("DATATYPE_DELETED", ((DataType)dataObj).getName());
         }
         return null;
     }

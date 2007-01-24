@@ -50,6 +50,7 @@
 
         <view name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.AgentBusRules"
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
             <altviews defaultmode="view" selector="agentType">
@@ -114,6 +115,7 @@
 
         <view name="CollectionObject"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
             resourcelabels="false"
             >
             <desc><![CDATA[The Collection Object form.]]></desc>
@@ -240,10 +242,11 @@
                resourcelabels="false">
     	    <desc><![CDATA[Subform within the Collection Object form.]]></desc>
     	    <altviews>
+    	        <altview name="Preparation Table" viewdef="Preparation Table" label="Grid" mode="view"/>
     	        <altview name="Preparation View" viewdef="Preparation" label="View" mode="view"/>
     	        <altview name="Preparation Edit" viewdef="Preparation" label="Edit" mode="edit" default="true"/>
     	        <altview name="Preparation IconView" viewdef="PreparationsIconView" label="IconView" mode="view"/>
-    	        <altview name="Preparation IconEdit" viewdef="PreparationsIconView" label="IconEdit" mode="edit" default="true"/>
+    	        <altview name="Preparation IconEdit" viewdef="PreparationsIconView" label="IconEdit" mode="edit"/>
     		</altviews>
     	</view>
 
@@ -730,7 +733,7 @@
     			</row>
 
     			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" defaulttype="table" rows="5"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
     			</row>
 
     			<row>
@@ -746,7 +749,7 @@
     		    </row>
     			
     			<row>
-    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" colspan="12"/>
+    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
     			</row>
 
     			<row>
@@ -822,7 +825,7 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
 
-    		<columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
 
     		<rows>
@@ -837,7 +840,6 @@
     			    
     			    <cell type="label" labelfor="2" label="Status"/>
     			    <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
-    			    <!-- <cell type="field" id="2" name="status.name" uitype="text"/> -->
     			</row>
     			<row>
 
@@ -847,13 +849,16 @@
                     <cell type="label" labelfor="4" label="Type"/>
     			    <cell type="field" id="4" name="typeStatusName" uitype="text"/>
 
-                    <cell type="label" labelfor="5" label="Date"/>
-    			    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
+    			    <cell type="label" labelfor="5" label="Date"/>
+    			    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+    			    
+    			    <cell type="label" labelfor="7" label="In Question"/>
+    			    <cell type="field" id="7" name="yesNo1" uitype="checkbox"/>
     			</row>
 
     			<row>
                     <cell type="label" labelfor="6" label="Remarks"/>
-    			    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="9" cols="50"/>
+    			    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
     			</row>
     		</rows>
     	</viewdef>
@@ -1355,7 +1360,18 @@
 
             </rows>
         </viewdef>
-
+        
+        <viewdef
+            type="formtable"
+            name="Preparation Table"
+            class="edu.ku.brc.specify.datamodel.Preparation"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <definition>Preparation</definition>
+        </viewdef>
+        
     	<viewdef
     	    type="form"
     	    name="Preparation"

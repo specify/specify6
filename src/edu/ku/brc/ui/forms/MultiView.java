@@ -94,6 +94,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
     protected boolean                      isSelectorForm;
     protected String                       selectorValue   = null;
+    
+    protected Vector<Object>                deletedItems    = null;
+
 
     // Temp
     protected MultiView                    thisObj           = null;
@@ -878,6 +881,28 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public int getCreateOptions()
     {
         return createOptions;
+    }
+    
+    /**
+     * Adds an item to be deleted to a list.
+     * @param deletedItem the item to be deleted.
+     */
+    public void addDeletedItem(final Object deletedItem)
+    {
+        if (deletedItems == null)
+        {
+            deletedItems = new Vector<Object>();
+        }
+        deletedItems.add(deletedItem);
+    }
+    
+    /**
+     * Returns a list of items to be deleted, it may return null.
+     * @return a list of items to be deleted, it may return null.
+     */
+    public Vector<Object> getDeletedItems()
+    {
+        return deletedItems;
     }
     
     /**

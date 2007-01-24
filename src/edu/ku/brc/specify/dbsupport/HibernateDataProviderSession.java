@@ -54,6 +54,15 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         //creates++;
         //log.info(" Creates: "+creates+"  Closes: "+closes+" Dif: "+(creates-closes));
     }
+    
+    /**
+     * Returns a native hibernate session.
+     * @return a native hibernate session.
+     */
+    public Session getSession()
+    {
+        return session;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#refresh(java.lang.Object)

@@ -54,6 +54,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -667,6 +668,17 @@ public class FormViewObj implements Viewable,
         // add new component
         mainBuilder.add(formComp, cc.xy(1, mainCompRowInx));
 
+        // This is needed to make the form layout correctly
+        //XXX I hate that I have to do this
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                //mainComp.invalidate();
+                //mainComp.validate();
+                //mainComp.doLayout();
+                UICacheManager.forceTopFrameRepaint();
+            }
+        });
     }
     
     /**
@@ -1002,6 +1014,7 @@ public class FormViewObj implements Viewable,
             this.getDataFromUI();
 
             traverseToGetDataFromForms(mvParent);
+            
             log.debug("saveObject checking businessrules for [" + (dataObj != null ? dataObj.getClass(): "null") + "]");
             if (businessRules != null && businessRules.processBusinessRules(dataObj) == BusinessRulesIFace.STATUS.Error)
             {
@@ -1018,6 +1031,20 @@ public class FormViewObj implements Viewable,
             FormHelper.updateLastEdittedInfo(dataObj);
             
             session.beginTransaction();
+            
+            // Delete the cached Items
+            Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
+            if (deletedItems != null)
+            {
+                for (Object obj : deletedItems)
+                {
+                    session.delete(obj);
+                }
+                deletedItems.clear();
+            }
+            session.commit();
+            session.flush();
+            
             Object dObj = session.merge(dataObj);
             session.saveOrUpdate(dObj);
             session.commit();
@@ -1077,14 +1104,68 @@ public class FormViewObj implements Viewable,
     }
 
     /**
+     * This adjusts the rsController after an item has been deleted, it gets a new item
+     * to fill the form if on exists.
+     */
+    protected void adjustRSControllerAfterRemove()
+    {
+        if (rsController != null)
+        {
+            int currInx = rsController.getCurrentIndex();
+            int newLen  = rsController.getLength() - 1;
+            int newInx  = Math.min(currInx, newLen-1);
+            
+            if (list != null)
+            {
+                list.remove(currInx); // remove from list
+            }
+            
+            if (recordSetItemList != null)
+            {
+                recordSetItemList.remove(currInx); // remove from list
+            }
+            
+            rsController.setLength(newLen); // set new len for controller
+    
+            if (newInx > -1 && (list == null || list.size() > 0))
+            {
+                rsController.setIndex(newInx);
+                dataObj = list.get(newInx);
+                
+                setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
+            } else 
+            {
+                setDataObj(null, true); // true means the dataObj is already in the current "list" of data items we are working with
+            }
+            updateControllerUI();
+        }
+    }
+
+    /**
      * Save any changes to the current object
      */
     protected void removeObject()
     {
-        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        // Delete a child object by caching it in the Top Level MultiView
+        if (mvParent != null && !mvParent.isTopLevel())
+        {
+            removeFromParent(dataObj);
+            mvParent.getTopLevel().addDeletedItem(dataObj);
+            String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
+            formValidator.setHasChanged(true);
+            
+            adjustRSControllerAfterRemove();
+
+            return;
+        }
+        
+        // This should happen
+        if (session != null)
         {
             session.close();
         }
+        
         session = DataProviderFactory.getInstance().createSession();
         setSession(session);
         
@@ -1101,33 +1182,32 @@ public class FormViewObj implements Viewable,
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
 
             boolean doClearObj = true;
-            if (mvParent.isTopLevel())
+
+            try
             {
-                try
+                session.beginTransaction();
+                // Clear the items in the "deleted" cahe because they will be deleted anyway.
+                if (mvParent != null)
                 {
-    
-                    session.beginTransaction();
-                    session.delete(dataObj);
-                    session.commit();
-                    session.flush();
-                    
-                } catch (edu.ku.brc.dbsupport.StaleObjectException e)
-                {
-                    doClearObj = false;
-                    session.rollback();
-                    recoverFromStaleObject("DELETE_DATA_STALE");
-                    
-                } catch (StaleObjectStateException e)
-                {
-                    doClearObj = false;
-                    session.rollback();
-                    recoverFromStaleObject("DELETE_DATA_STALE");
+                    mvParent.getDeletedItems().clear();
                 }
+                session.delete(dataObj);
+                session.commit();
+                session.flush();
                 
-            } else
+            } catch (edu.ku.brc.dbsupport.StaleObjectException e)
             {
-                session.deleteOnSaveOrUpdate(dataObj);
+                doClearObj = false;
+                session.rollback();
+                recoverFromStaleObject("DELETE_DATA_STALE");
+                
+            } catch (StaleObjectStateException e)
+            {
+                doClearObj = false;
+                session.rollback();
+                recoverFromStaleObject("DELETE_DATA_STALE");
             }
+
             
             //mvParent.clearData(true);
             
@@ -1135,38 +1215,8 @@ public class FormViewObj implements Viewable,
 
             if (doClearObj)
             {
-                if (rsController != null)
-                {
-                    int currInx = rsController.getCurrentIndex();
-                    int newLen  = rsController.getLength() - 1;
-                    int newInx  = Math.min(currInx, newLen-1);
-                    
-                    if (list != null)
-                    {
-                        list.remove(currInx); // remove from list
-                    }
-                    
-                    if (recordSetItemList != null)
-                    {
-                        recordSetItemList.remove(currInx); // remove from list
-                    }
-                    
-                    rsController.setLength(newLen); // set new len for controller
-    
-                    if (newInx > -1 && (list == null || list.size() > 0))
-                    {
-                        rsController.setIndex(newInx);
-                        dataObj = list.get(newInx);
-                        
-                        setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
-                    } else 
-                    {
-                        setDataObj(null, true); // true means the dataObj is already in the current "list" of data items we are working with
-                    }
-                } else
-                {
-                    setDataObj(null); 
-                }
+                adjustRSControllerAfterRemove();
+                
                 ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
             } else
             {
@@ -1178,17 +1228,19 @@ public class FormViewObj implements Viewable,
         {
             log.error("******* " + e);
             e.printStackTrace();
+        } finally
+        {
+            if (session != null && (mvParent == null || mvParent.isTopLevel()))
+            {
+                session.close();
+                session = null;
+            }
         }
         
-        if (session != null && (mvParent == null || mvParent.isTopLevel()))
-        {
-            session.close();
-            session = null;
-        }
     }
 
     /**
-     * Tells this form and all of it's children that it is a "new" form for data entry
+     * Tells this form and all of it's children that it is a "new" form for data entry.
      * @param isNewForm true is new, false is not
      */
     public void setHasNewData(final boolean isNewForm)
@@ -1198,7 +1250,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Returns the list of MultiView kids (subforms)
+     * Returns the list of MultiView kids (subforms).
      * @return the list of MultiView kids (subforms)
      */
     public List<MultiView> getKids()
@@ -1207,7 +1259,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Debug method - lists the fields that have changed
+     * Debug method - lists the fields that have changed.
      */
     public void listFieldChanges()
     {
@@ -1236,7 +1288,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Sets the focus to the first control in the form
+     * Sets the focus to the first control in the form.
      */
     protected void focusFirstFormControl()
     {
@@ -1250,7 +1302,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Adds the ResultSetController to the panel
+     * Adds the ResultSetController to the panel.
      */
     protected void addRSController()
     {
@@ -1286,7 +1338,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Returns the "Save" Button
+     * Returns the "Save" Button.
      * @return the Save Button
      */
     public JButton getSaveBtn()
@@ -1870,6 +1922,11 @@ public class FormViewObj implements Viewable,
         {
             session.close();
             session = null;
+            
+            if (mvParent != null)
+            {
+                mvParent.setSession(session);  
+            }
         }
     }
 

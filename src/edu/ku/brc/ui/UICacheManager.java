@@ -312,6 +312,17 @@ public class UICacheManager
     public static String getResourceString(final String key)
     {
         return instance.getResourceStringInternal(key);
+    } 
+    
+    /**
+     * Formats an Internationalized string with a variable argument list.
+     * @param key the I18N key
+     * @param args the list args
+     * @return a formatted string
+     */
+    public static String getLocalizedMessage(final String key, final Object ... args)
+    {
+        return String.format(getResourceString(key), args);
     }
 
     /**

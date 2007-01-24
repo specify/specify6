@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -21,9 +23,9 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 public abstract class SimpleBusRules implements BusinessRulesIFace
 {
@@ -31,7 +33,8 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
     protected Class<?>      dataClass;
     
     /**
-     * @param dataClass
+     * The data class that is used within the busniess rules.
+     * @param dataClass the data class
      */
     public SimpleBusRules(final Class<?> dataClass)
     {
@@ -41,14 +44,15 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getDeleteMsg(java.lang.Object)
      */
-    public abstract String getDeleteMsg(Object dataObj);
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getStandAloneDataItems(java.lang.Object)
-     */
-    public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj)
+    public String getDeleteMsg(Object dataObj)
     {
-        return null;
+        String title     = "Object";
+        if (dataObj instanceof FormDataObjIFace)
+        {
+            FormDataObjIFace dObj = (FormDataObjIFace)dataObj;
+            title = dObj.getIdentityTitle();
+        }
+        return getLocalizedMessage("GENERIC_OBJ_DELETED", title);
     }
 
     /* (non-Javadoc)
@@ -74,8 +78,8 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
         {
             conn = DBConnection.getInstance().createConnection();
             stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select count(*) from " + tableName + " where " + tableName + "." + columnName + " = " + id);
-            return rs.first() && rs.getInt(1) == 0;
+
+            return okToDelete(conn, stmt, tableName, columnName, id);
             
         } catch (Exception ex)
         {
@@ -85,15 +89,99 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
         {
             try 
             {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
                 
             } catch (Exception ex)
             {
                 ex.printStackTrace();
             }
         }
+        return false;
+    }
+
+    /**
+     * Checks to see if it can be deleted.
+     * @param connection db connection
+     * @param stmt db statement
+     * @param tableName the table name to check
+     * @param columnName the column name name to check
+     * @param id the Record ID to check
+     * @return true means it can be deleted, false means it found something
+     */
+    protected boolean okToDelete(final Connection connection, 
+                                 final Statement  stmt,
+                                 final String tableName, 
+                                 final String columnName, final long id)
+    {
+        try
+        {
+            ResultSet rs = stmt.executeQuery("select count(*) from " + tableName + " where " + tableName + "." + columnName + " = " + id);
+            boolean isOK = rs.first() && rs.getInt(1) == 0;
+            rs.close();
+            return isOK;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        }
         return false; // error on the side of not enabling the delete btn
+    }
+    
+    /**
+     * Helper to check a list of tables at one time.
+     * @param nameCombos a list of names combinations "table name/Foreign Key name"
+     * @param id the id to be checked
+     * @return true if ok to delete
+     */
+    protected boolean okToDelete(final String[] nameCombos, final long id)
+    {
+        Connection conn = null;
+        Statement  stmt = null;
+        try
+        {
+            conn = DBConnection.getInstance().createConnection();
+            stmt = conn.createStatement();
+
+            for (int i=0;i<nameCombos.length;i++)
+            {
+                if (!okToDelete(conn, stmt, nameCombos[i], nameCombos[i+1], id))
+                {
+                    return false;
+                }
+                i++;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try 
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return true;
     }
 
     /* (non-Javadoc)
@@ -114,14 +202,6 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
             return STATUS.Error;
         }       
         return STATUS.OK;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#saveStandAloneData(java.lang.Object, java.util.List)
-     */
-    public void saveStandAloneData(Object dataObj, List<BusinessRulesDataItem> list)
-    {
-        // no op
     }
 
     /* (non-Javadoc)

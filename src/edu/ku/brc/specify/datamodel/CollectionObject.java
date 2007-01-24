@@ -649,27 +649,27 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         if (ref instanceof Preparation)
         {
             preparations.remove(ref);
-            ((Preparation)ref).setCollectionObject(null);
+            //((Preparation)ref).setCollectionObject(null);
             
         } else if (ref instanceof Determination)
         {
             determinations.remove(ref);
-            ((Determination)ref).setCollectionObject(null);
+            //((Determination)ref).setCollectionObject(null);
             
         } else if (ref instanceof CollectionObjectCitation)
         {
             collectionObjectCitations.remove(ref);
-            ((CollectionObjectCitation)ref).setCollectionObject(null);
+            //((CollectionObjectCitation)ref).setCollectionObject(null);
             
         } else if (ref instanceof CollectionObjectAttr)
         {
             attrs.remove(ref);
-            ((CollectionObjectAttr)ref).setCollectionObject(null);
+            //((CollectionObjectAttr)ref).setCollectionObject(null);
             
         } else if (ref instanceof ProjectCollectionObject)
         {
             projectCollectionObjects.remove(ref);
-            ((ProjectCollectionObject)ref).setCollectionObject(null);
+            //((ProjectCollectionObject)ref).setCollectionObject(null);
             
         } 
 //        else if (ref instanceof DeaccessionPreparation)
@@ -681,7 +681,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         else if (ref instanceof OtherIdentifier)
         {
             otherIdentifiers.remove(ref);
-            ((OtherIdentifier)ref).setCollectionObject(null);
+            //((OtherIdentifier)ref).setCollectionObject(null);
 
         } else
         {

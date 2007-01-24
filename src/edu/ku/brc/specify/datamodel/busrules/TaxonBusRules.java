@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import edu.ku.brc.specify.datamodel.Taxon;
 
 /**
@@ -26,8 +27,7 @@ public class TaxonBusRules extends SimpleBusRules
     @Override
     public String getDeleteMsg(Object dataObj)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return getLocalizedMessage("TAXON_DELETED", ((Taxon)dataObj).getName());
     }
 
     /* (non-Javadoc)

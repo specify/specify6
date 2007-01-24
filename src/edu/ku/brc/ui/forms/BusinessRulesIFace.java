@@ -48,21 +48,6 @@ public interface BusinessRulesIFace
     public List<String> getWarningsAndErrors();
     
     /**
-     * Returns a 
-     * @param dataObj
-     * @return
-     */
-    public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj);
-    
-    /**
-     * Some complex data object may have sub-object created that can be saved indepently of 
-     * the main object itself. The business rules can determine this and ask fot the objects to be saved.
-     * The implementation can optional ignore this method and choose to do nothing.
-     * @param dataObj the data object to be checked.
-     */
-    public void saveStandAloneData(Object dataObj, List<BusinessRulesDataItem> list);
-    
-    /**
      * Asks if the object can be deleted.
      * @param dataObj the data object in question
      * @return true if it can be deleted, false if not

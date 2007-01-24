@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 
 /**
@@ -27,8 +28,7 @@ public class GeologicTimePeriodBusRules extends SimpleBusRules
     @Override
     public String getDeleteMsg(Object dataObj)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return getLocalizedMessage("GEOLOGICAL_TIME_PERIOD_DELETED", ((GeologicTimePeriod)dataObj).getName());
     }
 
     /* (non-Javadoc)

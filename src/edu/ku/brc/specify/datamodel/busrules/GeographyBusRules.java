@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import edu.ku.brc.specify.datamodel.Geography;
 
 /**
@@ -26,8 +27,7 @@ public class GeographyBusRules extends SimpleBusRules
     @Override
     public String getDeleteMsg(Object dataObj)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return getLocalizedMessage("GEOGRAPHY_DELETED", ((Geography)dataObj).getName());
     }
 
     /* (non-Javadoc)

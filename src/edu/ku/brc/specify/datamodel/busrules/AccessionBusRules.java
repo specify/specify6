@@ -20,9 +20,10 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -34,15 +35,9 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
-import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  *Business rules for validating a Accession.
@@ -118,7 +113,7 @@ public class AccessionBusRules implements BusinessRulesIFace
                 List <?> accessionNumbers        = session.getDataList(Accession.class, "number", accessionNumber);
                 if (accessionNumbers.size() > 0)
                 {
-                    errorList.add("Accession Number is already in use."); // I18N
+                    errorList.add("ACCESSION_IN_USE");
                 } else
                 {
                     return STATUS.OK;
@@ -132,70 +127,10 @@ public class AccessionBusRules implements BusinessRulesIFace
             
         } else
         {
-            errorList.add("Accession Number is missing!"); // I18N
+            errorList.add("ACCESSION_NUM_MISSING");
         }
 
         return STATUS.Error;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getStandAloneDataItems(java.lang.Object)
-     */
-    public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj)
-    {
-        
-        List<BusinessRulesDataItem> list = new ArrayList<BusinessRulesDataItem>();
-        Accession accession = (Accession)dataObj;
-        
-        for (AccessionAgent accAgent : accession.getAccessionAgents())
-        {
-            Agent agent = accAgent.getAgent();
-            if (agent != null && agent.getAgentId() == null)
-            {
-                list.add(new AccessionBRS(agent));
-            }
-        }
-        
-        for (AccessionAuthorizations auth : accession.getAccessionAuthorizations())
-        {
-            Permit permit = auth.getPermit();
-            if (permit != null && permit.getPermitId() == null)
-            {
-                list.add(new AccessionBRS(permit));
-            }
-        }
-        return list;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#saveStandAloneData(java.lang.Object, java.util.List)
-     */
-    public void saveStandAloneData(final Object dataObj, final List<BusinessRulesDataItem> list)
-    {
-        if (!(dataObj instanceof Accession))
-        {
-            return;
-        }
-        
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            session.beginTransaction();
-            
-            for (BusinessRulesDataItem item : list)
-            {
-                if (item.isChecked())
-                {
-                    session.save(item.getData());
-                }
-            }
-            session.commit();
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-        }
-        session.close();
     }
     
     /* (non-Javadoc)
@@ -251,7 +186,7 @@ public class AccessionBusRules implements BusinessRulesIFace
     {
         if (dataObj instanceof Accession)
         {
-            return "Accession "+((Accession)dataObj).getNumber() + " was deleted."; // I18N
+            return getLocalizedMessage("ACCESSION_DELETED", ((Accession)dataObj).getNumber());
         }
         return null;
     }
@@ -289,30 +224,4 @@ public class AccessionBusRules implements BusinessRulesIFace
             }
         }
      }
-    
-    //-----------------------------------------------------------------
-    //-- Inner Classes
-    //-----------------------------------------------------------------
-    class AccessionBRS extends BusinessRulesDataItem
-    {
-        public AccessionBRS(final Object data)
-        {
-            super(data);
-        }
-        
-        @Override
-        public String toString()
-        {
-            if (data instanceof Agent)
-            {
-                return DataObjFieldFormatMgr.format(data, "Agent"); // NOTE: This assumes we definitely have an "Agent" format
-
-            } else if (data instanceof Permit)
-            {
-                return ((Permit)data).getPermitNumber();
-            }
-            return null;
-        }
-    }
-
 }

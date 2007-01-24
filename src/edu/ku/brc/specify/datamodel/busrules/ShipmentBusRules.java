@@ -20,7 +20,8 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.util.ArrayList;
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -31,7 +32,6 @@ import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
-import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
@@ -87,35 +87,19 @@ public class ShipmentBusRules implements BusinessRulesIFace
             Set<Address> addr = agent.getAddresses();
             if (addr.size() == 0)
             {
-                errorList.add("The select agent you loaning to,\nneeds to have at least one address."); // Thsi shouldn't eveer happen
+                errorList.add(getLocalizedMessage("LOAN_MISSING_AGENT_ADDR")); // This shouldn't ever happen
                 return STATUS.Error;
             }
             
         } else
         {
-            errorList.add("Loan Agent is missing an Agent"); // Thsi shouldn't eveer happen
+            errorList.add(getLocalizedMessage("Loan Agent is missing an Agent")); // This shouldn't ever happen
             return STATUS.Error;
         }     
 
         
         return STATUS.OK;
 
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getStandAloneDataItems(java.lang.Object)
-     */
-    public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj)
-    {
-        return new ArrayList<BusinessRulesDataItem>();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#saveStandAloneData(java.lang.Object, java.util.List)
-     */
-    public void saveStandAloneData(final Object dataObj, final List<BusinessRulesDataItem> list)
-    {
-        // no op
     }
     
     /* (non-Javadoc)
@@ -134,7 +118,7 @@ public class ShipmentBusRules implements BusinessRulesIFace
     {
         if (dataObj instanceof Accession)
         {
-            return "Shipment "+((Shipment)dataObj).getShipmentNumber() + " was deleted."; // I18N
+            return getLocalizedMessage("SHIPMENT_DELETED", ((Shipment)dataObj).getShipmentNumber());
         }
         return null;
     }

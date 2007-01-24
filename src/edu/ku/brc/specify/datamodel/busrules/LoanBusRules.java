@@ -20,7 +20,8 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.util.ArrayList;
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+
 import java.util.List;
 import java.util.Vector;
 
@@ -28,7 +29,6 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
@@ -103,22 +103,6 @@ public class LoanBusRules implements BusinessRulesIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getStandAloneDataItems(java.lang.Object)
-     */
-    public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj)
-    {
-        return new ArrayList<BusinessRulesDataItem>();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#saveStandAloneData(java.lang.Object, java.util.List)
-     */
-    public void saveStandAloneData(final Object dataObj, final List<BusinessRulesDataItem> list)
-    {
-        // no op
-    }
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
     public boolean okToDelete(Object dataObj)
@@ -134,7 +118,7 @@ public class LoanBusRules implements BusinessRulesIFace
     {
         if (dataObj instanceof Accession)
         {
-            return "Loan "+((Loan)dataObj).getLoanNumber() + " was deleted."; // I18N
+            return getLocalizedMessage("LOAN_DELETED", ((Loan)dataObj).getLoanNumber());
         }
         return null;
     }

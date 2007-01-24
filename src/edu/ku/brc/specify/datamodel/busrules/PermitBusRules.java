@@ -20,21 +20,18 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.util.ArrayList;
+import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.ui.forms.BusinessRulesDataItem;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  *
@@ -45,7 +42,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
  */
 public class PermitBusRules implements BusinessRulesIFace
 {
-    private static final Logger  log = Logger.getLogger(PermitBusRules.class);
+    //private static final Logger  log = Logger.getLogger(PermitBusRules.class);
     
     private List<String> errorList = new Vector<String>();
     
@@ -109,7 +106,7 @@ public class PermitBusRules implements BusinessRulesIFace
                 List<?>                  permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
                 if (permitNumbers.size() > 0)
                 {
-                    errorList.add("Permit Number is already in use."); // I18N
+                    errorList.add(getLocalizedMessage("PERMIT_NUM_IN_USE", permitNum));
                 } else
                 {
                     return STATUS.OK;
@@ -122,67 +119,10 @@ public class PermitBusRules implements BusinessRulesIFace
             
         } else
         {
-            errorList.add("Permit Number is missing!"); // I18N
+            errorList.add(getLocalizedMessage("PERMIT_NUM_MISSING"));
         }
 
         return STATUS.Error;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getStandAloneDataItems(java.lang.Object)
-     */
-    public List<BusinessRulesDataItem> getStandAloneDataItems(Object dataObj)
-    {
-        Permit permit = (Permit)dataObj;
-        List<BusinessRulesDataItem> list = new ArrayList<BusinessRulesDataItem>();
-
-        //Agent agent = permit.getAgentByIssuee();
-        Agent agent = permit.getIssuedBy();
-        if (agent != null&& agent.getAgentId() == null)
-        {
-           list.add(new PermitBRS(agent));
-        }
-        
-        //agent = permit.getAgentByIssuer();
-        agent = permit.getIssuedTo();
-        if (agent != null && agent.getAgentId() == null)
-        {
-            list.add(new PermitBRS(agent));
-        }
-        return list;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#saveStandAloneData(java.lang.Object, java.util.List)
-     */
-    public void saveStandAloneData(final Object dataObj, final List<BusinessRulesDataItem> list)
-    {
-        if (!(dataObj instanceof Permit))
-        {
-            return;
-        }
-        
-        try
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-
-            session.beginTransaction();
-             
-            for (BusinessRulesDataItem item : list)
-            {
-                if (item.isChecked())
-                {
-                    session.attach(item.getData());
-                    session.save(item.getData());
-                }
-            }
-            session.commit();
-            session.close();
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-        }
     }
     
     /* (non-Javadoc)
@@ -208,7 +148,7 @@ public class PermitBusRules implements BusinessRulesIFace
     {
         if (dataObj instanceof Permit)
         {
-            return "Permit "+((Permit)dataObj).getPermitNumber() + " was deleted."; // I18N
+            return getLocalizedMessage("PERMIT_DELETED", ((Permit)dataObj).getPermitNumber());
         }
         return null;
     }
@@ -219,27 +159,5 @@ public class PermitBusRules implements BusinessRulesIFace
     public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon)
     {
         //
-    }
-    
-    //-----------------------------------------------------------------
-    //-- Inner Classes
-    //-----------------------------------------------------------------
-    class PermitBRS extends BusinessRulesDataItem
-    {
-        public PermitBRS(final Object data)
-        {
-            super(data);
-        }
-        
-        @Override
-        public String toString()
-        {
-            if (data instanceof Agent)
-            {
-                return DataObjFieldFormatMgr.format(data, "Agent"); // NOTE: This assumes we definitely have an "Agent" format
-
-            }
-            return null;
-        }
     }
 }
