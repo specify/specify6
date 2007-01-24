@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +56,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "locality")
 public class Locality extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -112,6 +131,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         localityId = null;
@@ -174,6 +194,9 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getLocalityId() {
         return this.localityId;
     }
@@ -182,6 +205,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.localityId;
@@ -190,6 +215,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Locality.class;
@@ -202,6 +229,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The named place the locality is closest to
      */
+    @Column(name = "NamedPlace", unique = false, nullable = true, insertable = true, updatable = true)
     public String getNamedPlace() {
         return this.namedPlace;
     }
@@ -213,6 +241,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Relation of the locality to the named place
      */
+    @Column(name = "RelationToNamedPlace", unique = false, nullable = true, insertable = true, updatable = true, length = 120)
     public String getRelationToNamedPlace() {
         return this.relationToNamedPlace;
     }
@@ -224,6 +253,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The full name of the locality.
      */
+    @Column(name = "LocalityName", unique = false, nullable = false, insertable = true, updatable = true)
     public String getLocalityName() {
         return this.localityName;
     }
@@ -235,6 +265,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * BaseMeridian for the Range/Township/Section data
      */
+    @Column(name = "BaseMeridian", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getBaseMeridian() {
         return this.baseMeridian;
     }
@@ -246,6 +277,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The Range of a legal description
      */
+    @Column(name = "Range", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getRange() {
         return this.range;
     }
@@ -257,6 +289,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "RangeDirection", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getRangeDirection() {
         return this.rangeDirection;
     }
@@ -268,6 +301,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The Township of a legal description
      */
+    @Column(name = "Township", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getTownship() {
         return this.township;
     }
@@ -279,6 +313,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "TownshipDirection", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getTownshipDirection() {
         return this.townshipDirection;
     }
@@ -290,6 +325,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The Section of a legal description
      */
+    @Column(name = "Section", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getSection() {
         return this.section;
     }
@@ -301,6 +337,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "SectionPart", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getSectionPart() {
         return this.sectionPart;
     }
@@ -312,6 +349,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The verbatim elevation including units as given in the field notes
      */
+    @Column(name = "VerbatimElevation", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVerbatimElevation() {
         return this.verbatimElevation;
     }
@@ -323,6 +361,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * i.e. Meters, Feet, ...
      */
+    @Column(name = "OriginalElevationUnit", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getOriginalElevationUnit() {
         return this.originalElevationUnit;
     }
@@ -334,6 +373,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The minimum elevation in Meters
      */
+    @Column(name = "MinElevation", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getMinElevation() {
         return this.minElevation;
     }
@@ -345,6 +385,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The maximum elevation in Meters
      */
+    @Column(name = "MaxElevation", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getMaxElevation() {
         return this.maxElevation;
     }
@@ -356,6 +397,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The method used to determine the elevation
      */
+    @Column(name = "ElevationMethod", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getElevationMethod() {
         return this.elevationMethod;
     }
@@ -367,6 +409,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * plus or minus -- in meters
      */
+    @Column(name = "ElevationAccuracy", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getElevationAccuracy() {
         return this.elevationAccuracy;
     }
@@ -378,6 +421,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * i.e. Decimal, Deg/Min/Sec, ...
      */
+    @Column(name = "OriginalLatLongUnit", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getOriginalLatLongUnit() {
         return this.originalLatLongUnit;
     }
@@ -389,6 +433,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The type of area described by the lat long data (Point,Line,Rectangle)
      */
+    @Column(name = "LatLongType", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLatLongType() {
         return this.latLongType;
     }
@@ -400,6 +445,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Latitude of first point
      */
+    @Column(name = "Latitude1", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
     public BigDecimal getLatitude1() {
         return this.latitude1;
     }
@@ -411,6 +457,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Longitude of first point
      */
+    @Column(name = "Longitude1", unique = false, nullable = true, insertable = true, updatable = true, precision = 13, scale = 10)
     public BigDecimal getLongitude1() {
         return this.longitude1;
     }
@@ -422,6 +469,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Latitude of second point
      */
+    @Column(name = "Latitude2", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
     public BigDecimal getLatitude2() {
         return this.latitude2;
     }
@@ -433,6 +481,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Longitude of second point
      */
+    @Column(name = "Longitude2", unique = false, nullable = true, insertable = true, updatable = true, precision = 13, scale = 10)
     public BigDecimal getLongitude2() {
         return this.longitude2;
     }
@@ -444,6 +493,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * the method used to determine the LatitudeLongitude
      */
+    @Column(name = "LatLongMethod", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLatLongMethod() {
         return this.latLongMethod;
     }
@@ -455,6 +505,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * radius -- in decimal degrees
      */
+    @Column(name = "LatLongAccuracy", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getLatLongAccuracy() {
         return this.latLongAccuracy;
     }
@@ -466,6 +517,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * GPSDatum
      */
+    @Column(name = "Datum", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getDatum() {
         return this.datum;
     }
@@ -477,6 +529,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * The name of the group that this record is visible to. (Default to public)
      */
+    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
     }
@@ -488,6 +541,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -499,6 +553,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -510,6 +565,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -521,6 +577,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getNumber1() {
         return this.number1;
     }
@@ -532,6 +589,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getNumber2() {
         return this.number2;
     }
@@ -543,6 +601,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -554,6 +613,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -565,6 +625,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Lat1Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLat1text() {
         return this.lat1text;
     }
@@ -576,6 +637,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Lat2Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLat2text() {
         return this.lat2text;
     }
@@ -587,6 +649,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Long1Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLong1text() {
         return this.long1text;
     }
@@ -598,6 +661,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Long2Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLong2text() {
         return this.long2text;
     }
@@ -609,6 +673,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "NationalParkName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getNationalParkName() {
         return this.nationalParkName;
     }
@@ -620,6 +685,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "IslandGroup", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getIslandGroup() {
         return this.islandGroup;
     }
@@ -631,6 +697,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Island", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getIsland() {
         return this.island;
     }
@@ -642,6 +709,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "WaterBody", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getWaterBody() {
         return this.waterBody;
     }
@@ -653,6 +721,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Drainage", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getDrainage() {
         return this.drainage;
     }
@@ -664,6 +733,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
+    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -672,6 +742,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
         this.visibility = visibility;
     }
     
+    @Transient
+    @Override
     public boolean isRestrictable()
     {
         return true;
@@ -680,6 +752,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -691,6 +764,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "colobjdef_locality", joinColumns = { @JoinColumn(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = false) })
     public Set<CollectionObjDef> getCollectionObjDefs() {
         return this.collectionObjDefs;
     }
@@ -702,6 +777,9 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Link to Country, State, County, WaterBody, Island, IslandGroup ... info
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "GeographyID", unique = false, nullable = false, insertable = true, updatable = true)
     public Geography getGeography() {
         return this.geography;
     }
@@ -713,6 +791,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<LocalityCitation> getLocalityCitations() {
         return this.localityCitations;
     }
@@ -721,6 +801,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
         this.localityCitations = localityCitations;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -734,6 +816,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
     public Set<CollectingEvent> getCollectingEvents() {
         return this.collectingEvents;
     }
@@ -792,6 +875,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 2;

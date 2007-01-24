@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +48,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "usergroup")
 public class UserGroup extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -53,6 +66,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
 
     /** default constructor */
     public UserGroup() {
+        //
     }
 
     /** constructor with id */
@@ -64,6 +78,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         userGroupId = null;
@@ -81,6 +96,9 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "UserGroupID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getUserGroupId() {
         return this.userGroupId;
     }
@@ -89,6 +107,8 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.userGroupId;
@@ -97,6 +117,8 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return UserGroup.class;
@@ -109,6 +131,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Column(name = "Name", unique = true, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName() {
         return this.name;
     }
@@ -120,6 +143,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -131,6 +155,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "userGroup")
     public Set<SpecifyUser> getSpecifyUsers() {
         return this.specifyUsers;
     }
@@ -142,6 +167,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     /**
     *
     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
    public Set<RecordSet> getRecordsets() {
        return this.recordsets;
    }
@@ -153,6 +179,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
    /**
     * 
     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
    public Set<AppResource> getAppResources() {
        return this.appResources;
    }
@@ -161,15 +188,19 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
        this.appResources = appResource;
    } 
    /**
-    * 
-    */
-   public Set getWorkbenches() {
-       return this.workbenches;
-   }
-   
-   public void setWorkbenches(Set workbench) {
-       this.workbenches = workbench;
-   }
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
+    public Set<Workbench> getWorkbenches()
+    {
+        return this.workbenches;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setWorkbenches(Set<Workbench> workbench)
+    {
+        this.workbenches = workbench;
+    }
     // Add Methods
 
     public void addSpecifyUser(final SpecifyUser specifyUserArg)
@@ -229,10 +260,17 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 78;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
     public String getIdentityTitle()
     { 
         if(name!=null)return name;

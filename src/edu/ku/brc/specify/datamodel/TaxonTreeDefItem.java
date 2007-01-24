@@ -28,11 +28,28 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "taxontreedefitem")
 public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
 	protected Long				    taxonTreeDefItemId;
@@ -79,6 +96,9 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		children = new HashSet<TaxonTreeDefItem>();
 	}
 
+    @Id
+    @GeneratedValue
+    @Column(name = "TaxonTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
 	public Long getTaxonTreeDefItemId()
 	{
 		return this.taxonTreeDefItemId;
@@ -88,6 +108,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -97,6 +118,8 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return TaxonTreeDefItem.class;
@@ -107,6 +130,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -117,6 +141,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.name = name;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -127,6 +152,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.remarks = remarks;
 	}
 
+    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -137,6 +163,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.rankId = rankId;
 	}
 
+    @Column(name = "IsEnforced", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsEnforced()
 	{
 		return this.isEnforced;
@@ -147,6 +174,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.isEnforced = isEnforced;
 	}
 
+    @Column(name = "IsInFullName", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsInFullName()
 	{
 		return isInFullName;
@@ -157,6 +185,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.isInFullName = isInFullName;
 	}
 
+    @Column(name = "TextAfter", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getTextAfter()
     {
         return textAfter;
@@ -167,6 +196,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         this.textAfter = textAfter;
     }
 
+    @Column(name = "TextBefore", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getTextBefore()
     {
         return textBefore;
@@ -177,6 +207,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         this.textBefore = textBefore;
     }
 
+    @Column(name = "FullNameSeparator", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getFullNameSeparator()
     {
         return fullNameSeparator;
@@ -187,6 +218,9 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         this.fullNameSeparator = fullNameSeparator;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public TaxonTreeDef getTreeDef()
 	{
 		return this.treeDef;
@@ -197,6 +231,9 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.treeDef = treeDef;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public TaxonTreeDefItem getParent()
 	{
 		return this.parent;
@@ -207,6 +244,8 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.parent = parent;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -217,6 +256,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.treeEntries = treeEntries;
 	}
 
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
 	public Set<TaxonTreeDefItem> getChildren()
 	{
 		return this.children;
@@ -227,6 +267,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.children = children;
 	}
 
+    @Transient
 	public Long getTreeDefItemId()
 	{
 		return getTaxonTreeDefItemId();
@@ -253,6 +294,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         }
 	}
 	
+    @Transient
 	public TaxonTreeDefItem getChild()
 	{
 		if(children.isEmpty())
@@ -293,6 +335,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 77;

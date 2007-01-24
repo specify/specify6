@@ -27,12 +27,31 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+
+
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * 
  */
+@Entity
+@Table(name = "specifyuser")
 public class SpecifyUser extends DataModelObjBase implements java.io.Serializable
 {
 
@@ -59,6 +78,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /** default constructor */
     public SpecifyUser()
     {
+        //
     }
 
     /** constructor with id */
@@ -89,6 +109,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         specifyUserId = null;
@@ -112,6 +133,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getSpecifyUserId()
     {
         return this.specifyUserId;
@@ -122,6 +146,8 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * 
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.specifyUserId;
@@ -131,6 +157,8 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return SpecifyUser.class;
@@ -143,6 +171,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Name", unique = true, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName()
     {
         return this.name;
@@ -156,6 +185,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "EMail", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getEmail()
     {
         return this.email;
@@ -173,6 +203,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * @return the userType
      */
+    @Column(name = "UserType", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
     public String getUserType()
     {
         return this.userType;
@@ -190,6 +221,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      * Short
      */
+    @Column(name = "PrivLevel", unique = false, nullable = false, insertable = true, updatable = true)
     public Short getPrivLevel()
     {
         return this.privLevel;
@@ -207,6 +239,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     public Set<CollectionObjDef> getCollectionObjDefs()
     {
         return this.collectionObjDefs;
@@ -224,6 +257,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     public Set<RecordSet> getRecordSets()
     {
         return this.recordSets;
@@ -245,6 +279,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      * Set<UserGroup>
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "sp_usergroup", joinColumns = { @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "UserGroupID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
     public Set<UserGroup> getUserGroup()
     {
         return this.userGroups;
@@ -263,6 +300,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      * Set<AppResourceDefault>
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     public Set<AppResourceDefault> getAppResourceDefaults()
     {
         return appResourceDefaults;
@@ -281,6 +319,8 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      * Set<UserPermission>
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<UserPermission> getUserPermissions()
     {
         return this.userPermissions;
@@ -299,6 +339,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      * Set<AppResource>
      */
+    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     public Set<AppResource> getAppResources()
     {
         return this.appResources;
@@ -316,6 +357,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     public Set<Workbench> getWorkbenches()
     {
         return this.workbenches;
@@ -334,6 +376,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      * Agent
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent()
     {
         return this.agent;
@@ -493,10 +538,17 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 72;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
     public String getIdentityTitle()
     { 
         if(name!=null)return name;

@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +48,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "datatype")
 public class DataType extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -50,6 +63,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public DataType() {
+        //
     }
 
     /** constructor with id */
@@ -61,6 +75,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         dataTypeId = null;
@@ -74,6 +89,9 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "DataTypeID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getDataTypeId() {
         return this.dataTypeId;
     }
@@ -82,6 +100,8 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.dataTypeId;
@@ -90,6 +110,8 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return DataType.class;
@@ -102,6 +124,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getName() {
         return this.name;
     }
@@ -113,6 +136,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "dataType")
     public Set<CollectionObjDef> getCollectionObjDef() {
         return this.collectionObjDef;
     }
@@ -121,22 +145,22 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
         this.collectionObjDef = collectionObjDef;
     }
 
-  /**
-	 * toString
-	 * @return String
-	 */
-  public String toString() {
-	  StringBuffer buffer = new StringBuffer(128);
+  /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer(128);
 
-      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-      buffer.append("name").append("='").append(getName()).append("' ");
-      buffer.append("]");
+        buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
+        buffer.append("name").append("='").append(getName()).append("' ");
+        buffer.append("]");
 
-      return buffer.toString();
-	}
-
-
-
+        return buffer.toString();
+    }
 
     // Add Methods
 
@@ -162,6 +186,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 33;

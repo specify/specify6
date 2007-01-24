@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,6 +58,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
 
  */
+@Entity
+@Table(name = "accession", uniqueConstraints = { @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
 public class Accession extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -115,6 +134,9 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AccessionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAccessionId() {
         return this.accessionId;
     }
@@ -122,6 +144,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -131,6 +154,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Accession.class;
@@ -143,6 +168,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * Source of Accession, e.g. 'Collecting', 'Gift',  'Bequest' ...
      */
+    @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getType() {
         return this.type;
     }
@@ -154,6 +180,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * Status of Accession, e.g. 'In process', 'Complete' ...
      */
+    @Column(name = "Status", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getStatus() {
         return this.status;
     }
@@ -165,6 +192,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      * A user-visible identifier of the Accession. Typically an integer, but may include alphanumeric characters as prefix, suffix, and separators
      */
+    @Column(name = "Number", unique = false, nullable = false, insertable = true, updatable = true, length = 60)
     public String getNumber() {
         return this.number;
     }
@@ -178,6 +206,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * accomodates historical accessions.
      */
+    @Column(name = "VerbatimDate", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVerbatimDate() {
         return this.verbatimDate;
     }
@@ -189,6 +218,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * Date of Accession
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateAccessioned", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getDateAccessioned() {
         return this.dateAccessioned;
     }
@@ -200,6 +231,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * Date material was received
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateReceived", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getDateReceived() {
         return this.dateReceived;
     }
@@ -211,6 +244,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -222,6 +256,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -233,6 +268,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * User definable
      */
+    @Column(name = "Text3", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText3() {
         return this.text3;
     }
@@ -244,6 +280,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber1() {
         return this.number1;
     }
@@ -255,6 +292,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber2() {
         return this.number2;
     }
@@ -266,6 +304,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * Comments
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -277,6 +316,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -288,6 +328,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -299,6 +340,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
@@ -310,6 +353,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AccessionAuthorizations> getAccessionAuthorizations() {
         return this.accessionAuthorizations;
     }
@@ -321,6 +366,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AccessionAgent> getAccessionAgents() {
         return this.accessionAgents;
     }
@@ -333,6 +380,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     /**
      * RepositoryAgreement for this Accession
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "RepositoryAgreementID", unique = false, nullable = true, insertable = true, updatable = true)
     public RepositoryAgreement getRepositoryAgreement() {
         return this.repositoryAgreement;
     }
@@ -341,6 +390,8 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         this.repositoryAgreement = repositoryAgreement;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -349,15 +400,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     public void setAttachments(Set<Attachment> attachments)
     {
         this.attachments = attachments;
-    }
-    public Set<Attachment> getAttachmentGroups()
-    {
-        return attachments;
-    }
-
-    public void setAttachmentGroups(Set<Attachment> attachmentGroups)
-    {
-        this.attachments = attachmentGroups;
     }
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
@@ -433,6 +475,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         return number != null ? number : super.getIdentityTitle();
@@ -442,6 +485,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 7;

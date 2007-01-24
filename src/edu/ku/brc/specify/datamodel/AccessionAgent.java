@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -38,6 +52,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
 
  */
+@Entity
+@Table(name = "accessionagent", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "AccessionID" }) })
 public class AccessionAgent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -88,6 +104,9 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AccessionAgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAccessionAgentId() {
         return this.accessionAgentId;
     }
@@ -96,6 +115,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -105,6 +125,8 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return AccessionAgent.class;
@@ -117,6 +139,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Role the agent played in the accession process
      */
+    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
     public String getRole() {
         return this.role;
     }
@@ -128,6 +151,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -139,6 +163,9 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /**
      *      * AgentAdress of agent playing role in Accession
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -147,6 +174,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
         this.agent = agent;
     }
     
+    @Transient
     public String getImageURL()
     {
         return agent.getImageURL();
@@ -160,6 +188,8 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Accession in which the Agent played a role
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AccessionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Accession getAccession() {
         return this.accession;
     }
@@ -171,6 +201,8 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "RepositoryAgreementID", unique = false, nullable = true, insertable = true, updatable = true)
     public RepositoryAgreement getRepositoryAgreement() {
         return this.repositoryAgreement;
     }
@@ -301,12 +333,14 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 12;
     }
 
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         return role + ": " + agent.getIdentityTitle();

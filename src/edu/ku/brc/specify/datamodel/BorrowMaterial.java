@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +51,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "borrowmaterial")
 public class BorrowMaterial extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -58,6 +73,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
 
     /** default constructor */
     public BorrowMaterial() {
+        //
     }
     
     /** constructor with id */
@@ -69,6 +85,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         borrowMaterialId = null;
@@ -92,6 +109,9 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "BorrowMaterialID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getBorrowMaterialId() {
         return this.borrowMaterialId;
     }
@@ -100,6 +120,8 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.borrowMaterialId;
@@ -108,6 +130,8 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return BorrowMaterial.class;
@@ -120,6 +144,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * e.g. 'FMNH 223456'
      */
+    @Column(name = "MaterialNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getMaterialNumber() {
         return this.materialNumber;
     }
@@ -131,6 +156,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Description of the material. 'e.g. Bufo bufo skull'
      */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getDescription() {
         return this.description;
     }
@@ -142,6 +168,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Number of specimens (for lots)
      */
+    @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantity() {
         return this.quantity;
     }
@@ -153,6 +180,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Notes concerning the return of the material
      */
+    @Column(name = "OutComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getOutComments() {
         return this.outComments;
     }
@@ -164,6 +192,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Notes concerning the receipt of the material
      */
+    @Column(name = "InComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getInComments() {
         return this.inComments;
     }
@@ -175,6 +204,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Quantity resolved (Returned, Accessioned, Lost, Discarded, Destroyed ...)
      */
+    @Column(name = "QuantityResolved", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantityResolved() {
         return this.quantityResolved;
     }
@@ -186,6 +216,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Quantity returned
      */
+    @Column(name = "QuantityReturned", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantityReturned() {
         return this.quantityReturned;
     }
@@ -198,6 +229,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      * 
      */
+    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "borrowMaterial")
     public Set<BorrowReturnMaterial> getBorrowReturnMaterials() {
         return this.borrowReturnMaterials;
     }
@@ -209,6 +241,8 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * ID of the Borrow containing the Prep
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "BorrowID", unique = false, nullable = false, insertable = true, updatable = true)
     public Borrow getBorrow() {
         return this.borrow;
     }
@@ -245,6 +279,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 20;

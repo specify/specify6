@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,6 +55,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "location")
 public class Location extends DataModelObjBase implements java.io.Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
 
     /**
@@ -80,7 +97,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.locationId = locationId;
 	}
 
-	@Override
+    @Override
     public void initialize()
 	{
 		locationId = null;
@@ -106,6 +123,9 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		children = new HashSet<Location>();
 	}
 
+    @Id
+    @GeneratedValue
+    @Column(name = "LocationID", unique = false, nullable = false, insertable = true, updatable = true)
 	public Long getLocationId()
 	{
 		return this.locationId;
@@ -116,6 +136,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
      * @returns ID Property.
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.locationId;
@@ -124,6 +145,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
     @Override
     public Class<?> getDataClass()
     {
@@ -135,6 +157,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.locationId = locationId;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
 	public String getName()
 	{
 		return this.name;
@@ -148,6 +171,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	/**
 	 * @return the fullName
 	 */
+    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
 	public String getFullName()
 	{
 		return fullName;
@@ -161,6 +185,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.fullName = fullName;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return remarks;
@@ -171,6 +196,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.remarks = remarks;
 	}
 
+    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -181,6 +207,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.rankId = rankId;
 	}
 
+    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -191,6 +218,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.nodeNumber = nodeNumber;
 	}
 
+    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -201,6 +229,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
+    @Column(name = "Abbrev", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
 	public String getAbbrev()
 	{
 		return this.abbrev;
@@ -211,6 +240,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.abbrev = abbrev;
 	}
 
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
 	public String getText1()
 	{
 		return this.text1;
@@ -221,6 +251,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.text1 = text1;
 	}
 
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
 	public String getText2()
 	{
 		return this.text2;
@@ -231,6 +262,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.text2 = text2;
 	}
 
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getNumber1()
 	{
 		return this.number1;
@@ -241,6 +273,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.number1 = number1;
 	}
 
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getNumber2()
 	{
 		return this.number2;
@@ -251,6 +284,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.number2 = number2;
 	}
 
+    @Column(name = "TimestampVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -261,6 +295,9 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.timestampVersion = timestampVersion;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.LOCK })
+    @JoinColumn(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LocationTreeDef getDefinition()
 	{
 		return this.definition;
@@ -271,6 +308,9 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.definition = definition;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "LocationTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LocationTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -285,6 +325,9 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
         }
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Location getParent()
 	{
 		return this.parent;
@@ -295,6 +338,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.parent = parent;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "location")
 	public Set<Preparation> getPreparations()
 	{
 		return this.preparations;
@@ -305,6 +349,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.preparations = preparations;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "location")
 	public Set<Container> getContainers()
 	{
 		return this.containers;
@@ -315,6 +360,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.containers = containers;
 	}
 
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<Location> getChildren()
 	{
 		return this.children;
@@ -325,6 +371,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		this.children = children;
 	}
 
+    @Transient
 	public Long getTreeId()
 	{
 		return getLocationId();
@@ -385,11 +432,13 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 				+nodeNumber+", "+highestChildNodeNumber;
 	}
 
+    @Transient
     public int getFullNameDirection()
     {
         return definition.getFullNameDirection();
     }
 
+    @Transient
     public String getFullNameSeparator()
     {
         return definitionItem.getFullNameSeparator();
@@ -520,6 +569,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	 * @param node the node to count descendants for
 	 * @return the number of proper descendants
 	 */
+    @Transient
 	public int getDescendantCount()
 	{
 		int totalDescendants = 0;
@@ -550,6 +600,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	 * 
 	 * @return all descendants of <code>node</code>
 	 */
+    @Transient
 	public List<Location> getAllDescendants()
 	{
 		Vector<Location> descendants = new Vector<Location>();
@@ -561,6 +612,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		return descendants;
 	}
 	
+    @Transient
 	public List<Location> getAllAncestors()
 	{
 		Vector<Location> ancestors = new Vector<Location>();
@@ -637,6 +689,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		return false;
 	}
 	
+    @Transient
 	public Comparator<? super Location> getComparator()
 	{
 		return new TreeOrderSiblingComparator();
@@ -646,6 +699,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 58;

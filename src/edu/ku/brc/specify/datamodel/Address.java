@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 
 
@@ -36,6 +47,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "address")
 public class Address extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -62,6 +75,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public Address() {
+        //
     }
 
     /** constructor with id */
@@ -101,6 +115,9 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * PrimaryKey
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AddressID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAddressId() {
         return this.addressId;
     }
@@ -109,6 +126,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -118,6 +136,8 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Address.class;
@@ -130,6 +150,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Address as it should appear on mailing labels
      */
+    @Column(name = "Address", unique = false, nullable = true, insertable = true, updatable = true)
     public String getAddress() {
         return this.address;
     }
@@ -141,6 +162,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Address2", unique = false, nullable = true, insertable = true, updatable = true)
     public String getAddress2() {
         return this.address2;
     }
@@ -152,6 +174,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "City", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getCity() {
         return this.city;
     }
@@ -163,6 +186,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "State", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getState() {
         return this.state;
     }
@@ -174,6 +198,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Country", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getCountry() {
         return this.country;
     }
@@ -185,6 +210,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "PostalCode", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getPostalCode() {
         return this.postalCode;
     }
@@ -196,6 +222,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -207,6 +234,8 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -220,6 +249,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Phone1", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getPhone1() {
         return this.phone1;
     }
@@ -231,6 +261,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Phone2", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getPhone2() {
         return this.phone2;
     }
@@ -242,6 +273,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Fax", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getFax() {
         return this.fax;
     }
@@ -253,6 +285,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "RoomOrBuilding", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getRoomOrBuilding() {
         return this.roomOrBuilding;
     }
@@ -265,6 +298,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Is the agent currently located at this address?
      */
+    @Column(name="IsPrimary",unique=false,nullable=true,insertable=true,updatable=true)
     public Boolean getIsPrimary() {
         return this.isPrimary;
     }
@@ -277,6 +311,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 8;

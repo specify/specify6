@@ -20,6 +20,16 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -30,6 +40,8 @@ import java.util.Set;
  * @code_status Beta
  * @author jstewart
  */
+@Entity
+@Table(name = "determinationstatus")
 public class DeterminationStatus extends DataModelObjBase implements Serializable
 {
     protected Long               determinationStatusId;
@@ -63,6 +75,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         determinations = new HashSet<Determination>();
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "status")
     public Set<Determination> getDeterminations()
     {
         return determinations;
@@ -73,6 +86,9 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         this.determinations = determinations;
     }
 
+    @Id
+    @GeneratedValue
+    @Column(name = "DeterminationStatusID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getDeterminationStatusId()
     {
         return determinationStatusId;
@@ -84,6 +100,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.determinationStatusId;
@@ -92,6 +109,8 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return DeterminationStatus.class;
@@ -102,6 +121,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         this.determinationStatusId = determinationStatusId;
     }
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getName()
     {
         return name;
@@ -112,6 +132,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         this.name = name;
     }
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks()
     {
         return remarks;
@@ -123,69 +144,17 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getLastEditedBy()
-     */
-    @Override
-    public String getLastEditedBy()
-    {
-        return lastEditedBy;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#setLastEditedBy(java.lang.String)
-     */
-    @Override
-    public void setLastEditedBy(String lastEditedBy)
-    {
-        this.lastEditedBy = lastEditedBy;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTimestampCreated()
-     */
-    @Override
-    public Date getTimestampCreated()
-    {
-        return timestampCreated;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#setTimestampCreated(java.util.Date)
-     */
-    @Override
-    public void setTimestampCreated(Date timestampCreated)
-    {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTimestampModified()
-     */
-    @Override
-    public Date getTimestampModified()
-    {
-        return timestampModified;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#setTimestampModified(java.util.Date)
-     */
-    @Override
-    public void setTimestampModified(Date timestampModified)
-    {
-        this.timestampModified = timestampModified;
-    }
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 501;
     }
 
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         // TODO Auto-generated method stub

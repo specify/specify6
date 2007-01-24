@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 
 
@@ -37,6 +48,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "workbenchtemplatemappingitem")
 public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -56,6 +69,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /** default constructor */
     public WorkbenchTemplateMappingItem() 
     {
+        //
     }
     
     /** constructor with id */
@@ -65,6 +79,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
    
     // Initializer
+    @Override
     public void initialize()
     {
         workbenchTemplateMappingItemId = null;
@@ -87,6 +102,9 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "WorkbenchTemplateMappingItemID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getWorkbenchTemplateMappingItemId() 
     {
         return this.workbenchTemplateMappingItemId;
@@ -96,6 +114,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.workbenchTemplateMappingItemId;
@@ -104,6 +124,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return WorkbenchTemplateMappingItem.class;
@@ -117,6 +139,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @Column(name = "TableName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getTablename() {
         return this.tablename;
     }
@@ -128,6 +151,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @Column(name = "TableId", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public Integer getTableid() {
         return this.tableid;
     }
@@ -139,6 +163,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @Column(name = "FieldName", unique = false, nullable = true, insertable = true, updatable = true)
     public String getFieldname() {
         return this.fieldname;
     }
@@ -150,6 +175,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @Column(name = "Caption", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getCaption() {
         return this.caption;
     }
@@ -161,6 +187,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @Column(name = "ViewOrder", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getVieworder() {
         return this.vieworder;
     }
@@ -172,6 +199,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @Column(name = "DataType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getDatatype() {
         return this.datatype;
     }
@@ -183,6 +211,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
     public WorkbenchTemplate getWorkbenchTemplates() {
         return this.workbenchTemplates;
     }
@@ -196,6 +226,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 82;

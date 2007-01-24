@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -35,6 +49,8 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
  * 
  */
+@Entity
+@Table(name = "collectionobjectattr")
 public class CollectionObjectAttr extends DataModelObjBase implements AttributeIFace, java.io.Serializable
 {
 
@@ -51,6 +67,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /** default constructor */
     public CollectionObjectAttr()
     {
+        //
     }
 
     /** constructor with id */
@@ -60,6 +77,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         attrId = null;
@@ -78,6 +96,9 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getAttrId()
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AttrID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAttrId()
     {
         return this.attrId;
@@ -91,6 +112,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
         this.attrId = attrId;
     }
     
+    @Transient
     @Override
     public Long getId()
     {
@@ -100,6 +122,8 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return CollectionObjectAttr.class;
@@ -124,6 +148,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getStrValue()
      */
+    @Column(name = "StrValue", unique = false, nullable = true, insertable = true, updatable = true)
     public String getStrValue()
     {
         //verifyType(AttributeIFace.FieldType.StringType);
@@ -143,6 +168,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getDblValue()
      */
+    @Column(name = "DoubleValue", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getDblValue()
     {
         //verifyType(AttributeIFace.FieldType.DoubleType);
@@ -161,6 +187,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getFloatValue()
      */
+    @Transient
     public Float getFloatValue()
     {
         //verifyType(AttributeIFace.FieldType.FloatType);
@@ -179,6 +206,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getIntValue()
      */
+    @Transient
     public Integer getIntValue()
     {
         //verifyType(AttributeIFace.FieldType.IntegerType);
@@ -197,6 +225,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getBoolValue()
      */
+    @Transient
     public Boolean getBoolValue()
     {
         //verifyType(AttributeIFace.FieldType.BooleanType);
@@ -212,6 +241,8 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
         dblValue = new Double(value ? 1.0 : 0.0);
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getCollectionObject()
     {
         return this.collectionObject;
@@ -225,6 +256,9 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AttributeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public AttributeDef getDefinition()
     {
         return this.definition;
@@ -247,6 +281,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 28;

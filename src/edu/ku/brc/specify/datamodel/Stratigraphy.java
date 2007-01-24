@@ -28,6 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +50,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "stratigraphy")
 public class Stratigraphy extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -64,6 +78,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
 
     /** default constructor */
     public Stratigraphy() {
+        //
     }
 
     /** constructor with id */
@@ -75,6 +90,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         stratigraphyId = null;
@@ -104,6 +120,9 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * CollectingEventID of related collecting event
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "StratigraphyID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getStratigraphyId() {
         return this.stratigraphyId;
     }
@@ -112,6 +131,8 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.stratigraphyId;
@@ -120,6 +141,8 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Stratigraphy.class;
@@ -132,6 +155,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * Lithostratigraphic supergroup
      */
+    @Column(name = "SuperGroup", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getSuperGroup() {
         return this.superGroup;
     }
@@ -143,6 +167,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @Column(name = "LithoGroup", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLithoGroup() {
         return this.lithoGroup;
     }
@@ -154,6 +179,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * Lithostratigraphic formation
      */
+    @Column(name = "Formation", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getFormation() {
         return this.formation;
     }
@@ -165,6 +191,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * Lithostratigraphic member
      */
+    @Column(name = "Member", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getMember() {
         return this.member;
     }
@@ -176,6 +203,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * Lithostratigraphic bed
      */
+    @Column(name = "Bed", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getBed() {
         return this.bed;
     }
@@ -187,6 +215,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -198,6 +227,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -209,6 +239,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -220,6 +251,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -231,6 +263,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -242,6 +275,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -253,6 +287,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -264,6 +299,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "stratigraphy")
     public Set<CollectingEvent> getCollectingEvents() {
         return this.collectingEvents;
     }
@@ -272,6 +308,8 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
         this.collectingEvents = collectingEvents;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "GeologicTimePeriodID", unique = false, nullable = true, insertable = true, updatable = true)
     public GeologicTimePeriod getGeologicTimePeriod()
 	{
 		return geologicTimePeriod;
@@ -282,45 +320,12 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
 		this.geologicTimePeriod = geologicTimePeriod;
 	}
 
-	/**
-     *
-     */
-    public Set<GeologicTimePeriod> getChildren() {
-        return this.children;
-    }
 
-    public void setChildren(Set<GeologicTimePeriod> children) {
-        this.children = children;
-    }
-
-
-
-
-
-    // Add Methods
-
-    public void addChildren(final GeologicTimePeriod childrenArg)
-    {
-        this.children.add(childrenArg);
-        //children.set(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeChildren(final GeologicTimePeriod childrenArg)
-    {
-        this.children.remove(childrenArg);
-        //children.setStratigraphy(null);
-    }
-
-    // Delete Add Methods
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 73;

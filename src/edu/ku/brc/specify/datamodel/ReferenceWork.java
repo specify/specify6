@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +53,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "referencework")
 public class ReferenceWork extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -73,6 +90,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
 
     /** default constructor */
     public ReferenceWork() {
+        //
     }
     
     /** constructor with id */
@@ -84,6 +102,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         referenceWorkId = null;
@@ -122,6 +141,9 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * PrimaryKey
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getReferenceWorkId() {
         return this.referenceWorkId;
     }
@@ -130,6 +152,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.referenceWorkId;
@@ -138,6 +162,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return ReferenceWork.class;
@@ -150,6 +176,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Link to Reference containing (if Section)
      */
+    @Column(name = "ContainingReferenceWorkID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getContainingReferenceWorkId() {
         return this.containingReferenceWorkId;
     }
@@ -161,6 +188,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "ReferenceWorkType", unique = false, nullable = false, insertable = true, updatable = true, length = 3)
     public Byte getReferenceWorkType() {
         return this.referenceWorkType;
     }
@@ -172,6 +200,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Title of reference
      */
+    @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true)
     public String getTitle() {
         return this.title;
     }
@@ -183,6 +212,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "Publisher", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getPublisher() {
         return this.publisher;
     }
@@ -194,6 +224,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "PlaceOfPublication", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getPlaceOfPublication() {
         return this.placeOfPublication;
     }
@@ -205,6 +236,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "WorkDate", unique = false, nullable = true, insertable = true, updatable = true, length = 25)
     public String getWorkDate() {
         return this.workDate;
     }
@@ -216,6 +248,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Volume/Issue for Journal articles
      */
+    @Column(name = "Volume", unique = false, nullable = true, insertable = true, updatable = true, length = 25)
     public String getVolume() {
         return this.volume;
     }
@@ -227,6 +260,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Number of pages or Page range for Journal articles
      */
+    @Column(name = "Pages", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getPages() {
         return this.pages;
     }
@@ -238,6 +272,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "URL", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
     public String getUrl() {
         return this.url;
     }
@@ -249,6 +284,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "LibraryNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLibraryNumber() {
         return this.libraryNumber;
     }
@@ -260,6 +296,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -271,6 +308,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -282,6 +320,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -293,6 +332,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -304,6 +344,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -315,6 +356,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name="IsPublished", unique=false, nullable=true, insertable=true, updatable=true)
     public Boolean getIsPublished() {
         return this.isPublished;
     }
@@ -326,6 +368,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -337,6 +380,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -348,6 +392,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "referenceWork")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<LocalityCitation> getLocalityCitations() {
         return this.localityCitations;
     }
@@ -359,6 +405,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "referenceWork")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<CollectionObjectCitation> getCollectionObjectCitations() {
         return this.collectionObjectCitations;
     }
@@ -370,6 +418,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "referenceWork")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<TaxonCitation> getTaxonCitations() {
         return this.taxonCitations;
     }
@@ -381,6 +431,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "referenceWork")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<DeterminationCitation> getDeterminationCitations() {
         return this.determinationCitations;
     }
@@ -392,6 +444,9 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Link to Journal containing the reference (if applicable)
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "JournalID", unique = false, nullable = true, insertable = true, updatable = true)
     public Journal getJournal() {
         return this.journal;
     }
@@ -403,6 +458,8 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "referenceWork")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Authors> getAuthors() {
         return this.authors;
     }
@@ -487,6 +544,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 69;

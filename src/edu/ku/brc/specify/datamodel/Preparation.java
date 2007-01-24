@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,6 +58,8 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
 
  */
+@Entity
+@Table(name = "preparation")
 public class Preparation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -66,6 +85,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
 
     /** default constructor */
     public Preparation() {
+        //
         // do nothing
     }
     
@@ -107,6 +127,9 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "PreparationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getPreparationId() {
         return this.preparationId;
     }
@@ -115,6 +138,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.preparationId;
@@ -123,6 +147,8 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Preparation.class;
@@ -135,6 +161,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -146,6 +173,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -157,6 +185,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * The number of objects (specimens, slides, pieces) prepared
      */
+    @Column(name = "Count", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getCount() 
     {
         return this.count;
@@ -167,12 +196,14 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         this.count = count;
     }
     
+    @Transient
     public int getAvailable()
     {
         int cnt = this.count != null ? this.count : 0;
         return cnt - getQuantityOut();
     }
 
+    @Transient
     public int getQuantityOut()
     {
         int stillOut = 0;
@@ -189,6 +220,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "StorageLocation", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getStorageLocation() {
         return this.storageLocation;
     }
@@ -200,6 +232,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -211,6 +244,8 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "PreparedDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getPreparedDate() {
         return this.preparedDate;
     }
@@ -222,6 +257,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
     public Set<LoanPhysicalObject> getLoanPhysicalObjects() {
         return this.loanPhysicalObjects;
     }
@@ -233,6 +269,9 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(targetEntity=edu.ku.brc.specify.datamodel.PreparationAttr.class,
+            cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttributeIFace> getAttrs() {
         return this.attrs;
     }
@@ -244,6 +283,9 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "PrepTypeID", unique = false, nullable = false, insertable = true, updatable = true)
     public PrepType getPrepType() {
         return this.prepType;
     }
@@ -255,6 +297,8 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
@@ -266,6 +310,9 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "PreparedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getPreparedByAgent() {
         return this.preparedByAgent;
     }
@@ -274,6 +321,8 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         this.preparedByAgent = preparedByAgent;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -287,6 +336,9 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "LocationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Location getLocation() {
         return this.location;
     }
@@ -298,6 +350,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
     *
     */
+   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
    public Set<DeaccessionPreparation> getDeaccessionPreparations() {
        return this.deaccessionPreparations;
    }
@@ -342,12 +395,14 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 63;
     }
 
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         String prepTypeStr = this.getPrepType().getName();

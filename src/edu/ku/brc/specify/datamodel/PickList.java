@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +58,8 @@ import edu.ku.brc.ui.db.PickListItemIFace;
  *
  */
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "picklist")
 public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable
 {
     // Fields    
@@ -74,6 +89,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         pickListId = null;
@@ -98,6 +114,9 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      * Returns the primary ID.
       * @return the primary ID.
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "PickListID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getPickListId()
     {
         return this.pickListId;
@@ -115,6 +134,8 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.pickListId;
@@ -123,6 +144,8 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return PickList.class;
@@ -131,6 +154,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
    /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getName()
      */
+    @Column(name = "Name", unique = true, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName()
     {
         return this.name;
@@ -147,6 +171,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getReadOnly()
      */
+    @Transient
     public Boolean getReadOnly()
     {
         return this.readOnly;
@@ -163,6 +188,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getSizeLimit()
      */
+    @Column(name = "SizeLimit", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getSizeLimit()
     {
         return this.sizeLimit;
@@ -179,6 +205,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getFieldName()
      */
+    @Column(name = "FieldName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getFieldName()
     {
         return fieldName;
@@ -195,6 +222,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getTableName()
      */
+    @Column(name = "TableName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getTableName()
     {
         return tableName;
@@ -211,6 +239,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getFormatter()
      */
+    @Column(name = "Formatter", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getFormatter()
     {
         return formatter;
@@ -227,6 +256,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getType()
      */
+    @Column(name = "Type", unique = false, nullable = false, insertable = true, updatable = true)
     public Integer getType()
     {
         return type;
@@ -243,6 +273,8 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getItems()
      */
+    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "pickList")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<PickListItemIFace> getItems()
     {
         return this.items;
@@ -299,6 +331,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 500;
@@ -308,6 +341,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         return name;

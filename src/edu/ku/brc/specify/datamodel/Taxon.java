@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
@@ -42,6 +57,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "taxon")
 public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
     /**
@@ -154,6 +171,9 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		children = new HashSet<Taxon>();
 	}
 
+    @Id
+    @GeneratedValue
+    @Column(name = "TaxonID", unique = false, nullable = false, insertable = true, updatable = true)
 	public Long getTaxonId()
 	{
 		return this.taxonId;
@@ -164,6 +184,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @returns ID Property.
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.taxonId;
@@ -173,6 +194,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         String title = fullName != null && fullName.length() > 0 ? fullName : name;
@@ -182,6 +204,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
     @Override
     public Class<?> getDataClass()
     {
@@ -193,6 +216,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonId = taxonId;
 	}
 
+    @Column(name = "TaxonomicSerialNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getTaxonomicSerialNumber()
 	{
 		return this.taxonomicSerialNumber;
@@ -203,6 +227,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonomicSerialNumber = taxonomicSerialNumber;
 	}
 
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true)
 	public String getGuid()
 	{
 		return this.guid;
@@ -213,6 +238,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.guid = guid;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getName()
 	{
 		return this.name;
@@ -223,6 +249,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.name = name;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -233,6 +260,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.remarks = remarks;
 	}
 
+    @Column(name = "UnitInd1", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitInd1()
 	{
 		return this.unitInd1;
@@ -243,6 +271,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd1 = unitInd1;
 	}
 
+    @Column(name = "UnitName1", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitName1()
 	{
 		return this.unitName1;
@@ -253,6 +282,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName1 = unitName1;
 	}
 
+    @Column(name = "UnitInd2", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitInd2()
 	{
 		return this.unitInd2;
@@ -263,6 +293,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd2 = unitInd2;
 	}
 
+    @Column(name = "UnitName2", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitName2()
 	{
 		return this.unitName2;
@@ -273,6 +304,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName2 = unitName2;
 	}
 
+    @Column(name = "UnitInd3", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitInd3()
 	{
 		return this.unitInd3;
@@ -283,6 +315,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd3 = unitInd3;
 	}
 
+    @Column(name = "UnitName3", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitName3()
 	{
 		return this.unitName3;
@@ -293,6 +326,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName3 = unitName3;
 	}
 
+    @Column(name = "UnitInd4", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitInd4()
 	{
 		return this.unitInd4;
@@ -303,6 +337,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitInd4 = unitInd4;
 	}
 
+    @Column(name = "UnitName4", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getUnitName4()
 	{
 		return this.unitName4;
@@ -313,6 +348,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.unitName4 = unitName4;
 	}
 
+    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
 	public String getFullName()
 	{
 		return this.fullName;
@@ -323,6 +359,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.fullName = fullName;
 	}
 
+    @Column(name = "CommonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
 	public String getCommonName()
 	{
 		return this.commonName;
@@ -333,6 +370,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.commonName = commonName;
 	}
 
+    @Column(name = "Author", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
 	public String getAuthor()
 	{
 		return this.author;
@@ -343,6 +381,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.author = author;
 	}
 
+    @Column(name = "Source", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getSource()
 	{
 		return this.source;
@@ -353,6 +392,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.source = source;
 	}
 
+    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getGroupPermittedToView()
 	{
 		return this.groupPermittedToView;
@@ -363,6 +403,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.groupPermittedToView = groupPermittedToView;
 	}
 
+    @Column(name = "EnvironmentalProtectionStatus", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getEnvironmentalProtectionStatus()
 	{
 		return this.environmentalProtectionStatus;
@@ -373,6 +414,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.environmentalProtectionStatus = environmentalProtectionStatus;
 	}
 
+    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -383,6 +425,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.nodeNumber = nodeNumber;
 	}
 
+    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -393,7 +436,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-	public Boolean getIsAccepted()
+    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)	public Boolean getIsAccepted()
 	{
 		return this.isAccepted;
 	}
@@ -403,6 +446,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.isAccepted = accepted;
 	}
 
+    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -413,6 +457,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.rankId = rankId;
 	}
 
+    @Column(name = "GroupNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 20)
 	public String getGroupNumber()
 	{
 		return this.groupNumber;
@@ -425,6 +470,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
+    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -433,14 +479,17 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         this.visibility = visibility;
     }
     
+    @Transient
     @Override
     public boolean isRestrictable()
     {
         return true;
     }
+    
     /**
      * 
      */
+    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -449,6 +498,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         this.visibilitySetBy = visibilitySetBy;
     }
     
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedTaxon")
 	public Set<Taxon> getAcceptedChildren()
 	{
 		return this.acceptedChildren;
@@ -459,6 +509,9 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.acceptedChildren = acceptedChildren;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AcceptedID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Taxon getAcceptedTaxon()
 	{
 		return this.acceptedTaxon;
@@ -469,6 +522,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.acceptedTaxon = acceptedTaxon;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
 	public Set<Determination> getDeterminations()
 	{
 		return determinations;
@@ -479,6 +533,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.determinations = determinations;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;
@@ -489,6 +545,9 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonCitations = taxonCitations;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.LOCK })
+    @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public TaxonTreeDef getDefinition()
 	{
 		return this.definition;
@@ -499,6 +558,9 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.definition = definition;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "TaxonTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public TaxonTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -513,6 +575,9 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         }
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Taxon getParent()
 	{
 		return this.parent;
@@ -524,6 +589,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
 
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<Taxon> getChildren()
 	{
 		return this.children;
@@ -534,6 +600,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.children = children;
 	}
 
+    @Transient
 	public Long getTreeId()
 	{
 		return this.taxonId;
@@ -544,6 +611,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         this.taxonId = id;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -628,11 +697,13 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 				+highestChildNodeNumber;
 	}
 
+    @Transient
     public int getFullNameDirection()
     {
         return definition.getFullNameDirection();
     }
 
+    @Transient
     public String getFullNameSeparator()
     {
         return definitionItem.getFullNameSeparator();
@@ -794,6 +865,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	 * @param node the node to count descendants for
 	 * @return the number of proper descendants
 	 */
+    @Transient
 	public int getDescendantCount()
 	{
 		int totalDescendants = 0;
@@ -824,6 +896,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	 * 
 	 * @return all descendants of <code>node</code>
 	 */
+    @Transient
 	public List<Taxon> getAllDescendants()
 	{
 		Vector<Taxon> descendants = new Vector<Taxon>();
@@ -835,6 +908,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		return descendants;
 	}
 	
+    @Transient
 	public List<Taxon> getAllAncestors()
 	{
 		Vector<Taxon> ancestors = new Vector<Taxon>();
@@ -911,6 +985,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		return false;
 	}
 	
+    @Transient
 	public Comparator<? super Taxon> getComparator()
 	{
 		return new TreeOrderSiblingComparator();
@@ -920,6 +995,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 4;

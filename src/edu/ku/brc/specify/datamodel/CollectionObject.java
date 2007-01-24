@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -44,6 +61,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
 
  */
+@Entity
+@Table(name = "collectionobject")
 public class CollectionObject extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -68,7 +87,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      protected Integer groupPermittedToView;
      protected Boolean deaccessioned;
      protected Float catalogNumber;
-     protected Integer visibility;;
+     protected Integer visibility;
      protected String visibilitySetBy;
      protected CollectingEvent collectingEvent;
      protected ContainerItem containerItem;
@@ -85,7 +104,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      protected Agent cataloger;
      protected Set<Attachment>          attachments;
      protected Container container;
-
 
     // Constructors
 
@@ -104,6 +122,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         collectionObjectId = null;
@@ -166,6 +185,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getCollectionObjectId() {
         return this.collectionObjectId;
     }
@@ -174,6 +196,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.collectionObjectId;
@@ -182,6 +206,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return CollectionObject.class;
@@ -194,6 +220,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * BiologicalObject (Bird, Fish, etc)
      */
+    @Column(name = "FieldNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getFieldNumber() {
         return this.fieldNumber;
     }
@@ -205,6 +232,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * Image, Sound, Preparation, Container(Container Label?)
      */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getDescription() {
         return this.description;
     }
@@ -216,6 +244,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -227,6 +256,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -238,6 +268,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -249,6 +280,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -260,6 +292,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -271,6 +304,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -282,6 +316,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "CountAmt", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getCountAmt() {
         return this.countAmt;
     }
@@ -293,6 +328,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -304,6 +340,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getName() {
         return this.name;
     }
@@ -315,6 +352,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "Modifier", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getModifier() {
         return this.modifier;
     }
@@ -326,6 +364,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "CatalogedDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getCatalogedDate() {
         return this.catalogedDate;
     }
@@ -337,6 +377,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "CatalogedDateVerbatim", length=32, unique = false, nullable = true, insertable = true, updatable = true)
     public String getCatalogedDateVerbatim() {
         return this.catalogedDateVerbatim;
     }
@@ -348,6 +389,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true)
     public String getGuid() {
         return this.guid;
     }
@@ -370,6 +412,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
     }
@@ -381,6 +424,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "Deaccessioned", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getDeaccessioned() {
         return this.deaccessioned;
     }
@@ -392,6 +436,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Column(name = "CatalogNumber", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getCatalogNumber() {
         return this.catalogNumber;
     }
@@ -403,6 +448,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
+    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -411,6 +457,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.visibility = visibility;
     }
 
+    @Transient
+    @Override
     public boolean isRestrictable()
     {
         return true;
@@ -418,6 +466,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      * 
      */
+    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -429,6 +478,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * BiologicalObject (Bird, Fish, etc)
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CollectingEventID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
     }
@@ -440,6 +492,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ContainerItemID", unique = false, nullable = true, insertable = true, updatable = true)
     public ContainerItem getContainerItem() {
         return this.containerItem;
     }
@@ -451,6 +505,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     public Set<CollectionObjectCitation> getCollectionObjectCitations() {
         return this.collectionObjectCitations;
     }
@@ -462,6 +517,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @OneToMany(targetEntity=edu.ku.brc.specify.datamodel.CollectionObjectAttr.class,
+            cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttributeIFace> getAttrs() {
         return this.attrs;
     }
@@ -473,6 +531,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     public Set<Preparation> getPreparations() {
         return this.preparations;
     }
@@ -484,6 +543,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     public Set<Determination> getDeterminations() {
         return this.determinations;
     }
@@ -495,6 +555,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
     }
@@ -506,6 +568,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     public Set<ProjectCollectionObject> getProjectCollectionObjects() {
         return this.projectCollectionObjects;
     }
@@ -528,6 +591,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     public Set<OtherIdentifier> getOtherIdentifiers() {
         return this.otherIdentifiers;
     }
@@ -539,6 +603,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = true)
     public CatalogSeries getCatalogSeries() {
         return this.catalogSeries;
     }
@@ -550,6 +617,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
     public Accession getAccession() {
         return this.accession;
     }
@@ -561,6 +631,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CatalogerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getCataloger() {
         return this.cataloger;
     }
@@ -570,6 +643,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     }
 
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -583,6 +658,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * Preparation, Container
      */
+    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ContainerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Container getContainer() {
         return this.container;
     }
@@ -590,7 +667,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public void setContainer(Container container) {
         this.container = container;
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
@@ -698,6 +774,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
 
@@ -721,6 +798,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 1;

@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 
@@ -36,6 +50,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "loanagents", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "LoanID", "AgentID" }) })
 public class LoanAgents extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -51,6 +67,7 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
 
     /** default constructor */
     public LoanAgents() {
+        //
     }
     
     /** constructor with id */
@@ -62,6 +79,7 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         loanAgentsId = null;
@@ -80,6 +98,9 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "LoanAgentsID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getLoanAgentsId() {
         return this.loanAgentsId;
     }
@@ -88,6 +109,8 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.loanAgentsId;
@@ -96,6 +119,8 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return LoanAgents.class;
@@ -108,6 +133,7 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Role the agent played in the loan
      */
+    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
     public String getRole() {
         return this.role;
     }
@@ -119,6 +145,7 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -130,6 +157,8 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     /**
      *      * ID of loan agent at AgentID played a role in
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LoanID", unique = false, nullable = false, insertable = true, updatable = true)
     public Loan getLoan() {
         return this.loan;
     }
@@ -141,6 +170,9 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Address of agent
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -165,6 +197,7 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 53;

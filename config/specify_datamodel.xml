@@ -260,14 +260,6 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="ReturnedByID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.BorrowMaterial" relationshipname="borrowMaterial" columnname="BorrowMaterialID"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.BorrowShipments" table="borrowshipments" tableid="22" lazy="true">
-      <field column="Remarks" name="remarks" type="text"/>
-      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
-      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
-      <id column="BorrowShipmentsID" name="borrowShipmentsId" type="java.lang.Long"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipment" columnname="ShipmentID"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Borrow" relationshipname="borrow" columnname="BorrowID"/>
-    </table>
     <table classname="edu.ku.brc.specify.datamodel.CatalogSeries" table="catalogseries" tableid="23" lazy="true">
       <field column="SeriesName" name="seriesName" type="java.lang.String" length="50"/>
       <field column="CatalogSeriesPrefix" name="catalogSeriesPrefix" type="java.lang.String" length="50"/>

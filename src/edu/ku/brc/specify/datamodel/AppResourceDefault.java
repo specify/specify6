@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +53,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "appresourcedefault")
 public class AppResourceDefault extends DataModelObjBase implements java.io.Serializable
 {
 
@@ -56,6 +73,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
 
     /** default constructor */
     public AppResourceDefault() {
+        //
     }
 
     /** constructor with id */
@@ -64,6 +82,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         appResourceDefaultId = null;
@@ -88,6 +107,9 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAppResourceDefaultId() {
         return this.appResourceDefaultId;
     }
@@ -96,6 +118,8 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.appResourceDefaultId;
@@ -104,6 +128,8 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return AppResourceDefault.class;
@@ -116,6 +142,9 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCatalogSeries()
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = true, insertable = true, updatable = true)
     public CatalogSeries getCatalogSeries() {
         return this.catalogSeries;
     }
@@ -130,6 +159,9 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollectionObjDef()
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
     }
@@ -144,6 +176,9 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getSpecifyUser()
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
     }
@@ -158,6 +193,8 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getAppResources()
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<AppResource> getAppResources() {
         return this.appResources;
     }
@@ -172,6 +209,8 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getViewSets()
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<ViewSetObj> getViewSets() {
         return this.viewSets;
     }
@@ -183,6 +222,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         this.viewSets = viewSets;
     }
 
+    @Column(name = "DisciplineType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getDisciplineType()
     {
         return disciplineType;
@@ -193,6 +233,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         this.disciplineType = disciplineType;
     }
 
+    @Column(name = "UserType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getUserType()
     {
         return userType;
@@ -203,6 +244,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         this.userType = userType;
     }
     
+    @Transient
     public String getVerboseUniqueIdentifer()
     {
         StringBuilder strBuf = new StringBuilder();
@@ -214,6 +256,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         return strBuf.toString(); 
     }
 
+    @Transient
     public String getUniqueIdentifer()
     {
         return appResourceDefaultId == null ? getVerboseUniqueIdentifer() : appResourceDefaultId.toString();
@@ -231,6 +274,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 85;

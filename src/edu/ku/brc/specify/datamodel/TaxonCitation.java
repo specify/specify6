@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 
 
@@ -36,6 +47,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "taxoncitation")
 public class TaxonCitation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -56,6 +69,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
 
     /** default constructor */
     public TaxonCitation() {
+        //
     }
     
     /** constructor with id */
@@ -67,6 +81,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         taxonCitationId = null;
@@ -90,6 +105,9 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "TaxonCitationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getTaxonCitationId() {
         return this.taxonCitationId;
     }
@@ -98,6 +116,8 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.taxonCitationId;
@@ -106,6 +126,8 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return TaxonCitation.class;
@@ -118,6 +140,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -129,6 +152,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -140,6 +164,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -151,6 +176,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -162,6 +188,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -173,6 +200,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -184,6 +212,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -195,6 +224,8 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      *      * The ID of reference work that cites the taxon name
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
     }
@@ -206,6 +237,8 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "TaxonID", unique = false, nullable = false, insertable = true, updatable = true)
     public Taxon getTaxon() {
         return this.taxon;
     }
@@ -230,6 +263,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 75;

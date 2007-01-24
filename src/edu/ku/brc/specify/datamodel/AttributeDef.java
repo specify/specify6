@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +49,8 @@ import java.util.Set;
  * @author rods
  *
  */
+@Entity
+@Table(name = "attributedef")
 public class AttributeDef extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -47,13 +62,15 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      protected CollectionObjDef collectionObjDef;
      protected PrepType prepType;
      protected Set<CollectingEventAttr> collectingEventAttrs;
-     protected Set<PreparationAttr> preparationAttr;
+     protected Set<PreparationAttr> preparationAttrs;
      protected Set<CollectionObjectAttr> collectionObjectAttrs;
 
     // Constructors
 
     /** default constructor */
-    public AttributeDef() {
+    public AttributeDef()
+    {
+        //
     }
 
     /** constructor with id */
@@ -65,6 +82,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         attributeDefId = null;
@@ -74,7 +92,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
         collectionObjDef = null;
         prepType = null;
         collectingEventAttrs = new HashSet<CollectingEventAttr>();
-        preparationAttr = new HashSet<PreparationAttr>();
+        preparationAttrs = new HashSet<PreparationAttr>();
         collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
     }
     // End Initializer
@@ -84,6 +102,9 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AttributeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAttributeDefId() {
         return this.attributeDefId;
     }
@@ -92,6 +113,8 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.attributeDefId;
@@ -100,6 +123,8 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Override
+    @Transient
     public Class<?> getDataClass()
     {
         return AttributeDef.class;
@@ -112,6 +137,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @Column(name = "TableType", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getTableType() {
         return this.tableType;
     }
@@ -123,6 +149,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @Column(name = "FieldName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getFieldName() {
         return this.fieldName;
     }
@@ -134,6 +161,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @Column(name = "DataType", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getDataType() {
         return this.dataType;
     }
@@ -145,6 +173,8 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
     }
@@ -156,6 +186,8 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PrepTypeID", unique = false, nullable = true, insertable = true, updatable = true)
     public PrepType getPrepType() {
         return this.prepType;
     }
@@ -167,6 +199,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
+    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "definition")
     public Set<CollectingEventAttr> getCollectingEventAttrs() {
         return this.collectingEventAttrs;
     }
@@ -178,17 +211,19 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
-    public Set getPreparationAttr() {
-        return this.preparationAttr;
+    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "definition")
+    public Set<PreparationAttr> getPreparationAttrs() {
+        return this.preparationAttrs;
     }
 
-    public void setPreparationAttr(Set<PreparationAttr> preparationAttr) {
-        this.preparationAttr = preparationAttr;
+    public void setPreparationAttrs(Set<PreparationAttr> preparationAttrs) {
+        this.preparationAttrs = preparationAttrs;
     }
 
     /**
      *
      */
+    @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "definition")
     public Set<CollectionObjectAttr> getCollectionObjectAttrs() {
         return this.collectionObjectAttrs;
     }
@@ -208,7 +243,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
 
     public void addPreparationAttrs(final PreparationAttr preparationAttrArg)
     {
-        this.preparationAttr.add(preparationAttrArg);
+        this.preparationAttrs.add(preparationAttrArg);
         preparationAttrArg.setDefinition(this);
     }
 
@@ -230,7 +265,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
 
     public void removePreparationAttrs(final PreparationAttr preparationAttrArg)
     {
-        this.preparationAttr.remove(preparationAttrArg);
+        this.preparationAttrs.remove(preparationAttrArg);
         preparationAttrArg.setPreparation(null);
     }
 
@@ -246,9 +281,9 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 16;
     }
-
 }

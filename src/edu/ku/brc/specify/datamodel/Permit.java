@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,6 +58,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
 
  */
+@Entity
+@Table(name = "permit")
 public class Permit extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -69,6 +88,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public Permit() {
+        //
         // do nothing
     }
 
@@ -81,6 +101,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         permitId = null;
@@ -112,6 +133,9 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "PermitID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getPermitId() {
         return this.permitId;
     }
@@ -120,6 +144,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.permitId;
@@ -128,6 +154,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Permit.class;
@@ -140,6 +168,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Identifier for the permit
      */
+    @Column(name = "PermitNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getPermitNumber() {
         return this.permitNumber;
     }
@@ -151,6 +180,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Permit category - 'CITES', 'Migratory Bird Treaty Act', ...
      */
+    @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getType() {
         return this.type;
     }
@@ -162,6 +192,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date permit was issued
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "IssuedDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getIssuedDate() {
         return this.issuedDate;
     }
@@ -173,6 +205,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date permit becomes effective
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "StartDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getStartDate() {
         return this.startDate;
     }
@@ -184,6 +218,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date permit expires
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EndDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getEndDate() {
         return this.endDate;
     }
@@ -195,6 +231,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date of renewal
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "RenewalDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getRenewalDate() {
         return this.renewalDate;
     }
@@ -206,6 +244,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -217,6 +256,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -228,6 +268,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -239,6 +280,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -250,6 +292,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -261,6 +304,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -272,6 +316,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -283,6 +328,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<AccessionAuthorizations> getAccessionAuthorizations() {
         return this.accessionAuthorizations;
     }
@@ -294,6 +341,9 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * AgentID of Issuee
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "IssuedToID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getIssuedTo() {
         return this.issuedTo;
     }
@@ -305,6 +355,9 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * AgentID of Issuer
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "IssuedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getIssuedBy() {
         return this.issuedBy;
     }
@@ -313,6 +366,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         this.issuedBy = agentByIssuer;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -331,6 +386,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         return permitNumber != null ? permitNumber : super.getIdentityTitle();
@@ -340,6 +396,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 6;

@@ -1,73 +1,70 @@
 <?xml version="1.0"?>
 <project name="Specify 6.0 Build File" default="db" basedir=".">
 
-  <!-- Set up properties containing important project directories -->
-  <property name="source.root" value="src"/>
-  <property name="class.root" value="bin"/>
-  <property name="lib.dir" value="libs"/>
-  <property name="hibernatelib.dir" value="hibernate_libs"/>
-  <property name="externallib.dir" value="external_libs"/>
-  <property name="hibernate.properties" value="hibernate.properties"/>
-  <property name="dir.dest" value="dest"/>
-  <property name="hibernate.generated.code.destdir" value="generated-src"/>
+	<!-- Set up properties containing important project directories -->
+	<property name="source.root" value="src" />
+	<property name="class.root" value="bin" />
+	<property name="lib.dir" value="libs" />
+	<property name="hibernatelib.dir" value="hibernate_libs" />
+	<property name="externallib.dir" value="external_libs" />
+	<property name="hibernate.properties" value="hibernate.properties" />
+	<property name="hibernate.cfg" value="hibernate.cfg.xml" />
+	<property name="dir.dest" value="dest" />
+	<property name="hibernate.generated.code.destdir" value="generated-src" />
 
-  <property name="data.dir" value="data"/>
+	<property name="data.dir" value="data" />
 
 	<!-- Needed for Packing on the Mac -->
-	<property name="packaging" value="packaging"/>
-	<property name="app.name" value="Specify"/>
-	<property name="jar.name" value="specify"/>
-	<property name="dist-mac" value="mac-dest"/>
+	<property name="packaging" value="packaging" />
+	<property name="app.name" value="Specify" />
+	<property name="jar.name" value="specify" />
+	<property name="dist-mac" value="mac-dest" />
 
 
-  <!-- Set up the class path for compilation and execution -->
-  <path id="project.class.path">
-      <!-- Include our own classes, of course -->
-      <pathelement location="${class.root}" />
-      <!-- Include jars in the project library directory -->
-    <fileset dir="${lib.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-    <fileset dir="${hibernatelib.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-    <fileset dir="${externallib.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-  </path>
+	<!-- Set up the class path for compilation and execution -->
+	<path id="project.class.path">
+		<!-- Include our own classes, of course -->
+		<pathelement location="${class.root}" />
+		<!-- Include jars in the project library directory -->
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${hibernatelib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${externallib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
 
-  <!--<include name="**/*.jar"/>-->
-  <target name="db" description="Runs HSQLDB database management UI against the database file--use when application is not running">
-      <java classname="org.hsqldb.util.DatabaseManager"
-            fork="yes">
-         <classpath refid="project.class.path"/>
-         <arg value="-driver"/>
-         <arg value="org.hsqldb.jdbcDriver"/>
-         <arg value="-url"/>
-         <arg value="jdbc:hsqldb:${data.dir}/collections"/>
-         <arg value="-user"/>
-         <arg value="sa"/>
-      </java>
-  </target>
+	<!--<include name="**/*.jar"/>-->
+	<target name="db" description="Runs HSQLDB database management UI against the database file--use when application is not running">
+		<java classname="org.hsqldb.util.DatabaseManager" fork="yes">
+			<classpath refid="project.class.path" />
+			<arg value="-driver" />
+			<arg value="org.hsqldb.jdbcDriver" />
+			<arg value="-url" />
+			<arg value="jdbc:hsqldb:${data.dir}/collections" />
+			<arg value="-user" />
+			<arg value="sa" />
+		</java>
+	</target>
 
-  <!-- Teach Ant how to use Hibernate's code generation tool -->
-  <!--<taskdef name="hbm2java"
+	<!-- Teach Ant how to use Hibernate's code generation tool -->
+	<!--<taskdef name="hbm2java"
            classname="net.sf.hibernate.tool.hbm2java.Hbm2JavaTask"
            classpathref="project.class.path"/>-->
 
-  <taskdef name="hbm2java"
-           classname="org.hibernate.tool.ant.Hbm2JavaGeneratorTask"
-           classpathref="project.class.path"/>
+	<taskdef name="hbm2java" classname="org.hibernate.tool.ant.Hbm2JavaGeneratorTask" classpathref="project.class.path" />
 
 
-<!-- Formally introduce Ant to the toolset -->
-   <taskdef name="hibernatetool"
-           classname="org.hibernate.tool.ant.HibernateToolTask">
-         <classpath refid="project.class.path" />
-   </taskdef>
+	<!-- Formally introduce Ant to the toolset -->
+	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask">
+		<classpath refid="project.class.path" />
+	</taskdef>
 
-   <!-- bit of a best guess, I'm afraid -->
-   <!-- <hibernatetool destdir="${source.root}">
+	<!-- bit of a best guess, I'm afraid -->
+	<!-- <hibernatetool destdir="${source.root}">
        <configuration propertyFile="src/${hibernate.properties}">
          <fileset dir="${source.root}">
             <include name="**/*.hbm.xml" />
@@ -78,141 +75,139 @@
    </hibernatetool>
 	-->
 
-  <!-- Create our runtime subdirectories and copy resources into them -->
-  <target name="prepare" description="Sets up build structures">
-    <mkdir dir="${class.root}"/>
+	<!-- Create our runtime subdirectories and copy resources into them -->
+	<target name="prepare" description="Sets up build structures">
+		<mkdir dir="${class.root}" />
 
-    <!-- Copy our property files and O/R mappings for use at runtime -->
-    <copy todir="${class.root}" >
-      <fileset dir="${source.root}" >
-        <include name="**/*.properties"/>
-        <include name="**/*.hbm.xml"/>
-      </fileset>
-    </copy>
-  </target>
+		<!-- Copy our property files and O/R mappings for use at runtime -->
+		<copy todir="${class.root}">
+			<fileset dir="${source.root}">
+				<include name="**/*.properties" />
+				<include name="**/*.hbm.xml" />
+			</fileset>
+		</copy>
+	</target>
 
-  <!-- Compile the java source of the project -->
-  <target name="compile" depends="prepare"
-          description="Compiles all Java classes">
-    <javac srcdir="${source.root}"
-           destdir="${class.root}"
-           debug="on"
-           optimize="off"
-           deprecation="on">
-      <classpath refid="project.class.path"/>
-    </javac>
-  </target>
+	<!-- Compile the java source of the project -->
+	<target name="compile" depends="prepare" description="Compiles all Java classes">
+		<javac srcdir="${source.root}" destdir="${class.root}" debug="on" optimize="off" deprecation="on">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
 
-  <target name="run" description="Runs prototype" depends="compile">
-    <java classname="edu.ku.brc.specify.Specify" fork="true">
-      <classpath refid="project.class.path"/>
-    	 <jvmarg value= "-Xmx900m"/>
-    </java>
-  </target>
+	<target name="run" description="Runs prototype" depends="compile">
+		<java classname="edu.ku.brc.specify.Specify" fork="true">
+			<classpath refid="project.class.path" />
+			<jvmarg value="-Xmx900m" />
+		</java>
+	</target>
 
-  <target name="initData" description="Runs Initialize Data" depends="compile">
-    <java classname="edu.ku.brc.specify.InitializeData" fork="true">
-      <classpath refid="project.class.path"/>
-    	 <jvmarg value= "-Xmx900m"/>
-    </java>
-  </target>
+	<target name="initData" description="Runs Initialize Data" depends="compile">
+		<java classname="edu.ku.brc.specify.InitializeData" fork="true">
+			<classpath refid="project.class.path" />
+			<jvmarg value="-Xmx900m" />
+		</java>
+	</target>
 
-  <target name="runwb" description="Runs prototype" depends="compile">
-    <java classname="edu.ku.brc.specify.WorkBench" fork="true">
-      <classpath refid="project.class.path"/>
-    	 <jvmarg value= "-Xmx900m"/>
-    </java>
-  </target>
+	<target name="runwb" description="Runs prototype" depends="compile">
+		<java classname="edu.ku.brc.specify.WorkBench" fork="true">
+			<classpath refid="project.class.path" />
+			<jvmarg value="-Xmx900m" />
+		</java>
+	</target>
 
-	  <target name="generateDatamodelDoc" description="Generates datamodel document" depends="compile">
-	    <java classname="edu.ku.brc.specify.tools.datamodelgenerator.DatamodelGenerator" fork="true">
-	      <classpath refid="project.class.path"/>
-	    </java>
-	  </target>	
-   
-	
+	<target name="generateDatamodelDoc" description="Generates datamodel document" depends="compile">
+		<java classname="edu.ku.brc.specify.tools.datamodelgenerator.DatamodelGenerator" fork="true">
+			<classpath refid="project.class.path" />
+		</java>
+	</target>
+
+
 	<target name="gencode">
-      <!-- bit of a best guess, I'm afraid -->
-     <mkdir dir="${hibernate.generated.code.destdir}"/>
-     <hibernatetool destdir="${hibernate.generated.code.destdir}">
-         <configuration propertyFile="src/${hibernate.properties}">
-            <fileset dir="${source.root}">
-              <include name="**/*.hbm.xml"/>
-              <exclude name="**/PickList.hbm.xml" />
-            </fileset>
-         </configuration>
-         <hbm2java />
-         <!-- <hbm2ddl /> -->
-      </hibernatetool>
-   </target>
+		<!-- bit of a best guess, I'm afraid -->
+		<mkdir dir="${hibernate.generated.code.destdir}" />
+		<hibernatetool destdir="${hibernate.generated.code.destdir}">
+			<configuration propertyFile="src/${hibernate.properties}">
+				<fileset dir="${source.root}">
+					<include name="**/*.hbm.xml" />
+					<exclude name="**/PickList.hbm.xml" />
+				</fileset>
+			</configuration>
+			<hbm2java />
+			<!-- <hbm2ddl /> -->
+		</hibernatetool>
+	</target>
 
-   <target name="genschema">
-      <!-- bit of a best guess, I'm afraid -->
-      <hibernatetool destdir="${source.root}">
-         <configuration propertyFile="src/${hibernate.properties}">
-            <fileset dir="${source.root}">
-               <include name="**/*.hbm.xml" />
-            </fileset>
-         </configuration>
-         <!-- <hbm2java /> -->
-         <hbm2ddl update="false"/>
-      </hibernatetool>
-   </target>
-	
-	   <target name="genschemaupdate">
-	      <!-- bit of a best guess, I'm afraid -->
-	      <hibernatetool destdir="${source.root}">
-	         <configuration propertyFile="src/${hibernate.properties}">
-	            <fileset dir="${source.root}">
-	               <include name="**/*.hbm.xml" />
-	            </fileset>
-	         </configuration>
-	         <!-- <hbm2java /> -->
-	         <hbm2ddl update="true"/>
-	      </hibernatetool>
-	   </target>
+	<target name="genschema">
+		<!-- bit of a best guess, I'm afraid -->
+		<hibernatetool destdir="${source.root}">
+			<configuration propertyFile="src/${hibernate.properties}">
+				<fileset dir="${source.root}">
+					<include name="**/*.hbm.xml" />
+				</fileset>
+			</configuration>
+			<!--
+			<annotationconfiguration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
+			<configuration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
+			-->
+			<hbm2ddl update="false" />
+		</hibernatetool>
+	</target>
+
+	<target name="genschemaupdate">
+		<!-- bit of a best guess, I'm afraid -->
+		<hibernatetool destdir="${source.root}">
+			<configuration propertyFile="src/${hibernate.properties}">
+				<fileset dir="${source.root}">
+					<include name="**/*.hbm.xml" />
+				</fileset>
+			</configuration>
+			<!-- <hbm2java /> -->
+			<hbm2ddl update="true" />
+		</hibernatetool>
+	</target>
 
 	<target name="jar" depends="compile">
-	    <jar destfile="${jar.name}.jar" basedir="${class.root}"/>
+		<jar destfile="${jar.name}.jar" basedir="${class.root}" />
 	</target>
 
 	<target name="clean-jar">
-	   <delete file="${jar.name}.jar" />
+		<delete file="${jar.name}.jar" />
 	</target>
 
 	<target name="dist-mac" depends="jar">
-	    <property name="appdir" value="${dist-mac}/${app.name}.app"/>
+		<property name="appdir" value="${dist-mac}/${app.name}.app" />
 
-	    <mkdir dir="${dist-mac}"/>
-	    <mkdir dir="${appdir}"/>
-	    <mkdir dir="${appdir}/Contents"/>
-	    <mkdir dir="${appdir}/Contents/MacOS"/>
-	    <mkdir dir="${appdir}/Contents/Resources"/>
-	    <mkdir dir="${appdir}/Contents/Resources/Java"/>
+		<mkdir dir="${dist-mac}" />
+		<mkdir dir="${appdir}" />
+		<mkdir dir="${appdir}/Contents" />
+		<mkdir dir="${appdir}/Contents/MacOS" />
+		<mkdir dir="${appdir}/Contents/Resources" />
+		<mkdir dir="${appdir}/Contents/Resources/Java" />
 
 		<!-- Copy Application Stub Compile the java source of the project -->
-		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS"/>
-		<exec command="chmod 755 ${appdir}/Contents/MacOS/JavaApplicationStub"/>
+		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
+		<exec command="chmod 755 ${appdir}/Contents/MacOS/JavaApplicationStub" />
 
 		<!-- Copy info list -->
-		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents"/>
+		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents" />
 
 		<!-- Copy the app -->
-		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java"/>
+		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java" />
 
-	    <!-- Copy Icons -->
-	    <copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources"/>
-	  
-	    <copy todir="${appdir}/Contents/Resources/Java">
-		    <fileset dir="libs">
-		        <include name="*.jar"/>
-		    </fileset>
+		<!-- Copy Icons -->
+		<copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources" />
+
+		<copy todir="${appdir}/Contents/Resources/Java">
+			<fileset dir="libs">
+				<include name="*.jar" />
+			</fileset>
 		</copy>
 
 		<!-- Tell OS the dir is an App -->
-		<exec command="/Developer/Tools/SetFile -a B ${appdir}"/>
+		<exec command="/Developer/Tools/SetFile -a B ${appdir}" />
 
-    </target>
+	</target>
 
 
 </project>

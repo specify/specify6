@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +51,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "workbenchtemplate")
 public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable 
 {
 
@@ -54,6 +69,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
 
     /** default constructor */
     public WorkbenchTemplate() {
+        //
     }
     
     /** constructor with id */
@@ -64,6 +80,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
    
     
     // Initializer
+    @Override
     public void initialize()
     {
         workbenchTemplateId = null;
@@ -84,6 +101,9 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getWorkbenchTemplateId() {
         return this.workbenchTemplateId;
     }
@@ -92,6 +112,8 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.workbenchTemplateId;
@@ -100,6 +122,8 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return WorkbenchTemplate.class;
@@ -112,6 +136,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getName() {
         return this.name;
     }
@@ -123,6 +148,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -134,38 +160,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     * 
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    public String getLastEditedBy()
-    {
-        return lastEditedBy;
-    }
-
-    public void setLastEditedBy(String lastEditedBy)
-    {
-        this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     * 
-     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchTemplate")
     public Set<Workbench> getWorkbenches() {
         return this.workbenches;
     }
@@ -178,6 +173,8 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * 
      */
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchTemplates")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<WorkbenchTemplateMappingItem> getWorkbenchTemplateMappingItems() 
     {
         return this.workbenchTemplateMappingItems;
@@ -222,10 +219,14 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 81;
     }
+    
+    @Override
+    @Transient
     public String getIdentityTitle()
     { 
         if(name!=null)return name;

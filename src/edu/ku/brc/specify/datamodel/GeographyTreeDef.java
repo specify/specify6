@@ -28,10 +28,25 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "geographytreedef")
 public class GeographyTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
 	protected Long				       geographyTreeDefId;
@@ -66,6 +81,9 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		treeDefItems = new HashSet<GeographyTreeDefItem>();
 	}
 
+    @Id
+    @GeneratedValue
+    @Column(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public Long getGeographyTreeDefId()
 	{
 		return this.geographyTreeDefId;
@@ -75,6 +93,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -84,6 +103,8 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return GeographyTreeDef.class;
@@ -94,6 +115,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.geographyTreeDefId = geographyTreeDefId;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -104,6 +126,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.name = name;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -114,6 +137,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.remarks = remarks;
 	}
 
+    @Column(name = "FullNameDirection", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getFullNameDirection()
     {
         return fullNameDirection;
@@ -124,6 +148,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
         this.fullNameDirection = fullNameDirection;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geographyTreeDef")
     public Set<CollectionObjDef> getCollObjDefs()
 	{
 		return this.collObjDefs;
@@ -146,6 +171,8 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
         cod.setGeographyTreeDef(null);
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<Geography> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -156,6 +183,8 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.treeEntries = treeEntries;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "treeDef")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<GeographyTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
@@ -166,6 +195,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		this.treeDefItems = treeDefItems;
 	}
 
+    @Transient
 	public Long getTreeDefId()
 	{
 		return getGeographyTreeDefId();
@@ -200,6 +230,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		item.setTreeDef(null);
 	}
 
+    @Transient
 	public Class<Geography> getNodeClass()
 	{
 		return Geography.class;
@@ -305,6 +336,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 44;

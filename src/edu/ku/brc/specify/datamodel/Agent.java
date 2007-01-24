@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Date;
@@ -40,6 +55,8 @@ import edu.ku.brc.util.AttachmentUtils;
 /**
 
  */
+@Entity
+@Table(name = "agent")
 public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -73,12 +90,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<GroupPersons>              groups;
     protected Set<GroupPersons>              members;
     protected Set<Determination>            determinations;
-    protected Set<Agent>                    agentsByOrganization;
-    protected Set<Agent>                    agentsByAgent;
     protected Set<Shipment>                 shipments;
     protected Set<Collectors>                collectors;
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
-    protected Set<Attachment>          attachments;
+    protected Set<Attachment>               attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
      
     // From AgentAddress
@@ -103,6 +118,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public Agent() {
+        //
         // do nothing
     }
 
@@ -140,8 +156,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         groups = new HashSet<GroupPersons>();
         members = new HashSet<GroupPersons>();
         determinations = new HashSet<Determination>();
-        agentsByOrganization = new HashSet<Agent>();
-        agentsByAgent = new HashSet<Agent>();
         shipments = new HashSet<Shipment>();
         collectors = new HashSet<Collectors>();
         exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
@@ -176,6 +190,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAgentId() {
         return this.agentId;
     }
@@ -184,6 +201,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -193,6 +211,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Agent.class;
@@ -202,6 +222,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.agentId = agentId;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -212,6 +234,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.attachments = attachments;
     }
     
+    @Transient
     public String getImageURL()
     {
         for (Attachment a: attachments)
@@ -247,6 +270,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "AgentType", unique = false, nullable = false, insertable = true, updatable = true, length = 3)
     public Byte getAgentType() {
         return this.agentType;
     }
@@ -258,6 +282,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of Person
      */
+    @Column(name = "FirstName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getFirstName() {
         return this.firstName;
     }
@@ -269,6 +294,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of Person
      */
+    @Column(name = "LastName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLastName() {
         return this.lastName;
     }
@@ -280,6 +306,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of Person
      */
+    @Column(name = "MiddleInitial", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getMiddleInitial() {
         return this.middleInitial;
     }
@@ -291,6 +318,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of Person
      */
+    @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getTitle() {
         return this.title;
     }
@@ -302,6 +330,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of Person or Organization
      */
+    @Column(name = "Interests", unique = false, nullable = true, insertable = true, updatable = true)
     public String getInterests() {
         return this.interests;
     }
@@ -313,6 +342,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of organization
      */
+    @Column(name = "Abbreviation", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getAbbreviation() {
         return this.abbreviation;
     }
@@ -324,6 +354,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of organization/group/Folks (and maybe persons)
      */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 120)
     public String getName() {
         return this.name;
     }
@@ -335,6 +366,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -345,6 +377,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
+    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -353,6 +386,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.visibility = visibility;
     }
     
+    @Transient
+    @Override
     public boolean isRestrictable()
     {
         return true;
@@ -361,6 +396,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -372,6 +408,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<Authors> getAuthors() {
         return this.authors;
     }
@@ -383,6 +420,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "receivedBy")
     public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;
     }
@@ -394,6 +432,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<BorrowReturnMaterial> getBorrowReturnMaterials() {
         return this.borrowReturnMaterials;
     }
@@ -405,6 +444,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentCatalogedBy")
     public Set<ExchangeIn> getExchangeInCatalogedBys() {
         return this.exchangeInCatalogedBys;
     }
@@ -416,6 +456,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "organization")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<Agent> getOrgMembers() {
         return this.orgMembers;
     }
@@ -427,6 +469,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * of organization
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "ParentOrganizationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getOrganization() {
         return this.organization;
     }
@@ -438,6 +483,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<Project> getProjects() {
         return this.projects;
     }
@@ -449,6 +495,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparedByAgent")
     public Set<Preparation> getPreparations() {
         return this.preparations;
     }
@@ -460,6 +507,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "member")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<GroupPersons> getGroups() {
         return this.groups;
     }
@@ -471,6 +520,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<GroupPersons> getMembers() {
         return this.members;
     }
@@ -482,6 +533,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "determiner")
     public Set<Determination> getDeterminations() {
         return this.determinations;
     }
@@ -493,28 +545,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
-    public Set<Agent> getAgentesByOrganization() {
-        return this.agentsByOrganization;
-    }
-
-    public void setAgentsByOrganization(Set<Agent> agentsByOrganization) {
-        this.agentsByOrganization = agentsByOrganization;
-    }
-
-    /**
-     *
-     */
-    public Set<Agent> getAgentsByAgent() {
-        return this.agentsByAgent;
-    }
-
-    public void setAgentsByAgent(Set<Agent> agentsByAgent) {
-        this.agentsByAgent = agentsByAgent;
-    }
-
-    /**
-     *
-     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shippedBy")
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -526,6 +557,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<Collectors> getCollectors() {
         return this.collectors;
     }
@@ -537,6 +569,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentCatalogedBy")
     public Set<ExchangeOut> getExchangeOutCatalogedBys() {
         return this.exchangeOutCatalogedBys;
     }
@@ -545,20 +578,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.exchangeOutCatalogedBys = exchangeOutCatalogedBys;
     }
 
-
-    public Set<Attachment> getAttachmentGroups()
-    {
-        return attachments;
-    }
-
-    public void setAttachmentGroups(Set<Attachment> attachmentGroups)
-    {
-        this.attachments = attachmentGroups;
-    }
-
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "originator")
     public Set<RepositoryAgreement> getRepositoryAgreements() {
         return this.repositoryAgreements;
     }
@@ -574,6 +597,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Agent's (person) job title at specified address and organization
      */
+    @Column(name = "JobTitle", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getJobTitle() {
         return this.jobTitle;
     }
@@ -585,6 +609,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "Email", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getEmail() {
         return this.email;
     }
@@ -596,6 +621,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @Column(name = "URL", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
     public String getUrl() {
         return this.url;
     }
@@ -608,6 +634,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<LoanAgents> getLoanAgents() {
         return this.loanAgents;
     }
@@ -619,6 +646,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shipper")
     public Set<Shipment> getShipmentsByShipper() {
         return this.shipmentsByShipper;
     }
@@ -630,6 +658,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shippedTo")
     public Set<Shipment> getShipmentsByShippedTo() {
         return this.shipmentsByShippedTo;
     }
@@ -641,6 +670,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<DeaccessionAgents> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
@@ -652,6 +682,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentReceivedFrom")
     public Set<ExchangeIn> getExchangeInFromOrganizations() {
         return this.exchangeInFromOrganizations;
     }
@@ -663,6 +694,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedTo")
     public Set<Permit> getPermitsIssuedTo() {
         return this.permitsIssuedTo;
     }
@@ -674,6 +706,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedBy")
     public Set<Permit> getPermitsIssuedBy() {
         return this.permitsIssuedBy;
     }
@@ -685,6 +718,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<BorrowAgents> getBorrowAgents() {
         return this.borrowAgents;
     }
@@ -696,6 +730,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
     public Set<AccessionAgent> getAccessionAgents() {
         return this.accessionAgents;
     }
@@ -707,6 +742,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentSentTo")
     public Set<ExchangeOut> getExchangeOutSentToOrganizations() {
         return this.exchangeOutSentToOrganizations;
     }
@@ -718,6 +754,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Associated record in Address table
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Address> getAddresses() {
         return this.addresses;
     }
@@ -728,6 +766,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpecifyUser> getSpecifyUsers() {
         return this.specifyUsers;
     }
@@ -805,12 +845,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 5;
     }
 
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         if (lastName != null)

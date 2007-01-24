@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +53,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "container")
 public class Container extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -57,6 +74,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
 
     /** default constructor */
     public Container() {
+        //
     }
 
     /** constructor with id */
@@ -68,6 +86,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         containerId = null;
@@ -90,6 +109,9 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ContainerID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getContainerId() {
         return this.containerId;
     }
@@ -98,6 +120,8 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.containerId;
@@ -106,6 +130,8 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Container.class;
@@ -118,6 +144,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Column(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getCollectionObjectId() {
         return this.collectionObjectId;
     }
@@ -129,6 +156,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getType() {
         return this.type;
     }
@@ -140,6 +168,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getName() {
         return this.name;
     }
@@ -151,6 +180,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true)
     public String getDescription() {
         return this.description;
     }
@@ -162,6 +192,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @Column(name = "Number", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getNumber() {
         return this.number;
     }
@@ -173,6 +204,8 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "container")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<ContainerItem> getItems() {
         return this.items;
     }
@@ -184,6 +217,8 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = false, updatable = false)
     public CollectionObject getContainer() {
         return this.container;
     }
@@ -195,6 +230,9 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "LocationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Location getLocation() {
         return this.location;
     }
@@ -228,6 +266,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 31;

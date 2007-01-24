@@ -28,11 +28,28 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "geographytreedefitem")
 public class GeographyTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Geography,GeographyTreeDef,GeographyTreeDefItem>
 {
 
@@ -67,7 +84,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	}
 
 	// Initializer
-	@Override
+    @Override
     public void initialize()
 	{
 		geographyTreeDefItemId = null;
@@ -89,11 +106,15 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 
 	// Property accessors
 
+    @Id
+    @GeneratedValue
+    @Column(name = "GeographyTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
 	public Long getGeographyTreeDefItemId()
 	{
 		return this.geographyTreeDefItemId;
 	}
 
+    @Transient
     @Override
     public Long getId()
     {
@@ -103,6 +124,8 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return GeographyTreeDefItem.class;
@@ -113,6 +136,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.geographyTreeDefItemId = geographyTreeDefItemId;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -123,6 +147,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.name = name;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -133,6 +158,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.remarks = remarks;
 	}
 
+    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -143,6 +169,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.rankId = rankId;
 	}
 
+    @Column(name = "IsEnforced", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsEnforced()
 	{
 		return this.isEnforced;
@@ -153,6 +180,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.isEnforced = isEnforced;
 	}
 
+    @Column(name = "IsInFullName", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsInFullName()
 	{
 		return isInFullName;
@@ -163,6 +191,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.isInFullName = isInFullName;
 	}
     
+    @Column(name = "TextAfter", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getTextAfter()
     {
         return textAfter;
@@ -173,6 +202,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         this.textAfter = textAfter;
     }
 
+    @Column(name = "TextBefore", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getTextBefore()
     {
         return textBefore;
@@ -183,6 +213,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         this.textBefore = textBefore;
     }
 
+    @Column(name = "FullNameSeparator", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
 	public String getFullNameSeparator()
     {
         return fullNameSeparator;
@@ -193,6 +224,9 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         this.fullNameSeparator = fullNameSeparator;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeographyTreeDef getTreeDef()
 	{
 		return this.treeDef;
@@ -203,6 +237,9 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.treeDef = treeDef;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public GeographyTreeDefItem getParent()
 	{
 		return this.parent;
@@ -213,6 +250,8 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.parent = parent;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<Geography> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -223,6 +262,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.treeEntries = treeEntries;
 	}
 
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
 	public Set<GeographyTreeDefItem> getChildren()
 	{
 		return this.children;
@@ -233,6 +273,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		this.children = children;
 	}
 
+    @Transient
 	public Long getTreeDefItemId()
 	{
 		return getGeographyTreeDefItemId();
@@ -259,6 +300,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         }
 	}
 	
+    @Transient
 	public GeographyTreeDefItem getChild()
 	{
 		if(children.isEmpty())
@@ -296,6 +338,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	}
     
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 45;

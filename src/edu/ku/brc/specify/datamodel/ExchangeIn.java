@@ -28,6 +28,22 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -37,6 +53,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "exchangein")
 public class ExchangeIn extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -60,6 +78,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
 
     /** default constructor */
     public ExchangeIn() {
+        //
     }
     
     /** constructor with id */
@@ -71,6 +90,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         exchangeInId = null;
@@ -97,6 +117,9 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ExchangeInID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getExchangeInId() {
         return this.exchangeInId;
     }
@@ -105,6 +128,8 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.exchangeInId;
@@ -113,6 +138,8 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return ExchangeIn.class;
@@ -125,6 +152,8 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Date exchange was received
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ExchangeDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getExchangeDate() {
         return this.exchangeDate;
     }
@@ -136,6 +165,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Number of items received
      */
+    @Column(name = "QuantityExchanged", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantityExchanged() {
         return this.quantityExchanged;
     }
@@ -147,6 +177,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Column(name = "DescriptionOfMaterial", unique = false, nullable = true, insertable = true, updatable = true, length = 120)
     public String getDescriptionOfMaterial() {
         return this.descriptionOfMaterial;
     }
@@ -158,6 +189,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -169,6 +201,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -180,6 +213,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -191,6 +225,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -202,6 +237,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -214,6 +250,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -225,6 +262,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -236,6 +274,9 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Agent ID of organization that sent material
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "ReceivedFromOrganizationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentReceivedFrom() {
         return this.agentReceivedFrom;
     }
@@ -247,6 +288,9 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Agent ID of person recording the exchange
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CatalogedByID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentCatalogedBy() {
         return this.agentCatalogedBy;
     }
@@ -271,6 +315,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 39;

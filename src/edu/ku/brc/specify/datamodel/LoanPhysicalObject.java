@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +53,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "loanphysicalobject")
 public class LoanPhysicalObject extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -59,6 +76,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
 
     /** default constructor */
     public LoanPhysicalObject() {
+        //
     }
     
     /** constructor with id */
@@ -70,6 +88,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         loanPhysicalObjectId = null;
@@ -94,6 +113,9 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * PrimaryKey
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "LoanPhysicalObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getLoanPhysicalObjectId() {
         return this.loanPhysicalObjectId;
     }
@@ -102,6 +124,8 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.loanPhysicalObjectId;
@@ -110,6 +134,8 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return LoanPhysicalObject.class;
@@ -122,6 +148,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * The total number of specimens  loaned (necessary for lots)
      */
+    @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getQuantity() {
         return this.quantity;
     }
@@ -133,6 +160,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Description of loaned material (intended to be used for non-cataloged items, i.e. when PreparationID is null)
      */
+    @Column(name = "DescriptionOfMaterial", unique = false, nullable = true, insertable = true, updatable = true)
     public String getDescriptionOfMaterial() {
         return this.descriptionOfMaterial;
     }
@@ -144,6 +172,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Comments on item when loaned
      */
+    @Column(name = "OutComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getOutComments() {
         return this.outComments;
     }
@@ -155,6 +184,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Comments on item when returned
      */
+    @Column(name = "InComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getInComments() {
         return this.inComments;
     }
@@ -166,6 +196,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)
      */
+    @Column(name = "QuantityResolved", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getQuantityResolved() {
         return this.quantityResolved;
     }
@@ -177,6 +208,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Number of specimens returned. (necessary for Lots)
      */
+    @Column(name = "QuantityReturned", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getQuantityReturned() {
         return this.quantityReturned;
     }
@@ -188,6 +220,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * User definable
      */
+    @Column(name="IsResolved",unique=false,nullable=false,insertable=true,updatable=true)
     public Boolean getIsResolved() {
         return this.isResolved;
     }
@@ -199,6 +232,8 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PreparationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Preparation getPreparation() {
         return this.preparation;
     }
@@ -210,6 +245,8 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Loan containing the PhysicalObject
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LoanID", unique = false, nullable = false, insertable = true, updatable = true)
     public Loan getLoan() {
         return this.loan;
     }
@@ -221,6 +258,8 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loanPhysicalObject")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;
     }
@@ -257,6 +296,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 54;

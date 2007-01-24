@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -37,6 +50,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "borrowreturnmaterial")
 public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -53,6 +68,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
 
     /** default constructor */
     public BorrowReturnMaterial() {
+        //
     }
     
     /** constructor with id */
@@ -64,6 +80,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         borrowReturnMaterialId = null;
@@ -83,6 +100,9 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "BorrowReturnMaterialID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getBorrowReturnMaterialId() {
         return this.borrowReturnMaterialId;
     }
@@ -91,6 +111,8 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.borrowReturnMaterialId;
@@ -99,6 +121,8 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return BorrowReturnMaterial.class;
@@ -111,6 +135,8 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /**
      * 
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ReturnedDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getReturnedDate() {
         return this.returnedDate;
     }
@@ -122,6 +148,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /**
      *      * Quantity of preparations returned
      */
+    @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantity() {
         return this.quantity;
     }
@@ -133,6 +160,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -145,6 +173,8 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /**
      *      * person processing the  return
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ReturnedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -156,6 +186,8 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     /**
      *      * Borrowed preparation returned
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "BorrowMaterialID", unique = false, nullable = false, insertable = true, updatable = true)
     public BorrowMaterial getBorrowMaterial() {
         return this.borrowMaterial;
     }
@@ -180,6 +212,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 21;

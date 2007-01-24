@@ -8,7 +8,7 @@
 		<!-- Don't forget to copy your JDBC driver to the lib/ directory! -->
 
 	    <!--
-	    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+	    <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
 	    <property name="hibernate.connection.url">jdbc:mysql://localhost/fish</property> 
 		<property name="hibernate.connection.username">rods</property>
@@ -41,23 +41,22 @@
 		<!-- Specify mapping files. -->
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSet.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/InfoRequest.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Accession.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAgent.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Accession.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAgent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAuthorizations.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Address.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Agent.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceDefault.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResource.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceData.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Attachment.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AttachmentMetadata.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AttributeDef.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Address.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Agent.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceDefault.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResource.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceData.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Attachment.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AttachmentMetadata.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AttributeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Authors.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowAgents.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Borrow.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowMaterial.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowReturnMaterial.hbm.xml"/>
-		
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CatalogSeries.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEvent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEventAttr.hbm.xml"/>
@@ -70,10 +69,10 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Container.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ContainerItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DataType.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Deaccession.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionAgents.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Deaccession.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionAgents.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionPreparation.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationCitation.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Determination.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationStatus.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ExchangeIn.hbm.xml"/>
@@ -103,24 +102,111 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PrepType.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ProjectCollectionObject.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Project.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/ReferenceWork.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/RepositoryAgreement.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Shipment.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/SpecifyUser.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Stratigraphy.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ReferenceWork.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RepositoryAgreement.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Shipment.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/SpecifyUser.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Stratigraphy.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Taxon.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserGroup.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserPermission.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/ViewSetObj.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ViewSetObj.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchDataItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplate.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplateMappingItem.hbm.xml"/>
-
-
+		
+		<!--
+		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Address"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AppResource"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AppResourceData"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AttachmentMetadata"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AttributeDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Authors"/>
+		<mapping class="edu.ku.brc.specify.datamodel.BorrowAgents"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Borrow"/>
+		<mapping class="edu.ku.brc.specify.datamodel.BorrowMaterial"/>
+		<mapping class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CatalogSeries"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttr"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingTrip"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectionObject"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Collectors"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Container"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ContainerItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DataType"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionAgents"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Determination"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DeterminationStatus"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Geography"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GeographyTreeDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GroupPersons"/>
+		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LoanAgents"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Loan"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LocalityCitation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Locality"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Location"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.OtherIdentifier"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Permit"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PickList"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PickListItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Preparation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttr"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PrepType"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Project"/>
+		<mapping class="edu.ku.brc.specify.datamodel.RecordSet"/>
+		<mapping class="edu.ku.brc.specify.datamodel.RecordSetItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ReferenceWork"/>
+		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Stratigraphy"/>
+		<mapping class="edu.ku.brc.specify.datamodel.TaxonCitation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>
+		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.UserGroup"/>
+		<mapping class="edu.ku.brc.specify.datamodel.UserPermission"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ViewSetObj"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Workbench"/>
+		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchDataItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"/>
+		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem"/>
+		-->
+		
+		
+		
+		
+		
         <!-- Settings for the second-level cache -->
         <!--
         <class-cache class="org.hibernate.auction.model.Item" usage="read-write"/>

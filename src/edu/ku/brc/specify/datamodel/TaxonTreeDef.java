@@ -28,10 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name="taxontreedef")
 public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
 	protected Long				    taxonTreeDefId;
@@ -54,7 +67,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
 
-	@Override
+    @Override
     public void initialize()
 	{
 		taxonTreeDefId = null;
@@ -66,6 +79,8 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		treeDefItems = new HashSet<TaxonTreeDefItem>();
 	}
 
+    @Id
+    @Column(name="TaxonTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
     public Long getTaxonTreeDefId()
 	{
 		return this.taxonTreeDefId;
@@ -75,6 +90,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -84,6 +100,8 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return TaxonTreeDef.class;
@@ -94,6 +112,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
 
+    @Column(name="Name", unique=false, nullable=true, insertable=true, updatable=true, length=64)
 	public String getName()
 	{
 		return this.name;
@@ -104,6 +123,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.name = name;
 	}
 
+    @Column(name="Remarks", length=65535, unique=false, nullable=true, insertable=true, updatable=true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -114,6 +134,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.remarks = remarks;
 	}
 
+    @Column(name="FullNameDirection", unique=false, nullable=true, insertable=true, updatable=true)
 	public Integer getFullNameDirection()
     {
         return fullNameDirection;
@@ -124,6 +145,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
         this.fullNameDirection = fullNameDirection;
     }
 
+    @Transient
     public CollectionObjDef getCollObjDef()
 	{
 		return this.collObjDef;
@@ -134,6 +156,8 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.collObjDef = collObjDef;
 	}
 
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="definition")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.LOCK} )
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -144,6 +168,8 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.treeEntries = treeEntries;
 	}
 
+    @OneToMany(cascade={}, fetch=FetchType.EAGER, mappedBy="treeDef")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.LOCK} )
 	public Set<TaxonTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
@@ -154,6 +180,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.treeDefItems = treeDefItems;
 	}
 
+    @Transient
 	public Long getTreeDefId()
 	{
 		return getTaxonTreeDefId();
@@ -188,6 +215,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		item.setTreeDef(null);
 	}
 
+    @Transient
 	public Class<Taxon> getNodeClass()
 	{
 		return Taxon.class;
@@ -293,6 +321,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 76;

@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +52,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "deaccession")
 public class Deaccession extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -62,6 +77,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
 
     /** default constructor */
     public Deaccession() {
+        //
     }
     
     /** constructor with id */
@@ -73,6 +89,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         deaccessionId = null;
@@ -99,6 +116,9 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getDeaccessionId() {
         return this.deaccessionId;
     }
@@ -107,6 +127,8 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.deaccessionId;
@@ -115,6 +137,8 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Deaccession.class;
@@ -127,6 +151,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Description of the Type of deaccession; i.e. Gift, disposal, lost
      */
+    @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getType() {
         return this.type;
     }
@@ -138,6 +163,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Name institution assigns to the deacession
      */
+    @Column(name = "DeaccessionNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getDeaccessionNumber() {
         return this.deaccessionNumber;
     }
@@ -149,6 +175,8 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DeaccessionDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getDeaccessionDate() {
         return this.deaccessionDate;
     }
@@ -160,6 +188,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -171,6 +200,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -182,6 +212,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -193,6 +224,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -204,6 +236,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -215,6 +248,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -226,6 +260,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -237,6 +272,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
     public Set<DeaccessionAgents> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
@@ -248,6 +284,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
     public Set<DeaccessionPreparation> getDeaccessionPreparations() {
         return this.deaccessionPreparations;
     }
@@ -296,6 +333,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 34;

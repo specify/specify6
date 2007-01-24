@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +56,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "repositoryAgreement")
 public class RepositoryAgreement extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
@@ -57,7 +76,6 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      protected String remarks;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<CollectionObject>        collectionObjects;
      protected Set<AccessionAuthorizations> repositoryAgreementAuthorizations;
      protected Set<AccessionAgent>         repositoryAgreementAgents;
      protected Set<Accession>               accessions;
@@ -69,6 +87,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
 
     /** default constructor */
     public RepositoryAgreement() {
+        //
     }
 
     /** constructor with id */
@@ -80,6 +99,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
 
 
     // Initializer
+    @Override
     public void initialize()
     {
         repositoryAgreementId = null;
@@ -99,7 +119,6 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        collectionObjects                 = new HashSet<CollectionObject>();
         repositoryAgreementAuthorizations = new HashSet<AccessionAuthorizations>();
         repositoryAgreementAgents         = new HashSet<AccessionAgent>();
         accessions                        = new HashSet<Accession>();
@@ -112,6 +131,9 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "RepositoryAgreementID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getRepositoryAgreementId() {
         return this.repositoryAgreementId;
     }
@@ -120,6 +142,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
+    @Transient
     public Long getId()
     {
         return this.repositoryAgreementId;
@@ -128,6 +152,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return RepositoryAgreement.class;
@@ -140,6 +166,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Number", unique = false, nullable = false, insertable = true, updatable = true, length = 60)
     public String getNumber() {
         return this.number;
     }
@@ -151,6 +178,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Status", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getStatus() {
         return this.status;
     }
@@ -162,6 +190,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "StartDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getStartDate() {
         return this.startDate;
     }
@@ -173,6 +203,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EndDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getEndDate() {
         return this.endDate;
     }
@@ -184,6 +216,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateReceived", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getDateReceived() {
         return this.dateReceived;
     }
@@ -195,6 +229,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -206,6 +241,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -217,6 +253,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Text3", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText3() {
         return this.text3;
     }
@@ -228,6 +265,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber1() {
         return this.number1;
     }
@@ -239,6 +277,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
     public Float getNumber2() {
         return this.number2;
     }
@@ -250,6 +289,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -261,6 +301,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -272,6 +313,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -283,17 +325,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
-    public Set<CollectionObject> getCollectionObjects() {
-        return this.collectionObjects;
-    }
-
-    public void setCollectionObjects(Set<CollectionObject> collectionObjects) {
-        this.collectionObjects = collectionObjects;
-    }
-
-    /**
-     *
-     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "repositoryAgreement")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AccessionAuthorizations> getRepositoryAgreementAuthorizations() {
         return this.repositoryAgreementAuthorizations;
     }
@@ -305,6 +338,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      *
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "repositoryAgreement")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AccessionAgent> getRepositoryAgreementAgents() {
         return this.repositoryAgreementAgents;
     }
@@ -312,6 +347,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     public void setRepositoryAgreementAgents(Set<AccessionAgent> repositoryAgreementAgents) {
         this.repositoryAgreementAgents = repositoryAgreementAgents;
     }
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "repositoryAgreement")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -322,18 +359,12 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         this.attachments = attachments;
     }
     
-    public Set<Attachment> getAttachmentGroups()
-    {
-        return attachments;
-    }
-
-    public void setAttachmentGroups(Set<Attachment> attachmentGroups)
-    {
-        this.attachments = attachmentGroups;
-    }
     /**
      *
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getOriginator() {
         return this.originator;
     }
@@ -345,6 +376,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "repositoryAgreement")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<Accession> getAccessions() {
         return this.accessions;
     }
@@ -357,6 +390,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 70;

@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 
@@ -36,6 +50,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "deaccessionagents", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "DeaccessionID" }) })
 public class DeaccessionAgents extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -51,6 +67,7 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
 
     /** default constructor */
     public DeaccessionAgents() {
+        //
     }
     
     /** constructor with id */
@@ -62,6 +79,7 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         deaccessionAgentsId = null;
@@ -80,6 +98,9 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "DeaccessionAgentsID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getDeaccessionAgentsId() {
         return this.deaccessionAgentsId;
     }
@@ -88,6 +109,8 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.deaccessionAgentsId;
@@ -96,6 +119,8 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return DeaccessionAgents.class;
@@ -108,6 +133,7 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     /**
      *      * Role agent played in deaccession
      */
+    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
     public String getRole() {
         return this.role;
     }
@@ -119,6 +145,7 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -130,6 +157,9 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     /**
      *      * AgentID for agent
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -141,6 +171,8 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     /**
      *      * Deaccession agent played role in
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Deaccession getDeaccession() {
         return this.deaccession;
     }
@@ -165,6 +197,7 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 35;

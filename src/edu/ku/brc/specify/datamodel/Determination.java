@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +56,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "determination")
 public class Determination extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -67,6 +86,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
 
     /** default constructor */
     public Determination() {
+        //
     }
     
     /** constructor with id */
@@ -78,6 +98,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         determinationId = null;
@@ -109,6 +130,9 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "DeterminationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getDeterminationId() 
     {
         return this.determinationId;
@@ -118,6 +142,8 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.determinationId;
@@ -126,6 +152,8 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Determination.class;
@@ -139,6 +167,9 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "DeterminationStatusID", unique = false, nullable = false, insertable = true, updatable = true)
     public DeterminationStatus getStatus() 
     {
         return this.status;
@@ -149,6 +180,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
         this.status = status;
     }
     
+    @Transient
     public boolean isCurrent()
     {
     	//TODO: is this a final implementation?
@@ -163,6 +195,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * e.g. 'Holotype', 'Paratype'...
      */
+    @Column(name = "TypeStatusName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getTypeStatusName() 
     {
         return this.typeStatusName;
@@ -176,6 +209,8 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DeterminedDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getDeterminedDate() 
     {
         return this.determinedDate;
@@ -189,6 +224,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Confidence of determination (value from PickList)
      */
+    @Column(name = "Confidence", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getConfidence() 
     {
         return this.confidence;
@@ -202,6 +238,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Method of determination (value from PickList)
      */
+    @Column(name = "Method", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getMethod() 
     {
         return this.method;
@@ -215,6 +252,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Body part, or characteristic used as the basis of a determination.
      */
+    @Column(name = "FeatureOrBasis", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getFeatureOrBasis() 
     {
         return this.featureOrBasis;
@@ -228,6 +266,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() 
     {
         return this.remarks;
@@ -241,6 +280,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() 
     {
         return this.text1;
@@ -254,6 +294,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() 
     {
         return this.text2;
@@ -267,6 +308,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() 
     {
         return this.number1;
@@ -280,6 +322,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() 
     {
         return this.number2;
@@ -293,6 +336,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() 
     {
         return this.yesNo1;
@@ -306,6 +350,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() 
     {
         return this.yesNo2;
@@ -319,6 +364,9 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "TaxonID", unique = false, nullable = true, insertable = true, updatable = true)
     public Taxon getTaxon() 
     {
         return this.taxon;
@@ -332,6 +380,8 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getCollectionObject() 
     {
         return this.collectionObject;
@@ -345,6 +395,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "determination")
     public Set<DeterminationCitation> getDeterminationCitations() 
     {
         return this.determinationCitations;
@@ -358,6 +409,9 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     /**
      *      * id of the Person making the determination
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "DeterminerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getDeterminer() 
     {
         return this.determiner;
@@ -396,12 +450,14 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 9;
     }
 
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         // TODO Auto-generated method stub

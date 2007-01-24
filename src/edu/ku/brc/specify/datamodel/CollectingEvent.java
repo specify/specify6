@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -42,6 +59,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
 
  */
+@Entity
+@Table(name = "collectingevent")
 public class CollectingEvent extends DataModelObjBase implements java.io.Serializable, Comparable<CollectingEvent> {
 
     // Fields    
@@ -89,6 +108,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         collectingEventId = null;
@@ -124,6 +144,9 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "CollectingEventID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getCollectingEventId() {
         return this.collectingEventId;
     }
@@ -132,6 +155,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.collectingEventId;
@@ -140,6 +165,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return CollectingEvent.class;
@@ -152,6 +179,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.
      */
+    @Column(name = "StationFieldNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getStationFieldNumber() {
         return this.stationFieldNumber;
     }
@@ -163,6 +191,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * The method used to obtain the biological object
      */
+    @Column(name = "Method", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getMethod() {
         return this.method;
     }
@@ -174,6 +203,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Date which collector recorded in field book, exactly as reported by the collector.  Should indicate whether reported as range, season, month, etc.
      */
+    @Column(name = "VerbatimDate", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVerbatimDate() {
         return this.verbatimDate;
     }
@@ -185,6 +215,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * The date collecting event began
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "StartDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getStartDate() {
         return this.startDate;
     }
@@ -196,6 +228,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "StartDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getStartDatePrecision() {
         return this.startDatePrecision;
     }
@@ -207,6 +240,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "StartDateVerbatim", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getStartDateVerbatim() {
         return this.startDateVerbatim;
     }
@@ -218,6 +252,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * The date collecting event ended
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EndDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getEndDate() {
         return this.endDate;
     }
@@ -229,6 +265,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "EndDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getEndDatePrecision() {
         return this.endDatePrecision;
     }
@@ -240,6 +277,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "EndDateVerbatim", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getEndDateVerbatim() {
         return this.endDateVerbatim;
     }
@@ -251,6 +289,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Start time in military format
      */
+    @Column(name = "StartTime", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getStartTime() {
         return this.startTime;
     }
@@ -262,6 +301,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * End time in military format
      */
+    @Column(name = "EndTime", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getEndTime() {
         return this.endTime;
     }
@@ -273,6 +313,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collectors.
      */
+    @Column(name = "VerbatimLocality", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getVerbatimLocality() {
         return this.verbatimLocality;
     }
@@ -284,6 +325,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * The name of the group that this record is visible to.
      */
+    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
     }
@@ -295,6 +337,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -305,6 +348,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
+    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -316,6 +360,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -324,6 +369,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         this.visibilitySetBy = visibilitySetBy;
     }
     
+    @Transient
+    @Override
     public boolean isRestrictable()
     {
         return true;
@@ -332,6 +379,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
@@ -343,6 +392,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<Collectors> getCollectors() {
         return this.collectors;
     }
@@ -354,6 +405,9 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Locality where collection took place
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "LocalityID", unique = false, nullable = true, insertable = true, updatable = true)
     public Locality getLocality() {
         return this.locality;
     }
@@ -365,6 +419,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "StratigraphyID", unique = false, nullable = true, insertable = true, updatable = true)
     public Stratigraphy getStratigraphy() {
         return this.stratigraphy;
     }
@@ -376,6 +432,9 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @OneToMany(targetEntity=edu.ku.brc.specify.datamodel.CollectingEventAttr.class,
+            cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttributeIFace> getAttrs() {
         return this.attrs;
     }
@@ -384,6 +443,9 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         this.attrs = attrs;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CollectingTripID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingTrip getCollectingTrip()
     {
         return collectingTrip;
@@ -394,6 +456,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         this.collectingTrip = collectingTrip;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
 	{
 		return attachments;
@@ -471,6 +535,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 10;

@@ -28,6 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 
 /**
@@ -37,11 +49,14 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
  *
  */
 @SuppressWarnings("serial")
+@Entity(name="recordsetitem")
 public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
 
-    // Fields    
+    // Fields
 
-     protected Long recordId;
+    protected Long recordSetItemId;
+    protected RecordSet recordSet;
+    protected Long recordId;
 
 
     // Constructors
@@ -49,7 +64,7 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     /** default constructor */
      public RecordSetItem() 
      {
-         
+         //
      }
      
      public RecordSetItem(final Long recordId) 
@@ -66,15 +81,29 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     public void initialize()
     {
         recordId = null;
+        recordSet = null;
     }
     // End Initializer
 
     // Property accessors
 
+    @Id
+    @GeneratedValue
+    @Column(name = "RecordSetItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    protected Long getRecordSetItemId()
+    {
+        return recordSetItemId;
+    }
+
+    protected void setRecordSetItemId(Long recordSetItemId)
+    {
+        this.recordSetItemId = recordSetItemId;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#getRecordId()
      */
+    @Column(name = "RecordId", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getRecordId() {
         return this.recordId;
     }
@@ -89,6 +118,19 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     public int compareTo(RecordSetItemIFace obj)
     {
         return recordId.compareTo(obj.getRecordId());
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( {CascadeType.SAVE_UPDATE})
+    @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
+    protected RecordSet getRecordSet()
+    {
+        return recordSet;
+    }
+
+    protected void setRecordSet(RecordSet recordSet)
+    {
+        this.recordSet = recordSet;
     }
     
     // Add Methods

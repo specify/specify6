@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +55,8 @@ import java.util.Set;
  * Created Date: Nov 14, 2006
  *
  */
+@Entity
+@Table(name = "preptype")
 public class PrepType extends DataModelObjBase implements java.io.Serializable
 {
 
@@ -58,6 +73,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     /** default constructor */
     public PrepType()
     {
+        //
     }
 
     /** constructor with id */
@@ -67,6 +83,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         prepTypeId = null;
@@ -86,6 +103,9 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "PrepTypeID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getPrepTypeId()
     {
         return this.prepTypeId;
@@ -95,6 +115,8 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.prepTypeId;
@@ -103,6 +125,8 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return PrepType.class;
@@ -116,6 +140,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getName()
     {
         return this.name;
@@ -126,6 +151,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
         this.name = name;
     }
 
+    @Column(name = "IsLoanable", unique=false, nullable=false, insertable=true, updatable=true)
     public Boolean getIsLoanable()
     {
         return isLoanable;
@@ -139,6 +165,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "prepType")
     public Set<Preparation> getPreparations()
     {
         return this.preparations;
@@ -152,6 +179,8 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "prepType")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttributeDef> getAttributeDefs()
     {
         return this.attributeDefs;
@@ -198,6 +227,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 65;

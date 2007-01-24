@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -38,6 +52,8 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
 
  */
+@Entity
+@Table(name = "collectingeventattr")
 public class CollectingEventAttr extends DataModelObjBase implements AttributeIFace,java.io.Serializable {
 
     // Fields    
@@ -53,6 +69,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
 
     /** default constructor */
     public CollectingEventAttr() {
+        //
     }
     
     /** constructor with id */
@@ -64,6 +81,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         attrId = null;
@@ -81,6 +99,9 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getAttrId()
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AttrID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAttrId()
     {
         return this.attrId;
@@ -94,6 +115,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
         this.attrId = attrId;
     }
     
+    @Transient
     @Override
     public Long getId()
     {
@@ -103,6 +125,8 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return CollectingEventAttr.class;
@@ -127,6 +151,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getStrValue()
      */
+    @Column(name = "StrValue", unique = false, nullable = true, insertable = true, updatable = true)
     public String getStrValue()
     {
         //verifyType(AttributeIFace.FieldType.StringType);
@@ -146,6 +171,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getDblValue()
      */
+    @Column(name = "DoubleValue", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getDblValue()
     {
         //verifyType(AttributeIFace.FieldType.DoubleType);
@@ -164,6 +190,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getFloatValue()
      */
+    @Transient
     public Float getFloatValue()
     {
         //verifyType(AttributeIFace.FieldType.FloatType);
@@ -182,6 +209,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getIntValue()
      */
+    @Transient
     public Integer getIntValue()
     {
         //verifyType(AttributeIFace.FieldType.IntegerType);
@@ -200,6 +228,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getBoolValue()
      */
+    @Transient
     public Boolean getBoolValue()
     {
         //verifyType(AttributeIFace.FieldType.BooleanType);
@@ -219,6 +248,8 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectingEventID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
     }
@@ -230,6 +261,9 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AttributeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public AttributeDef getDefinition() {
         return this.definition;
     }
@@ -254,6 +288,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 25;

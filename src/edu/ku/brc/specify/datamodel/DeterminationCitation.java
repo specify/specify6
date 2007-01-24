@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 
@@ -36,6 +50,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "determinationcitation", uniqueConstraints = { @UniqueConstraint(columnNames = { "ReferenceWorkID", "DeterminationID" }) })
 public class DeterminationCitation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -50,6 +66,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
 
     /** default constructor */
     public DeterminationCitation() {
+        //
     }
     
     /** constructor with id */
@@ -61,6 +78,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         determinationCitationId = null;
@@ -78,6 +96,9 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "DeterminationCitationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getDeterminationCitationId() {
         return this.determinationCitationId;
     }
@@ -86,6 +107,8 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.determinationCitationId;
@@ -94,6 +117,8 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return DeterminationCitation.class;
@@ -106,6 +131,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -117,6 +143,9 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     /**
      *      * ID of the publication citing the determination
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
     }
@@ -128,6 +157,9 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     /**
      *      * Determination being cited
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "DeterminationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Determination getDetermination() {
         return this.determination;
     }
@@ -152,6 +184,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 38;

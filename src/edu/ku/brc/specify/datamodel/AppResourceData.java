@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 
 
 
@@ -35,6 +46,8 @@ package edu.ku.brc.specify.datamodel;
 /**
 
  */
+@Entity
+@Table(name = "appresourcedata")
 public class AppResourceData extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -49,6 +62,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
 
     /** default constructor */
     public AppResourceData() {
+        //
     }
     
     /** constructor with id */
@@ -57,6 +71,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     }
    
     
+    @Override
     public void initialize()
     {
         appResourceDataId = null;
@@ -69,6 +84,9 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AppResourceDataID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAppResourceDataId() {
         return this.appResourceDataId;
     }
@@ -77,6 +95,8 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.appResourceDataId;
@@ -85,6 +105,8 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return AppResourceData.class;
@@ -97,6 +119,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "data", unique = false, nullable = false, insertable = true, updatable = true, length = 1073741823)
     public java.sql.Blob getData() {
         return this.data;
     }
@@ -108,6 +131,8 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
     public AppResource getAppResource() {
         return this.AppResource;
     }
@@ -119,6 +144,8 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ViewSetObjID", unique = false, nullable = true, insertable = true, updatable = true)
     public ViewSetObj getViewSetObj() {
         return this.ViewSetObj;
     }
@@ -132,10 +159,9 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 84;
     }
-
-
 }

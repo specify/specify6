@@ -28,6 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+
+
 import java.util.Date;
 
 
@@ -36,6 +48,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "authors", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "ReferenceWorkID" }) })
 public class Authors extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -51,6 +65,7 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public Authors() {
+        //
     }
     
     /** constructor with id */
@@ -62,6 +77,7 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         authorsId = null;
@@ -80,6 +96,9 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AuthorsID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAuthorsId() {
         return this.authorsId;
     }
@@ -88,6 +107,8 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.authorsId;
@@ -96,6 +117,8 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Authors.class;
@@ -108,6 +131,7 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true)
     public Short getOrderNumber() {
         return this.orderNumber;
     }
@@ -119,6 +143,7 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -130,6 +155,8 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Reference record the Agent authored
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
     }
@@ -141,6 +168,8 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Agent record representing the Authors
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -165,6 +194,7 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 17;

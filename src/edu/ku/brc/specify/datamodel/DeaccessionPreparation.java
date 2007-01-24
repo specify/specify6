@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +53,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "deaccessionpreparation")
 public class DeaccessionPreparation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -45,15 +62,16 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      protected Long deaccessionPreparationId;
      protected Short quantity;
      protected String remarks;
-     protected CollectionObject collectionObject;
      protected Deaccession deaccession;
      protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
+     protected Preparation preparation;
 
 
     // Constructors
 
     /** default constructor */
     public DeaccessionPreparation() {
+        //
     }
     
     /** constructor with id */
@@ -65,6 +83,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         deaccessionPreparationId = null;
@@ -73,9 +92,9 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
         timestampModified = null;
         timestampCreated = new Date();
         lastEditedBy = null;
-        collectionObject = null;
         deaccession = null;
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
+        preparation = null;
     }
     // End Initializer
 
@@ -84,6 +103,9 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "DeaccessionPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getDeaccessionPreparationId() {
         return this.deaccessionPreparationId;
     }
@@ -92,6 +114,8 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.deaccessionPreparationId;
@@ -100,6 +124,8 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return DeaccessionPreparation.class;
@@ -112,6 +138,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     /**
      *      * Number of specimens deaccessioned (necessary for lots)
      */
+    @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantity() {
         return this.quantity;
     }
@@ -123,6 +150,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -132,20 +160,11 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     }
 
     /**
-     *      * The object being deaccessioned
-     */
-    public CollectionObject getCollectionObject() {
-        return this.collectionObject;
-    }
-    
-
-    public void setCollectionObject(CollectionObject collectionObject) {
-        this.collectionObject = collectionObject;
-    }
-
-    /**
      *      * The deaccession
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Deaccession getDeaccession() {
         return this.deaccession;
     }
@@ -157,6 +176,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "deaccessionPreparation")
     public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;
     }
@@ -165,9 +185,18 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
         this.loanReturnPhysicalObjects = loanReturnPhysicalObjects;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "PreparationID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Preparation getPreparation()
+    {
+        return this.preparation;
+    }
 
-
-
+    public void setPreparation(Preparation preparation)
+    {
+        this.preparation = preparation;
+    }
 
     // Add Methods
 
@@ -193,6 +222,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 36;

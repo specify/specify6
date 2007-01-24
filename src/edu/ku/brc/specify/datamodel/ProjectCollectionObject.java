@@ -28,6 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+
+
 import java.util.Date;
 
 
@@ -36,6 +48,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "projectcollectionobjects", uniqueConstraints = { @UniqueConstraint(columnNames = { "CollectionObjectID", "ProjectID" }) })
 public class ProjectCollectionObject extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -50,6 +64,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
 
     /** default constructor */
     public ProjectCollectionObject() {
+        //
     }
     
     /** constructor with id */
@@ -61,6 +76,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         projectCollectionObjectId = null;
@@ -78,6 +94,9 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ProjectCollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getProjectCollectionObjectId() {
         return this.projectCollectionObjectId;
     }
@@ -86,6 +105,8 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.projectCollectionObjectId;
@@ -94,6 +115,8 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return ProjectCollectionObject.class;
@@ -106,6 +129,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -117,6 +141,8 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
@@ -128,6 +154,8 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ProjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public Project getProject() {
         return this.project;
     }
@@ -152,6 +180,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 67;

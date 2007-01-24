@@ -28,10 +28,25 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "geologictimeperiodtreedef")
 public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
 	protected Long                               geologicTimePeriodTreeDefId;
@@ -57,7 +72,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	}
 
 	// Initializer
-	@Override
+    @Override
     public void initialize()
 	{
 		geologicTimePeriodTreeDefId = null;
@@ -76,6 +91,9 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	/**
 	 * 
 	 */
+    @Id
+    @GeneratedValue
+    @Column(name = "GeologicTimePeriodTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public Long getGeologicTimePeriodTreeDefId()
 	{
 		return this.geologicTimePeriodTreeDefId;
@@ -85,6 +103,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -94,6 +113,8 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return GeologicTimePeriodTreeDef.class;
@@ -107,6 +128,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	/**
 	 * 
 	 */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -120,6 +142,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	/**
 	 * 
 	 */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -130,6 +153,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 		this.remarks = remarks;
 	}
 
+    @Column(name = "FullNameDirection", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getFullNameDirection()
     {
         return fullNameDirection;
@@ -143,6 +167,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
     /**
 	 * 
 	 */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geologicTimePeriodTreeDef")
 	public Set<CollectionObjDef> getCollObjDefs()
 	{
 		return this.collObjDefs;
@@ -169,6 +194,8 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	/**
 	 * 
 	 */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<GeologicTimePeriod> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -182,6 +209,8 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	/**
 	 * 
 	 */
+    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "treeDef")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<GeologicTimePeriodTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
@@ -196,6 +225,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	// Methods added to implement TreeDefinitionIface
 	//
 
+    @Transient
 	public Long getTreeDefId()
 	{
 		return getGeologicTimePeriodTreeDefId();
@@ -231,6 +261,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	}
 
 	// methods to "complete" the implementation of TreeDefinitionIface
+    @Transient
 	public Class<GeologicTimePeriod> getNodeClass()
 	{
 		return GeologicTimePeriod.class;
@@ -336,6 +367,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 47;

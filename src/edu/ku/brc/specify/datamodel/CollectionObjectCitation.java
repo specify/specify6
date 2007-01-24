@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 
 
@@ -36,6 +47,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "collectionobjectcitation")
 public class CollectionObjectCitation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -50,6 +63,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
 
     /** default constructor */
     public CollectionObjectCitation() {
+        //
     }
     
     /** constructor with id */
@@ -61,6 +75,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         collectionObjectCitationId = null;
@@ -78,6 +93,9 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "CollectionObjectCitationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getCollectionObjectCitationId() {
         return this.collectionObjectCitationId;
     }
@@ -86,6 +104,8 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.collectionObjectCitationId;
@@ -94,6 +114,8 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return CollectionObjectCitation.class;
@@ -106,6 +128,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -117,6 +140,8 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     /**
      *      * The associated reference
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
     }
@@ -128,6 +153,8 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     /**
      *      * Biological Object cited
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
@@ -152,6 +179,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 29;

@@ -28,6 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +50,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "containeritem")
 public class ContainerItem extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -51,6 +65,7 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
 
     /** default constructor */
     public ContainerItem() {
+        //
     }
     
     /** constructor with id */
@@ -62,6 +77,7 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         containerItemId = null;
@@ -77,6 +93,9 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ContainerItemID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getContainerItemId() {
         return this.containerItemId;
     }
@@ -85,6 +104,8 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.containerItemId;
@@ -93,6 +114,8 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return ContainerItem.class;
@@ -105,6 +128,8 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ContainerID", unique = false, nullable = false, insertable = true, updatable = true)
     public Container getContainer() {
         return this.container;
     }
@@ -116,6 +141,7 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "containerItem")
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
@@ -152,6 +178,7 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 32;

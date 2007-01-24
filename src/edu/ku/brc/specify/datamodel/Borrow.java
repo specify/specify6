@@ -28,6 +28,24 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +57,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "borrow")
 public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -67,6 +87,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public Borrow() {
+        //
     }
     
     /** constructor with id */
@@ -78,6 +99,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         borrowId = null;
@@ -109,6 +131,9 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "BorrowID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getBorrowId() {
         return this.borrowId;
     }
@@ -117,6 +142,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Override
+    @Transient
     public Long getId()
     {
         return this.borrowId;
@@ -125,6 +152,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Borrow.class;
@@ -137,6 +166,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Lender's loan number
      */
+    @Column(name = "InvoiceNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getInvoiceNumber() {
         return this.invoiceNumber;
     }
@@ -148,6 +178,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date material was received
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ReceivedDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getReceivedDate() {
         return this.receivedDate;
     }
@@ -159,6 +191,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Original Due date for loan
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "OriginalDueDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getOriginalDueDate() {
         return this.originalDueDate;
     }
@@ -170,6 +204,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date loan was closed
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateClosed", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Calendar getDateClosed() {
         return this.dateClosed;
     }
@@ -181,6 +217,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -192,6 +229,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -203,6 +241,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -214,6 +253,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -225,6 +265,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -237,6 +278,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * False until all material has been returned
      */
+    @Column(name="IsClosed", unique=false, nullable=true, insertable=true, updatable=false)
     public Boolean getIsClosed() {
         return this.isClosed;
     }
@@ -248,6 +290,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -259,6 +302,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -270,6 +314,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "CurrentDueDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getCurrentDueDate() {
         return this.currentDueDate;
     }
@@ -291,6 +337,12 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name="borrow_shipment",
+            joinColumns = {@JoinColumn(name="BorrowID")},
+            inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -301,6 +353,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "borrow")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<BorrowAgents> getBorrowAgents() {
         return this.borrowAgents;
     }
@@ -312,6 +366,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "borrow")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<BorrowMaterial> getBorrowMaterials() {
         return this.borrowMaterials;
     }
@@ -383,6 +439,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 18;

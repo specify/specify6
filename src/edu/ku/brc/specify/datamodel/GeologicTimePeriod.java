@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,6 +55,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "geologictimeperiod")
 public class GeologicTimePeriod extends DataModelObjBase implements java.io.Serializable, Treeable<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>{
 
     /**
@@ -114,6 +131,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Id
+    @GeneratedValue
+    @Column(name = "GeologicTimePeriodID", unique = false, nullable = false, insertable = true, updatable = true)
 	public Long getGeologicTimePeriodId()
 	{
 		return this.geologicTimePeriodId;
@@ -123,6 +143,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -132,6 +153,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
     @Override
     public Class<?> getDataClass()
     {
@@ -146,6 +168,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -159,6 +182,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -172,6 +196,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * @return the fullName
 	 */
+    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
 	public String getFullName()
 	{
 		return fullName;
@@ -188,6 +213,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -201,6 +227,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -214,6 +241,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Column(name = "Standard", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getStandard()
 	{
 		return this.standard;
@@ -224,6 +252,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.standard = standard;
 	}
 
+    @Column(name = "End", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
 	public Float getEnd()
 	{
 		return end;
@@ -234,6 +263,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.end = end;
 	}
 
+    @Column(name = "EndUncertainty", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
 	public Float getEndUncertainty()
 	{
 		return endUncertainty;
@@ -244,6 +274,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.endUncertainty = endUncertainty;
 	}
 
+    @Column(name = "Start", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
 	public Float getStart()
 	{
 		return start;
@@ -254,6 +285,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.start = start;
 	}
 
+    @Column(name = "AgeStartUncertainty", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
 	public Float getStartUncertainty()
 	{
 		return startUncertainty;
@@ -267,6 +299,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -280,6 +313,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @Column(name = "TimestampVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -293,6 +327,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.LOCK })
+    @JoinColumn(name = "GeologicTimePeriodTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeologicTimePeriodTreeDef getDefinition()
 	{
 		return this.definition;
@@ -306,6 +343,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeologicTimePeriodTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -323,6 +363,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public GeologicTimePeriod getParent()
 	{
 		return this.parent;
@@ -336,6 +379,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<GeologicTimePeriod> getChildren()
 	{
 		return this.children;
@@ -346,6 +390,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.children = children;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geologicTimePeriod")
 	public Set<Stratigraphy> getStratigraphies()
 	{
 		return stratigraphies;
@@ -358,6 +403,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 
 	/* Code added in order to implement Treeable */
 
+    @Transient
 	public Long getTreeId()
 	{
 		return getGeologicTimePeriodId();
@@ -415,11 +461,13 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 
 	// methods to complete implementation of AbstractTreeable
 
+    @Transient
     public int getFullNameDirection()
     {
         return definition.getFullNameDirection();
     }
 
+    @Transient
     public String getFullNameSeparator()
     {
         return definitionItem.getFullNameSeparator();
@@ -549,6 +597,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * @param node the node to count descendants for
 	 * @return the number of proper descendants
 	 */
+    @Transient
 	public int getDescendantCount()
 	{
 		int totalDescendants = 0;
@@ -579,6 +628,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * 
 	 * @return all descendants of <code>node</code>
 	 */
+    @Transient
 	public List<GeologicTimePeriod> getAllDescendants()
 	{
 		Vector<GeologicTimePeriod> descendants = new Vector<GeologicTimePeriod>();
@@ -590,6 +640,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		return descendants;
 	}
 	
+    @Transient
 	public List<GeologicTimePeriod> getAllAncestors()
 	{
 		Vector<GeologicTimePeriod> ancestors = new Vector<GeologicTimePeriod>();
@@ -666,6 +717,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		return false;
 	}
 	
+    @Transient
 	public Comparator<? super GeologicTimePeriod> getComparator()
 	{
 		return new GeologicTimePeriodComparator();
@@ -675,6 +727,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 46;

@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 
 
@@ -36,6 +47,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "otheridentifier")
 public class OtherIdentifier extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -51,6 +64,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
 
     /** default constructor */
     public OtherIdentifier() {
+        //
     }
     
     /** constructor with id */
@@ -62,6 +76,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         otherIdentifierId = null;
@@ -79,6 +94,9 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "OtherIdentifierID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getOtherIdentifierId() {
         return this.otherIdentifierId;
     }
@@ -87,6 +105,8 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.otherIdentifierId;
@@ -95,6 +115,8 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return OtherIdentifier.class;
@@ -107,6 +129,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "Identifier", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getIdentifier() {
         return this.identifier;
     }
@@ -118,6 +141,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -129,6 +153,8 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     /**
      *      * ID of object identified by Identifier
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
@@ -153,6 +179,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 61;
@@ -161,6 +188,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     /**
      * @return the institution
      */
+    @Column(name = "Institution", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getInstitution()
     {
         return this.institution;

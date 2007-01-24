@@ -28,6 +28,24 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -45,6 +63,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
 
  */
+@Entity
+@Table(name = "loan")
 public class Loan extends DataModelObjBase implements java.io.Serializable {
 
     // options for the 'category' field
@@ -159,6 +179,9 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * PrimaryKey
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "LoanID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getLoanId() {
         return this.loanId;
     }
@@ -168,6 +191,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      * @returns ID Property.
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.loanId;
@@ -179,6 +203,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Loan.class;
@@ -186,6 +212,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Invoice number
      */
+    @Column(name = "LoanNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getLoanNumber() {
         return this.loanNumber;
     }
@@ -197,6 +224,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date the Loan was created.
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "LoanDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getLoanDate() {
         return this.loanDate;
     }
@@ -208,6 +237,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date the loan is due for return (Same as original Due date unless loan period has been extended)
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "CurrentDueDate", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Calendar getCurrentDueDate() {
         return this.currentDueDate;
     }
@@ -219,6 +250,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date the loan was originally due.
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "OriginalDueDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getOriginalDueDate() {
         return this.originalDueDate;
     }
@@ -230,6 +263,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date loan was closed.
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateClosed", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getDateClosed() {
         return this.dateClosed;
     }
@@ -241,6 +276,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Type of record: loan(0), Gift(1)
      */
+    @Column(name="IsGift", unique=false, nullable=true, insertable=true, updatable=false)
     public Boolean getIsGift() {
         return this.isGift;
     }
@@ -253,6 +289,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -264,6 +301,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -275,6 +313,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -286,6 +325,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -297,6 +337,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -308,6 +349,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * 'No' until all preparations in the loan have been returned/resolved.
      */
+    @Column(name="IsClosed", unique=false, nullable=true, insertable=true, updatable=false)
     public Boolean getIsClosed() {
         return this.isClosed;
     }
@@ -319,6 +361,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -330,6 +373,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -341,6 +385,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<LoanAgents> getLoanAgents() {
         return this.loanAgents;
     }
@@ -352,6 +398,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<LoanPhysicalObject> getLoanPhysicalObjects() {
         return this.loanPhysicalObjects;
     }
@@ -361,18 +409,14 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     }
 
     /**
-     *      * Link to Shipment table
-     */
-//    public Shipment getShipment() {
-//        return this.shipment;
-//    }
-//    
-//    public void setShipment(Shipment shipment) {
-//        this.shipment = shipment;
-//    }
-    /**
      * 
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name="loan_shipment",
+            joinColumns = {@JoinColumn(name="LoanID")},
+            inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -380,6 +424,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public void setShipments(Set<Shipment> shipments) {
         this.shipments = shipments;
     }
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -436,6 +482,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 52;
@@ -445,6 +492,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         return loanNumber != null ? loanNumber : super.getIdentityTitle();

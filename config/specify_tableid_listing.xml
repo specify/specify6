@@ -38,7 +38,6 @@
         <table name="edu.ku.brc.specify.datamodel.BorrowAgents" id="19"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" id="20"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" id="21"/>
-        <table name="edu.ku.brc.specify.datamodel.BorrowShipments" id="22"/>
         <table name="edu.ku.brc.specify.datamodel.CatalogSeries" id="23"/>
         <table name="edu.ku.brc.specify.datamodel.CollectingEvent" id="10">
             <display view="CollectingEvent"/>

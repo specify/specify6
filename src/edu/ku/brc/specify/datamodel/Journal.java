@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +51,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "journal")
 public class Journal extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -53,6 +68,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public Journal() {
+        //
     }
     
     /** constructor with id */
@@ -64,6 +80,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         journalId = null;
@@ -82,6 +99,9 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "JournalID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getJournalId() {
         return this.journalId;
     }
@@ -90,6 +110,8 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.journalId;
@@ -98,6 +120,8 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Journal.class;
@@ -110,6 +134,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Full name of the journal
      */
+    @Column(name = "JournalName", unique = false, nullable = true, insertable = true, updatable = true)
     public String getJournalName() {
         return this.journalName;
     }
@@ -121,6 +146,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "JournalAbbreviation", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getJournalAbbreviation() {
         return this.journalAbbreviation;
     }
@@ -132,6 +158,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -143,6 +170,8 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "journal")
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<ReferenceWork> getReferenceWorks() {
         return this.referenceWorks;
     }
@@ -179,6 +208,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 51;

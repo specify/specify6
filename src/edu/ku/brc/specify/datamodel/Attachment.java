@@ -15,6 +15,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -29,6 +46,8 @@ import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Orderable;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
+@Entity
+@Table(name = "attachments")
 public class Attachment extends DataModelObjBase implements Serializable, Orderable
 {
     private Long                    attachmentID;
@@ -90,6 +109,9 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         taxon = null;
     }
 
+    @Id
+    @GeneratedValue
+    @Column(name = "AttachmentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAttachmentID()
     {
         return this.attachmentID;
@@ -100,6 +122,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.attachmentID = attachmentID;
     }
     
+    @Transient
     @Override
     public Long getId()
     {
@@ -109,11 +132,14 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Attachment.class;
     }
 
+    @Column(name = "MimeType", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getMimeType()
     {
         return this.mimeType;
@@ -124,6 +150,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.mimeType = mimeType;
     }
 
+    @Column(name = "OrigFilename", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getOrigFilename()
     {
         return this.origFilename;
@@ -142,6 +169,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         }
     }
 
+    @Temporal(TemporalType.DATE)
+    @Column(name = "FileCreatedDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getFileCreatedDate()
     {
         return this.fileCreatedDate;
@@ -152,6 +181,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.fileCreatedDate = fileCreatedDate;
     }
 
+    @Column(name = "Ordinal", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getOrdinal()
     {
         return ordinal;
@@ -162,6 +192,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.ordinal = ordinal;
     }
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks()
     {
         return this.remarks;
@@ -172,6 +203,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.remarks = remarks;
     }
 
+    @Column(name = "AttachmentLocation", unique = false, nullable = true, insertable = true, updatable = true)
     public String getAttachmentLocation()
     {
         return this.attachmentLocation;
@@ -182,6 +214,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.attachmentLocation = attachmentLocation;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "attachment")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttachmentMetadata> getMetadata()
     {
         return this.metadata;
@@ -204,6 +238,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         meta.setAttachment(null);
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent()
     {
         return agent;
@@ -214,6 +250,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.agent = agent;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectingEventID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingEvent getCollectingEvent()
     {
         return collectingEvent;
@@ -224,6 +262,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.collectingEvent = collectingEvent;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionObject getCollectionObject()
     {
         return collectionObject;
@@ -234,6 +274,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.collectionObject = collectionObject;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LoanID", unique = false, nullable = true, insertable = true, updatable = true)
     public Loan getLoan()
     {
         return loan;
@@ -244,6 +286,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.loan = loan;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LocalityID", unique = false, nullable = true, insertable = true, updatable = true)
     public Locality getLocality()
     {
         return locality;
@@ -254,6 +298,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.locality = locality;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PermitID", unique = false, nullable = true, insertable = true, updatable = true)
     public Permit getPermit()
     {
         return permit;
@@ -264,6 +310,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.permit = permit;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PreparationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Preparation getPreparation()
     {
         return preparation;
@@ -274,6 +322,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.preparation = preparation;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "TaxonID", unique = false, nullable = true, insertable = true, updatable = true)
     public Taxon getTaxon()
     {
         return taxon;
@@ -286,6 +336,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
+    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() 
     {
         return this.visibility;
@@ -299,6 +350,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     /**
      * 
      */
+    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVisibilitySetBy() 
     {
         return this.visibilitySetBy;
@@ -322,6 +374,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()
      */
+    @Transient
     public int getOrderIndex()
     {
         if (ordinal != null) { return this.ordinal; }
@@ -340,6 +393,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 41;
@@ -349,6 +403,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         if (getOrigFilename() != null)
@@ -400,6 +455,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     /**
      * @return the accession
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
     public Accession getAccession()
     {
         return this.accession;
@@ -416,6 +473,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     /**
      * @return the repositoryAgreement
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "RepositoryAgreementID", unique = false, nullable = true, insertable = true, updatable = true)
     public RepositoryAgreement getRepositoryAgreement()
     {
         return this.repositoryAgreement;

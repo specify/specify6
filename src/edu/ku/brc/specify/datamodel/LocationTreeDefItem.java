@@ -28,11 +28,28 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "locationtreedefitem")
 public class LocationTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Location,LocationTreeDef,LocationTreeDefItem>
 {
 
@@ -62,7 +79,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.locationTreeDefItemId = locationTreeDefItemId;
 	}
 
-	@Override
+    @Override
     public void initialize()
 	{
 		locationTreeDefItemId = null;
@@ -80,6 +97,9 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		children = new HashSet<LocationTreeDefItem>();
 	}
 
+    @Id
+    @GeneratedValue
+    @Column(name = "LocationTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
 	public Long getLocationTreeDefItemId()
 	{
 		return this.locationTreeDefItemId;
@@ -89,6 +109,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
     @Override
     public Long getId()
     {
@@ -98,6 +119,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
     @Override
     public Class<?> getDataClass()
     {
@@ -109,6 +131,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.locationTreeDefItemId = locationTreeDefItemId;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -119,6 +142,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.name = name;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -129,6 +153,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.remarks = remarks;
 	}
 
+    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -139,6 +164,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.rankId = rankId;
 	}
 
+    @Column(name = "IsEnforced", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsEnforced()
 	{
 		return this.isEnforced;
@@ -149,6 +175,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.isEnforced = isEnforced;
 	}
 
+    @Column(name = "IsInFullName", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsInFullName()
 	{
 		return isInFullName;
@@ -159,6 +186,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.isInFullName = isInFullName;
 	}
 
+    @Column(name = "TextAfter", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getTextAfter()
     {
         return textAfter;
@@ -169,6 +197,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
         this.textAfter = textAfter;
     }
 
+    @Column(name = "TextBefore", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getTextBefore()
     {
         return textBefore;
@@ -179,6 +208,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
         this.textBefore = textBefore;
     }
 
+    @Column(name = "FullNameSeparator", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getFullNameSeparator()
     {
         return fullNameSeparator;
@@ -189,6 +219,9 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
         this.fullNameSeparator = fullNameSeparator;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public LocationTreeDef getTreeDef()
 	{
 		return this.treeDef;
@@ -199,6 +232,9 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.treeDef = treeDef;
 	}
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public LocationTreeDefItem getParent()
 	{
 		return this.parent;
@@ -209,6 +245,8 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.parent = parent;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<Location> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -219,6 +257,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.treeEntries = treeEntries;
 	}
 
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
 	public Set<LocationTreeDefItem> getChildren()
 	{
 		return this.children;
@@ -229,6 +268,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.children = children;
 	}
 
+    @Transient
 	public Long getTreeDefItemId()
 	{
 		return getLocationTreeDefItemId();
@@ -255,6 +295,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
         }
 	}
 	
+    @Transient
 	public LocationTreeDefItem getChild()
 	{
 		if(children.isEmpty())
@@ -295,6 +336,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 60;

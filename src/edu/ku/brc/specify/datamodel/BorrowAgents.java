@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 
@@ -36,6 +50,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "borrowagents", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "BorrowID" }) })
 public class BorrowAgents extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -51,6 +67,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
 
     /** default constructor */
     public BorrowAgents() {
+        //
     }
     
     /** constructor with id */
@@ -62,6 +79,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         borrowAgentsId = null;
@@ -80,6 +98,9 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "BorrowAgentsID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getBorrowAgentsId() {
         return this.borrowAgentsId;
     }
@@ -88,6 +109,8 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.borrowAgentsId;
@@ -96,6 +119,8 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return BorrowAgents.class;
@@ -108,6 +133,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     /**
      *      * Role played by agent in borrow
      */
+    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
     public String getRole() {
         return this.role;
     }
@@ -119,6 +145,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -131,6 +158,9 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     /**
      *      * Address/Organization from which agent participated in the borrow
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -142,6 +172,8 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     /**
      *      * ID of borrow in which Agent played role
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "BorrowID", unique = false, nullable = false, insertable = true, updatable = true)
     public Borrow getBorrow() {
         return this.borrow;
     }
@@ -166,6 +198,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 19;

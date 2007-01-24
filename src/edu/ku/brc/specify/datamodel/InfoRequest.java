@@ -28,6 +28,22 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -43,6 +59,8 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 /**
 
  */
+@Entity
+@Table(name = "inforequest")
 public class InfoRequest extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -56,7 +74,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      protected Calendar requestDate;
      protected Calendar replyDate;
      protected String   remarks;
-     protected RecordSetIFace recordSet;
+     protected RecordSet recordSet;
      protected Agent    agent;
 
 
@@ -64,6 +82,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
 
     /** default constructor */
     public InfoRequest() {
+        //
     }
     
     /** constructor with id */
@@ -72,6 +91,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         infoRequestID = null;
@@ -118,6 +138,9 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "InfoRequestID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getInfoRequestID() {
         return this.infoRequestID;
     }
@@ -126,6 +149,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
         this.infoRequestID = infoRequestID;
     }
     
+    @Transient
     @Override
     public Long getId()
     {
@@ -135,6 +159,8 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return InfoRequest.class;
@@ -143,6 +169,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Firstname", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getFirstName() {
         return this.firstName;
     }
@@ -154,6 +181,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Lastname", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLastName() {
         return this.lastName;
     }
@@ -165,6 +193,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Institution", unique = false, nullable = true, insertable = true, updatable = true, length = 127)
     public String getInstitution() {
         return this.institution;
     }
@@ -176,6 +205,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Email", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getEmail() {
         return this.email;
     }
@@ -187,6 +217,8 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "RequestDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getRequestDate() {
         return this.requestDate;
     }
@@ -198,6 +230,8 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ReplyDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getReplyDate() {
         return this.replyDate;
     }
@@ -209,6 +243,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -220,14 +255,23 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    public RecordSetIFace getRecordSet() {
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
+    public RecordSet getRecordSet() {
         return this.recordSet;
     }
     
-    public void setRecordSet(RecordSetIFace recordSet) {
+    public void setRecordSet(RecordSet recordSet) {
         this.recordSet = recordSet;
     }
+    
+    public void setRecordSet(RecordSetIFace recordSet)
+    {
+        this.recordSet = (RecordSet)recordSet;
+    }
 
+    @Column(name = "Number", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getNumber()
     {
         return number;
@@ -241,6 +285,9 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -261,6 +308,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
     @Override
+    @Transient
     public String getIdentityTitle()
     {
         return number != null ? number : super.getIdentityTitle();
@@ -270,6 +318,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 50;

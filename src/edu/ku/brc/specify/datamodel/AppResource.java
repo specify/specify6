@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.File;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -51,6 +68,8 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
 
  */
+@Entity
+@Table(name = "appresource")
 public class AppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {
     private static final Logger  log       = Logger.getLogger(AppResource.class);
@@ -80,6 +99,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /** default constructor */
     public AppResource() 
     {
+        //
     }
     
     /** constructor with id */
@@ -120,6 +140,9 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAppResourceId() {
         return this.appResourceId;
     }
@@ -128,6 +151,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.appResourceId;
@@ -136,6 +161,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return AppResource.class;
@@ -148,6 +175,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getLevel()
      */
+    @Column(name = "Level", unique = false, nullable = false, insertable = true, updatable = true)
     public Short getLevel() {
         return this.level;
     }
@@ -162,6 +190,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getName()
      */
+    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName() {
         return this.name;
     }
@@ -176,6 +205,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getDescription()
      */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true)
     public String getDescription() {
         return this.description;
     }
@@ -190,6 +220,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getMimeType()
      */
+    @Transient
     public String getMimeType() {
         return this.mimeType;
     }
@@ -204,6 +235,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getMetaData()
      */
+    @Column(name = "MetaData", unique = false, nullable = true, insertable = true, updatable = true)
     public String getMetaData()
     {
         return metaData;
@@ -234,6 +266,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "OwnerPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getOwnerPermissionLevel() {
         return this.ownerPermissionLevel;
     }
@@ -245,6 +278,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getMetaDataMap()
      */
+    @Transient
     public Map<String, String> getMetaDataMap()
     {
         initMetaData();
@@ -255,6 +289,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "GroupPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getGroupPermissionLevel() {
         return this.groupPermissionLevel;
     }
@@ -266,6 +301,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "AllPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getAllPermissionLevel() {
         return this.allPermissionLevel;
     }
@@ -304,6 +340,9 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getAppResourceDefaults()
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "appresdef_appres", joinColumns = { @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<AppResourceDefault> getAppResourceDefaults() {
         return this.appResourceDefaults;
     }
@@ -317,24 +356,22 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
     }
     /**
      * 
      */
-    public SpecifyUser getOwner() {
-        return this.specifyUser;
-    }
     public void setSpecifyUser(SpecifyUser owner) {
         this.specifyUser = owner;
     }
-    public void setOwner(SpecifyUser owner) {
-        this.specifyUser = owner;
-    }  
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "UserGroupID", unique = false, nullable = true, insertable = true, updatable = true)
     public UserGroup getGroup() {
         return this.group;
     }
@@ -342,6 +379,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     public void setGroup(UserGroup group) {
         this.group = group;
     }
+    @Transient
     public String getFileName()
     {
         return fileName;
@@ -355,6 +393,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResource")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AppResourceData> getAppResourceDatas() {
         return appResourceDatas;
     }
@@ -377,6 +417,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         {
             AppResourceData ard;
             if (appResourceDatas.size() == 0)
+        //
             {
                 ard = new AppResourceData();
                 ard.initialize();
@@ -401,6 +442,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getDataAsString()
      */
+    @Transient
     public String getDataAsString()
     {
         getAppResourceDatas(); // Must call this before accessing it as a local data member
@@ -410,6 +452,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
             AppResourceData ard = null;
             Blob blobData = null;
             if (appResourceDatas.size() > 0)
+        //
             {
                 ard = appResourceDatas.iterator().next();
                 if (ard != null)
@@ -448,6 +491,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 83;

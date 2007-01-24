@@ -28,10 +28,25 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "locationtreedef")
 public class LocationTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
 {
 	protected Long				   locationTreeDefId;
@@ -69,6 +84,9 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	/**
 	 * 
 	 */
+    @Id
+    @GeneratedValue
+    @Column(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public Long getLocationTreeDefId()
 	{
 		return this.locationTreeDefId;
@@ -79,6 +97,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
      * @returns ID Property.
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.locationTreeDefId;
@@ -87,6 +106,8 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return LocationTreeDef.class;
@@ -97,6 +118,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.locationTreeDefId = locationTreeDefId;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -107,6 +129,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.name = name;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -117,6 +140,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.remarks = remarks;
 	}
 
+    @Column(name = "FullNameDirection", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getFullNameDirection()
     {
         return fullNameDirection;
@@ -127,6 +151,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
         this.fullNameDirection = fullNameDirection;
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locationTreeDef")
     public Set<CollectionObjDef> getCollObjDefs()
 	{
 		return this.collObjDefs;
@@ -149,6 +174,8 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
         cod.setLocationTreeDef(null);
     }
 
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<Location> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -159,6 +186,8 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.treeEntries = treeEntries;
 	}
 
+    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "treeDef")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<LocationTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
@@ -169,6 +198,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		this.treeDefItems = treeDefItems;
 	}
 
+    @Transient
 	public Long getTreeDefId()
 	{
 		return getLocationTreeDefId();
@@ -203,6 +233,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		item.setTreeDef(null);
 	}
 
+    @Transient
 	public Class<Location> getNodeClass()
 	{
 		return Location.class;
@@ -308,6 +339,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 59;

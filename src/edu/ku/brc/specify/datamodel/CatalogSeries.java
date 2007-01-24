@@ -28,6 +28,22 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -37,6 +53,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "catalogseries")
 public class CatalogSeries extends DataModelObjBase implements java.io.Serializable, Comparable<CatalogSeries>
 {
     protected static List<CatalogSeries> currentCatalogSeries = new ArrayList<CatalogSeries>();
@@ -57,6 +75,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
 
     /** default constructor */
     public CatalogSeries() {
+        //
     }
 
     /** constructor with id */
@@ -83,6 +102,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         catalogSeriesId = null;
@@ -104,6 +124,9 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getCatalogSeriesId() {
         return this.catalogSeriesId;
     }
@@ -112,6 +135,8 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.catalogSeriesId;
@@ -120,6 +145,8 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return CatalogSeries.class;
@@ -143,6 +170,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Textual name for Catalog series. E.g. Main specimen collection
      */
+    @Column(name = "SeriesName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getSeriesName() {
         return this.seriesName;
     }
@@ -154,6 +182,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Text Displayed with Catalog numbers. E.g. 'KU'
      */
+    @Column(name = "CatalogSeriesPrefix", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getCatalogSeriesPrefix() {
         return this.catalogSeriesPrefix;
     }
@@ -165,6 +194,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /**
      *
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -177,6 +207,9 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /**
      *
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "catseries_colobjdef", joinColumns = { @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<CollectionObjDef> getCollectionObjDefItems() {
         return this.collectionObjDefItems;
     }
@@ -196,6 +229,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
 //        this.tissue = tissue;
 //    }
     
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "catalogSeries")
     public Set<AppResourceDefault> getAppResourceDefaults()
     {
         return appResourceDefaults;
@@ -206,6 +240,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
         this.appResourceDefaults = appResourceDefaults;
     }
 
+    @Override
     public String toString()
     {
         return seriesName;
@@ -241,6 +276,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 23;

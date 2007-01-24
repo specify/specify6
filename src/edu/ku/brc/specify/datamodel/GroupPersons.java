@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 
@@ -36,6 +50,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "grouppersons", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) })
 public class GroupPersons extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -51,6 +67,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
 
     /** default constructor */
     public GroupPersons() {
+        //
     }
     
     /** constructor with id */
@@ -62,6 +79,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         groupPersonsId = null;
@@ -80,6 +98,9 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "GroupPersonsID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getGroupPersonsId() {
         return this.groupPersonsId;
     }
@@ -88,6 +109,8 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.groupPersonsId;
@@ -96,6 +119,8 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return GroupPersons.class;
@@ -108,6 +133,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     /**
      * 
      */
+    @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true)
     public Short getOrderNumber() {
         return this.orderNumber;
     }
@@ -119,6 +145,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -130,6 +157,8 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     /**
      *      * AgentID of group
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "GroupID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getGroup() {
         return this.group;
     }
@@ -141,6 +170,9 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     /**
      *      * AgentID of member (member must be of type Person)
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "MemberID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getMember() {
         return this.member;
     }
@@ -165,6 +197,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 49;

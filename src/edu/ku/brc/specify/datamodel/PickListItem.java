@@ -28,6 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -41,14 +54,15 @@ import edu.ku.brc.ui.db.PickListItemIFace;
  *
  */
 @SuppressWarnings("serial")
+@Entity(name="picklistitem")
 public class PickListItem implements PickListItemIFace, java.io.Serializable
 {
-
     // Fields
-
+    protected Long pickListItemId;
     private String title;
     private String value;
     private Date   timestampCreated;
+    protected PickList pickList;
     
     // Non-Persisted Value as an Object
     private Object valueObject;
@@ -60,8 +74,6 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     {
         // do nothing
     }
-
-    // Property accessors
 
     public PickListItem(final String title, final String value, final Date timestampCreated)
     {
@@ -80,9 +92,23 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         this.timestampCreated = timestampCreated;
     }
 
+    @Id
+    @GeneratedValue
+    @Column(name = "PickListItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    protected Long getPickListItemId()
+    {
+        return pickListItemId;
+    }
+
+    protected void setPickListItemId(Long pickListItemId)
+    {
+        this.pickListItemId = pickListItemId;
+    }
+
     /**
      * 
      */
+    @Column(name = "title", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getTitle()
     {
         return this.title;
@@ -93,9 +119,23 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         this.title = title;
     }
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "PickListID", unique = false, nullable = false, insertable = true, updatable = true)
+    protected PickList getPickList()
+    {
+        return pickList;
+    }
+
+    protected void setPickList(PickList pickList)
+    {
+        this.pickList = pickList;
+    }
+
     /**
      * 
      */
+    @Column(name = "value", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getValue()
     {
         return this.value == null ? title : value;
@@ -106,7 +146,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         this.value = value;
     }
     
-
+    @Transient
     public Object getValueObject()
     {
         return valueObject;
@@ -129,6 +169,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /**
      * 
      */
+    @Column(name = "TimestampCreated", unique = false, nullable = false, insertable = true, updatable = true)
     public Date getTimestampCreated()
     {
         return this.timestampCreated;
@@ -147,7 +188,6 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         if (title.equals(obj.getTitle()))
         {
             return 0;
-
         }
         // else
         return title.compareTo(obj.getTitle());

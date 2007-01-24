@@ -1424,7 +1424,6 @@ public class ObjCreatorHelper
         deaccessionpreparation.setTimestampModified(new Date());
         deaccessionpreparation.setQuantity(quantity);
         deaccessionpreparation.setDeaccession(deaccession);
-        deaccessionpreparation.setCollectionObject(collectionObject);
         if (session != null)
         {
           session.saveOrUpdate(deaccessionpreparation);
@@ -2203,7 +2202,7 @@ public class ObjCreatorHelper
     	wbdi.setColumnNumber(columnNumber);
     	//wbdi.setRowOfData(rowData);
     	wbdi.setCellData(cellData);
-    	wbdi.setOwner(workbench);
+    	wbdi.setWorkbench(workbench);
         
         saveOrUpdate(wbdi);
         

@@ -28,6 +28,22 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.io.File;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -51,6 +67,8 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
 
  */
+@Entity
+@Table(name = "viewsetobj")
 public class ViewSetObj extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {
 
@@ -75,6 +93,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
 
     /** default constructor */
     public ViewSetObj() {
+        //
     }
     
     /** constructor with id */
@@ -84,6 +103,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
    
     
     // Initializer
+    @Override
     public void initialize()
     {
         viewSetObjId = null;
@@ -108,6 +128,9 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ViewSetObjID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getViewSetObjId() {
         return this.viewSetObjId;
     }
@@ -116,6 +139,8 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.viewSetObjId;
@@ -124,6 +149,8 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return ViewSetObj.class;
@@ -136,6 +163,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Column(name = "Level", unique = false, nullable = false, insertable = true, updatable = true)
     public Short getLevel() {
         return this.level;
     }
@@ -147,6 +175,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName() {
         return this.name;
     }
@@ -158,6 +187,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true)
     public String getDescription() {
         return this.description;
     }
@@ -169,6 +199,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getMimeType()
      */
+    @Transient
     public String getMimeType() {
         return "text/xml";
     }
@@ -183,6 +214,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getMetaData()
      */
+    @Column(name = "MetaData", unique = false, nullable = true, insertable = true, updatable = true)
     public String getMetaData()
     {
         return metaData;
@@ -214,6 +246,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getMetaDataMap()
      */
+    @Transient
     public Map<String, String> getMetaDataMap()
     {
         initMetaData();
@@ -250,6 +283,9 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "appresdef_viewsetobj", joinColumns = { @JoinColumn(name = "ViewSetObjID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<AppResourceDefault> getAppResourceDefaults() {
         return this.appResourceDefaults;
     }
@@ -258,6 +294,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
         this.appResourceDefaults = appResourceDefaults;
     }
 
+    @Transient
     public String getFileName()
     {
         return fileName;
@@ -271,6 +308,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "viewSetObj")
     public Set<AppResourceData> getAppResourceDatas() {
         return appResourceDatas;
     }
@@ -317,6 +355,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getDataAsString()
      */
+    @Transient
     public String getDataAsString()
     {
         log.debug("********* "+getFileName()+" size:"+appResourceDatas.size());
@@ -372,6 +411,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 86;

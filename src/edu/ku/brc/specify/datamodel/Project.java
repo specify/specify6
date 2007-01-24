@@ -28,6 +28,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +56,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "project")
 public class Project extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -64,6 +83,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
 
     /** default constructor */
     public Project() {
+        //
     }
     
     /** constructor with id */
@@ -75,6 +95,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         projectId = null;
@@ -103,6 +124,9 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ProjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getProjectId() {
         return this.projectId;
     }
@@ -111,6 +135,8 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.projectId;
@@ -119,6 +145,8 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return Project.class;
@@ -131,6 +159,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Name of the project
      */
+    @Column(name = "ProjectName", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getProjectName() {
         return this.projectName;
     }
@@ -142,6 +171,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Description of project
      */
+    @Column(name = "ProjectDescription", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getProjectDescription() {
         return this.projectDescription;
     }
@@ -153,6 +183,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * URL for project
      */
+    @Column(name = "URL", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
     public String getUrl() {
         return this.url;
     }
@@ -164,6 +195,8 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date project began
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "StartDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getStartDate() {
         return this.startDate;
     }
@@ -175,6 +208,8 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Date project ended
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EndDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getEndDate() {
         return this.endDate;
     }
@@ -186,6 +221,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -197,6 +233,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -208,6 +245,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -219,6 +257,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -230,6 +269,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -241,6 +281,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -252,6 +293,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -263,6 +305,9 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * Agent record for project
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "ProjectAgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
     }
@@ -274,6 +319,8 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "project")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<ProjectCollectionObject> getProjectCollectionObjects() {
         return this.projectCollectionObjects;
     }
@@ -310,6 +357,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 66;

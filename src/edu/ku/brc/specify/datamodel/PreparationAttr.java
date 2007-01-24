@@ -28,6 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+
 import java.util.Date;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -35,6 +46,8 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 /**
  * 
  */
+@Entity
+@Table(name = "preparationattr")
 public class PreparationAttr extends DataModelObjBase implements AttributeIFace, java.io.Serializable
 {
 
@@ -51,6 +64,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /** default constructor */
     public PreparationAttr()
     {
+        //
     }
 
     /** constructor with id */
@@ -60,6 +74,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     }
 
     // Initializer
+    @Override
     public void initialize()
     {
         attrId = null;
@@ -78,6 +93,9 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getAttrId()
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AttrID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAttrId()
     {
         return this.attrId;
@@ -91,6 +109,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
         this.attrId = attrId;
     }
 
+    @Transient
     @Override
     public Long getId()
     {
@@ -100,6 +119,8 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return PreparationAttr.class;
@@ -116,6 +137,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
             throw new RuntimeException("Attribute being accessed without a definition.");
         }
         if (definition.getDataType() != type.getType())
+        //
         {           
             throw new RuntimeException("Attribute being accessed as ["+AttributeIFace.FieldType.getString(type.getType())+"] when it is of type["+AttributeIFace.FieldType.getString(definition.getDataType())+"]");
         }
@@ -124,6 +146,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getStrValue()
      */
+    @Column(name = "StrValue", unique = false, nullable = true, insertable = true, updatable = true)
     public String getStrValue()
     {
         //verifyType(AttributeIFace.FieldType.StringType);
@@ -143,6 +166,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getDblValue()
      */
+    @Column(name = "DoubleValue", unique = false, nullable = true, insertable = true, updatable = true)
     public Double getDblValue()
     {
         //verifyType(AttributeIFace.FieldType.DoubleType);
@@ -161,6 +185,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getFloatValue()
      */
+    @Transient
     public Float getFloatValue()
     {
         //verifyType(AttributeIFace.FieldType.FloatType);
@@ -179,6 +204,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getIntValue()
      */
+    @Transient
     public Integer getIntValue()
     {
         //verifyType(AttributeIFace.FieldType.IntegerType);
@@ -197,6 +223,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#getBoolValue()
      */
+    @Transient
     public Boolean getBoolValue()
     {
         //verifyType(AttributeIFace.FieldType.BooleanType);
@@ -215,6 +242,8 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AttributeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public AttributeDef getDefinition()
     {
         return this.definition;
@@ -228,6 +257,8 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PreparationId", unique = false, nullable = false, insertable = true, updatable = true)
     public Preparation getPreparation()
     {
         return this.preparation;
@@ -250,6 +281,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 64;

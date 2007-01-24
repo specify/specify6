@@ -27,6 +27,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +50,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
  * 
  */
+@Entity
+@Table(name = "accessionauthorizations", uniqueConstraints = { @UniqueConstraint(columnNames = { "PermitID", "AccessionID" }), @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
 public class AccessionAuthorizations extends DataModelObjBase implements java.io.Serializable,
         Comparable<AccessionAuthorizations>
 {
@@ -83,6 +99,9 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "AccessionAuthorizationsID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getAccessionAuthorizationsId()
     {
         return this.accessionAuthorizationsId;
@@ -94,6 +113,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
      * @returns ID Property.
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.accessionAuthorizationsId;
@@ -102,6 +122,8 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return AccessionAuthorizations.class;
@@ -115,6 +137,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks()
     {
         return this.remarks;
@@ -128,6 +151,9 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /**
      * * Permit authorizing accession
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "PermitID", unique = false, nullable = false, insertable = true, updatable = true)
     public Permit getPermit()
     {
         return this.permit;
@@ -141,6 +167,8 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /**
      * * Accession authorized by permit
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
     public Accession getAccession()
     {
         return this.accession;
@@ -154,6 +182,8 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     /**
      * 
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "RepositoryAgreementID", unique = false, nullable = true, insertable = true, updatable = true)
     public RepositoryAgreement getRepositoryAgreement()
     {
         return this.repositoryAgreement;
@@ -282,6 +312,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 13;

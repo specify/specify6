@@ -28,6 +28,24 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +57,8 @@ import java.util.Set;
 /**
 
  */
+@Entity
+@Table(name = "exchangeout")
 public class ExchangeOut extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -63,6 +83,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
 
     /** default constructor */
     public ExchangeOut() {
+        //
     }
     
     /** constructor with id */
@@ -74,6 +95,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         exchangeOutId = null;
@@ -101,6 +123,9 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Primary key
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ExchangeOutID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getExchangeOutId() {
         return this.exchangeOutId;
     }
@@ -109,6 +134,8 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.exchangeOutId;
@@ -117,6 +144,8 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return ExchangeOut.class;
@@ -129,6 +158,8 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Date exchange was sent
      */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ExchangeDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getExchangeDate() {
         return this.exchangeDate;
     }
@@ -140,6 +171,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Number of items sent
      */
+    @Column(name = "QuantityExchanged", unique = false, nullable = false, insertable = true, updatable = true)
     public Short getQuantityExchanged() {
         return this.quantityExchanged;
     }
@@ -151,6 +183,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "DescriptionOfMaterial", unique = false, nullable = true, insertable = true, updatable = true, length = 120)
     public String getDescriptionOfMaterial() {
         return this.descriptionOfMaterial;
     }
@@ -162,6 +195,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -173,6 +207,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -184,6 +219,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -195,6 +231,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber1() {
         return this.number1;
     }
@@ -206,6 +243,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
     public Float getNumber2() {
         return this.number2;
     }
@@ -217,6 +255,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -228,6 +267,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * User definable
      */
+    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
@@ -239,6 +279,9 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Agent ID of organization material was sent to
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "SentToOrganizationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentSentTo() {
         return this.agentSentTo;
     }
@@ -250,6 +293,9 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Agent ID of person who recorded  the exchange
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CatalogedByID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentCatalogedBy() {
         return this.agentCatalogedBy;
     }
@@ -261,6 +307,12 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Shipment information for the exchange
      */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name="exchangeout_shipment",
+            joinColumns = {@JoinColumn(name="ExchangeOutID")},
+            inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
+    @Cascade( { CascadeType.SAVE_UPDATE })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -285,6 +337,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 40;

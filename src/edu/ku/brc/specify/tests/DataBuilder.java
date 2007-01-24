@@ -1460,7 +1460,6 @@ public class DataBuilder
         deaccessionpreparation.setTimestampModified(new Date());
         deaccessionpreparation.setQuantity(quantity);
         deaccessionpreparation.setDeaccession(deaccession);
-        deaccessionpreparation.setCollectionObject(collectionObject);
         persist(deaccessionpreparation);
         return deaccessionpreparation;
     }
@@ -2081,7 +2080,7 @@ public class DataBuilder
         wbdi.setColumnNumber(columnNumber);
         //wbdi.setRowOfData(rowData);
         wbdi.setCellData(cellData);
-        wbdi.setOwner(workbench);
+        wbdi.setWorkbench(workbench);
 
         persist(wbdi);
 

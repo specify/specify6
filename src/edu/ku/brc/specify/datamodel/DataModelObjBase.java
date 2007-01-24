@@ -25,8 +25,13 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
+@MappedSuperclass
 public abstract class DataModelObjBase implements FormDataObjIFace
 {
     protected PropertyChangeSupport changes;
@@ -45,21 +50,25 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getId()
      */
+    @Transient
     public abstract Long getId();
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getIdentityTitle()
      */
+    @Transient
     public String getIdentityTitle()
     {
         Long id = getId();
         
         return getClass().getSimpleName() + ": " + id;
+        //
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampCreated()
      */
+    @Column(name = "TimestampCreated", unique = false, nullable = false, insertable = true, updatable = false, length = 23)
     public Date getTimestampCreated()
     {
         return this.timestampCreated;
@@ -76,6 +85,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampModified()
      */
+    @Column(name = "TimestampModified", unique = false, nullable = false, insertable = true, updatable = true)
     public Date getTimestampModified()
     {
         return this.timestampModified != null ? this.timestampModified : timestampCreated;
@@ -92,6 +102,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getLastEditedBy()
      */
+    @Column(name = "LastEditedBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getLastEditedBy()
     {
         return this.lastEditedBy;
@@ -108,6 +119,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#isRestrictable()
      */
+    @Transient
     public boolean isRestrictable()
     {
         return false;
@@ -160,11 +172,13 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
+    @Transient
     public abstract Integer getTableId();
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
     public abstract Class<?> getDataClass();
 
     //---------------------------------------------------------------------------

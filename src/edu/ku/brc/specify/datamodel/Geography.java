@@ -28,6 +28,21 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,6 +55,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")
+@Entity
+@Table(name = "geography")
 public class Geography extends DataModelObjBase implements java.io.Serializable, Treeable<Geography,GeographyTreeDef,GeographyTreeDefItem>{
 
     /**
@@ -85,7 +102,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	}
 
 	// Initializer
-	@Override
+    @Override
     public void initialize()
 	{
 		geographyId = null;
@@ -120,6 +137,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Id
+    @GeneratedValue
+    @Column(name = "GeographyID", unique = false, nullable = false, insertable = true, updatable = true)
 	public Long getGeographyId()
 	{
 		return this.geographyId;
@@ -130,6 +150,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      * @returns ID Property.
      */
     @Override
+    @Transient
     public Long getId()
     {
         return this.geographyId;
@@ -139,6 +160,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
     @Override
+    @Transient
     public Class<?> getDataClass()
     {
         return Geography.class;
@@ -152,6 +174,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
 	public String getName()
 	{
 		return this.name;
@@ -162,6 +185,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.name = name;
 	}
 
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
 	public String getRemarks()
 	{
 		return remarks;
@@ -175,6 +199,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "CommonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
 	public String getCommonName()
 	{
 		return this.commonName;
@@ -188,6 +213,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 * @return the fullName
 	 */
+    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
 	public String getFullName()
 	{
 		return fullName;
@@ -204,6 +230,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "GeographyCode", unique = false, nullable = true, insertable = true, updatable = true, length = 8)
 	public String getGeographyCode()
 	{
 		return this.geographyCode;
@@ -217,6 +244,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "RankID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -230,6 +258,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -243,6 +272,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -256,6 +286,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "Abbrev", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
 	public String getAbbrev()
 	{
 		return this.abbrev;
@@ -269,6 +300,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
 	public String getText1()
 	{
 		return this.text1;
@@ -282,6 +314,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
 	public String getText2()
 	{
 		return this.text2;
@@ -295,6 +328,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getNumber1()
 	{
 		return this.number1;
@@ -308,6 +342,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getNumber2()
 	{
 		return this.number2;
@@ -321,6 +356,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "TimestampVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -334,6 +370,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @Column(name = "IsCurrent", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsCurrent()
 	{
 		return this.isCurrent;
@@ -347,6 +384,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geography")
 	public Set<Locality> getLocalities()
 	{
 		return this.localities;
@@ -360,6 +398,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.LOCK })
+    @JoinColumn(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeographyTreeDef getDefinition()
 	{
 		return this.definition;
@@ -373,6 +414,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "GeographyTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeographyTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -390,6 +434,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Geography getParent()
 	{
 		return this.parent;
@@ -403,6 +450,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<Geography> getChildren()
 	{
 		return this.children;
@@ -415,6 +463,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 
 	/* Code added in order to implement Treeable */
 
+    @Transient
 	public Long getTreeId()
 	{
 		return getGeographyId();
@@ -473,6 +522,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 
 	// methods to complete implementation of AbstractTreeable
 
+    @Transient
 	public int getFullNameDirection()
 	{
         Integer dir = definition.getFullNameDirection();
@@ -485,6 +535,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		return dir;
 	}
 
+    @Transient
 	public String getFullNameSeparator()
 	{
 		return definitionItem.getFullNameSeparator();
@@ -616,6 +667,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 * @param node the node to count descendants for
 	 * @return the number of proper descendants
 	 */
+    @Transient
 	public int getDescendantCount()
 	{
 		int totalDescendants = 0;
@@ -646,6 +698,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 * 
 	 * @return all descendants of <code>node</code>
 	 */
+    @Transient
 	public List<Geography> getAllDescendants()
 	{
 		Vector<Geography> descendants = new Vector<Geography>();
@@ -657,6 +710,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		return descendants;
 	}
 	
+    @Transient
 	public List<Geography> getAllAncestors()
 	{
 		Vector<Geography> ancestors = new Vector<Geography>();
@@ -733,6 +787,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		return false;
 	}
 	
+    @Transient
 	public Comparator<? super Geography> getComparator()
 	{
 		return new TreeOrderSiblingComparator();
@@ -742,6 +797,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 3;

@@ -28,6 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+
 import java.util.Date;
 
 
@@ -36,6 +50,8 @@ import java.util.Date;
 /**
 
  */
+@Entity
+@Table(name = "localitycitation", uniqueConstraints = { @UniqueConstraint(columnNames = { "ReferenceWorkID", "LocalityID" }) })
 public class LocalityCitation extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -50,6 +66,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
 
     /** default constructor */
     public LocalityCitation() {
+        //
     }
     
     /** constructor with id */
@@ -61,6 +78,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     
 
     // Initializer
+    @Override
     public void initialize()
     {
         localityCitationId = null;
@@ -78,6 +96,9 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     /**
      * 
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "LocalityCitationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Long getLocalityCitationId() {
         return this.localityCitationId;
     }
@@ -86,6 +107,8 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
+    @Transient
+    @Override
     public Long getId()
     {
         return this.localityCitationId;
@@ -94,6 +117,8 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
+    @Transient
+    @Override
     public Class<?> getDataClass()
     {
         return LocalityCitation.class;
@@ -106,6 +131,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     /**
      * 
      */
+    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -117,6 +143,9 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     /**
      *      * ID of work citing locality
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
     }
@@ -128,6 +157,8 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     /**
      *      * ID of locality cited
      */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = true)
     public Locality getLocality() {
         return this.locality;
     }
@@ -152,6 +183,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
+    @Transient
     public Integer getTableId()
     {
         return 57;
