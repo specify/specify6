@@ -782,6 +782,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     for (ViewSet vs : getViewSetList(appResDef))
                     {
+                        System.out.println("["+viewName+"]");
                         View view = vs.getView(viewName);
                         if (view != null)
                         {

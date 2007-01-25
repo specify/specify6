@@ -1928,6 +1928,10 @@ public class DataBuilder
         referencework.setIsPublished(isPublished);
         referencework.setJournal(journal);
         referencework.setTitle(title);
+        if (journal != null)
+        {
+            journal.getReferenceWorks().add(referencework);
+        }
         persist(referencework);
         return referencework;
     }

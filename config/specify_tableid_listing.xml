@@ -78,7 +78,9 @@
         <table name="edu.ku.brc.specify.datamodel.InfoRequest" id="50">
             <display view="InfoRequest"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Journal" id="51"/>
+        <table name="edu.ku.brc.specify.datamodel.Journal" id="51">
+            <display view="Journal"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Loan" id="52">
         	<display view="Loan"/>
         </table>
@@ -109,7 +111,9 @@
         <table name="edu.ku.brc.specify.datamodel.Project" id="66"/>
         <table name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" id="67"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSet" id="68"/>
-        <table name="edu.ku.brc.specify.datamodel.ReferenceWork" id="69"/>
+        <table name="edu.ku.brc.specify.datamodel.ReferenceWork" id="69">
+            <display view="ReferenceWork"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" id="70"/>
         <table name="edu.ku.brc.specify.datamodel.Shipment" id="71"/>
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" id="72"/>

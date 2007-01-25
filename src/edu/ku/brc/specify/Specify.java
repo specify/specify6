@@ -66,11 +66,14 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -670,6 +673,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     @SuppressWarnings("synthetic-access")
                     public void actionPerformed(ActionEvent ae)
                     {
+                        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+                        Object dObj = tmpSession.get(Locality.class, 3L);
+                        tmpSession.close();
+                        
                         final JDialog dialog = new JDialog(topFrame, "Local Prefs", true);
                         dialog.setContentPane(new AppPrefsEditor(false));
                         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

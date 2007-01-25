@@ -29,9 +29,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
 
@@ -268,14 +268,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
      */
     protected void configColumns()
     {
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setHorizontalAlignment(JLabel.CENTER);
-
-        TableColumnModel tableColModel = table.getColumnModel();
-        for (int i=0;i<tableColModel.getColumnCount();i++)
-        {
-            tableColModel.getColumn(i).setCellRenderer(renderer);
-        }
+        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     /**

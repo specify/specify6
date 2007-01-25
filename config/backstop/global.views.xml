@@ -147,6 +147,26 @@
                 <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" label="Edit" mode="edit" validated="true"/>                
             </altviews>
         </view>
+        
+        <view name="Journal"
+            class="edu.ku.brc.specify.datamodel.Journal"
+            resourcelabels="false">
+            <desc><![CDATA[The Journal Form.]]></desc>
+            <altviews>
+                <altview name="Journal View" viewdef="Journal" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="Journal Edit" viewdef="Journal" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="ReferenceWork"
+            class="edu.ku.brc.specify.datamodel.ReferenceWork"
+            resourcelabels="false">
+            <desc><![CDATA[The ReferenceWork Form.]]></desc>
+            <altviews>
+                <altview name="ReferenceWork View" viewdef="ReferenceWork" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="ReferenceWork Edit" viewdef="ReferenceWork" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
     </views>
 
     <!-- #############################################################################################
@@ -700,6 +720,72 @@
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea" colspan="5" cols="40" valtype="Changed"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Journal"
+            class="edu.ku.brc.specify.datamodel.Journal"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Journal form]]></desc>
+            <columnDef>140px,2px,p:g,5px,p,2px,p</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="journalName" uitype="text"/>
+                    <cell type="label" labelfor="2" label="Abbreviation"/>
+                    <cell type="field" id="2" name="journalAbbreviation" uitype="text" cols="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Reference Work" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="ReferenceWork" id="3" name="referenceWorks" colspan="7"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="ReferenceWork"
+            class="edu.ku.brc.specify.datamodel.ReferenceWork"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The ReferenceWork form]]></desc>
+            <columnDef>140px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Title"/>
+                    <cell type="field" id="1" name="title" uitype="text" cols="50" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Publisher"/>
+                    <cell type="field" id="2" name="publisher" uitype="text" cols="50" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Place Of Publication"/>
+                    <cell type="field" id="3" name="placeOfPublication" uitype="text" cols="50" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Work Date"/>
+                    <cell type="field" id="4" name="workDate" uitype="text" cols="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Volume"/>
+                    <cell type="field" id="5" name="volume" uitype="text" cols="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Pages"/>
+                    <cell type="field" id="6" name="pages" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Library #"/>
+                    <cell type="field" id="7" name="libraryNumber" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

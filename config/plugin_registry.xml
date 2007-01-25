@@ -17,8 +17,10 @@
 	    	<service command="Edit" tableid="10" tooltip="EditRecordSetTT"/>
 	        <service command="Edit" tableid="41" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="50" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="51" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="52" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="65" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="69" tooltip="EditRecordSetTT"/>
 	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask"/>
 	    

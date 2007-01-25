@@ -95,7 +95,7 @@ public class LuceneUpdater
         String updateSQLStr = tblInfo.getUpdateSql(formObj.getTableId());
         if (updateSQLStr != null)
         {
-            String sql = String.format(updateSQLStr, new Object[] {formObj.getId()});
+            String sql = String.format(updateSQLStr, new Object[] {formObj.getId().toString()});
             
             log.info("["+sql+"]");
             

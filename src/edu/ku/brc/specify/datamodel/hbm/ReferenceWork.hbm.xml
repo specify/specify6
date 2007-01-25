@@ -5,7 +5,7 @@
 <class name="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="referenceWorkId" type="java.lang.Integer" column="ReferenceWorkID">
+    <id name="referenceWorkId" type="java.lang.Long" column="ReferenceWorkID">
         <meta attribute="field-description">PrimaryKey</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
@@ -96,7 +96,7 @@
         <meta attribute="field-description"></meta>
     </property>
     
-    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" not-null="true" length="50" index="IX_ReferenceWork_2">
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_ReferenceWork_2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>

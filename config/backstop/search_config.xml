@@ -309,16 +309,15 @@ where determinationstatus.DeterminationStatusID = 1]]>
                     <![CDATA[SELECT ColFieldsDef FROM collectingevent INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID]]>
                 </sql>
                 <cols>
-                    <col pos="1" id="true">collectingevent.CollectingEventID</col>
+                    <col pos="1">locality.LocalityName</col>
                     <col pos="2" key="startdate">StartDate</col>
                     <col pos="3" key="enddate">EndDate</col>
-                    <col pos="4">locality.NamedPlace</col>
-                    <col pos="5">locality.LocalityName</col>
-                    <col pos="6">locality.Township</col>
-                    <col pos="7">locality.Section</col>
+                    <col pos="4">locality.Latitude1</col>
+                    <col pos="5">locality.Longitude1</col>
+                    <col pos="6" id="true">collectingevent.CollectingEventID</col>
                     
-                    <join pos="8" tableid="1">collectingevent.CollectingEventID</join>
-                    <join pos="9" tableid="10">collectingevent.LocalityID</join>
+                    <join pos="7" tableid="1">collectingevent.CollectingEventID</join>
+                    <join pos="8" tableid="10">collectingevent.LocalityID</join>
                     <join pos="9" tableid="2">locality.LocalityID</join>
                 </cols>
             </index>
@@ -647,7 +646,70 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 <recordset tabletype="8" col="1"/>
             </detailView>
         </table>
-                
+        
+        <table id="22" tableid="51" indexed="true" name="Journal" title="Journal" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="journal" title="Journal"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM journal]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">JournalID</col>
+                    <col pos="2">JournalName</col>
+                    <col pos="3">JournalAbbreviation</col>
+                </cols>
+            </index>
+            <detailView icon="Journal">
+                <sql>
+                    <![CDATA[SELECT JournalName, JournalAbbreviation, JournalID FROM journal WHERE JournalID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="JournalName" text="Name"/>
+                    <caption col="JournalAbbreviation" text="Abbreviation"/>
+                    <caption col="JournalID" text="ID" visible="false"/>
+                </captions>
+                <recordset tabletype="51" col="3"/>
+            </detailView>
+        </table>
+      
+        <table id="23" tableid="69" indexed="true" name="ReferenceWork" title="Reference Work" priority="1" color="30, 144, 255">
+            <outofdate>
+                <table name="referencework" title="Reference Work"/>
+            </outofdate>
+            <index>
+                <sql>
+                    <![CDATA[SELECT ColFieldsDef FROM referencework]]>
+                </sql>
+                <cols>
+                    <col pos="1" id="true">ReferenceWorkID</col>
+                    <col pos="2">Title</col>
+                    <col pos="3">Publisher</col>
+                    <col pos="4">PlaceOfPublication</col>
+                    <col pos="5">WorkDate</col>
+                    <col pos="6">Volume</col>
+                    <col pos="7">Pages</col>
+                    <col pos="8">LibraryNumber</col>
+                </cols>
+            </index>
+            <detailView icon="ReferenceWork">
+                <sql>
+                    <![CDATA[SELECT Title, Publisher, PlaceOfPublication, WorkDate, Volume, Pages, LibraryNumber, ReferenceWorkID FROM referencework WHERE ReferenceWorkID IN (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="Title" text="Title"/>
+                    <caption col="Publisher" text="Publisher"/>
+                    <caption col="PlaceOfPublication" text="Place Of Publication"/>
+                    <caption col="WorkDate" text="Work Date"/>
+                    <caption col="Volume" text="Volume"/>
+                    <caption col="Pages" text="Pages"/>
+                    <caption col="LibraryNumber" text="Library Number"/>
+                    <caption col="ReferenceWorkID" text="ID" visible="false"/>
+                </captions>
+                <recordset tabletype="69" col="8"/>
+            </detailView>
+        </table>                
     </express>
     
     <!-- ************************************************* -->

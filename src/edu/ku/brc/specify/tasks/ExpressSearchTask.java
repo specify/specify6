@@ -531,7 +531,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             for (ExpressResultsTableInfo erti : list)
             {
                 log.debug("Checking up["+tblInfo.getTableId()+"]");
-                results = resultsForJoinsMap.get(tblInfo.getTableId());
+                results = resultsForJoinsMap.get(erti.getId());//tblInfo.getTableId());
                 if (results == null)
                 {
                     Integer joinColTableId = null;
@@ -543,6 +543,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                             if (tblInfo.getTableId().equals(jci.getJoinTableId()))
                             {
                                 joinColTableId = jci.getJoinTableIdAsInt();
+                                break;
                             }
                         }
                     }
@@ -572,14 +573,14 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                                          final Hits                                    hits)
     {
         // For Debug Only
-        if (false)
+        if (true)
         {
             for (Enumeration<ExpressSearchResults> e=resultsMap.elements();e.hasMoreElements();)
             {
                 ExpressSearchResults results = e.nextElement();
                 if (results.getRecIds().size() > 0)
                 {
-                    System.err.println("\n------------------------------------");
+                    System.err.println("\n\n------------------------------------");
                     System.err.println("------------------------------------");
                     System.err.println("Search Id "+results.getTableInfo().getId()+" Table Id "+results.getTableInfo().getTableId());
                     System.err.println("------------------------------------");
@@ -596,11 +597,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 ExpressSearchResults results = e.nextElement();
                 if (results.getRecIds().size() > 0)
                 {
-                    System.err.println("\n------------------------------------");
+                    System.err.println("\n\n------------------------------------");
                     System.err.println("------------------------------------");
                     System.err.println("Search Id "+results.getTableInfo().getId() + 
-                            " Table Id "+results.getTableInfo().getTableId() + 
-                            " Column Name "+results.getJoinColTableId());
+                                       " Table Id "+results.getTableInfo().getTableId() + 
+                                       " Column Name "+results.getJoinColTableId());
                     System.err.println("------------------------------------");
                     for (Long l : results.getRecIds())
                     {

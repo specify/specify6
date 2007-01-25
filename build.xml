@@ -150,7 +150,7 @@
 			<annotationconfiguration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
 			<configuration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
 			-->
-			<hbm2ddl update="false" />
+			<hbm2ddl update="false" export="true" outputfilename="specify6.sql"/>
 		</hibernatetool>
 	</target>
 

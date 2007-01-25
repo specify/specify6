@@ -417,10 +417,10 @@ public class ExpressResultsTableInfo
         String sql = patternSql.replaceFirst("ColFieldsDef", strBuf.toString());
         if (sql.toLowerCase().indexOf("where") > -1)
         {
-            return  idColName != null ? sql + " AND " + idColName + " = %d" : null;
+            return  idColName != null ? sql + " AND " + idColName + " in (%s)" : null;
         }
         
-        return  idColName != null ? sql + " where " + idColName + " = %d" : null;
+        return  idColName != null ? sql + " where " + idColName + " in (%s)" : null;
 
     }
 

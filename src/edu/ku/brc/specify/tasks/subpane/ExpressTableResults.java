@@ -60,23 +60,23 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
     {
         super(esrPane, results, installServices);
         
+        Vector<Long> recIds = results.getRecIds();
+        StringBuffer idsStr = new StringBuffer(recIds.size()*8);
+        for (int i=0;i<recIds.size();i++)
+        {
+            if (i > 0) idsStr.append(',');
+            idsStr.append(recIds.elementAt(i).toString());
+        }
+        
         String sqlStr;
         if (results.getJoinColTableId() != null)
         {
             sqlStr = results.getTableInfo().getUpdateSql(results.getJoinColTableId());
-            sqlStr = String.format(sqlStr, new Object[] {results.getRecIds().get(0)});
+            sqlStr = String.format(sqlStr, new Object[] {idsStr.toString()});
             
         } else
         {
             String vsql = tableInfo.getViewSql();
-            
-            Vector<Long> recIds = results.getRecIds();
-            StringBuffer idsStr = new StringBuffer(recIds.size()*8);
-            for (int i=0;i<recIds.size();i++)
-            {
-                if (i > 0) idsStr.append(',');
-                idsStr.append(recIds.elementAt(i).toString());
-            }
             sqlStr = vsql.replace("%s", idsStr.toString());
         }
 

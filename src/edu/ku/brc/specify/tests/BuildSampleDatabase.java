@@ -31,6 +31,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriod;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDefItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createJournal;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoan;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoanAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createLoanPhysicalObject;
@@ -43,6 +44,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createPermit;
 import static edu.ku.brc.specify.tests.DataBuilder.createPickList;
 import static edu.ku.brc.specify.tests.DataBuilder.createPrepType;
 import static edu.ku.brc.specify.tests.DataBuilder.createPreparation;
+import static edu.ku.brc.specify.tests.DataBuilder.createReferenceWork;
 import static edu.ku.brc.specify.tests.DataBuilder.createShipment;
 import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxon;
@@ -91,20 +93,24 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgents;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -148,18 +154,26 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        UserGroup userGroup = createUserGroup(disciplineName);
-        SpecifyUser user = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
-        DataType dataType = createDataType(disciplineName);
+        UserGroup    userGroup    = createUserGroup(disciplineName);
+        SpecifyUser  user         = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
+        DataType     dataType     = createDataType(disciplineName);
         TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
-        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user,
-                taxonTreeDef, null, null, null);
+        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
         //dataType.addCollectionObjDef(collectionObjDef);
         dataObjects.add(collectionObjDef);
         dataObjects.add(userGroup);
         dataObjects.add(user);
         dataObjects.add(dataType);
         dataObjects.add(taxonTreeDef);
+        
+        Journal journal = createJournalsAndReferenceWork();
+        List<ReferenceWork> rwList = new Vector<ReferenceWork>();
+        rwList.addAll(journal.getReferenceWorks());
+        dataObjects.add(journal);
+        for (ReferenceWork rw : rwList)
+        {
+            dataObjects.add(rw);
+        }
         
         ////////////////////////////////
         // build the trees
@@ -229,7 +243,7 @@ public class BuildSampleDatabase
         String RECT  = "Rectangle";
         
         log.info("Creating localities");
-        Locality forestStream = createLocality("Unnamed forest stream", (Geography)geos.get(13));
+        Locality forestStream = createLocality("Unnamed forest stream pond", (Geography)geos.get(13));
         forestStream.setLatLongType(POINT);
         forestStream.setOriginalLatLongUnit(0);
         forestStream.setLat1text("38.925467 deg N");
@@ -237,7 +251,7 @@ public class BuildSampleDatabase
         forestStream.setLong1text("94.984867 deg W");
         forestStream.setLongitude1(new BigDecimal(-94.984867));
 
-        Locality lake   = createLocality("Deep, dark lake", (Geography)geos.get(18));
+        Locality lake   = createLocality("Deep, dark lake pond", (Geography)geos.get(18));
         lake.setLatLongType(RECT);
         lake.setOriginalLatLongUnit(1);
         lake.setLat1text("41.548842 deg N");
@@ -677,8 +691,29 @@ public class BuildSampleDatabase
         closedLoan.getShipments().add(loan1Ship);
         overdueLoan.getShipments().add(loan2Ship);
         dataObjects.add(loan1Ship);
-        dataObjects.add(loan2Ship);
+        dataObjects.add(loan2Ship);   
 
+        if (true)
+        {
+            TaxonCitation taxonCitation = new TaxonCitation();
+            taxonCitation.initialize();
+            Taxon taxon10 = (Taxon)taxa.get(10);
+            taxonCitation.setTaxon(taxon10);
+            taxonCitation.setReferenceWork(rwList.get(0));
+            rwList.get(0).addTaxonCitations(taxonCitation);
+            taxon10.getTaxonCitations().add(taxonCitation);
+            dataObjects.add(taxonCitation);
+            
+            
+            LocalityCitation localityCitation = new LocalityCitation();
+            localityCitation.initialize();
+            localityCitation.setLocality(ce1.getLocality());
+            ce1.getLocality().getLocalityCitations().add(localityCitation);
+            localityCitation.setReferenceWork(rwList.get(1));
+            rwList.get(1).addLocalityCitations(localityCitation);
+            dataObjects.add(localityCitation);
+        }
+        
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
@@ -1049,6 +1084,18 @@ public class BuildSampleDatabase
         
         return newObjs;
     }
+    
+    public static Journal createJournalsAndReferenceWork()
+    {
+        Journal journal = createJournal("Fish times", "FT");
+        
+        @SuppressWarnings("unused")
+        ReferenceWork rw = createReferenceWork((byte)1, "Why Do Fish Have Scales?", "Fish Publishing", "NYC", "12/12/1900", "Vol 1.", "Pages 234-236", null, "112974-4532", true, journal);
+        rw = createReferenceWork((byte)1, "Can Fish think?", "Fish Publishing", "Chicago", "12/12/1901", "Vol 2", "Pages 1-10", null, "64543-4532", true, journal);
+        rw = createReferenceWork((byte)1, "The Taxon Def of Blubber Fish?", "Icthy Publishing", "SFO", "12/12/1960", "Vol 200", "Pages 10-100", null, "856433-4532", false, journal);
+        
+        return journal;
+    }
 
     @SuppressWarnings("unchecked")
     protected static int fixNodeNumbersFromRoot( Treeable root )
@@ -1225,6 +1272,37 @@ public class BuildSampleDatabase
                     //persist(dataObjects.get(0)); // just persist the CollectionObjDef object
                     persist(dataObjects);
                     commitTx();
+                    
+                    if (true)
+                    {
+                        startTx();
+                        List<?> journal    = HibernateUtil.getCurrentSession().createCriteria(Journal.class).list();
+                        List<?> taxa       = HibernateUtil.getCurrentSession().createCriteria(Taxon.class).list();
+                        List<?> localities = HibernateUtil.getCurrentSession().createCriteria(Locality.class).list();
+                        List<ReferenceWork> rwList = new Vector<ReferenceWork>();
+                        rwList.addAll(((Journal)journal.get(0)).getReferenceWorks());
+                        
+                        TaxonCitation taxonCitation = new TaxonCitation();
+                        taxonCitation.initialize();
+                        Taxon taxon10 = (Taxon)taxa.get(10);
+                        taxonCitation.setTaxon(taxon10);
+                        taxonCitation.setReferenceWork(rwList.get(0));
+                        rwList.get(0).addTaxonCitations(taxonCitation);
+                        taxon10.getTaxonCitations().add(taxonCitation);
+                        dataObjects.add(taxonCitation);
+                        persist(taxonCitation);
+                        
+                        Locality locality = (Locality)localities.get(0);
+                        LocalityCitation localityCitation = new LocalityCitation();
+                        localityCitation.initialize();
+                        localityCitation.setLocality(locality);
+                        locality.getLocalityCitations().add(localityCitation);
+                        localityCitation.setReferenceWork(rwList.get(1));
+                        rwList.get(1).addLocalityCitations(localityCitation);
+                        dataObjects.add(localityCitation);
+                        persist(localityCitation);
+                        commitTx();
+                    }
                     
                     attachMgr.cleanup();
                     
