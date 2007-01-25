@@ -43,6 +43,7 @@ import javax.persistence.UniqueConstraint;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "authors", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "ReferenceWorkID" }) })
 public class Authors extends DataModelObjBase implements java.io.Serializable {
 

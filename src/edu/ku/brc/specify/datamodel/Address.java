@@ -42,6 +42,7 @@ import javax.persistence.Transient;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "address")
 public class Address extends DataModelObjBase implements java.io.Serializable {
 

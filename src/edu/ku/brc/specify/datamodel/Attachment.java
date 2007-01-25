@@ -46,6 +46,7 @@ import edu.ku.brc.util.Orderable;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "attachments")
 public class Attachment extends DataModelObjBase implements Serializable, Orderable
 {

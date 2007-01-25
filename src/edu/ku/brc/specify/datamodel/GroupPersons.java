@@ -45,6 +45,7 @@ import org.hibernate.annotations.CascadeType;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "grouppersons", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) })
 public class GroupPersons extends DataModelObjBase implements java.io.Serializable {
 

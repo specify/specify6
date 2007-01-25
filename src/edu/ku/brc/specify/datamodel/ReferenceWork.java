@@ -49,6 +49,7 @@ import java.util.Set;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "referencework")
 public class ReferenceWork extends DataModelObjBase implements java.io.Serializable {
 

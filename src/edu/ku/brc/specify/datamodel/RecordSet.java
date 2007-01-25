@@ -56,6 +56,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
  */
 @SuppressWarnings("serial")
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "recordset")
 public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace {
 

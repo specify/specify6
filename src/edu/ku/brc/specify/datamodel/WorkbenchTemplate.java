@@ -47,6 +47,7 @@ import java.util.Set;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbenchtemplate")
 public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable 
 {

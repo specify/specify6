@@ -46,6 +46,7 @@ import java.util.Set;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "stratigraphy")
 public class Stratigraphy extends DataModelObjBase implements java.io.Serializable {
 

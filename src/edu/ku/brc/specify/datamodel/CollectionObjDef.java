@@ -51,6 +51,7 @@ import java.util.Set;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name="collectionobjdef")
 public class CollectionObjDef extends DataModelObjBase implements java.io.Serializable 
 {

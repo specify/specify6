@@ -55,6 +55,7 @@ import edu.ku.brc.util.AttachmentUtils;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "agent")
 public class Agent extends DataModelObjBase implements java.io.Serializable {
 

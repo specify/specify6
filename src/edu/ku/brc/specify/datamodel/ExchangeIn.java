@@ -49,6 +49,7 @@ import java.util.Calendar;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "exchangein")
 public class ExchangeIn extends DataModelObjBase implements java.io.Serializable {
 

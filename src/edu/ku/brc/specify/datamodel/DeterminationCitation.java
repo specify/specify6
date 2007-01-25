@@ -45,6 +45,7 @@ import org.hibernate.annotations.CascadeType;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "determinationcitation", uniqueConstraints = { @UniqueConstraint(columnNames = { "ReferenceWorkID", "DeterminationID" }) })
 public class DeterminationCitation extends DataModelObjBase implements java.io.Serializable {
 

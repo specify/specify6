@@ -39,6 +39,7 @@ import java.util.Set;
  * @author jstewart
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "determinationstatus")
 public class DeterminationStatus extends DataModelObjBase implements Serializable
 {

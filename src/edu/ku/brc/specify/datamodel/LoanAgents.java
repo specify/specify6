@@ -45,6 +45,7 @@ import org.hibernate.annotations.CascadeType;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "loanagents", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "LoanID", "AgentID" }) })
 public class LoanAgents extends DataModelObjBase implements java.io.Serializable {
 

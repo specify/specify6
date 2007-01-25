@@ -52,6 +52,7 @@ import java.util.Set;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "catalogseries")
 public class CatalogSeries extends DataModelObjBase implements java.io.Serializable, Comparable<CatalogSeries>
 {

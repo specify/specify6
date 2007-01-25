@@ -42,6 +42,7 @@ import javax.persistence.Transient;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "taxoncitation")
 public class TaxonCitation extends DataModelObjBase implements java.io.Serializable {
 

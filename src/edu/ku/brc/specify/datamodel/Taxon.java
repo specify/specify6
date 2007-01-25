@@ -57,6 +57,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 @SuppressWarnings("serial")
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "taxon")
 public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {

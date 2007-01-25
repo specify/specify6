@@ -47,6 +47,7 @@ import edu.ku.brc.util.Orderable;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "collectors", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "CollectingEventID" }) })
 public class Collectors extends DataModelObjBase implements java.io.Serializable, Orderable {
 

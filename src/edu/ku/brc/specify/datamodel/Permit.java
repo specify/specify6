@@ -54,6 +54,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "permit")
 public class Permit extends DataModelObjBase implements java.io.Serializable {
 

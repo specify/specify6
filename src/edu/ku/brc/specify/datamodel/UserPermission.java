@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "sp_userpermission")
 public class UserPermission extends DataModelObjBase implements java.io.Serializable
 {

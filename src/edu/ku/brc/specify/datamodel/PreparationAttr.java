@@ -44,6 +44,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
  * 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "preparationattr")
 public class PreparationAttr extends DataModelObjBase implements AttributeIFace, java.io.Serializable
 {

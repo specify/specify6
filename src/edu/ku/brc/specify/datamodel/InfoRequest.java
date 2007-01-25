@@ -55,6 +55,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "inforequest")
 public class InfoRequest extends DataModelObjBase implements java.io.Serializable {
 

@@ -64,6 +64,7 @@ import edu.ku.brc.helpers.XMLHelper;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "viewsetobj")
 public class ViewSetObj extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {

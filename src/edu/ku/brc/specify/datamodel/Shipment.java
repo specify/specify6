@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "shipment")
 public class Shipment extends DataModelObjBase implements java.io.Serializable {
 

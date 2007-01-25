@@ -48,6 +48,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  * 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "accessionauthorizations", uniqueConstraints = { @UniqueConstraint(columnNames = { "PermitID", "AccessionID" }), @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
 public class AccessionAuthorizations extends DataModelObjBase implements java.io.Serializable,
         Comparable<AccessionAuthorizations>

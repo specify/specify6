@@ -47,6 +47,7 @@ import javax.persistence.Transient;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "appresourcedata")
 public class AppResourceData extends DataModelObjBase implements java.io.Serializable {
 

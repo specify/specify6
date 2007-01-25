@@ -42,6 +42,7 @@ import javax.persistence.Transient;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "otheridentifier")
 public class OtherIdentifier extends DataModelObjBase implements java.io.Serializable {
 

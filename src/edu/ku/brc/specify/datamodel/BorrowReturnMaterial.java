@@ -46,6 +46,7 @@ import java.util.Calendar;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "borrowreturnmaterial")
 public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Serializable {
 

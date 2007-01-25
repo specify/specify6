@@ -53,6 +53,7 @@ import java.util.Set;
 
  */
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "exchangeout")
 public class ExchangeOut extends DataModelObjBase implements java.io.Serializable {
 

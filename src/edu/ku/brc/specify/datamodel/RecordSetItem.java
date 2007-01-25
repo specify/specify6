@@ -90,12 +90,12 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     @Id
     @GeneratedValue
     @Column(name = "RecordSetItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    protected Long getRecordSetItemId()
+    public Long getRecordSetItemId()
     {
         return recordSetItemId;
     }
 
-    protected void setRecordSetItemId(Long recordSetItemId)
+    public void setRecordSetItemId(Long recordSetItemId)
     {
         this.recordSetItemId = recordSetItemId;
     }
