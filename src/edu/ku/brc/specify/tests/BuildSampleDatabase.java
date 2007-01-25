@@ -150,15 +150,20 @@ public class BuildSampleDatabase
         log.info("Creating single discipline database: " + disciplineName);
 
         Vector<Object> dataObjects = new Vector<Object>();
-
+        List<Agent>    agents      = new Vector<Agent>();
+        
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        UserGroup    userGroup    = createUserGroup(disciplineName);
-        SpecifyUser  user         = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
-        DataType     dataType     = createDataType(disciplineName);
-        TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
+        Agent            userAgent        = createAgent("Mr.", "Rod", "C", "Spears", "rs");
+        UserGroup        userGroup        = createUserGroup(disciplineName);
+        SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
+        DataType         dataType         = createDataType(disciplineName);
+        TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
         CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
+        
+        user.setAgent(userAgent);
+
         //dataType.addCollectionObjDef(collectionObjDef);
         dataObjects.add(collectionObjDef);
         dataObjects.add(userGroup);
@@ -285,11 +290,11 @@ public class BuildSampleDatabase
         // agents and addresses
         ////////////////////////////////
         log.info("Creating agents and addresses");
-        List<Agent> agents = new Vector<Agent>();
+
         agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "js"));
         agents.add(createAgent("Mr.", "James", "H", "Beach", "jb"));
         agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk"));
-        agents.add(createAgent("Mr.", "Rod", "C", "Spears", "rs"));
+        agents.add(userAgent);
         agents.add(createAgent("Mr.", "Andy", "D", "Bentley", "AB"));
         agents.add(createAgent("Sir", "Dudley", "X", "Simmons", "dxs"));
         agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc"));
@@ -693,7 +698,7 @@ public class BuildSampleDatabase
         dataObjects.add(loan1Ship);
         dataObjects.add(loan2Ship);   
 
-        if (true)
+        if (false)
         {
             TaxonCitation taxonCitation = new TaxonCitation();
             taxonCitation.initialize();
