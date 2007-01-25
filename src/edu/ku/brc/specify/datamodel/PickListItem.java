@@ -121,12 +121,12 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.SAVE_UPDATE })
     @JoinColumn(name = "PickListID", unique = false, nullable = false, insertable = true, updatable = true)
-    protected PickList getPickList()
+    public PickList getPickList()
     {
         return pickList;
     }
 
-    protected void setPickList(PickList pickList)
+    public void setPickList(PickList pickList)
     {
         this.pickList = pickList;
     }
