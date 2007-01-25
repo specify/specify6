@@ -273,7 +273,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getItems()
      */
-    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "pickList")
+    @OneToMany(cascade = {}, targetEntity=PickListItem.class, fetch = FetchType.EAGER, mappedBy = "pickList")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<PickListItemIFace> getItems()
     {

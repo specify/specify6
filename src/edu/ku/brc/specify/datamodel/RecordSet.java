@@ -197,7 +197,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getItems()
      */
-    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "recordSet")
+    @OneToMany(cascade = {}, targetEntity=RecordSetItem.class, fetch = FetchType.EAGER, mappedBy = "recordSet")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<RecordSetItemIFace> getItems() {
         return this.items;
