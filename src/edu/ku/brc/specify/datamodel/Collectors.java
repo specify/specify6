@@ -84,12 +84,10 @@ public class Collectors extends DataModelObjBase implements java.io.Serializable
     @Override
     public void initialize()
     {
+        super.init();
         collectorsId = null;
         orderNumber = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         collectingEvent = null;
         agent = null;
     }

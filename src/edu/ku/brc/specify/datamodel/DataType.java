@@ -39,6 +39,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -78,6 +79,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         dataTypeId = null;
         name = null;
         collectionObjDef = new HashSet<CollectionObjDef>();

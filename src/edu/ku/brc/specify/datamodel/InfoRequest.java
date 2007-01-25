@@ -94,6 +94,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     @Override
     public void initialize()
     {
+        super.init();
         infoRequestID = null;
         number = null;
         firstName = null;
@@ -103,8 +104,6 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
         requestDate = null;
         replyDate = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
         recordSet = null;
         agent = null;
         

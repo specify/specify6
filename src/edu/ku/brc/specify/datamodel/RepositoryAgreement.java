@@ -102,6 +102,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     @Override
     public void initialize()
     {
+        super.init();
         repositoryAgreementId = null;
         number = null;
         status = null;
@@ -114,9 +115,6 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         number1 = null;
         number2 = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         repositoryAgreementAuthorizations = new HashSet<AccessionAuthorizations>();

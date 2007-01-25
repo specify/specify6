@@ -92,6 +92,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     @Override
     public void initialize()
     {
+        super.init();
         deaccessionId = null;
         type = null;
         deaccessionNumber = null;
@@ -101,9 +102,6 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         deaccessionAgents = new HashSet<DeaccessionAgents>();

@@ -83,13 +83,11 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     @Override
     public void initialize()
     {
+        super.init();
         borrowReturnMaterialId = null;
         returnedDate = null;
         quantity = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         agent = null;
         borrowMaterial = null;
     }

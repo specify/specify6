@@ -85,10 +85,8 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     @Override
     public void initialize()
     {
+        super.init();
         appResourceDefaultId = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         catalogSeries = null;
         collectionObjDef = null;
         specifyUser = null;

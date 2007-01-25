@@ -70,6 +70,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
     @Override
     public void initialize()
 	{
+        super.init();
 		taxonTreeDefId = null;
 		name = null;
 		remarks = null;

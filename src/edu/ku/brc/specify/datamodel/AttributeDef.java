@@ -41,6 +41,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,6 +86,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     @Override
     public void initialize()
     {
+        super.init();
         attributeDefId = null;
         tableType = null;
         fieldName = null;

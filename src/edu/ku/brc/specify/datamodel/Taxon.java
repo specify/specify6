@@ -132,6 +132,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	@Override
     public void initialize()
 	{
+        super.init();
 		taxonId = null;
 		taxonomicSerialNumber = null;
 		guid = null;
@@ -153,9 +154,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		environmentalProtectionStatus = null;
 		nodeNumber = null;
 		highestChildNodeNumber = null;
-		timestampCreated = new Date();
-        timestampModified = null;
-		lastEditedBy = null;
 		isAccepted = null;
 		rankId = null;
 		groupNumber = null;

@@ -81,11 +81,9 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     @Override
     public void initialize()
     {
+        super.init();
         determinationCitationId = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         referenceWork = null;
         determination = null;
     }

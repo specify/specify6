@@ -104,6 +104,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         permitId = null;
         permitNumber = null;
         type = null;
@@ -116,9 +117,6 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         accessionAuthorizations = new HashSet<AccessionAuthorizations>();

@@ -98,6 +98,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         projectId = null;
         projectName = null;
         projectDescription = null;
@@ -109,9 +110,6 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         agent = null;

@@ -87,6 +87,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     @Override
     public void initialize()
     {
+        super.init();
         workbenchId = null;
         name = null;
         dbTableId = null;
@@ -96,13 +97,8 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel = null;
-        timestampCreated = new Date();
-        timestampModified = null;
         workbenchTemplate = null;
         workbenchItems = new HashSet<WorkbenchDataItem>();       
-        timestampCreated = new Date();
-        timestampModified = new Date();
-        lastEditedBy = null;
         specifyUser = null;
         group = null;
     }

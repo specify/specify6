@@ -80,9 +80,8 @@ public class ContainerItem extends DataModelObjBase implements java.io.Serializa
     @Override
     public void initialize()
     {
+        super.init();
         containerItemId = null;
-        timestampModified = null;
-        timestampCreated = new Date();
         container = null;
         collectionObjects = new HashSet<CollectionObject>();
     }

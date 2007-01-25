@@ -83,15 +83,12 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     @Override
     public void initialize()
     {
+        super.init();
         workbenchTemplateId = null;
         name = null;
         remarks = null;
         workbenches = new HashSet<Workbench>();
         workbenchTemplateMappingItems = new HashSet<WorkbenchTemplateMappingItem>();   
-        
-        timestampCreated = new Date();
-        timestampModified = new Date();
-        lastEditedBy = null;
     }
     
     // End Initializer

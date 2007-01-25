@@ -91,6 +91,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     @Override
     public void initialize()
     {
+        super.init();
         loanPhysicalObjectId = null;
         quantity = null;
         descriptionOfMaterial = null;
@@ -99,9 +100,6 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
         quantityResolved = null;
         quantityReturned = null;
         isResolved = false;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         preparation = null;
         loan = null;
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();

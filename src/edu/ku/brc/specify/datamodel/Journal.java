@@ -83,13 +83,11 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         journalId = null;
         journalName = null;
         journalAbbreviation = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         referenceWorks = new HashSet<ReferenceWork>();
     }
     // End Initializer

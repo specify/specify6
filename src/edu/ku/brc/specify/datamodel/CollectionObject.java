@@ -125,6 +125,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     @Override
     public void initialize()
     {
+        super.init();
         collectionObjectId = null;
         fieldNumber = null;
         description = null;
@@ -143,9 +144,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         guid = null;
         //altCatalogNumber = null;
         groupPermittedToView = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         deaccessioned = null;
         catalogNumber = null;
         visibility = null;

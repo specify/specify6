@@ -105,6 +105,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     @Override
     public void initialize()
     {
+        super.init();
         referenceWorkId = null;
         containingReferenceWorkId = null;
         referenceWorkType = null;
@@ -121,9 +122,6 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         isPublished = null;
         yesNo1 = null;
         yesNo2 = null;

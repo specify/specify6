@@ -82,12 +82,10 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     @Override
     public void initialize()
     {
+        super.init();
         groupPersonsId = null;
         orderNumber = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         group = null;
         member = null;
     }

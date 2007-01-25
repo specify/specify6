@@ -101,6 +101,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     @Override
     public void initialize()
     {
+        super.init();
         preparationId = null;
         text1 = null;
         text2 = null;
@@ -108,9 +109,6 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         storageLocation = null;
         remarks = null;
         preparedDate = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         attrs = new HashSet<AttributeIFace>();
         prepType = null;

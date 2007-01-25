@@ -84,15 +84,13 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     @Override
     public void initialize()
     {
+        super.init();
         taxonCitationId = null;
         remarks = null;
         text1 = null;
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         referenceWork = null;

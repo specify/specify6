@@ -105,14 +105,12 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     @Override
     public void initialize()
     {
+        super.init();
         catalogSeriesId = null;
         //isTissueSeries = null;
         seriesName = null;
         catalogSeriesPrefix = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         collectionObjDefItems = new HashSet<CollectionObjDef>();
         //tissue = null;
         appResourceDefaults = new HashSet<AppResourceDefault>();

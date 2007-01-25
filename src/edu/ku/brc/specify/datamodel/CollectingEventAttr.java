@@ -84,11 +84,10 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     @Override
     public void initialize()
     {
+        super.init();
         attrId = null;
         strValue = null;
         dblValue = null;
-        timestampCreated = new Date();
-        timestampModified = null;
         collectingEvent = null;
         definition = null;
     }

@@ -92,6 +92,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     @Override
     public void initialize()
     {
+        super.init();
         pickListId = null;
         name       = null;
         type       = 0;
@@ -101,11 +102,6 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         readOnly   = false;
         sizeLimit  = 50;
         items      = new HashSet<PickListItemIFace>();
-        
-        // base class
-        timestampCreated  = new Date();
-        timestampModified = null;
-        lastEditedBy      = null;
     }
 
     // Property accessors

@@ -81,11 +81,9 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     @Override
     public void initialize()
     {
+        super.init();
         localityCitationId = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         referenceWork = null;
         locality = null;
     }

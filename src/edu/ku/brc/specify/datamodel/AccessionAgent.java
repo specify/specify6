@@ -87,12 +87,10 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     @Override
     public void initialize()
     {
+        super.init();
         accessionAgentId = null;
         role = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         agent = null;
         accession = null;
         repositoryAgreement = null;

@@ -66,12 +66,10 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     @Override
     public void initialize()
     {
+        super.init();
         determinationStatusId = null;
         name = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         determinations = new HashSet<Determination>();
     }
 

@@ -44,6 +44,7 @@ import org.hibernate.annotations.CascadeType;
 
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,6 +88,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
     @Override
     public void initialize()
 	{
+        super.init();
 		geographyTreeDefItemId = null;
 		name = null;
 		remarks = null;

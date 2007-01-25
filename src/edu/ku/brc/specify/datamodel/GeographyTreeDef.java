@@ -41,6 +41,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,6 +73,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	@Override
     public void initialize()
 	{
+        super.init();
 		geographyTreeDefId = null;
 		name = null;
 		remarks = null;

@@ -78,15 +78,12 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     @Override
     public void initialize()
     {
+        super.init();
         workbenchDataItemId = null;
         cellData = null;
         rowNumber = null;
         columnNumber = null;
         owner = null;
-        
-        timestampCreated = new Date();
-        timestampModified = new Date();
-        lastEditedBy = null;
     }
     
     // End Initializer

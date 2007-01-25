@@ -102,6 +102,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	@Override
     public void initialize()
 	{
+        super.init();
 		geologicTimePeriodId = null;
 		rankId = null;
 		name = null;
@@ -113,10 +114,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		startUncertainty = null;
 		end = null;
 		endUncertainty = null;
-        //timestampModified = null;
-		timestampCreated = new Date();
 		timestampVersion = new Date();
-		lastEditedBy = null;
 		definition = null;
 		definitionItem = null;
 		parent = null;

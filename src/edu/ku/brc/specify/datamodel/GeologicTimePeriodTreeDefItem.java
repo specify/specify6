@@ -44,6 +44,7 @@ import org.hibernate.annotations.CascadeType;
 
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -89,6 +90,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
     @Override
     public void initialize()
 	{
+        super.init();
 		geologicTimePeriodTreeDefItemId = null;
 		name = null;
 		remarks = null;

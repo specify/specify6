@@ -82,12 +82,10 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     @Override
     public void initialize()
     {
+        super.init();
         borrowAgentsId = null;
         role = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         agent = null;
         borrow = null;
     }

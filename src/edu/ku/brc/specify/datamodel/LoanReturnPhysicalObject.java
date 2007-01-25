@@ -87,13 +87,11 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     @Override
     public void initialize()
     {
+        super.init();
         loanReturnPhysicalObjectId = null;
         returnedDate = null;
         quantity = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         loanPhysicalObject = null;
         deaccessionPreparation = null;
         receivedBy = null;

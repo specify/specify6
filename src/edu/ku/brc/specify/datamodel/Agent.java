@@ -131,6 +131,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         agentId = null;
         agentType = null;
         firstName = null;
@@ -141,9 +142,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         abbreviation = null;
         name = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         visibility = null;
         authors = new HashSet<Authors>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();

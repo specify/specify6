@@ -87,6 +87,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         addressId = null;
         address = null;
         address2 = null;
@@ -95,9 +96,6 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         country = null;
         postalCode = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         agent = null;
         
         // Agent

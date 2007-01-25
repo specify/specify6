@@ -80,12 +80,10 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         authorsId = null;
         orderNumber = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         referenceWork = null;
         agent = null;
     }

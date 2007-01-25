@@ -82,11 +82,9 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     @Override
     public void initialize()
     {
+        super.init();
         accessionAuthorizationsId = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         permit = null;
         accession = null;
         repositoryAgreement = null;

@@ -112,6 +112,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     @Override
     public void initialize()
     {
+        super.init();
         specifyUserId = null;
         name = null;
         email = null;

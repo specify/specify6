@@ -88,6 +88,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     @Override
     public void initialize()
     {
+        super.init();
         borrowMaterialId = null;
         materialNumber = null;
         description = null;
@@ -96,9 +97,6 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
         inComments = null;
         quantityResolved = null;
         quantityReturned = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
         borrow = null;
     }

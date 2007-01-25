@@ -93,6 +93,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     @Override
     public void initialize()
     {
+        super.init();
         stratigraphyId = null;
         superGroup = null;
         lithoGroup = null;
@@ -104,9 +105,6 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         collectingEvents = null;

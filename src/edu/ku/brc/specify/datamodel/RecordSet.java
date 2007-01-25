@@ -107,6 +107,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     @Override
     public void initialize()
     {
+        super.init();
         recordSetId = null;
         //name = null;
         //tableId = null;
@@ -114,8 +115,6 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel = null;
-        timestampModified = null;
-        timestampCreated = new Date();
         items = new HashSet<RecordSetItemIFace>();
         specifyUser = null;
         group = null;

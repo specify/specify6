@@ -30,6 +30,7 @@ import org.hibernate.annotations.CascadeType;
 
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,6 +74,7 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     @Override
     public void initialize()
     {
+        super.init();
         collectingTripId = null;
         remarks = null;
         startDate = null;

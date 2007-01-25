@@ -82,6 +82,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     @Override
     public void initialize()
 	{
+        super.init();
 		locationTreeDefItemId = null;
 		name = null;
 		remarks = null;

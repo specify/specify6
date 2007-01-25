@@ -86,12 +86,10 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     @Override
     public void initialize()
     {
+        super.init();
         deaccessionPreparationId = null;
         quantity = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         deaccession = null;
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
         preparation = null;

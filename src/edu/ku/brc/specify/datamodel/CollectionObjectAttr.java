@@ -80,11 +80,10 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     @Override
     public void initialize()
     {
+        super.init();
         attrId = null;
         strValue = null;
         dblValue = null;
-        timestampCreated = new Date();
-        timestampModified = null;
         collectionObject = null;
         definition = null;
     }

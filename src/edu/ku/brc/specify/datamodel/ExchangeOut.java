@@ -98,6 +98,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     @Override
     public void initialize()
     {
+        super.init();
         exchangeOutId = null;
         exchangeDate = null;
         quantityExchanged = null;
@@ -107,9 +108,6 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         agentSentTo = null;

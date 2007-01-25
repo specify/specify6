@@ -81,6 +81,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     @Override
     public void initialize()
     {
+        super.init();
         userGroupId = null;
         name = null;
         remarks = null;

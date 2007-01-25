@@ -97,6 +97,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         shipmentId = null;
         shipmentDate = null;
         shipmentNumber = null;
@@ -109,9 +110,6 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         shipper = null;

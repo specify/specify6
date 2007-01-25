@@ -79,11 +79,9 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     @Override
     public void initialize()
     {
+        super.init();
         projectCollectionObjectId = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         collectionObject = null;
         project = null;
     }

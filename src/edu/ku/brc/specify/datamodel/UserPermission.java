@@ -49,6 +49,7 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
     @Override
     public void initialize()
     {
+        super.init();
         userPermissionId = null;
         dataAccessPrivilege = null;
         adminPrivilege = null;

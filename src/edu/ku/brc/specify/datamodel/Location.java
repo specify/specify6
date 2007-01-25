@@ -100,6 +100,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
     @Override
     public void initialize()
 	{
+        super.init();
 		locationId = null;
 		name = null;
 		remarks = null;
@@ -111,10 +112,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		text2 = null;
 		number1 = null;
 		number2 = null;
-		timestampCreated = new Date();
-        timestampModified = null;
 		timestampVersion = null;
-		lastEditedBy = null;
 		definition = null;
 		definitionItem = null;
 		parent = null;

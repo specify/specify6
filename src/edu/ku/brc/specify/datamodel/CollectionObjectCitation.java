@@ -78,11 +78,9 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     @Override
     public void initialize()
     {
+        super.init();
         collectionObjectCitationId = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         referenceWork = null;
         collectionObject = null;
     }

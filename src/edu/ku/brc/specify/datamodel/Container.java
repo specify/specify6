@@ -89,15 +89,13 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     @Override
     public void initialize()
     {
+        super.init();
         containerId = null;
         collectionObjectId = null;
         type = null;
         name = null;
         description = null;
         number = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         items = new HashSet<ContainerItem>();
         container = null;
         location = null;

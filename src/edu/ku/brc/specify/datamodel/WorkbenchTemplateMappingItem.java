@@ -82,6 +82,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     @Override
     public void initialize()
     {
+        super.init();
         workbenchTemplateMappingItemId = null;
         tablename = null;
         tableid = null;
@@ -90,10 +91,6 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         vieworder = null;
         datatype = null;
         workbenchTemplates = null;
-        
-        timestampCreated = new Date();
-        timestampModified = new Date();
-        lastEditedBy = null;
     }
     // End Initializer
 

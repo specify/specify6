@@ -113,15 +113,13 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     @Override
     public void initialize()
     {
+        super.init();
         appResourceId       = null;
         level               = null;
         name                = null;
         description         = null;
         mimeType            = null;
         metaData            = null;
-        timestampCreated    = new Date();
-        timestampModified   = null;
-        lastEditedBy        = null;
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel = null;

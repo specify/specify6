@@ -106,14 +106,12 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     @Override
     public void initialize()
     {
+        super.init();
         viewSetObjId = null;
         level = null;
         name = null;
         description = null;
         metaData = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         appResourceDefaults = new HashSet<AppResourceDefault>();
         appResourceDatas = new HashSet<AppResourceData>();
         

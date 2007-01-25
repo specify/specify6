@@ -88,6 +88,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     @Override
     public void initialize()
     {
+        super.init();
         attachmentID = null;
         mimeType = null;
         origFilename = null;
@@ -95,9 +96,6 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         ordinal = null;
         remarks = null;
         attachmentLocation = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         metadata = new HashSet<AttachmentMetadata>();
         agent = null;
         collectionObject = null;

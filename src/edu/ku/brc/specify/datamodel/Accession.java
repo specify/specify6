@@ -104,6 +104,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     @Override
     public void initialize()
     {
+        super.init();
         accessionId = null;
         type = null;
         status = null;
@@ -117,9 +118,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         number1 = null;
         number2 = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
         collectionObjects = new HashSet<CollectionObject>();

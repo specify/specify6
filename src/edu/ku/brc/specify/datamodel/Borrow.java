@@ -102,6 +102,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         borrowId = null;
         invoiceNumber = null;
         receivedDate = null;
@@ -112,9 +113,6 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         isClosed = null;
         yesNo1 = null;
         yesNo2 = null;

@@ -79,12 +79,10 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     @Override
     public void initialize()
     {
+        super.init();
         otherIdentifierId = null;
         identifier = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         collectionObject = null;
     }
     // End Initializer

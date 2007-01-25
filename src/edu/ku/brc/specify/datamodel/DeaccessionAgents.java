@@ -82,12 +82,10 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     @Override
     public void initialize()
     {
+        super.init();
         deaccessionAgentsId = null;
         role = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         agent = null;
         deaccession = null;
     }

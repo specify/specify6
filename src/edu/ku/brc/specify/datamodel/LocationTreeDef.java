@@ -72,6 +72,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	@Override
     public void initialize()
 	{
+        super.init();
 		locationTreeDefId = null;
 		name = null;
 		remarks = null;

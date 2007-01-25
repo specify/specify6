@@ -111,6 +111,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     @Override
     public void initialize()
     {
+        super.init();
         collectingEventId = null;
         stationFieldNumber = null;
         method = null;
@@ -127,9 +128,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         groupPermittedToView = null;
         remarks = null;
         visibility = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         collectionObjects = new HashSet<CollectionObject>();
         collectors = new HashSet<Collectors>();
         locality = null;

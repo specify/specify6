@@ -81,6 +81,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	@Override
     public void initialize()
 	{
+        super.init();
 		taxonTreeDefItemId = null;
 		name = null;
 		remarks = null;

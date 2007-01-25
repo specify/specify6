@@ -105,12 +105,11 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     @Override
     public void initialize()
     {
+        super.init();
         collectionObjDefId = null;
         name = null;
         discipline = null;
         dataType = null;
-        timestampModified = null;
-        timestampCreated = new Date();
         userPermissions = null;
         catalogSeries = new HashSet<CatalogSeries>();
         specifyUser = null;

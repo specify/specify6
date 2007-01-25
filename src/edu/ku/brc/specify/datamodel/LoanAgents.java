@@ -82,12 +82,10 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     @Override
     public void initialize()
     {
+        super.init();
         loanAgentsId = null;
         role = null;
         remarks = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         loan = null;
         agent = null;
     }

@@ -115,6 +115,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     @Override
     public void initialize()
     {
+        super.init();
         loanId          = null;
         loanNumber      = null;
         loanDate        = null;
@@ -129,10 +130,6 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         number1         = null;
         number2         = null;
 
-        timestampCreated = new Date();
-        timestampModified = null;
-
-        lastEditedBy    = null;
         isClosed        = OPEN;
         yesNo1          = null;
         yesNo2          = null;

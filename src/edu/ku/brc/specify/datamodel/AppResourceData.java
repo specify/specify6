@@ -28,6 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -74,6 +76,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     @Override
     public void initialize()
     {
+        super.init();
         appResourceDataId = null;
         data = null;
     }

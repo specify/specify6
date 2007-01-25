@@ -61,13 +61,11 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     @Override
     public void initialize()
     {
+        super.init();
         attachmentMetadataID = null;
         name = null;
         value = null;
         attachment = null;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
     }
     // End Initializer
     

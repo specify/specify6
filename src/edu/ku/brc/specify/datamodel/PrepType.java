@@ -86,12 +86,10 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     @Override
     public void initialize()
     {
+        super.init();
         prepTypeId = null;
         name = null;
         isLoanable = true;
-        timestampCreated = new Date();
-        timestampModified = null;
-        lastEditedBy = null;
         preparations = new HashSet<Preparation>();
         attributeDefs = new HashSet<AttributeDef>();
     }
