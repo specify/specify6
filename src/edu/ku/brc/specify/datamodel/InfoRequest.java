@@ -43,18 +43,13 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Calendar;
-import java.util.Date;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-
-
-
 
 /**
 

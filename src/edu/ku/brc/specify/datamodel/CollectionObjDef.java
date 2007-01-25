@@ -38,17 +38,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 
 /**
 
@@ -287,7 +284,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      *      * @hibernate.one-to-one
      */
     @OneToOne
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name="TaxonTreeDefID")
     public TaxonTreeDef getTaxonTreeDef() {
         return this.taxonTreeDef;
     }

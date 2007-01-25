@@ -40,13 +40,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-
-
 
 /**
 

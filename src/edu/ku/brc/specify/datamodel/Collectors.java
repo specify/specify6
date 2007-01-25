@@ -41,13 +41,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cascade;
 
-
-import java.util.Date;
-
 import edu.ku.brc.util.Orderable;
-
-
-
 
 /**
 

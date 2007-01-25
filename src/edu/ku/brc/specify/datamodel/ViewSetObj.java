@@ -43,7 +43,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-
 import java.io.File;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -60,9 +59,6 @@ import org.hibernate.Hibernate;
 
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
-
-
-
 
 /**
 

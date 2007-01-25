@@ -42,7 +42,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;

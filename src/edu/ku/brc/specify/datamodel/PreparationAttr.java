@@ -38,9 +38,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-
-import java.util.Date;
-
 import edu.ku.brc.dbsupport.AttributeIFace;
 
 /**

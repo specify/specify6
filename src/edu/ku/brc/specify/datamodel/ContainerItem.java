@@ -39,13 +39,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-
-
 
 /**
 

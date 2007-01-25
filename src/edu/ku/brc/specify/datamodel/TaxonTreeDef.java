@@ -31,13 +31,17 @@ package edu.ku.brc.specify.datamodel;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -81,6 +85,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	}
 
     @Id
+    @GeneratedValue
     @Column(name="TaxonTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
     public Long getTaxonTreeDefId()
 	{
@@ -146,7 +151,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
         this.fullNameDirection = fullNameDirection;
     }
 
-    @Transient
+    @OneToOne(mappedBy="taxonTreeDef")
     public CollectionObjDef getCollObjDef()
 	{
 		return this.collObjDef;

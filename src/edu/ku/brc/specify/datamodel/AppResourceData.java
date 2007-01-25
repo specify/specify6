@@ -28,8 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

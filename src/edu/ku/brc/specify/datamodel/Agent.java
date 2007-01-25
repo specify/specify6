@@ -45,7 +45,6 @@ import org.hibernate.annotations.CascadeType;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -165,9 +164,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         email = null;
         url = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = new Date();
-        lastEditedBy = null;
         addresses = new HashSet<Address>();
         loanAgents = new HashSet<LoanAgents>();
         shipmentsByShipper = new HashSet<Shipment>();
