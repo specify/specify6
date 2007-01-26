@@ -77,6 +77,8 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -508,7 +510,27 @@ public class TableViewObj implements Viewable,
     }
     
     /**
-     * @param rowIndex
+     * Tells MV and UI that a change has been made. 
+     */
+    protected void tellMultiViewOfChange()
+    {
+        if (mvParent != null)
+        {
+            MultiView root = mvParent;
+            while (root.getMultiViewParent() != null)
+            {
+                root = root.getMultiViewParent();
+            }
+            formValidator.setHasChanged(true);
+            root.dataChanged(null, null, null);
+        }
+    }
+    
+    /**
+     * Can create a new item or edit an existing it; or view and existing item.
+     * @param rowIndex the index tho be editted
+     * @param isEdit whether we are editing or view
+     * @param isNew hwther the object is new
      */
     protected void editRow(final int rowIndex, final boolean isEdit, final boolean isNew)
     {
@@ -539,17 +561,14 @@ public class TableViewObj implements Viewable,
                         dialog.getMultiView().getDataFromUI();
                         if (mvParent != null)
                         {
-                            MultiView root = mvParent;
-                            while (root.getMultiViewParent() != null)
-                            {
-                                root = root.getMultiViewParent();
-                            }
-                            formValidator.setHasChanged(true);
-                            root.dataChanged(null, null, null);
+                            tellMultiViewOfChange();
                             
                             Object daObj = dialog.getMultiView().getData();
                             parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
-                            dataObjList.add(daObj);
+                            if (isNew)
+                            {
+                                dataObjList.add(daObj);
+                            }
                             model.fireDataChanged();
                             table.invalidate();
                             
@@ -571,12 +590,37 @@ public class TableViewObj implements Viewable,
     }
     
     /**
-     * 
-     * @param rowIndex
+     * Delets a Row in the table and there an data object
+     * @param rowIndex the item to be deleted
      */
     protected void deleteRow(final int rowIndex)
     {
+        FormDataObjIFace dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
+        if (dObj == null)
+        {
+            return;
+        }
+        parentDataObj.removeReference(dObj, dataSetFieldName);
+        dataObjList.remove(rowIndex);
         
+        model.fireDataChanged();
+        table.invalidate();
+        
+        JComponent comp = mvParent.getTopLevel();
+        comp.validate();
+        comp.repaint();
+        
+        tellMultiViewOfChange();
+        
+        // Delete a child object by caching it in the Top Level MultiView
+        if (mvParent != null && !mvParent.isTopLevel())
+        {
+            mvParent.getTopLevel().addDeletedItem(dObj);
+            String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dObj) : "";
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
+
+            return;
+        }
     }
     
     /**

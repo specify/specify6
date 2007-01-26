@@ -98,21 +98,21 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
     public void initialize()
     {
         super.init();
-        shipmentId = null;
-        shipmentDate = null;
-        shipmentNumber = null;
-        shipmentMethod = null;
+        shipmentId      = null;
+        shipmentDate     = null;
+        shipmentNumber   = null;
+        shipmentMethod   = null;
         numberOfPackages = null;
-        weight = null;
+        weight           = null;
         insuredForAmount = null;
-        remarks = null;
-        text1 = null;
-        text2 = null;
-        number1 = null;
-        number2 = null;
-        yesNo1 = null;
-        yesNo2 = null;
-        shipper = null;
+        remarks   = null;
+        text1     = null;
+        text2     = null;
+        number1   = null;
+        number2   = null;
+        yesNo1    = null;
+        yesNo2    = null;
+        shipper   = null;
         shippedTo = null;
         shippedBy = null;
         //borrowShipments = new HashSet<BorrowShipments>();
@@ -340,8 +340,8 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
         return this.shippedTo;
     }
     
-    public void setShippedTo(Agent agentByShippedTo) {
-        this.shippedTo = agentByShippedTo;
+    public void setShippedTo(Agent shippedTo) {
+        this.shippedTo = shippedTo;
     }
 
     /**

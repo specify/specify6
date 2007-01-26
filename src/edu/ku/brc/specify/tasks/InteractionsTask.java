@@ -394,9 +394,7 @@ public class InteractionsTask extends BaseTask
                         Shipment shipment = new Shipment();
                         shipment.initialize();
                         
-                        //loan.setShipment(shipment);//changed to support many-to-many
                         loan.addShipment(shipment);
-                        shipment.getLoans().add(loan);
                         
                         for (Preparation prep : prepsHash.keySet())
                         {

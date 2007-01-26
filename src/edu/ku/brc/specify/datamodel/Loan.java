@@ -466,9 +466,11 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     // Delete Add Methods
     public void addShipment(final Shipment shipment)
     {
-        if(shipment==null)return;
-        this.shipments.add(shipment);
-        shipment.getLoans().add(this);
+        if (shipment != null)
+        {
+            this.shipments.add(shipment);
+            shipment.getLoans().add(this);
+        }
     } 
 
     /* (non-Javadoc)

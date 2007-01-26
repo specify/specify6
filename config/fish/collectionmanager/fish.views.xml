@@ -995,7 +995,7 @@
                 </row>
                 
                 <row>                   
-                    <cell type="subview" viewname="Shipment" id="11" name="shipment" colspan="12"/>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="Preparations To be Loaned" colspan="12"/>
@@ -1601,9 +1601,9 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Shipped By"/>
-                    <cell type="field" id="7" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
                     <cell type="label" labelfor="8" label="Shipped To"/>
-                    <cell type="field" id="8" name="agentByShippedTo" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
                 </row>
             </rows>
         </viewdef>

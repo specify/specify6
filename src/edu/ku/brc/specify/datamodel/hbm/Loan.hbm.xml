@@ -124,7 +124,7 @@
     </many-to-one> -->
 
     <!-- bi-directional many-to-many association to Shipment -->
-    <set name="shipments" table="loan_shipment" inverse="true" lazy="true" cascade="save-update, lock, merge">
+    <set name="shipments" table="loan_shipment" lazy="true" cascade="save-update, lock, merge">
         <key>
             <column name="LoanID"/>
         </key>

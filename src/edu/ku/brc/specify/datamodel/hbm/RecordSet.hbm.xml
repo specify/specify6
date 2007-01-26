@@ -54,7 +54,7 @@
         <!-- Associations -->
         
         <!-- bi-directional one-to-many association to RecordSetItem -->
-        <set name="items" table="recordset_items" lazy="false">
+        <set name="items" table="recordset_items" lazy="false" cascade="save-update, lock, merge">
             <key column="RecordSetID"/>
             <composite-element class="RecordSetItem">
                 <property name="RecordId" not-null="true" unique="false"/>

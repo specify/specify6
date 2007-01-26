@@ -276,9 +276,9 @@ public final class FormHelper
                     for (int i=0;i<fileNameArray.length;i++)
                     {
                         String fieldName = fileNameArray[i];
-                       if (i < fileNameArray.length-1)
+                        if (i < fileNameArray.length-1)
                         {
-                             data = getter.getFieldValue(dataObj, fieldName);
+                             data = getter.getFieldValue(data, fieldName);
                             if (data == null)
                             {
                                 try
