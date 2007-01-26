@@ -51,11 +51,11 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	{
 		visibleNodes = new Vector<T>();
 		childrenWereShowing = new Hashtable<T, Boolean>();
-		this.visibleRoot = root;
         
         this.dataService = TreeDataServiceFactory.createService();
         this.treeDef = treeDef;
         this.root = dataService.getRootNode(treeDef);
+        this.visibleRoot = this.root;
         
 		comparator = root.getComparator();
 		
