@@ -164,7 +164,7 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
      *      * Address of agent
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

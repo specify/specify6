@@ -92,7 +92,7 @@
     </set>
     
     <!-- bi-directional many-to-one association to PrepType -->
-    <many-to-one name="prepType" class="edu.ku.brc.specify.datamodel.PrepType" cascade="save-update" outer-join="true">
+    <many-to-one name="prepType" class="edu.ku.brc.specify.datamodel.PrepType" cascade="save-update,merge,lock" outer-join="true">
         <meta attribute="field-description"></meta>
         <column name="PrepTypeID"  not-null="true"/>
     </many-to-one>
@@ -104,13 +104,13 @@
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent  not-null="true"-->
-    <many-to-one name="preparedByAgent" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="preparedByAgent" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update,merge,lock" outer-join="true">
         <meta attribute="field-description"></meta>
         <column name="PreparedByID" />
     </many-to-one>
         
     <!-- bi-directional many-to-one association to Location -->
-    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update" outer-join="auto">
+    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update,merge,lock" outer-join="auto">
         <meta attribute="field-description"></meta>
         <column name="LocationID"  not-null="false"/>
     </many-to-one>

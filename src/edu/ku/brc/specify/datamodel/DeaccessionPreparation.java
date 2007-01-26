@@ -157,7 +157,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      *      * The deaccession
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Deaccession getDeaccession() {
         return this.deaccession;
@@ -180,7 +180,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "PreparationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Preparation getPreparation()
     {

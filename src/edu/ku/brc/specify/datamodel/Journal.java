@@ -165,7 +165,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "journal")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ReferenceWork> getReferenceWorks() {
         return this.referenceWorks;
     }

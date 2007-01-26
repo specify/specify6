@@ -157,7 +157,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
      *      * AgentAdress of agent playing role in Accession
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

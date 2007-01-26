@@ -43,7 +43,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-many association to CollectionObjDef -->
-    <set name="collectionObjDefItems" table="catseries_colobjdef" lazy="true" cascade="save-update">
+    <set name="collectionObjDefItems" table="catseries_colobjdef" lazy="true" cascade="save-update, lock, merge">
         <key>
             <column name="CatalogSeriesID"/>
         </key>

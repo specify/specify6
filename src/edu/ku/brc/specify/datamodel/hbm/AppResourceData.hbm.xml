@@ -46,7 +46,7 @@
             constrained="true" />
         -->
         
-        <!--<one-to-one name="viewSetObj" class="edu.ku.brc.specify.datamodel.ViewSetObj" outer-join="auto" constrained="true" cascade="save-update"/> -->
+        <!--<one-to-one name="viewSetObj" class="edu.ku.brc.specify.datamodel.ViewSetObj" outer-join="auto" constrained="true" cascade="save-update, lock, merge"/> -->
 
         
     </class>

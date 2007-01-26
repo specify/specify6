@@ -33,7 +33,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
-    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" cascade="save-update" outer-join="true" index="IX_LocalityCitationReferenceWorkID" unique-key="IX_LocalityCitation">
+    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" cascade="save-update, lock, merge" outer-join="true" index="IX_LocalityCitationReferenceWorkID" unique-key="IX_LocalityCitation">
         <meta attribute="field-description">ID of work citing locality</meta>
         <column name="ReferenceWorkID"  not-null="true"/>
     </many-to-one>

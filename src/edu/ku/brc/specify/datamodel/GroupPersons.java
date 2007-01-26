@@ -164,7 +164,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
      *      * AgentID of member (member must be of type Person)
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "MemberID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getMember() {
         return this.member;

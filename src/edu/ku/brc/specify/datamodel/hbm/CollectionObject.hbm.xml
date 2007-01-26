@@ -128,14 +128,14 @@
     <!-- Associations -->
 
     <!-- bi-directional many-to-one association to CollectingEvent not-null="true"-->
-    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" cascade="save-update" outer-join="true" index="IX_CollectionObjectCollectingEventID">
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" cascade="save-update,merge,lock" outer-join="true" index="IX_CollectionObjectCollectingEventID">
     	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">BiologicalObject (Bird, Fish, etc)</meta>
         <column name="CollectingEventID"  />
     </many-to-one>
 
     <!-- bi-directional many-to-one association to ContainerItem  not-null="false"-->
-    <many-to-one name="containerItem" class="edu.ku.brc.specify.datamodel.ContainerItem" cascade="all" outer-join="auto">
+    <many-to-one name="containerItem" class="edu.ku.brc.specify.datamodel.ContainerItem" cascade="save-update,merge,lock" outer-join="auto">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="ContainerItemID" />
@@ -223,21 +223,21 @@
     </set>
 
     <!-- bi-directional many-to-one association to CatalogSeries -->
-    <many-to-one name="catalogSeries" class="edu.ku.brc.specify.datamodel.CatalogSeries" cascade="save-update" outer-join="true">
+    <many-to-one name="catalogSeries" class="edu.ku.brc.specify.datamodel.CatalogSeries" cascade="save-update,merge,lock" outer-join="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="CatalogSeriesID"  not-null="true"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" cascade="save-update" outer-join="true">
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" cascade="save-update,merge,lock" outer-join="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="AccessionID" />
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Agent  not-null="true"-->
-    <many-to-one name="cataloger" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update"  outer-join="auto">
+    <many-to-one name="cataloger" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update,merge,lock"  outer-join="auto">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="CatalogerID" />

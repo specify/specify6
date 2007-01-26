@@ -148,7 +148,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
      * * Permit authorizing accession
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "PermitID", unique = false, nullable = false, insertable = true, updatable = true)
     public Permit getPermit()
     {

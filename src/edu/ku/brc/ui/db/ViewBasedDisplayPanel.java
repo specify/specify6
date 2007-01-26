@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
@@ -73,7 +74,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     protected JButton        okBtn;
     protected JButton        cancelBtn    = null;
     protected JPanel         contentPanel;
-    protected Window         parent;
+    protected Window         parentWin;
 
     /**
      * Constructor.
@@ -107,7 +108,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                                  final boolean isEdit,
                                  final int     options)
     {
-        this.parent      = parent;
+        this.parentWin      = parent;
         this.className   = className;
         this.idFieldName = idFieldName;
         this.displayName = displayName;
@@ -154,6 +155,10 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
         okBtn = new JButton(closeBtnTitle);
         okBtn.addActionListener(this);
+        if (parentWin instanceof JDialog)
+        {
+            ((JDialog)parentWin).getRootPane().setDefaultButton(okBtn);
+        }
 
         ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
         btnBuilder.addGlue();
@@ -229,7 +234,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         // Handle clicks on the OK and Cancel buttons.
-        parent.setVisible(false);
+        parentWin.setVisible(false);
         if (propertyChangeListener != null)
         {
             boolean isOkButton = (e.getSource() == okBtn);

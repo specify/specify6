@@ -119,7 +119,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "PickListID", unique = false, nullable = false, insertable = true, updatable = true)
     public PickList getPickList()
     {

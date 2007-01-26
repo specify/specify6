@@ -280,7 +280,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
     @JoinTable(name = "appresdef_viewsetobj", joinColumns = { @JoinColumn(name = "ViewSetObjID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = false) })
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<AppResourceDefault> getAppResourceDefaults() {
         return this.appResourceDefaults;
     }

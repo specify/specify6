@@ -375,7 +375,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
@@ -388,7 +388,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Collectors> getCollectors() {
         return this.collectors;
     }
@@ -401,7 +401,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      *      * Locality where collection took place
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocalityID", unique = false, nullable = true, insertable = true, updatable = true)
     public Locality getLocality() {
         return this.locality;
@@ -439,7 +439,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectingTripID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingTrip getCollectingTrip()
     {

@@ -35,7 +35,7 @@ public class TreeFactory
 	 * and rank.
 	 * 
 	 * @param implementingClass the class of the node to be created
-	 * @param parent the parent of the new node
+	 * @param parentWin the parent of the new node
 	 * @param name the name of the new node
 	 * @param rank the rank of the new node
 	 * @return the new Treeable node instance

@@ -357,7 +357,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getOriginator() {
         return this.originator;
@@ -371,7 +371,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "repositoryAgreement")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Accession> getAccessions() {
         return this.accessions;
     }

@@ -22,10 +22,12 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.ui.DateWrapper;
 
 /**
  *
@@ -37,6 +39,8 @@ import edu.ku.brc.specify.datamodel.RecordSetItem;
 @SuppressWarnings("serial")
 public class ResultSetTableModelDM extends ResultSetTableModel
 {
+    protected DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+
     // Static Data Members
     private static final Logger log = Logger.getLogger(ResultSetTableModelDM.class);
    
@@ -181,8 +185,16 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                 }
                 
             }
-            
-            return displayColIndexes != null ? resultSet.getObject(displayColIndexes[column]+1) : resultSet.getObject(column+1);
+            Object data = displayColIndexes != null ? resultSet.getObject(displayColIndexes[column]+1) : resultSet.getObject(column+1);
+            /*System.out.println(data != null ? data.getClass().getSimpleName() : "");
+            if (data != null)
+            {
+                if (data instanceof Date)
+                {
+                    return scrDateFormat.format((Date)data);
+                }
+            }*/
+            return data;//displayColIndexes != null ? resultSet.getObject(displayColIndexes[column]+1) : resultSet.getObject(column+1);
             
         } catch (SQLException ex)
         {

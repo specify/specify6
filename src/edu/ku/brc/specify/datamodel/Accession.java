@@ -339,7 +339,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }

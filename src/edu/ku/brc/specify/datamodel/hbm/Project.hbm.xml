@@ -80,7 +80,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent not-null="true"-->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent"  cascade="save-update" outer-join="true">
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent"  cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">Agent record for project</meta>
         <column name="ProjectAgentID" />
     </many-to-one>

@@ -307,11 +307,13 @@ public class TableViewObj implements Viewable,
      * @param rows the number of rows
      */
     public void setVisibleRowCount(int rows)
-    { 
-        table.setPreferredScrollableViewportSize(new Dimension( 
-                table.getPreferredScrollableViewportSize().width, 
-                rows*table.getRowHeight() 
-        )); 
+    {
+        if (table != null)
+        {
+            table.setPreferredScrollableViewportSize(new Dimension( 
+                    table.getPreferredScrollableViewportSize().width, 
+                    rows*table.getRowHeight()));
+        }
     }
     
     /**
@@ -321,14 +323,17 @@ public class TableViewObj implements Viewable,
      */
     public void setVisibleRowCountForHeight(int rows)
     { 
-        int height = 0; 
-        for(int row=0; row<rows; row++) 
-            height += table.getRowHeight(row); 
-     
-        table.setPreferredScrollableViewportSize(new Dimension( 
-                table.getPreferredScrollableViewportSize().width, 
-                height 
-        )); 
+        if (table != null)
+        {
+            int height = 0; 
+            for(int row=0; row<rows; row++) 
+                height += table.getRowHeight(row); 
+         
+            table.setPreferredScrollableViewportSize(new Dimension( 
+                    table.getPreferredScrollableViewportSize().width, 
+                    height 
+            ));
+        }
     }
 
     

@@ -62,7 +62,7 @@
         <!-- Associations -->
         
         <!-- bi-directional many-to-many association to AppResourceDefault -->
-        <set name="appResourceDefaults" table="appresdef_appres" lazy="true" cascade="save-update">
+        <set name="appResourceDefaults" table="appresdef_appres" lazy="true" cascade="save-update, lock, merge">
             <key>
                 <column name="AppResourceID"/>
             </key>

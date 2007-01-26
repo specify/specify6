@@ -473,7 +473,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *      * BiologicalObject (Bird, Fish, etc)
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectingEventID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
@@ -598,7 +598,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = true)
     public CatalogSeries getCatalogSeries() {
         return this.catalogSeries;
@@ -612,7 +612,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
     public Accession getAccession() {
         return this.accession;
@@ -626,7 +626,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CatalogerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getCataloger() {
         return this.cataloger;

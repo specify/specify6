@@ -70,7 +70,7 @@
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
-    <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="save-update">
+    <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="save-update, lock, merge">
         <meta attribute="field-description"></meta>
         <key>
             <column name="LoanPhysicalObjectID"/>

@@ -138,7 +138,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCatalogSeries()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = true, insertable = true, updatable = true)
     public CatalogSeries getCatalogSeries() {
         return this.catalogSeries;
@@ -155,7 +155,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollectionObjDef()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
@@ -172,7 +172,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getSpecifyUser()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
@@ -189,7 +189,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getAppResources()
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<AppResource> getAppResources() {
         return this.appResources;
     }
@@ -205,7 +205,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getViewSets()
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ViewSetObj> getViewSets() {
         return this.viewSets;
     }

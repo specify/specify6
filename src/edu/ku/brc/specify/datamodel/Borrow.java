@@ -336,7 +336,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
             name="borrow_shipment",
             joinColumns = {@JoinColumn(name="BorrowID")},
             inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }

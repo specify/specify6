@@ -95,19 +95,19 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent not-null="true"-->
-    <many-to-one name="shipper" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="shipper" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">AgentID of agent transporting the material</meta>
         <column name="ShipperID"  />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent   not-null="true"-->
-    <many-to-one name="shippedTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="shippedTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">AgentID of agent material is shipped to</meta>
         <column name="ShippedToID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent not-null="true"-->
-    <many-to-one name="shippedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="shippedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">AgentID of person approving/initiating the shipment</meta>
         <column name="ShippedByID"  />
     </many-to-one>
@@ -124,7 +124,7 @@
     </set> -->
     
     <!-- bi-directional many-to-many association to Borrow -->
-    <set name="borrows" table="borrow_shipment" inverse="true" lazy="true" cascade="save-update">
+    <set name="borrows" table="borrow_shipment" inverse="true" lazy="true" cascade="save-update, lock, merge">
         <key>
             <column name="ShipmentID"/>
         </key>
@@ -141,7 +141,7 @@
     </set> -->
     
     <!-- bi-directional many-to-many association to Loan -->
-    <set name="loans" table="loan_shipment" inverse="true" lazy="true" cascade="save-update">
+    <set name="loans" table="loan_shipment" inverse="true" lazy="true" cascade="save-update, lock, merge">
         <key>
             <column name="ShipmentID"/>
         </key>
@@ -158,7 +158,7 @@
     </set> -->
     
         <!-- bi-directional many-to-many association to ExchangeOut -->
-    <set name="exchangeOuts" table="exchangeout_shipment" lazy="true" inverse="true" cascade="save-update">
+    <set name="exchangeOuts" table="exchangeout_shipment" lazy="true" inverse="true" cascade="save-update, lock, merge">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ShipmentID"/>

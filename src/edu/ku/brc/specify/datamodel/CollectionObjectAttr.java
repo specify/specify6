@@ -254,7 +254,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AttributeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public AttributeDef getDefinition()
     {

@@ -508,7 +508,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AcceptedID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Taxon getAcceptedTaxon()
 	{

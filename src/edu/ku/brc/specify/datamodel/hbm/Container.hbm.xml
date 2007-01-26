@@ -69,7 +69,7 @@
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Location -->
-    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update" outer-join="auto">
+    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" cascade="save-update, lock, merge" outer-join="auto">
         <meta attribute="field-description"></meta>
         <column name="LocationID"  not-null="false"/>
     </many-to-one>

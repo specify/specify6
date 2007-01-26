@@ -89,7 +89,7 @@
 
         <!-- bi-directional many-to-one association to Taxon -->
         <many-to-one name="acceptedTaxon" class="edu.ku.brc.specify.datamodel.Taxon"
-            outer-join="true" column="AcceptedID" cascade="save-update"/>
+            outer-join="true" column="AcceptedID" cascade="save-update, lock, merge"/>
 
         <!-- bi-directional one-to-many association to TaxonCitation -->
         <set name="taxonCitations" inverse="true" cascade="all-delete-orphan">

@@ -118,13 +118,13 @@
     </set>
     
     <!-- bi-directional many-to-one association to Shipment -->
-    <!-- <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" cascade="save-update" outer-join="true" index="IX_LoanShipmentID">
+    <!-- <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" cascade="save-update, lock, merge" outer-join="true" index="IX_LoanShipmentID">
         <meta attribute="field-description">Link to Shipment table</meta>
         <column name="ShipmentID"  not-null="true"/>
     </many-to-one> -->
 
     <!-- bi-directional many-to-many association to Shipment -->
-    <set name="shipments" table="loan_shipment" inverse="true" lazy="true" cascade="save-update">
+    <set name="shipments" table="loan_shipment" inverse="true" lazy="true" cascade="save-update, lock, merge">
         <key>
             <column name="LoanID"/>
         </key>

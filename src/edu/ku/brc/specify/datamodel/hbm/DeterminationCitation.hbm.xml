@@ -33,13 +33,13 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
-    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork"  cascade="save-update"  outer-join="true" index="IX_DeterminationCitationReferenceWorkID" unique-key="IX_DeterminationCitation">
+    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork"  cascade="save-update, lock, merge"  outer-join="true" index="IX_DeterminationCitationReferenceWorkID" unique-key="IX_DeterminationCitation">
         <meta attribute="field-description">ID of the publication citing the determination</meta>
         <column name="ReferenceWorkID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Determination -->
-    <many-to-one name="determination" class="edu.ku.brc.specify.datamodel.Determination"  cascade="save-update"  outer-join="true" index="IX_DeterminationCitationDeterminationID" unique-key="IX_DeterminationCitation">
+    <many-to-one name="determination" class="edu.ku.brc.specify.datamodel.Determination"  cascade="save-update, lock, merge"  outer-join="true" index="IX_DeterminationCitationDeterminationID" unique-key="IX_DeterminationCitation">
         <meta attribute="field-description">Determination being cited</meta>
         <column name="DeterminationID"  not-null="true"/>
     </many-to-one>

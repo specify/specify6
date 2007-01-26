@@ -108,7 +108,7 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObject -->
-    <set name="collectionObjects" lazy="true" inverse="true" cascade="save-update">    
+    <set name="collectionObjects" lazy="true" inverse="true" cascade="save-update, lock, merge">    
     	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta> 
         <key>
@@ -118,7 +118,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to Collectors -->
-    <set name="collectors" lazy="true" inverse="true" cascade="save-update" order-by="orderNumber asc">
+    <set name="collectors" lazy="true" inverse="true" cascade="save-update, lock, merge" order-by="orderNumber asc">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectingEventID"/>
@@ -127,14 +127,14 @@
     </set>
     
     <!-- bi-directional many-to-one association to Locality -->
-    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" cascade="save-update" outer-join="true" index="IX_CollectingEventLocalityID">
+    <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" cascade="save-update,merge,lock" outer-join="true" index="IX_CollectingEventLocalityID">
     	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Locality where collection took place</meta>
         <column name="LocalityID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to CollectingTrip -->
-    <many-to-one name="collectingTrip" class="edu.ku.brc.specify.datamodel.CollectingTrip" cascade="save-update" outer-join="true">
+    <many-to-one name="collectingTrip" class="edu.ku.brc.specify.datamodel.CollectingTrip" cascade="save-update,merge,lock" outer-join="true">
         <column name="CollectingTripID"/>
     </many-to-one>
     

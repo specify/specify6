@@ -95,7 +95,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->
-    <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="save-update">
+    <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="save-update, lock, merge">
         <meta attribute="field-description"></meta>
         <key>
             <column name="PermitID"/>
@@ -104,13 +104,13 @@
     </set>
     
     <!-- bi-directional many-to-one association to Agent not-null="true"-->
-    <many-to-one name="issuedTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="issuedTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">AgentID of Issuee</meta>
         <column name="IssuedToID"  />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent not-null="true"-->
-    <many-to-one name="issuedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="issuedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">AgentID of Issuer</meta>
         <column name="IssuedByID"  />
     </many-to-one>

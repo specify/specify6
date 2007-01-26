@@ -100,7 +100,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to CollectionObject -->
-    <set name="collectionObjects" lazy="true" inverse="true" cascade="save-update">
+    <set name="collectionObjects" lazy="true" inverse="true" cascade="save-update, lock, merge">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>

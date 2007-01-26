@@ -253,7 +253,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loanPhysicalObject")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;
     }

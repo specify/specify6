@@ -236,7 +236,7 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingTrip")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectingEvent> getCollectingEvents() {
         return this.collectingEvents;
     }

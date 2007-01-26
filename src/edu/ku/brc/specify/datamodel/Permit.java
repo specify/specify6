@@ -323,7 +323,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<AccessionAuthorizations> getAccessionAuthorizations() {
         return this.accessionAuthorizations;
     }
@@ -336,7 +336,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of Issuee
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "IssuedToID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getIssuedTo() {
         return this.issuedTo;
@@ -350,7 +350,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of Issuer
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "IssuedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getIssuedBy() {
         return this.issuedBy;

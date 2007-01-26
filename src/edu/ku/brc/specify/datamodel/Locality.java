@@ -772,7 +772,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
      *      * Link to Country, State, County, WaterBody, Island, IslandGroup ... info
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "GeographyID", unique = false, nullable = false, insertable = true, updatable = true)
     public Geography getGeography() {
         return this.geography;

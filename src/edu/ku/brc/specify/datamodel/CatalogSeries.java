@@ -206,7 +206,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
     @JoinTable(name = "catseries_colobjdef", joinColumns = { @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = false) })
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectionObjDef> getCollectionObjDefItems() {
         return this.collectionObjDefItems;
     }

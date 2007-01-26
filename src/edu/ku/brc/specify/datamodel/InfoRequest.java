@@ -251,7 +251,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
     public RecordSet getRecordSet() {
         return this.recordSet;
@@ -281,7 +281,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

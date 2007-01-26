@@ -274,7 +274,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
      *      * Agent ID of organization material was sent to
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "SentToOrganizationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentSentTo() {
         return this.agentSentTo;
@@ -288,7 +288,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
      *      * Agent ID of person who recorded  the exchange
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CatalogedByID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentCatalogedBy() {
         return this.agentCatalogedBy;
@@ -306,7 +306,7 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
             name="exchangeout_shipment",
             joinColumns = {@JoinColumn(name="ExchangeOutID")},
             inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }

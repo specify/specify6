@@ -452,7 +452,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "organization")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Agent> getOrgMembers() {
         return this.orgMembers;
     }
@@ -465,7 +465,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *      * of organization
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ParentOrganizationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getOrganization() {
         return this.organization;

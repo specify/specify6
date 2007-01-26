@@ -162,7 +162,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "DeterminationStatusID", unique = false, nullable = false, insertable = true, updatable = true)
     public DeterminationStatus getStatus() 
     {
@@ -359,7 +359,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "TaxonID", unique = false, nullable = true, insertable = true, updatable = true)
     public Taxon getTaxon() 
     {
@@ -404,7 +404,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      *      * id of the Person making the determination
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "DeterminerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getDeterminer() 
     {

@@ -78,13 +78,13 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentSentTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="agentSentTo" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">Agent ID of organization material was sent to</meta>
         <column name="SentToOrganizationID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agentCatalogedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="agentCatalogedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">Agent ID of person who recorded  the exchange</meta>
         <column name="CatalogedByID"  not-null="true"/>
     </many-to-one>
@@ -96,7 +96,7 @@
     </many-to-one> -->
     
     <!-- bi-directional many-to-many association to Shipment -->
-    <set name="shipments" table="exchangeout_shipment" inverse="true" lazy="true" cascade="save-update">
+    <set name="shipments" table="exchangeout_shipment" inverse="true" lazy="true" cascade="save-update, lock, merge">
         <key>
             <column name="ExchangeOutID"/>
         </key>

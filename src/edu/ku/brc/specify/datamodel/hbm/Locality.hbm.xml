@@ -258,7 +258,7 @@
     </set>   
   
     <!-- bi-directional many-to-one association to Geography -->
-    <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" cascade="save-update" outer-join="true" index="IX_LocalityGeographyID"  >
+    <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" cascade="save-update, lock, merge" outer-join="true" index="IX_LocalityGeographyID"  >
     <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Link to Country, State, County, WaterBody, Island, IslandGroup ... info</meta>
         <column name="GeographyID"  not-null="true"/>

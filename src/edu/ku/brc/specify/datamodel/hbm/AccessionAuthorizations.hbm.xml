@@ -31,7 +31,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Permit -->
-    <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" outer-join="true" cascade="save-update" index="IX_AccessionAuthorizationsPermitID" unique-key="IX_AccessionAuthorizations">
+    <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" outer-join="true" cascade="save-update, lock, merge" index="IX_AccessionAuthorizationsPermitID" unique-key="IX_AccessionAuthorizations">
         <meta attribute="field-description">Permit authorizing accession</meta>
         <column name="PermitID"  not-null="true"/>
     </many-to-one>

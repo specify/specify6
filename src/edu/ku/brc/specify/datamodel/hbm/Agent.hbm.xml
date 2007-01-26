@@ -152,7 +152,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to Agent -->
-    <set name="orgMembers" lazy="true" inverse="true" cascade="save-update">
+    <set name="orgMembers" lazy="true" inverse="true" cascade="save-update, lock, merge">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ParentOrganizationID"/>
@@ -161,7 +161,7 @@
     </set>
 
     <!-- bi-directional many-to-one association to Agent  not-null="true"-->
-    <many-to-one name="organization" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true" index="IX_AgentParentOrganizationID">
+    <many-to-one name="organization" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true" index="IX_AgentParentOrganizationID">
         <meta attribute="field-description">of organization</meta>
         <column name="ParentOrganizationID"  />
     </many-to-one>

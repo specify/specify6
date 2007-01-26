@@ -34,7 +34,7 @@
     <!-- Associations -->
     
     <!-- bi-directional one-to-many association to CollectingEvent -->
-    <set name="collectingEvents" inverse="true" cascade="save-update">
+    <set name="collectingEvents" inverse="true" cascade="save-update, lock, merge">
         <key column="CollectingTripID"/>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
     </set>	

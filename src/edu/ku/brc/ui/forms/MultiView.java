@@ -604,6 +604,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     {
                         if (add(viewable, altViewName))
                         {
+                            if (viewable instanceof TableViewObj)
+                            {
+                                ((TableViewObj)viewable).setVisibleRowCount(5);// XXX FIX ME cellSubView.getTableRows());
+                            }
                             if (mvParent != null)
                             {
                                 //viewable.getUIComponent().setSize(size);

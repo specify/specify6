@@ -225,7 +225,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Location getLocation() {
         return this.location;

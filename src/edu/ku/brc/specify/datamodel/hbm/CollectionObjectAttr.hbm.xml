@@ -41,7 +41,7 @@
     </many-to-one>
    
     <!-- bi-directional many-to-one association to AttributeDef -->
-    <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" cascade="save-update" outer-join="true">
+    <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="AttributeDefID"  not-null="true"/>

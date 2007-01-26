@@ -72,7 +72,7 @@
 
     
      <!-- bi-directional many-to-many association to UserGroup -->
-    <set name="userGroup" table="sp_usergroup" cascade="save-update" outer-join="true"  >
+    <set name="userGroup" table="sp_usergroup" cascade="save-update, lock, merge" outer-join="true"  >
     	<meta attribute="field-description"></meta>
     	<key column="SpecifyUserID"/>
     	<many-to-many column="UserGroupID" class="edu.ku.brc.specify.datamodel.UserGroup"/>
@@ -94,7 +94,7 @@
     </one-to-one> -->
 
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update">
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update, lock, merge">
         <meta attribute="field-description"></meta>
         <column name="AgentID"  />
     </many-to-one>

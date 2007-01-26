@@ -38,7 +38,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent"  cascade="save-update" outer-join="true" index="IX_BorrowAgentsAgentID" unique-key="IX_BorrowAgents">
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent"  cascade="save-update, lock, merge" outer-join="true" index="IX_BorrowAgentsAgentID" unique-key="IX_BorrowAgents">
         <meta attribute="field-description">Address/Organization from which agent participated in the borrow</meta>
         <column name="AgentID" not-null="true"/>
     </many-to-one>

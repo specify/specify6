@@ -198,7 +198,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
      *      * Person processing the loan return
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ReceivedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getReceivedBy() {
         return this.receivedBy;

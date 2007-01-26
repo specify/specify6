@@ -61,7 +61,7 @@
     </many-to-one>   
     
     <!-- bi-directional many-to-one association to Agent  not-null="true"-->
-    <many-to-one name="receivedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update" outer-join="true">
+    <many-to-one name="receivedBy" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge" outer-join="true">
         <meta attribute="field-description">Person processing the loan return</meta>
         <column name="ReceivedByID" />
     </many-to-one>

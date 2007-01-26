@@ -86,7 +86,7 @@
     </set> -->
     
     <!-- bi-directional many-to-many association to Shipment -->
-    <set name="shipments" table="borrow_shipment" inverse="true" lazy="true" cascade="save-update">
+    <set name="shipments" table="borrow_shipment" inverse="true" lazy="true" cascade="save-update, lock, merge">
         <key>
             <column name="BorrowID"/>
         </key>

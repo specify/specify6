@@ -44,7 +44,7 @@
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="member" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update">
+    <many-to-one name="member" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge">
         <meta attribute="field-description">AgentID of member (member must be of type Person)</meta>
         <column name="MemberID"  not-null="true"/>
     </many-to-one>

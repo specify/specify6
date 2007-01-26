@@ -341,7 +341,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
     @JoinTable(name = "appresdef_appres", joinColumns = { @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = false) })
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<AppResourceDefault> getAppResourceDefaults() {
         return this.appResourceDefaults;
     }

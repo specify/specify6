@@ -300,7 +300,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
      *      * Agent record for project
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ProjectAgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

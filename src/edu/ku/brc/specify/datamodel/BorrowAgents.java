@@ -152,7 +152,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
      *      * Address/Organization from which agent participated in the borrow
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

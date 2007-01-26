@@ -44,7 +44,7 @@
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update" index="IX_LoanAgentsAgentID" unique-key="IX_LoanAgents">
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update, lock, merge" index="IX_LoanAgentsAgentID" unique-key="IX_LoanAgents">
         <meta attribute="field-description">Agent</meta>
         <column name="AgentID"  not-null="true"/>
     </many-to-one>

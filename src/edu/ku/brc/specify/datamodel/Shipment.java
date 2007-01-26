@@ -320,7 +320,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of agent transporting the material
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ShipperID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getShipper() {
         return this.shipper;
@@ -334,7 +334,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of agent material is shipped to
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ShippedToID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getShippedTo() {
         return this.shippedTo;
@@ -348,7 +348,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of person approving/initiating the shipment
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ShippedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getShippedBy() {
         return this.shippedBy;
@@ -372,7 +372,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      * 
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy="shipments")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Borrow> getBorrows() {
         return this.borrows;
     }
@@ -384,7 +384,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      * 
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy="shipments")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Loan> getLoans() {
         return this.loans;
     }
@@ -397,7 +397,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      * 
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy="shipments")
-    @Cascade( { CascadeType.SAVE_UPDATE })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ExchangeOut> getExchangeOuts() {
         return this.exchangeOuts;
     }

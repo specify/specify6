@@ -50,13 +50,13 @@
     </many-to-one> -->
         
     <!-- bi-directional many-to-one association to Deaccession -->
-    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" cascade="save-update" outer-join="true" >
+    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" cascade="save-update, lock, merge" outer-join="true" >
         <meta attribute="field-description">The deaccession</meta>
         <column name="DeaccessionID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
-    <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="none">
+    <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="save-update, lock, merge">
         <meta attribute="field-description"></meta>
         <key>
             <column name="DeaccessionPhysicalObjectID"/>
