@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -89,7 +88,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public synchronized T getRootNode(D treeDef)
 	{
-		Class<T> nodeClass = treeDef.getNodeClass();
 		T root = null;
 		
         Session session = getNewSession(treeDef);
@@ -102,12 +100,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             }
         }
         
-        
-//        Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.rankId = 0 AND node.definition = :def");
-//		q.setParameter("def",treeDef);
-//		root = (T)q.uniqueResult();
-//        // force loading of the def and items
-//        root.getDefinition().getTreeDefItems().size();
         session.close();
 		return root;
 	}
@@ -156,27 +148,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
 	}
 
-//	/**
-//	 * Regenerates all nodeNumber and highestChildNodeNumber field values for all
-//	 * nodes attached to the given root.  The nodeNumber field of the given root
-//	 * must already be set.
-//	 * 
-//	 * @param root the top of the tree to be renumbered
-//	 * @return the highest node number value present in the subtree rooted at <code>root</code>
-//	 */
-//	protected synchronized int fixNodeNumbersFromRoot( T root, Session session )
-//	{
-//        session.lock(root,LockMode.NONE);
-//        int nextNodeNumber = root.getNodeNumber();
-//		for( T child: root.getChildren() )
-//		{
-//			child.setNodeNumber(++nextNodeNumber);
-//			nextNodeNumber = fixNodeNumbersFromRoot(child,session);
-//		}
-//		root.setHighestChildNodeNumber(nextNodeNumber);
-//		return nextNodeNumber;
-//	}
-
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getAllTreeDefs(java.lang.Class)
 	 */
@@ -184,8 +155,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	public synchronized List<D> getAllTreeDefs(Class<D> treeDefClass)
 	{
         Session session = getNewSession();
-		Criteria crit = session.createCriteria(treeDefClass);
-		List<?> results = crit.list();
+
+        Query q = session.createQuery("FROM " + treeDefClass.getSimpleName() + " as def");
+        List<?> results = q.list();
+        
 		Vector<D> defs = new Vector<D>(results.size());
 		for( Object o: results )
 		{
