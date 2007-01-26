@@ -55,7 +55,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         Vector<T> results = new Vector<T>();
         Class<T> nodeClass = treeDef.getNodeClass();
         
-        Session session = getNewSession();
+        Session session = getNewSession(treeDef);
         Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name LIKE :name");
         q.setParameter("name",name);
         for( Object o: q.list() )
@@ -93,11 +93,21 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		T root = null;
 		
         Session session = getNewSession(treeDef);
-        Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.rankId = 0 AND node.definition = :def");
-		q.setParameter("def",treeDef);
-		root = (T)q.uniqueResult();
-        // force loading of the def and items
-        root.getDefinition().getTreeDefItems().size();
+        
+        for( I defItem: treeDef.getTreeDefItems() )
+        {
+            if (defItem.getRankId()==0)
+            {
+                root = defItem.getTreeEntries().iterator().next();
+            }
+        }
+        
+        
+//        Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.rankId = 0 AND node.definition = :def");
+//		q.setParameter("def",treeDef);
+//		root = (T)q.uniqueResult();
+//        // force loading of the def and items
+//        root.getDefinition().getTreeDefItems().size();
         session.close();
 		return root;
 	}
@@ -146,26 +156,26 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
 	}
 
-	/**
-	 * Regenerates all nodeNumber and highestChildNodeNumber field values for all
-	 * nodes attached to the given root.  The nodeNumber field of the given root
-	 * must already be set.
-	 * 
-	 * @param root the top of the tree to be renumbered
-	 * @return the highest node number value present in the subtree rooted at <code>root</code>
-	 */
-	protected synchronized int fixNodeNumbersFromRoot( T root, Session session )
-	{
-        session.lock(root,LockMode.NONE);
-        int nextNodeNumber = root.getNodeNumber();
-		for( T child: root.getChildren() )
-		{
-			child.setNodeNumber(++nextNodeNumber);
-			nextNodeNumber = fixNodeNumbersFromRoot(child,session);
-		}
-		root.setHighestChildNodeNumber(nextNodeNumber);
-		return nextNodeNumber;
-	}
+//	/**
+//	 * Regenerates all nodeNumber and highestChildNodeNumber field values for all
+//	 * nodes attached to the given root.  The nodeNumber field of the given root
+//	 * must already be set.
+//	 * 
+//	 * @param root the top of the tree to be renumbered
+//	 * @return the highest node number value present in the subtree rooted at <code>root</code>
+//	 */
+//	protected synchronized int fixNodeNumbersFromRoot( T root, Session session )
+//	{
+//        session.lock(root,LockMode.NONE);
+//        int nextNodeNumber = root.getNodeNumber();
+//		for( T child: root.getChildren() )
+//		{
+//			child.setNodeNumber(++nextNodeNumber);
+//			nextNodeNumber = fixNodeNumbersFromRoot(child,session);
+//		}
+//		root.setHighestChildNodeNumber(nextNodeNumber);
+//		return nextNodeNumber;
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getAllTreeDefs(java.lang.Class)

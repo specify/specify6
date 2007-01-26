@@ -944,8 +944,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if(findResults.isEmpty())
 		{
 			//TODO: notify the user that no results were found
-			log.error("Search returned no results");
-			setStatusBarText("Search returned no results");
+			log.info("Search for '"+nodeName+"' returned no results");
+			setStatusBarText("Search for '"+nodeName+"' returned no results");
 			return;
 		}
 		
@@ -1006,7 +1006,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 		
-		if(findResults != null && findName != null)
+		if(findResults != null && findResults.size()>0 && findName != null)
 		{
 			log.error("Searching for next node from previous search: " + findName);
 			// find the next node from the previous search
