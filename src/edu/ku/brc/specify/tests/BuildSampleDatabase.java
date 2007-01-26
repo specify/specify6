@@ -64,6 +64,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -1211,7 +1213,9 @@ public class BuildSampleDatabase
     
     public static void main(String[] args) throws Exception
     {
-        String databaseName = "testfish";
+        String dbName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
+        String databaseName = dbName;
+        //String databaseName = "testfish_anno";
         String databaseHost = "localhost";
         String userName = "rods";
         String password = "rods";
