@@ -255,7 +255,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // icons for buttons
         Icon icon_subtree    = IconManager.getIcon("TTV_Subtree",   IconManager.IconSize.Std16);
         Icon icon_wholeTree  = IconManager.getIcon("TTV_WholeTree", IconManager.IconSize.Std16);
-//        Icon icon_allDescend = IconManager.getIcon("TTV_AllDescend",IconManager.IconSize.Std16);
         Icon icon_syncViews  = IconManager.getIcon("TTV_SyncViews", IconManager.IconSize.Std16);
         Icon icon_newChild   = IconManager.getIcon("TTV_NewChild",  IconManager.IconSize.Std16);
         Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
@@ -929,46 +928,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		T parent = node.getParent();
 		list.setSelectedValue(parent,true);
 	}
-	
-//	/** 
-//	 * Expands all of the nodes below the currently selected node.
-//	 */
-//	@SuppressWarnings("unchecked")
-//	public void expandAllDescendantsOfSelection(JList list)
-//	{
-//		if(checkBusy())
-//		{
-//			return;
-//		}
-//
-//		Object selection = list.getSelectedValue();
-//		if( selection == null )
-//		{
-//			return;
-//		}
-//		final T node = (T)selection;
-//
-//		int userChoice = JOptionPane.OK_OPTION;
-//		
-//		int descCnt = listModel.getDescendantCount(node);
-//		if (descCnt > 30)
-//		{
-//			userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-//		}
-//		if(userChoice == JOptionPane.OK_OPTION)
-//		{
-//            doExpandAllDescendants(node);
-//		}
-//	}
-//	
-//	protected void doExpandAllDescendants(final T node)
-//	{
-//		setBusy(true,"Expanding all descendants of " + node.getName());
-//        listModel.loadAllDescendants(node);
-//        listModel.showDescendants(node);
-//        setBusy(false,null);
-//	}
-		
+			
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#find(java.lang.String, int, boolean)
 	 */
