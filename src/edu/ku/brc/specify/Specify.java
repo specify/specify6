@@ -51,9 +51,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.DesertBlue;
 import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -267,7 +265,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // the record is deleted it doesn't get added.
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
-
         dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
@@ -918,14 +915,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
     // DatabaseLoginListener Interface
     //---------------------------------------------------------
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.DatabaseLoginListener#aboutToLoginIn()
-     */
-    public void aboutToLoginIn()
-    {
-        // do nothing
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
      */
