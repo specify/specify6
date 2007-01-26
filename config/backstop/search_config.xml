@@ -811,5 +811,25 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                 <recordset tabletype="3" col="1"/>
             </detailView>
         </table> 
+        
+        
+        <table id="104" tableid="65" name="PrepTypeSearch" title="PrepType Search" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[select PrepTypeID, Name from preptype where %s]]>
+                </sql>
+                <captions>
+                    <caption col="PrepTypeID" text="PrepTypeID"  visible="false"/>
+                    <caption col="Name" text="Name"/>
+                </captions>
+                <recordset tabletype="65" col="1"/>
+            </detailView>
+        </table>
+        
     </generic>
 </searches>

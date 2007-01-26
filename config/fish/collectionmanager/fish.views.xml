@@ -144,7 +144,8 @@
     	    <altviews>
     	        <altview name="Determination View" viewdef="Determination" label="View" mode="view"/>
     	        <altview name="Determination Edit" viewdef="Determination" label="Edit" mode="edit" default="true"/>
-    	        <altview name="Determination Table" viewdef="Determination Table" label="Grid" mode="view"/>
+    	        <altview name="Determination Table View" viewdef="Determination Table" label="Grid" mode="view"/>
+    	        <altview name="Determination Table Edit" viewdef="Determination Table" label="Grid" mode="edit"/>
     	    </altviews>
     	</view>
 
@@ -242,7 +243,8 @@
                resourcelabels="false">
     	    <desc><![CDATA[Subform within the Collection Object form.]]></desc>
     	    <altviews>
-    	        <altview name="Preparation Table" viewdef="Preparation Table" label="Grid" mode="view"/>
+    	        <altview name="Preparation Table View" viewdef="Preparation Table" label="Grid" mode="view"/>
+    	        <altview name="Preparation Table Edit" viewdef="Preparation Table" label="Grid" mode="edit"/>
     	        <altview name="Preparation View" viewdef="Preparation" label="View" mode="view"/>
     	        <altview name="Preparation Edit" viewdef="Preparation" label="Edit" mode="edit" default="true"/>
     	        <altview name="Preparation IconView" viewdef="PreparationsIconView" label="IconView" mode="view"/>
@@ -713,7 +715,7 @@
     			    <cell type="field" id="1" name="catalogNumber" format="%.0f" uitype="text"/>
 
                     <cell type="label" labelfor="2" label="Catalog Series"/>
-    			    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="text"/>
+    			    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="dsptextfield"/>
 
     			    <cell type="label" labelfor="13" label="Prev/Exchg"/>
     			    <cell type="field" id="13" name="fieldNumber" uitype="text"/>
@@ -726,7 +728,7 @@
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="5" label="Date"/>
-    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
+    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     			</row>
      			<row>
     				<cell type="separator" label="Determination" colspan="12"/>
@@ -1391,7 +1393,7 @@
 			   </row>
     			<row>
                     <cell type="label" labelfor="1" label="Prepared Date"/>
-    			    <cell type="field" id="1" name="preparedDate" format="" uitype="text"/>
+    			    <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
 
     			    <cell type="label" labelfor="2" label="Prepared By"/>
     			    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>

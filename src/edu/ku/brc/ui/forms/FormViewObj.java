@@ -255,6 +255,7 @@ public class FormViewObj implements Viewable,
         boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         
+        
         formIsInNewDataMode = isNewObject;
         //System.err.println(view.getName()+"  "+formIsInNewDataMode+"  "+options);
         
@@ -349,8 +350,11 @@ public class FormViewObj implements Viewable,
                     {
                         // We want it on the left side of other buttons
                         // so wee need to add it before the Save button
-                        addValidationIndicator(comps);
-    
+                        JComponent valInfoBtn = createValidationIndicator(this);
+                        if (valInfoBtn != null)
+                        {
+                            comps.add(valInfoBtn);
+                        }
                         addSaveBtn();
                         comps.add(saveBtn);
                         saveWasAdded = true;
@@ -370,7 +374,12 @@ public class FormViewObj implements Viewable,
                     addSaveBtn();
                     comps.add(saveBtn);
                 }
-                addValidationIndicator(comps);
+                
+                JComponent valInfoBtn = createValidationIndicator(this);
+                if (valInfoBtn != null)
+                {
+                    comps.add(valInfoBtn);
+                }
             }
         }
 
@@ -425,7 +434,7 @@ public class FormViewObj implements Viewable,
             for (AltView av : viewArg.getAltViews())
             {
                 ViewDef.ViewType type = av.getViewDef().getType();
-                if (av.getMode() == mode || type == ViewDef.ViewType.table || type == ViewDef.ViewType.formtable)
+                if (av.getMode() == mode)//|| type == ViewDef.ViewType.table || type == ViewDef.ViewType.formtable)
                 {
                     altViewsListArg.add(av);
                 }
@@ -495,9 +504,9 @@ public class FormViewObj implements Viewable,
      * Creates the JButton that displays the current state of the forms validation
      * @param comps the list of control that will be added to the controlbar
      */
-    protected void addValidationIndicator(final List<JComponent> comps)
+    public static JButton createValidationIndicator(final Viewable viewable)
     {
-        if (formValidator != null)
+        if (viewable.getValidator() != null)
         {
             JButton validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
             validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
@@ -507,25 +516,33 @@ public class FormViewObj implements Viewable,
             validationInfoBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    showValidationInfo();
+                    showValidationInfo(viewable);
                 }
             });
-            comps.add(validationInfoBtn);
-            formValidator.setValidationBtn(validationInfoBtn);
+            viewable.getValidator().setValidationBtn(validationInfoBtn);
+            return validationInfoBtn;
         }
+        // else
+        return null;
     }
 
     /**
-     *
+     * Static Helper method for showing Validation info.
+     * @param viewable the view to show info for.
      */
-    protected void showValidationInfo()
+    protected static void showValidationInfo(final Viewable viewable)
     {
         if (true)
         {
-            FormValidatorInfo formInfo = new FormValidatorInfo(this);
+            FormValidatorInfo formInfo = new FormValidatorInfo(viewable);
 
-            JDialog dialog = new JDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME));
-            dialog.setTitle(formValidator.getName());
+            Frame frame = UIHelper.getFrame(viewable.getUIComponent());
+            if (frame == null) // should never be null
+            {
+                frame = (Frame)UICacheManager.get(UICacheManager.TOPFRAME);
+            }
+            JDialog dialog = new JDialog(frame);
+            dialog.setTitle(viewable.getValidator().getName());
             PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("p", "p,5px,p"));
             panelBuilder.add(formInfo, cc.xy(1,1));
 
@@ -559,7 +576,7 @@ public class FormViewObj implements Viewable,
 
         } else
         {
-            FormValidatorInfo formInfo = new FormValidatorInfo(this);
+            FormValidatorInfo formInfo = new FormValidatorInfo(viewable);
             JFrame frame = new JFrame();
             frame.setContentPane(formInfo);
             frame.pack();
@@ -583,7 +600,7 @@ public class FormViewObj implements Viewable,
             
             formValidator.validateForm();
             
-            registerWithRootMV(show);
+            addRemoveWithRootMV(mvParent, formValidator, show);
         }
         
         if (switcherUI != null)
@@ -749,13 +766,15 @@ public class FormViewObj implements Viewable,
     
     /**
      * Adds or Removes the Validation listener from MultiView Root.
-     * @param add true means add it, false means remove it
+     * @param mvParent the parent to use to search for the Root mvParent
+     * @param validator the validator
+      * @param add true means add it, false means remove it
      */
-    protected void registerWithRootMV(final boolean add)
+    public static void addRemoveWithRootMV(final MultiView mvParent, final FormValidator validator, final boolean add)
     {
         // if this isn't the root form then find the root form
         // and make it listen to this validator for changes.
-        if (mvParent != null)
+        if (mvParent != null && validator != null)
         {
             MultiView root = mvParent;
             while (root.getMultiViewParent() != null)
@@ -764,13 +783,13 @@ public class FormViewObj implements Viewable,
             }
             if (add)
             {
-                formValidator.addValidationListener(root);
-                root.addFormValidator(formValidator);
+                validator.addValidationListener(root);
+                root.addFormValidator(validator);
                 
             } else
             {
-                formValidator.removeValidationListener(root);
-                root.removeFormValidator(formValidator);
+                validator.removeValidationListener(root);
+                root.removeFormValidator(validator);
             }
         } 
     }
@@ -908,12 +927,11 @@ public class FormViewObj implements Viewable,
         FormDataObjIFace obj = FormHelper.createAndNewDataObj(view.getClassName());
         if (parentDataObj instanceof FormDataObjIFace)
         {
-            obj.initialize();
             ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
             
         } else
         {
-            FormHelper.initAndAddToParent(parentDataObj, obj);
+            FormHelper.addToParent(parentDataObj, obj);
         }
 
         if (carryFwdDataObj == null && dataObj != null)
@@ -1044,6 +1062,8 @@ public class FormViewObj implements Viewable,
             }
             session.commit();
             session.flush();
+            
+            session.beginTransaction();
             
             Object dObj = session.merge(dataObj);
             session.saveOrUpdate(dObj);
@@ -1664,7 +1684,7 @@ public class FormViewObj implements Viewable,
                 
                 session = DataProviderFactory.getInstance().createSession();
                 
-                if (session != null)
+                if (session != null && mvParent != null)
                 {
                     mvParent.setSession(session);   
                 }
@@ -1677,8 +1697,7 @@ public class FormViewObj implements Viewable,
                     {
                         session.attach(o);
                     }
-                }
-                
+                } 
             }
         }
         
@@ -1780,6 +1799,12 @@ public class FormViewObj implements Viewable,
                     FormCellField cellField    = (FormCellField)fieldInfo.getFormCell();
                     String        formatName   = cellField.getFormatName();
                     String        defaultValue = cellField.getDefaultValue();
+                    
+                    if (cellField.getName().equals("collectingEvent.locality"))
+                    {
+                        int x = 0;
+                        x++;
+                    }
 
                     boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
 
@@ -2000,9 +2025,9 @@ public class FormViewObj implements Viewable,
                             
                        log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
                         Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
-                        if (uiData != null)
+                        if (uiData != null && dataObj != null)
                         {
-                            log.info(fieldInfo.getFormCell().getName()+" "+dataObj.getClass().getSimpleName());
+                            log.info(fieldInfo.getFormCell().getName()+" "+(dataObj != null ? dataObj.getClass().getSimpleName() : "dataObj was null"));
                             FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
                         }
                     }

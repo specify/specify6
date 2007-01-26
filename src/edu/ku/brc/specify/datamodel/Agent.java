@@ -113,6 +113,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<AccessionAgent>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
     protected Set<SpecifyUser> specifyUsers;
+    
+    protected static Agent                  currentUserAgent = null;
 
     // Constructors
 

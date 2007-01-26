@@ -8,18 +8,21 @@ package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  *
  * @code_status Alpha
  * @author jstewart
  */
-public class PreparationIconMapper implements ObjectIconMapper
+public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMapper
 {
-    public PreparationIconMapper()
+    public PreparationIconTextMapper()
     {
         // do nothing
     }
@@ -33,6 +36,35 @@ public class PreparationIconMapper implements ObjectIconMapper
         mappedClasses[0] = Preparation.class;
         return mappedClasses;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.ObjectTextMapper#getString(java.lang.Object)
+     */
+    public String getString(Object o)
+    {
+        Preparation prep = (Preparation)o;
+        if (prep != null)
+        {
+            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                tmpSession.attach(prep);
+
+            } catch (Exception ex)
+            {
+                //log.error(ex);
+                
+            } finally 
+            {
+                tmpSession.close();     
+            }
+
+            return DataObjFieldFormatMgr.format(prep, "Preparation");
+            
+        }
+        return null;
+    }
+
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectIconMapper#getIcon(java.lang.Object)

@@ -404,7 +404,7 @@ public class ViewFactory
         {
             ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName);
             cbx.setRequired(cellField.isRequired());
-            if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
+            if (validator != null)// && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
                 DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
                 cbx.getComboBox().getModel().addListDataListener(dcn);
@@ -1359,14 +1359,21 @@ public class ViewFactory
         {
             ViewDef viewDef = altView.getViewDef();
             
+            FormValidator validator = null;
+            if (altView.isValidated())
+            {
+                ValidatedJPanel validatedPanel = new ValidatedJPanel();
+                validator      = validatedPanel.getFormValidator();
+                validator.setDataChangeNotification(true);
+            }
             // Special situation where we create a table from a Form Definition
             if (viewDef instanceof FormViewDef)
             {
                 FormViewDef               formViewDef   = (FormViewDef)viewDef;  
                 Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
-                TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, null, options);
+                TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, validator, options);
 
-                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
+                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
                 return tableViewObj;
                 
             } else
@@ -1390,7 +1397,7 @@ public class ViewFactory
     
                 //Object currDataObj = tableViewObj.getCurrentDataObj();
     
-                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
+                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
 
             /*
             if (validatedPanel != null)
@@ -1518,7 +1525,7 @@ public class ViewFactory
                 if (data != null)
                 {
                     viewable.setDataObj(data);
-                    viewable.setDataIntoUI();
+                    //viewable.setDataIntoUI();
                 } else
                 {
                     throw new RuntimeException("Form could be created because the data was null! ["+view.getName()+"]["+altView.getName()+"]");

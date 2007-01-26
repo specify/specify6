@@ -14,12 +14,17 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -40,19 +45,24 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -68,6 +78,7 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
@@ -118,6 +129,7 @@ public class TableViewObj implements Viewable,
     protected MultiView                     mvParent       = null;
     protected View                          view;
     protected AltView                       altView;
+    protected ViewDef                       viewDef;
     protected FormViewDef                   formViewDef;
     protected int                           options;
     protected String                        cellName       = null;
@@ -137,12 +149,15 @@ public class TableViewObj implements Viewable,
     protected Vector<ColumnInfo>            columnList      = new Vector<ColumnInfo>();
     
     protected FormValidator                 formValidator   = null;
-    protected Object                        parentDataObj   = null;
+    protected FormDataObjIFace              parentDataObj   = null;
     protected Object                        dataObj         = null;
     protected Set<Object>                   origDataSet     = null;
     protected List<Object>                  dataObjList     = null;
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
+    
+    protected String                        dataClassName;
+    protected String                        dataSetFieldName;
 
     protected JPanel                        mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
@@ -155,6 +170,10 @@ public class TableViewObj implements Viewable,
     protected MenuSwitcherPanel             switcherUI;
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
+    
+    protected JButton                       editButton      = null;
+    protected JButton                       newButton       = null;
+    protected JButton                       deleteButton    = null;
 
     protected BusinessRulesIFace            businessRules   = null; 
 
@@ -189,6 +208,8 @@ public class TableViewObj implements Viewable,
         this.altView     = altView;
         this.mvParent    = mvParent;
         this.options     = options;
+        this.viewDef     = altView.getViewDef();
+        this.formValidator = formValidator;
         
         businessRules    = view.getBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
@@ -196,7 +217,6 @@ public class TableViewObj implements Viewable,
         
         MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
-        // XXX setValidator(formValidator);
 
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
@@ -205,10 +225,9 @@ public class TableViewObj implements Viewable,
 
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
+        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING);
         
-        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
-
-        //setValidator(formValidator);
+        setValidator(formValidator);
 
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
@@ -216,7 +235,6 @@ public class TableViewObj implements Viewable,
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
-
 
         mainComp = new JPanel(new BorderLayout());
         
@@ -257,7 +275,7 @@ public class TableViewObj implements Viewable,
                     altView.setMode(AltView.CreationMode.Edit);
                 }
                 
-                switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
+                switcherUI = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
                 
                 if (tempMode != null)
                 {
@@ -266,17 +284,67 @@ public class TableViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (altView.getMode() == AltView.CreationMode.Edit && saveBtn != null)
+                    if (isEditting)
                     {
-                        // We want it on the left side of other buttons
-                        // so wee need to add it before the Save button
-                        //addValidationIndicator(comps);
+                        editButton   = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
+                        newButton    = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
+                        deleteButton = UIHelper.createButton("SmallTrash", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
+                        
+                        editButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                                editRow(table.getSelectedRow(), isEditting, false);
+                            }
+                        });
+                        
+                        newButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                                editRow(table.getSelectedRow(), isEditting, true);
+                            }
+                        });
+                        
+                        deleteButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                                deleteRow(table.getSelectedRow());
+                            }
+                        });
+                        
+                        PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,1px,p,1px,p,1px,p,1px,p", "p"));
+                        builder.add(editButton, cc.xy(2,1));
+                        builder.add(newButton, cc.xy(4,1));
+                        builder.add(deleteButton, cc.xy(6,1));
+        
+                        
+                        comps.add(builder.getPanel());
+
+                        if (saveBtn != null)
+                        {
+                            // We want it on the left side of other buttons
+                            // so wee need to add it before the Save button
+                            //addValidationIndicator(comps);
+        
+                            //addSaveBtn();
     
-                        //addSaveBtn();
-                        comps.add(saveBtn);
-                        saveWasAdded = true;
-    
+                            comps.add(saveBtn);
+                            saveWasAdded = true;
+                        }
+                    } else
+                    {
+                         editButton = UIHelper.createButton("ViewForm", getResourceString("ViewRecord"), IconManager.IconSize.Std16, true);
+                         editButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                                editRow(table.getSelectedRow(), isEditting, false);
+                            }
+                        });
+                         PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,10px", "p"));
+                         builder.add(editButton, cc.xy(2,1));
+                         comps.add(builder.getPanel());
+   
                     }
+                    updateUI(false);
                     comps.add(switcherUI);
                 }
             }
@@ -288,7 +356,11 @@ public class TableViewObj implements Viewable,
                     //addSaveBtn();
                     comps.add(saveBtn);
                 }
-                //addValidationIndicator(comps);
+                JComponent valInfoBtn = FormViewObj.createValidationIndicator(this);
+                if (valInfoBtn != null)
+                {
+                    comps.add(valInfoBtn);
+                }
             }
         }
 
@@ -345,6 +417,33 @@ public class TableViewObj implements Viewable,
         // Now Build the JTable
         model    = new ColTableModel();
         table    = new JTable(model);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setRowSelectionAllowed(true);
+        table.setColumnSelectionAllowed(false);
+        table.setFocusable(false);
+        
+        //table.setCellSelectionEnabled(false);
+        
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                
+                ListSelectionModel lsm          = (ListSelectionModel)e.getSource();
+                updateUI(!lsm.isSelectionEmpty());
+                
+            }
+        });
+            
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if ( e.getClickCount() == 2 )
+                {
+                    int index = table.getSelectedRow();
+                    editRow(index, isEditting, false);
+                }
+            }
+        });
+
         
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -386,6 +485,98 @@ public class TableViewObj implements Viewable,
         
         initColumnSizes(table);
 
+    }
+    
+    /**
+     * Sest the btn enabled/disabled state.
+     * @param hasSelection whether something is selected.
+     */
+    protected void updateUI(final boolean hasSelection)
+    {
+        if (editButton != null)
+        {
+            editButton.setEnabled(hasSelection);
+        }
+        if (newButton != null)
+        {
+            newButton.setEnabled(true);
+        }
+        if (deleteButton != null)
+        {
+            deleteButton.setEnabled(hasSelection);
+        }
+    }
+    
+    /**
+     * @param rowIndex
+     */
+    protected void editRow(final int rowIndex, final boolean isEdit, final boolean isNew)
+    {
+        FormDataObjIFace dObj = null;
+        if (isNew)
+        {
+            dObj = FormHelper.createAndNewDataObj(dataClassName);
+            
+        } else
+        {
+            dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
+            if (dObj == null)
+            {
+                return;
+            }
+        }
+        
+        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, false);
+        if (isEdit)
+        {
+            dialog.setCloseListener(new PropertyChangeListener()
+            {
+                public void propertyChange(PropertyChangeEvent evt)
+                {
+                    String action = evt.getPropertyName();
+                    if (action.equals("OK"))
+                    {
+                        dialog.getMultiView().getDataFromUI();
+                        if (mvParent != null)
+                        {
+                            MultiView root = mvParent;
+                            while (root.getMultiViewParent() != null)
+                            {
+                                root = root.getMultiViewParent();
+                            }
+                            formValidator.setHasChanged(true);
+                            root.dataChanged(null, null, null);
+                            
+                            Object daObj = dialog.getMultiView().getData();
+                            parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
+                            dataObjList.add(daObj);
+                            model.fireDataChanged();
+                            table.invalidate();
+                            
+                            JComponent comp = mvParent.getTopLevel();
+                            comp.validate();
+                            comp.repaint();
+                        }
+    
+                    }
+                    else if (action.equals("Cancel"))
+                    {
+                        log.warn("User clicked Cancel");
+                    }
+                }
+            });
+        }
+        dialog.setData(dObj);
+        dialog.showDisplay(true);
+    }
+    
+    /**
+     * 
+     * @param rowIndex
+     */
+    protected void deleteRow(final int rowIndex)
+    {
+        
     }
     
     /**
@@ -435,6 +626,27 @@ public class TableViewObj implements Viewable,
     public JTable getTable()
     {
         return table;
+    }
+    
+
+    /**
+     * Set the form formValidator and hooks up the root form to listen also.
+     * @param formValidator the formValidator
+     */
+    protected void setValidator(final FormValidator formValidator)
+    {
+        this.formValidator = formValidator;
+
+        // If there is a form validator and this is not the "root" form 
+        // then add this form as a listener to the validator AND
+        // make the root form a listener to this validator.
+        if (formValidator != null && mvParent != null)
+        {
+            formValidator.addValidationListener(this);
+
+            //log.debug(formViewDef.getName()+ " formValidator: "+formValidator);
+            //registerWithRootMV(true);
+        }
     }
     
     //-------------------------------------------------
@@ -600,7 +812,7 @@ public class TableViewObj implements Viewable,
      */
     public void setParentDataObj(Object parentDataObj)
     {
-        this.parentDataObj = parentDataObj;
+        this.parentDataObj = (FormDataObjIFace)parentDataObj;
     }
 
     /* (non-Javadoc)
@@ -671,6 +883,13 @@ public class TableViewObj implements Viewable,
             ignoreSelection = true;
             switcherUI.set(altView);
             ignoreSelection = false;
+        }
+        
+        if (formValidator != null)
+        {
+            formValidator.validateForm();
+            
+            FormViewObj.addRemoveWithRootMV(mvParent, formValidator, show);
         }
     }
 
@@ -754,6 +973,12 @@ public class TableViewObj implements Viewable,
     public void setCellName(String cellName)
     {
         this.cellName = cellName;
+        this.dataSetFieldName = cellName;
+        
+        if (parentDataObj == null)
+        {
+            this.dataClassName = viewDef.getClassName();
+        }
     }
     
     /* (non-Javadoc)
@@ -937,6 +1162,9 @@ public class TableViewObj implements Viewable,
         return null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#createRecordIndentifier(java.lang.String, javax.swing.ImageIcon)
+     */
     public JComponent createRecordIndentifier(String title, ImageIcon icon)
     {
         // not supported
@@ -1057,7 +1285,7 @@ public class TableViewObj implements Viewable,
      */
     public void indexChanged(int newIndex)
     {
-        dataObj = list.get(newIndex);
+        dataObj = dataObjList.get(newIndex);
 
         setDataIntoUI();
 
@@ -1324,7 +1552,7 @@ public class TableViewObj implements Viewable,
     //------------------------------------------------------------------
     //-- Table Model
     //------------------------------------------------------------------
-    public class ColTableModel implements TableModel
+    public class ColTableModel extends AbstractTableModel
     {
         protected Vector<TableModelListener> listeners = new Vector<TableModelListener>();
 
@@ -1464,6 +1692,11 @@ public class TableViewObj implements Viewable,
         public void removeTableModelListener(TableModelListener l)
         {
             listeners.remove(l);
+        }
+        
+        public void fireDataChanged()
+        {
+            this.fireTableDataChanged();
         }
     }
     

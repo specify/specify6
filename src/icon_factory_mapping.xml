@@ -2,7 +2,8 @@
 	<ClassIcon class="edu.ku.brc.specify.datamodel.Accession" iconname="Accession" />
 	<ClassIcon class="edu.ku.brc.specify.datamodel.Determination" iconname="Determination" />
 	<ClassIcon class="edu.ku.brc.specify.datamodel.CollectionObject" iconname="CollectionObject" />
+	<!-- <ClassIcon class="edu.ku.brc.specify.datamodel.Preparation" iconname="Preparation" /> -->
 	<SubMapper class="edu.ku.brc.specify.ui.AttachmentIconMapper" />
-	<SubMapper class="edu.ku.brc.specify.ui.PreparationIconMapper" />
+	<SubMapper class="edu.ku.brc.specify.ui.PreparationIconTextMapper" />
 	<SubMapper class="edu.ku.brc.specify.ui.AgentIconTextMapper" />
 </IconFactoryMapping>

@@ -17,6 +17,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+
 
 /**
  * @author rods
@@ -39,7 +42,7 @@ public final class FormHelper
      */
     public static boolean updateLastEdittedInfo(final Object dataObj)
     {
-        log.debug("updateLastEdittedInfo for [" + dataObj.getClass() + "]");
+        log.debug("updateLastEdittedInfo for [" + (dataObj != null ? dataObj.getClass() : "dataObj was null") + "]");
         if (dataObj != null)
         {
             try
@@ -89,9 +92,11 @@ public final class FormHelper
     {
         try
         {
-            //Object dataObj = newDataClass.newInstance();
             FormDataObjIFace formDataObj = Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class).newInstance();
             formDataObj.initialize();
+            
+            CommandDispatcher.dispatch(new CommandAction("Data", "New", formDataObj));
+            
             return formDataObj;
             
         } catch (ClassNotFoundException ex)

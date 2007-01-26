@@ -77,7 +77,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
         } else
         {
             String vsql = tableInfo.getViewSql();
-            sqlStr = vsql.replace("%s", idsStr.toString());
+            sqlStr = idsStr.length() > 0 ? vsql.replace("%s", idsStr.toString()) : vsql;
         }
 
         log.debug("["+sqlStr+"]");

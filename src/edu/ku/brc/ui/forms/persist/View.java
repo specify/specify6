@@ -96,21 +96,24 @@ public class View implements Comparable<View>
      * @param altViewType look for a default view for this type of view
      * @return the default altView
      */
-    public AltView getDefaultAltView(final String altViewType)
+    public AltView getDefaultAltView(final AltView.CreationMode creationMode, final String altViewType)
     {
         
-        if (StringUtils.isNotEmpty(altViewType))
+        if (creationMode != null && StringUtils.isNotEmpty(altViewType))
         {
             AltView defAltView = null;
             boolean isForm     = altViewType.equals("form");
             for (AltView altView : altViews)
             {
                 ViewDef.ViewType type = altView.getViewDef().getType();
-                System.out.println("["+type+"]["+altView.getName()+"]");
-                if (isForm  && type == ViewDef.ViewType.form ||
+                System.out.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"]");
+                if (isForm && type == ViewDef.ViewType.form ||
                     !isForm && type != ViewDef.ViewType.form)
                 {
-                    return altView;
+                    if (altView.getMode() == creationMode)
+                    {
+                        return altView;
+                    }
                 }
                 
                 if (altView.isDefault())
@@ -144,7 +147,7 @@ public class View implements Comparable<View>
      */
     public AltView getDefaultAltView()
     {
-        return getDefaultAltView(null);
+        return getDefaultAltView(null, null);
     }
 
     /**
@@ -157,7 +160,7 @@ public class View implements Comparable<View>
     {
         // First get default AltView and check to see if it's 
         // edit mode matches the desired edit mode
-        AltView defAltView = getDefaultAltView(defAltViewType);
+        AltView defAltView = getDefaultAltView(creationMode, defAltViewType);
         if (defAltView.getMode() == creationMode || altViews.size() == 1)
         {
             return defAltView;

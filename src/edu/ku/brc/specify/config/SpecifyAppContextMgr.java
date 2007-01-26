@@ -39,6 +39,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AppResource;
 import edu.ku.brc.specify.datamodel.AppResourceDefault;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
@@ -49,6 +50,8 @@ import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewSet;
@@ -84,12 +87,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected List<AppResourceDefault>         appResourceList = new ArrayList<AppResourceDefault>();
     protected Hashtable<String, List<ViewSet>> viewSetHash     = new Hashtable<String, List<ViewSet>>();
 
-    protected String      databaseName          = null;
-    protected String      userName              = null;
-    protected SpecifyUser user                  = null;
+    protected String         databaseName          = null;
+    protected String         userName              = null;
+    protected SpecifyUser    user                  = null;
 
-    protected ViewSetMgr     backStopViewSetMgr = null;
-    protected AppResourceMgr backStopAppResMgr  = null;
+    protected ViewSetMgr     backStopViewSetMgr    = null;
+    protected AppResourceMgr backStopAppResMgr     = null;
+    protected Agent          currentUserAgent      = null;
 
 
     /**
@@ -553,6 +557,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (list.size() == 1)
         {
             user = (SpecifyUser)list.get(0);
+            user.getAgent(); // makes sure the Agent is not lazy loaded
             SpecifyUser.setCurrentUser(user);
 
         } else
@@ -583,7 +588,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         userType = StringUtils.replace(userType, " ", "").toLowerCase();
         log.debug("Def Type["+userType+"]");
-
+        
         appResourceList.clear();
         viewSetHash.clear();
 
@@ -685,7 +690,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         backStopViewSetMgr = new ViewSetMgr(XMLHelper.getConfigDir("backstop"));
         backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
-
+        
         currentStatus = CONTEXT_STATUS.OK;
         
         session.close();
@@ -1039,5 +1044,44 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     }
 
-
+    
+    
+    /**
+     * Returns a Default Object from Prefs if there is one.
+     */
+    public FormDataObjIFace getDefaultObject(final Class<?> classObj, final boolean ask)
+    {
+        FormDataObjIFace dObj        = null;
+        String           prefName    = classObj.getSimpleName() + "_DefaultId";
+        AppPreferences   appPrefs    = AppPreferences.getRemote();
+        String           idStr       = appPrefs.get(prefName, null);
+        if (StringUtils.isEmpty(idStr) && ask)
+        {
+            try
+            {
+                ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
+                if (dlg != null)
+                {
+                    dlg.getDialog().setVisible(true);
+                    if (!dlg.isCancelled())
+                    {
+                        dObj = (FormDataObjIFace)dlg.getSelectedObject();
+                        appPrefs.put(prefName, dObj.getId().toString());
+                        return dObj;
+                    }
+                }
+            } catch (Exception ex)
+            {
+                // it's ok 
+                // we get when it can't find the search dialog
+            }
+        } else
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            dObj = (FormDataObjIFace)session.get(classObj, Long.valueOf(idStr));
+            session.close();
+        }
+        return dObj;
+    }
+    
 }

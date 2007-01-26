@@ -54,7 +54,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
-import com.jgoodies.looks.plastic.theme.ExperienceBlue;
+import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -242,7 +242,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
                 UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
             }
 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel());

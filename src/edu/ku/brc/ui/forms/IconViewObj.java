@@ -10,7 +10,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -43,9 +42,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
@@ -138,24 +135,15 @@ public class IconViewObj implements Viewable
     
     protected void initMainComp()
     {
-        editButton = createButton("EditForm", getResourceString("EditRecord"));
-        newButton = createButton("CreateObj", getResourceString("NewRecord"));
-        deleteButton = createButton("SmallTrash", getResourceString("DeleteRecord"));
+        editButton   = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
+        newButton    = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
+        deleteButton = UIHelper.createButton("SmallTrash", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
 
         altViewsList = new Vector<AltView>();
         switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
         
-        validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
-        validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
-        validationInfoBtn.setMargin(new Insets(1,1,1,1));
-        validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());
-        validationInfoBtn.setFocusable(false);
-        validationInfoBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                log.error("validation button clicked: not yet implemented");
-            }
-        });
+        validationInfoBtn = FormViewObj.createValidationIndicator(this);
+
         
         iconTray = new IconTray(IconTray.SINGLE_ROW);
         //iconTray = new IconTray(IconTray.MULTIPLE_ROWS);
@@ -222,7 +210,7 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            ViewBasedDisplayIFace dialog = getEditObjectDialog(selection, false);
+            ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, false);
             dialog.setData(selection);
             dialog.showDisplay(true);
         }
@@ -240,7 +228,7 @@ public class IconViewObj implements Viewable
                     return;
                 }
                 
-                final ViewBasedDisplayIFace dialog = getEditObjectDialog(selection,false);
+                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection,false);
                 dialog.setCloseListener(new PropertyChangeListener()
                 {
                     public void propertyChange(PropertyChangeEvent evt)
@@ -307,7 +295,7 @@ public class IconViewObj implements Viewable
                 final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
                 
                 // get an edit dialog for the object
-                final ViewBasedDisplayIFace dialog = getEditObjectDialog(newObject,true);
+                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject,true);
                 dialog.setCloseListener(new PropertyChangeListener()
                 {
                     public void propertyChange(PropertyChangeEvent evt)
@@ -378,42 +366,6 @@ public class IconViewObj implements Viewable
                 }
             }
         });
-    }
-    
-    protected ViewBasedDisplayIFace getEditObjectDialog(FormDataObjIFace objectToEdit, boolean isNewObject)
-    {
-        TableInfo setTI = DBTableIdMgr.lookupByClassName(objectToEdit.getClass().getName());
-        String defFormName = setTI.getEditObjDialog();
-
-        boolean isEdit  = (altView.getMode() == CreationMode.Edit) ? true : false;
-        isEdit = true;
-        int     options = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
-        String  title   = (isNewObject && isEdit) ? getResourceString("Edit") : objectToEdit.getIdentityTitle();
-        ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
-                                                                    defFormName,
-                                                                    title,
-                                                                    getResourceString("OK"),
-                                                                    isEdit,
-                                                                    options,
-                                                                    FRAME_TYPE.DIALOG);
-        return dialog;
-    }
-
-    /**
-     * A utility method used to create the 'edit', 'new' and 'delete' buttons.
-     * 
-     * @param iconName the name of the icon to use for the button
-     * @param toolTip the tooltip text for the button
-     * @return a button
-     */
-    protected JButton createButton(String iconName, String toolTip)
-    {
-        JButton btn = new JButton(IconManager.getIcon(iconName, IconManager.IconSize.Std16));
-        btn.setToolTipText(toolTip);
-        btn.setFocusable(false);
-        btn.setMargin(new Insets(1,1,1,1));
-        btn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        return btn;
     }
 
     //-------------------------------------------------

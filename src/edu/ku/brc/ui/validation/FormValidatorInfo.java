@@ -26,7 +26,6 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
-import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 
 /**
@@ -49,9 +48,8 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
      * CReate a FormValidator.
      * @param formViewObj the FormViewObj that will be validated
      */
-    public FormValidatorInfo(final FormViewObj formViewObj)
+    public FormValidatorInfo(final Viewable formViewObj)
     {
-        
         model = new FormValidatorInfoModel(formViewObj);
         table = new JTable(model);
         
@@ -61,7 +59,6 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
         setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
-
     }
     
     /**

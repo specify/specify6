@@ -533,6 +533,7 @@ public class InfoRequestTask extends BaseTask
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)
             {
+                // XXX DEMO Code
                 InfoRequest infoRequest = new InfoRequest();
                 infoRequest.setEmail("rods@ku.edu");
                 infoRequest.setFirstName("Rod");

@@ -46,6 +46,7 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,14 +70,22 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.ui.forms.DataObjectGettable;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
 
 /**
  * A Helper class that has a very wide array of misc methods for helping out. (Is that meaningless or what?)
@@ -630,7 +639,7 @@ public final class UIHelper
                     {
                         data = getter.getFieldValue(data, st.nextToken());
                     }
-                    dataValue = (data == null) ? "" : data;
+                    dataValue = data;
                 } else
                 {
                     dataValue = getter.getFieldValue(dataObj, fldName);
@@ -1088,5 +1097,54 @@ public final class UIHelper
         } while (parent != null);
         
         return null;
+    }
+    
+    
+    /**
+     * Helper to create an icon button.
+     * @param iconName the name of the icon
+     * @param toolTip the text of the tool tip
+     * @param size the size of the icon
+     * @param focusable whether the button can take focus
+     * @return a icon btn
+     */
+    public static JButton createButton(final String iconName, final String toolTip, IconManager.IconSize size, final boolean focusable)
+    {
+        JButton btn = new JButton(IconManager.getIcon(iconName, size));
+        btn.setToolTipText(toolTip);
+        btn.setFocusable(focusable);
+        btn.setMargin(new Insets(1,1,1,1));
+        btn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        return btn;
+    }
+    
+    /**
+     * Creates a dialog for editting or viewing a data object.
+     * @param altView the current AaltView
+     * @param mainComp the mainComp that this is being launched from
+     * @param dataObj the data object for the dialog (cannot be NULL)
+     * @param isNewObject whether it is a new object
+     * @return the dialog
+     */
+    public static  ViewBasedDisplayIFace createDataObjectDialog(final AltView          altView, 
+                                                                final JComponent       mainComp, 
+                                                                final FormDataObjIFace dataObj, 
+                                                                final boolean          isNewObject)
+    {
+        TableInfo setTI = DBTableIdMgr.lookupByClassName(dataObj.getClass().getName());
+        String defFormName = setTI.getEditObjDialog();
+
+        boolean isEdit  = (altView.getMode() == CreationMode.Edit) ? true : false;
+        isEdit = true;
+        int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
+        String  title   = (isNewObject && isEdit) ? getResourceString("Edit") : dataObj.getIdentityTitle();
+        ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
+                                                                    defFormName,
+                                                                    title,
+                                                                    getResourceString("OK"),
+                                                                    isEdit,
+                                                                    opts,
+                                                                    FRAME_TYPE.DIALOG);
+        return dialog;
     }
 }

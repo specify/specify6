@@ -51,6 +51,18 @@
                 <altview name="LocalitySearch" viewdef="LocalitySearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
+        
+        <view 
+            name="PrepTypeSearch"
+            class="edu.ku.brc.specify.datamodel.PrepType"
+            resourcelabels="false">
+            <desc><![CDATA[The PrepType Search Form]]></desc>
+            <altviews>
+                <altview name="PrepTypeSearch" viewdef="PrepTypeSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        
     </views>
     
     <viewdefs>
@@ -225,6 +237,25 @@
             </rows>
         </viewdef>
         
+        <viewdef type="form"
+            name="PrepTypeSearch"
+            class="edu.ku.brc.specify.datamodel.PrepType"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The PrepType Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="Name" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
         
     </viewdefs>
 </viewset>

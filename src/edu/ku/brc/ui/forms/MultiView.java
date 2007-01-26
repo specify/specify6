@@ -416,7 +416,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         } else
         {
-            altView = view.getDefaultAltView(defAltViewType);
+            altView = view.getDefaultAltView(createWithMode, defAltViewType);
         }
         return altView;
     }

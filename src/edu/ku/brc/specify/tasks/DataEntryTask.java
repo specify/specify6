@@ -17,7 +17,6 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
-import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -51,10 +49,16 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -64,7 +68,6 @@ import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -82,6 +85,7 @@ public class DataEntryTask extends BaseTask
 
     public static final String     DATA_ENTRY   = "Data_Entry";
     public static final String     OPEN_VIEW    = "OpenView";
+    public static final String     DATA         = "Data"; // Sent by FormHelper for when new DataObject are created
     public static final DataFlavor DATAENTRY_FLAVOR = new DataFlavor(DataEntryTask.class, "Data_Entry");
     
     protected static Hashtable<String, ImageIcon> iconForFormClass = new Hashtable<String, ImageIcon>();
@@ -101,6 +105,7 @@ public class DataEntryTask extends BaseTask
         
         CommandDispatcher.register(DATA_ENTRY, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
+        CommandDispatcher.register(DATA, this);
         
         // Do this here instead of in initialize because the static method will need to access the icon mapping first
         viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
@@ -187,7 +192,6 @@ public class DataEntryTask extends BaseTask
                 try
                 {
                     dataObj = FormHelper.createAndNewDataObj(Class.forName(view.getClassName()));
-                    dataObj.initialize();
                     
                 } catch (Exception ex)
                 {
@@ -457,25 +461,100 @@ public class DataEntryTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
     
-    protected void adjustColObjForm(final FormPane formPane)
+    protected void adjustDataEntryForms(final FormPane formPane)
     {
+        /*
         FormViewObj formViewObj = formPane.getMultiView().getCurrentViewAsFormViewObj();
-        if (formViewObj != null && formViewObj.getDataObj() instanceof CollectionObject)
+        if (formViewObj != null)
         {
-            CollectionObject      colObj     = (CollectionObject)formViewObj.getDataObj();
-            //boolean   isNewObj = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
+            boolean   isNewObj = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
             //boolean   isEdit   = formPane.getMultiView().isEditable();
-            if (colObj != null)
+            
+            if (formViewObj.getDataObj() instanceof CollectionObject)
             {
+                CollectionObject      colObj     = (CollectionObject)formViewObj.getDataObj();
+                //boolean   isNewObj = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
+                //boolean   isEdit   = formPane.getMultiView().isEditable();
+                if (colObj != null)
+                {
+                    if (colObj.getCatalogSeries() == null)
+                    {
+                        CatalogSeries catSeries = CatalogSeries.getCurrentCatalogSeries().get(0);
+                        colObj.setCatalogSeries(catSeries); 
+                        Component comp     = formViewObj.getControlByName("catalogSeries.seriesName");
+                        if (comp instanceof JTextField)
+                        {
+                            ((JTextField)comp).setText(catSeries.getSeriesName());
+                        }
+                    }
+                }
+            } else if (isNewObj && formViewObj.getDataObj() instanceof Preparation)
+            {
+                Preparation prep = (Preparation)formViewObj.getDataObj();
+
+                if (prep != null)
+                {
+                    if (prep.getPreparedByAgent() == null)
+                    {
+                        prep.setPreparedByAgent(SpecifyUser.getCurrentUser().getAgent());
+                        Component comp     = formViewObj.getControlByName("preparedByAgent");
+                        if (comp instanceof GetSetValueIFace)
+                        {
+                            ((GetSetValueIFace)comp).setValue(SpecifyUser.getCurrentUser().getAgent(), null);
+                        }
+                    }
+                }
+            }
+        }*/
+    }
+    
+    /**
+     * Adjust a new Data object before it is set into a form.
+     * @param dataObj the new data object.
+     */
+    protected void adjustNewDataObject(final Object dataObj)
+    {
+        if (dataObj != null && dataObj instanceof FormDataObjIFace)
+        {
+            if (dataObj instanceof CollectionObject)
+            {
+                CollectionObject colObj = (CollectionObject)dataObj;
                 if (colObj.getCatalogSeries() == null)
                 {
                     CatalogSeries catSeries = CatalogSeries.getCurrentCatalogSeries().get(0);
                     colObj.setCatalogSeries(catSeries); 
-                    Component comp     = formViewObj.getControlByName("catalogSeries.seriesName");
-                    if (comp instanceof JTextField)
+                }
+                
+                if (colObj.getCollectingEvent() == null)
+                {
+                    CollectingEvent ce = new CollectingEvent();
+                    ce.initialize();
+                    colObj.setCollectingEvent(ce);
+                    ce.getCollectionObjects().add(colObj);
+                    
+                    Agent agent = SpecifyUser.getCurrentUser().getAgent();
+                    if (agent != null)
                     {
-                        ((JTextField)comp).setText(catSeries.getSeriesName());
+                        colObj.setCataloger(agent);
                     }
+                    
+                    //Locality locality = new Locality();
+                    //locality.initialize();
+                    
+                    //ce.setLocality(locality);
+                    //locality.getCollectingEvents().
+                }
+
+            } else if (dataObj instanceof Preparation)
+            {
+                Preparation prep = (Preparation)dataObj;
+                if (prep.getPreparedByAgent() == null)
+                {
+                    prep.setPreparedByAgent(SpecifyUser.getCurrentUser().getAgent());
+                    
+                    SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                    FormDataObjIFace defPrepType = appContextMgr.getDefaultObject(PrepType.class, true);
+                    prep.setPrepType((PrepType)defPrepType);
                 }
             }
         }
@@ -490,7 +569,7 @@ public class DataEntryTask extends BaseTask
     
         if (cmdAction.isAction(DataEntryTask.OPEN_VIEW))
         {
-            adjustColObjForm((FormPane)cmdAction.getData());
+            adjustDataEntryForms((FormPane)cmdAction.getData());
             
         } else if (cmdAction.isAction("Edit"))
         {
@@ -539,11 +618,17 @@ public class DataEntryTask extends BaseTask
         {
             processDataEntryCommands(cmdAction);
             
+        } else if (cmdAction.isType(DataEntryTask.DATA))
+        {
+            adjustNewDataObject(cmdAction.getData());
+            
         } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {
             viewsNavBox.clear();
             //initializeViewsNavBox();
         }
+            
+
     }
     
 

@@ -198,7 +198,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                             {
                                 strBuf.append(" OR ");
                             }
-                            strBuf.append(" lower("+colName+") like '%"+valStr+"%'");
+                            strBuf.append(" lower("+colName+") like '#$#"+valStr+"#$#'");
                             cnt++;
                         }
                     } else
@@ -208,8 +208,10 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                 }
                 
                 String fullSQL = sqlStr.replace("%s", strBuf.toString());
+                log.info(fullSQL);
+                fullSQL = fullSQL.replace("#$#", "%");
+                log.info(fullSQL);
                 tableInfo.setViewSql(fullSQL);
-                log.debug(fullSQL);
                 setUIEnabled(false);
                 
                 ExpressSearchResults results = new ExpressSearchResults(tableInfo.getId(), null, tableInfo);
