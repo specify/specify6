@@ -1214,6 +1214,11 @@ public class BuildSampleDatabase
     public static void main(String[] args) throws Exception
     {
         String dbName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
+        if (dbName==null)
+        {
+            System.err.println("You must specify a database name.");
+            return;
+        }
         String databaseName = dbName;
         //String databaseName = "testfish_anno";
         String databaseHost = "localhost";
