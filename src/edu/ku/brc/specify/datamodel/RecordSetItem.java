@@ -40,6 +40,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 
 /**
@@ -123,14 +124,19 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( {CascadeType.SAVE_UPDATE})
     @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
-    protected RecordSet getRecordSet()
+    public RecordSet getRecordSet()
     {
         return recordSet;
     }
 
-    protected void setRecordSet(RecordSet recordSet)
+    public void setRecordSet(RecordSet recordSet)
     {
         this.recordSet = recordSet;
+    }
+    
+    public void setRecordSet(RecordSetIFace recordSet)
+    {
+        setRecordSet((RecordSet)recordSet);
     }
     
     // Add Methods

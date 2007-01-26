@@ -303,8 +303,9 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public RecordSetItemIFace addItem(final Long recordId)
     {
-        RecordSetItemIFace rsi = new RecordSetItem(recordId);
+        RecordSetItem rsi = new RecordSetItem(recordId);
         this.items.add(rsi);
+        rsi.setRecordSet(this);
         return rsi;
     }
 
@@ -313,8 +314,9 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public RecordSetItemIFace addItem(final String recordId)
     {
-        RecordSetItemIFace rsi = new RecordSetItem(recordId);
+        RecordSetItem rsi = new RecordSetItem(recordId);
         this.items.add(rsi);
+        rsi.setRecordSet(this);
         return rsi;
     }
 
@@ -324,6 +326,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     public RecordSetItemIFace addItem(final RecordSetItemIFace item)
     {
         this.items.add(item);
+        ((RecordSetItem)item).setRecordSet(this);
         return item;
     }
 
