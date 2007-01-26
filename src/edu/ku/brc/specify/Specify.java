@@ -670,10 +670,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     @SuppressWarnings("synthetic-access")
                     public void actionPerformed(ActionEvent ae)
                     {
-                        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-                        Object dObj = tmpSession.get(Locality.class, 3L);
-                        tmpSession.close();
-                        
                         final JDialog dialog = new JDialog(topFrame, "Local Prefs", true);
                         dialog.setContentPane(new AppPrefsEditor(false));
                         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
