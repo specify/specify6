@@ -154,6 +154,7 @@ public class DataBuilder
                                                   final PrepType prepType)
     {
         AttributeDef attrDef = new AttributeDef();
+        attrDef.initialize();
         attrDef.setDataType(type.getType());
         attrDef.setFieldName(name);
         attrDef.setPrepType(prepType);
@@ -666,6 +667,7 @@ public class DataBuilder
         item.setValue(value);
         item.setTitle(value);
         pickList.addPickListItem(item);
+        item.setPickList(pickList);
         return item;
     }
     
