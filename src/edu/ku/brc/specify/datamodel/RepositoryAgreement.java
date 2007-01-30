@@ -72,7 +72,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      protected String remarks;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<AccessionAuthorizations> repositoryAgreementAuthorizations;
+     protected Set<AccessionAuthorization> repositoryAgreementAuthorizations;
      protected Set<AccessionAgent>         repositoryAgreementAgents;
      protected Set<Accession>               accessions;
      protected Set<Attachment>          attachments;
@@ -113,7 +113,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         remarks = null;
         yesNo1 = null;
         yesNo2 = null;
-        repositoryAgreementAuthorizations = new HashSet<AccessionAuthorizations>();
+        repositoryAgreementAuthorizations = new HashSet<AccessionAuthorization>();
         repositoryAgreementAgents         = new HashSet<AccessionAgent>();
         accessions                        = new HashSet<Accession>();
         originator = null;
@@ -321,11 +321,11 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "repositoryAgreement")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<AccessionAuthorizations> getRepositoryAgreementAuthorizations() {
+    public Set<AccessionAuthorization> getRepositoryAgreementAuthorizations() {
         return this.repositoryAgreementAuthorizations;
     }
 
-    public void setRepositoryAgreementAuthorizations(Set<AccessionAuthorizations> repositoryAgreementAuthorizations) {
+    public void setRepositoryAgreementAuthorizations(Set<AccessionAuthorization> repositoryAgreementAuthorizations) {
         this.repositoryAgreementAuthorizations = repositoryAgreementAuthorizations;
     }
 

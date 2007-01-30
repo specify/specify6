@@ -46,28 +46,28 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "deaccessionagents", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "DeaccessionID" }) })
-public class DeaccessionAgents extends DataModelObjBase implements java.io.Serializable {
+@Table(name = "loanagent", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "LoanID", "AgentID" }) })
+public class LoanAgent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long deaccessionAgentsId;
+     protected Long loanAgentId;
      protected String role;
      protected String remarks;
+     protected Loan loan;
      protected Agent agent;
-     protected Deaccession deaccession;
 
 
     // Constructors
 
     /** default constructor */
-    public DeaccessionAgents() {
+    public LoanAgent() {
         //
     }
     
     /** constructor with id */
-    public DeaccessionAgents(Long deaccessionAgentsId) {
-        this.deaccessionAgentsId = deaccessionAgentsId;
+    public LoanAgent(Long loanAgentId) {
+        this.loanAgentId = loanAgentId;
     }
    
     
@@ -78,11 +78,11 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     public void initialize()
     {
         super.init();
-        deaccessionAgentsId = null;
+        loanAgentId = null;
         role = null;
         remarks = null;
+        loan = null;
         agent = null;
-        deaccession = null;
     }
     // End Initializer
 
@@ -93,9 +93,9 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
      */
     @Id
     @GeneratedValue
-    @Column(name = "DeaccessionAgentsID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDeaccessionAgentsId() {
-        return this.deaccessionAgentsId;
+    @Column(name = "LoanAgentID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Long getLoanAgentId() {
+        return this.loanAgentId;
     }
 
     /**
@@ -106,7 +106,7 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     @Override
     public Long getId()
     {
-        return this.deaccessionAgentsId;
+        return this.loanAgentId;
     }
 
     /* (non-Javadoc)
@@ -116,15 +116,15 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     @Override
     public Class<?> getDataClass()
     {
-        return DeaccessionAgents.class;
+        return LoanAgent.class;
     }
     
-    public void setDeaccessionAgentsId(Long deaccessionAgentsId) {
-        this.deaccessionAgentsId = deaccessionAgentsId;
+    public void setLoanAgentId(Long loanAgentId) {
+        this.loanAgentId = loanAgentId;
     }
 
     /**
-     *      * Role agent played in deaccession
+     *      * Role the agent played in the loan
      */
     @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
     public String getRole() {
@@ -148,7 +148,20 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     }
 
     /**
-     *      * AgentID for agent
+     *      * ID of loan agent at AgentID played a role in
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LoanID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Loan getLoan() {
+        return this.loan;
+    }
+    
+    public void setLoan(Loan loan) {
+        this.loan = loan;
+    }
+
+    /**
+     *      * Address of agent
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
@@ -159,19 +172,6 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     
     public void setAgent(Agent agent) {
         this.agent = agent;
-    }
-
-    /**
-     *      * Deaccession agent played role in
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Deaccession getDeaccession() {
-        return this.deaccession;
-    }
-    
-    public void setDeaccession(Deaccession deaccession) {
-        this.deaccession = deaccession;
     }
 
 
@@ -193,7 +193,7 @@ public class DeaccessionAgents extends DataModelObjBase implements java.io.Seria
     @Transient
     public Integer getTableId()
     {
-        return 35;
+        return 53;
     }
 
 }

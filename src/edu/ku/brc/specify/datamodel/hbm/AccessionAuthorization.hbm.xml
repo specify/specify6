@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" table="accessionauthorizations" lazy="true">
+<class name="edu.ku.brc.specify.datamodel.AccessionAuthorization" table="accessionauthorization" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="accessionAuthorizationsId" type="java.lang.Long" column="AccessionAuthorizationsID">
+    <id name="accessionAuthorizationId" type="java.lang.Long" column="AccessionAuthorizationID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
@@ -31,19 +31,19 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Permit -->
-    <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" outer-join="true" cascade="save-update, lock, merge" index="IX_AccessionAuthorizationsPermitID" unique-key="IX_AccessionAuthorizations">
+    <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" outer-join="true" cascade="save-update" index="IX_AccessionAuthorizationPermitID" unique-key="IX_AccessionAuthorization">
         <meta attribute="field-description">Permit authorizing accession</meta>
         <column name="PermitID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" outer-join="true" cascade="none" index="IX_AccessionAuthorizationsAccessionID" unique-key="IX_AccessionAuthorizations">
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" outer-join="true" cascade="none" index="IX_AccessionAuthorizationAccessionID" unique-key="IX_AccessionAuthorization">
         <meta attribute="field-description">Accession authorized by permit</meta>
         <column name="AccessionID" not-null="false" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to RepositoryAgreement -->
-    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" outer-join="true" cascade="none" index="IX_RepAccessionAuthorizationsAccessionID" unique-key="IX_RepAccessionAuthorizations">
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" outer-join="true" cascade="none" index="IX_RepAccessionAuthorizationAccessionID" unique-key="IX_RepAccessionAuthorization">
         <meta attribute="field-description"></meta>
         <column name="RepositoryAgreementID" not-null="false"/>
     </many-to-one>

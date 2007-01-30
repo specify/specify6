@@ -79,7 +79,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      protected Set<TaxonCitation> taxonCitations;
      protected Set<DeterminationCitation> determinationCitations;
      protected Journal journal;
-     protected Set<Authors> authors;
+     protected Set<Author> authors;
 
 
     // Constructors
@@ -126,7 +126,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         taxonCitations = new HashSet<TaxonCitation>();
         determinationCitations = new HashSet<DeterminationCitation>();
         journal = null;
-        authors = new HashSet<Authors>();
+        authors = new HashSet<Author>();
     }
     // End Initializer
 
@@ -454,11 +454,11 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "referenceWork")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Authors> getAuthors() {
+    public Set<Author> getAuthors() {
         return this.authors;
     }
     
-    public void setAuthors(Set<Authors> authors) {
+    public void setAuthors(Set<Author> authors) {
         this.authors = authors;
     }
 
@@ -492,7 +492,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         determinationCitation.setReferenceWork(this);
     }
 
-    public void addAuthors(final Authors author)
+    public void addAuthor(final Author author)
     {
         this.authors.add(author);
         author.setReferenceWork(this);
@@ -526,7 +526,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         determinationCitation.setReferenceWork(null);
     }
 
-    public void removeAuthors(final Authors author)
+    public void removeAuthor(final Author author)
     {
         this.authors.remove(author);
         author.setReferenceWork(null);

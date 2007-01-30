@@ -293,6 +293,7 @@ public class GenericDBConversion
                 "TaxonomicUnitType"                
         };*/
 
+        //These are the names as they occur in teh old datamodel
         String[] tableNames =
         {
         "Accession",
@@ -436,8 +437,8 @@ public class GenericDBConversion
 
             "Collection", "OrganizationID", "Agent", "AgentID",
 
-            "GroupPersons", "GroupID", "Agent", "AgentID",
-            "GroupPersons", "MemberID", "Agent", "AgentID",
+            "GroupPerson", "GroupID", "Agent", "AgentID",
+            "GroupPerson", "MemberID", "Agent", "AgentID",
 
             // ??? "ExchangeOut", "CollectionID", "Collection", "CollectionID",
             "ExchangeOut", "SentToOrganizationID", "Agent", "AgentID",
@@ -472,16 +473,16 @@ public class GenericDBConversion
             "Habitat", "HostTaxonID", "TaxonName", "TaxonNameID",
             //"Habitat", "HabitatTypeID", "HabitatType", "HabitatTypeID",
 
-            "Authors", "AgentID", "Agent", "AgentID",
-            "Authors", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
+            "Author", "AgentID", "Agent", "AgentID",
+            "Author", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
 
             "BorrowMaterial",  "BorrowID", "Borrow", "BorrowID",
 
-            //"BorrowShipments", "BorrowID", "Borrow", "BorrowID",
-            //"BorrowShipments", "ShipmentID", "Shipment", "ShipmentID",
+            //"BorrowShipment", "BorrowID", "Borrow", "BorrowID",
+            //"BorrowShipment", "ShipmentID", "Shipment", "ShipmentID",
 
-            "BorrowAgents",    "BorrowID", "Borrow", "BorrowID",
-            "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
+            "BorrowAgent",    "BorrowID", "Borrow", "BorrowID",
+            "BorrowAgent",    "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"BorrowAgents",    "RoleID", "Role", "RoleID",
 
             "DeaccessionCollectionObject", "DeaccessionID",            "Deaccession",                 "DeaccessionID",
@@ -564,8 +565,8 @@ public class GenericDBConversion
             "Loan", "ShipmentID", "Shipment", "ShipmentID",
             //"Loan", "CollectionID", "Collection", "CollectionID",
 
-            "AccessionAuthorizations", "AccessionID", "Accession", "AccessionID",
-            "AccessionAuthorizations", "PermitID", "Permit", "PermitID",
+            "AccessionAuthorization", "AccessionID", "Accession", "AccessionID",
+            "AccessionAuthorization", "PermitID", "Permit", "PermitID",
 
             "AccessionAgent", "AccessionID", "Accession", "AccessionID",
             "AccessionAgent", "AgentAddressID", "AgentAddress", "AgentAddressID",
@@ -606,18 +607,18 @@ public class GenericDBConversion
             //"Locality", "LatLongTypeID", "LatLongType", "LatLongTypeID",
             //"Locality", "LatLongMethodID", "LatLongMethod", "LatLongMethodID",
 
-            "DeaccessionAgents", "DeaccessionID", "Deaccession", "DeaccessionID",
-            "DeaccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-            //"DeaccessionAgents", "RoleID", "Role", "RoleID",
+            "DeaccessionAgent", "DeaccessionID", "Deaccession", "DeaccessionID",
+            "DeaccessionAgent", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            //"DeaccessionAgent", "RoleID", "Role", "RoleID",
 
             "ProjectCollectionObjects", "ProjectID", "Project", "ProjectID",
             "ProjectCollectionObjects", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
 
             "Project", "ProjectAgentID", "Agent", "AgentID",
 
-            "LoanAgents", "LoanID", "Loan", "LoanID",
-            "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-            //"LoanAgents", "RoleID", "Role", "RoleID",
+            "LoanAgent", "LoanID", "Loan", "LoanID",
+            "LoanAgent", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            //"LoanAgent", "RoleID", "Role", "RoleID",
 
             //"Accession", "CollectionID", "Collection", "CollectionID",
             //"Accession", "StatusID", "Status", "StatusID",
@@ -659,31 +660,31 @@ public class GenericDBConversion
         String[] tablesToMoveOver = {
                                     "AccessionAgent",
                                     "Accession",
-                                    "AccessionAuthorizations",
+                                    "AccessionAuthorization",
                                     //"Address",
                                     //"Agent",
                                     //"AgentAddress",
-                                    "Authors",
+                                    "Author",
                                     "Borrow",
-                                    "BorrowAgents",
+                                    "BorrowAgent",
                                     "BorrowMaterial",
                                     "BorrowReturnMaterial",
-                                    //"BorrowShipments",
+                                    //"BorrowShipment",
                                     "CatalogSeries",
                                     "CollectingEvent",
                                     "CollectionObjectCitation",
-                                    "Collectors",
+                                    "Collector",
                                     "Deaccession",
-                                    "DeaccessionAgents",
+                                    "DeaccessionAgent",
                                     //"DeaccessionPreparation",
                                     //"Determination",
                                     "DeterminationCitation",
                                     "ExchangeIn",
                                     "ExchangeOut",
-                                    "GroupPersons",
+                                    "GroupPerson",
                                     "Journal",
                                     "Loan",
-                                    "LoanAgents",
+                                    "LoanAgent",
                                     //"LoanPhysicalObject",
                                     "LoanReturnPhysicalObject",
                                     //"locality",
@@ -699,31 +700,34 @@ public class GenericDBConversion
        };
 
        Map<String, Map<String, String>> tableMaps = new Hashtable<String, Map<String, String>>();
-       tableMaps.put("authors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
+       tableMaps.put("accessionagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "AccessionAgentID", "AccessionAgentsID"}));
+       tableMaps.put("accessionauthorization", createFieldNameMap(new String[] {"AccessionAuthorizationID", "AccessionAuthorizationsID"}));
+       tableMaps.put("author", createFieldNameMap(new String[] {"OrderNumber", "Order1", "AuthorID", "AuthorsID"}));
        tableMaps.put("borrow", createFieldNameMap(new String[] {"IsClosed", "Closed"}));
+       tableMaps.put("borrowagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "BorrowAgentID", "BorrowAgentsID"}));
        tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
-       tableMaps.put("collectors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
+       tableMaps.put("borrowshipment", createFieldNameMap(new String[] {"BorrowShipmentID", "BorrowShipmentsID"}));
+       tableMaps.put("collectingevent", createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID"}));
+       tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
+       tableMaps.put("collector", createFieldNameMap(new String[] {"OrderNumber", "Order1", "CollectorID", "CollectorsID"}));
+       tableMaps.put("deaccession", createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
+       tableMaps.put("deaccessionagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID","DeaccessionAgentID","DeaccessionAgentsID"}));
        //tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
        //tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
+       tableMaps.put("groupperson", createFieldNameMap(new String[] {"GroupPersonID", "GroupPersonsID"}));
+       tableMaps.put("loan", createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
+       tableMaps.put("loanagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID","LoanAgentID","LoanAgentsID"}));
        tableMaps.put("loanphysicalobject", createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
        tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
+       tableMaps.put("permit", createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
+       tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] {"ProjectCollectionObjectID", "ProjectCollectionObjectsID"}));
        tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1", "IsPublished", "Published"}));
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
-       tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
-       tableMaps.put("accessionagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "AccessionAgentID", "AccessionAgentsID"}));
-       tableMaps.put("borrowagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
-       tableMaps.put("deaccessionagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
-       tableMaps.put("loanagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
-       tableMaps.put("loan", createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
-       
-       
-       tableMaps.put("deaccession", createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
-       tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] {"ProjectCollectionObjectID", "ProjectCollectionObjectsID"}));
+
        Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
        tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
-       tableMaps.put("permit", createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
-       tableMaps.put("collectingevent", createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID"}));
+       
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
        
 
@@ -743,7 +747,7 @@ public class GenericDBConversion
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                
            } else if (tableName.equals("Accession") || 
-                       tableName.equals("AccessionAuthorizations"))
+                       tableName.equals("AccessionAuthorization"))
            {
                String[] ignoredFields = {"RepositoryAgreementID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
@@ -791,14 +795,25 @@ public class GenericDBConversion
                    tableName.equals("Stratigraphy"))
            {
                BasicSQLUtils.setShowMappingError(false);
-
            }
            
-           if(tableName.toLowerCase().equals("accessionagent"))
+           if(tableName.toLowerCase().equals("accessionagent")
+                   || tableName.toLowerCase().equals("accessionauthorization")
+                   || tableName.toLowerCase().equals("author")
+                   || tableName.toLowerCase().equals("borrowshipment")
+                   || tableName.toLowerCase().equals("borrowagent")
+                   || tableName.toLowerCase().equals("collector")
+                   || tableName.toLowerCase().equals("deaccessionagent")
+                   || tableName.toLowerCase().equals("groupperson")
+                   || tableName.toLowerCase().equals("loanagent"))
            {
-               copyTable(oldDBConn, newDBConn, "select * from accessionagents", "accessionagents", "accessionagent", tableMaps.get(lowerCaseName), null);
+               if (!copyTable(oldDBConn, newDBConn, "select * from " + tableName + "s", tableName + "s", tableName, tableMaps.get(lowerCaseName), null))
+               {
+                   log.error("Table ["+tableName+"] didn't copy correctly.");
+                   break;
+               }
                
-           }           
+           }            
            else if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
            {
                log.error("Table ["+tableName+"] didn't copy correctly.");
@@ -1488,7 +1503,7 @@ public class GenericDBConversion
                 "usysborrowagenrole",             "BorrowAgentRole",
                 "usysaccessionarole",             "AccessionRole",
                 "usysdeaccessiorole",             "DeaccessionaRole",
-                "usysloanagentsrole",             "LoanAgentsRole",
+                "usysloanagentsrole",             "LoanAgentRole",
                 "usysbiologicalsex",              "BiologicalSex",
                 "usysbiologicalstage",            "BiologicalStage",
                 "usyscollectingmethod",           "CollectingMethod",
@@ -2512,7 +2527,8 @@ public class GenericDBConversion
             return true;
         }
         
-        Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", 
+        Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {
+                "CollectionObjectID", "BiologicalObjectID", //meg is this right?
                 "IsCurrent",           "Current1", 
                 "DeterminedDate",      "Date1", 
                 "TaxonID",             "TaxonNameID"});

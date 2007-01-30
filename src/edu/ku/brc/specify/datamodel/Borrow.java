@@ -73,9 +73,9 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Calendar currentDueDate;
-     //protected Set<BorrowShipments> borrowShipments;
+     //protected Set<BorrowShipment> borrowShipments;
      protected Set<Shipment> shipments;
-     protected Set<BorrowAgents> borrowAgents;
+     protected Set<BorrowAgent> borrowAgents;
      protected Set<BorrowMaterial> borrowMaterials;
 
 
@@ -114,8 +114,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
         yesNo2 = null;
         currentDueDate = null;
         shipments = new HashSet<Shipment>();
-       // borrowShipments = new HashSet<BorrowShipments>();
-        borrowAgents = new HashSet<BorrowAgents>();
+       // borrowShipments = new HashSet<BorrowShipment>();
+        borrowAgents = new HashSet<BorrowAgent>();
         borrowMaterials = new HashSet<BorrowMaterial>();
     }
     // End Initializer
@@ -321,11 +321,11 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-//    public Set<BorrowShipments> getBorrowShipments() {
+//    public Set<BorrowShipment> getBorrowShipments() {
 //        return this.borrowShipments;
 //    }
 //    
-//    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
+//    public void setBorrowShipments(Set<BorrowShipment> borrowShipments) {
 //        this.borrowShipments = borrowShipments;
 //    }
     /**
@@ -349,11 +349,11 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "borrow")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<BorrowAgents> getBorrowAgents() {
+    public Set<BorrowAgent> getBorrowAgents() {
         return this.borrowAgents;
     }
     
-    public void setBorrowAgents(Set<BorrowAgents> borrowAgents) {
+    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
         this.borrowAgents = borrowAgents;
     }
 
@@ -376,7 +376,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     // Add Methods
 
-//    public void addBorrowShipments(final BorrowShipments borrowShipment)
+//    public void addBorrowShipments(final BorrowShipment borrowShipment)
 //    {
 //        this.borrowShipments.add(borrowShipment);
 //        borrowShipment.setBorrow(this);
@@ -388,7 +388,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
         shipment.getBorrows().add(this);
     } 
     
-    public void addBorrowAgents(final BorrowAgents borrowAgent)
+    public void addBorrowAgent(final BorrowAgent borrowAgent)
     {
         this.borrowAgents.add(borrowAgent);
         borrowAgent.setBorrow(this);
@@ -404,7 +404,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     // Delete Methods
 
-//    public void removeBorrowShipments(final BorrowShipments borrowShipment)
+//    public void removeBorrowShipments(final BorrowShipment borrowShipment)
 //    {
 //        this.borrowShipments.remove(borrowShipment);
 //        borrowShipment.setBorrow(null);
@@ -415,7 +415,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
       this.shipments.remove(shipment);
       shipment.removeBorrow(this);
   }
-    public void removeBorrowAgents(final BorrowAgents borrowAgent)
+    public void removeBorrowAgent(final BorrowAgent borrowAgent)
     {
         this.borrowAgents.remove(borrowAgent);
         borrowAgent.setBorrow(null);

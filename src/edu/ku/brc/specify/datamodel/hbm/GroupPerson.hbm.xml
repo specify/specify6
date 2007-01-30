@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.Collectors" table="collectors">
+<class name="edu.ku.brc.specify.datamodel.GroupPerson" table="groupperson">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="collectorsId" type="java.lang.Long" column="CollectorsID">
+    <id name="groupPersonId" type="java.lang.Integer" column="GroupPersonID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
-
+    
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
-
-    <property name="orderNumber" type="java.lang.Integer" column="OrderNumber" not-null="true" length="10" unique-key="IX_CollectorsCEOrder">
+    
+    <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_GroupPersonOrder">
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
     
@@ -25,25 +26,27 @@
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
     
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to CollectingEvent -->
-    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" cascade="persist,save-update" index="IX_CollectorsCollectingEventID" unique-key="IX_CollectorsCEOrder">
-        <meta attribute="field-description">The CollectingEvent the agent participated in</meta>
-        <column name="CollectingEventID"  not-null="true"/>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="group" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" unique-key="IX_GroupPersonOrder">
+        <meta attribute="field-description">AgentID of group</meta>
+        <column name="GroupID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" index="IX_CollectorsAgentID">
-        <meta attribute="field-description">Link to Collector's record in Agent table</meta>
-        <column name="AgentID"  not-null="true"/>
+    <many-to-one name="member" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update">
+        <meta attribute="field-description">AgentID of member (member must be of type Person)</meta>
+        <column name="MemberID"  not-null="true"/>
     </many-to-one>
 
 </class>

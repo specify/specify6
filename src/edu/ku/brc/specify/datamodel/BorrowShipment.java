@@ -28,59 +28,48 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import java.util.Date;
+
+
+
 
 /**
 
  */
-@Entity
-@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "authors", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "ReferenceWorkID" }) })
-public class Authors extends DataModelObjBase implements java.io.Serializable {
+public class BorrowShipment extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long authorsId;
-     protected Short orderNumber;
+     protected Long borrowShipmentId;
      protected String remarks;
-     protected ReferenceWork referenceWork;
-     protected Agent agent;
+     protected Shipment shipment;
+     protected Borrow borrow;
 
 
     // Constructors
 
     /** default constructor */
-    public Authors() {
-        //
+    public BorrowShipment() {
     }
     
     /** constructor with id */
-    public Authors(Long authorsId) {
-        this.authorsId = authorsId;
+    public BorrowShipment(Long borrowShipmentId) {
+        this.borrowShipmentId = borrowShipmentId;
     }
    
     
     
 
     // Initializer
-    @Override
     public void initialize()
     {
-        super.init();
-        authorsId = null;
-        orderNumber = null;
+        borrowShipmentId = null;
         remarks = null;
-        referenceWork = null;
-        agent = null;
+        timestampModified = null;
+        timestampCreated = new Date();
+        lastEditedBy = null;
+        shipment = null;
+        borrow = null;
     }
     // End Initializer
 
@@ -89,54 +78,34 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-    @Id
-    @GeneratedValue
-    @Column(name = "AuthorsID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAuthorsId() {
-        return this.authorsId;
+    public Long getBorrowShipmentId() {
+        return this.borrowShipmentId;
     }
 
     /**
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */
-    @Transient
-    @Override
     public Long getId()
     {
-        return this.authorsId;
+        return this.borrowShipmentId;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
-    @Transient
-    @Override
     public Class<?> getDataClass()
     {
-        return Authors.class;
+        return BorrowShipment.class;
     }
     
-    public void setAuthorsId(Long authorsId) {
-        this.authorsId = authorsId;
+    public void setBorrowShipmentId(Long borrowShipmentId) {
+        this.borrowShipmentId = borrowShipmentId;
     }
 
     /**
      * 
      */
-    @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true)
-    public Short getOrderNumber() {
-        return this.orderNumber;
-    }
-    
-    public void setOrderNumber(Short orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    /**
-     * 
-     */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -145,30 +114,27 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
         this.remarks = remarks;
     }
 
+
     /**
-     *      * Reference record the Agent authored
+     *      * The shipment
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
-    public ReferenceWork getReferenceWork() {
-        return this.referenceWork;
+    public Shipment getShipment() {
+        return this.shipment;
     }
     
-    public void setReferenceWork(ReferenceWork referenceWork) {
-        this.referenceWork = referenceWork;
+    public void setShipment(Shipment shipment) {
+        this.shipment = shipment;
     }
 
     /**
-     *      * Agent record representing the Authors
+     *      * The borrow being shipped (returned)
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Agent getAgent() {
-        return this.agent;
+    public Borrow getBorrow() {
+        return this.borrow;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setBorrow(Borrow borrow) {
+        this.borrow = borrow;
     }
 
 
@@ -187,10 +153,9 @@ public class Authors extends DataModelObjBase implements java.io.Serializable {
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
-    @Transient
     public Integer getTableId()
     {
-        return 17;
+        return 22;
     }
 
 }

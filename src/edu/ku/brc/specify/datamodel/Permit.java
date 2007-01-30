@@ -74,7 +74,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      protected Float number2;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<AccessionAuthorizations> accessionAuthorizations;
+     protected Set<AccessionAuthorization> accessionAuthorizations;
      protected Agent issuedTo;
      protected Agent issuedBy;
      protected Set<Attachment>          attachments;
@@ -115,7 +115,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         number2 = null;
         yesNo1 = null;
         yesNo2 = null;
-        accessionAuthorizations = new HashSet<AccessionAuthorizations>();
+        accessionAuthorizations = new HashSet<AccessionAuthorization>();
         issuedTo = null;
         issuedBy = null;
         attachments = new HashSet<Attachment>();
@@ -324,11 +324,12 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<AccessionAuthorizations> getAccessionAuthorizations() {
+    public Set<AccessionAuthorization> getAccessionAuthorizations() {
+
         return this.accessionAuthorizations;
     }
 
-    public void setAccessionAuthorizations(Set<AccessionAuthorizations> accessionAuthorizations) {
+    public void setAccessionAuthorizations(Set<AccessionAuthorization> accessionAuthorizations) {
         this.accessionAuthorizations = accessionAuthorizations;
     }
 
@@ -396,7 +397,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         return 6;
     }
 
-//    protected Set<AccessionAuthorizations> accessionAuthorizations;
+//    protected Set<AccessionAuthorization> accessionAuthorizations;
 //    protected Agent agentByIssuee;
 //    protected Agent agentByIssuer;
 //    protected Set<Attachment>          attachments;

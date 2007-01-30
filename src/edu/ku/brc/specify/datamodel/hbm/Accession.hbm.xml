@@ -109,14 +109,14 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     </set>
     
-    <!-- bi-directional one-to-many association to AccessionAuthorizations -->
+    <!-- bi-directional one-to-many association to AccessionAuthorization -->
     <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
             <column name="AccessionID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
     </set>
     
     <!-- bi-directional one-to-many association to AccessionAgent -->

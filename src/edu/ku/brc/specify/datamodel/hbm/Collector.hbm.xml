@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.LoanAgents" table="loanagents" lazy="true">
+<class name="edu.ku.brc.specify.datamodel.Collector" table="collector">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="loanAgentsId" type="java.lang.Long" column="LoanAgentsID">
+    <id name="collectorId" type="java.lang.Long" column="CollectorID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
@@ -15,9 +15,8 @@
         <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
 
-    <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_LoanAgents">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Role the agent played in the loan</meta>
+    <property name="orderNumber" type="java.lang.Integer" column="OrderNumber" not-null="true" length="10">
+        <meta attribute="field-description"></meta>    
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -26,26 +25,24 @@
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
     
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to Loan -->
-    <many-to-one name="loan" class="edu.ku.brc.specify.datamodel.Loan" outer-join="true" cascade="none" index="IX_LoanAgentsLoanID" unique-key="IX_LoanAgents">
-        <meta attribute="field-description">ID of loan agent at AgentID played a role in</meta>
-        <column name="LoanID"  not-null="true"/>
+    <!-- bi-directional many-to-one association to CollectingEvent -->
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" cascade="persist,save-update" index="IX_CollectorCollectingEventID" >
+        <meta attribute="field-description">The CollectingEvent the agent participated in</meta>
+        <column name="CollectingEventID"  not-null="true"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" outer-join="true" cascade="save-update, lock, merge" index="IX_LoanAgentsAgentID" unique-key="IX_LoanAgents">
-        <meta attribute="field-description">Agent</meta>
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" index="IX_CollectorAgentID">
+        <meta attribute="field-description">Link to Collector's record in Agent table</meta>
         <column name="AgentID"  not-null="true"/>
     </many-to-one>
 

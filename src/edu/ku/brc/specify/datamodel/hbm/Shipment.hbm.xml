@@ -113,14 +113,14 @@
     </many-to-one>
     
     <!-- this was missing but existing in original mapping file - now replaced -->
-    <!-- bi-directional one-to-many association to BorrowShipments -->
+    <!-- bi-directional one-to-many association to BorrowShipment -->
     <!-- this was removed and replaced by a many-to-many back to Borrow --> 
     <!-- <set name="borrowShipments" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ShipmentID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipments"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipment"/>
     </set> -->
     
     <!-- bi-directional many-to-many association to Borrow -->

@@ -19,7 +19,7 @@
     <discipline name="tissue"       title="Tissue" type="1"/>
     
     <discipline name="accessions"   title="Accessions" type="2"/>
-   
+   <discipline name="animal"         title="Animal"    type="0"/>
     
 </disciplines>
 

@@ -16,7 +16,7 @@ package edu.ku.brc.specify.tests;
 
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccession;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAgent;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAuthorizations;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAuthorization;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgent;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
@@ -75,7 +75,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
-import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
+import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AppResourceDefault;
@@ -86,7 +86,7 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.ContainerItem;
 import edu.ku.brc.specify.datamodel.DataType;
@@ -729,7 +729,7 @@ public class CreateTestDatabases
                 permit.setIssuedBy(agents[agentsInx % agents.length]);
                 agentsInx++;
 
-                AccessionAuthorizations accessionAuthorizations = createAccessionAuthorizations(permit, accessions[i], null);
+                AccessionAuthorization accessionAuthorizations = createAccessionAuthorization(permit, accessions[i], null);
                 accessions[i].getAccessionAuthorizations().add(accessionAuthorizations);
             }
 
@@ -857,7 +857,7 @@ public class CreateTestDatabases
 
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
-                    new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                    new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
             // Create AttributeDef for Collecting Event
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
@@ -1024,7 +1024,7 @@ public class CreateTestDatabases
 
                  // Create Collecting Event
                  CollectingEvent colEv = createCollectingEvent(localities.get(0),
-                         new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                         new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
                  // Create AttributeDef for Collecting Event
                  AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
@@ -1250,7 +1250,7 @@ public class CreateTestDatabases
 
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
-                    new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                    new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
             // Create AttributeDef for Collecting Event
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
@@ -1436,7 +1436,7 @@ public class CreateTestDatabases
 
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(localities.get(0),
-                    new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                    new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
             // Create AttributeDef for Collecting Event
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);

@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -155,7 +155,7 @@ public class KeyholeMarkupGenerator
 
 		// get names of collectors
 		List<String> agentNames = new Vector<String>();
-		for( Collectors c: ce.getCollectors() )
+		for( Collector c: ce.getCollectors() )
 		{
             if (StringUtils.isNotEmpty(c.getAgent().getName()))
             {
@@ -207,7 +207,7 @@ public class KeyholeMarkupGenerator
 		//sb.append(" - ");
 		//sb.append(endString);
 		//sb.append("</h3></center><br/>");
-		sb.append("<h3>Collectors:</h3>\n<ul>\n");
+		sb.append("<h3>Collector:</h3>\n<ul>\n");
 		for( String agent: agentNames )
 		{
 			sb.append("<li>");

@@ -86,13 +86,13 @@
             </altviews>
         </view>
 
-        <view name="AccessionAuthorizations"
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
+        <view name="AccessionAuthorization"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="AccessionAuthorizations View" viewdef="AccessionAuthorizations" label="View" mode="view" validated="false" default="true"/>
-                <altview name="AccessionAuthorizations Edit" viewdef="AccessionAuthorizations" label="Edit" mode="edit" validated="true"/>
+                <altview name="AccessionAuthorization View" viewdef="AccessionAuthorization" label="View" mode="view" validated="false" default="true"/>
+                <altview name="AccessionAuthorization Edit" viewdef="AccessionAuthorization" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -472,7 +472,7 @@
                     <cell type="separator" label="Authorizations" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="AccessionAuthorizations" id="9" name="accessionAuthorizations" colspan="12"/>
+                    <cell type="subview" viewname="AccessionAuthorization" id="9" name="accessionAuthorizations" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
@@ -620,12 +620,12 @@
 
         <viewdef
             type="form"
-            name="AccessionAuthorizations"
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
+            name="AccessionAuthorization"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
-            <desc><![CDATA[Permit subform for AccessionAuthorizations.]]></desc>
+            <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
             <enableRules/>
 
             <columnDef>100px,2px,p,2px,p:g</columnDef>

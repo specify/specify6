@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -39,35 +40,36 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+
+import edu.ku.brc.util.Orderable;
 
 /**
 
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "loanagents", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "LoanID", "AgentID" }) })
-public class LoanAgents extends DataModelObjBase implements java.io.Serializable {
+@Table(name = "collector", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "CollectingEventID" }) })
+public class Collector extends DataModelObjBase implements java.io.Serializable, Orderable {
 
     // Fields    
 
-     protected Long loanAgentsId;
-     protected String role;
+     protected Long collectorId;
+     protected Integer orderNumber;
      protected String remarks;
-     protected Loan loan;
+     protected CollectingEvent collectingEvent;
      protected Agent agent;
 
 
     // Constructors
 
     /** default constructor */
-    public LoanAgents() {
+    public Collector() {
         //
     }
     
     /** constructor with id */
-    public LoanAgents(Long loanAgentsId) {
-        this.loanAgentsId = loanAgentsId;
+    public Collector(Long collectorId) {
+        this.collectorId = collectorId;
     }
    
     
@@ -78,10 +80,10 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     public void initialize()
     {
         super.init();
-        loanAgentsId = null;
-        role = null;
+        collectorId = null;
+        orderNumber = null;
         remarks = null;
-        loan = null;
+        collectingEvent = null;
         agent = null;
     }
     // End Initializer
@@ -93,9 +95,9 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
      */
     @Id
     @GeneratedValue
-    @Column(name = "LoanAgentsID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getLoanAgentsId() {
-        return this.loanAgentsId;
+    @Column(name = "CollectorID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Long getCollectorId() {
+        return this.collectorId;
     }
 
     /**
@@ -106,7 +108,7 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     @Override
     public Long getId()
     {
-        return this.loanAgentsId;
+        return this.collectorId;
     }
 
     /* (non-Javadoc)
@@ -116,23 +118,23 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     @Override
     public Class<?> getDataClass()
     {
-        return LoanAgents.class;
+        return Collector.class;
     }
     
-    public void setLoanAgentsId(Long loanAgentsId) {
-        this.loanAgentsId = loanAgentsId;
+    public void setCollectorId(Long collectorId) {
+        this.collectorId = collectorId;
     }
 
     /**
-     *      * Role the agent played in the loan
+     * 
      */
-    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
-    public String getRole() {
-        return this.role;
+    @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+    public Integer getOrderNumber() {
+        return this.orderNumber;
     }
     
-    public void setRole(String role) {
-        this.role = role;
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     /**
@@ -148,23 +150,23 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     *      * ID of loan agent at AgentID played a role in
+     *      * The CollectingEvent the agent participated in
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LoanID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Loan getLoan() {
-        return this.loan;
+    @ManyToOne(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+    @JoinColumn(name = "CollectingEventID", unique = false, nullable = false, insertable = true, updatable = true)
+    public CollectingEvent getCollectingEvent() {
+        return this.collectingEvent;
     }
     
-    public void setLoan(Loan loan) {
-        this.loan = loan;
+    public void setCollectingEvent(CollectingEvent collectingEvent) {
+        this.collectingEvent = collectingEvent;
     }
 
     /**
-     *      * Address of agent
+     *      * Link to Collector's record in Agent table
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
@@ -193,7 +195,25 @@ public class LoanAgents extends DataModelObjBase implements java.io.Serializable
     @Transient
     public Integer getTableId()
     {
-        return 53;
+        return 30;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#getOrderIndex()
+     */
+    @Transient
+    public int getOrderIndex()
+    {
+        return getOrderNumber();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#setOrderIndex(int)
+     */
+    public void setOrderIndex(int order)
+    {
+        setOrderNumber(order);
+    }
+
 
 }

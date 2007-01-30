@@ -65,7 +65,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      protected Float number2;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<DeaccessionAgents> deaccessionAgents;
+     protected Set<DeaccessionAgent> deaccessionAgents;
      protected Set<DeaccessionPreparation> deaccessionPreparations;
 
 
@@ -100,7 +100,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         number2 = null;
         yesNo1 = null;
         yesNo2 = null;
-        deaccessionAgents = new HashSet<DeaccessionAgents>();
+        deaccessionAgents = new HashSet<DeaccessionAgent>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
     }
     // End Initializer
@@ -267,11 +267,11 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
-    public Set<DeaccessionAgents> getDeaccessionAgents() {
+    public Set<DeaccessionAgent> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
     
-    public void setDeaccessionAgents(Set<DeaccessionAgents> deaccessionAgents) {
+    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
         this.deaccessionAgents = deaccessionAgents;
     }
 
@@ -293,7 +293,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
 
     // Add Methods
 
-    public void addDeaccessionAgents(final DeaccessionAgents deaccessionAgent)
+    public void addDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
     {
         this.deaccessionAgents.add(deaccessionAgent);
         deaccessionAgent.setDeaccession(this);
@@ -309,7 +309,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
 
     // Delete Methods
 
-    public void removeDeaccessionAgents(final DeaccessionAgents deaccessionAgent)
+    public void removeDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
     {
         this.deaccessionAgents.remove(deaccessionAgent);
         deaccessionAgent.setDeaccession(null);

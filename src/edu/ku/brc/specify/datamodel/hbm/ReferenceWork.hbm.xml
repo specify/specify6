@@ -163,13 +163,13 @@
     </many-to-one>
 
 
-	    <!-- bi-directional one-to-many association to Authors -->
+	    <!-- bi-directional one-to-many association to Author -->
     <set name="authors" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="ReferenceWorkID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.Authors"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Author"/>
     </set>
 	</class>
 </hibernate-mapping>

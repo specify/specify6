@@ -85,7 +85,7 @@ import edu.ku.brc.specify.datamodel.CollectingTrip;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -97,7 +97,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanAgents;
+import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -216,7 +216,7 @@ public class BuildSampleDatabase
         //dataObjects.add(createPickList("AgentTitle", true, titles));
         
         String[] roles = {"Borrower", "Receiver"};
-        dataObjects.add(createPickList("LoanAgentsRole", true, roles));
+        dataObjects.add(createPickList("LoanAgentRole", true, roles));
         
         String[] sexes = {"Both", "Female", "Male", "Unknown"};
         dataObjects.add(createPickList("BiologicalSex", true, sexes));
@@ -347,9 +347,9 @@ public class BuildSampleDatabase
         // collecting events (collectors, collecting trip)
         ////////////////////////////////
         log.info("Creating collecting events, collectors and a collecting trip");
-        Collectors collectorJosh = createCollector(agents.get(0), 2);
-        Collectors collectorJim = createCollector(agents.get(1), 1);
-        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collectors[]{collectorJosh,collectorJim});
+        Collector collectorJosh = createCollector(agents.get(0), 2);
+        Collector collectorJim = createCollector(agents.get(1), 1);
+        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorJosh,collectorJim});
         calendar.set(1993, 3, 19, 11, 56, 00);
         ce1.setStartDate(calendar);
         ce1.setStartDateVerbatim("19 Mar 1993, 11:56 AM");
@@ -361,9 +361,9 @@ public class BuildSampleDatabase
         AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionObjDef, null);//meg added cod
         CollectingEventAttr cevAttr = createCollectingEventAttr(ce1, cevAttrDef, "Sleepy Hollow", null);
 
-        Collectors collectorMeg = createCollector(agents.get(2), 1);
-        Collectors collectorRod = createCollector(agents.get(3), 2);
-        CollectingEvent ce2 = createCollectingEvent(farmpond, new Collectors[]{collectorMeg,collectorRod});
+        Collector collectorMeg = createCollector(agents.get(2), 1);
+        Collector collectorRod = createCollector(agents.get(3), 2);
+        CollectingEvent ce2 = createCollectingEvent(farmpond, new Collector[]{collectorMeg,collectorRod});
         calendar.set(1993, 3, 20, 06, 12, 00);
         ce2.setStartDate(calendar);
         ce2.setStartDateVerbatim("20 Mar 1993, 6:12 AM");
@@ -676,10 +676,10 @@ public class BuildSampleDatabase
         dataObjects.addAll(newLoanLPOs);
         dataObjects.addAll(returns);
         
-        LoanAgents loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
-        LoanAgents loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
-        LoanAgents loanAgent3 = createLoanAgent("Borrower", closedLoan, agents.get(4));
-        LoanAgents loanAgent4 = createLoanAgent("Borrower", overdueLoan, agents.get(4));
+        LoanAgent loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
+        LoanAgent loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
+        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan, agents.get(4));
+        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, agents.get(4));
         dataObjects.add(loanAgent1);
         dataObjects.add(loanAgent2);
         dataObjects.add(loanAgent3);

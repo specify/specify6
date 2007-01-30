@@ -80,7 +80,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      protected Integer visibility;
      protected String visibilitySetBy;
      protected Set<CollectionObject> collectionObjects;
-     protected Set<Collectors> collectors;
+     protected Set<Collector> collectors;
      protected Locality locality;
      protected Stratigraphy stratigraphy;
      protected CollectingTrip collectingTrip;
@@ -126,7 +126,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         remarks = null;
         visibility = null;
         collectionObjects = new HashSet<CollectionObject>();
-        collectors = new HashSet<Collectors>();
+        collectors = new HashSet<Collector>();
         locality = null;
         stratigraphy = null;
         attrs = new HashSet<AttributeIFace>();
@@ -306,7 +306,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     }
 
     /**
-     *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collectors.
+     *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
      */
     @Column(name = "VerbatimLocality", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
     public String getVerbatimLocality() {
@@ -389,11 +389,11 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<Collectors> getCollectors() {
+    public Set<Collector> getCollectors() {
         return this.collectors;
     }
     
-    public void setCollectors(Set<Collectors> collectors) {
+    public void setCollectors(Set<Collector> collectors) {
         this.collectors = collectors;
     }
 
@@ -471,7 +471,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         collectionObject.setCollectingEvent(this);
     }
 
-    public void addCollectors(final Collectors collector)
+    public void addCollector(final Collector collector)
     {
         this.collectors.add(collector);
         collector.setCollectingEvent(this);
@@ -493,7 +493,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         collectionObject.setCollectingEvent(null);
     }
 
-    public void removeCollectors(final Collectors collector)
+    public void removeCollector(final Collector collector)
     {
         this.collectors.remove(collector);
         collector.setCollectingEvent(null);

@@ -79,7 +79,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected String                        remarks;
     protected Integer                       visibility;
     protected String                        visibilitySetBy;
-    protected Set<Authors>                   authors;
+    protected Set<Author>                   authors;
     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
     protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
     protected Set<ExchangeIn>               exchangeInCatalogedBys;
@@ -87,11 +87,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Agent                         organization;
     protected Set<Project>                  projects;
     protected Set<Preparation>              preparations;
-    protected Set<GroupPersons>              groups;
-    protected Set<GroupPersons>              members;
+    protected Set<GroupPerson>              groups;
+    protected Set<GroupPerson>              members;
     protected Set<Determination>            determinations;
     protected Set<Shipment>                 shipments;
-    protected Set<Collectors>                collectors;
+    protected Set<Collector>                collectors;
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
     protected Set<Attachment>               attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
@@ -102,14 +102,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected String                        url;
      
     protected Set<Address>                  addresses;
-    protected Set<LoanAgents>                loanAgents;
+    protected Set<LoanAgent>                loanAgents;
     protected Set<Shipment>                 shipmentsByShipper;
     protected Set<Shipment>                 shipmentsByShippedTo;
-    protected Set<DeaccessionAgents>         deaccessionAgents;
+    protected Set<DeaccessionAgent>         deaccessionAgents;
     protected Set<ExchangeIn>               exchangeInFromOrganizations;
     protected Set<Permit>                   permitsIssuedTo;
     protected Set<Permit>                   permitsIssuedBy;
-    protected Set<BorrowAgents>              borrowAgents;
+    protected Set<BorrowAgent>              borrowAgents;
     protected Set<AccessionAgent>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
     protected Set<SpecifyUser> specifyUsers;
@@ -145,7 +145,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         name = null;
         remarks = null;
         visibility = null;
-        authors = new HashSet<Authors>();
+        authors = new HashSet<Author>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
         exchangeInCatalogedBys = new HashSet<ExchangeIn>();
@@ -153,11 +153,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         organization = null;
         projects = new HashSet<Project>();
         preparations = new HashSet<Preparation>();
-        groups = new HashSet<GroupPersons>();
-        members = new HashSet<GroupPersons>();
+        groups = new HashSet<GroupPerson>();
+        members = new HashSet<GroupPerson>();
         determinations = new HashSet<Determination>();
         shipments = new HashSet<Shipment>();
-        collectors = new HashSet<Collectors>();
+        collectors = new HashSet<Collector>();
         exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
         attachments = new HashSet<Attachment>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
@@ -168,14 +168,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         url = null;
         remarks = null;
         addresses = new HashSet<Address>();
-        loanAgents = new HashSet<LoanAgents>();
+        loanAgents = new HashSet<LoanAgent>();
         shipmentsByShipper = new HashSet<Shipment>();
         shipmentsByShippedTo = new HashSet<Shipment>();
-        deaccessionAgents = new HashSet<DeaccessionAgents>();
+        deaccessionAgents = new HashSet<DeaccessionAgent>();
         exchangeInFromOrganizations = new HashSet<ExchangeIn>();
         permitsIssuedTo = new HashSet<Permit>();
         permitsIssuedBy = new HashSet<Permit>();
-        borrowAgents = new HashSet<BorrowAgents>();
+        borrowAgents = new HashSet<BorrowAgent>();
         accessionAgents = new HashSet<AccessionAgent>();
         exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
         organization = null;
@@ -406,11 +406,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    public Set<Authors> getAuthors() {
+    public Set<Author> getAuthors() {
         return this.authors;
     }
 
-    public void setAuthors(Set<Authors> authors) {
+    public void setAuthors(Set<Author> authors) {
         this.authors = authors;
     }
 
@@ -506,12 +506,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "member")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<GroupPersons> getGroups() {
+    public Set<GroupPerson> getGroups() {
         return this.groups;
     }
 
-    public void setGroups(Set<GroupPersons> groupPersonsByGroup) {
-        this.groups = groupPersonsByGroup;
+    public void setGroups(Set<GroupPerson> groupPersonByGroup) {
+        this.groups = groupPersonByGroup;
     }
 
     /**
@@ -519,12 +519,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<GroupPersons> getMembers() {
+    public Set<GroupPerson> getMembers() {
         return this.members;
     }
 
-    public void setMembers(Set<GroupPersons> groupPersonsByMember) {
-        this.members = groupPersonsByMember;
+    public void setMembers(Set<GroupPerson> groupPersonByMember) {
+        this.members = groupPersonByMember;
     }
 
     /**
@@ -555,11 +555,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    public Set<Collectors> getCollectors() {
+    public Set<Collector> getCollectors() {
         return this.collectors;
     }
 
-    public void setCollectors(Set<Collectors> collectors) {
+    public void setCollectors(Set<Collector> collectors) {
         this.collectors = collectors;
     }
 
@@ -632,11 +632,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    public Set<LoanAgents> getLoanAgents() {
+    public Set<LoanAgent> getLoanAgents() {
         return this.loanAgents;
     }
 
-    public void setLoanAgents(Set<LoanAgents> loanAgents) {
+    public void setLoanAgents(Set<LoanAgent> loanAgents) {
         this.loanAgents = loanAgents;
     }
 
@@ -668,11 +668,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    public Set<DeaccessionAgents> getDeaccessionAgents() {
+    public Set<DeaccessionAgent> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
 
-    public void setDeaccessionAgents(Set<DeaccessionAgents> deaccessionAgents) {
+    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
         this.deaccessionAgents = deaccessionAgents;
     }
 
@@ -716,11 +716,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    public Set<BorrowAgents> getBorrowAgents() {
+    public Set<BorrowAgent> getBorrowAgents() {
         return this.borrowAgents;
     }
 
-    public void setBorrowAgents(Set<BorrowAgents> borrowAgents) {
+    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
         this.borrowAgents = borrowAgents;
     }
 
@@ -776,7 +776,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Add Methods
 
-    public void addAuthors(final Authors author)
+    public void addAuthor(final Author author)
     {
         this.authors.add(author);
         author.setAgent(this);

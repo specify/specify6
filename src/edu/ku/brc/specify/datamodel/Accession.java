@@ -80,7 +80,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<CollectionObject> collectionObjects;
-     protected Set<AccessionAuthorizations> accessionAuthorizations;
+     protected Set<AccessionAuthorization> accessionAuthorizations;
      protected Set<AccessionAgent> accessionAgents;
      protected RepositoryAgreement repositoryAgreement;
      protected Set<Attachment>          attachments;
@@ -121,7 +121,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         yesNo1 = null;
         yesNo2 = null;
         collectionObjects = new HashSet<CollectionObject>();
-        accessionAuthorizations = new HashSet<AccessionAuthorizations>();
+        accessionAuthorizations = new HashSet<AccessionAuthorization>();
         accessionAgents = new HashSet<AccessionAgent>();
         repositoryAgreement = null;
     }
@@ -353,11 +353,11 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<AccessionAuthorizations> getAccessionAuthorizations() {
+    public Set<AccessionAuthorization> getAccessionAuthorizations() {
         return this.accessionAuthorizations;
     }
 
-    public void setAccessionAuthorizations(Set<AccessionAuthorizations> accessionAuthorizations) {
+    public void setAccessionAuthorizations(Set<AccessionAuthorization> accessionAuthorizations) {
         this.accessionAuthorizations = accessionAuthorizations;
     }
 
@@ -410,10 +410,10 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
             collectionObjects.add((CollectionObject)ref);
             ((CollectionObject)ref).setAccession(this);
             
-        } else if (ref instanceof AccessionAuthorizations)
+        } else if (ref instanceof AccessionAuthorization)
         {
-            accessionAuthorizations.add((AccessionAuthorizations)ref);
-            ((AccessionAuthorizations)ref).setAccession(this);
+            accessionAuthorizations.add((AccessionAuthorization)ref);
+            ((AccessionAuthorization)ref).setAccession(this);
 
         } else if (ref instanceof AccessionAgent)
         {
@@ -444,10 +444,10 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
             collectionObjects.remove(ref);
             ((CollectionObject)ref).setAccession(null);
                 
-        } else if (ref instanceof AccessionAuthorizations)
+        } else if (ref instanceof AccessionAuthorization)
         {
             accessionAuthorizations.remove(ref);
-            ((AccessionAuthorizations)ref).setAccession(null);
+            ((AccessionAuthorization)ref).setAccession(null);
             
         } else if (ref instanceof AccessionAgent)
         {

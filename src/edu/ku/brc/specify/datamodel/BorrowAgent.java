@@ -12,20 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 package edu.ku.brc.specify.datamodel;
 
 import javax.persistence.Column;
@@ -46,28 +32,28 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "grouppersons", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) })
-public class GroupPersons extends DataModelObjBase implements java.io.Serializable {
+@Table(name = "borrowagent", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "BorrowID" }) })
+public class BorrowAgent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long groupPersonsId;
-     protected Short orderNumber;
+     protected Long borrowAgentId;
+     protected String role;
      protected String remarks;
-     protected Agent group;
-     protected Agent member;
+     protected Agent agent;
+     protected Borrow borrow;
 
 
     // Constructors
 
     /** default constructor */
-    public GroupPersons() {
+    public BorrowAgent() {
         //
     }
     
     /** constructor with id */
-    public GroupPersons(Long groupPersonsId) {
-        this.groupPersonsId = groupPersonsId;
+    public BorrowAgent(Long borrowAgentId) {
+        this.borrowAgentId = borrowAgentId;
     }
    
     
@@ -78,11 +64,11 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     public void initialize()
     {
         super.init();
-        groupPersonsId = null;
-        orderNumber = null;
+        borrowAgentId = null;
+        role = null;
         remarks = null;
-        group = null;
-        member = null;
+        agent = null;
+        borrow = null;
     }
     // End Initializer
 
@@ -93,9 +79,9 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
      */
     @Id
     @GeneratedValue
-    @Column(name = "GroupPersonsID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getGroupPersonsId() {
-        return this.groupPersonsId;
+    @Column(name = "BorrowAgentID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Long getBorrowAgentId() {
+        return this.borrowAgentId;
     }
 
     /**
@@ -106,7 +92,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     @Override
     public Long getId()
     {
-        return this.groupPersonsId;
+        return this.borrowAgentId;
     }
 
     /* (non-Javadoc)
@@ -116,23 +102,23 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     @Override
     public Class<?> getDataClass()
     {
-        return GroupPersons.class;
+        return BorrowAgent.class;
     }
     
-    public void setGroupPersonsId(Long groupPersonsId) {
-        this.groupPersonsId = groupPersonsId;
+    public void setBorrowAgentId(Long borrowAgentId) {
+        this.borrowAgentId = borrowAgentId;
     }
 
     /**
-     * 
+     *      * Role played by agent in borrow
      */
-    @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true)
-    public Short getOrderNumber() {
-        return this.orderNumber;
+    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    public String getRole() {
+        return this.role;
     }
     
-    public void setOrderNumber(Short orderNumber) {
-        this.orderNumber = orderNumber;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     /**
@@ -147,31 +133,32 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
         this.remarks = remarks;
     }
 
-    /**
-     *      * AgentID of group
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "GroupID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Agent getGroup() {
-        return this.group;
-    }
-    
-    public void setGroup(Agent agentByGroup) {
-        this.group = agentByGroup;
-    }
 
     /**
-     *      * AgentID of member (member must be of type Person)
+     *      * Address/Organization from which agent participated in the borrow
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "MemberID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Agent getMember() {
-        return this.member;
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setMember(Agent agentByMember) {
-        this.member = agentByMember;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
+    }
+
+    /**
+     *      * ID of borrow in which Agent played role
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "BorrowID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Borrow getBorrow() {
+        return this.borrow;
+    }
+    
+    public void setBorrow(Borrow borrow) {
+        this.borrow = borrow;
     }
 
 
@@ -193,7 +180,7 @@ public class GroupPersons extends DataModelObjBase implements java.io.Serializab
     @Transient
     public Integer getTableId()
     {
-        return 49;
+        return 19;
     }
 
 }

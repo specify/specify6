@@ -148,7 +148,8 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     @Transient
     public Object getValueObject()
     {
-        return valueObject;
+        //return valueObject;
+        return valueObject == null ? value : valueObject;
     }
 
     public void setValueObject(Object valueObject)

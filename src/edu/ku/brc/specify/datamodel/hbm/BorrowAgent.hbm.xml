@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.GroupPersons" table="grouppersons">
+<class name="edu.ku.brc.specify.datamodel.BorrowAgent" table="borrowagent" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="groupPersonsId" type="java.lang.Integer" column="GroupPersonsID">
+    <id name="borrowAgentId" type="java.lang.Long" column="BorrowAgentID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
-    
+
     <timestamp name="timestampModified" column="TimestampModified">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Versioning Timestamp</meta>
     </timestamp>
-    
-    <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_GroupPersonsOrder">
+
+    <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_BorrowAgent">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description">Role played by agent in borrow</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -38,15 +38,15 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="group" class="edu.ku.brc.specify.datamodel.Agent" cascade="none" unique-key="IX_GroupPersonsOrder">
-        <meta attribute="field-description">AgentID of group</meta>
-        <column name="GroupID"  not-null="true"/>
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent"  cascade="save-update" outer-join="true" index="IX_BorrowAgentAgentID" unique-key="IX_BorrowAgent">
+        <meta attribute="field-description">Address/Organization from which agent participated in the borrow</meta>
+        <column name="AgentID" not-null="true"/>
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="member" class="edu.ku.brc.specify.datamodel.Agent" cascade="save-update, lock, merge">
-        <meta attribute="field-description">AgentID of member (member must be of type Person)</meta>
-        <column name="MemberID"  not-null="true"/>
+    <!-- bi-directional many-to-one association to Borrow -->
+    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow"  outer-join="true" cascade="none" index="IX_BorrowAgentBorrowID" unique-key="IX_BorrowAgent">
+        <meta attribute="field-description">ID of borrow in which Agent played role</meta>
+        <column name="BorrowID" not-null="true"/>
     </many-to-one>
 
 </class>

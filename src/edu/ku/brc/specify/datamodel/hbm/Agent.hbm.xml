@@ -97,31 +97,31 @@
     </property>        	
     <!-- Associations -->
 
-    <!-- bi-directional one-to-many association to Authors -->
+    <!-- bi-directional one-to-many association to Author -->
     <set name="authors" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="AgentID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.Authors"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Author"/>
     </set>
     
-    <!-- bi-directional one-to-many association to GroupPersons -->
+    <!-- bi-directional one-to-many association to GroupPerson -->
     <set name="groups" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="MemberID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPersons"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPerson"/>
     </set>
 
-    <!-- bi-directional one-to-many association to GroupPersons -->
+    <!-- bi-directional one-to-many association to GroupPerson -->
     <set name="members" lazy="true" inverse="true" cascade="all-delete-orphan" order-by="orderNumber asc">
         <meta attribute="field-description"></meta>
         <key>
             <column name="GroupID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPersons"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPerson"/>
     </set>
     
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
@@ -202,13 +202,13 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.Shipment"/>
     </set>
 
-    <!-- bi-directional one-to-many association to Collectors -->
+    <!-- bi-directional one-to-many association to Collector -->
     <set name="collectors" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="AgentID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.Collectors"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Collector"/>
     </set>
 
     <!-- bi-directional one-to-many association to ExchangeOut -->
@@ -249,13 +249,13 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.Address"/>
     </set>
 
-    <!-- bi-directional one-to-many association to LoanAgents -->
+    <!-- bi-directional one-to-many association to LoanAgent -->
     <set name="loanAgents" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="AgentID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.LoanAgents"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.LoanAgent"/>
     </set>
 
     <!-- bi-directional one-to-many association to Shipment -->
@@ -276,13 +276,13 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.Shipment"/>
     </set>
 
-    <!-- bi-directional one-to-many association to DeaccessionAgents -->
+    <!-- bi-directional one-to-many association to DeaccessionAgent -->
     <set name="deaccessionAgents" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="AgentID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionAgents"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
     </set>
 
     <!-- bi-directional one-to-many association to ExchangeIn -->
@@ -312,13 +312,13 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.Permit"/>
     </set>
 
-    <!-- bi-directional one-to-many association to BorrowAgents -->
+    <!-- bi-directional one-to-many association to BorrowAgent -->
     <set name="borrowAgents" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="AgentID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgents"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
     </set>
 
     <!-- bi-directional one-to-many association to AccessionAgent -->

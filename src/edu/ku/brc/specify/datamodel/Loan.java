@@ -87,7 +87,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      protected Boolean isClosed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<LoanAgents> loanAgents;
+     protected Set<LoanAgent> loanAgents;
      protected Set<LoanPhysicalObject> loanPhysicalObjects;
      //protected Shipment shipment;
      protected Set<Shipment> shipments;
@@ -129,7 +129,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         isClosed        = OPEN;
         yesNo1          = null;
         yesNo2          = null;
-        loanAgents      = new HashSet<LoanAgents>();
+        loanAgents      = new HashSet<LoanAgent>();
 
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         shipments = new HashSet<Shipment>();
@@ -380,11 +380,11 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<LoanAgents> getLoanAgents() {
+    public Set<LoanAgent> getLoanAgents() {
         return this.loanAgents;
     }
     
-    public void setLoanAgents(Set<LoanAgents> loanAgents) {
+    public void setLoanAgents(Set<LoanAgent> loanAgents) {
         this.loanAgents = loanAgents;
     }
 
@@ -429,7 +429,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         this.attachments = attachments;
     }
 
-    public void addLoanAgents(final LoanAgents loanAgent)
+    public void addLoanAgent(final LoanAgent loanAgent)
     {
         this.loanAgents.add(loanAgent);
         loanAgent.setLoan(this);
@@ -451,7 +451,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         this.shipments.remove(shipment);
         shipment.removeLoan(this);
     }
-    public void removeLoanAgents(final LoanAgents loanAgent)
+    public void removeLoanAgent(final LoanAgent loanAgent)
     {
         this.loanAgents.remove(loanAgent);
         loanAgent.setLoan(null);

@@ -94,13 +94,13 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to AccessionAuthorizations -->
+    <!-- bi-directional one-to-many association to AccessionAuthorization -->
     <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="save-update, lock, merge">
         <meta attribute="field-description"></meta>
         <key>
             <column name="PermitID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
     </set>
     
     <!-- bi-directional many-to-one association to Agent not-null="true"-->

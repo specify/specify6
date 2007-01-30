@@ -78,7 +78,7 @@ public class LoanBusRules implements BusinessRulesIFace
         /*
         Loan loan = (Loan)dataObj;
         
-        for (LoanAgents loanAgent : loan.getLoanAgents())
+        for (LoanAgent loanAgent : loan.getLoanAgents())
         {
             Agent agent = loanAgent.getAgent();
             if (agent != null)

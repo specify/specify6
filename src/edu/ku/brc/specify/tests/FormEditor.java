@@ -116,7 +116,7 @@ import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -380,7 +380,7 @@ public class FormEditor implements DatabaseLoginListener
 
         // Create Collecting Event
         CollectingEvent colEv = createCollectingEvent(localities[0],
-                new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
         // Create AttributeDef for Collecting Event
         //AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);

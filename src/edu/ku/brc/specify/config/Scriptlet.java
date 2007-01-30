@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /*
@@ -439,10 +439,10 @@ public class Scriptlet extends JRDefaultScriptlet
         if (list.size() > 0)
         {
             CollectingEvent ce = (CollectingEvent)list.get(0);
-            Set<Collectors> collectors = ce.getCollectors();
+            Set<Collector> collectors = ce.getCollectors();
             if (collectors.size() > 0)
             {
-                collectorsStr = DataObjFieldFormatMgr.aggregate(collectors, Collectors.class);
+                collectorsStr = DataObjFieldFormatMgr.aggregate(collectors, Collector.class);
             } else
             {
                 collectorsStr = "No Collectors"; // XXX I18N

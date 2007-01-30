@@ -72,7 +72,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      protected Agent shipper;
      protected Agent shippedTo;
      protected Agent shippedBy;
-     //protected Set<BorrowShipments> borrowShipments;
+     //protected Set<BorrowShipment> borrowShipments;
      protected Set<Borrow> borrows;
      protected Set<Loan> loans;
      protected Set<ExchangeOut> exchangeOuts;
@@ -115,7 +115,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
         shipper   = null;
         shippedTo = null;
         shippedBy = null;
-        //borrowShipments = new HashSet<BorrowShipments>();
+        //borrowShipments = new HashSet<BorrowShipment>();
         borrows = new HashSet<Borrow>();
         loans = new HashSet<Loan>();
         exchangeOuts = new HashSet<ExchangeOut>();
@@ -361,11 +361,11 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-//    public Set<BorrowShipments> getBorrowShipments() {
+//    public Set<BorrowShipment> getBorrowShipments() {
 //        return this.borrowShipments;
 //    }
 //    
-//    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
+//    public void setBorrowShipments(Set<BorrowShipment> borrowShipments) {
 //        this.borrowShipments = borrowShipments;
 //    }
     /**
@@ -412,7 +412,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
 
     // Add Methods
 
-//    public void addBorrowShipments(final BorrowShipments borrowShipment)
+//    public void addBorrowShipments(final BorrowShipment borrowShipment)
 //    {
 //        this.borrowShipments.add(borrowShipment);
 //        borrowShipment.setShipment(this);
@@ -439,7 +439,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
 
     // Delete Methods
 
-//    public void removeBorrowShipments(final BorrowShipments borrowShipment)
+//    public void removeBorrowShipments(final BorrowShipment borrowShipment)
 //    {
 //        this.borrowShipments.remove(borrowShipment);
 //        borrowShipment.setShipment(null);

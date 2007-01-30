@@ -46,7 +46,7 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -395,7 +395,7 @@ public class DBSchemaTest extends TestCase
 
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
-                    new Collectors[] {createCollector(Darwin, 0), createCollector(Agassiz, 1)});
+                    new Collector[] {createCollector(Darwin, 0), createCollector(Agassiz, 1)});
 
             // Create AttributeDef for Collecting Event
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);

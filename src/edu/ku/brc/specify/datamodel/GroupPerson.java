@@ -46,28 +46,28 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "borrowagents", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "BorrowID" }) })
-public class BorrowAgents extends DataModelObjBase implements java.io.Serializable {
+@Table(name = "groupperson", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) })
+public class GroupPerson extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long borrowAgentsId;
-     protected String role;
+     protected Long groupPersonId;
+     protected Short orderNumber;
      protected String remarks;
-     protected Agent agent;
-     protected Borrow borrow;
+     protected Agent group;
+     protected Agent member;
 
 
     // Constructors
 
     /** default constructor */
-    public BorrowAgents() {
+    public GroupPerson() {
         //
     }
     
     /** constructor with id */
-    public BorrowAgents(Long borrowAgentsId) {
-        this.borrowAgentsId = borrowAgentsId;
+    public GroupPerson(Long groupPersonId) {
+        this.groupPersonId = groupPersonId;
     }
    
     
@@ -78,11 +78,11 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     public void initialize()
     {
         super.init();
-        borrowAgentsId = null;
-        role = null;
+        groupPersonId = null;
+        orderNumber = null;
         remarks = null;
-        agent = null;
-        borrow = null;
+        group = null;
+        member = null;
     }
     // End Initializer
 
@@ -93,9 +93,9 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
      */
     @Id
     @GeneratedValue
-    @Column(name = "BorrowAgentsID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getBorrowAgentsId() {
-        return this.borrowAgentsId;
+    @Column(name = "GroupPersonID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Long getGroupPersonId() {
+        return this.groupPersonId;
     }
 
     /**
@@ -106,7 +106,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     @Override
     public Long getId()
     {
-        return this.borrowAgentsId;
+        return this.groupPersonId;
     }
 
     /* (non-Javadoc)
@@ -116,23 +116,23 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     @Override
     public Class<?> getDataClass()
     {
-        return BorrowAgents.class;
+        return GroupPerson.class;
     }
     
-    public void setBorrowAgentsId(Long borrowAgentsId) {
-        this.borrowAgentsId = borrowAgentsId;
+    public void setGroupPersonId(Long groupPersonId) {
+        this.groupPersonId = groupPersonId;
     }
 
     /**
-     *      * Role played by agent in borrow
+     * 
      */
-    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
-    public String getRole() {
-        return this.role;
+    @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getOrderNumber() {
+        return this.orderNumber;
     }
     
-    public void setRole(String role) {
-        this.role = role;
+    public void setOrderNumber(Short orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     /**
@@ -147,32 +147,31 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
         this.remarks = remarks;
     }
 
+    /**
+     *      * AgentID of group
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "GroupID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Agent getGroup() {
+        return this.group;
+    }
+    
+    public void setGroup(Agent agentByGroup) {
+        this.group = agentByGroup;
+    }
 
     /**
-     *      * Address/Organization from which agent participated in the borrow
+     *      * AgentID of member (member must be of type Person)
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Agent getAgent() {
-        return this.agent;
+    @JoinColumn(name = "MemberID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Agent getMember() {
+        return this.member;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
-    }
-
-    /**
-     *      * ID of borrow in which Agent played role
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "BorrowID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Borrow getBorrow() {
-        return this.borrow;
-    }
-    
-    public void setBorrow(Borrow borrow) {
-        this.borrow = borrow;
+    public void setMember(Agent agentByMember) {
+        this.member = agentByMember;
     }
 
 
@@ -194,7 +193,7 @@ public class BorrowAgents extends DataModelObjBase implements java.io.Serializab
     @Transient
     public Integer getTableId()
     {
-        return 19;
+        return 49;
     }
 
 }

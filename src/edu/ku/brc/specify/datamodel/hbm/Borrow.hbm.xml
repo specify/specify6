@@ -75,14 +75,14 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to BorrowShipments -->
+    <!-- bi-directional one-to-many association to BorrowShipment -->
     <!-- Removed and replaced with many-to-many -->
    <!-- <set name="borrowShipments" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="BorrowID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipments"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipment"/>
     </set> -->
     
     <!-- bi-directional many-to-many association to Shipment -->
@@ -93,13 +93,13 @@
         <many-to-many class="edu.ku.brc.specify.datamodel.Shipment" column="ShipmentID"/>
     </set>  
      
-    <!-- bi-directional one-to-many association to BorrowAgents -->
+    <!-- bi-directional one-to-many association to BorrowAgent -->
     <set name="borrowAgents" lazy="true" inverse="true" cascade="all-delete-orphan">
         <meta attribute="field-description"></meta>
         <key>
             <column name="BorrowID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgents"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to BorrowMaterial -->

@@ -49,14 +49,14 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "accessionauthorizations", uniqueConstraints = { @UniqueConstraint(columnNames = { "PermitID", "AccessionID" }), @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
-public class AccessionAuthorizations extends DataModelObjBase implements java.io.Serializable,
-        Comparable<AccessionAuthorizations>
+@Table(name = "accessionauthorization", uniqueConstraints = { @UniqueConstraint(columnNames = { "PermitID", "AccessionID" }), @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
+public class AccessionAuthorization extends DataModelObjBase implements java.io.Serializable,
+        Comparable<AccessionAuthorization>
 {
 
     // Fields
 
-    protected Long                accessionAuthorizationsId;
+    protected Long                accessionAuthorizationId;
     protected String              remarks;
     protected Permit              permit;
     protected Accession           accession;
@@ -65,15 +65,15 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     // Constructors
 
     /** default constructor */
-    public AccessionAuthorizations()
+    public AccessionAuthorization()
     {
         // do nothing
     }
 
     /** constructor with id */
-    public AccessionAuthorizations(Long accessionAuthorizationsId)
+    public AccessionAuthorization(Long accessionAuthorizationId)
     {
-        this.accessionAuthorizationsId = accessionAuthorizationsId;
+        this.accessionAuthorizationId = accessionAuthorizationId;
     }
 
     // Initializer
@@ -81,7 +81,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     public void initialize()
     {
         super.init();
-        accessionAuthorizationsId = null;
+        accessionAuthorizationId = null;
         remarks = null;
         permit = null;
         accession = null;
@@ -97,10 +97,10 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
      */
     @Id
     @GeneratedValue
-    @Column(name = "AccessionAuthorizationsID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAccessionAuthorizationsId()
+    @Column(name = "AccessionAuthorizationID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Long getAccessionAuthorizationId()
     {
-        return this.accessionAuthorizationsId;
+        return this.accessionAuthorizationId;
     }
 
     /**
@@ -112,7 +112,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     @Transient
     public Long getId()
     {
-        return this.accessionAuthorizationsId;
+        return this.accessionAuthorizationId;
     }
 
     /* (non-Javadoc)
@@ -122,12 +122,12 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
     @Override
     public Class<?> getDataClass()
     {
-        return AccessionAuthorizations.class;
+        return AccessionAuthorization.class;
     }
 
-    public void setAccessionAuthorizationsId(Long accessionAuthorizationsId)
+    public void setAccessionAuthorizationId(Long accessionAuthorizationId)
     {
-        this.accessionAuthorizationsId = accessionAuthorizationsId;
+        this.accessionAuthorizationId = accessionAuthorizationId;
     }
 
     /**
@@ -190,7 +190,7 @@ public class AccessionAuthorizations extends DataModelObjBase implements java.io
         this.repositoryAgreement = repositoryAgreement;
     }
 
-    public int compareTo(AccessionAuthorizations obj)
+    public int compareTo(AccessionAuthorization obj)
     {
         if (permit != null && permit.permitNumber != null &&
                 obj.permit.permitNumber != null &&

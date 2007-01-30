@@ -123,7 +123,7 @@
         <key>
             <column name="CollectingEventID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.Collectors"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Collector"/>
     </set>
     
     <!-- bi-directional many-to-one association to Locality -->
