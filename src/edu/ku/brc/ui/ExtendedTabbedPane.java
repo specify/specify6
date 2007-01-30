@@ -13,6 +13,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
 
 /**
@@ -119,7 +120,7 @@ public class ExtendedTabbedPane extends JTabbedPane
      * @param title the title of the tab
      * @param icon the icon for the tab (can be null)
      */
-    protected void adjustTab(final int index, final String title, final Icon icon)
+    protected void adjustTab(final String title, final Icon icon, final Component comp)
     {
         final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
@@ -130,7 +131,7 @@ public class ExtendedTabbedPane extends JTabbedPane
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                closeCurrent();
+                remove(comp);
             }
             @Override
             public void mouseEntered(MouseEvent e)
@@ -150,7 +151,7 @@ public class ExtendedTabbedPane extends JTabbedPane
         JPanel tabPanel = new JPanel(new BorderLayout());
         if (icon != null)
         {
-            tabPanel.add(new JLabel(title, icon, JLabel.RIGHT), BorderLayout.WEST);
+            tabPanel.add(new JLabel(title, icon, SwingConstants.RIGHT), BorderLayout.WEST);
             tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
         }
         tabPanel.add(closeBtn, BorderLayout.EAST);
@@ -164,10 +165,9 @@ public class ExtendedTabbedPane extends JTabbedPane
     @Override
     public void addTab(String title, Component component)
     {
-        // TODO Auto-generated method stub
         super.addTab(title, component);
         
-        adjustTab(getTabCount()-1, title, null);
+        adjustTab(title, null, component);
     }
 
     /* (non-Javadoc)
@@ -176,10 +176,9 @@ public class ExtendedTabbedPane extends JTabbedPane
     @Override
     public void addTab(String title, Icon icon, Component component, String tip)
     {
-        // TODO Auto-generated method stub
         super.addTab(title, icon, component, tip);
         
-        adjustTab(getTabCount()-1, title, icon);
+        adjustTab(title, icon, component);
     }
 
     /* (non-Javadoc)
@@ -188,10 +187,9 @@ public class ExtendedTabbedPane extends JTabbedPane
     @Override
     public void addTab(String title, Icon icon, Component component)
     {
-        // TODO Auto-generated method stub
         super.addTab(title, icon, component);
         
-        adjustTab(getTabCount()-1, title, icon);
+        adjustTab(title, icon, component);
     }
 
     /* (non-Javadoc)
@@ -200,10 +198,9 @@ public class ExtendedTabbedPane extends JTabbedPane
     @Override
     public void insertTab(String title, Icon icon, Component component, String tip, int index)
     {
-        // TODO Auto-generated method stub
         super.insertTab(title, icon, component, tip, index);
         
-        adjustTab(index, title, icon);
+        adjustTab(title, icon, component);
     }
 
     /**
@@ -250,15 +247,11 @@ public class ExtendedTabbedPane extends JTabbedPane
             int y =  s.height-5;
             if (isOver)
             {
-                //g.setColor(color.darker());
-                //g.fillRect(x, y, CLOSER_SIZE+1, CLOSER_SIZE+1);
                 g.setColor(Color.RED);
                 drawCloser(g, x, y, CLOSER_SIZE, CLOSER_SIZE);
                 
             } else
             {
-                //g.setColor(color);
-                //g.fillRect(x, y, CLOSER_SIZE, CLOSER_SIZE);
                 g.setColor(color.darker());
                 drawCloser(g, x, y, CLOSER_SIZE, CLOSER_SIZE);                
             }
@@ -266,8 +259,5 @@ public class ExtendedTabbedPane extends JTabbedPane
         {
             closerRect.setBounds(0,0,0,0);
         }
-        
-        //g.setColor(color.darker().darker());
-        //drawCloser(g, x, y, CLOSER_SIZE, CLOSER_SIZE);
     }
 }
