@@ -24,7 +24,7 @@ import java.awt.event.ActionListener;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
@@ -55,11 +55,11 @@ public class CollectorActionListener implements ActionListener
         }
         
         Object source = e.getSource();
-        if (!(source instanceof Collectors))
+        if (!(source instanceof Collector))
         {
-            throw new IllegalArgumentException("Passed object must be a Collectors");
+            throw new IllegalArgumentException("Passed object must be a Collector");
         }
-        Collectors  collector   = (Collectors)source;
+        Collector  collector   = (Collector)source;
         IconViewObj iconViewObj = ((IconViewObj.IconViewActionEvent)e).getIconViewObj();
         
         TableInfo setTI = DBTableIdMgr.lookupByClassName(collector.getClass().getName());

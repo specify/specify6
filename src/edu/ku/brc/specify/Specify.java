@@ -72,7 +72,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.CollectorActionListener;
@@ -197,7 +197,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         AttachmentUtils.setThumbnailer(thumb);
         ActionListener attachmentDisplayer = AttachmentUtils.getAttachmentDisplayer();
         DefaultClassActionHandler.getInstance().registerActionHandler(Attachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(Collectors.class, new CollectorActionListener());
+        DefaultClassActionHandler.getInstance().registerActionHandler(Collector.class, new CollectorActionListener());
         
         
         // Load Local Prefs

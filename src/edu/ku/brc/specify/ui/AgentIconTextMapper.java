@@ -28,10 +28,10 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.BorrowAgents;
-import edu.ku.brc.specify.datamodel.Collectors;
-import edu.ku.brc.specify.datamodel.DeaccessionAgents;
-import edu.ku.brc.specify.datamodel.LoanAgents;
+import edu.ku.brc.specify.datamodel.BorrowAgent;
+import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.DeaccessionAgent;
+import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -56,11 +56,11 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
     {
         Class[] mappedClasses = new Class[6];
         mappedClasses[0] = Agent.class;
-        mappedClasses[1] = BorrowAgents.class;
+        mappedClasses[1] = BorrowAgent.class;
         mappedClasses[2] = AccessionAgent.class;
-        mappedClasses[3] = Collectors.class;
-        mappedClasses[4] = DeaccessionAgents.class;
-        mappedClasses[5] = LoanAgents.class;
+        mappedClasses[3] = Collector.class;
+        mappedClasses[4] = DeaccessionAgent.class;
+        mappedClasses[5] = LoanAgent.class;
         return mappedClasses;
     }
     
@@ -76,25 +76,25 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         {
             a = (Agent)o;
         }
-        if (o instanceof BorrowAgents)
+        if (o instanceof BorrowAgent)
         {
-            a = ((BorrowAgents)o).getAgent();
+            a = ((BorrowAgent)o).getAgent();
         }
         if (o instanceof AccessionAgent)
         {
             a = ((AccessionAgent)o).getAgent();
         }
-        if (o instanceof Collectors)
+        if (o instanceof Collector)
         {
-            a = ((Collectors)o).getAgent();
+            a = ((Collector)o).getAgent();
         }
-        if (o instanceof DeaccessionAgents)
+        if (o instanceof DeaccessionAgent)
         {
-            a = ((DeaccessionAgents)o).getAgent();
+            a = ((DeaccessionAgent)o).getAgent();
         }
-        if (o instanceof LoanAgents)
+        if (o instanceof LoanAgent)
         {
-            a = ((LoanAgents)o).getAgent();
+            a = ((LoanAgent)o).getAgent();
         }
         if (a==null)
         {
