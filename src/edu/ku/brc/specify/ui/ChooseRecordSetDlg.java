@@ -100,7 +100,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
                recordSets = session.getDataList(RecordSet.class);
             } else
             {
-                recordSets = (List<RecordSet>)session.getDataList("from recordset in class RecordSet where recordset.tableId = " + tableId);
+                recordSets = (List<RecordSet>)session.getDataList("from recordset in class RecordSet where recordset.dbTableId = " + tableId);
             }
             session.close();
 
