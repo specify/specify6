@@ -15,9 +15,11 @@ package edu.ku.brc.specify.tests;
 
 import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
 import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserPermission;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.setSession;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteSpecifyUserDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserGroupFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserPermissionFromDB;
@@ -27,9 +29,12 @@ import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserPermissionInD
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.UserPermission;
@@ -271,12 +276,31 @@ public class SpecifyUserTest extends TestCase
         try
         {
             log.info("Creating SpecifyUser");
+            log.info("createSpecifyUser");
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, null, "CollectionManager");
+
             SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, null, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
             assertTrue("SpecifyUser was not found in th database.", isSpecifyUserInDB(testUser.getId()));
             
-            UserPermission permission = createUserPermission(testUser, null, true, true);
+            Session session = HibernateUtil.getCurrentSession();
+            setSession(session);
+            HibernateUtil.beginTransaction();
+
+            log.info("createDataType");
+            DataType         dataType         = createDataType("fish");
+
+           // createMultipleLocalities();
+
+            HibernateUtil.commitTransaction();
+
+            log.info("createCollectionObjDef");
+            CollectionObjDef collectionObjDef =  edu.ku.brc.specify.tests.CreateTestDatabases.createCollectionObjDef(dataType, user, "fish", "fish");
+            //createCollectionObjDef(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
+
+            
+            UserPermission permission = createUserPermission(testUser, collectionObjDef, true, true);
             assertNotNull("UserPermission is null", permission);
             assertTrue("UserPermission failed to be deleted from the database.", deleteUserPermissionFromDB(permission.getId()));
             assertTrue("SpecifyUser failed to be deleted from the database.", deleteSpecifyUserDB(testUser.getId()));
@@ -313,8 +337,14 @@ public class SpecifyUserTest extends TestCase
             
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
             assertTrue("SpecifyUser was not found in th database.", isSpecifyUserInDB(testUser.getId()));
+            log.info("createDataType");
+            DataType         dataType         = createDataType("fish");
+            log.info("createSpecifyUser");
+            SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", (short)0, null, "CollectionManager");
+
+            CollectionObjDef collectionObjDef =  edu.ku.brc.specify.tests.CreateTestDatabases.createCollectionObjDef(dataType, user, "fish", "fish");
             
-            UserPermission permission = createUserPermission(testUser, null, true, true);
+            UserPermission permission = createUserPermission(testUser, collectionObjDef, true, true);
             assertNotNull("UserPermission is null", permission);
             stopHibernateTransaction();
             startHibernateTransaction();
