@@ -381,15 +381,14 @@ public class GenericDBConversion
         idMapper  = idMapperMgr.addTableMapper("collectionobject", "CollectionObjectID");
         if (shouldCreateMapTables)
         {
-            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.CollectionObjectTypeID = 10 order by CollectionObjectID");
-            //idMapper.mapAllIds("select CollectionObjectID from collectionobject order by CollectionObjectID");
+            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.DerivedFromID Is Null order by CollectionObjectID"); 
         }
 
         // Map all the Physical IDs
         idMapper = idMapperMgr.addTableMapper("preparation", "PreparationID");
         if (shouldCreateMapTables)
         {
-            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where collectionobject.CollectionObjectTypeID = 22 order by CollectionObjectID");
+            idMapper.mapAllIds("select CollectionObjectID from collectionobject Where not (collectionobject.DerivedFromID Is Null) order by CollectionObjectID");       
         }
 
         // Map all the Physical IDs
@@ -485,10 +484,10 @@ public class GenericDBConversion
             "BorrowAgent",    "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"BorrowAgents",    "RoleID", "Role", "RoleID",
 
-            "DeaccessionCollectionObject", "DeaccessionID",            "Deaccession",                 "DeaccessionID",
-            "DeaccessionCollectionObject", "DeaccessionPreparationID", "DeaccessionCollectionObject", "DeaccessionCollectionObjectID",
-            "DeaccessionCollectionObject", "CollectionObjectID",       "CollectionObject",            "CollectionObjectID", // not sure this is needed
-            "DeaccessionCollectionObject", "PreparationID",            "Preparation",                 "PreparationID",
+            "DeaccessionPreparation", "DeaccessionID",            "Deaccession",                 "DeaccessionID",
+            "DeaccessionPreparation", "DeaccessionPreparationID", "DeaccessionCollectionObject", "DeaccessionCollectionObjectID",
+            //"DeaccessionCollectionObject", "CollectionObjectID",       "CollectionObject",            "CollectionObjectID", // not sure this is needed
+            "DeaccessionPreparation", "PreparationID",            "Preparation",                 "PreparationID",
 
             "CollectionObjectCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "CollectionObjectCitation", "BiologicalObjectID", "CollectionObject", "CollectionObjectID",
@@ -503,8 +502,8 @@ public class GenericDBConversion
             "CollectingEvent", "StratigraphyID", "Stratigraphy", "StratigraphyID",
             //"CollectingEvent", "MethodID", "Method", "MethodID",
 
-            "Collectors", "CollectingEventID", "CollectingEvent", "CollectingEventID",
-            "Collectors", "AgentID", "Agent", "AgentID",
+            "Collector", "CollectingEventID", "CollectingEvent", "CollectingEventID",
+            "Collector", "AgentID", "Agent", "AgentID",
 
             //"Permit", "IssuerID", "AgentAddress", "AgentAddressID",
             //"Permit", "IssueeID", "AgentAddress", "AgentAddressID",
@@ -707,7 +706,7 @@ public class GenericDBConversion
        tableMaps.put("borrowagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "BorrowAgentID", "BorrowAgentsID"}));
        tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
        tableMaps.put("borrowshipment", createFieldNameMap(new String[] {"BorrowShipmentID", "BorrowShipmentsID"}));
-       tableMaps.put("collectingevent", createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID"}));
+       tableMaps.put("collectingevent", createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID", "TaxonID", "TaxonNameID"}));
        tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
        tableMaps.put("collector", createFieldNameMap(new String[] {"OrderNumber", "Order1", "CollectorID", "CollectorsID"}));
        tableMaps.put("deaccession", createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
@@ -725,8 +724,8 @@ public class GenericDBConversion
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
 
-       Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
-       tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
+       //Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
+       //tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
        
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
        
@@ -858,7 +857,7 @@ public class GenericDBConversion
             return "Plant";
         }
 
-        if (checkName(new String[] {"Fish", "Bird", "Frog", "Insect", "Fossil", "Icth", "Orn", "Herp", "Entom", "Paleo", "Mammal", "Invertebrate"}, collectionObjTypeName))
+        if (checkName(new String[] {"Fish", "Bird", "Frog", "Insect", "Fossil", "Icth", "Orn", "Herp", "Entom", "Paleo", "Mammal", "Invertebrate", "Animal"}, collectionObjTypeName))
         {
             return "Animal";
         }
@@ -2529,7 +2528,7 @@ public class GenericDBConversion
         
         Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {
                 "CollectionObjectID", "BiologicalObjectID", //meg is this right?
-                "IsCurrent",           "Current1", 
+                "IsCurrent",           "Current1",  
                 "DeterminedDate",      "Date1", 
                 "TaxonID",             "TaxonNameID"});
        
