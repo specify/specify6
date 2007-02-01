@@ -167,7 +167,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getReadOnly()
      */
-    @Transient
+    @Column(name = "ReadOnly", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getReadOnly()
     {
         return this.readOnly;

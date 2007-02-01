@@ -56,7 +56,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     // Fields
 
      protected Long containerId;
-     protected Integer collectionObjectId;
+     protected Long collectionObjectId;
      protected Short type;
      protected String name;
      protected String description;
@@ -139,11 +139,11 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      *
      */
     @Column(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getCollectionObjectId() {
+    public Long getCollectionObjectId() {
         return this.collectionObjectId;
     }
 
-    public void setCollectionObjectId(Integer collectionObjectId) {
+    public void setCollectionObjectId(Long collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
 

@@ -428,7 +428,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      * 
      */
     @OneToMany(targetEntity=edu.ku.brc.specify.datamodel.CollectingEventAttr.class,
-            cascade = {}, fetch = FetchType.LAZY)
+            cascade = {}, fetch = FetchType.LAZY, mappedBy="collectingEvent")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttributeIFace> getAttrs() {
         return this.attrs;

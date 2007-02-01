@@ -77,7 +77,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	protected Float							startUncertainty;
 	protected Float							end;
 	protected Float							endUncertainty;
-	protected Date							timestampVersion;
 	private GeologicTimePeriodTreeDef		definition;
 	private GeologicTimePeriodTreeDefItem	definitionItem;
 	private GeologicTimePeriod				parent;
@@ -114,7 +113,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		startUncertainty = null;
 		end = null;
 		endUncertainty = null;
-		timestampVersion = new Date();
 		definition = null;
 		definitionItem = null;
 		parent = null;
@@ -306,20 +304,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	public void setRemarks(String remarks)
 	{
 		this.remarks = remarks;
-	}
-
-	/**
-	 * 
-	 */
-    @Column(name = "TimestampVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
-	public Date getTimestampVersion()
-	{
-		return this.timestampVersion;
-	}
-
-	public void setTimestampVersion(Date timestampVersion)
-	{
-		this.timestampVersion = timestampVersion;
 	}
 
 	/**

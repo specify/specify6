@@ -119,11 +119,10 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplate.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplateMappingItem.hbm.xml"/>
 
-		
-		<!--
+		<!--		
 		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
-		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Address"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
@@ -132,8 +131,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentMetadata"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttributeDef"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Authors"/>
-		<mapping class="edu.ku.brc.specify.datamodel.BorrowAgents"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Author"/>
+		<mapping class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Borrow"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowMaterial"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"/>
@@ -145,12 +144,12 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Collectors"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Container"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ContainerItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DataType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>
-		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionAgents"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Determination"/>
@@ -163,10 +162,10 @@
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
-		<mapping class="edu.ku.brc.specify.datamodel.GroupPersons"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GroupPerson"/>
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
-		<mapping class="edu.ku.brc.specify.datamodel.LoanAgents"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LoanAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Loan"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"/>

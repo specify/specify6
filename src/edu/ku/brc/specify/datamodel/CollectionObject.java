@@ -512,7 +512,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @OneToMany(targetEntity=edu.ku.brc.specify.datamodel.CollectionObjectAttr.class,
-            cascade = {}, fetch = FetchType.LAZY)
+            cascade = {}, fetch = FetchType.LAZY, mappedBy="collectionObject")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttributeIFace> getAttrs() {
         return this.attrs;

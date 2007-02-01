@@ -107,7 +107,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /**
      * 
      */
-    @Column(name = "title", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getTitle()
     {
         return this.title;
@@ -134,7 +134,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /**
      * 
      */
-    @Column(name = "value", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Value", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getValue()
     {
         return this.value == null ? title : value;
