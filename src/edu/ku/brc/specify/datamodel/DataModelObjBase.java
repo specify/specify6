@@ -53,7 +53,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     public void init()
     {
         timestampCreated = new Date();
-        timestampModified = null;
+        timestampModified = new Date();
         lastEditedBy=null;
     }
     
