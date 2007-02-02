@@ -185,7 +185,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         catch (IOException e1)
         {
-            System.err.println("Problems setting the FileStoreAttachmentManager at ["+location+"]");
+            log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]");
             // TODO: fix this up
             System.exit(-1);
         }

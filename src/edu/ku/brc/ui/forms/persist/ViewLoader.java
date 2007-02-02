@@ -557,9 +557,9 @@ public class ViewLoader
                             // XXX DEBUG ONLY PLease REMOVE LATER
                             if (StringUtils.isEmpty(uitypeStr))
                             {
-                                System.err.println("***************************************************************************");
-                                System.err.println("***** Cell Id["+cellId+"] Name["+cellName+"] uitype is empty and should be 'text'. (Please Fix!)");
-                                System.err.println("***************************************************************************");
+                                log.debug("***************************************************************************");
+                                log.debug("***** Cell Id["+cellId+"] Name["+cellName+"] uitype is empty and should be 'text'. (Please Fix!)");
+                                log.debug("***************************************************************************");
                                 uitypeStr = "text";
                             }
 

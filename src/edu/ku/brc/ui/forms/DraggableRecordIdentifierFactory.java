@@ -11,6 +11,8 @@ import java.security.PrivilegedAction;
 
 import javax.swing.ImageIcon;
 
+import org.apache.log4j.Logger;
+
 /**
  * Default factory implementation, but it can be orridden by setting Systme property "edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory".
  * This factory creates DraggableRecordIdentifier objects.
@@ -22,6 +24,7 @@ import javax.swing.ImageIcon;
  */
 public class DraggableRecordIdentifierFactory
 {
+    private static final Logger log = Logger.getLogger(DraggableRecordIdentifierFactory.class);
     private static final String className = "edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory";
     
     protected static DraggableRecordIdentifierFactory instance = null;
@@ -71,7 +74,7 @@ public class DraggableRecordIdentifierFactory
                  
             } catch (Exception e) 
             {
-                System.err.println(e);
+                log.error(e);
                 InternalError error = new InternalError("Can't instantiate DraggableRecordIdentifierFactory factory " + factoryName);
                 error.initCause(e);
                 throw error;

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -46,6 +47,8 @@ import edu.ku.brc.ui.CommandDispatcher;
  */
 public class LocalityMapperTask extends BaseTask
 {
+    private static final Logger log = Logger.getLogger(LocalityMapperTask.class);
+    
     // Static Data Members
     public static final String LOCALITYMAPPER = "LocalityMapper";
     //private static final Logger log = Logger.getLogger(LocalityMapperTask.class);
@@ -94,7 +97,7 @@ public class LocalityMapperTask extends BaseTask
             
         } else
         {
-            System.err.println("Query String was empty.");
+            log.warn("Query String was empty.");
         }
     }
 

@@ -171,7 +171,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String displayInfoDialogName,
                                 final String objTitle )
     {
-        //System.err.println("ValComboBoxFromQuery "+Thread.currentThread().getName()+ " "+Thread.currentThread().hashCode());
         if (StringUtils.isEmpty(displayColumn))
         {
             throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] displayColumn null.");
@@ -182,7 +181,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         if (StringUtils.isEmpty(displayInfoDialogName))
         {
-            //System.err.println("Thread: "+Thread.currentThread().getName());
             throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] displayInfoDialogName is null.");
         }
         

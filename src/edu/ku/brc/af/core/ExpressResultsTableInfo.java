@@ -164,8 +164,6 @@ public class ExpressResultsTableInfo
             }
             
             buildSql  = patternSql.replaceFirst("ColFieldsDef", strBuf.toString());
-           
-            //System.err.println("["+buildSql+"]");
         }
 
         if (loadType == LOAD_TYPE.Viewing || loadType == LOAD_TYPE.Both)

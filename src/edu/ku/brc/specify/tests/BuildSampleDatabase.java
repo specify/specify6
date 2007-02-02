@@ -1216,7 +1216,7 @@ public class BuildSampleDatabase
         String dbName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
         if (dbName==null)
         {
-            System.err.println("You must specify a database name.");
+            log.error("You must specify a database name.");
             return;
         }
         String databaseName = dbName;

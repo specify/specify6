@@ -407,7 +407,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             // but check all the forms
             if (!pp.getValidator().isFormValid())
             {
-                System.err.println("false!"+pp);
+                log.debug("false!"+pp);
                 okToEnable = false;
                 break;
             }

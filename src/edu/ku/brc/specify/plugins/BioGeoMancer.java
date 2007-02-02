@@ -60,6 +60,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
@@ -92,7 +93,8 @@ import edu.ku.brc.ui.UIPluginable;
  */
 public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginable, PropertyChangeListener, MapperListener
 {
-
+    private static final Logger log = Logger.getLogger(BioGeoMancer.class);
+    
     protected boolean doingCache = true;
 
     protected static final int BGM_WIDTH  = 500;
@@ -295,7 +297,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
         } catch (Exception ex)
         {
-            System.err.println("Couldn't find value for["+name+"]");
+            log.warn("Couldn't find value for["+name+"]");
         }
         return new JLabel("", JLabel.LEFT);
     }

@@ -75,7 +75,7 @@ public class AttrUtils
             
         } catch (Exception e) 
         {
-            System.err.println("******* " + e);
+            log.warn("******* " + e);
             HibernateUtil.rollbackTransaction();
         } 
         return null;
@@ -127,7 +127,7 @@ public class AttrUtils
 
             } catch (Exception e)
             {
-                System.err.println("******* " + e);
+                log.warn("******* " + e);
                 e.printStackTrace();
                 HibernateUtil.rollbackTransaction();
             }
@@ -167,7 +167,7 @@ public class AttrUtils
             
         } catch (Exception e) 
         {
-            System.err.println("******* " + e);
+            log.warn("******* " + e);
             HibernateUtil.rollbackTransaction();
         } 
         return null;

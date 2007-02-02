@@ -71,7 +71,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            System.err.println(session.hashCode());
+            log.debug(session.hashCode());
             session.refresh(dataObj);
  
             return true;
@@ -89,7 +89,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            System.err.println(session.hashCode());
+            log.debug(session.hashCode());
             session.delete(dataObj);
  
             return true;

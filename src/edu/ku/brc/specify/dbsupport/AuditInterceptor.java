@@ -110,7 +110,7 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
                 {
                     newFormObjsList.remove(formObj);
                     updateIndex(formObj, IndexAction.New);
-                    System.err.println("postFlush"+formObj);
+                    log.debug("postFlush"+formObj);
                 }
             }
         }

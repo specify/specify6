@@ -29,6 +29,8 @@ import java.util.Vector;
 
 import javax.swing.JMenuItem;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -73,7 +75,7 @@ import edu.ku.brc.ui.forms.persist.View;
 public class SystemSetupTask extends BaseTask
 {
     // Static Data Members
-    //private static final Logger log  = Logger.getLogger(SystemSetupTask.class);
+    private static final Logger log  = Logger.getLogger(SystemSetupTask.class);
 
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
@@ -385,7 +387,7 @@ public class SystemSetupTask extends BaseTask
             
         } catch (Exception ex)
         {
-            System.err.println(ex);
+            log.warn(ex);
         }
         session.close();
 
@@ -407,7 +409,7 @@ public class SystemSetupTask extends BaseTask
             
         } catch (Exception ex)
         {
-            System.err.println(ex);
+            log.warn(ex);
         }
         session.close();
 

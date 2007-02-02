@@ -580,15 +580,14 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 ExpressSearchResults results = e.nextElement();
                 if (results.getRecIds().size() > 0)
                 {
-                    System.err.println("\n\n------------------------------------");
-                    System.err.println("------------------------------------");
-                    System.err.println("Search Id "+results.getTableInfo().getId()+" Table Id "+results.getTableInfo().getTableId());
-                    System.err.println("------------------------------------");
+                    log.debug("\n\n------------------------------------");
+                    log.debug("------------------------------------");
+                    log.debug("Search Id "+results.getTableInfo().getId()+" Table Id "+results.getTableInfo().getTableId());
+                    log.debug("------------------------------------");
                     for (Long l : results.getRecIds())
                     {
-                        System.err.print(l+" ");
+                        log.debug(l+" ");
                     }
-                    System.err.println();
                 }
             }
     
@@ -597,17 +596,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 ExpressSearchResults results = e.nextElement();
                 if (results.getRecIds().size() > 0)
                 {
-                    System.err.println("\n\n------------------------------------");
-                    System.err.println("------------------------------------");
-                    System.err.println("Search Id "+results.getTableInfo().getId() + 
+                    log.debug("\n\n------------------------------------");
+                    log.debug("------------------------------------");
+                    log.debug("Search Id "+results.getTableInfo().getId() + 
                                        " Table Id "+results.getTableInfo().getTableId() + 
                                        " Column Name "+results.getJoinColTableId());
-                    System.err.println("------------------------------------");
+                    log.debug("------------------------------------");
                     for (Long l : results.getRecIds())
                     {
-                        System.err.print(l+" ");
+                        log.debug(l+" ");
                     }
-                    System.err.println();
                 }
             }
         }

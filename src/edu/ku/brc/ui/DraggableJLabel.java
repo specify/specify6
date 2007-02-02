@@ -204,8 +204,6 @@ public class DraggableJLabel extends JLabel implements GhostActionable
 
         
         buffer = new BufferedImage(bgBufImg.getWidth(), bgBufImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        //System.err.println("perferred "+getPreferredSize());
-        //System.err.println("BufferedImage "+bgBufImg.getWidth()+", "+bgBufImg.getHeight());
 
         int shadowWidth  = bgBufImg.getWidth() - getItemWidth();
         int shadowHeight = bgBufImg.getHeight() - getItemHeight();
@@ -225,8 +223,6 @@ public class DraggableJLabel extends JLabel implements GhostActionable
 
         g2.setClip(left, top, width, height);
         
-        //System.err.println("Clip "+left+", "+top+", "+width+", "+height);
-
         g2.translate(left, top);
         super.paint(g2);
         
@@ -264,7 +260,6 @@ public class DraggableJLabel extends JLabel implements GhostActionable
     {
         if (shadowBuffer == null || generateImgBuf)
         {
-            //System.err.println("getBackgroundImageBuffer "+getItemWidth()+", "+getItemHeight());
             createRenderingHints();
             ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
 

@@ -97,7 +97,6 @@ public class RepresentativeIconFactory implements ObjectIconMapper
             String iconname = entry.getAttributes().getNamedItem("iconname").getNodeValue();
             Class<?> clazz = Class.forName(classname);
             ImageIcon icon = IconManager.getIcon(iconname, IconSize.Std24);
-            System.err.println(clazz+"  "+icon);
             classToIconMap.put(clazz, icon);
         }
         

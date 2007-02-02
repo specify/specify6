@@ -134,20 +134,6 @@ public class TableStats
         
         public void readTables() throws SQLException
         {
-            /*DatabaseMetaData metadata = null;
-            metadata = conn.getMetaData();
-            String[] names = { "TABLE" };
-            ResultSet tableNames = metadata.getTables(null, "%", "%", names);
-            while (tableNames.next())
-            {
-                System.err.println("----");
-                for (int i=1;i<tableNames.getMetaData().getColumnCount();i++)
-                {
-                    System.err.println(tableNames.getMetaData().getColumnName(i)+ "  "+tableNames.getString(i));
-                }
-                //System.err.println(tableNames.getString("TABLE_NAME"));
-            }*/
-            
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("show table status");
             rs.first();
@@ -160,18 +146,9 @@ public class TableStats
                     numRows = BasicSQLUtils.getNumRecords(conn, name);//rs.getInt(getColNameIndex(rs, "Rows"));
                     size    = rs.getInt(getColNameIndex(rs, "Data_length"));
                     
-                    //System.out.println(BasicSQLUtils.getNumRecords(conn, name) +" " + numRows);
-                    /*System.err.println("----");
-                    for (int i=1;i<rs.getMetaData().getColumnCount();i++)
-                    {
-                        String colName = rs.getMetaData().getColumnName(i);
-                        
-                        System.err.println(rs.getMetaData().getColumnName(i)+ "  "+rs.getString(i));
-                    }*/
                     break;
                 }
             } while (rs.next());
-            //metadata.
         }
         
         public String getName()

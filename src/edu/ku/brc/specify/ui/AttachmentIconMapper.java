@@ -14,6 +14,8 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
@@ -27,6 +29,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class AttachmentIconMapper implements ObjectIconMapper
 {
+    private static final Logger log = Logger.getLogger(AttachmentIconMapper.class);
     protected Hashtable<Attachment,ImageIcon> thumbnailCache;
     protected List<Attachment> thumbGenStarted;
     
@@ -94,9 +97,10 @@ public class AttachmentIconMapper implements ObjectIconMapper
             // start a thumbnail generator thread
             Runnable r = new Runnable()
             {
+                @SuppressWarnings("synthetic-access")
                 public void run()
                 {
-                    System.err.println("Starting thumb gen thread for " + a.getOrigFilename());
+                    log.debug("Starting thumb gen thread for " + a.getOrigFilename());
                     Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
                     File thumbFile = null;
                     
@@ -104,9 +108,9 @@ public class AttachmentIconMapper implements ObjectIconMapper
                     {
                         thumbFile = File.createTempFile("sp6_thumb_", null);
                         thumbFile.deleteOnExit();
-                        System.err.println("Generating thumb for " + a.getOrigFilename());
+                        log.debug("Generating thumb for " + a.getOrigFilename());
                         thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
-                        System.err.println("Done generating thumb for " + a.getOrigFilename());
+                        log.debug("Done generating thumb for " + a.getOrigFilename());
                     }
                     catch (IOException e)
                     {
@@ -118,7 +122,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                     {
                         ImageIcon icon = new ImageIcon(thumbFile.getAbsolutePath());
                         icon = IconManager.getScaledIcon(icon, IconSize.NonStd, size);
-                        System.err.println("Caching thumb for " + a.getOrigFilename());
+                        log.debug("Caching thumb for " + a.getOrigFilename());
                         thumbnailCache.put(a, icon);
                     }
                 }

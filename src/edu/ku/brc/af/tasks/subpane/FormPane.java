@@ -260,9 +260,6 @@ public class FormPane extends DroppableTaskPane
             opts &= ~MultiView.RESULTSET_CONTROLLER; // Clear Bit first
             opts |= (dataArg != null && (dataArg instanceof List || dataArg instanceof Set)) ? MultiView.RESULTSET_CONTROLLER : 0;
                        
-            //System.err.println("Is List: ["+(dataArg != null && (dataArg instanceof List || dataArg instanceof Set))+"] "+dataArg);
-            //MultiView.printCreateOptions("After", opts);
-            
             multiView = new MultiView(null, null, view, mode, options);
             if (multiView != null)
             {

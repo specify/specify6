@@ -254,8 +254,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     
     public void setImageURL(String url)
     {
-        System.err.println("Implement this: setImageURL(" + url + ")");
-
         Attachment newImage = new Attachment();
         newImage.initialize();
         newImage.setOrigFilename(url);

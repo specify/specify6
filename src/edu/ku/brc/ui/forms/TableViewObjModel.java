@@ -66,7 +66,7 @@ public class TableViewObjModel extends AbstractTableModel
 //         * classObj.getDeclaredField(fieldName).getType(); } else { typeClass = String.class; } } else {
 //         * typeClass = String.class; } ColumnInfo colInfo = new ColumnInfo(label, typeClass,
 //         * fieldName); colInfo.addElement(colInfo);
-//         *  } } catch (Exception e) { System.err.println(e); } fireTableModelChanged();
+//         *  } } catch (Exception e) { log.error(e); } fireTableModelChanged();
 //         */
 //    }
 
@@ -156,7 +156,7 @@ public class TableViewObjModel extends AbstractTableModel
          * value = pa.getName(); } else if (colInfo._fieldName.equals("value")) { value =
          * pa.getValue(); } else { return ""; } } else { return _dataGetter.getFieldValue(obj,
          * colInfo._fieldName); } } catch (Exception e) {
-         * System.err.println(e+"\n"+colInfo._fieldName); } return value;
+         * log.error(e+"\n"+colInfo._fieldName); } return value;
          */
     }
 

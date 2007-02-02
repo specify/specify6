@@ -101,7 +101,7 @@ public class HTTPGetter implements Runnable
         // execute the method
         httpClient.executeMethod(mthod);
         
-        System.err.println("Len: "+mthod.getResponseContentLength());
+        log.debug("Len: "+mthod.getResponseContentLength());
         return iStream = mthod.getResponseBodyAsStream();
     }
     

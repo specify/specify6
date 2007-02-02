@@ -28,6 +28,7 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.helpers.HTTPGetter;
@@ -42,6 +43,7 @@ import edu.ku.brc.ui.UICacheManager;
  */
 public class FishBaseInfoGetter extends HTTPGetter
 {
+    private static final Logger log = Logger.getLogger(FishBaseInfoGetter.class);
     public enum InfoType {Summary, Image, Thumbnail, PictureList}
 
     protected FishBaseInfoGetterListener consumer;
@@ -76,7 +78,7 @@ public class FishBaseInfoGetter extends HTTPGetter
             if (!path.mkdirs())
             {
                 String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
-                System.err.println(msg);
+                log.warn(msg);
                 throw new RuntimeException(msg);
             }
         }
