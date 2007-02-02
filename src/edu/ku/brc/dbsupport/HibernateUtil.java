@@ -154,16 +154,20 @@ public class HibernateUtil {
 
         String connection   = dbConn.getConnectionStr();
         
+        config.setProperty("hibernate.show_sql", "true");
+        
         config.setProperty("hibernate.connection.username", userName);
         config.setProperty("hibernate.connection.password", password);
         
         log.info("Using database ["+connection+"]");
         
+        // if not MS SQLServer
         if (connection.indexOf("inetdae7") == -1)
         {
             config.setProperty("hibernate.connection.url", connection);
             config.setProperty("hibernate.dialect", dbConn.getDialect());
             config.setProperty("hibernate.connection.driver_class", driver);
+            config.setProperty("hibernate.bytecode.use_reflection_optimizer", "true");
         }  
         else 
         {
@@ -209,7 +213,7 @@ public class HibernateUtil {
         try 
         {
             configuration = new Configuration();
-//            configuration = new AnnotationConfiguration();
+            //configuration = new AnnotationConfiguration();
             AuditInterceptor auditInter = AuditInterceptor.getInstance();
             if (auditInter != null)
             {
