@@ -460,7 +460,7 @@ public class AppPreferences
         for (Enumeration<?> e=properties.propertyNames();e.hasMoreElements();)
         {
             String name = (String)e.nextElement();
-            System.out.println("["+name+"]");
+            log.info("["+name+"]");
             if (name.startsWith(nodeName))
             {
                 String nm = name.substring(len+1, name.length());
