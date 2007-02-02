@@ -60,6 +60,14 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         for( Object o: q.list() )
         {
             T t = (T)o;
+            
+            // force loading on all ancestors
+            T parent = t.getParent();
+            while(parent!=null)
+            {
+                parent = parent.getParent();
+            }
+            
             results.add(t);
         }
         
@@ -156,15 +164,20 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	{
         Session session = getNewSession();
 
-        Query q = session.createQuery("FROM " + treeDefClass.getSimpleName() + " as def");
+        Query q = session.createQuery("FROM " + treeDefClass.getSimpleName());
         List<?> results = q.list();
         
 		Vector<D> defs = new Vector<D>(results.size());
 		for( Object o: results )
 		{
 			D def = (D)o;
+            
+            // force loading of all related def items
+            def.getTreeDefItems().size();
+            
 			defs.add(def);
 		}
+        
         session.close();
 		return defs;
 	}
@@ -181,8 +194,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		Query query = session.createQuery("FROM " + className + " WHERE " + idFieldName + "=:defId");
 		query.setParameter("defId",defId);
 		D def = (D)query.uniqueResult();
-        
+
+        // force loading of all related def items
         def.getTreeDefItems().size();
+        
         session.close();
 		return def;
 	}
