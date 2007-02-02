@@ -22,6 +22,8 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -43,6 +45,7 @@ import edu.ku.brc.ui.forms.persist.AltView;
  */
 public class CollectorActionListener implements ActionListener
 {
+    protected static final Logger log = Logger.getLogger(CollectorActionListener.class);
     
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -62,8 +65,15 @@ public class CollectorActionListener implements ActionListener
         Collector  collector   = (Collector)source;
         IconViewObj iconViewObj = ((IconViewObj.IconViewActionEvent)e).getIconViewObj();
         
-        TableInfo setTI = DBTableIdMgr.lookupByClassName(collector.getClass().getName());
+        // instead of using Collector.class.getName, use this so it works with subclasses as well
+        String classname = collector.getClass().getName();
+        TableInfo setTI = DBTableIdMgr.lookupByClassName(classname);
         String defFormName = setTI.getEditObjDialog();
+        if (defFormName==null)
+        {
+            log.error("Cannot find default form for " + collector.getClass().getSimpleName() + " records");
+            return;
+        }
 
         int     options    = iconViewObj.getViewOptions();
         boolean isEditting = iconViewObj.getAltView().getMode() == AltView.CreationMode.Edit;

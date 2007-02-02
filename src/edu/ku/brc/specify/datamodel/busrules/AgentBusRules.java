@@ -45,9 +45,9 @@ public class AgentBusRules extends SimpleBusRules
         {
                 "specifyuser",  "AgentID",
                 "agent",        "ParentOrganizationID",
-                "grouppersons", "GroupID",
+                "groupperson", "GroupID",
                 "loanreturnphysicalobject", "ReceivedByID",
-                "authors",      "AgentID",
+                "author",      "AgentID",
                 "borrowreturnmaterial", "ReturnedByID",
                 "preparation",  "PreparedByID",
                 "exchangein",   "CatalogedByID",
@@ -56,19 +56,27 @@ public class AgentBusRules extends SimpleBusRules
                 "shipment",     "ShippedByID",
                 "shipment",     "ShipperID",
                 "shipment",     "ShippedToID",
-                "collectors",   "AgentID",
+                "collector",   "AgentID",
                 "exchangeout",  "CatalogedByID",
                 "exchangeout",  "SentToOrganizationID",
                 "repositoryagreement",  "AgentID",
-                "deaccessionagents",  "AgentID",
+                "deaccessionagent",  "AgentID",
                 "permit",       "IssuedToID",
                 "permit",       "IssuedByID",
-                "borrowagents",  "AgentID",
+                "borrowagent",  "AgentID",
             };
 
         Agent agent = (Agent)dataObj;
         
-        return okToDelete(tableInfo, agent.getId());
+        Long agentId = agent.getId();
+        if (agentId==null)
+        {
+            return true;
+        }
+        
+        boolean result = okToDelete(tableInfo, agent.getId());
+        
+        return result;
     }
 
 }
