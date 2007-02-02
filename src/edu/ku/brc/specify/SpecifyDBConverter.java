@@ -26,6 +26,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
@@ -64,9 +65,7 @@ import edu.ku.brc.ui.UIHelper;
  * Create more sample data, letting Hibernate persist it for us.
  *
  * @code_status Beta
- *
  * @author rods
- *
  */
 public class SpecifyDBConverter
 {
@@ -279,8 +278,6 @@ public class SpecifyDBConverter
             stmt.close();
             connection.close();
             
-//            writeHibPropFile(databaseName);
-//            doGenSchema();
             SpecifySchemaGenerator schGen = new SpecifySchemaGenerator();
             schGen.generateSchema("localhost", databaseName);
         }
@@ -341,7 +338,6 @@ public class SpecifyDBConverter
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
                 boolean copyAgentAddressTables = false;
                 if (copyAgentAddressTables || doAll)
-                //if (copyAgentAddressTables)
                 {
                     conversion.convertAgents();
 
@@ -486,12 +482,15 @@ public class SpecifyDBConverter
                 	conversion.convertTaxonTreeDefItems();
                     
                     // fix the fullNameDirection field in each of the converted tree defs
-                    Criteria crit = HibernateUtil.getCurrentSession().createCriteria(TaxonTreeDef.class);
+                    Session session = HibernateUtil.getCurrentSession();
+                    Query q = session.createQuery("FROM TaxonTreeDef");
+                    List<?> allTTDs = q.list();
                     HibernateUtil.beginTransaction();
-                    for(Object o: crit.list())
+                    for(Object o: allTTDs)
                     {
                         TaxonTreeDef ttd = (TaxonTreeDef)o;
                         ttd.setFullNameDirection(TreeDefIface.FORWARD);
+                        session.saveOrUpdate(ttd);
                     }
                     try
                     {
@@ -503,12 +502,15 @@ public class SpecifyDBConverter
                     }
                     
                     // fix the fullNameSeparator field in each of the converted tree def items
-                    crit = HibernateUtil.getCurrentSession().createCriteria(TaxonTreeDefItem.class);
+                    session = HibernateUtil.getCurrentSession();
+                    q = session.createQuery("FROM TaxonTreeDefItem");
+                    List<?> allTTDIs = q.list();
                     HibernateUtil.beginTransaction();
-                    for(Object o: crit.list())
+                    for(Object o: allTTDIs)
                     {
                         TaxonTreeDefItem ttdi = (TaxonTreeDefItem)o;
                         ttdi.setFullNameSeparator(" ");
+                        session.saveOrUpdate(ttdi);
                     }
                     try
                     {
