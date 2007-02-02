@@ -263,7 +263,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    @OneToMany(targetEntity=edu.ku.brc.specify.datamodel.PreparationAttr.class,
+    @OneToMany(targetEntity=PreparationAttr.class,
             cascade = {}, fetch = FetchType.LAZY, mappedBy="preparation")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AttributeIFace> getAttrs() {
