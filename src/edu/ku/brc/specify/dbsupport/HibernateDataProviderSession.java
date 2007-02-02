@@ -143,12 +143,17 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> getDataList(Class<T> clsObject)
+    public <T> List<T> getDataList(Class<T> clazz)
     {
         if (session != null)
         {
-            Criteria criteria = session.createCriteria(clsObject);
-            return criteria.list();
+            Query q = session.createQuery("FROM " + clazz.getName());
+            return q.list();
+
+            // this is the old method, which returns multiple copies of any result that
+            // has any EAGER loaded relationships
+            // Criteria criteria = session.createCriteria(clazz);
+            // return criteria.list();
         }
         
         log.error("Session was null.");
