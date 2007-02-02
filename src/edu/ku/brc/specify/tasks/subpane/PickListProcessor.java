@@ -140,6 +140,7 @@ public class PickListProcessor implements FormProcessor
                         {
                             PickListItem pli = new PickListItem(title.getText(), null, new Date());
                             pickList.getItems().add(pli);
+                            pli.setPickList(pickList);
                             title.setText("");
                             value.setText("");
 

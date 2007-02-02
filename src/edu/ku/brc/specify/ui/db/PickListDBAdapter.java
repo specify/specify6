@@ -174,6 +174,7 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
             if (pickList != null)
             {
                 pickList.getItems().add(item);
+                item.setPickList(pickList);
             }
 
             save();

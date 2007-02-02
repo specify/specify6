@@ -1474,6 +1474,7 @@ public class CreateTestDatabases
 
             ContainerItem containerItem = createContainerItem(container);
             container.getItems().add(containerItem);
+            containerItem.setContainer(container);
             containerItem.getCollectionObjects().add(colObjs[1]);
             colObjs[1].setContainerItem(containerItem);
             session.saveOrUpdate(containerItem);
@@ -1482,6 +1483,7 @@ public class CreateTestDatabases
 
             containerItem = createContainerItem(container);
             container.getItems().add(containerItem);
+            containerItem.setContainer(container);
             containerItem.getCollectionObjects().add(colObjs[2]);
             colObjs[2].setContainerItem(containerItem);
             session.saveOrUpdate(containerItem);

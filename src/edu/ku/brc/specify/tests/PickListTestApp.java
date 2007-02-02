@@ -475,6 +475,10 @@ public class PickListTestApp
           pl.initialize();
           pl.setName("states");
           pl.setItems(list);
+          for (PickListItemIFace pli: list)
+          {
+              pli.setPickList(pl);
+          }
           pl.setSizeLimit(50); // doesn't matter when readonly
           pl.setReadOnly(true);
           session.save(pl);
