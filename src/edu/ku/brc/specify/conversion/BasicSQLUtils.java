@@ -674,8 +674,8 @@ public class BasicSQLUtils
 
             // Get the columns that have dates in case we get a TimestampCreated date that is null
             // and then we can go looking for an older date to try to figure it out
-            Integer timestampModifiedInx = fromHash.get("TimestampCreated");
-            Integer timestampCreatedInx  = fromHash.get("TimestampModified");
+            Integer timestampModifiedInx = fromHash.get("TimestampModified");
+            Integer timestampCreatedInx  = fromHash.get("TimestampCreated");
             boolean isAccessionTable     = fromTableName.equals("accession");
 
             StringBuilder verbatimDateStr = new StringBuilder(1024);
