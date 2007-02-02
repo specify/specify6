@@ -16,6 +16,8 @@ import java.util.Vector;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -35,6 +37,7 @@ import edu.ku.brc.ui.IconManager;
  */
 public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
+    private static final Logger log = Logger.getLogger(TaxonTreeTask.class);
 	public static final String TAXON = "TaxonTree";
 	
 	public TaxonTreeTask()
@@ -45,7 +48,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         CommandDispatcher.register(TAXON, this);
         initialize();
         
-        System.out.println("\"Taxonomy (the science of classification) is often undervalued as a glorified form of filing�with each species in its prescribed place in an album; but taxonomy is a fundamental and dynamic science, dedicated to exploring the causes of relationships and similarities among organisms. Classifications are theories about the basis of natural order, not dull catalogues compiled only to avoid chaos.\" Stephen Jay Gould (1990, p.98)");
+        log.info("\"Taxonomy (the science of classification) is often undervalued as a glorified form of filing - with each species in its prescribed place in an album; but taxonomy is a fundamental and dynamic science, dedicated to exploring the causes of relationships and similarities among organisms. Classifications are theories about the basis of natural order, not dull catalogues compiled only to avoid chaos.\" Stephen Jay Gould (1990, p.98)");
 	}
 	
 	@Override
