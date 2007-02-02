@@ -1328,10 +1328,12 @@ public class BuildSampleDatabase
                     {
                         rollbackTx();
                         log.error("Failed to persist DB objects", e);
+                        return;
                     }
                     catch(Exception e2)
                     {
                         log.error("Failed to persist DB objects.  Rollback failed.  DB may be in inconsistent state.", e2);
+                        return;
                     }
                 }
             }
@@ -1339,7 +1341,10 @@ public class BuildSampleDatabase
         else
         {
             log.error("Login failed");
+            return;
         }
+        
+        System.out.println("All done");
     }
 }
 
