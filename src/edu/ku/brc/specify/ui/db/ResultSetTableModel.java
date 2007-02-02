@@ -310,6 +310,7 @@ public class ResultSetTableModel extends AbstractTableModel
                 {
                     RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column+1));
                     items.add(rsi);
+                    rsi.setRecordSet(rs);
                 } while (resultSet.next());
 
                 return rs;
@@ -322,6 +323,7 @@ public class ResultSetTableModel extends AbstractTableModel
                     {
                         RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column+1));
                         items.add(rsi);
+                        rsi.setRecordSet(rs);
                     }
                 }
 

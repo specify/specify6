@@ -414,6 +414,7 @@ public class RecordSetTask extends BaseTask
                         {
                             RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
                             dstRecordSet.getItems().add(newrsi);
+                            newrsi.setRecordSet(dstRecordSet);
                         }
                     }
                     log.debug("");

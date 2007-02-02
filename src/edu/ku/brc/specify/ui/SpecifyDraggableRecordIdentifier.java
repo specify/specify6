@@ -92,6 +92,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
                 recordSet.initialize();
                 recordSetItem = new RecordSetItem();
                 recordSet.getItems().add(recordSetItem);
+                recordSetItem.setRecordSet(recordSet);
                 recordSet.setDbTableId(formDataObj.getTableId());
             }
             

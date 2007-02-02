@@ -284,6 +284,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     {                   
                         RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column));
                         items.add(rsi);
+                        rsi.setRecordSet(rs);
                     } while (resultSet.next());
                 }    
 
@@ -298,6 +299,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     {
                         RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column));
                         items.add(rsi);
+                        rsi.setRecordSet(rs);
                     }
                 }
             }
