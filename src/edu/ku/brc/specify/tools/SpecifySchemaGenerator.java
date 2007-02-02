@@ -84,7 +84,7 @@ public class SpecifySchemaGenerator
         sb.append("hibernate.connection.password=rods\n");
         sb.append("hibernate.max_fetch_depth=3\n");
         sb.append("hibernate.connection.pool_size=5\n");
-        sb.append("hibernate.cglib.use_reflection_optimizer=true\n");
+        sb.append("hibernate.bytecode.use_reflection_optimizer=true\n");
 
         try
         {
