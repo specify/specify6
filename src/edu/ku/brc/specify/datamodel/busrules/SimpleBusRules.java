@@ -79,7 +79,7 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
             conn = DBConnection.getInstance().createConnection();
             stmt = conn.createStatement();
 
-            return okToDelete(conn, stmt, tableName, columnName, id);
+            return okToDelete(stmt, tableName, columnName, id);
             
         } catch (Exception ex)
         {
@@ -108,15 +108,13 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
 
     /**
      * Checks to see if it can be deleted.
-     * @param connection db connection
      * @param stmt db statement
      * @param tableName the table name to check
      * @param columnName the column name name to check
      * @param id the Record ID to check
      * @return true means it can be deleted, false means it found something
      */
-    protected boolean okToDelete(final Connection connection, 
-                                 final Statement  stmt,
+    protected boolean okToDelete(final Statement  stmt,
                                  final String tableName, 
                                  final String columnName, final long id)
     {
@@ -132,7 +130,7 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
             ex.printStackTrace();
             
         }
-        return false; // error on the side of not enabling the delete btn
+        return false; // err on the side of not enabling the delete btn
     }
     
     /**
@@ -152,7 +150,7 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
 
             for (int i=0;i<nameCombos.length;i++)
             {
-                if (!okToDelete(conn, stmt, nameCombos[i], nameCombos[i+1], id))
+                if (!okToDelete(stmt, nameCombos[i], nameCombos[i+1], id))
                 {
                     return false;
                 }
