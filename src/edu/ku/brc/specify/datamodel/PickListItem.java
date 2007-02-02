@@ -42,6 +42,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
 
 /**
@@ -129,6 +130,11 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     public void setPickList(PickList pickList)
     {
         this.pickList = pickList;
+    }
+    
+    public void setPickList(PickListIFace pickList)
+    {
+    	setPickList((PickList)pickList);
     }
 
     /**

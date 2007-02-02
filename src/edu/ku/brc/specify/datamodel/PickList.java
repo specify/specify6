@@ -291,6 +291,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     {
         PickListItem pli = new PickListItem(title, value, new Date());
         items.add(pli);
+        pli.setPickList(this);
         return pli;
     }
     
@@ -301,6 +302,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     {
         PickListItem pli = new PickListItem(title, value, new Date());
         items.add(pli);
+        pli.setPickList(this);
         return pli;
        
     }

@@ -19,15 +19,17 @@ import java.util.Date;
 /**
  * Represents a PickListItem.
  * 
- * @author rods
- *
- * @code_status Beta
- *
  * Created Date: Nov 10, 2006
  *
+ * @author rods
+ * @code_status Beta
  */
 public interface PickListItemIFace extends Comparable<PickListItemIFace>
 {
+	public void setPickList(PickListIFace pickList);
+	
+	public PickListIFace getPickList();
+	
     public String getTitle();
 
     public void setTitle(String title);
