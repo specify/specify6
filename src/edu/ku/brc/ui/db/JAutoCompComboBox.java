@@ -100,7 +100,6 @@ public class JAutoCompComboBox extends JEditComboBox
             {
                 textField.setText(((PickListItem)item).getTitle());
                 textField.setSelectionEnd(caretPos + textField.getText().length());
-                System.out.println("caretPos "+caretPos + " " + textField.getText().length());
                 textField.moveCaretPosition(caretPos);
             }
         }
