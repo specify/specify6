@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -65,8 +66,9 @@ public class CollectorActionListener implements ActionListener
         Collector  collector   = (Collector)source;
         IconViewObj iconViewObj = ((IconViewObj.IconViewActionEvent)e).getIconViewObj();
         
-        // instead of using Collector.class.getName, use this so it works with subclasses as well
-        String classname = collector.getClass().getName();
+        // instead of using Agent.class.getName, use this so it works with subclasses of Agent as well
+        Agent agent = collector.getAgent();
+        String classname = agent.getClass().getName();
         TableInfo setTI = DBTableIdMgr.lookupByClassName(classname);
         String defFormName = setTI.getEditObjDialog();
         if (defFormName==null)
@@ -87,7 +89,7 @@ public class CollectorActionListener implements ActionListener
                                                                     isEditting,
                                                                     options,
                                                                     FRAME_TYPE.DIALOG);
-        dialog.setData(collector.getAgent());
+        dialog.setData(agent);
         dialog.showDisplay(true);
         
     }
