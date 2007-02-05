@@ -274,11 +274,11 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
                             {
                                 Document doc = hits.doc(i);
                                 String   sid = doc.get("sid");
-                                System.out.println("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
+                                log.debug("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
                                 if (sid != null && sid.equals(tblInfo.getId()))
                                 {
-                                    System.out.println("sid: ["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
-                                    System.out.println("Removing["+hits.id(i)+"] "+sid);
+                                    log.debug("sid: ["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
+                                    log.debug("Removing["+hits.id(i)+"] "+sid);
                                     
                                     reader.deleteDocument(hits.id(i));
                                     

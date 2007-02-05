@@ -383,11 +383,11 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
                 doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
                 
-                if (true)
+                if (false)
                 {
-                    System.out.println("id: "+doc.get("id"));
-                    System.out.println("sid: "+doc.get("sid"));
-                    System.out.println("class: "+doc.get("class"));
+                    log.debug("id: "+doc.get("id"));
+                    log.debug("sid: "+doc.get("sid"));
+                    log.debug("class: "+doc.get("class"));
                 }
 
                 int cnt = 0;
