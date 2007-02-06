@@ -1494,7 +1494,7 @@ public class GenericDBConversion
         log.info("Converting USYS Tables.");
 
         BasicSQLUtils.deleteAllRecordsFromTable("picklist");
-        BasicSQLUtils.deleteAllRecordsFromTable("picklist_items");
+        BasicSQLUtils.deleteAllRecordsFromTable("picklistitems");
 
         String[] tables = {
                 "usysaccessionstatus",            "AccessionStatus",
