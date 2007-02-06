@@ -90,12 +90,6 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
             item = item.getChild();
     	}
         
-        for ( int i = 0; i < model.getSize(); ++i )
-        {
-            System.out.println("Model element: " + model.getElementAt(i));
-        }
-        
-        System.out.println("setting combobox value to " + defaultItem);
         cb.setValue(defaultItem, null);
         form.setDataObj(node);
     }

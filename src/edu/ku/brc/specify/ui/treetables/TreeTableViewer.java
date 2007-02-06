@@ -1291,7 +1291,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 			T t = (T)listModel.getElementAt(index);
 			list.setSelectedIndex(index);
-			System.out.println("Show popup for " + t);
 			popupMenu.setList(list);
 			popupMenu.show(list,e.getX(),e.getY());
 		}
