@@ -553,7 +553,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     @Transient
     public String getIdentityTitle()
     { 
-        if(name!=null)return name;
+        if (name != null) return name;
         return super.getIdentityTitle();
     }
 }

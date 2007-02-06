@@ -42,30 +42,33 @@ public class StatDataItem implements QueryResultsListener
 
     protected String     description;
     protected String     sql;
-    protected String     link        = null;
-    protected boolean    useProgress = false;
+    protected String     link           = null;
+    protected boolean    useProgress    = false;
     
-    protected StatGroupTableModel model       = null;
+    protected StatGroupTableModel model = null;
     
     // The Data 
     protected Object value  = "...";
     
-    protected boolean hasStarted  = false;
-    protected boolean hasData     = false;
+    protected boolean hasStarted        = false;
+    protected boolean hasData           = false;
 
     protected Vector<QueryResultsContainer> qrcs       = new Vector<QueryResultsContainer>();
     protected Vector<VALUE_TYPE>            valuesType = new Vector<VALUE_TYPE>();
 
      // XXX need to get Colors from L&F
-    protected Color      linkColor = Color.BLUE;
+    protected Color      linkColor      = Color.BLUE;
     protected Color      defColor;
 
-    /* Constructor for a single statistical data item
+    /**
+     *  Constructor for a single statistical data item.
      * @param description the textual description of the statistic
      * @param link
      * @param useProgress
      */
-    public StatDataItem(final String description, final String link, final boolean useProgress)
+    public StatDataItem(final String description, 
+                        final String link, 
+                        final boolean useProgress)
     {
         this.description = description;
         this.useProgress = useProgress;
@@ -73,19 +76,24 @@ public class StatDataItem implements QueryResultsListener
     }
 
     /**
-     * Constructor for a single statistical data item
+     * Constructor for a single statistical data item.
      * @param description the textual description of the statistic
      * @param sql the SQL string that returns a single number
-     * @param link
-     * @param useProgress
+     * @param link the link
+     * @param useProgress use progress indicator
+     * @param formatStr optional format string (%d or %5.2% etc)
      */
-    public StatDataItem(final String description, final String sql, final String link, final boolean useProgress)
+    public StatDataItem(final String description, 
+                        final String sql, 
+                        final String link, 
+                        final boolean useProgress,
+                        final String formatStr)
     {
         this(description, link, useProgress);
         this.sql = sql;
 
         QueryResultsContainer qrc = new QueryResultsContainer(sql);
-        qrc.add(new QueryResultsDataObj(1, 1));
+        qrc.add(new QueryResultsDataObj(1, 1, formatStr));
 
         qrcs.addElement(qrc);
 
@@ -121,16 +129,18 @@ public class StatDataItem implements QueryResultsListener
     /**
      * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to 1,1
      * @param sqlStr the SQl statement
+     * @param formatStr optional format string (%d or %5.2% etc)
      * @return Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      */
-    public QueryResultsContainer add(final String sqlStr)
+    public QueryResultsContainer add(final String sqlStr,
+                                     final String formatStr)
     {
         if (sqlStr == null)
         {
             throw new RuntimeException("sql is null for ["+description+"]");
         }
         QueryResultsContainer qrc = new QueryResultsContainer(sqlStr);
-        qrc.add( new QueryResultsDataObj(1, 1));
+        qrc.add( new QueryResultsDataObj(1, 1, formatStr));
         valuesType.addElement(VALUE_TYPE.Ignore);
         qrcs.addElement(qrc);
 
@@ -143,16 +153,21 @@ public class StatDataItem implements QueryResultsListener
      * @param row the QueryResultsDataObj row in the resultset
      * @param col the QueryResultsDataObj column in the resultset
      * @param valType whether to ignore the value or indicate it is the description or value
+     * @param formatStr optional format string (%d or %5.2% etc)
      * @return Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      */
-    public QueryResultsContainer add(final String sqlStr, final int row, final int col, final VALUE_TYPE valType)
+    public QueryResultsContainer add(final String     sqlStr, 
+                                     final int        row, 
+                                     final int        col, 
+                                     final VALUE_TYPE valType,
+                                     final String     formatStr)
     {
         if (sqlStr == null)
         {
             throw new RuntimeException("sql is null for ["+description+"]");
         }
         QueryResultsContainer qrc = new QueryResultsContainer(sqlStr);
-        qrc.add( new QueryResultsDataObj(row, col));
+        qrc.add( new QueryResultsDataObj(row, col, formatStr));
         valuesType.addElement(valType);
         qrcs.addElement(qrc);
 
@@ -160,15 +175,20 @@ public class StatDataItem implements QueryResultsListener
     }
 
     /**
-     * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
+     * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col.
      * @param qrc the QueryResultsContainer to be executed
      * @param row the QueryResultsDataObj row in the resultset
      * @param col the QueryResultsDataObj column in the resultset
      * @param valType whether to ignore the value or indicate it is the description or value
+     * @param formatStr optional format string (%d or %5.2% etc)
      */
-    public void add(final QueryResultsContainer qrc, final int row, final int col, final VALUE_TYPE valType)
+    public void add(final QueryResultsContainer qrc, 
+                    final int        row, 
+                    final int        col, 
+                    final VALUE_TYPE valType,
+                    final String     formatStr)
     {
-        qrc.add( new QueryResultsDataObj(row, col));
+        qrc.add( new QueryResultsDataObj(row, col, formatStr));
     }
 
     /**

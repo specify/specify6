@@ -12,7 +12,6 @@ import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
@@ -71,7 +70,6 @@ import edu.ku.brc.specify.datamodel.PreparationAttr;
 import edu.ku.brc.specify.datamodel.Project;
 import edu.ku.brc.specify.datamodel.ProjectCollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -1893,14 +1891,6 @@ public class DataBuilder
         recordset.setName(name);
         persist(recordset);
         return recordset;
-    }
-
-    public static RecordSetItemIFace createRecordSetItem()
-    {
-        RecordSetItem recordsetitem = new RecordSetItem();
-        recordsetitem.initialize();
-        persist(recordsetitem);
-        return recordsetitem;
     }
 
     public static ReferenceWork createReferenceWork(final Byte referenceWorkType,

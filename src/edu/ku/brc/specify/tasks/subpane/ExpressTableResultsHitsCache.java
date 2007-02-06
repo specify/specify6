@@ -15,8 +15,6 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.swing.table.AbstractTableModel;
@@ -26,9 +24,7 @@ import org.apache.lucene.search.Hits;
 
 import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -255,10 +251,8 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          */
         public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
         {
-            RecordSetIFace rs = new RecordSet();
-
-            Set<RecordSetItemIFace> items = new HashSet<RecordSetItemIFace>();
-            rs.setItems(items);
+            RecordSet rs = new RecordSet();
+            rs.initialize();
 
             try
             {
@@ -272,9 +266,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     for (int i=0;i<hits.length();i++)
                     {
                         Document doc  = hits.doc(i);
-                        RecordSetItem rsi = new RecordSetItem(Long.parseLong(doc.get("id")));
-                        items.add(rsi);
-                        rsi.setRecordSet(rs);
+                        rs.addItem(Long.parseLong(doc.get("id")));
                     }
                 } else
                 {
@@ -282,9 +274,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     {
                         Document doc  = hits.doc(indexes[rows[i]]);
                         //log.debug("["+doc.get("id")+"]["+doc.get("sid")+"]["+doc.get("data")+"]");
-                        RecordSetItem rsi = new RecordSetItem(Long.parseLong(doc.get("id")));
-                        items.add(rsi);
-                        rsi.setRecordSet(rs);
+                        rs.addItem(Long.parseLong(doc.get("id")));
                     }
                 }
             } catch (Exception ex)

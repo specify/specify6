@@ -74,7 +74,7 @@ public class LocalityMapperTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(name, this, "Map");
+        return starterPane = new SimpleDescPane(name, this, "Map");
     }
 
     /**

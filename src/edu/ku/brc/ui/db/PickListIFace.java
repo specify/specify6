@@ -65,8 +65,6 @@ public interface PickListIFace
 
     public Set<PickListItemIFace> getItems();
 
-    public void setItems(Set<PickListItemIFace> items);
-
     public PickListItemIFace addPickListItem(final String title, final String value);
 
     public PickListItemIFace addPickListItem(final String title, final Object value);

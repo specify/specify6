@@ -23,11 +23,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Vector;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
@@ -40,20 +38,28 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
  * Created Date: Dec 19, 2006
  *
  */
-public class PrepTypeBusRules implements BusinessRulesIFace
+public class PrepTypeBusRules extends BaseBusRules
 {
-    private List<String> errorList = new Vector<String>();
+
+    /**
+     * Constrcutor.
+     */
+    public PrepTypeBusRules()
+    {
+        super(PrepType.class);
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getDeleteMsg(java.lang.Object)
      */
-    public String getDeleteMsg(Object dataObj)
+    public String getDeleteMsg(final Object dataObj)
     {
         if (dataObj instanceof PrepType)
         {
             return getLocalizedMessage("PREPTYPE_DELETED", ((PrepType)dataObj).getName());
         }
-        return null;
+        // else
+        return super.getDeleteMsg(dataObj);
     }
 
     /* (non-Javadoc)

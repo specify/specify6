@@ -14,7 +14,7 @@ import edu.ku.brc.specify.datamodel.Geography;
  * @code_status Alpha
  * @author jstewart
  */
-public class GeographyBusRules extends SimpleBusRules
+public class GeographyBusRules extends BaseBusRules
 {
     public GeographyBusRules()
     {

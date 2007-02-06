@@ -176,7 +176,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 String sqlStr = "select TimestampCreated from accession order by TimestampCreated desc limit 0,1"; // TODO This needs to be per DB PLATFORM
                 log.debug(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
-                container.add(new QueryResultsDataObj(nameStr));
+                container.add(new QueryResultsDataObj(nameStr, null));
 
                 // Since the index doesn't exist fake like
                 // each table has at least one out of date record
@@ -383,7 +383,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 doc.add(new Field("sid", idStr, Field.Store.YES, Field.Index.NO));
                 doc.add(new Field("class", tableInfo.getName(), Field.Store.YES, Field.Index.NO));
                 
-                if (false)
+                if (false) // debug
                 {
                     log.debug("id: "+doc.get("id"));
                     log.debug("sid: "+doc.get("sid"));

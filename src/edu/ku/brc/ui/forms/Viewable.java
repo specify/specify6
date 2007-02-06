@@ -216,7 +216,21 @@ public interface Viewable
      */
     public void setHasNewData(boolean hasNewData);
     
+    /**
+     * Sets the Save Btn into the Viewable so it can enable and disABLE IT.
+     * @param saveBtn THE SAVE BTN
+     */
     public void registerSaveBtn(JButton saveBtn);
+    
+    /**
+     * Updates the enable/disable state of the save btn if it has one.
+     */
+    public void updateSaveBtn();
+    
+    /**
+     * Focus the appropriate UI element.
+     */
+    public void focus();
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.

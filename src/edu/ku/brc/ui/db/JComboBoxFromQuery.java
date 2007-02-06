@@ -97,7 +97,7 @@ public class JComboBoxFromQuery extends JComboBox
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public JComboBoxFromQuery(final String tableName,
                               final String idColumn,
@@ -115,8 +115,23 @@ public class JComboBoxFromQuery extends JComboBox
         init();
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#requestFocus()
+     */
+    @Override
+    public void requestFocus()
+    {
+        if (tf != null)
+        {
+            tf.requestFocus();
+        } else
+        {
+            super.requestFocus();
+        }
+    }
+    
     /**
-     * Returns combobox's text field
+     * Returns combobox's text field.
      * @return combobox's text field
      */
     public JTextField getTextField()

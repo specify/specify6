@@ -99,7 +99,6 @@ public class LabelsTask extends BaseTask
     // Data Members
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> labelsList       = new Vector<NavBoxItemIFace>();
-    protected SubPaneIFace            starterPane      = null;
 
     // temp data
     protected NavBoxItemIFace         oneNbi           = null;
@@ -190,7 +189,7 @@ public class LabelsTask extends BaseTask
     }
 
     /**
-     * Performs a command (to create a label)
+     * Performs a command (to create a label).
      * @param labelName the name of lable (the file name)
      * @param labelTitle the localized title to be displayed as the tab title
      * @param recordSet the recordSet to be turned into labels
@@ -205,12 +204,13 @@ public class LabelsTask extends BaseTask
         if (starterPane == null)
         {
             labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this);
-            SubPaneMgr.getInstance().addPane(labelsPane);
+            addSubPaneToMgr(labelsPane);
             
         } else
         {
             labelsPane  = (LabelsPane)starterPane;
             SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
+            
             starterPane = null;
         }
         labelsPane.createReport(labelName, recordSet);

@@ -22,18 +22,23 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 
-import java.util.List;
+import java.awt.Component;
 import java.util.Set;
-import java.util.Vector;
+
+import javax.swing.JTextField;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.validation.ValFormattedTextField;
 
 /**
  * Business rules for validating a Loan.
@@ -43,28 +48,42 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
  * @author rods
  *
  */
-public class ShipmentBusRules implements BusinessRulesIFace
+public class ShipmentBusRules extends BaseBusRules
 {
-    //private static final Logger  log      = Logger.getLogger(LoanBusRule.class);
-    
-    private List<String> errorList = new Vector<String>();
-
-   
     /**
      * Constructor.
      */
     public ShipmentBusRules()
     {
-        //
+        super(Shipment.class);
     }
-    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getWarningsAndErrors()
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public List<String> getWarningsAndErrors()
+    @Override
+    public void fillForm(Object dataObj, Viewable viewable)
     {
-        return errorList;
+        FormViewObj formViewObj = (FormViewObj)viewable;
+        if (formViewObj != null && formViewObj.getDataObj() instanceof Shipment)
+        {
+            MultiView mvParent = formViewObj.getMVParent();
+            boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
+            if (isNewObj)
+            {              
+                Loan        loan     = (Loan)mvParent.getMultiViewParent().getData();
+                Component   shipComp = formViewObj.getControlByName("shipmentNumber");
+                if (shipComp instanceof JTextField)
+                {
+                    ValFormattedTextField shipTxt = (ValFormattedTextField)shipComp;
+                    shipTxt.setValue(loan.getLoanNumber(), loan.getLoanNumber());
+                    shipTxt.setChanged(true);
+                }
+            }
+        }
     }
+
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
@@ -120,7 +139,8 @@ public class ShipmentBusRules implements BusinessRulesIFace
         {
             return getLocalizedMessage("SHIPMENT_DELETED", ((Shipment)dataObj).getShipmentNumber());
         }
-        return null;
+        // else
+        return super.getDeleteMsg(dataObj);
     }
     
     /* (non-Javadoc)

@@ -492,6 +492,7 @@ public class DatamodelGenerator
 		{
 			log.error("Could not find table/ID listing file for input ");
 		}
+        log.info("Done.");
 	}
 
 }

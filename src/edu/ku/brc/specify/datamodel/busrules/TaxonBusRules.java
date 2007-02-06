@@ -14,7 +14,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
  * @code_status Alpha
  * @author jstewart
  */
-public class TaxonBusRules extends SimpleBusRules
+public class TaxonBusRules extends BaseBusRules
 {
     public TaxonBusRules()
     {

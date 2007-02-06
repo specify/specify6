@@ -14,27 +14,19 @@
  */
 package edu.ku.brc.af.core;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
-import edu.ku.brc.ui.IconManager;
 
 /**
  * Manages all the SubPanes that are in the main Tabbed pane. It notifies listeners when SubPanes are added, removed or Shown.
@@ -103,13 +95,19 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * @param pane the pane to be added
      * @return the same pane
      */
-    public SubPaneIFace addPane(SubPaneIFace pane)
+    public SubPaneIFace addPane(final SubPaneIFace pane)
     {
         if (pane == null)
         {
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
         }
         
+        if (instance.panes.contains(pane))
+        {
+            showPane(pane);
+            return pane;
+        }
+        /*
         for (Enumeration<SubPaneIFace> e=instance.panes.elements();e.hasMoreElements();)
         {
             if (e.nextElement() == pane)
@@ -117,7 +115,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 showPane(pane);
                 return pane;
             }
-        }
+        }*/
 
         // Add this pane to the tabs
         String title = buildUniqueName(pane.getName());
@@ -131,10 +129,15 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         this.setSelectedIndex(getTabCount()-1);
 
         // XXX Are these needed??
-        pane.getUIComponent().invalidate();
-        invalidate();
-        doLayout();
-
+        /*SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                pane.getUIComponent().invalidate();
+                invalidate();
+                doLayout();
+            }
+        });*/
         return pane;
     }
     
@@ -146,15 +149,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace renamePane(final SubPaneIFace pane, final String newName)
     {
-        SubPaneIFace fndPane = panes.get(pane.getName());
-        if (pane != fndPane)
-        {
-            throw new RuntimeException("Panes don't match on rename.");
-        }
         panes.remove(pane.getName());
         pane.setName(newName);
         this.setTitleAt(indexOfComponent(pane.getUIComponent()), newName);
-        panes.put(newName, fndPane);
+        panes.put(newName, pane);
         
         return pane;
     }
@@ -167,11 +165,19 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
     {
+        //System.err.println("SubPaneMgr::replacePane ************************************************");
+
+        // The caller is assuming that the pane is there to be replaced, but the SubPaneMgr can't
+        // be responsible for that. So if the pane to be replaced is not found then it just adds 
+        // SubPane straight away.
         SubPaneIFace fndPane = panes.get(oldPane.getName());
         if (oldPane != fndPane)
         {
-            throw new RuntimeException("Couldn't find Pane ["+oldPane.getName()+"]");
+            //log.warn("Couldn't find Pane ["+oldPane.getName()+"]");
+            addPane(newPane);
+            return newPane;
         }
+        
         // Add this pane to the tabs
         String title = buildUniqueName(newPane.getName());
         newPane.setName(title);

@@ -25,7 +25,6 @@ import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -36,8 +35,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.Viewable;
 
 /**
  *Business rules for validating a Accession.
@@ -47,26 +46,24 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
  * @author rods
  *
  */
-public class AccessionBusRules implements BusinessRulesIFace
+public class AccessionBusRules extends BaseBusRules
 {
     private static final Logger  log      = Logger.getLogger(AccessionBusRules.class);
-    
-    private List<String> errorList = new Vector<String>();
    
     /**
      * Constructor.
      */
     public AccessionBusRules()
     {
-        //
+        super(Accession.class);
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getWarningsAndErrors()
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public List<String> getWarningsAndErrors()
+    public void fillForm(Object dataObj, Viewable viewable)
     {
-        return errorList;
+        
     }
 
     /* (non-Javadoc)
@@ -188,7 +185,8 @@ public class AccessionBusRules implements BusinessRulesIFace
         {
             return getLocalizedMessage("ACCESSION_DELETED", ((Accession)dataObj).getNumber());
         }
-        return null;
+        // else
+        return super.getDeleteMsg(dataObj);
     }
     
     /* (non-Javadoc)

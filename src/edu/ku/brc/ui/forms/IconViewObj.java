@@ -722,6 +722,22 @@ public class IconViewObj implements Viewable
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#updateSaveBtn()
+     */
+    public void updateSaveBtn()
+    {
+        // do nothing
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#focus()
+     */
+    public void focus()
+    {
+        // do nothing
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()
      */
     public void shutdown()

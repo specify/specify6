@@ -35,6 +35,13 @@ public interface BusinessRulesIFace
     public enum STATUS {None, OK, Warning, Error};
     
     /**
+     * Notification a form was just filled with data.
+     * @param dataObj the data object that went into the form
+     * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
+     */
+    public void fillForm(Object dataObj, Viewable viewable);
+    
+    /**
      * Processes the business rules for the data object.
      * @param dataObj the data object for rthe rules to be processed on.
      * @return the result status after processing the busniess rules.

@@ -1917,17 +1917,6 @@ public class ObjCreatorHelper
         return recordset;
     }
 
-    public static RecordSetItemIFace createRecordSetItem()
-    {
-        RecordSetItem recordsetitem = new RecordSetItem();
-        recordsetitem.initialize();
-        if (session != null)
-        {
-          session.saveOrUpdate(recordsetitem);
-        }
-        return recordsetitem;
-    }
-
     public static ReferenceWork createReferenceWork(final Byte referenceWorkType,
                                                     final String title,
                                                     final String publisher,

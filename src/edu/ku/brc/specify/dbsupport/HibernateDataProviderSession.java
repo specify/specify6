@@ -191,6 +191,26 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getData(java.lang.Class, java.lang.String, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace.CompareType)
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getData(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
+    {
+        if (session != null)
+        {
+            Criteria criteria = session.createCriteria(clsObject);
+            criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
+            List<T> list = criteria.list();
+            return list == null || list.size() == 0 ? null : list.get(0);
+        }
+        
+        log.error("Session was null.");
+
+        return null;
+    }
+
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, java.lang.Object)
      */
     public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value)

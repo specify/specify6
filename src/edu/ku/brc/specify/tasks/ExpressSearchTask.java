@@ -65,7 +65,6 @@ import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -119,6 +118,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     {
         super(EXPRESSSEARCH, getResourceString(EXPRESSSEARCH));
         icon = IconManager.getIcon("Search", IconManager.IconSize.Std16);
+        
+        closeOnLastPane = true;
 
         lucenePath = getIndexDirPath(); // must be initialized here
         
@@ -347,7 +348,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     public void showIndexerPane()
     {
         ExpressSearchIndexerPane expressSearchIndexerPane = new ExpressSearchIndexerPane(this, this, ExpressSearchTask.getIndexDirPath());
-        SubPaneMgr.getInstance().addPane(expressSearchIndexerPane);
+        addSubPaneToMgr(expressSearchIndexerPane);
     }
 
     /**
@@ -363,7 +364,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
             if (doQuery(lucenePath, analyzer, searchText, badSearchColor, expressSearchPane))
             {
-                SubPaneMgr.getInstance().addPane(expressSearchPane);
+                addSubPaneToMgr(expressSearchPane);
             } else
             {
                 UICacheManager.displayLocalizedStatusBarText("NoExpressSearchResults");
@@ -573,7 +574,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                                          final Hits                                    hits)
     {
         // For Debug Only
-        if (true)
+        if (false)
         {
             for (Enumeration<ExpressSearchResults> e=resultsMap.elements();e.hasMoreElements();)
             {
@@ -799,7 +800,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(name, this, "This is the Express Search Pane");
+        return starterPane = new SimpleDescPane(name, this, "This is the Express Search Pane");
     }
     
     /*

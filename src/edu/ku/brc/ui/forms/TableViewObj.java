@@ -56,6 +56,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -410,6 +411,24 @@ public class TableViewObj implements Viewable,
         }
     }
 
+
+    /**
+     * Sets all the Columns to be center justified this COULD be set up in the table info.
+     *
+     */
+    protected void configColumns()
+    {
+        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setHorizontalAlignment(JLabel.CENTER);
+
+        TableColumnModel tableColModel = table.getColumnModel();
+        for (int i=0;i<tableColModel.getColumnCount();i++)
+        {
+            tableColModel.getColumn(i).setCellRenderer(renderer);
+        }
+    }
     
     /**
      * Build the table now that we have all the information we need for the columns.
@@ -423,6 +442,8 @@ public class TableViewObj implements Viewable,
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setFocusable(false);
+        
+        configColumns();
         
         //table.setCellSelectionEnabled(false);
         
@@ -549,44 +570,51 @@ public class TableViewObj implements Viewable,
         }
         
         final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, false);
-        if (isEdit)
+        if (dialog != null)
         {
-            dialog.setCloseListener(new PropertyChangeListener()
+            if (isEdit)
             {
-                public void propertyChange(PropertyChangeEvent evt)
+                dialog.setCloseListener(new PropertyChangeListener()
                 {
-                    String action = evt.getPropertyName();
-                    if (action.equals("OK"))
+                    public void propertyChange(PropertyChangeEvent evt)
                     {
-                        dialog.getMultiView().getDataFromUI();
-                        if (mvParent != null)
+                        String action = evt.getPropertyName();
+                        if (action.equals("OK"))
                         {
-                            tellMultiViewOfChange();
-                            
-                            Object daObj = dialog.getMultiView().getData();
-                            parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
-                            if (isNew)
+                            dialog.getMultiView().getDataFromUI();
+                            if (mvParent != null)
                             {
-                                dataObjList.add(daObj);
+                                tellMultiViewOfChange();
+                                
+                                Object daObj = dialog.getMultiView().getData();
+                                parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
+                                if (isNew)
+                                {
+                                    dataObjList.add(daObj);
+                                    if (origDataSet != null)
+                                    {
+                                        origDataSet.add(daObj);
+                                    }
+                                }
+                                model.fireDataChanged();
+                                table.invalidate();
+                                
+                                JComponent comp = mvParent.getTopLevel();
+                                comp.validate();
+                                comp.repaint();
                             }
-                            model.fireDataChanged();
-                            table.invalidate();
-                            
-                            JComponent comp = mvParent.getTopLevel();
-                            comp.validate();
-                            comp.repaint();
+        
                         }
-    
+                        else if (action.equals("Cancel"))
+                        {
+                            log.warn("User clicked Cancel");
+                        }
                     }
-                    else if (action.equals("Cancel"))
-                    {
-                        log.warn("User clicked Cancel");
-                    }
-                }
-            });
+                });
+            }
+            dialog.setData(dObj);
+            dialog.showDisplay(true);
         }
-        dialog.setData(dObj);
-        dialog.showDisplay(true);
     }
     
     /**
@@ -922,6 +950,15 @@ public class TableViewObj implements Viewable,
      */
     public void aboutToShow(boolean show)
     {
+        
+        if (origDataSet != null && list != null && origDataSet.size() != list.size())
+        {
+            // XXX Ok here we know new items have been added
+            // so we need to resort (maybe) but certainly need to re-adjust the RecordSet controller.
+            //
+            // Actually check the sizes isn't enough, we need to really know if there was a change in the list
+        }
+        
         if (switcherUI != null)
         {
             ignoreSelection = true;
@@ -1039,6 +1076,22 @@ public class TableViewObj implements Viewable,
     public void registerSaveBtn(JButton saveBtnArg)
     {
         this.saveBtn = saveBtnArg;
+    }  
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#updateSaveBtn()
+     */
+    public void updateSaveBtn()
+    {
+        // do nothing
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#focus()
+     */
+    public void focus()
+    {
+        // do nothing
     }
     
     /* (non-Javadoc)

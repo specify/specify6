@@ -83,7 +83,7 @@ public class QueryTask extends BaseTask
     public void createAndExecute(final String sqlStr)
     {
         SQLQueryPane sqlPane = new SQLQueryPane(name, this, false, false);//true, true);
-        SubPaneMgr.getInstance().addPane(sqlPane);
+        addSubPaneToMgr(sqlPane);
         sqlPane.setSQLStr(sqlStr);
         sqlPane.doQuery();
 
@@ -104,7 +104,7 @@ public class QueryTask extends BaseTask
     {
         View view = ViewSetMgrTests.getView(viewSetName, viewName);
         SearchFormPane searchFormPane = new SearchFormPane(view.getName(), this, viewSetName, viewName);
-        SubPaneMgr.getInstance().addPane(searchFormPane);
+        addSubPaneToMgr(searchFormPane);
 
     }*/
 
@@ -113,7 +113,7 @@ public class QueryTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SQLQueryPane(name, this, false, false);
+        return starterPane = new SQLQueryPane(name, this, false, false);
     }
 
     /*

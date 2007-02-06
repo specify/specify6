@@ -71,7 +71,7 @@ public class ReportsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(title, this, "This is the Reports Pane");
+        return starterPane = new SimpleDescPane(title, this, "This is the Reports Pane");
     }
 
     /*

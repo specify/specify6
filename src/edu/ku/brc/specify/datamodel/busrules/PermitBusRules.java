@@ -23,15 +23,12 @@ package edu.ku.brc.specify.datamodel.busrules;
 import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
  *
@@ -40,26 +37,14 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
  * @author rods
  *
  */
-public class PermitBusRules implements BusinessRulesIFace
-{
-    //private static final Logger  log = Logger.getLogger(PermitBusRules.class);
-    
-    private List<String> errorList = new Vector<String>();
-    
+public class PermitBusRules extends BaseBusRules
+{  
     /**
      * Constructor.
      */
     public PermitBusRules()
     {
-        //
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getWarningsAndErrors()
-     */
-    public List<String> getWarningsAndErrors()
-    {
-        return errorList;
+        super(Permit.class);
     }
 
     /* (non-Javadoc)
@@ -150,14 +135,7 @@ public class PermitBusRules implements BusinessRulesIFace
         {
             return getLocalizedMessage("PERMIT_DELETED", ((Permit)dataObj).getPermitNumber());
         }
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.DraggableIcon)
-     */
-    public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon)
-    {
-        //
+        // else
+        return super.getDeleteMsg(dataObj);
     }
 }

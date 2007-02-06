@@ -14,7 +14,7 @@ import edu.ku.brc.specify.datamodel.Location;
  * @code_status Alpha
  * @author jstewart
  */
-public class LocationBusRules extends SimpleBusRules
+public class LocationBusRules extends BaseBusRules
 {
     public LocationBusRules()
     {
@@ -31,7 +31,8 @@ public class LocationBusRules extends SimpleBusRules
         {
             return getLocalizedMessage("LOCATION_DELETED", ((Location)dataObj).getName());
         }
-        return null;
+        // else
+        return super.getDeleteMsg(dataObj);
     }
 
     /* (non-Javadoc)

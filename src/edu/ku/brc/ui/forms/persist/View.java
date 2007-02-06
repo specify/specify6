@@ -106,7 +106,7 @@ public class View implements Comparable<View>
             for (AltView altView : altViews)
             {
                 ViewDef.ViewType type = altView.getViewDef().getType();
-                System.out.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"]");
+                //System.out.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"]");
                 if (isForm && type == ViewDef.ViewType.form ||
                     !isForm && type != ViewDef.ViewType.form)
                 {

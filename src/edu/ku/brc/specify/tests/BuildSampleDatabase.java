@@ -59,9 +59,12 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -1213,13 +1216,21 @@ public class BuildSampleDatabase
     
     public static void main(String[] args) throws Exception
     {
-        String dbName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
-        if (dbName==null)
+        Properties sysProps     = System.getProperties();
+        String     databaseName = null;
+        if (!((String)sysProps.get("user.name")).startsWith("rod"))
         {
-            log.error("You must specify a database name.");
-            return;
+            databaseName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
+            if (databaseName==null)
+            {
+                System.err.println("You must specify a database name.");
+                return; 
+            }
+        } else
+        {
+            databaseName = "testfish";
         }
-        String databaseName = dbName;
+       
         //String databaseName = "testfish_anno";
         String databaseHost = "localhost";
         String userName = "rods";

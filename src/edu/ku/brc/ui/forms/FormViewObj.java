@@ -282,6 +282,15 @@ public class FormViewObj implements Viewable,
 
         String rowDefs = (addSelectorCBX ? "t:p," : "") + (mvParent == null ? "t:p" : "t:p:g") + (addExtraRow ? ",2px,t:p" : "");
 
+        /*
+        JPanel mainPanel = new JPanel() {
+            public void paintComponent(Graphics g)
+            {
+                super.paintComponent(g);
+                KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+                focusManager.getFocusOwner()
+            }
+        }*/
         mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         mainComp    = mainBuilder.getPanel();
         mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -404,6 +413,7 @@ public class FormViewObj implements Viewable,
         {
             addRSController();
         }
+
     }
     
     
@@ -526,6 +536,14 @@ public class FormViewObj implements Viewable,
     }
 
     /**
+     * @return the mvParent
+     */
+    public MultiView getMVParent()
+    {
+        return mvParent;
+    }
+
+    /**
      * Static Helper method for showing Validation info.
      * @param viewable the view to show info for.
      */
@@ -592,6 +610,14 @@ public class FormViewObj implements Viewable,
     public void aboutToShow(final boolean show)
     {
         isShowing = show;
+        
+        if (origDataSet != null && list != null && origDataSet.size() != list.size())
+        {
+            // XXX Ok here we know new items have been added
+            // so we need to resort (maybe) but certainly need to re-adjust the RecordSet controller.
+            //
+            // Actually check the sizes isn't enough, we need to really know if there was a change in the list
+        }
         
         if (formValidator != null)
         {
@@ -865,7 +891,8 @@ public class FormViewObj implements Viewable,
      */
     public boolean checkForChanges()
     {
-        if (formValidator != null && formValidator.hasChanged() && mvParent != null && mvParent.isTopLevel())
+        if ((formValidator != null && formValidator.hasChanged()) ||
+            (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()))
         {
             int rv = JOptionPane.showConfirmDialog(null,
                         getResourceString("SaveChanges"),
@@ -1047,20 +1074,19 @@ public class FormViewObj implements Viewable,
             
             FormHelper.updateLastEdittedInfo(dataObj);
             
-            session.beginTransaction();
-            
             // Delete the cached Items
             Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
             if (deletedItems != null)
             {
+                session.beginTransaction();
                 for (Object obj : deletedItems)
                 {
                     session.delete(obj);
                 }
                 deletedItems.clear();
+                session.commit();
+                session.flush();
             }
-            session.commit();
-            session.flush();
             
             session.beginTransaction();
             
@@ -1309,14 +1335,54 @@ public class FormViewObj implements Viewable,
     /**
      * Sets the focus to the first control in the form.
      */
-    protected void focusFirstFormControl()
+    public void focusFirstFormControl()
     {
+        int       insertPos = Integer.MAX_VALUE;
+        Component focusable = null;
+        Component first     = null;
         for (FieldInfo compFI : controlsById.values())
         {
+            Component comp = compFI.getComp();
+
+            if (comp.isEnabled() && comp instanceof GetSetValueIFace)
+            {
+                Object val = ((GetSetValueIFace)comp).getValue();
+                if (val == null || (val instanceof String && StringUtils.isEmpty((String)val)))
+                {
+                    if (compFI.getInsertPos() < insertPos)
+                    {
+                        if (comp instanceof UIValidatable)
+                        {
+
+                            focusable = ((UIValidatable)comp).getValidatableUIComp();
+                        } else
+                        {
+                            focusable = comp;
+                        }
+                        insertPos = compFI.getInsertPos();
+                    }
+                }
+            }
+            
             if (compFI.getInsertPos() == 0)
             {
-                compFI.getComp().requestFocus();
+                first = comp;
             }
+        }
+        
+        if (focusable != null)
+        {
+            //KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
+            //System.out.println(focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
+            //System.out.println("["+focusable.isFocusable()+"]");
+            //focusable.setFocusable(true);
+            focusable.requestFocusInWindow();  // XXX This doesn't work for the main form, why? Somebody is stealing the focus.
+            //System.out.println("["+focusable+"]");
+            
+        } else if (first != null)
+        {
+            first.requestFocus();
+            System.out.println("*["+first+"]");
         }
     }
 
@@ -1556,8 +1622,7 @@ public class FormViewObj implements Viewable,
                 
                 if (newList.size() > 0)
                 {
-                    Object firstDataObj = newList.get(0);
-                    if (firstDataObj instanceof Comparable<?>)
+                    if (newList.get(0) instanceof Comparable<?>)
                     {
                         Collections.sort(newList);
                     }
@@ -1918,7 +1983,19 @@ public class FormViewObj implements Viewable,
 
             listFieldChanges();
         }
+        
+        
+        if (businessRules != null)
+        {
+            businessRules.fillForm(dataObj, this);
+        }
 
+
+        if (mvParent != null && mvParent.isTopLevel() && saveBtn != null && isEditting)
+        {
+            saveBtn.setEnabled(false);
+        }
+        
         // Now set all the controls with default values as having been changed
         // this is done because "resetFields" has just set them all to false
         if (defaultValueList.size() > 0)
@@ -1935,11 +2012,6 @@ public class FormViewObj implements Viewable,
             defaultValueList.clear();
         }
 
-        if (mvParent != null && mvParent.isTopLevel() && saveBtn != null && isEditting)
-        {
-            saveBtn.setEnabled(false);
-        }
-        
         updateControllerUI();
         
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
@@ -1952,6 +2024,7 @@ public class FormViewObj implements Viewable,
                 mvParent.setSession(session);  
             }
         }
+
     }
 
     /* (non-Javadoc)
@@ -2347,6 +2420,28 @@ public class FormViewObj implements Viewable,
     public void registerSaveBtn(JButton saveBtnArg)
     {
         this.saveBtn = saveBtnArg;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#updateSaveBtn()
+     */
+    public void updateSaveBtn()
+    {
+        if (saveBtn != null && formValidator != null)
+        {
+            if (mvParent == null || mvParent.isAllValidationOK())
+            {
+                validationWasOK(formValidator.getState() == UIValidatable.ErrorType.Valid);
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#focus()
+     */
+    public void focus()
+    {
+        focusFirstFormControl();
     }
 
     /* (non-Javadoc)

@@ -28,6 +28,10 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,12 +45,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 
@@ -56,7 +57,8 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "preparation")
-public class Preparation extends DataModelObjBase implements java.io.Serializable {
+public class Preparation extends DataModelObjBase implements java.io.Serializable, Comparable<Preparation>
+{
 
     // Fields    
 
@@ -399,8 +401,32 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     @Transient
     public String getIdentityTitle()
     {
-        String prepTypeStr = this.getPrepType().getName();
-        return prepTypeStr + (collectionObject != null ?  (": " + collectionObject.getIdentityTitle()) : "");
+        PrepType pt = this.getPrepType();
+        if (pt != null && StringUtils.isNotEmpty(pt.getName()))
+        {
+          String prepTypeStr = pt.getName();
+          return prepTypeStr + (collectionObject != null ?  (": " + collectionObject.getIdentityTitle()) : "");
+        } 
+        // else
+        return "Prepration " + getPreparationId();
+    }
+    
+
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Preparation obj)
+    {
+        if (prepType != null && obj != null && StringUtils.isNotEmpty(prepType.name) && StringUtils.isNotEmpty(obj.prepType.name))
+        {
+            return prepType.name.compareTo(obj.prepType.name);
+        }
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
     }
 
 }

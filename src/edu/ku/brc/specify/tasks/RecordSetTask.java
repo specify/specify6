@@ -201,6 +201,7 @@ public class RecordSetTask extends BaseTask
             session.beginTransaction();
             session.saveOrUpdate(recordSet);
             session.commit();
+            session.flush();
             
             FormHelper.updateLastEdittedInfo(recordSet);
 
@@ -297,7 +298,7 @@ public class RecordSetTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(name, this, "This is the Data Entry Pane");
+        return starterPane = new SimpleDescPane(name, this, "This is the Data Entry Pane");
     }
 
      /*

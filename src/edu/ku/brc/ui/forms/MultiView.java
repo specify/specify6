@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -471,6 +472,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             log.error("Couldn't create View["+view.getName()+"] alt["+altView.getName()+"] options["+createOptions+"]");
             printCreateOptions("Error", createOptions);
         }
+        
+        //viewable.focus();
 
         return viewable;
     }
@@ -751,6 +754,21 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         
         ignoreDataChanges = false;
+        
+        if (isTopLevel() && currentViewable != null)
+        {
+            currentViewable.updateSaveBtn();
+        }
+        
+        if (isTopLevel())
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    currentViewable.focus();
+                }
+            });
+        }
     }
 
     /**
@@ -770,7 +788,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Returns whether all the validation of this form and child forms is OK.
      * @return whether all the validation of this form and child forms is OK
      */
-    protected boolean isAllValidationOK()
+    public boolean isAllValidationOK()
     {
         for (FormValidator validator : formValidators)
         {

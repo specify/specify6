@@ -54,7 +54,6 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -88,7 +87,9 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -272,7 +273,7 @@ public class InteractionsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(title, this, "Please select an Interaction");
+        return starterPane = new SimpleDescPane(title, this, "Please select an Interaction");
     }
 
     /* (non-Javadoc)
@@ -344,7 +345,7 @@ public class InteractionsTask extends BaseTask
         session.attach(infoRequest);
         RecordSetIFace rs = infoRequest.getRecordSet();
         session.close();   
-        createNewLoan(rs);
+        createNewLoan(infoRequest, rs);
     }
     
     /**
@@ -352,7 +353,7 @@ public class InteractionsTask extends BaseTask
      * @param recordSet the recordset to use to create the loan
      */
     @SuppressWarnings("unchecked")
-    protected void createNewLoan(final RecordSetIFace recordSet)
+    protected void createNewLoan(final InfoRequest infoRequest, final RecordSetIFace recordSet)
     {      
         DBTableIdMgr.getInClause(recordSet);
 
@@ -393,6 +394,19 @@ public class InteractionsTask extends BaseTask
                         
                         Shipment shipment = new Shipment();
                         shipment.initialize();
+                        
+                        // Get Defaults for Certain fields
+                        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                        PickListItemIFace defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"), true);
+                        shipment.setShipmentMethod(defShipmentMethod.getValue());
+                        
+                        FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+                        shipment.setShippedBy((Agent)shippedBy);
+                        
+                        if (infoRequest != null && infoRequest.getAgent() != null)
+                        {
+                            shipment.setShippedTo(infoRequest.getAgent());
+                        }
                         
                         loan.addShipment(shipment);
                         
@@ -531,51 +545,59 @@ public class InteractionsTask extends BaseTask
         
         if (printLoan)
         {
-            RecordSet rs = new RecordSet();
-            rs.initialize();
-            rs.setName(loan.getIdentityTitle());
-            rs.setDbTableId(loan.getTableId());
-            rs.addItem(loan.getId());
-            printLoan(rs);
-        }
-    }
-    
-    /**
-     * Returns whether all the email prefs needed for sending mail have been filled in.
-     * @return whether all the email prefs needed for sending mail have been filled in.
-     */
-    public boolean isEMailPrefsOK(final Hashtable<String, String> emailPrefs)
-    {
-        AppPreferences appPrefs = AppPreferences.getRemote();
-        boolean allOK = true;
-        String[] emailPrefNames = { "servername", "username", "password", "email"};
-        for (String pName : emailPrefNames)
-        {
-            String key   = "settings.email."+pName;
-            String value = appPrefs.get(key, "");
-            //log.info("["+pName+"]["+value+"]");
-            if (StringUtils.isNotEmpty(value) || pName.equals("password"))
+            //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
             {
-                emailPrefs.put(pName, value);
-                
-            } else
-            {
-                log.info("Key["+key+"] is empty");
-                allOK = false;
-                
-                // XXX For Demo
-                if (true)
+                //session.attach(loan);
+                if (loan.getShipments().size() == 0)
                 {
-                    emailPrefs.put("servername", "imap.ku.edu");
-                    emailPrefs.put("username", "rods");
-                    emailPrefs.put("password", "");
-                    emailPrefs.put("email", "rods@ku.edu");
-                    allOK = true;
+                    UICacheManager.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
+                    
+                } else if (loan.getShipments().size() > 1)
+                {
+                    // XXX Do we allow them to pick a shipment or print all?
+                    UICacheManager.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
+                    
+                } else
+                {
+                    // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
+                    // but the hard part will be sending the correct info so the report can be printed
+                    // using bouth a Loan Id and a Shipment ID, and at some point distinguishing between using
+                    // the shipped by versus the shipper.
+                    Shipment shipment = loan.getShipments().iterator().next();
+                    if (shipment.getShippedBy() == null)
+                    {
+                        UICacheManager.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
+                    } else if (shipment.getShippedBy().getAddresses().size() == 0)
+                    {
+                        UICacheManager.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
+                    } else if (shipment.getShippedTo() == null)
+                    {
+                        UICacheManager.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
+                    } else if (shipment.getShippedTo().getAddresses().size() == 0)
+                    {
+                        UICacheManager.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
+                    } else
+                    {
+                        //session.close();
+                        //session = null;
+                        
+                        RecordSet rs = new RecordSet();
+                        rs.initialize();
+                        rs.setName(loan.getIdentityTitle());
+                        rs.setDbTableId(loan.getTableId());
+                        rs.addItem(loan.getId());
+                        printLoan(rs);
+                    }
                 }
-                break;
+            } finally
+            {
+                //if (session != null)
+                //{
+                //    session.close();
+                //}
             }
         }
-        return allOK;
     }
     
     /**
@@ -605,7 +627,7 @@ public class InteractionsTask extends BaseTask
                 if (viewable instanceof TableViewObj)
                 {
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
-                    if (!isEMailPrefsOK(emailPrefs))
+                    if (!EMailHelper.isEMailPrefsOK(emailPrefs))
                     {
                         JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
@@ -752,7 +774,7 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
-     * Starts process to return a loan
+     * Starts process to return a loan.
      * @param doPartial true means show dialog and do partial, false means just return the loan
      */
     protected void doReturnLoan(final Loan   loan, 
@@ -973,7 +995,7 @@ public class InteractionsTask extends BaseTask
                     {
                         if (cmdAction.isAction(NEW_LOAN))
                         {    
-                            createNewLoan(rs);
+                            createNewLoan(null, rs);
                                 
                         } else if (cmdAction.isAction(InfoRequestName))
                         {

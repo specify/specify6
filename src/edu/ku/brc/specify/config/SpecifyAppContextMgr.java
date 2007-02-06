@@ -44,12 +44,15 @@ import edu.ku.brc.specify.datamodel.AppResource;
 import edu.ku.brc.specify.datamodel.AppResourceDefault;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
 import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.ViewSetMgr;
@@ -1048,31 +1051,122 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Returns a Default Object from Prefs if there is one.
      */
-    public FormDataObjIFace getDefaultObject(final Class<?> classObj, final boolean ask)
+    public PickListItemIFace getDefaultPickListItem(final String pickListName, final String title, final boolean ask)
     {
+        PickListItemIFace dObj        = null;
+        CatalogSeries     catSeries   = CatalogSeries.getCurrentCatalogSeries().get(0);
+        String            prefName    = (catSeries != null ? catSeries.getIdentityTitle() : "") + pickListName + "_DefaultId";
+        AppPreferences    appPrefs    = AppPreferences.getRemote();
+        String            idStr       = appPrefs.get(prefName, null);
+        
+        if (StringUtils.isNotEmpty(idStr))
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            dObj = (PickListItemIFace)session.get(PickListItem.class, Long.valueOf(idStr));
+            session.close();
+            
+            if (dObj != null)
+            {
+                return dObj;
+            }            
+        }
+            
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            PickList pickList = (PickList)session.getData(PickList.class, "name", pickListName, DataProviderSessionIFace.CompareType.Equals);
+            if (pickList != null)
+            {
+                Vector<PickListItemIFace> list = new Vector<PickListItemIFace>();
+                list.addAll(pickList.getItems());
+                ChooseFromListDlg<PickListItemIFace> dlg = new ChooseFromListDlg<PickListItemIFace>(null, 
+                        UICacheManager.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", title), list);
+                dlg.setModal(true);
+                dlg.setVisible(true);
+                if (!dlg.isCancelled())
+                {
+                    appPrefs.put(prefName, dlg.getSelectedObject().getId().toString());
+                    return dlg.getSelectedObject();
+                }
+            }
+            throw new RuntimeException("PickList name["+pickListName+"] doesn't exist.");
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            session.close();
+        }
+        return dObj;
+    }
+
+    
+    
+    /**
+     * Returns a Default Object from Prefs if there is one.
+     */
+    public FormDataObjIFace getDefaultObject(final Class<?> classObj, 
+                                             final String prefPrefix,
+                                             final String title,
+                                             final boolean ask, 
+                                             boolean useAllItems)
+    {
+        CatalogSeries    catSeries   = CatalogSeries.getCurrentCatalogSeries().get(0);
         FormDataObjIFace dObj        = null;
-        String           prefName    = classObj.getSimpleName() + "_DefaultId";
+        String           prefName    = (catSeries != null ? catSeries.getIdentityTitle() : "") + prefPrefix + "_DefaultId";
         AppPreferences   appPrefs    = AppPreferences.getRemote();
         String           idStr       = appPrefs.get(prefName, null);
         if (StringUtils.isEmpty(idStr) && ask)
         {
-            try
+            if (useAllItems)
             {
-                ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
-                if (dlg != null)
-                {
-                    dlg.getDialog().setVisible(true);
-                    if (!dlg.isCancelled())
-                    {
-                        dObj = (FormDataObjIFace)dlg.getSelectedObject();
-                        appPrefs.put(prefName, dObj.getId().toString());
-                        return dObj;
-                    }
+                class Item {
+                    public FormDataObjIFace data;
+                    public Item(FormDataObjIFace d) { data = d; }
+                    public String toString() { return data.getIdentityTitle(); }
                 }
-            } catch (Exception ex)
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                List<Item> items = new Vector<Item>();
+                for (Object o : session.getDataList(classObj))
+                {
+                    items.add(new Item((FormDataObjIFace)o));
+                }
+                session.close();
+                
+                
+                ChooseFromListDlg<Item> dlg = new ChooseFromListDlg<Item>(null, title, items);
+                dlg.setModal(true);
+                dlg.setVisible(true);
+                if (!dlg.isCancelled())
+                {
+                    dObj = (FormDataObjIFace)dlg.getSelectedObject().data;
+                    appPrefs.put(prefName, dObj.getId().toString());
+                    return dObj;
+                }
+                
+            } else
             {
-                // it's ok 
-                // we get when it can't find the search dialog
+                try
+                {
+                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
+                    dlg.setTitle(title);
+                    if (dlg != null)
+                    {
+                        dlg.getDialog().setVisible(true);
+                        if (!dlg.isCancelled())
+                        {
+                            dObj = (FormDataObjIFace)dlg.getSelectedObject();
+                            appPrefs.put(prefName, dObj.getId().toString());
+                            return dObj;
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    // it's ok 
+                    // we get when it can't find the search dialog
+                }
             }
         } else
         {

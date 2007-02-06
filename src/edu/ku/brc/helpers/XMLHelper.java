@@ -43,6 +43,7 @@ public class XMLHelper
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(XMLHelper.class);
+    private static final String eol = System.getProperty("line.separator");
 
    /**
     * Reads a File and return the root element from the DOM
@@ -188,7 +189,7 @@ public class XMLHelper
        BufferedReader input    = null;
        try 
        {
-           String eol = System.getProperty("line.separator");
+           
            input = new BufferedReader(new FileReader(file));
            
            String line = null;
@@ -257,5 +258,38 @@ public class XMLHelper
                output.close();
            }
        }
+   }
+   
+   public static void indent(final StringBuilder sb, final int width)
+   {
+       for (int i=0;i<width;i++)
+       {
+           sb.append(' ');
+       }
+   }
+   
+   public static void addAttr(final StringBuilder sb, final String name, final String value)
+   {
+       sb.append(' ');
+       sb.append(name);
+       sb.append("=\"");
+       sb.append(value == null ? "" : value);
+       sb.append('\"');
+   }
+   
+   public static void addNode(final StringBuilder sb, final int indent, final String name, final boolean isEnd)
+   {
+       indent(sb, indent);
+       sb.append('<');
+       if (isEnd) sb.append('/');
+       sb.append(name);
+       sb.append('>');
+   }
+   
+   public static void addNode(final StringBuilder sb, final int indent, final String name, final String value)
+   {
+       addNode(sb, indent, name, false);
+       sb.append(value);
+       addNode(sb, 0, name, true);
    }
 }

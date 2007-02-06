@@ -1007,7 +1007,7 @@ public class GenericDBConversion
             updateStatement.close();
             updateStatement = null;
 
-            long userGroupId = BasicSQLUtils.getHighestId(newDBConn, "UserGroupID", "usergroup");
+            //long userGroupId = BasicSQLUtils.getHighestId(newDBConn, "UserGroupID", "usergroup");
 
             updateStatement = newDBConn.createStatement();
             strBuf = new StringBuilder(128);

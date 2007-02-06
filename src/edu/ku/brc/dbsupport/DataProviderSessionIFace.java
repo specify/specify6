@@ -48,6 +48,8 @@ public interface DataProviderSessionIFace
     
     public <T> T get(Class<T> clsObj, Long id);
 
+    public <T> T getData(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
+    
     public Object getData(String sqlStr);
     
     public boolean contains(final Object obj);

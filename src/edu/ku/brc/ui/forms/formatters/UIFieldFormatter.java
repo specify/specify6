@@ -20,6 +20,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.ui.DateWrapper;
 
 
 /**
@@ -32,15 +33,20 @@ import edu.ku.brc.dbsupport.DBConnection;
  */
 public class UIFieldFormatter
 {
+    public enum PartialDateEnum {None, Full, Month, Year};
+    
     protected String               name;
     protected Class                dataClass;
     protected boolean              isDate;
+    protected PartialDateEnum      partialDateType;
     protected boolean              isDefault;
     protected List<UIFieldFormatterField> fields;
     protected boolean              isIncrementer;
+    protected DateWrapper          dateWrapper = null;
 
     public UIFieldFormatter(final String  name, 
                             final boolean isDate, 
+                            final PartialDateEnum partialDateType,
                             final Class   dataClass,
                             final boolean isDefault,
                             final boolean isIncrementer,
@@ -48,6 +54,7 @@ public class UIFieldFormatter
     {
         this.name      = name;
         this.dataClass = dataClass;
+        this.partialDateType = partialDateType;
         this.isDate    = isDate;
         this.isDefault = isDefault;
         this.fields    = fields;
@@ -89,6 +96,42 @@ public class UIFieldFormatter
         this.isIncrementer = isIncrementer;
     }
     
+    public PartialDateEnum getPartialDateType()
+    {
+        return partialDateType;
+    }
+    
+    /**
+     * @return the dateWrapper
+     */
+    public DateWrapper getDateWrapper()
+    {
+        return dateWrapper;
+    }
+
+    /**
+     * Sets Date Wrapper.
+     * @param dateWrapper the dateWrapper to set
+     */
+    public void setDateWrapper(final DateWrapper dateWrapper)
+    {
+        this.dateWrapper = dateWrapper;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        StringBuilder s = new StringBuilder();
+        s.append( "Name["+name+"] isDate["+isDate+"]  dataClass["+dataClass.getSimpleName()+"] isDefault["+isDefault+"] isIncrementor["+isIncrementer+"]");
+        for (UIFieldFormatterField f : fields)
+        {
+            s.append("\n  "+f.toString());
+        }
+        return s.toString();
+    }
+
     /**
      * This is work in progress.
      * @return the next formatted ID

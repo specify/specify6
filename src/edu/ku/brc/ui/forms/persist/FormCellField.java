@@ -34,7 +34,7 @@ import edu.ku.brc.ui.DateWrapper;
 public final class FormCellField extends FormCell
 {
     // NOTE: textpl is not intended to be defined in the form, it is for internal use only
-    public enum FieldType {text, formattedtext, label, dsptextfield, textfieldinfo, image, url, combobox, checkbox, 
+    public enum FieldType {text, formattedtext, label, dsptextfield, textfieldinfo, image, url, combobox, checkbox, spinner,
                            password, dsptextarea, textarea, browse, querycbx, treequerycbx, list, colorchooser, button, progress, plugin,
                            textpl}
 
@@ -58,7 +58,7 @@ public final class FormCellField extends FormCell
 
     // Needed for Text Components
     protected int      cols    = 10; // TextField and TextArea
-    protected int      rows    = 1; // Text Area Only
+    protected int      rows    = 1;  // Text Area Only
 
     protected String   validationType = "";
     protected String   validationRule = "";

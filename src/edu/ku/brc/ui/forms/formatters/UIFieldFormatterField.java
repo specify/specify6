@@ -60,5 +60,13 @@ public class UIFieldFormatterField
     {
         return incrementer;
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return "Type["+type+"]  size["+size+"]  value["+value+"] incr["+incrementer+"]";
+    }
 
 }

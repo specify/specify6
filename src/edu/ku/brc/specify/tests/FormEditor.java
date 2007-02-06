@@ -1283,6 +1283,12 @@ public class FormEditor implements DatabaseLoginListener
     public static void main(String[] args)
     {
 
+        if (true)
+        {
+            EMailHelper.sendMsgAsGMail("smtp.gmail.com",  "rodspears@gmail.com", "", "rodspears@gmail.com",
+                           "rods@ku.edu", "Test", "test", EMailHelper.HTML_TEXT, null);
+
+        }
         // Create Specify Application
         SwingUtilities.invokeLater(new Runnable() {
             public void run()

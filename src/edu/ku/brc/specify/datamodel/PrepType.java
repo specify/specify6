@@ -158,6 +158,17 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     {
         this.isLoanable = isLoanable;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        if (name != null) return name;
+        return super.getIdentityTitle();
+    }
 
     /**
      * 

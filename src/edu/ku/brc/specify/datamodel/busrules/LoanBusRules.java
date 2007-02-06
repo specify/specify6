@@ -22,15 +22,19 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 
-import java.util.List;
-import java.util.Vector;
+import java.awt.Component;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * Business rules for validating a Loan.
@@ -40,28 +44,50 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
  * @author rods
  *
  */
-public class LoanBusRules implements BusinessRulesIFace
-{
-    //private static final Logger  log      = Logger.getLogger(LoanBusRule.class);
-    
-    private List<String> errorList = new Vector<String>();
-
-   
+public class LoanBusRules extends BaseBusRules
+{  
     /**
      * Constructor.
      */
     public LoanBusRules()
     {
-        //
+        super(Loan.class);
     }
     
+    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getWarningsAndErrors()
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public List<String> getWarningsAndErrors()
+    @Override
+    public void fillForm(final Object dataObj, final Viewable viewable)
     {
-        return errorList;
+        if (viewable instanceof FormViewObj)
+        {
+            FormViewObj formViewObj = (FormViewObj)viewable;
+            if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
+            {
+                MultiView mvParent = formViewObj.getMVParent();
+                Loan      loan     = (Loan)formViewObj.getDataObj();
+                boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
+                boolean   isEdit   = mvParent.isEditable();
+    
+                Component comp     = formViewObj.getControlByName("generateInvoice");
+                if (comp instanceof JCheckBox)
+                {
+                    ((JCheckBox)comp).setVisible(isEdit);
+                }
+                comp = formViewObj.getControlByName("ReturnLoan");
+                if (comp instanceof JButton)
+                {
+                    comp.setVisible(!isNewObj && isEdit);
+                    comp.setEnabled(!loan.getIsClosed());
+                }
+            }
+        }
     }
+
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
@@ -96,10 +122,8 @@ public class LoanBusRules implements BusinessRulesIFace
                 return STATUS.Error;
             }     
         }
-        */
-        
+        */  
         return STATUS.OK;
-
     }
     
     /* (non-Javadoc)
@@ -110,7 +134,6 @@ public class LoanBusRules implements BusinessRulesIFace
         return true;
     }
     
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#deleteMsg(java.lang.Object)
      */
@@ -120,7 +143,8 @@ public class LoanBusRules implements BusinessRulesIFace
         {
             return getLocalizedMessage("LOAN_DELETED", ((Loan)dataObj).getLoanNumber());
         }
-        return null;
+        // else
+        return super.getDeleteMsg(dataObj);
     }
     
     /* (non-Javadoc)

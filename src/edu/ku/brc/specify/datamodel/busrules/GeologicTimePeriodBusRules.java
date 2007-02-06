@@ -14,7 +14,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
  * @code_status Alpha
  * @author jstewart
  */
-public class GeologicTimePeriodBusRules extends SimpleBusRules
+public class GeologicTimePeriodBusRules extends BaseBusRules
 {
     public GeologicTimePeriodBusRules()
     {

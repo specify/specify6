@@ -132,7 +132,7 @@ public class StatsTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return new StatsPane(name, this, "StatsSummaryPanel", true, null);
+        return starterPane = new StatsPane(name, this, "StatsSummaryPanel", true, null);
     }
 
     /**

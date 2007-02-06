@@ -21,7 +21,7 @@
             </index>
             <detailView icon="ColObj">
                 <sql>
-                    <![CDATA[SELECT CollectionObjectID, CatalogNumber, CatalogedDate, FieldNumber From collectionobject where CollectionObjectID in (%s)]]>
+                    <![CDATA[SELECT CollectionObjectID, CatalogNumber, CatalogedDate, FieldNumber From collectionobject where CollectionObjectID in (%s) order by CatalogNumber asc]]>
                 </sql>
                 <captions>
                     <caption col="CollectionObjectID" text="CollectionObjectID" visible="false"/>
@@ -398,7 +398,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </index>
             <detailView icon="ColObj">
                 <sql>
-                    <![CDATA[SELECT distinct collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s)]]>
+                    <![CDATA[SELECT distinct collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID where collectionobject.CollectionObjectID in (%s) order by CatalogNumber asc]]>
                 </sql>
                 <captions>
                     <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>

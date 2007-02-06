@@ -61,6 +61,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -1134,17 +1135,24 @@ public final class UIHelper
         TableInfo setTI = DBTableIdMgr.lookupByClassName(dataObj.getClass().getName());
         String defFormName = setTI.getEditObjDialog();
 
-        boolean isEdit  = (altView.getMode() == CreationMode.Edit) ? true : false;
-        isEdit = true;
-        int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
-        String  title   = (isNewObject && isEdit) ? getResourceString("Edit") : dataObj.getIdentityTitle();
-        ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
-                                                                    defFormName,
-                                                                    title,
-                                                                    getResourceString("OK"),
-                                                                    isEdit,
-                                                                    opts,
-                                                                    FRAME_TYPE.DIALOG);
-        return dialog;
+        if (StringUtils.isNotEmpty(defFormName))
+        {
+            boolean isEdit  = (altView.getMode() == CreationMode.Edit) ? true : false;
+            isEdit = true;
+            int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
+            String  title   = (isNewObject && isEdit) ? getResourceString("Edit") : dataObj.getIdentityTitle();
+            ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
+                                                                        defFormName,
+                                                                        title,
+                                                                        getResourceString("OK"),
+                                                                        isEdit,
+                                                                        opts,
+                                                                        FRAME_TYPE.DIALOG);
+            return dialog;
+        }
+        // else
+        log.error("The Default Form Name is empty for Object type ["+dataObj.getClass().getName()+"]");
+        
+        return null;
     }
 }

@@ -171,6 +171,7 @@
         
         <view name="LoanItems"
             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRule"
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
@@ -241,7 +242,7 @@
     	<view name="Preparation"
               class="edu.ku.brc.specify.datamodel.Preparation"
                resourcelabels="false">
-    	    <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+    	    <desc><![CDATA[Subform within the Preparation form.]]></desc>
     	    <altviews>
     	        <altview name="Preparation Table View" viewdef="Preparation Table" label="Grid" mode="view"/>
     	        <altview name="Preparation Table Edit" viewdef="Preparation Table" label="Grid" mode="edit"/>
@@ -255,7 +256,7 @@
         <view name="InfoRequest"
             class="edu.ku.brc.specify.datamodel.InfoRequest"
             resourcelabels="false">
-            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <desc><![CDATA[Subform within the InfoRequest form.]]></desc>
             <altviews>
                 <altview name="InfoRequest View" viewdef="InfoRequest" label="View" mode="view"/>
                 <altview name="InfoRequest Edit" viewdef="InfoRequest" label="Edit" mode="edit" default="true"/>
@@ -704,7 +705,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
             <rowDef auto="true" cell="p:g" sep="2px"/>
     		<rows>
     		    <row>
@@ -717,7 +718,7 @@
                     <cell type="label" labelfor="2" label="Catalog Series"/>
     			    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="dsptextfield"/>
 
-    			    <cell type="label" labelfor="13" label="Prev/Exchg"/>
+    			    <cell type="label" labelfor="13" label="Exchg"/>
     			    <cell type="field" id="13" name="fieldNumber" uitype="text"/>
     			</row>
     			<row>
@@ -728,7 +729,7 @@
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="5" label="Date"/>
-    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+    			    <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/>
     			</row>
      			<row>
     				<cell type="separator" label="Determination" colspan="12"/>
@@ -827,7 +828,7 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <columnDef>120px,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
 
     		<rows>
@@ -1034,9 +1035,9 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Quantity"/>
-                    <cell type="field" id="1" name="quantity" uitype="text" isrequired="true"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000" isrequired="true"/>
                     <cell type="label" labelfor="7" label="Returned"/>
-                    <cell type="field" id="7" name="quantityReturned" uitype="text" isrequired="true" default="0"/>
+                    <cell type="field" id="7" name="quantityReturned" uitype="spinner" initialize="max=2000" isrequired="true"/>
                     <cell type="label" labelfor="2" label="Method"/>
                     <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
                 </row>
@@ -1400,7 +1401,7 @@
     			</row>
     			<row>
                     <cell type="label" labelfor="3" label="Count"/>
-    			    <cell type="field" id="3" name="count" uitype="text"/>
+    			    <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="4" label="Storage"/>
     			    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>

@@ -26,19 +26,28 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.Viewable;
 
-public abstract class SimpleBusRules implements BusinessRulesIFace
+public abstract class BaseBusRules implements BusinessRulesIFace
 {
-    private List<String> errorList = new Vector<String>();
-    protected Class<?>      dataClass;
+    protected List<String> errorList = new Vector<String>();
+    protected Class<?>     dataClass;
     
     /**
      * The data class that is used within the busniess rules.
      * @param dataClass the data class
      */
-    public SimpleBusRules(final Class<?> dataClass)
+    public BaseBusRules(final Class<?> dataClass)
     {
         this.dataClass = dataClass;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     */
+    public void fillForm(Object dataObj, Viewable viewable)
+    {
+        
     }
     
     /* (non-Javadoc)
@@ -52,6 +61,7 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
             FormDataObjIFace dObj = (FormDataObjIFace)dataObj;
             title = dObj.getIdentityTitle();
         }
+        // else
         return getLocalizedMessage("GENERIC_OBJ_DELETED", title);
     }
 
@@ -79,7 +89,7 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
             conn = DBConnection.getInstance().createConnection();
             stmt = conn.createStatement();
 
-            return okToDelete(stmt, tableName, columnName, id);
+            return okToDelete(conn, stmt, tableName, columnName, id);
             
         } catch (Exception ex)
         {
@@ -108,13 +118,15 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
 
     /**
      * Checks to see if it can be deleted.
+     * @param connection db connection
      * @param stmt db statement
      * @param tableName the table name to check
      * @param columnName the column name name to check
      * @param id the Record ID to check
      * @return true means it can be deleted, false means it found something
      */
-    protected boolean okToDelete(final Statement  stmt,
+    protected boolean okToDelete(final Connection connection, 
+                                 final Statement  stmt,
                                  final String tableName, 
                                  final String columnName, final long id)
     {
@@ -130,7 +142,7 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
             ex.printStackTrace();
             
         }
-        return false; // err on the side of not enabling the delete btn
+        return false; // error on the side of not enabling the delete btn
     }
     
     /**
@@ -150,7 +162,7 @@ public abstract class SimpleBusRules implements BusinessRulesIFace
 
             for (int i=0;i<nameCombos.length;i++)
             {
-                if (!okToDelete(stmt, nameCombos[i], nameCombos[i+1], id))
+                if (!okToDelete(conn, stmt, nameCombos[i], nameCombos[i+1], id))
                 {
                     return false;
                 }

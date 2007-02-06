@@ -18,8 +18,6 @@ package edu.ku.brc.specify.ui.db;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
@@ -27,9 +25,7 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 /**
  * @code_status Alpha
@@ -285,10 +281,8 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
-        RecordSetIFace rs = new RecordSet();
-
-        Set<RecordSetItemIFace> items = new HashSet<RecordSetItemIFace>();
-        rs.setItems(items);
+        RecordSet rs = new RecordSet();
+        rs.initialize();
 
         // return if now rows are selected
         if (!returnAll && (rows == null || rows.length == 0))
@@ -308,9 +302,7 @@ public class ResultSetTableModel extends AbstractTableModel
             {
                 do
                 {
-                    RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column+1));
-                    items.add(rsi);
-                    rsi.setRecordSet(rs);
+                    rs.addItem(resultSet.getLong(column+1));
                 } while (resultSet.next());
 
                 return rs;
@@ -321,9 +313,7 @@ public class ResultSetTableModel extends AbstractTableModel
                 {
                     if (resultSet.absolute(rows[i]))
                     {
-                        RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column+1));
-                        items.add(rsi);
-                        rsi.setRecordSet(rs);
+                        rs.addItem(resultSet.getLong(column+1));
                     }
                 }
 

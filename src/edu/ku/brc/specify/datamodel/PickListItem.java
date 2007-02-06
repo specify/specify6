@@ -154,7 +154,6 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     @Transient
     public Object getValueObject()
     {
-        //return valueObject;
         return valueObject == null ? value : valueObject;
     }
 
@@ -184,6 +183,14 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     public void setTimestampCreated(Date createdDate)
     {
         this.timestampCreated = createdDate;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListItemIFace#getId()
+     */
+    public Long getId()
+    {
+        return pickListItemId;
     }
     
     //-------------------------------------

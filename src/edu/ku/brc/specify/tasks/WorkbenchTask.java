@@ -34,7 +34,6 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
@@ -135,7 +134,7 @@ public class WorkbenchTask extends BaseTask
     		{
     			File csvFile = jfc.getSelectedFile();
     			log.debug("Importing field notebook: " + csvFile.getAbsolutePath() );
-    			SubPaneMgr.getInstance().addPane(new WorkbenchPane("Field Notebook Import", this, jfc.getSelectedFile()));
+    			addSubPaneToMgr(new WorkbenchPane("Field Notebook Import", this, jfc.getSelectedFile()));
     		}
         } else
         {
@@ -167,7 +166,7 @@ public class WorkbenchTask extends BaseTask
             {
                 String filename = dialog.getDirectory() + curFile;
 
-                SubPaneMgr.getInstance().addPane(new WorkbenchPane("Field Notebook Import", this, new File(filename)));
+                addSubPaneToMgr(new WorkbenchPane("Field Notebook Import", this, new File(filename)));
             }
 
         }
@@ -178,7 +177,7 @@ public class WorkbenchTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new WorkbenchPane(name, this,null);
+        return starterPane = new WorkbenchPane(name, this,null);
     }
     
     /* (non-Javadoc)

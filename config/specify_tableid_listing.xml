@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 89
+    Last Used Id is 89 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -58,7 +58,7 @@
         <table name="edu.ku.brc.specify.datamodel.DeaccessionAgent" id="35"/>
         <table name="edu.ku.brc.specify.datamodel.DeaccessionPreparation" id="36"/>
         <table name="edu.ku.brc.specify.datamodel.Determination" id="9">
-            <display view="Determination"/>
+            <display objtitle="Determination" view="Determination" dataobjformatter="Determination"  searchdlg="DeterminationSearch" newobjdlg="DeterminationDisplay"/>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.DeterminationCitation" id="38"/>
         <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" id="88">
@@ -101,6 +101,7 @@
         <table name="edu.ku.brc.specify.datamodel.PickList" id="500">
             <display view="PickList"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.PickListItem" id="501"/>
         <table name="edu.ku.brc.specify.datamodel.Preparation" id="63">
             <display objtitle="Preparation" view="Preparation" newobjdlg="PreparationDisplay"/>
 		</table>
@@ -111,6 +112,7 @@
         <table name="edu.ku.brc.specify.datamodel.Project" id="66"/>
         <table name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" id="67"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSet" id="68"/>
+        <table name="edu.ku.brc.specify.datamodel.RecordSetItem" id="502"/>
         <table name="edu.ku.brc.specify.datamodel.ReferenceWork" id="69">
             <display view="ReferenceWork"/>
         </table>

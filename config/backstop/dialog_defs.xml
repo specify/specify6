@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dialog resourcelabels="">
-	<dialog type="search" viewset="Search" view="AgentSearch" name="AgentSearch" title="AgentSearch" class="edu.ku.brc.specify.datamodel.Agent" idfield="agentId"/>
-    <dialog type="search" viewset="Search" view="PermitSearch" name="PermitSearch" title="PermitSearchTitle" class="edu.ku.brc.specify.datamodel.Permit" idfield="permitId"/>
     <dialog type="search" viewset="Search" view="AccessionSearch" name="AccessionSearch" title="AccessionSearchTitle" class="edu.ku.brc.specify.datamodel.Accession" idfield="accessionId"/>
+    <dialog type="search" viewset="Search" view="AgentSearch" name="AgentSearch" title="AgentSearch" class="edu.ku.brc.specify.datamodel.Agent" idfield="agentId"/>
+    <dialog type="search" viewset="Search" view="DeterminationSearch" name="DeterminationSearch" title="DeterminationSearch" class="edu.ku.brc.specify.datamodel.Determination" idfield="determinationId"/>
     <dialog type="search" viewset="Search" view="GeographySearch" name="GeographySearch" title="GeographySearchTitle" class="edu.ku.brc.specify.datamodel.Geography" idfield="geographyId"/>
     <dialog type="search" viewset="Search" view="LocalitySearch" name="LocalitySearch" title="LocalitySearchTitle" class="edu.ku.brc.specify.datamodel.LocalitySearch" idfield="localityId"/>
-    <dialog type="search" viewset="Search" view="Taxon" name="TaxonSearch" title="TaxonSearchTitle" class="edu.ku.brc.specify.datamodel.Taxon" idfield="taxonId"/>
+    <dialog type="search" viewset="Search" view="PermitSearch" name="PermitSearch" title="PermitSearchTitle" class="edu.ku.brc.specify.datamodel.Permit" idfield="permitId"/>
     <dialog type="search" viewset="Search" view="PrepTypeSearch" name="PrepTypeSearch" title="PrepTypeSearch" class="edu.ku.brc.specify.datamodel.PrepType" idfield="prepTypeId"/>
+    <dialog type="search" viewset="Search" view="Taxon" name="TaxonSearch" title="TaxonSearchTitle" class="edu.ku.brc.specify.datamodel.Taxon" idfield="taxonId"/>
     
-    <dialog type="display" viewset="Global" view="Agent" name="AgentDisplay" title="AgentTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
-    <dialog type="display" viewset="Global" view="Permit" name="PermitDisplay" title="PermitTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
-    <dialog type="display" viewset="Fish Views" view="Preparation" name="PreparationDisplay" title="Preparation" class="edu.ku.brc.specify.datamodel.Preparation"/>
     <dialog type="display" viewset="Global" view="Accession" name="AccessionDisplay" title="AccessionTitle" class="edu.ku.brc.specify.datamodel.Accession"/>
     <dialog type="display" viewset="Global" view="AccessionAgent" name="AccessionAgentDisplay" title="AccessionAgentTitle" class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
+    <dialog type="display" viewset="Global" view="Agent" name="AgentDisplay" title="AgentTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
+    <dialog type="display" viewset="Global" view="AttachmentsForm" name="AttachmentsForm" title="Attachment" class="edu.ku.brc.specify.datamodel.Attachment"/>
+    <dialog type="display" viewset="Fish Views" view="Determination" name="DeterminationDisplay" title="Determination" class="edu.ku.brc.specify.datamodel.Determination"/>
     <dialog type="display" viewset="Global" view="Geography" name="GeographyDisplay" title="GeographyTitle" class="edu.ku.brc.specify.datamodel.Geography"/>
     <dialog type="display" viewset="Global" view="Locality" name="LocalityDisplay" title="LocalityTitle" class="edu.ku.brc.specify.datamodel.Locality"/>
+    <dialog type="display" viewset="Global" view="Permit" name="PermitDisplay" title="PermitTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
+    <dialog type="display" viewset="Fish Views" view="Preparation" name="PreparationDisplay" title="Preparation" class="edu.ku.brc.specify.datamodel.Preparation"/>
     <dialog type="display" viewset="Global" view="Taxon" name="TaxonDisplay" title="TaxonTitle" class="edu.ku.brc.specify.datamodel.Taxon"/>
-    <dialog type="display" viewset="Global" view="AttachmentsForm" name="AttachmentsForm" title="Attachment" class="edu.ku.brc.specify.datamodel.Attachment"/>
     <!-- <dialog type="display" viewset="Global" view="PrepType" name="PrepTypeDisplay" title="Preparation Type" class="edu.ku.brc.specify.datamodel.PrepType"/> -->
     
     <dialog type="display" viewset="Fish Views" view="FishBase" name="FishBase" title="FishBase" class="org.dom4j.Element"/>

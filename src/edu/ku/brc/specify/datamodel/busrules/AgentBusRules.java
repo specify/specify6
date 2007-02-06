@@ -27,7 +27,7 @@ import edu.ku.brc.specify.datamodel.Agent;
  * Created Date: Jan 24, 2007
  *
  */
-public class AgentBusRules extends SimpleBusRules
+public class AgentBusRules extends BaseBusRules
 {
 
     public AgentBusRules()

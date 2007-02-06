@@ -310,11 +310,14 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         return 79;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()
     { 
-        if(name!=null)return name;
+        if (name != null) return name;
         return super.getIdentityTitle();
     }
 }

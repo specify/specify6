@@ -131,7 +131,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		String tabName = getResourceString(name) + ": " + treeDef.getName();
     	TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
     	visibleTTVs.add(ttv);
-    	SubPaneMgr.getInstance().addPane(ttv);
+    	addSubPaneToMgr(ttv);
     	return ttv;
 	}
 	
@@ -155,7 +155,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	@Override
 	public SubPaneIFace getStarterPane()
 	{
-		return new SimpleDescPane(title, this, "This is the taxonomy tree editor");
+		return starterPane = new SimpleDescPane(title, this, "This is the taxonomy tree editor");
 	}
 
 	/* (non-Javadoc)

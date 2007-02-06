@@ -27,7 +27,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
  * Created Date: Jan 24, 2007
  *
  */
-public class CollectionObjectBusRules extends SimpleBusRules
+public class CollectionObjectBusRules extends BaseBusRules
 {
 
     /**

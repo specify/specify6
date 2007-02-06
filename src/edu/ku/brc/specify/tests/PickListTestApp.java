@@ -28,10 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -64,13 +61,11 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.PickList;
-import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 /*
  * @code_status Unknown (auto-generated)
@@ -407,7 +402,6 @@ public class PickListTestApp
         {
             HibernateUtil.beginTransaction();
             
-            Set<PickListItemIFace> list = new HashSet<PickListItemIFace>();
             String[] states = {"AL", "Alabama - AL", 
                               "AK", "Alaska - AK", 
                               "AZ", "Arizona - AZ", 
@@ -461,26 +455,19 @@ public class PickListTestApp
                               "WI", "Wisconsin - WI", 
                               "WY", "Wyoming - WY"};
           
-          for (int i=0;i<states.length;i++)
-          {
-              PickListItemIFace pli = new PickListItem();
-              System.out.println("["+states[i]+"]["+states[i+1]+"]");
-              pli.setValue(states[i++]);
-              pli.setTitle(states[i]);
-              pli.setTimestampCreated(new Date());
-              list.add(pli);
-          }
-               
-          PickList pl = new PickList();
-          pl.initialize();
-          pl.setName("states");
-          pl.setItems(list);
-          for (PickListItemIFace pli: list)
-          {
-              pli.setPickList(pl);
-          }
-          pl.setSizeLimit(50); // doesn't matter when readonly
-          pl.setReadOnly(true);
+            PickList pl = new PickList();
+            pl.initialize();
+            pl.setName("states");
+            pl.setSizeLimit(50); // doesn't matter when readonly
+            pl.setReadOnly(true);
+            
+            for (int i=0;i<states.length;i++)
+            {
+                pl.addPickListItem(states[i], states[i+1]);
+                i++;
+                System.out.println("["+states[i]+"]["+states[i+1]+"]");
+            }
+
           session.save(pl);
 
           HibernateUtil.commitTransaction();

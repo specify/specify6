@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
@@ -66,23 +65,24 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
     protected static ColorWrapper     valtextcolor       = null;
-    protected static ColorWrapper     requiredfieldcolor = null;
-    protected static DateWrapper      scrDateFormat      = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");                
+    protected static ColorWrapper     requiredfieldcolor = null;  
 
-    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
-    protected boolean                 isRequired = false;
-    protected boolean                 isChanged  = false;
-    protected boolean                 isNew      = false;
-    protected Color                   bgColor    = null;
+    protected UIValidatable.ErrorType     valState       = UIValidatable.ErrorType.Valid;
+    protected boolean                     isRequired     = false;
+    protected boolean                     isChanged      = false;
+    protected boolean                     isNew          = false;
+    protected Color                       bgColor        = null;
 
-    protected int                     requiredLength   = 0;
-    protected Object[]                formatObj  = null;
+    protected int                         requiredLength = 0;
+    protected Object[]                    formatObj      = null;
 
-    protected JFormattedDoc           document;
-    protected String                  defaultValue = null;
+    protected JFormattedDoc               document;
+    protected String                      defaultValue   = null;
 
     protected UIFieldFormatter            formatter;
-    protected List<UIFieldFormatterField> fields = null;
+    protected List<UIFieldFormatterField> fields         = null;
+    
+    protected Object                      origValue      = null;
 
     //---
     protected String bgStr     = null;
@@ -108,24 +108,10 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         super();
 
         init();
-
-        formatter = UIFieldFormatterMgr.getFormatter(formatterName);
-        fields = formatter.getFields();
-
-        StringBuilder strBuf = new StringBuilder(32);
-        for (UIFieldFormatterField field : fields)
-        {
-            requiredLength += field.getSize();
-            strBuf.append(field.getValue());
-        }
-        bgStr = strBuf.toString();
+        
         inner = getInsets();
-
-        this.setColumns(requiredLength);
-
-        document = new JFormattedDoc(this, formatter, requiredLength);
-        setDocument(document);
-        document.addDocumentListener(this);
+        
+        setFormatterInternal(UIFieldFormatterMgr.getFormatter(formatterName));
         
         addFocusListener(new FocusAdapter()
                 {
@@ -146,6 +132,54 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     }
                 });
 
+    }
+    
+    /**
+     * Sets the formatter.
+     * @param formatterName the formatter to use
+     */
+    protected void setFormatterInternal(final UIFieldFormatter formatterArg)
+    {
+        if (formatter != formatterArg && formatterArg != null)
+        {
+            int oldReqLen = requiredLength;
+            
+            formatter = formatterArg;
+            
+            fields = formatter.getFields();
+    
+            requiredLength = 0;
+            
+            StringBuilder strBuf = new StringBuilder(32);
+            for (UIFieldFormatterField field : fields)
+            {
+                requiredLength += field.getSize();
+                strBuf.append(field.getValue());
+            }
+            bgStr = strBuf.toString();
+    
+            if (requiredLength > oldReqLen) // don't let the field shrink
+            {
+                this.setColumns(requiredLength);
+            }
+    
+            document = new JFormattedDoc(this, formatter, requiredLength);
+            setDocument(document);
+            document.addDocumentListener(this);
+        }
+    }
+    
+    /**
+     * Sets the formatter and reset the current value into the new format.
+     * @param formatterName the formatter to use
+     */
+    public void setFormatter(final UIFieldFormatter formatter)
+    {
+        Object currentValue = isChanged ? getValue() : origValue;
+        
+        setFormatterInternal(formatter);
+        
+        setValue(currentValue, "");
     }
 
 
@@ -211,14 +245,14 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         super.setEnabled(enabled);
 
-        //setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
 
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
      */
     @Override
-    public void setText(String text)
+    public void setText(final String text)
     {
         document.setIgnoreNotify(true);
         super.setText(text);
@@ -371,6 +405,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         this.defaultValue = defaultValue;
 
+
         String data;
 
         if (value != null)
@@ -381,11 +416,11 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
             } else if (value instanceof Date)
             {
-                data = scrDateFormat.format((Date)value);
+                data = formatter.getDateWrapper().format((Date)value);
                 
             } else if (value instanceof Calendar)
             {
-                data = scrDateFormat.format(((Calendar)value).getTime());
+                data = formatter.getDateWrapper().format(((Calendar)value).getTime());
                 
             } else
             {
@@ -396,7 +431,12 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
             data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
         }
-
+        
+        if (origValue == null)
+        {
+            origValue = value;
+        }
+        
         setText(data);
 
         validateState();
@@ -409,7 +449,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public Object getValue()
     {
-        if (formatter.getName().equals("Date"))
+        if (formatter.isDate())
         {
             String value = getText();
             if (StringUtils.isNotEmpty(value))
@@ -417,7 +457,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 try
                 {
                     Calendar cal = Calendar.getInstance();
-                    cal.setTime(scrDateFormat.getSimpleDateFormat().parse(value));
+                    cal.setTime(formatter.getDateWrapper().getSimpleDateFormat().parse(value));
                     return cal;
 
                 } catch (ParseException ex)
@@ -461,9 +501,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
     public class JFormattedDoc extends ValPlainTextDocument
     {
-        protected int limit;
-        protected ValFormattedTextField textField;
-        protected UIFieldFormatter docFormatter;
+        protected int                     limit;
+        protected ValFormattedTextField   textField;
+        protected UIFieldFormatter        docFormatter;
         protected UIFieldFormatterField[] docFields;
 
         /**

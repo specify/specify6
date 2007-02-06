@@ -5,8 +5,6 @@
 
 <hibernate-mapping package="edu.ku.brc.specify.datamodel" >
 
-  <import class="PickListItem"/>
-  
 <class name="edu.ku.brc.specify.datamodel.PickList" table="picklist">
         
     <id name="pickListId" type="java.lang.Long" column="PickListID">
@@ -61,7 +59,7 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to PickListItem -->
-    <set name="items" table="picklist_items" lazy="false">
+    <!-- <set name="items" table="picklist_items" lazy="false">
         <meta attribute="scope-field">protected</meta>
         <key column="pickListItemID"/>
     	<composite-element class="PickListItem">
@@ -69,9 +67,17 @@
     		<property name="value" not-null="false" unique="false" length="64"/>
     	    <property name="timestampCreated" not-null="true"/>
         </composite-element>
-    </set>
+    </set> -->
 	
-
+    <set name="items" lazy="false" inverse="true" cascade="all-delete-orphan, lock, merge">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="PickListID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.PickListItem"/>
+    </set>
+    
   </class>
 
 </hibernate-mapping>

@@ -132,13 +132,13 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         loanAgents      = new HashSet<LoanAgent>();
 
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
-        shipments = new HashSet<Shipment>();
-        attachments = new HashSet<Attachment>();
+        shipments           = new HashSet<Shipment>();
+        attachments         = new HashSet<Attachment>();
 
         
         if (true)
         {
-            // For Demo
+            // XXX For Demo
             try
             {
                 Connection conn = DBConnection.getInstance().createConnection();
@@ -151,10 +151,10 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
                         String numStr = rs.getString(1);
                         int num = Integer.parseInt(numStr.substring(6,8));
                         num++;
-                        loanNumber = String.format("2006-%03d", new Object[] {num});
+                        loanNumber = String.format("2007-%03d", new Object[] {num});
                     } else
                     {
-                        loanNumber = "2006-001";
+                        loanNumber = "2007-001";
                     }
                 }
             }

@@ -17,8 +17,6 @@ package edu.ku.brc.af.core;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.apache.log4j.Logger;
-
 
 /**
  * 
@@ -29,7 +27,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class SecurityMgr
 {
-    private static final Logger  log = Logger.getLogger(SecurityMgr.class);
+    //private static final Logger  log = Logger.getLogger(SecurityMgr.class);
     public enum SECURITY_LEVEL {None, Read, ReadWrite, ReadWriteDelete}
     protected static SecurityMgr instance = null;
     protected SECURITY_LEVEL currentLevel = SECURITY_LEVEL.ReadWriteDelete;

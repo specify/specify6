@@ -22,16 +22,12 @@ import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Vector;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
- * Business Rules for DeterminationStatuss.
+ * Business Rules for DeterminationStatus.
  * 
  * @author rods
  *
@@ -40,9 +36,16 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
  * Created Date: Dec 19, 2006
  *
  */
-public class DeterminationStatusBusRules implements BusinessRulesIFace
+public class DeterminationStatusBusRules extends BaseBusRules
 {
-    private List<String> errorList = new Vector<String>();
+    
+    /**
+     * Constrcutor.
+     */
+    public DeterminationStatusBusRules()
+    {
+        super(DeterminationStatusBusRules.class);
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getDeleteMsg(java.lang.Object)
@@ -53,16 +56,8 @@ public class DeterminationStatusBusRules implements BusinessRulesIFace
         {
             return getLocalizedMessage("DETERMINATION_STATUS_DELETED", ((DeterminationStatus)dataObj).getName());
         }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getWarningsAndErrors()
-     */
-    public List<String> getWarningsAndErrors()
-    {
-        // TODO Auto-generated method stub
-        return errorList;
+        // else
+        return super.getDeleteMsg(dataObj);
     }
 
     /* (non-Javadoc)
@@ -70,6 +65,8 @@ public class DeterminationStatusBusRules implements BusinessRulesIFace
      */
     public boolean okToDelete(Object dataObj)
     {
+        errorList.clear();
+        
         DeterminationStatus DeterminationStatus = (DeterminationStatus)dataObj;
         if (DeterminationStatus.getId() == null)
         {
@@ -104,28 +101,4 @@ public class DeterminationStatusBusRules implements BusinessRulesIFace
 
         return false;
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusinessRules(java.lang.Object)
-     */
-    public STATUS processBusinessRules(Object dataObj)
-    {
-        errorList.clear();
-        
-        if (dataObj == null || !(dataObj instanceof DeterminationStatus))
-        {
-            return STATUS.Error;
-        }       
-        return STATUS.OK;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.forms.DraggableRecordIdentifier)
-     */
-    public void setObjectIdentity(Object dataObj, DraggableRecordIdentifier draggableIcon)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
 }

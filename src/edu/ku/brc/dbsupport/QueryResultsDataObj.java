@@ -15,6 +15,8 @@
 
 package edu.ku.brc.dbsupport;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A class that describes where the the desired piece of data is located (row/col) in the results set 
  * and whether it has been processed, meaning: does it have it's value yet?
@@ -30,26 +32,49 @@ public class QueryResultsDataObj
     protected int     row           = 0;
     protected int     col           = 0;
     protected boolean isProcessable = true;
+    protected String  formatStr     = "";
     
     /**
      * Constructs with row and column.
      * @param row the row it came from
      * @param col the column it came from
+     * @param formatStr the string format
      */
-    public QueryResultsDataObj(int row, int col)
+    public QueryResultsDataObj(final int row, final int col, final String formatStr)
     {
-        this.row  = row;
-        this.col  = col;
+        this.row       = row;
+        this.col       = col;
+        this.formatStr = formatStr;
+    }
+
+    /**
+     * Constructs with row and column.
+     * @param row the row it came from
+     * @param col the column it came from
+     */
+    public QueryResultsDataObj(final int row, final int col)
+    {
+        this(row, col, null);
     }
 
     /**
      * Constructs with object. Sometimes it is convient for the owner to pre-seed the value.
      * @param result the value of the object
+     * @param formatStr the string format
+     */
+    public QueryResultsDataObj(final Object result, final String formatStr)
+    {
+        this.result        = result;
+        this.isProcessable = false;
+        this.formatStr     = formatStr;
+    }
+
+    /**
+     * Constructs with object. Sometimes it is convient for the owner to pre-seed the value.
      */
     public QueryResultsDataObj(Object result)
     {
-        this.result   = result;
-        isProcessable = false;
+        this(result, null);
     }
 
     /**
@@ -58,6 +83,10 @@ public class QueryResultsDataObj
      */
     public Object getResult()
     {
+        if (StringUtils.isNotEmpty(formatStr))
+        {
+            return String.format(formatStr, new Object[] {result} );
+        }
         return result;
     }
 

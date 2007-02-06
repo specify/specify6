@@ -61,7 +61,7 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to RecordSet -->
-    <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" cascade="save-update, lock, merge" not-null="true" outer-join="auto" lazy="false">
+    <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" cascade="save-update" not-null="true" outer-join="auto" lazy="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <column name="RecordSetID"  not-null="true"/>

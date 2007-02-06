@@ -180,6 +180,18 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
     // Delete Add Methods
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        if (name != null) return name;
+        return super.getIdentityTitle();
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

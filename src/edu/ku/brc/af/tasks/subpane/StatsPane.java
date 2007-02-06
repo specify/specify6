@@ -57,12 +57,12 @@ public class StatsPane extends BaseSubPane
     private static final Logger log = Logger.getLogger(StatsPane.class);
 
     // Data Members
-    protected String  resourceName           = null;
+    protected String  resourceName       = null;
     protected Color   bgColor            = Color.WHITE;
     protected boolean useSeparatorTitles = false;
 
-    protected int PREFERREDWIDTH = 260;
-    protected int SPACING        = 35;
+    protected int     PREFERREDWIDTH     = 300;
+    protected int     SPACING            = 35;
 
     /**
      * Creates a StatsPane.
@@ -210,8 +210,9 @@ public class StatsPane extends BaseSubPane
                         {
                             List<?> items = boxElement.selectNodes("item");
                             StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"),
-                                                                           new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")},
-                                                                           useSeparatorTitles, items.size());
+                                                                           new String[] {getAttr(boxElement, "desctitle", " "), getAttr(boxElement, "valtitle", " ")},
+                                                                           useSeparatorTitles, 
+                                                                           items.size());
                             for (Object io : items)
                             {
                                 Element itemElement = (Element)io;
@@ -230,7 +231,14 @@ public class StatsPane extends BaseSubPane
 
                                 if (statements.size() == 1)
                                 {
-                                    statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatDataItem.VALUE_TYPE.Value);
+                                    
+                                    String formatStr = null;
+                                    Element formatNode = (Element)itemElement.selectSingleNode("sql/format");
+                                    if (formatNode != null)
+                                    {
+                                        formatStr = formatNode.getTextTrim();
+                                    }
+                                    statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatDataItem.VALUE_TYPE.Value, formatStr);
 
                                 } else if (statements.size() > 0)
                                 {
@@ -238,14 +246,15 @@ public class StatsPane extends BaseSubPane
                                     for (Object stObj : statements)
                                     {
                                         Element stElement = (Element)stObj;
-                                        int vRowInx = getAttr(stElement, "row", -1);
-                                        int vColInx = getAttr(stElement, "col", -1);
+                                        int    vRowInx = getAttr(stElement, "row", -1);
+                                        int    vColInx = getAttr(stElement, "col", -1);
+                                        String format  = getAttr(stElement, "format", null);
                                         if (vRowInx == -1 || vColInx == -1)
                                         {
-                                            statItem.add(stElement.getText()); // ignore return object
+                                            statItem.add(stElement.getText(), format); // ignore return object
                                         } else
                                         {
-                                            statItem.add(stElement.getText(), vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value); // ignore return object
+                                            statItem.add(stElement.getText(), vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value, format); // ignore return object
                                         }
                                         cnt++;
                                     }

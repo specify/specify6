@@ -94,8 +94,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected List<TaskCommandDef> commands     = null;
 
     // SubPane List Management
-    protected List<SubPaneIFace>  subPanes          = new ArrayList<SubPaneIFace>();
+    protected List<SubPaneIFace>  subPanes             = new ArrayList<SubPaneIFace>();
     protected boolean             taskCentricPanesOnly = true;
+    protected boolean             closeOnLastPane      = false;
+    protected SubPaneIFace        starterPane          = null;
 
     // Data Members needed for support "recent form pane" management
     protected FormPane  recentFormPane = null;
@@ -127,8 +129,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         ContextMgr.unregister(this);
         SubPaneMgr.getInstance().removeListener(this);
-
-
     }
 
     /**
@@ -296,12 +296,21 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     }
 
     /**
-     * Adds a SubPane to the Mgr and caches a pointer to it.
+     * Adds a SubPane to the Mgr and caches a pointer to it and clear the starterPane data member.
      * @param subPane the subpane in question
      */
     protected void addSubPaneToMgr(final SubPaneIFace subPane)
     {
-        SubPaneMgr.getInstance().addPane(subPane);
+        if (starterPane != null)
+        {
+            SubPaneMgr.getInstance().replacePane(starterPane, subPane);
+            starterPane = null;
+            
+        } else
+        {
+            SubPaneMgr.getInstance().addPane(subPane);
+        }
+
     }
 
     /**
@@ -641,6 +650,12 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public void subPaneRemoved(SubPaneIFace subPane)
     {
+        if (starterPane == null && subPane.getTask() == this && !closeOnLastPane && subPanes.size() == 1)
+        {
+            SubPaneMgr.getInstance().replacePane(subPane, starterPane = getStarterPane());
+            return;
+        }
+        // else
         subPanes.remove(subPane);
     }
 

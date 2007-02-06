@@ -618,9 +618,14 @@ public class ViewLoader
                                 case plugin:
                                 case button:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
-                                    properties = processInitializeString(initialize);
+                                    properties   = processInitializeString(initialize);
                                     break;
-
+                                    
+                                case spinner:
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    properties   = processInitializeString(initialize);
+                                    break;
+                                    
                                 case combobox:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
                                     break;

@@ -471,7 +471,7 @@ public class SystemSetupTask extends BaseTask
         //recentFormPane = new FormPane(null, name, this, "");
         //return recentFormPane;
         
-        return new SimpleDescPane(SYSTEMSETUPTASK, this, "System Tools");
+        return starterPane = new SimpleDescPane(SYSTEMSETUPTASK, this, "System Tools");
     }
 
      /*

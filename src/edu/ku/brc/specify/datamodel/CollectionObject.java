@@ -44,6 +44,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +54,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
@@ -59,47 +63,48 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "collectionobject")
-public class CollectionObject extends DataModelObjBase implements java.io.Serializable {
+public class CollectionObject extends DataModelObjBase implements java.io.Serializable, Comparable<CollectionObject>
+{
 
     // Fields
 
-     protected Long collectionObjectId;
-     protected String fieldNumber;
-     protected String description;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Integer countAmt;
-     protected String remarks;
-     protected String name;
-     protected String modifier;
-     protected Calendar catalogedDate;
-     protected String catalogedDateVerbatim;
-     protected String guid;
-     //protected String altCatalogNumber;
-     protected Integer groupPermittedToView;
-     protected Boolean deaccessioned;
-     protected Float catalogNumber;
-     protected Integer visibility;
-     protected String visibilitySetBy;
-     protected CollectingEvent collectingEvent;
-     protected ContainerItem containerItem;
-     protected Set<CollectionObjectCitation> collectionObjectCitations;
-     protected Set<AttributeIFace> attrs;
-     protected Set<Preparation> preparations;
-     protected Set<Determination> determinations;
-     protected CollectionObjDef collectionObjDef;
-     protected Set<ProjectCollectionObject> projectCollectionObjects;
+    protected Long                          collectionObjectId;
+    protected String                        fieldNumber;
+    protected String                        description;
+    protected String                        text1;
+    protected String                        text2;
+    protected Float                         number1;
+    protected Float                         number2;
+    protected Boolean                       yesNo1;
+    protected Boolean                       yesNo2;
+    protected Integer                       countAmt;
+    protected String                        remarks;
+    protected String                        name;
+    protected String                        modifier;
+    protected Calendar                      catalogedDate;
+    protected String                        catalogedDateVerbatim;
+    protected String                        guid;
+    // protected String altCatalogNumber;
+    protected Integer                       groupPermittedToView;
+    protected Boolean                       deaccessioned;
+    protected Float                         catalogNumber;
+    protected Integer                       visibility;
+    protected String                        visibilitySetBy;
+    protected CollectingEvent               collectingEvent;
+    protected ContainerItem                 containerItem;
+    protected Set<CollectionObjectCitation> collectionObjectCitations;
+    protected Set<AttributeIFace>           attrs;
+    protected Set<Preparation>              preparations;
+    protected Set<Determination>            determinations;
+    protected CollectionObjDef              collectionObjDef;
+    protected Set<ProjectCollectionObject>  projectCollectionObjects;
     // protected Set<DeaccessionPreparation> deaccessionPreparations;
-     protected Set<OtherIdentifier> otherIdentifiers;
-     protected CatalogSeries catalogSeries;
-     protected Accession accession;
-     protected Agent cataloger;
-     protected Set<Attachment>          attachments;
-     protected Container container;
+    protected Set<OtherIdentifier>          otherIdentifiers;
+    protected CatalogSeries                 catalogSeries;
+    protected Accession                     accession;
+    protected Agent                         cataloger;
+    protected Set<Attachment>               attachments;
+    protected Container                     container;
 
     // Constructors
 
@@ -122,43 +127,71 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public void initialize()
     {
         super.init();
-        collectionObjectId = null;
-        fieldNumber = null;
-        description = null;
-        text1 = null;
-        text2 = null;
-        number1 = null;
-        number2 = null;
-        yesNo1 = null;
-        yesNo2 = null;
-        countAmt = null;
-        remarks = null;
-        name = null;
-        modifier = null;
-        catalogedDate = null;
+        collectionObjectId    = null;
+        fieldNumber           = null;
+        description           = null;
+        text1                 = null;
+        text2                 = null;
+        number1               = null;
+        number2               = null;
+        yesNo1                = null;
+        yesNo2                = null;
+        countAmt              = null;
+        remarks               = null;
+        name                  = null;
+        modifier              = null;
+        catalogedDate         = null;
         catalogedDateVerbatim = null;
-        guid = null;
+        guid                  = null;
         //altCatalogNumber = null;
-        groupPermittedToView = null;
-        deaccessioned = null;
-        catalogNumber = null;
-        visibility = null;
-        visibilitySetBy = null; 
-        collectingEvent = null;
-        containerItem = null;
+        groupPermittedToView  = null;
+        deaccessioned         = null;
+        catalogNumber         = null;
+        visibility            = null;
+        visibilitySetBy       = null; 
+        collectingEvent       = null;
+        containerItem         = null;
         collectionObjectCitations = new HashSet<CollectionObjectCitation>();
-        attrs = new HashSet<AttributeIFace>();
-        preparations = new HashSet<Preparation>();
-        determinations = new HashSet<Determination>();
-        collectionObjDef = null;
+        attrs                 = new HashSet<AttributeIFace>();
+        preparations          = new HashSet<Preparation>();
+        determinations        = new HashSet<Determination>();
+        collectionObjDef      = null;
         projectCollectionObjects = new HashSet<ProjectCollectionObject>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
-        otherIdentifiers = new HashSet<OtherIdentifier>();
-        catalogSeries = null;
-        accession = null;
-        cataloger = null;
-        attachments = new HashSet<Attachment>();
-        container = null;
+        otherIdentifiers      = new HashSet<OtherIdentifier>();
+        catalogSeries         = null;
+        accession             = null;
+        cataloger             = null;
+        attachments           = new HashSet<Attachment>();
+        container             = null;
+        
+        if (true)
+        {
+            // XXX For Demo
+            try
+            {
+                Connection conn = DBConnection.getInstance().createConnection();
+                if (conn != null)
+                {
+                    Statement  stmt = conn.createStatement();
+                    ResultSet  rs   = stmt.executeQuery("select CatalogNumber from collectionobject order by CatalogNumber desc limit 0,1");
+                    if (rs.first())
+                    {
+                        Float catNum = rs.getFloat(1);
+                        catalogNumber = catNum + 1;
+                    } else
+                    {
+                        catalogNumber = 1.0F;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+
+
     }
     // End Initializer
     
@@ -796,5 +829,24 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public Integer getTableId()
     {
         return 1;
+    }
+    
+
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(CollectionObject obj)
+    {
+        // XXX TODO need to fix when Cat Nums change to Strings!
+        if (catalogNumber != null && obj != null && obj.catalogNumber != null)
+        {
+            return catalogNumber.compareTo(obj.catalogNumber);
+        }
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
     }
 }

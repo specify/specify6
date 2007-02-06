@@ -46,5 +46,11 @@ public interface ViewBasedSearchDialogIFace
      */
     public Object getSelectedObject();
     
+    /**
+     * Sets the title of the dialog.
+     * @param title the title (already localized)
+     */
+    public void setTitle(String title);
+    
 
 }

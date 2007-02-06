@@ -14,7 +14,9 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -100,6 +102,25 @@ public class UIFieldFormatterMgr
         }
         return formatter;
     }
+    
+    /**
+     * Returns a Date Formatter for a given type of Partial Date.
+     * @param type the type of Partial Date formatter.
+     * @return the formatter
+     */
+    public static UIFieldFormatter getDateFormmater(UIFieldFormatter.PartialDateEnum type)
+    {
+        for (Enumeration<UIFieldFormatter> e=instance.hash.elements();e.hasMoreElements();)
+        {
+            UIFieldFormatter f = e.nextElement();
+            //System.out.println("["+Date.class+"]["+f.getDataClass()+"] "+f.getPartialDateType());
+            if ((Date.class == f.getDataClass() || Date.class == f.getDataClass())  && f.getPartialDateType() == type)
+            {
+                return f;
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
@@ -152,9 +173,10 @@ public class UIFieldFormatterMgr
                     String  dataClassName = formatElement.attributeValue("class");
                     boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
 
-                    List<?>              fieldsList = formatElement.selectNodes("field");
-                    List<UIFieldFormatterField> fields     = new ArrayList<UIFieldFormatterField>();
-                    boolean              isInc      = false;
+                    List<?>              fieldsList         = formatElement.selectNodes("field");
+                    List<UIFieldFormatterField> fields      = new ArrayList<UIFieldFormatterField>();
+                    boolean              isInc              = false;
+                    String               partialDateTypeStr = formatElement.attributeValue("partialdate");
                     
                     for (Object fldObj : fieldsList)
                     {
@@ -164,10 +186,12 @@ public class UIFieldFormatterMgr
                         String    value   = fldElement.attributeValue("value");
                         String    typeStr = fldElement.attributeValue("type");
                         boolean   increm  = XMLHelper.getAttr(fldElement, "inc", false);
+                        
                         UIFieldFormatterField.FieldType type = null;
                         try
                         {
                             type  = UIFieldFormatterField.FieldType.valueOf(typeStr);
+                            
                         } catch (Exception ex)
                         {
                             log.error("["+typeStr+"]"+ex.toString());
@@ -179,21 +203,33 @@ public class UIFieldFormatterMgr
                         }
                     }
                     
+                    UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.Full;
                     Class dataClass = null;
-                    try
+                    if (StringUtils.isNotEmpty(dataClassName))
                     {
-                        dataClass = Class.forName(dataClassName);
-                    } catch (Exception ex)
+                        try
+                        {
+                            dataClass = Class.forName(dataClassName);
+                        } catch (Exception ex)
+                        {
+                            log.error("Couldn't load class ["+dataClassName+"] for ["+name+"]");
+                        }
+                    } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
                     {
-                        log.error("Couldn't load class ["+dataClassName+"] for ["+name+"]");
+                        dataClass = Date.class;
+                        if (StringUtils.isNotEmpty(partialDateTypeStr))
+                        {
+                            partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
+                        }
                     }
 
-                    boolean   isDate    = StringUtils.isNotEmpty(fType) && fType.equals("date");
-                    UIFieldFormatter formatter = new UIFieldFormatter(name, isDate, dataClass, isDefault, isInc, fields);
+                    boolean isDate = StringUtils.isNotEmpty(fType) && fType.equals("date");
+                    UIFieldFormatter formatter = new UIFieldFormatter(name, isDate, partialDateType, dataClass, isDefault, isInc, fields);
                     if (isDate && fields.size() == 0)
                     {
                         addFieldsForDate(formatter);
                     }
+                    //System.out.println(formatter.toString());
 
                     hash.put(name, formatter);
 
@@ -214,32 +250,65 @@ public class UIFieldFormatterMgr
      * for the date from the dat preference
      * @param formatter the formatter to be augmented
      */
-    protected void addFieldsForDate(UIFieldFormatter formatter)
+    protected void addFieldsForDate(final UIFieldFormatter formatter)
     {
         DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
-        String formatStr = scrDateFormat.getSimpleDateFormat().toPattern();
-        char currChar = ' ';
+        UIFieldFormatter.PartialDateEnum partialType = formatter.getPartialDateType();
+        
+        StringBuilder newFormatStr = new StringBuilder();
+        String        formatStr    = scrDateFormat.getSimpleDateFormat().toPattern();
+        boolean       wasConsumed  = false;
+        char          currChar     = ' ';
+        
         for (int i=0;i<formatStr.length();i++)
         {
             char c = formatStr.charAt(i);
             if (c != currChar)
             {
-                if (c == 'M' || c == 'd')
+                if (c == 'M') // make sure we consume them
                 {
-                    String s = "";
-                    s += c;
-                    s += c;
-                    UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 2, s.toUpperCase(), false);
-                    formatter.getFields().add(f);
-                    currChar = c;
+                    if (partialType == UIFieldFormatter.PartialDateEnum.Full || partialType == UIFieldFormatter.PartialDateEnum.Month)
+                    {
+                        String s = "";
+                        s += c;
+                        s += c;
+                        UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 2, s.toUpperCase(), false);
+                        formatter.getFields().add(f);
+                        currChar = c;
+                        newFormatStr.append(c);
+                        newFormatStr.append(c);
+                        
+                    } else
+                    {
+                        wasConsumed = true;
+                    }
 
+                } else if (c == 'd')
+                {
+                    if (partialType == UIFieldFormatter.PartialDateEnum.Full)
+                    {
+                        String s = "";
+                        s += c;
+                        s += c;
+                        UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, 2, s.toUpperCase(), false);
+                        formatter.getFields().add(f);
+                        currChar = c;
+                        newFormatStr.append(c);
+                        newFormatStr.append(c);
+
+                    } else
+                    {
+                        wasConsumed = true;
+                    }
+                    
                 } else if (c == 'y')
                 {
                     int start = i;
                     while (i < formatStr.length() && formatStr.charAt(i) == 'y')
                     {
                         i++;
+                        newFormatStr.append(c);
                     }
                     UIFieldFormatterField f;
                     if (i - start > 2)
@@ -252,20 +321,28 @@ public class UIFieldFormatterMgr
                     formatter.getFields().add(f);
                     currChar = c;
                     i--;
-                } else
+                    
+                } else if (!wasConsumed)
                 {
                     String s = "";
                     s += c;
                     UIFieldFormatterField f = new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, s, false);
                     formatter.getFields().add(f);
+                    newFormatStr.append(c);
+                    
+                } else
+                {
+                    wasConsumed = false;
                 }
             }
+        } // for
+        
+        if (partialType == UIFieldFormatter.PartialDateEnum.Full)
+        {
+            formatter.setDateWrapper(scrDateFormat);
+        } else
+        {
+            formatter.setDateWrapper(new DateWrapper(new SimpleDateFormat(newFormatStr.toString())));
         }
-    }
-
-    //---------------------------------------------------------
-    // Inner Classes
-    //---------------------------------------------------------
-
-
+     }
 }

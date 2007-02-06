@@ -89,6 +89,7 @@ import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 import edu.ku.brc.ui.validation.ValFormattedTextField;
 import edu.ku.brc.ui.validation.ValListBox;
 import edu.ku.brc.ui.validation.ValPasswordField;
+import edu.ku.brc.ui.validation.ValSpinner;
 import edu.ku.brc.ui.validation.ValTextArea;
 import edu.ku.brc.ui.validation.ValTextField;
 import edu.ku.brc.ui.validation.ValidatedJPanel;
@@ -883,7 +884,7 @@ public class ViewFactory
                             compToAdd = createValComboBox(validator, cellField, adapter);
                             addToValidator = validator != null; // might already added to validator
                             break;
-                        
+                            
                         case checkbox:
                         {
                             ValCheckBox checkbox = new ValCheckBox(cellField.getLabel(), 
@@ -896,7 +897,26 @@ public class ViewFactory
                             }
                             compToAdd = checkbox;
                             break;
-                       }
+                        }
+                        
+                        case spinner:
+                        {
+                            String minStr = cellField.getProperty("min");
+                            int    min    = StringUtils.isNotEmpty(minStr) ? Integer.parseInt(minStr) : 0;
+                            
+                            String maxStr = cellField.getProperty("max");
+                            int    max    = StringUtils.isNotEmpty(maxStr) ? Integer.parseInt(maxStr) : 0; 
+                            
+                            ValSpinner spinner = new ValSpinner(min, max, cellField.isRequired(), 
+                                                                   cellField.isReadOnly() || mode == AltView.CreationMode.View);
+                            if (validator != null)
+                            {
+                                DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getId(), spinner, null);
+                                spinner.addChangeListener(dcn);
+                            }
+                            compToAdd = spinner;
+                            break;
+                        }                            
                          
                         case password:
                             compToAdd      = createPasswordField(validator, cellField);

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -54,7 +55,6 @@ import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -64,6 +64,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -93,7 +94,6 @@ public class DataEntryTask extends BaseTask
     // Data Members
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
-    protected SubPaneIFace        starterPane      = null;
 
     /**
      * Default Constructor
@@ -205,22 +205,28 @@ public class DataEntryTask extends BaseTask
             DataProviderFactory.getInstance().evict(data.getClass());    
         }
         
-        FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
+        final FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
                                          isNewForm ? (MultiView.IS_NEW_OBJECT |  MultiView.RESULTSET_CONTROLLER): 0);
         
         formPane.setIcon(getIconForView(view));
         
-        if (starterPane == null)
+        SwingUtilities.invokeLater(new Runnable()
         {
-            SubPaneMgr.getInstance().addPane(formPane);
-            
-        } else
-        {
-            SubPaneMgr.getInstance().replacePane(starterPane, formPane);
-            starterPane = null;
-        }
-        
-        CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, OPEN_VIEW, formPane));
+            public void run()
+            {
+                if (starterPane == null)
+                {
+                    addSubPaneToMgr(formPane);
+                    
+                } else
+                {
+                    SubPaneMgr.getInstance().replacePane(starterPane, formPane);
+                    starterPane = null;
+                }
+                
+                CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, OPEN_VIEW, formPane));            }
+        });
+
     }
 
     /**
@@ -416,8 +422,7 @@ public class DataEntryTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        starterPane = new DroppableFormRecordSetAccepter(title, this, "This is the Data Entry Pane");
-        return starterPane;
+        return starterPane = new DroppableFormRecordSetAccepter(title, this, "This is the Data Entry Pane");
     }
 
     /*
@@ -553,7 +558,8 @@ public class DataEntryTask extends BaseTask
                     prep.setPreparedByAgent(SpecifyUser.getCurrentUser().getAgent());
                     
                     SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-                    FormDataObjIFace defPrepType = appContextMgr.getDefaultObject(PrepType.class, true);
+                    String               prepTitle     = UICacheManager.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", PrepType.class.getSimpleName());
+                    FormDataObjIFace     defPrepType   = appContextMgr.getDefaultObject(PrepType.class, "PrepType", prepTitle, true, true);
                     prep.setPrepType((PrepType)defPrepType);
                 }
             }
@@ -659,7 +665,7 @@ public class DataEntryTask extends BaseTask
                 Object daeData = dae.getData();
                 if (daeData != null && daeData instanceof RecordSet)
                 {
-                    SubPaneMgr.getInstance().addPane(DataEntryTask.createFormFor(task, "ZZZZ", (RecordSetIFace)daeData));
+                    addSubPaneToMgr(DataEntryTask.createFormFor(task, "ZZZZ", (RecordSetIFace)daeData));
                     return;
                 }
             }

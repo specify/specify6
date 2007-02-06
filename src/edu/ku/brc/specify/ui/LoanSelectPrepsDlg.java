@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -145,10 +146,18 @@ public class LoanSelectPrepsDlg extends JDialog
                 doEnableOKBtn();
             }
         };
- 
+        
+        // XXX Try this Collections.sort(Collections.list(Collections.enumeration(colObjs)))
+        Vector<CollectionObject> colObjList = new Vector<CollectionObject>();
+        for (CollectionObject co : colObjs)
+        {
+            colObjList.add(co);
+        }
+        Collections.sort(colObjList);
+        
         int i = 0;
         int y = 1;
-        for (CollectionObject co : colObjs)
+        for (CollectionObject co : colObjList)
         {
             if (getCurrentDetermination(co) != null)
             {
@@ -345,17 +354,25 @@ public class LoanSelectPrepsDlg extends JDialog
             
             Color[] colors = new Color[] { new Color(255,255,255), new Color(235,235,255)};
             
-            int i = 0;
+            Vector<Preparation> prepsList = new Vector<Preparation>();
             for (Preparation prep : colObj.getPreparations())
             {
                 if (prep.getPrepType().getIsLoanable())
                 {
-                    PrepPanel pp = new PrepPanel(dlgParent, prep);
-                    panels.add(pp);
-                    pp.setBackground(colors[i % 2]);
-                    contentPanel.add(pp);
-                    i++;
+                    prepsList.add(prep);
                 }
+            }
+            Collections.sort(prepsList);
+            
+            int i = 0;
+            for (Preparation prep : prepsList)
+            {
+                PrepPanel pp = new PrepPanel(dlgParent, prep);
+                panels.add(pp);
+                pp.setBackground(colors[i % 2]);
+                contentPanel.add(pp);
+                i++;
+
             }
             pbuilder.add(outerPanel, cc.xy(1,3));
             

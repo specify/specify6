@@ -55,9 +55,9 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
 
     // Fields
 
-    protected Long recordSetItemId;
+    protected Long      recordSetItemId;
     protected RecordSet recordSet;
-    protected Long recordId;
+    protected Long      recordId;
 
 
     // Constructors
@@ -81,6 +81,7 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     // Initializer
     public void initialize()
     {
+        recordSetItemId = null;
         recordId = null;
         recordSet = null;
     }
@@ -122,7 +123,7 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( {CascadeType.SAVE_UPDATE})
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE})
     @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
     public RecordSet getRecordSet()
     {
@@ -138,8 +139,4 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     {
         setRecordSet((RecordSet)recordSet);
     }
-    
-    // Add Methods
-
-    // Done Add Methods
 }

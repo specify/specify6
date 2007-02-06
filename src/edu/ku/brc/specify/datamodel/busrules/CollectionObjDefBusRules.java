@@ -19,7 +19,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
-public class CollectionObjDefBusRules extends SimpleBusRules
+public class CollectionObjDefBusRules extends BaseBusRules
 {   
     /**
      * 
@@ -67,6 +67,7 @@ public class CollectionObjDefBusRules extends SimpleBusRules
         {
             return getLocalizedMessage("COLLECTIONOBJDEF_DELETED", ((CollectionObjDef)dataObj).getName());
         }
-        return null;
+        // else
+        return super.getDeleteMsg(dataObj);
     }
 }

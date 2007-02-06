@@ -54,11 +54,13 @@
         <!-- Associations -->
         
         <!-- bi-directional one-to-many association to RecordSetItem -->
-        <set name="items" table="recordset_items" lazy="false" cascade="save-update, lock, merge">
-            <key column="RecordSetID"/>
-            <composite-element class="RecordSetItem">
-                <property name="RecordId" not-null="true" unique="false"/>
-            </composite-element>
+        <set name="items" lazy="false" inverse="true" cascade="all-delete-orphan, lock, merge">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>
+            <key>
+                <column name="RecordSetID"/>
+            </key>
+            <one-to-many class="edu.ku.brc.specify.datamodel.RecordSetItem"/>
         </set>
         
         <!-- many-to-one association to SpecifyUser -->

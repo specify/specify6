@@ -17,16 +17,12 @@ package edu.ku.brc.specify.ui.db;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.ui.DateWrapper;
 
 /**
@@ -252,10 +248,8 @@ public class ResultSetTableModelDM extends ResultSetTableModel
     {
         try
         {
-            RecordSetIFace rs = new RecordSet();
-            
-            Set<RecordSetItemIFace> items = new HashSet<RecordSetItemIFace>();
-            rs.setItems(items);
+            RecordSet rs = new RecordSet();
+            rs.initialize();
             
             if (rows == null || rows.length == 0)
             {
@@ -282,9 +276,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     }                   
                     do
                     {                   
-                        RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column));
-                        items.add(rsi);
-                        rsi.setRecordSet(rs);
+                        rs.addItem(resultSet.getLong(column));
                     } while (resultSet.next());
                 }    
 
@@ -297,9 +289,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     int rowInx = displayIndexes != null ? displayIndexes[rows[i]] : rows[i];
                     if (resultSet.absolute(rowInx+1))
                     {
-                        RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column));
-                        items.add(rsi);
-                        rsi.setRecordSet(rs);
+                        rs.addItem(resultSet.getLong(column));
                     }
                 }
             }

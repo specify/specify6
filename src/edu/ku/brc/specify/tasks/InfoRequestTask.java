@@ -275,7 +275,11 @@ public class InfoRequestTask extends BaseTask
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();
-        infoRequest.setRecordSet(recordSet);
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        RecordSet rs = session.get(RecordSet.class, recordSet.getRecordSetId());
+        infoRequest.setRecordSet(rs);
+        session.close();
         
         //TaskMgr.getInstance().getTask(INFOREQUEST)
         
@@ -283,7 +287,7 @@ public class InfoRequestTask extends BaseTask
                                          MultiView.IS_NEW_OBJECT );
         formPane.setIcon(IconManager.getIcon(INFOREQUEST, IconManager.IconSize.Std16));
         
-        SubPaneMgr.getInstance().addPane(formPane);
+        ((InfoRequestTask)TaskMgr.getTask(INFOREQUEST)).addSubPaneToMgr(formPane);
         //formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
 
     }
@@ -340,6 +344,7 @@ public class InfoRequestTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         recentFormPane = new FormPane(name, this, "");
+        starterPane = recentFormPane;
         return recentFormPane;
     }
     
@@ -414,12 +419,13 @@ public class InfoRequestTask extends BaseTask
             InfoRequest infoRequest = (InfoRequest)formViewObj.getDataObj();
             Agent       toAgent     = infoRequest.getAgent();
             
-            boolean   sendEMail = true; // default to true
+            boolean   sendEMailTmp = true; // default to true
             Component comp      = formViewObj.getControlByName("sendEMail");
             if (comp instanceof JCheckBox)
             {
-                sendEMail = ((JCheckBox)comp).isSelected();
+                sendEMailTmp = ((JCheckBox)comp).isSelected();
             }
+            final boolean sendEMail = sendEMailTmp;
             
             MultiView mv = formViewObj.getSubView("InfoRequestColObj");
             if (mv != null && sendEMail)
@@ -468,7 +474,7 @@ public class InfoRequestTask extends BaseTask
                             {
                                 dlg.getMultiView().getDataFromUI();
                                 
-                                System.out.println("["+values.get("bodytext")+"]");
+                                //System.out.println("["+values.get("bodytext")+"]");
                                 
                                 TableViewObj  tblViewObj = (TableViewObj)viewable;
                                 File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
@@ -479,24 +485,30 @@ public class InfoRequestTask extends BaseTask
                                 
                                 //EMailHelper.setDebugging(true);
                                 String text = values.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
+                                
+                                // XXX need to move the invokdeLater into the UICacheManager
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run()
                                     {
                                         UICacheManager.displayLocalizedStatusBarText("SENDING_EMAIL");
                                     }
                                 });
-                                final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
-                                                                        emailPrefs.get("username"), 
-                                                                        Encryption.decrypt(emailPrefs.get("password")), 
-                                                                        emailPrefs.get("email"), 
-                                                                        values.get("to"), 
-                                                                        values.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run()
-                                    {
-                                        UICacheManager.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
-                                    }
-                                });
+                                
+                                if (sendEMail)
+                                {
+                                    final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
+                                                                            emailPrefs.get("username"), 
+                                                                            Encryption.decrypt(emailPrefs.get("password")), 
+                                                                            emailPrefs.get("email"), 
+                                                                            values.get("to"), 
+                                                                            values.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run()
+                                        {
+                                            UICacheManager.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                        }
+                                    });
+                                }
                             }
                             else if (action.equals("Cancel"))
                             {

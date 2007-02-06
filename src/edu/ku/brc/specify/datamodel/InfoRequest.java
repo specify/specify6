@@ -92,18 +92,18 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     {
         super.init();
         infoRequestID = null;
-        number = null;
-        firstName = null;
-        lastName = null;
-        institution = null;
-        email = null;
-        requestDate = null;
-        replyDate = null;
-        remarks = null;
-        recordSet = null;
-        agent = null;
+        number        = null;
+        firstName     = null;
+        lastName      = null;
+        institution   = null;
+        email         = null;
+        requestDate   = null;
+        replyDate     = null;
+        remarks       = null;
+        recordSet     = null;
+        agent         = null;
         
-        // For Demo
+        // XXX For Demo
         try
         {
             Connection conn = DBConnection.getInstance().createConnection();
@@ -114,10 +114,10 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
                 String numStr = rs.getString(1);
                 int num = Integer.parseInt(numStr.substring(6,8));
                 num++;
-                number = String.format("2006-%03d", new Object[] {num});
+                number = String.format("2007-%03d", new Object[] {num});
             } else
             {
-                number = "2006-001";
+                number = "2007-001";
             }
         }
         catch (Exception ex)

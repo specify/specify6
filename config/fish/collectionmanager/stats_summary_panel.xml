@@ -136,7 +136,10 @@
             <sql><statement><![CDATA[select count(Name) from (select DISTINCT Name from (select g.GeographyID,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement></sql>
         </item>
         <item title="Percent Geo Referenced">
-            <sql><statement><![CDATA[select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null]]></statement></sql>
+            <sql>
+                <statement><![CDATA[select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null]]></statement>
+                <format>%5.2f</format>
+            </sql>
         </item>
     </box>
   </row>

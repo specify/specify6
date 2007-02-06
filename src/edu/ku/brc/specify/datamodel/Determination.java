@@ -454,8 +454,8 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getIdentityTitle()
     {
-        // TODO Auto-generated method stub
-        return "Determination: " + this.getTaxon().getName();
+        Taxon taxon = getTaxon();
+        return "Determination " + (taxon != null ? ": "+ taxon.getName() : "");
     }
 
 }

@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -39,10 +40,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -195,6 +198,10 @@ public class EMailHelper
 
                 t.sendMessage(msg, msg.getAllRecipients());
 
+            } catch (Exception e)
+            {
+                log.error(e);
+                
             } finally
             {
 
@@ -214,6 +221,7 @@ public class EMailHelper
               instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
             }
             return false;
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -228,23 +236,74 @@ public class EMailHelper
      */
     public static String askForPassword(final Frame topframe)
     {
-        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p"));
+        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p"));
         CellConstraints cc        = new CellConstraints();
         JLabel          label     = new JLabel(getResourceString("password")+":", JLabel.RIGHT);
         JPasswordField  passField = new JPasswordField(25);
+        JCheckBox       savePassword = new JCheckBox(getResourceString("SAVE_PASSWORD"));
 
         builder.add(label, cc.xy(1,1));
         builder.add(passField, cc.xy(3,1));
-        JOptionPane.showConfirmDialog(topframe, 
-                builder.getPanel(), 
-                getResourceString("PASSWORD_TITLE"), 
-                JOptionPane.OK_CANCEL_OPTION, 
-                JOptionPane.QUESTION_MESSAGE);
+        builder.add(savePassword, cc.xy(3,3));
+        JOptionPane.showConfirmDialog(topframe, builder.getPanel(), 
+                getResourceString("PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        
+        String passwordText = new String(passField.getPassword());
+        if (savePassword.isSelected())
+        {
+            AppPreferences appPrefs = AppPreferences.getRemote();
+            if (StringUtils.isNotEmpty(passwordText))
+            {
+                System.out.println(passwordText);
+                appPrefs.put("settings.email.password", Encryption.encrypt(passwordText));
+            }
+        }
 
-        return new String(passField.getPassword());
+        return passwordText;
     } 
 
-
+    /**
+     * Returns whether all the email prefs needed for sending mail have been filled in.
+     * @return whether all the email prefs needed for sending mail have been filled in.
+     */
+    public static boolean isEMailPrefsOK(final Hashtable<String, String> emailPrefs)
+    {
+        AppPreferences appPrefs       = AppPreferences.getRemote();
+        boolean        allOK          = true;
+        String[]       emailPrefNames = { "servername", "username", "password", "email"};
+        
+        for (String pName : emailPrefNames)
+        {
+            String key   = "settings.email."+pName;
+            String value = appPrefs.get(key, "");
+            if (StringUtils.isNotEmpty(value) || pName.equals("password"))
+            {
+                emailPrefs.put(pName, value);
+                
+            } else
+            {
+                log.info("Key["+key+"] is empty");
+                allOK = false;
+                
+                // XXX For Demo
+                if (true)
+                {
+                    emailPrefs.put("accountname", "IMAP");
+                    emailPrefs.put("servername",  "imap.ku.edu");
+                    emailPrefs.put("username",    "rods");
+                    emailPrefs.put("password",    appPrefs.get("settings.email.password", ""));
+                    emailPrefs.put("email",       "rods@ku.edu");
+                    for (String n : emailPrefs.keySet())
+                    {
+                        appPrefs.put("settings.email."+n, emailPrefs.get(n));
+                    }
+                    allOK = true;
+                }
+                break;
+            }
+        }
+        return allOK;
+    }
 
     /**
      * Returns true if the account type string is "POP3".
@@ -509,5 +568,144 @@ public class EMailHelper
             }
         }
     }
+
+    public static boolean sendMsgAsGMail(String host,
+                                  String userName,
+                                  String password,
+                                  String fromEMailAddr,
+                                  String toEMailAddr,
+                                  String subject,
+                                  String bodyText,
+                                  String mimeType,
+                                  File   fileAttachment)
+    {
+        Properties props = System.getProperties();
+        
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.starttls.enable", "true");
+        
+        boolean usingSSL = false;
+        if (usingSSL)
+        {
+            props.put("mail.smtps.port", "587");
+            props.put("mail.smtp.starttls.enable", "true");
+            
+        }
+
+        Session session = Session.getInstance(props, null);
+
+        session.setDebug(instance.isDebugging);
+        if (instance.isDebugging)
+        {
+            log.debug("Host:     " + host);
+            log.debug("UserName: " + userName);
+            log.debug("Password: " + password);
+            log.debug("From:     " + fromEMailAddr);
+            log.debug("To:       " + toEMailAddr);
+            log.debug("Subject:  " + subject);
+        }
+
+
+        try
+        {
+            // create a message
+            MimeMessage msg = new MimeMessage(session);
+
+            msg.setFrom(new InternetAddress(fromEMailAddr));
+            if (toEMailAddr.indexOf(",") > -1)
+            {
+                StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
+                InternetAddress[] address = new InternetAddress[st.countTokens()];
+                int i = 0;
+                while (st.hasMoreTokens())
+                {
+                    String toStr = st.nextToken().trim();
+                    address[i++] = new InternetAddress(toStr);
+                }
+                msg.setRecipients(Message.RecipientType.TO, address);
+            } else
+            {
+                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
+                msg.setRecipients(Message.RecipientType.TO, address);
+            }
+            msg.setSubject(subject);
+            
+            //msg.setContent( aBodyText , "text/html;charset=\"iso-8859-1\"");
+
+            // create the second message part
+            if (fileAttachment != null)
+            {
+                // create and fill the first message part
+                MimeBodyPart mbp1 = new MimeBodyPart();
+                mbp1.setContent(bodyText, mimeType);//"text/html;charset=\"iso-8859-1\"");
+                //mbp1.setContent(bodyText, "text/html;charset=\"iso-8859-1\"");
+
+                MimeBodyPart mbp2 = new MimeBodyPart();
+
+               // attach the file to the message
+                FileDataSource fds = new FileDataSource(fileAttachment);
+                mbp2.setDataHandler(new DataHandler(fds));
+                mbp2.setFileName(fds.getName());
+
+                // create the Multipart and add its parts to it
+                Multipart mp = new MimeMultipart();
+                mp.addBodyPart(mbp1);
+                mp.addBodyPart(mbp2);
+
+                // add the Multipart to the message
+                msg.setContent(mp);
+
+            } else
+            {
+                // add the Multipart to the message
+                msg.setContent(bodyText, mimeType);
+            }
+
+
+            // set the Date: header
+            msg.setSentDate(new Date());
+
+            // send the message
+            //Transport.send(msg);
+
+            SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
+            try {
+                t.connect(host, userName, password);
+
+                t.sendMessage(msg, msg.getAllRecipients());
+
+            } catch (Exception e)
+            {
+                log.error(e);
+                
+            } finally
+            {
+
+                 log.debug("Response: " + t.getLastServerResponse());
+                 t.close();
+            }
+
+
+        } catch (MessagingException mex)
+        {
+            instance.lastErrorMsg = mex.toString();
+
+            //mex.printStackTrace();
+            Exception ex = null;
+            if ((ex = mex.getNextException()) != null) {
+              ex.printStackTrace();
+              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+            }
+            return false;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return true;
+    }
+    
 
 }

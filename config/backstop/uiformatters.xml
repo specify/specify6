@@ -17,5 +17,9 @@
         <field size="1" type="separator" value="-"/>
         <field size="3" type="numeric" value="NNN" inc="true"/>
     </format>
+    
     <format name="Date" type="date"/>
+    <format name="PartialDateMonth" type="date" partialdate="Month"/>
+    <format name="PartialDateYear" type="date" partialdate="Year"/>
+    
 </formats>
