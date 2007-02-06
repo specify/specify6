@@ -38,8 +38,6 @@
         
         <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23"/>
 
-        <property name="timestampVersion" type="java.sql.Timestamp" column="TimestampVersion" length="16"/>
-
         <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="32"/>
 
         <!-- Associations -->
