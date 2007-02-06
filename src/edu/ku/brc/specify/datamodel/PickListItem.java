@@ -188,6 +188,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListItemIFace#getId()
      */
+    @Transient
     public Long getId()
     {
         return pickListItemId;
