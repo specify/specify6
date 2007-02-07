@@ -454,8 +454,8 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getIdentityTitle()
     {
-        Taxon taxon = getTaxon();
-        return "Determination " + (taxon != null ? ": "+ taxon.getName() : "");
+        Taxon tax = getTaxon();
+        return "Determination " + (tax != null ? ": "+ tax.getName() : "");
     }
 
 }

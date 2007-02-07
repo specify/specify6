@@ -273,6 +273,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */
+    @Override
     @Transient
     public String getIdentityTitle()
     {
