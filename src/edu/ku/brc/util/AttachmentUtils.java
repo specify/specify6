@@ -6,18 +6,15 @@
  */
 package edu.ku.brc.util;
 
-
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
-import org.jdesktop.jdic.desktop.Desktop;
-import org.jdesktop.jdic.desktop.DesktopException;
-import org.jdesktop.jdic.filetypes.Association;
-import org.jdesktop.jdic.filetypes.AssociationService;
+import javax.activation.FileTypeMap;
 
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -75,11 +72,10 @@ public class AttachmentUtils
 
                 try
                 {
-                    Desktop.open(original);
+                    Desktop.getDesktop().open(original);
                 }
-                catch (DesktopException e1)
+                catch (IOException e1)
                 {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
             }
@@ -95,53 +91,8 @@ public class AttachmentUtils
             return null;
         }
         
-        String fileExt = "";
-        int lastDotIndex = filename.lastIndexOf(".");
-        if (lastDotIndex != -1)
-        {
-            fileExt = filename.substring(lastDotIndex+1).toLowerCase();
-        }
-        
-        // XXX Remove for Java 6.0
-        if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
-        {
-            
-            if (fileExt.equals("jpg"))
-            {
-                return "image/jpeg";
-            }
-            if (fileExt.equals("png"))
-            {
-                return "image/png";
-            }
-            if (fileExt.equals("pdf"))
-            {
-                return "application/pdf";
-            }
-            if (fileExt.equals("mpg"))
-            {
-                return "video/mpeg";
-            }
-    
-            return "application/octet-stream";
-        }
-        // else
-        try
-        {
-            AssociationService assServ   = new AssociationService();
-            Association        fileAssoc = assServ.getFileExtensionAssociation(fileExt);
-            if (fileAssoc==null)
-            {
-                return null;
-            }
-            return fileAssoc.getMimeType();
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
+        return FileTypeMap.getDefaultFileTypeMap().getContentType(filename);
     }
-
     
     public static void main(String[] args)
     {
