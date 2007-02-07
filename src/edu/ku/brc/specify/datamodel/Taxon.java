@@ -522,7 +522,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.LOCK })
+    @Cascade( { CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public TaxonTreeDef getDefinition()
 	{
@@ -535,7 +535,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "TaxonTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public TaxonTreeDefItem getDefinitionItem()
 	{
@@ -552,7 +552,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Taxon getParent()
 	{
