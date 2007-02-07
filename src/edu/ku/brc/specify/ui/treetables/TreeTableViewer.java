@@ -310,17 +310,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
 
-//        JButton showDescend0 = new JButton(icon_allDescend);
-//        showDescend0.setSize(20,20);
-//        showDescend0.setToolTipText("Show All Descendants");
-//        showDescend0.addActionListener(new ActionListener()
-//        {
-//            public void actionPerformed(ActionEvent ae)
-//            {
-//                expandAllDescendantsOfSelection(lists[0]);
-//            }
-//        });
-        
         JButton syncViews0 = new JButton(icon_syncViews);
         syncViews0.setSize(20,20);
         syncViews0.setToolTipText("Sync w/ Other View");
@@ -464,17 +453,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
 
-//        JButton showDescend1 = new JButton(icon_allDescend);
-//        showDescend1.setSize(20,20);
-//        showDescend1.setToolTipText("Show All Descendants");
-//        showDescend1.addActionListener(new ActionListener()
-//        {
-//            public void actionPerformed(ActionEvent ae)
-//            {
-//                expandAllDescendantsOfSelection(lists[0]);
-//            }
-//        });
-        
         JButton syncViews1 = new JButton(icon_syncViews);
         syncViews1.setSize(20,20);
         syncViews1.setToolTipText("Sync w/ Other View");
@@ -733,7 +711,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 		};
 
-		showEditDialog(newNode, "New Node Form", callback);
+		showEditDialog(newNode, "New Node Form", callback, true);
 	}
 	
 	/**
@@ -842,7 +820,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 		};
 
-		showEditDialog(selectedNode, "Edit Node Values", callback);
+		showEditDialog(selectedNode, "Edit Node Values", callback, false);
 	}
 
 	/**
@@ -1110,11 +1088,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param title the title of the dialog window
 	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
 	 */
-	protected void showEditDialog(T node,String title,EditDialogCallback<T> callback)
+	protected void showEditDialog(T node,String title, EditDialogCallback<T> callback, boolean isNewObject)
 	{
 		nameBeforeEditDialogShown = node.getName();
 		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);
-		TreeNodeEditDialog<T,D,I> editDialog = new TreeNodeEditDialog<T,D,I>(formsNames.first,formsNames.second,title,callback);
+		TreeNodeEditDialog<T,D,I> editDialog = new TreeNodeEditDialog<T,D,I>(formsNames.first,formsNames.second,title,callback,isNewObject);
 		editDialog.setModal(true);
 		editDialog.setData(node);
 		editDialog.setVisible(true);
@@ -1289,7 +1267,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			{
 				return;
 			}
-			T t = (T)listModel.getElementAt(index);
 			list.setSelectedIndex(index);
 			popupMenu.setList(list);
 			popupMenu.show(list,e.getX(),e.getY());

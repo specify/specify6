@@ -13,6 +13,7 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -25,6 +26,8 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -53,6 +56,8 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
     /** The registered callback to notify after user action occurs. */
     protected EditDialogCallback<T> callback;
     
+    protected boolean isNewObject;
+    
     /**
      * Constructs a node edit dialog using the given view to represent objects
      * of the given class.
@@ -67,9 +72,12 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
     public EditFormDialog(final String viewSetName,
                                 final String viewName,
                                 final String title,
-                                final EditDialogCallback<T> callback) throws HeadlessException
+                                final EditDialogCallback<T> callback,
+                                final boolean isNewObject) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
+        
+        this.isNewObject = isNewObject;
         
         this.callback = callback;
         
@@ -182,9 +190,22 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
         
         getData();
         
-        ((FormViewObj)form).saveObject();
+        Object dataObj = form.getDataObj();
+        if (dataObj instanceof FormDataObjIFace)
+        {
+            FormDataObjIFace formObj = (FormDataObjIFace)dataObj;
+            String currentUserString = FormHelper.getCurrentUserEditStr();
+            formObj.setLastEditedBy(currentUserString);
+            formObj.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+        }
         
-        callback.editCompleted((T)form.getDataObj());
+        // save changes to any object that already exists in the DB
+        if (!isNewObject)
+        {
+            ((FormViewObj)form).saveObject();
+        }
+        
+        callback.editCompleted((T)dataObj);
     }
     
     /**

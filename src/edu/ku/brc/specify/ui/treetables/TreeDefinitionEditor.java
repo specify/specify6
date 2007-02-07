@@ -196,7 +196,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				showDefEditDialog(displayedDef);	
+				showDefEditDialog(displayedDef,false);	
 			}
 		});
 
@@ -387,7 +387,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	 *
 	 * @param treeDef the tree definition being edited
 	 */
-	protected void showDefEditDialog(D treeDef)
+	protected void showDefEditDialog(D treeDef, boolean isNewObject)
 	{
 		EditDialogCallback<D> callback = new EditDialogCallback<D>()
 		{
@@ -409,7 +409,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 			return;
 		}
 		String defEditDialogTitle = getResourceString("TreeDefEditDialogTitle");
-		EditFormDialog<D> editDialog = new EditFormDialog<D>(formsNames.first,formsNames.second,defEditDialogTitle,callback);
+		EditFormDialog<D> editDialog = new EditFormDialog<D>(formsNames.first,formsNames.second,defEditDialogTitle,callback,isNewObject);
 		editDialog.setModal(true);
 		editDialog.setData(treeDef);
 		editDialog.setVisible(true);

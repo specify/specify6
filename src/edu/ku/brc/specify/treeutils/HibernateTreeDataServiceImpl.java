@@ -18,6 +18,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -528,7 +529,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         {
             if (o!=null)
             {
-                session.lock(o, LockMode.NONE);
+                // make sure not to attempt locking an unsaved object
+                DataModelObjBase dmob = (DataModelObjBase)o;
+                if (dmob.getId()!=null)
+                {
+                    session.lock(o, LockMode.NONE);
+                }
             }
         }
         return session;

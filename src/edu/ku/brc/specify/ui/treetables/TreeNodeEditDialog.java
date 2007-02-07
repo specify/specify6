@@ -29,9 +29,9 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
 {
     private static final String DEF_ITEM_CB_ID = "defItemComboBox";
     
-    public TreeNodeEditDialog(String viewSetName, String viewName, String title, EditDialogCallback<T> callback) throws HeadlessException
+    public TreeNodeEditDialog(String viewSetName, String viewName, String title, EditDialogCallback<T> callback, boolean isNewObject) throws HeadlessException
 	{
-		super(viewSetName,viewName,title,callback);
+		super(viewSetName,viewName,title,callback,isNewObject);
 	}
     
     /**
@@ -94,13 +94,6 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
         form.setDataObj(node);
     }
     
-//    protected void setDefItemByName( T node, String defItemName )
-//    {
-//    	I item = node.getDefinition().getDefItemByName(defItemName);
-//    	node.setDefinitionItem(item);
-//    	node.setRankId(item.getRankId());
-//    }
-
     @SuppressWarnings("unchecked")
 	@Override
 	protected void getData()
