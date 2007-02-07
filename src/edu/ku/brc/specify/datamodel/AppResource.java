@@ -409,7 +409,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     {
         if (fileName != null)
         {
-            throw new RuntimeException("Not implemented!");
+            //throw new RuntimeException("Not implemented!");
         }
         
         if (StringUtils.isNotEmpty(dataStr))
@@ -496,6 +496,13 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         return 83;
     }
 
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return description;
+    }
 
 }

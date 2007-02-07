@@ -76,6 +76,8 @@ public interface AppResourceIFace
     public abstract void setDataAsString(final String dataStr);
     
     public abstract String getDataAsString();
+    
+    public String toString();
 
     //public abstract Set<AppResourceDefault> getAppContexts();
     //public abstract void setAppContexts(Set<AppResourceDefault> appContexts);
