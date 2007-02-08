@@ -806,6 +806,7 @@ public class GenericDBConversion
                    || tableName.toLowerCase().equals("groupperson")
                    || tableName.toLowerCase().equals("loanagent"))
            {
+        	   tableName = tableName.toLowerCase();
                if (!copyTable(oldDBConn, newDBConn, "select * from " + tableName + "s", tableName + "s", tableName, tableMaps.get(lowerCaseName), null))
                {
                    log.error("Table ["+tableName+"] didn't copy correctly.");
