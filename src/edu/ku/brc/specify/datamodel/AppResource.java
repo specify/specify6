@@ -229,7 +229,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getMimeType()
      */
-    @Column(name = "MimeType", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "MimeType", unique = false, nullable = true, insertable = true, updatable = true)
     public String getMimeType() {
         return this.mimeType;
     }
