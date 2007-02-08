@@ -212,8 +212,8 @@ public class HibernateUtil {
         
         try 
         {
-            configuration = new Configuration();
-            //configuration = new AnnotationConfiguration();
+            //configuration = new Configuration();
+            configuration = new AnnotationConfiguration();
             AuditInterceptor auditInter = AuditInterceptor.getInstance();
             if (auditInter != null)
             {

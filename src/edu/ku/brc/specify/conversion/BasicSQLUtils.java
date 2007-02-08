@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +68,7 @@ public class BasicSQLUtils
      */
     protected  BasicSQLUtils()
     {
+        //
     }
 
     /**
@@ -399,18 +401,15 @@ public class BasicSQLUtils
                     Date dateObj = UIHelper.convertIntToDate((Integer)obj);                   
                     return dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"';
 
-                } else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
+                }
+                else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
                 {
                     int val = ((Integer)obj).intValue();
                     return Integer.toString(val == 0? 0 : 1);
                 }
-                {
-                    return ((Integer)obj).toString();
-                }
-            } else
-            {
                 return ((Integer)obj).toString();
             }
+            return ((Integer)obj).toString();
 
         } else if (obj instanceof Date)
         {
@@ -617,7 +616,7 @@ public class BasicSQLUtils
     }
 
     /**
-     * Copies from one connect/table to another connection/table. Sets the order by clause to be the first field in the
+     * Copies from one connection/table to another connection/table. Sets the order by clause to be the first field in the
      * "from" field list.
      *
      * @param fromConn DB Connection that the data is coming from
@@ -637,6 +636,19 @@ public class BasicSQLUtils
                                     final Map<String, String> colNewToOldMap,
                                     final Map<String, String> verbatimDateMapper)
     {
+        return copyTable(fromConn,toConn,sql,fromTableName,toTableName,colNewToOldMap,verbatimDateMapper,null);
+    }
+
+    public static boolean copyTable(final Connection fromConn,
+                                    final Connection toConn,
+                                    final String     sql,
+                                    final String     fromTableName,
+                                    final String     toTableName,
+                                    final Map<String, String> colNewToOldMap,
+                                    final Map<String, String> verbatimDateMapper,
+                                    final Map<String, String> newColDefValues)
+    {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
 
         IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
 
@@ -722,8 +734,8 @@ public class BasicSQLUtils
                 
                 // OK here we make sure that both the created dated ad modified date are not null
                 // and we copy the date if one has a value and the other does not.
-                Date timestampCreatedCached  = null;
-                Date timestampModifiedCached = null;
+                Date timestampCreatedCached  = now;
+                Date timestampModifiedCached = now;
                 
                 if (timestampModifiedInx != null && timestampCreatedInx != null)
                 {
@@ -749,7 +761,7 @@ public class BasicSQLUtils
                         timestampModifiedCached = rs.getDate(timestampModifiedInx);
                         if (timestampModifiedCached == null)
                         {
-                            timestampModifiedCached = Calendar.getInstance().getTime();
+                            timestampModifiedCached = now;
                         }
                     }
                         
@@ -758,7 +770,7 @@ public class BasicSQLUtils
                         timestampCreatedCached = rs.getDate(timestampCreatedInx);
                         if (timestampCreatedCached == null)
                         {
-                            timestampCreatedCached = Calendar.getInstance().getTime();
+                            timestampCreatedCached = now;
                         }
                     }
                 }
@@ -773,7 +785,6 @@ public class BasicSQLUtils
                     String colName          = fieldMetaData.getName();
                     String oldMappedColName = null;
 
-                    //log.info("meg processing new columnName: " + colName);
                     // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);
                     
@@ -900,17 +911,27 @@ public class BasicSQLUtils
                             str.append(getStrValue(dataObj, fieldMetaData.getType()));
                         }
 
-                    } else
+                    }
+                    else // there was no old column that maps to this new column
                     {
-                        //System.out.println("ignoreMappingFieldNames" + ignoreMappingFieldNames);
-                        //System.out.println("ignoreMappingFieldNames.get(colName)" + ignoreMappingFieldNames.get(colName));
-                        if (showMappingError &&
-                            (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
+                        String newColValue = null;
+                        if (newColDefValues!=null)
                         {
-                            log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped");
+                            newColValue = newColDefValues.get(colName);
+                        }
+                        if (newColValue==null)
+                        {
+                            newColValue = "NULL";
+                            //System.out.println("ignoreMappingFieldNames" + ignoreMappingFieldNames);
+                            //System.out.println("ignoreMappingFieldNames.get(colName)" + ignoreMappingFieldNames.get(colName));
+                            if (showMappingError &&
+                                (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
+                            {
+                                log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped");
+                            }
                         }
                         if (i > 0) str.append(", ");
-                        str.append("NULL");
+                        str.append(newColValue);
                     }
 
                 }

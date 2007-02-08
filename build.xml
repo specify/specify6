@@ -141,16 +141,16 @@
 	<target name="genschema">
 		<!-- bit of a best guess, I'm afraid -->
 		<hibernatetool destdir="${source.root}">
+			<annotationconfiguration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
+			<!--
 			<configuration propertyFile="src/${hibernate.properties}">
 				<fileset dir="${source.root}">
 					<include name="**/*.hbm.xml" />
 				</fileset>
 			</configuration>
-			<!--
-			<annotationconfiguration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
 			<configuration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
 			-->
-			<hbm2ddl update="false" export="true" outputfilename="specify6.sql"/>
+			<hbm2ddl update="false" export="true"/>
 		</hibernatetool>
 	</target>
 

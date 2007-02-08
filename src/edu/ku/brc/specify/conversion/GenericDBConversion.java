@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +49,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -116,11 +118,13 @@ public class GenericDBConversion
     
     protected static final Logger log = Logger.getLogger(GenericDBConversion.class);
 
-    protected static StringBuilder strBuf   = new StringBuilder("");
-    protected static Calendar     calendar  = Calendar.getInstance();
-
     protected static SimpleDateFormat dateFormatter  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
+    protected static StringBuilder strBuf   = new StringBuilder("");
+    protected static Calendar     calendar  = Calendar.getInstance();
+    protected static Date now = new Date();
+    protected static String nowStr = dateFormatter.format(now);
+    
     protected String oldDriver   = "";
     protected String oldDBName   = "";
     protected String oldUserName = "";
@@ -1003,7 +1007,8 @@ public class GenericDBConversion
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "usergroup");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "specifyuser");
 
-            updateStatement.executeUpdate("INSERT INTO usergroup VALUES (null,'admin2', '')");
+            String updateStr = "INSERT INTO usergroup (TimestampCreated,TimestampModified,LastEditedBy,UserGroupId,Name,Remarks) VALUES ('"+nowStr+"','"+nowStr+"',null,null,'admin2', '')";
+            updateStatement.executeUpdate(updateStr);
             updateStatement.clearBatch();
             updateStatement.close();
             updateStatement = null;
@@ -1012,8 +1017,11 @@ public class GenericDBConversion
 
             updateStatement = newDBConn.createStatement();
             strBuf = new StringBuilder(128);
-            strBuf.append("INSERT INTO specifyuser VALUES (");
-            strBuf.append("NULL,");
+            strBuf.append("INSERT INTO specifyuser (SpecifyUserID,TimestampCreated,TimestampModified,LastEditedBy,Name,EMail,UserType,PrivLevel,AgentID) VALUES (");
+            strBuf.append("NULL,"); // SpecifyUserID
+            strBuf.append("'" + nowStr + "',"); // TimestampCreated
+            strBuf.append("'" + nowStr + "',"); // TimestampModified
+            strBuf.append("NULL,"); // LastEditedBy
             strBuf.append("'"+userName+"',");
             strBuf.append("'"+"email@email.edu"+"',");
             strBuf.append("'"+userType+"',");
@@ -1068,7 +1076,8 @@ public class GenericDBConversion
                 */
 
                 Statement updateStatement = newDBConn.createStatement();
-                updateStatement.executeUpdate("INSERT INTO datatype VALUES (null,'"+dataTypeName+"')");
+                String updateStr = "INSERT INTO datatype (DataTypeID, TimestampCreated, TimestampModified, LastEditedBy, Name) VALUES (null,'"+nowStr+"','"+nowStr+"',NULL,'"+dataTypeName+"')";
+                updateStatement.executeUpdate(updateStr);
                 updateStatement.clearBatch();
                 updateStatement.close();
                 updateStatement = null;
@@ -1169,17 +1178,19 @@ public class GenericDBConversion
 
                 Statement updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf2 = new StringBuilder();
-                strBuf2.append("INSERT INTO collectionobjdef VALUES (");
+                strBuf2.append("INSERT INTO collectionobjdef (CollectionObjDefID, TimestampModified, Discipline, Name, TimestampCreated, LastEditedBy, DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID) VALUES (");
                 strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); // TimestampModified
                 strBuf2.append("'"+dateFormatter.format(new Date())+"',");
                 strBuf2.append("'"+discipline.getTitle()+"',");
                 strBuf2.append("'"+discipline.getName()+"',");
                 strBuf2.append("'"+dateFormatter.format(new Date())+"',");  // TimestampCreated
+                strBuf2.append("NULL,"); // lastEditedBy
                 strBuf2.append(dataTypeId+",");
                 strBuf2.append(specifyUserId+",");
                 strBuf2.append("1,"); // GeographyTreeDefID
                 strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
-                strBuf2.append("1)"); // LocationTreeDefID
+                strBuf2.append("1,"); // LocationTreeDefID
+                strBuf2.append("1)"); // TaxonTreeDefID
                 //strBuf2.append("NULL)");//  UserPermissionID//User/Security changes
                 log.info(strBuf2.toString());
                 
@@ -1224,7 +1235,7 @@ public class GenericDBConversion
     
                      Statement updateStatement = newDBConn.createStatement();
                      strBuf.setLength(0);
-                     strBuf.append("INSERT INTO catseries_colobjdef VALUES (");
+                     strBuf.append("INSERT INTO catseries_colobjdef (CatalogSeriesID,CollectionObjDefID) VALUES (");
                      strBuf.append(newCatalogSeriesID+", ");
                      strBuf.append(newColObjdefID+")");
     
@@ -1326,6 +1337,7 @@ public class GenericDBConversion
                     pli.setValue(typeStr);
                     pli.setTimestampCreated(new Date());
                     items.add(pli);
+                    pli.setPickList(pl);
                     count++;
 
                 }
@@ -1495,7 +1507,7 @@ public class GenericDBConversion
         log.info("Converting USYS Tables.");
 
         BasicSQLUtils.deleteAllRecordsFromTable("picklist");
-        BasicSQLUtils.deleteAllRecordsFromTable("picklistitems");
+        BasicSQLUtils.deleteAllRecordsFromTable("picklistitem");
 
         String[] tables = {
                 "usysaccessionstatus",            "AccessionStatus",
@@ -2074,6 +2086,7 @@ public class GenericDBConversion
                     if (useHibernate)
                     {
                         Criteria criteria = session.createCriteria(CollectionObject.class);
+                        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
                         criteria.add(Restrictions.eq("collectionObjectId", rs.getInt(1)));
                         List<?> list = criteria.list();
                         if (list.size() == 0)
@@ -3443,6 +3456,11 @@ public class GenericDBConversion
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
     	newToOldColMap.put("Name", "TaxonomyTypeName");
 
+        //since these columns don't exist in the old DB, setup some default values for them
+        Map<String,String> timestampValues = new Hashtable<String, String>();
+        timestampValues.put("TimestampCreated", "'" + nowStr + "'");
+        timestampValues.put("TimestampModified", "'" + nowStr + "'");
+
     	String[] ignoredFields = {"Remarks", "FullNameDirection"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
@@ -3453,7 +3471,8 @@ public class GenericDBConversion
     			"taxonomytype",
     			"taxontreedef",
     			newToOldColMap,
-    			null) )
+    			null,
+                timestampValues) )
     	{
     		log.error("Table 'taxonomytype' didn't copy correctly");
     	}
@@ -3481,7 +3500,12 @@ public class GenericDBConversion
     	newToOldColMap.put("Name", "RankName");
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
 
-    	String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName", "FullNameSeparator", "TextBefore", "TextAfter"};
+        //since these columns don't exist in the old DB, setup some default values for them
+        Map<String,String> timestampValues = new Hashtable<String, String>();
+        timestampValues.put("TimestampCreated", "'" + nowStr + "'");
+        timestampValues.put("TimestampModified", "'" + nowStr + "'");
+
+        String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName", "FullNameSeparator", "TextBefore", "TextAfter"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	// Copy over most of the columns in the old table to the new one
@@ -3492,7 +3516,8 @@ public class GenericDBConversion
     			"taxonomicunittype",
     			"taxontreedefitem",
     			newToOldColMap,
-    			null) )
+    			null,
+                timestampValues) )
     	{
     		log.error("Table 'taxonomicunittype' didn't copy correctly");
     	}
@@ -4531,6 +4556,7 @@ public class GenericDBConversion
                "agent.VisibilitySetBy",//User/Security changes
                "agent.ParentOrganizationID"};
 
+
        // See comments for agent Columns
        String[] addressColumns = {"address.AddressID",
                                    "address.TimestampModified",
@@ -4550,6 +4576,7 @@ public class GenericDBConversion
                                     "agentaddress.RoomOrBuilding",
                                     "address.AgentID"};
 
+       
        Hashtable<Long, Long> agentTracker = new Hashtable<Long, Long>();
        Hashtable<Long, Long> addressTracker = new Hashtable<Long, Long>();
        Hashtable<Long, Long> oldAddrIds = new Hashtable<Long, Long>();
@@ -4652,7 +4679,10 @@ public class GenericDBConversion
                if (!alreadyInserted)
                {
                    // Create Agent
-                    StringBuilder sqlStr = new StringBuilder("INSERT INTO agent VALUES (");
+                    StringBuilder sqlStr = new StringBuilder();
+                    sqlStr.append("INSERT INTO agent ");
+                    sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, LastEditedBy, Visibility, VisibilitySetBy, ParentOrganizationID)");
+                    sqlStr.append(" VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
                         //log.info(agentColumns[i]);
@@ -4672,7 +4702,7 @@ public class GenericDBConversion
                         {
                             if (agentType == 1) // when it is an individual, clear the name field
                             {
-                                sqlStr.append("null");
+                                sqlStr.append("NULL");
                             } else
                             {
                                 inx = indexFromNameMap.get(agentColumns[i]);
@@ -4686,7 +4716,7 @@ public class GenericDBConversion
                         }
                         else if(agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
                         {
-                            sqlStr.append("null");
+                            sqlStr.append("NULL");
                         }else
                         {
                             inx = indexFromNameMap.get(agentColumns[i]);
@@ -4740,7 +4770,9 @@ public class GenericDBConversion
                boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
                if (!alreadyInsertedAddr)
                {
-                   StringBuilder sqlStr = new StringBuilder("INSERT INTO address VALUES (");
+                   StringBuilder sqlStr = new StringBuilder("INSERT INTO address ");
+                   sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, LastEditedBy, IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID)");
+                   sqlStr.append(" VALUES (");
                    for (int i=0;i<addressColumns.length;i++)
                    {
                        if (i > 0) sqlStr.append(",");
@@ -4863,7 +4895,9 @@ public class GenericDBConversion
                boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
                if (!alreadyInsertedAddr)
                {
-                   StringBuilder sqlStr = new StringBuilder("INSERT INTO address VALUES (");
+                   StringBuilder sqlStr = new StringBuilder("INSERT INTO address ");
+                   sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, LastEditedBy, IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID)");
+                   sqlStr.append(" VALUES (");
                    for (int i=0;i<addressColumns.length;i++)
                    {
                        if (i > 0) sqlStr.append(",");
@@ -4988,7 +5022,9 @@ public class GenericDBConversion
                if (!alreadyInserted)
                {
                    // Create Agent
-                    StringBuilder sqlStr = new StringBuilder("INSERT INTO agent VALUES (");
+                   StringBuilder sqlStr = new StringBuilder("INSERT INTO agent ");
+                   sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, LastEditedBy, Visibility, VisibilitySetBy, ParentOrganizationID)");
+                   sqlStr.append(" VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
                         if (i > 0) sqlStr.append(",");

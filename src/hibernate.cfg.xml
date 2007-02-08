@@ -39,6 +39,7 @@
 		-->
 		
 		<!-- Specify mapping files. -->
+		<!--
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSet.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSetItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/InfoRequest.hbm.xml"/>
@@ -120,8 +121,8 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchDataItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplate.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplateMappingItem.hbm.xml"/>
-
-		<!--		
+		-->
+		
 		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
@@ -203,7 +204,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchDataItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem"/>
-		-->
 		
         <!-- Settings for the second-level cache -->
         <!--
