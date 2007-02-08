@@ -97,6 +97,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected ViewSetMgr     backStopViewSetMgr    = null;
     protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
+    
+    protected DataProviderSessionIFace session     = null;
 
 
     /**
@@ -220,10 +222,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         String sqlStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        Object                   result  = session.getData(sqlStr);
-        int                      count   =  result != null ? (Integer)result : 0;
-        session.close();
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        Object                   result     = tmpSession.getData(sqlStr);
+        int                      count      =  result != null ? (Integer)result : 0;
+        tmpSession.close();
         return count;
         
     }
@@ -236,7 +238,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return the current Catalog Series or null
      */
     @SuppressWarnings("unchecked")
-    protected List<CatalogSeries> setupCurrentCatalogSeries(final DataProviderSessionIFace session, final SpecifyUser user, final boolean alwaysAsk)
+    protected List<CatalogSeries> setupCurrentCatalogSeries(final DataProviderSessionIFace sessionArg, final SpecifyUser user, final boolean alwaysAsk)
     {
         final String prefName = mkUserDBPrefName("recent_catalogseries_id");
 
@@ -251,7 +253,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 String recentIds = appPrefs.get(prefName, null);
                 if (StringUtils.isNotEmpty(recentIds))
                 {
-                    List list = session.getDataList("From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
+                    List list = sessionArg.getDataList("From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
                     for (Object obj : list)
                     {
                         catSeries.add((CatalogSeries)obj);
@@ -263,7 +265,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (askToSelect)
             {
                 String queryStr = "select distinct cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
-                List list = session.getDataList(queryStr);
+                List list = sessionArg.getDataList(queryStr);
                 if (list.size() == 1)
                 {
                     catSeries.add((CatalogSeries)list.get(0));
@@ -443,9 +445,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param colObjDef the CollectionObjDef
      * @return the AppResourceDefault object or null
      */
-    protected AppResourceDefault find(final List appResDefList,
-                                      final SpecifyUser userArg,
-                                      final CatalogSeries catSeries,
+    protected AppResourceDefault find(final List             appResDefList,
+                                      final SpecifyUser      userArg,
+                                      final CatalogSeries    catSeries,
                                       final CollectionObjDef colObjDef)
     {
         log.debug("finding AppResourceDefault");
@@ -454,8 +456,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             AppResourceDefault ard = (AppResourceDefault)obj;
 
             SpecifyUser      spUser = ard.getSpecifyUser();
-            CatalogSeries    cs   = ard.getCatalogSeries();
-            CollectionObjDef cod  = ard.getCollectionObjDef();
+            CatalogSeries    cs     = ard.getCatalogSeries();
+            CollectionObjDef cod    = ard.getCollectionObjDef();
 
             if (spUser != null && spUser.getSpecifyUserId() == userArg.getSpecifyUserId() &&
                 cs != null && cs.getCatalogSeriesId() == catSeries.getCatalogSeriesId() &&
@@ -477,7 +479,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         log.debug("Creating AppResourceDef from Dir");
         AppResourceDefault appResDef = new AppResourceDefault();
         appResDef.initialize();
-
 
         ViewSetMgr viewSetMgr = new ViewSetMgr(dir);
         for (ViewSet vs : viewSetMgr.getViewSets())
@@ -511,6 +512,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         AppResourceMgr appResMgr = new AppResourceMgr(dir);
         for (AppResource appRes : appResMgr.getAppResources())
         {
+            appRes.getAppResourceDefaults().add(appResDef);
             appResDef.getAppResources().add(appRes);
         }
         return appResDef;
@@ -554,9 +556,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // We need to search for User, CatalogSeries, CollectionObjDef and UserType
         // Then
 
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
 
-        List list = session.getDataList(SpecifyUser.class, "name", userName);
+        List list = tmpSession.getDataList(SpecifyUser.class, "name", userName);
         if (list.size() == 1)
         {
             user = (SpecifyUser)list.get(0);
@@ -575,7 +577,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Ask the User to choose which CatalogSeries they will be working with
         CatalogSeries.getCurrentCatalogSeries().clear();
         
-        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(session, user, startingOver);
+        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(tmpSession, user, startingOver);
         if (catalogSeries == null)
         {
             //catalogSeries = new ArrayList<CatalogSeries>();
@@ -595,11 +597,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
         appResourceList.clear();
         viewSetHash.clear();
 
-       List appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+       List appResDefList = tmpSession.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
 
 
-        if (catalogSeries.size() == 0)
-        {
+//       Hashtable<String, AppResource> appResHash = new Hashtable<String, AppResource>();
+       
+       if (catalogSeries.size() == 0)
+       {
             //throw new RuntimeException("What does it mean if the current user is not assigned to any CatalogSeries?");
             
             // Accession / Registrar / Director may not be assigned to any Catalog Series
@@ -642,11 +646,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     
                     disciplineHash.put(cod.getDiscipline(), cod.getDiscipline());
                     
-                    AppResourceDefault appResource = find(appResDefList, user, cs, cod);
-                    if (appResource != null)
+                    AppResourceDefault appResourceDef = find(appResDefList, user, cs, cod);
+                    if (appResourceDef != null)
                     {
-                        log.debug("Adding1 "+getAppResDefAsString(appResource));
-                        appResourceList.add(appResource);
+                        log.debug("Adding1 "+getAppResDefAsString(appResourceDef));
+                        appResourceList.add(appResourceDef);
+                        /*for (AppResource ap : appResourceDef.getPersistedAppResources())
+                        {
+                            appResHash.put(ap.getName(), ap);
+                        }*/
                         
                     }
                 }
@@ -661,12 +669,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             File dir = XMLHelper.getConfigDir(discipline + File.separator + userType);
             if (dir.exists())
             {
-                AppResourceDefault appResource = createAppResourceDefFromDir(dir);
-                appResource.setDisciplineType(discipline);
-                appResource.setUserType(userType);
-                appResource.setSpecifyUser(user);//added to fix not-null constraints
-                log.debug("Adding2 "+getAppResDefAsString(appResource));
-                appResourceList.add(appResource);
+                AppResourceDefault appResDef = createAppResourceDefFromDir(dir);
+                appResDef.setDisciplineType(discipline);
+                appResDef.setUserType(userType);
+                appResDef.setSpecifyUser(user);//added to fix not-null constraints
+                appResDef.setCatalogSeries(CatalogSeries.getCurrentCatalogSeries().get(0));
+                appResDef.setCollectionObjDef(CollectionObjDef.getCurrentCollectionObjDef());
+                
+                log.debug("Adding2 "+getAppResDefAsString(appResDef));
+                appResourceList.add(appResDef);
+                
             } else
             {
                 log.debug("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
@@ -680,11 +692,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             File dir = XMLHelper.getConfigDir(discipline);
             if (dir.exists())
             {
-                AppResourceDefault appResource = createAppResourceDefFromDir(dir);
-                appResource.setDisciplineType(discipline);
-                appResource.setSpecifyUser(user);
-                log.debug("Adding3 "+getAppResDefAsString(appResource));
-                appResourceList.add(appResource);
+                AppResourceDefault appResDef = createAppResourceDefFromDir(dir);
+                appResDef.setDisciplineType(discipline);
+                appResDef.setSpecifyUser(user);
+                
+                appResDef.setCatalogSeries(CatalogSeries.getCurrentCatalogSeries().get(0));
+                appResDef.setCollectionObjDef(CollectionObjDef.getCurrentCollectionObjDef());
+
+                log.debug("Adding3 "+getAppResDefAsString(appResDef));
+                appResourceList.add(appResDef);
+                
             } else
             {
                 log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
@@ -696,7 +713,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         currentStatus = CONTEXT_STATUS.OK;
         
-        session.close();
+        tmpSession.close();
         
         return currentStatus;
     }
@@ -855,14 +872,39 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public AppResourceIFace getResource(final String name)
     {
-        for (AppResourceDefault appResDef : appResourceList)
+        boolean closeSession = false;
+        if (session == null)
         {
-            for (AppResourceIFace appRes : appResDef.getAppResources())
+            session = DataProviderFactory.getInstance().createSession();
+            closeSession = true;
+        }
+        try
+        {
+            for (AppResourceDefault appResDef : appResourceList)
             {
-                if (appRes.getName().equals(name))
+                if (appResDef.getAppResourceDefaultId() != null)
                 {
-                    return appRes;
+                    session.attach(appResDef);
                 }
+                
+                for (AppResourceIFace appRes : appResDef.getAppResources())
+                {
+                    if (appRes.getName().equals(name))
+                    {
+                        return appRes;
+                    }
+                }
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            if (closeSession)
+            {
+                session.close();
+                session = null;
             }
         }
         
@@ -878,23 +920,51 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public Element getResourceAsDOM(final String name)
     {
-        AppResourceIFace appRes = getResource(name);
-        if (appRes != null)
+        AppResourceIFace appResource = getResource(name);
+        if (appResource != null && appResource instanceof AppResource)
         {
-            if (appRes.getMimeType().equals("text/xml"))
+            boolean closeSession = false;
+            if (session == null)
             {
-                try
+                session = DataProviderFactory.getInstance().createSession();
+                closeSession = true;
+            }
+            
+            AppResource appRes = (AppResource)appResource;
+            try
+            {
+                if (appRes.getAppResourceId() != null)
                 {
-                    return XMLHelper.readStrToDOM4J(appRes.getDataAsString());
-
-                } catch (Exception ex)
-                {
-                    log.error(ex);
-                    throw new RuntimeException(ex);
+                    session.attach(appRes);
                 }
-            } else
+                
+                if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
+                {
+                    try
+                    {
+                        return XMLHelper.readStrToDOM4J(appRes.getDataAsString());
+    
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        throw new RuntimeException(ex);
+                    }
+                } else
+                {
+                    throw new RuntimeException("MimeType was not 'text/xml'");
+                }
+                
+            } catch (Exception ex)
             {
-                throw new RuntimeException("MimeType was not 'text/xml'");
+                log.error(ex);
+                
+            } finally 
+            {
+                if (closeSession)
+                {
+                    session.close();
+                    session = null;
+                }
             }
         } else
         {
@@ -914,7 +984,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             for (AppResourceIFace appRes : appResDef.getAppResources())
             {
                 //log.debug("["+appRes.getMimeType()+"]["+mimeType+"]");
-                if (appRes.getMimeType().equals(mimeType))
+                if (appRes.getMimeType() != null && appRes.getMimeType().equals(mimeType))
                 {
                     list.add(appRes);
                 }
@@ -1051,6 +1121,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Returns a Default Object from Prefs if there is one.
      */
+    @SuppressWarnings("cast")
     public PickListItemIFace getDefaultPickListItem(final String pickListName, final String title, final boolean ask)
     {
         PickListItemIFace dObj        = null;
@@ -1061,9 +1132,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (StringUtils.isNotEmpty(idStr))
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            dObj = (PickListItemIFace)session.get(PickListItem.class, Long.valueOf(idStr));
-            session.close();
+            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+            dObj = (PickListItemIFace)tmpSession.get(PickListItem.class, Long.valueOf(idStr));
+            tmpSession.close();
             
             if (dObj != null)
             {
@@ -1071,10 +1142,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }            
         }
             
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
         try
         {
-            PickList pickList = (PickList)session.getData(PickList.class, "name", pickListName, DataProviderSessionIFace.CompareType.Equals);
+            PickList pickList = (PickList)tmpSession.getData(PickList.class, "name", pickListName, DataProviderSessionIFace.CompareType.Equals);
             if (pickList != null)
             {
                 Vector<PickListItemIFace> list = new Vector<PickListItemIFace>();
@@ -1097,7 +1168,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } finally 
         {
-            session.close();
+            tmpSession.close();
         }
         return dObj;
     }
@@ -1107,6 +1178,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Returns a Default Object from Prefs if there is one.
      */
+    @SuppressWarnings("cast")
     public FormDataObjIFace getDefaultObject(final Class<?> classObj, 
                                              final String prefPrefix,
                                              final String title,
@@ -1127,13 +1199,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     public Item(FormDataObjIFace d) { data = d; }
                     public String toString() { return data.getIdentityTitle(); }
                 }
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
                 List<Item> items = new Vector<Item>();
-                for (Object o : session.getDataList(classObj))
+                for (Object o : tmpSession.getDataList(classObj))
                 {
                     items.add(new Item((FormDataObjIFace)o));
                 }
-                session.close();
+                tmpSession.close();
                 
                 
                 ChooseFromListDlg<Item> dlg = new ChooseFromListDlg<Item>(null, title, items);
@@ -1151,9 +1223,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 try
                 {
                     ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
-                    dlg.setTitle(title);
                     if (dlg != null)
                     {
+                        dlg.setTitle(title);
                         dlg.getDialog().setVisible(true);
                         if (!dlg.isCancelled())
                         {
@@ -1170,9 +1242,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            dObj = (FormDataObjIFace)session.get(classObj, Long.valueOf(idStr));
-            session.close();
+            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+            dObj = (FormDataObjIFace)tmpSession.get(classObj, Long.valueOf(idStr));
+            tmpSession.close();
         }
         return dObj;
     }

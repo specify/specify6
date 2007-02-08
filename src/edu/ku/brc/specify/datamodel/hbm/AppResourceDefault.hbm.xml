@@ -54,7 +54,7 @@
         </many-to-one> 
         
         <!-- bi-directional many-to-many association to AppResource -->
-        <set name="appResources" table="appresdef_appres" lazy="true" inverse="true" cascade="save-update, lock, merge">
+        <set name="persistedAppResources" table="appresdef_appres" lazy="true" inverse="true" cascade="save-update, lock, merge">
             <key>
                 <column name="AppResourceDefaultID"/>
             </key>
@@ -62,7 +62,7 @@
         </set>
         
         <!-- bi-directional many-to-many association to ViewSetObj -->
-        <set name="viewSets" table="appresdef_viewsetobj" lazy="true" inverse="true" cascade="save-update, lock, merge">
+        <set name="persistedViewSets" table="appresdef_viewsetobj" lazy="true" inverse="true" cascade="save-update, lock, merge">
             <key>
                 <column name="AppResourceDefaultID"/>
             </key>

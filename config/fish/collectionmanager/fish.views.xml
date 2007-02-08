@@ -729,7 +729,8 @@
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="5" label="Date"/>
-    			    <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/>
+    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/> 
+    			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
     			</row>
      			<row>
     				<cell type="separator" label="Determination" colspan="12"/>

@@ -55,9 +55,13 @@
 	      <meta attribute="scope-field">protected</meta>
 	    </property>  
 	
-	    <property name="allPermissionLevel" type="java.lang.Integer" column="AllPermissionLevel">
-	      <meta attribute="scope-field">protected</meta>
-	    </property>  
+        <property name="allPermissionLevel" type="java.lang.Integer" column="AllPermissionLevel">
+            <meta attribute="scope-field">protected</meta>
+        </property>  
+        
+        <property name="mimeType" type="java.lang.String" column="MimeType">
+            <meta attribute="scope-field">protected</meta>
+        </property>  
         
         <!-- Associations -->
         

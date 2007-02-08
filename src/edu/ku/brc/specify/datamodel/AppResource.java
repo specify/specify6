@@ -219,7 +219,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getMimeType()
      */
-    @Transient
+    @Column(name = "MimeType", unique = false, nullable = false, insertable = true, updatable = true)
     public String getMimeType() {
         return this.mimeType;
     }
@@ -407,16 +407,15 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      */
     public void setDataAsString(final String dataStr)
     {
-        if (fileName != null)
-        {
-            //throw new RuntimeException("Not implemented!");
-        }
+        //if (fileName != null)
+        //{
+        //    //throw new RuntimeException("Not implemented!");
+        //}
         
         if (StringUtils.isNotEmpty(dataStr))
         {
             AppResourceData ard;
             if (appResourceDatas.size() == 0)
-        //
             {
                 ard = new AppResourceData();
                 ard.initialize();
@@ -435,7 +434,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
             appResourceDatas.iterator().next().setData(null);
         }
         
-        setAppResourceDatas(appResourceDatas); // Must call this to make sure it knows we changed it
+        //setAppResourceDatas(appResourceDatas); // Must call this to make sure it knows we changed it
     }
 
     /* (non-Javadoc)
@@ -451,7 +450,6 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
             AppResourceData ard = null;
             Blob blobData = null;
             if (appResourceDatas.size() > 0)
-        //
             {
                 ard = appResourceDatas.iterator().next();
                 if (ard != null)
@@ -461,7 +459,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
             }
             
             String str = null;
-            if (StringUtils.isNotEmpty(fileName))
+            if (blobData == null && StringUtils.isNotEmpty(fileName))
             {
                 File file = new File(fileName);
                 str = XMLHelper.getContents(file);

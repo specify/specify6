@@ -411,5 +411,4 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     {
         return 86;
     }
-
 }

@@ -61,10 +61,14 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      protected CatalogSeries    catalogSeries;
      protected CollectionObjDef collectionObjDef;
      protected SpecifyUser      specifyUser;
-     protected Set<AppResource> appResources;
-     protected Set<ViewSetObj>  viewSets;
+     protected Set<AppResource> persistedAppResources;
+     protected Set<ViewSetObj>  persistedViewSets;
      protected String           userType;
      protected String           disciplineType;
+     
+     // Transient Data Member
+     protected Set<AppResource> appResources;
+     protected Set<ViewSetObj>  viewSets;
 
     // Constructors
 
@@ -83,15 +87,19 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     public void initialize()
     {
         super.init();
-        appResourceDefaultId = null;
-        catalogSeries = null;
-        collectionObjDef = null;
-        specifyUser = null;
-        appResources = new HashSet<AppResource>();
-        viewSets = new HashSet<ViewSetObj>();
+        appResourceDefaultId  = null;
+        catalogSeries         = null;
+        collectionObjDef      = null;
+        specifyUser           = null;
+        
+        persistedAppResources = new HashSet<AppResource>();
+        persistedViewSets     = new HashSet<ViewSetObj>();
 
-        userType       = null;
-        disciplineType = null;
+        userType              = null;
+        disciplineType        = null;
+        
+        appResources          = new HashSet<AppResource>();
+        viewSets              = new HashSet<ViewSetObj>();
 
     }
     // End Initializer
@@ -185,36 +193,28 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         this.specifyUser = specifyUser;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getAppResources()
-     */
+
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<AppResource> getAppResources() {
-        return this.appResources;
+    public Set<AppResource> getPersistedAppResources() {
+        return this.persistedAppResources;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setAppResources(java.util.Set)
-     */
-    public void setAppResources(Set<AppResource> appResources) {
-        this.appResources = appResources;
+
+    public void setPersistedAppResources(Set<AppResource> persistedAppResources) {
+        this.persistedAppResources = persistedAppResources;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getViewSets()
-     */
+
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ViewSetObj> getViewSets() {
-        return this.viewSets;
+    public Set<ViewSetObj> getPersistedViewSets() {
+        return this.persistedViewSets;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setViewSets(java.util.Set)
-     */
-    public void setViewSets(Set<ViewSetObj> viewSets) {
-        this.viewSets = viewSets;
+
+    public void setPersistedViewSets(Set<ViewSetObj> persistedViewSets) {
+        this.persistedViewSets = persistedViewSets;
     }
 
     @Column(name = "DisciplineType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
@@ -240,6 +240,38 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     }
     
     @Transient
+    public Set<AppResource> getAppResources()
+    {
+        if (appResources == null)
+        {
+            appResources = new HashSet<AppResource>();
+            appResources.addAll(getPersistedAppResources());
+        }
+        return appResources;
+    }
+
+    public void setAppResources(Set<AppResource> appResources)
+    {
+        this.appResources = appResources;
+    }
+
+    @Transient
+    public Set<ViewSetObj> getViewSets()
+    {
+        if (viewSets == null)
+        {
+            viewSets = new HashSet<ViewSetObj>();
+            viewSets.addAll(getPersistedViewSets());
+        }
+        return viewSets;
+    }
+
+    public void setViewSets(Set<ViewSetObj> viewSets)
+    {
+        this.viewSets = viewSets;
+    }
+
+    @Transient
     public String getVerboseUniqueIdentifer()
     {
         StringBuilder strBuf = new StringBuilder();
@@ -256,14 +288,8 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     {
         return appResourceDefaultId == null ? getVerboseUniqueIdentifer() : appResourceDefaultId.toString();
     }
+    
 
-    // Add Methods
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    // Delete Add Methods
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
