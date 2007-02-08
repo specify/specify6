@@ -841,7 +841,7 @@ public class BasicSQLUtils
 
                             } else
                             {
-                                if (ignoreMappingFieldIDs != null && ignoreMappingFieldIDs.get(oldMappedColName) == null)
+                                if (ignoreMappingFieldIDs == null || ignoreMappingFieldIDs.get(oldMappedColName) == null)
                                 {
                                     log.error("No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]");
                                 }
