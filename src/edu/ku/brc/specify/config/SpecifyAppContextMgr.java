@@ -694,7 +694,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setDisciplineType(discipline);
                 appResDef.setSpecifyUser(user);
                 
-                appResDef.setCatalogSeries(CatalogSeries.getCurrentCatalogSeries().get(0));
+                appResDef.setCatalogSeries(CatalogSeries.getCurrentCatalogSeries().size() > 0 ? CatalogSeries.getCurrentCatalogSeries().get(0) : null);
                 appResDef.setCollectionObjDef(CollectionObjDef.getCurrentCollectionObjDef());
 
                 log.debug("Adding3 "+getAppResDefAsString(appResDef));
