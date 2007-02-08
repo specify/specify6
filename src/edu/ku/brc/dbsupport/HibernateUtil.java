@@ -154,7 +154,7 @@ public class HibernateUtil {
 
         String connection   = dbConn.getConnectionStr();
         
-        config.setProperty("hibernate.show_sql", "true");
+        config.setProperty("hibernate.show_sql", "false");
         
         config.setProperty("hibernate.connection.username", userName);
         config.setProperty("hibernate.connection.password", password);
