@@ -55,10 +55,10 @@ public class ListSlider extends JPanel
     private DefaultListModel    sourceListModel;
     private DefaultListModel    destinationListModel;
     // TO DO: I18N
-    private String              addString            = "Add";
-    private String              removeString         = "Remove";
-    private String              addAllString         = "Add All";
-    private String              removeAllString     = "Remove All";
+    private String              addString            = "Add";//XXX 
+    private String              removeString         = "Remove";//XXX 
+    private String              addAllString         = "Add All";//XXX 
+    private String              removeAllString      = "Remove All";//XXX 
 
     private JButton             addButton;                               
     private JButton             removeButton;                                
