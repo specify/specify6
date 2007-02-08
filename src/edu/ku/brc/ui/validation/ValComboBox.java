@@ -494,15 +494,16 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                             fnd = true;
                             break;
                         }
-                    } else if (item.equals(value))
+                    } else if ((isFormObjIFace && item == value) || item.equals(value))
                     {
                         comboBox.setSelectedIndex(i);
                         fnd = true;
                         break;
+                        
                     }
                 }
             }
-
+            
             if (fnd)
             {
                 this.valState = UIValidatable.ErrorType.Valid;
