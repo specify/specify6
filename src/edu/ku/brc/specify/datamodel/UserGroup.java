@@ -125,7 +125,17 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     {
         return UserGroup.class;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
+    
     public void setUserGroupId(Long userGroupId) {
         this.userGroupId = userGroupId;
     }

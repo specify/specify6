@@ -167,6 +167,16 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         return AppResource.class;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
+    
     public void setAppResourceId(Long appResourceId) {
         this.appResourceId = appResourceId;
     }

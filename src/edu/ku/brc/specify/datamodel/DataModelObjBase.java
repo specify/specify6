@@ -191,6 +191,15 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      */
     @Transient
     public abstract Class<?> getDataClass();
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#isIndexable()
+     */
+    @Transient
+    public boolean isIndexable()
+    {
+        return true;
+    }
 
     //---------------------------------------------------------------------------
     // Property Change Support

@@ -124,6 +124,13 @@ public interface FormDataObjIFace
      */
     public Class<?> getDataClass();
     
+    /**
+     * Indicates whether this object should be indexed by the Express Search Indexer.
+     * 
+     * @return true - index, false - don't
+     */
+    public abstract boolean isIndexable();
+    
     //---------------------------------------------------------------------------
     // Property Change Support
     //---------------------------------------------------------------------------

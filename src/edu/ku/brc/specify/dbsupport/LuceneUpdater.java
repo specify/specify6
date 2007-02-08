@@ -33,10 +33,6 @@ import org.apache.lucene.store.FSDirectory;
 
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.ExpressSearchIndexer;
-import edu.ku.brc.specify.datamodel.AppResource;
-import edu.ku.brc.specify.datamodel.AppResourceData;
-import edu.ku.brc.specify.datamodel.AppResourceDefault;
-import edu.ku.brc.specify.datamodel.ViewSetObj;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -121,10 +117,8 @@ public class LuceneUpdater
      */
     protected boolean updateIndex(final FormDataObjIFace formObj, final IndexAction action)
     {
-        if (formObj instanceof AppResource || 
-            formObj instanceof AppResourceDefault || 
-            formObj instanceof AppResourceData ||
-            formObj instanceof ViewSetObj)
+        // Short Circut the Indexer by asking the object if it is indexable.
+        if (!formObj.isIndexable())
         {
             return true;
         }

@@ -97,8 +97,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected ViewSetMgr     backStopViewSetMgr    = null;
     protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
-    
-    protected DataProviderSessionIFace session     = null;
 
 
     /**
@@ -222,10 +220,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         String sqlStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
         
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        Object                   result     = tmpSession.getData(sqlStr);
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        Object                   result     = session.getData(sqlStr);
         int                      count      =  result != null ? (Integer)result : 0;
-        tmpSession.close();
+        session.close();
         return count;
         
     }
@@ -556,9 +554,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // We need to search for User, CatalogSeries, CollectionObjDef and UserType
         // Then
 
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 
-        List list = tmpSession.getDataList(SpecifyUser.class, "name", userName);
+        List list = session.getDataList(SpecifyUser.class, "name", userName);
         if (list.size() == 1)
         {
             user = (SpecifyUser)list.get(0);
@@ -577,7 +575,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Ask the User to choose which CatalogSeries they will be working with
         CatalogSeries.getCurrentCatalogSeries().clear();
         
-        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(tmpSession, user, startingOver);
+        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(session, user, startingOver);
         if (catalogSeries == null)
         {
             //catalogSeries = new ArrayList<CatalogSeries>();
@@ -597,7 +595,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         appResourceList.clear();
         viewSetHash.clear();
 
-       List appResDefList = tmpSession.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+       List appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
 
 
 //       Hashtable<String, AppResource> appResHash = new Hashtable<String, AppResource>();
@@ -713,7 +711,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         currentStatus = CONTEXT_STATUS.OK;
         
-        tmpSession.close();
+        session.close();
         
         return currentStatus;
     }
@@ -872,12 +870,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public AppResourceIFace getResource(final String name)
     {
-        boolean closeSession = false;
-        if (session == null)
-        {
-            session = DataProviderFactory.getInstance().createSession();
-            closeSession = true;
-        }
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
             for (AppResourceDefault appResDef : appResourceList)
@@ -901,11 +894,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } finally 
         {
-            if (closeSession)
-            {
-                session.close();
-                session = null;
-            }
+            session.close();
+            session = null;
+
         }
         
         if (backStopAppResMgr == null)
@@ -923,14 +914,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         AppResourceIFace appResource = getResource(name);
         if (appResource != null && appResource instanceof AppResource)
         {
-            boolean closeSession = false;
-            if (session == null)
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                closeSession = true;
-            }
-            
-            AppResource appRes = (AppResource)appResource;
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            AppResource              appRes  = (AppResource)appResource;
             try
             {
                 if (appRes.getAppResourceId() != null)
@@ -960,11 +945,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } finally 
             {
-                if (closeSession)
-                {
-                    session.close();
-                    session = null;
-                }
+                session.close();
+                session = null;
             }
         } else
         {
@@ -1132,9 +1114,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (StringUtils.isNotEmpty(idStr))
         {
-            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-            dObj = (PickListItemIFace)tmpSession.get(PickListItem.class, Long.valueOf(idStr));
-            tmpSession.close();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            dObj = (PickListItemIFace)session.get(PickListItem.class, Long.valueOf(idStr));
+            session.close();
             
             if (dObj != null)
             {
@@ -1142,10 +1124,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }            
         }
             
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            PickList pickList = (PickList)tmpSession.getData(PickList.class, "name", pickListName, DataProviderSessionIFace.CompareType.Equals);
+            PickList pickList = (PickList)session.getData(PickList.class, "name", pickListName, DataProviderSessionIFace.CompareType.Equals);
             if (pickList != null)
             {
                 Vector<PickListItemIFace> list = new Vector<PickListItemIFace>();
@@ -1168,7 +1150,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } finally 
         {
-            tmpSession.close();
+            session.close();
         }
         return dObj;
     }
@@ -1199,13 +1181,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     public Item(FormDataObjIFace d) { data = d; }
                     public String toString() { return data.getIdentityTitle(); }
                 }
-                DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 List<Item> items = new Vector<Item>();
-                for (Object o : tmpSession.getDataList(classObj))
+                for (Object o : session.getDataList(classObj))
                 {
                     items.add(new Item((FormDataObjIFace)o));
                 }
-                tmpSession.close();
+                session.close();
                 
                 
                 ChooseFromListDlg<Item> dlg = new ChooseFromListDlg<Item>(null, title, items);
@@ -1242,9 +1224,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-            dObj = (FormDataObjIFace)tmpSession.get(classObj, Long.valueOf(idStr));
-            tmpSession.close();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            dObj = (FormDataObjIFace)session.get(classObj, Long.valueOf(idStr));
+            session.close();
         }
         return dObj;
     }

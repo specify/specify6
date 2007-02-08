@@ -114,6 +114,16 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
         return AppResourceData.class;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
+    
     public void setAppResourceDataId(Long appResourceDataId) {
         this.appResourceDataId = appResourceDataId;
     }

@@ -159,5 +159,14 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
         // TODO Auto-generated method stub
         return null;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
 }

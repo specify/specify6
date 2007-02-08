@@ -137,7 +137,17 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     {
         return AppResourceDefault.class;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
+    
     public void setAppResourceDefaultId(Long appResourceDefaultId) {
         this.appResourceDefaultId = appResourceDefaultId;
     }

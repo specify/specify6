@@ -151,6 +151,16 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
         return ViewSetObj.class;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
+        
     public void setViewSetObjId(Long viewSetObjId) {
         this.viewSetObjId = viewSetObjId;
     }
