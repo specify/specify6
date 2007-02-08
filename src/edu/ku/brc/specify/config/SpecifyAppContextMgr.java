@@ -734,6 +734,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
         List<ViewSet> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
         if (viewSetList == null)
         {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            if (appResDef.getAppResourceDefaultId() != null)
+            {
+                session.attach(appResDef);
+            }
             viewSetList = new Vector<ViewSet>();
             for (ViewSetObj vso : appResDef.getViewSets())
             {
@@ -750,6 +755,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
             viewSetHash.put(appResDef.getUniqueIdentifer(), viewSetList);
+            session.close();
         }
         return viewSetList;
     }
