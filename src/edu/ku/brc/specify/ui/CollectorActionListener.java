@@ -66,9 +66,10 @@ public class CollectorActionListener implements ActionListener
         Collector  collector   = (Collector)source;
         IconViewObj iconViewObj = ((IconViewObj.IconViewActionEvent)e).getIconViewObj();
         
-        // instead of using Agent.class.getName, use this so it works with subclasses of Agent as well
         Agent agent = collector.getAgent();
-        String classname = agent.getClass().getName();
+
+        // if we use agent.getClass().getName() it might fail if the agent object is a Hibernate-generated proxy, which is common
+        String classname = Agent.class.getName();
         TableInfo setTI = DBTableIdMgr.lookupByClassName(classname);
         String defFormName = setTI.getEditObjDialog();
         if (defFormName==null)
