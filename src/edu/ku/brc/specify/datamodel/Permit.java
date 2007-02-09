@@ -343,8 +343,8 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         return this.issuedTo;
     }
 
-    public void setIssuedTo(Agent agentByIssuee) {
-        this.issuedTo = agentByIssuee;
+    public void setIssuedTo(Agent issuedTo) {
+        this.issuedTo = issuedTo;
     }
 
     /**

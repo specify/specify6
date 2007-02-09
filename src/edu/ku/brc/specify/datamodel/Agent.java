@@ -694,8 +694,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         return this.permitsIssuedTo;
     }
 
-    public void setPermitsIssuedTo(Set<Permit> permitsByIssuee) {
-        this.permitsIssuedTo = permitsByIssuee;
+    public void setPermitsIssuedTo(Set<Permit> permitsIssuedTo) {
+        this.permitsIssuedTo = permitsIssuedTo;
     }
 
     /**
