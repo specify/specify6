@@ -118,10 +118,9 @@ public class GenericDBConversion
     
     protected static final Logger log = Logger.getLogger(GenericDBConversion.class);
 
-    protected static SimpleDateFormat dateFormatter  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
     protected static StringBuilder strBuf   = new StringBuilder("");
-    protected static Calendar     calendar  = Calendar.getInstance();
+
+    protected static SimpleDateFormat dateFormatter  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static Timestamp now = new Timestamp(System.currentTimeMillis());
     protected static String nowStr = dateFormatter.format(now);
     
@@ -132,19 +131,16 @@ public class GenericDBConversion
 
     protected IdMapperMgr  idMapperMgr;
 
-    protected DBConnection oldDB;
-
     protected Connection oldDBConn;
     protected Connection newDBConn;
 
     protected String[]                  standardDataTypes    = {"Plant", "Animal", "Mineral", "Fungi", "Anthropology"};
     protected Hashtable<String, Integer> dataTypeNameIndexes = new Hashtable<String, Integer>(); // Name to Index in Array
-
     protected Hashtable<String, Long> dataTypeNameToIds = new Hashtable<String, Long>(); // name to Record ID
 
     protected Hashtable<String, TableStats> tableStatHash = new Hashtable<String, TableStats>();
     
-    // Helps during debuggin
+    // Helps during debugging
     protected static boolean shouldCreateMapTables = true;
     protected static boolean shouldDeleteMapTables = false;
 
@@ -173,8 +169,7 @@ public class GenericDBConversion
         this.oldPassword  = oldPassword;
         this.idMapperMgr  = IdMapperMgr.getInstance();
         
-        this.oldDB        = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
-
+        DBConnection oldDB        = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getInstance().createConnection();
     }
@@ -247,15 +242,6 @@ public class GenericDBConversion
         {
             frame.setDesc(text);
         }
-    }
-
-    /**
-     * Return old DB
-     * @return old DB
-     */
-    public DBConnection getOldDB()
-    {
-        return oldDB;
     }
 
     /**
