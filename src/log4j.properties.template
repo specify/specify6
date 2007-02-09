@@ -1,72 +1,48 @@
-### direct log messages to stdout ###
-log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-log4j.appender.stdout.Target=System.out
-log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern=%d{HH:mm:ss} %5p %c{4}:%L - %m%n
+# Log4J configuration file template
+#
+# Appenders are defined/configured by lines that start 'log4j.appender.[appender_name]'
+# Loggers are defined/configured by lines that start 'log4j.logger.[logger_name]'
+#
+# Possible log levels are (in order from most verbose to most granular):
+#       ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF
 
 
-### direct messages to file hibernate.log ###
-log4j.appender.file=org.apache.log4j.FileAppender
-log4j.appender.file.File=hibernate.log
-log4j.appender.file.layout=org.apache.log4j.PatternLayout
-log4j.appender.file.layout.ConversionPattern=%d{HH:mm:ss} %5p %c{1}:%L - %m%n
+############################################
+#####           Appenders              #####
+############################################
+
+### An appended for System.out ###
+log4j.appender.StdOutAppender=org.apache.log4j.ConsoleAppender
+log4j.appender.StdOutAppender.Target=System.out
+log4j.appender.StdOutAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.StdOutAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
+
+### A file appender for 'specify.log' ###
+log4j.appender.SpecifyLogFileAppender=org.apache.log4j.FileAppender
+log4j.appender.SpecifyLogFileAppender.File=specify.log
+log4j.appender.SpecifyLogFileAppender.Append=false
+log4j.appender.SpecifyLogFileAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.SpecifyLogFileAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
+
+### A file appender for 'hibernate.log' ###
+log4j.appender.HibernateLogFileAppender=org.apache.log4j.FileAppender
+log4j.appender.HibernateLogFileAppender.File=hibernate.log
+log4j.appender.HibernateLogFileAppender.Append=false
+log4j.appender.HibernateLogFileAppender.layout=org.apache.log4j.PatternLayout
+log4j.appender.HibernateLogFileAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
 
 
-### direct messages to file specify.log ###
-log4j.appender.specifylogfile=org.apache.log4j.FileAppender
-log4j.appender.specifylogfile.File=specify.log
-log4j.appender.specifylogfile.Append=false
-log4j.appender.specifylogfile.layout=org.apache.log4j.PatternLayout
-log4j.appender.specifylogfile.layout.ConversionPattern=%d{HH:mm:ss} %5p %c{4}:%L - %m%n
+############################################
+#####            Loggers               #####
+############################################
 
-### direct messages to file specify.log ###
-log4j.appender.hibernatelogfile=org.apache.log4j.FileAppender
-log4j.appender.hibernatelogfile.File=hibernate.log
-log4j.appender.hibernatelogfile.Append=false
-log4j.appender.hibernatelogfile.layout=org.apache.log4j.PatternLayout
-log4j.appender.hibernatelogfile.layout.ConversionPattern=%d{HH:mm:ss} %5p %c{2}:%L - %m%n
+log4j.rootLogger=ERROR, StdOutAppender, SpecifyLogFileAppender
+log4j.logger.edu.ku=INFO
+log4j.logger.org.hibernate=WARN, HibernateLogFileAppender
 
-# DAILY OUTPUT DRIVER SETTINGS
-log4j.appender.DAY=org.apache.log4j.DailyRollingFileAppender
-log4j.appender.DAY.File=daily_application.log
-log4j.appender.DAY.MaxFileSize=512KB
-log4j.appender.DAY.MaxBackupIndex=5
-log4j.appender.DAY.DatePattern='.'yyyy-MM-dd
-log4j.appender.DAY.layout=org.apache.log4j.PatternLayout
-log4j.appender.DAY.layout.ConversionPattern=%d{HH:mm:ss} %5p %c{2}:%L - %m%n
-
-### set log levels - for more verbose logging change 'info' to 'debug' ###
-
-log4j.rootLogger=warn, stdout, specifylogfile
-###, debug, info
-
-log4j.logger.org.hibernate=warn, hibernatelogfile
-
-### log just the SQL
-log4j.logger.org.hibernate.SQL=error
-
-
-### log Specify parameters ###
-edu.ku.brc.specify.config.SpecifyConfig=debug
-
-### log Digester parameters ###
-org.apache.commons.digester.Digester=info, error, debug
-
-### log JDBC bind parameters ###
-log4j.logger.org.hibernate.type=error
-
-### log schema export/update ###
-log4j.logger.org.hibernate.tool.hbm2ddl=warn
-
-### log cache activity ###
-#log4j.logger.net.sf.hibernate.cache=info
-
-#log4j.logger.edu.ku.brc=debug, specifylogfile
-
-#log4j.logger.edu.ku.brc.ui=all, specifylogfile
-#log4j.logger.edu.ku.brc.util=all, specifylogfile
-#log4j.logger.edu.ku.brc.specify=all, specifylogfile
-
-### enable the following line if you want to track down connection ###
-### leakages when using DriverManagerConnectionProvider ###
-#log4j.logger.org.hibernate.connection.DriverManagerConnectionProvider=trace
+# Other options to consider
+#
+# log4j.logger.org.apache=[some level]
+# log4j.logger.edu.ku.brc.af=[some level]
+# log4j.logger.edu.ku.brc.specify=[some level]
+# log4j.logger.edu.ku.brc.specify.conversion=[some level]
