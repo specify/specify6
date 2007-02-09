@@ -63,18 +63,6 @@
 		<classpath refid="project.class.path" />
 	</taskdef>
 
-	<!-- bit of a best guess, I'm afraid -->
-	<!-- <hibernatetool destdir="${source.root}">
-       <configuration propertyFile="src/${hibernate.properties}">
-         <fileset dir="${source.root}">
-            <include name="**/*.hbm.xml" />
-         </fileset>
-      </configuration>
-      <hbm2java />
-      <hbm2ddl />
-   </hibernatetool>
-	-->
-
 	<!-- Create our runtime subdirectories and copy resources into them -->
 	<target name="prepare" description="Sets up build structures">
 		<mkdir dir="${class.root}" />
@@ -139,31 +127,16 @@
 	</target>
 
 	<target name="genschema">
-		<!-- bit of a best guess, I'm afraid -->
 		<hibernatetool destdir="${source.root}">
 			<annotationconfiguration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
-			<!--
-			<configuration propertyFile="src/${hibernate.properties}">
-				<fileset dir="${source.root}">
-					<include name="**/*.hbm.xml" />
-				</fileset>
-			</configuration>
-			<configuration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
-			-->
-			<hbm2ddl update="false" export="true"/>
+			<hbm2ddl format="true"/>
 		</hibernatetool>
 	</target>
 
-	<target name="genschemaupdate">
-		<!-- bit of a best guess, I'm afraid -->
+	<target name="updateschema">
 		<hibernatetool destdir="${source.root}">
-			<configuration propertyFile="src/${hibernate.properties}">
-				<fileset dir="${source.root}">
-					<include name="**/*.hbm.xml" />
-				</fileset>
-			</configuration>
-			<!-- <hbm2java /> -->
-			<hbm2ddl update="true" />
+			<annotationconfiguration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
+			<hbm2ddl format="true" update="true" />
 		</hibernatetool>
 	</target>
 
