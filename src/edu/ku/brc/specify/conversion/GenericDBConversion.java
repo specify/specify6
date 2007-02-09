@@ -122,7 +122,7 @@ public class GenericDBConversion
 
     protected static StringBuilder strBuf   = new StringBuilder("");
     protected static Calendar     calendar  = Calendar.getInstance();
-    protected static Date now = new Date();
+    protected static Timestamp now = new Timestamp(System.currentTimeMillis());
     protected static String nowStr = dateFormatter.format(now);
     
     protected String oldDriver   = "";
@@ -1955,7 +1955,8 @@ public class GenericDBConversion
      * @param typeMap a map for changing the type of the data (meaning an old value may be a boolean stored in a float)
      * @return true for success
      */
-    public boolean convertBiologicalAttrs(CollectionObjDef colObjDef, final Map<String, String> colToNameMap, final Map<String, Short> typeMap)
+    public boolean convertBiologicalAttrs(CollectionObjDef colObjDef, @SuppressWarnings("unused")
+    final Map<String, String> colToNameMap, final Map<String, Short> typeMap)
     {
         AttributeIFace.FieldType[] attrTypes = {AttributeIFace.FieldType.IntegerType, AttributeIFace.FieldType.FloatType,
                                                 AttributeIFace.FieldType.DoubleType, AttributeIFace.FieldType.BooleanType,
@@ -3041,7 +3042,7 @@ public class GenericDBConversion
             
         } catch (Exception ex)
         {
-            
+            // TODO: what now?
         }
         return 0;
     }
@@ -4234,7 +4235,6 @@ public class GenericDBConversion
     	allTime.setStart(100000f);
     	allTime.setEnd(0f);
     	allTime.setEndUncertainty(0f);
-    	Date now = Calendar.getInstance().getTime();
     	allTime.setTimestampCreated(now);
     	allTime.setTimestampModified(now);
     	session.save(allTime);
