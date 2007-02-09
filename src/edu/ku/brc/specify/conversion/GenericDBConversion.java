@@ -509,10 +509,8 @@ public class GenericDBConversion
             "Collector", "CollectingEventID", "CollectingEvent", "CollectingEventID",
             "Collector", "AgentID", "Agent", "AgentID",
 
-            //"Permit", "IssuerID", "AgentAddress", "AgentAddressID",
-            //"Permit", "IssueeID", "AgentAddress", "AgentAddressID",
-            "Permit", "IssuedByID", "AgentAddress", "AgentAddressID",
-            "Permit", "IssuedToID", "AgentAddress", "AgentAddressID",
+            "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
+            "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
             //"Permit", "TypeID", "Type", "TypeID",
 
             "Sound", "RecordedByID", "Agent", "AgentID",
@@ -568,11 +566,11 @@ public class GenericDBConversion
             "Loan", "ShipmentID", "Shipment", "ShipmentID",
             //"Loan", "CollectionID", "Collection", "CollectionID",
 
-            "AccessionAuthorization", "AccessionID", "Accession", "AccessionID",
-            "AccessionAuthorization", "PermitID", "Permit", "PermitID",
+            "AccessionAuthorizations", "AccessionID", "Accession", "AccessionID",
+            "AccessionAuthorizations", "PermitID",    "Permit", "PermitID",
 
-            "AccessionAgent", "AccessionID", "Accession", "AccessionID",
-            "AccessionAgent", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            "AccessionAgents", "AccessionID",    "Accession",    "AccessionID",
+            "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"AccessionAgent", "RoleID", "Role", "RoleID",
 
             "DeterminationCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
@@ -588,9 +586,9 @@ public class GenericDBConversion
             //"CollectionTaxonomyTypes", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
             //"CollectionTaxonomyTypes", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
 
-            "AgentAddress", "AddressID", "Address", "AddressID",
-            "AgentAddress", "AgentID", "Agent", "AgentID",
-            "AgentAddress", "OrganizationID", "Agent", "AgentID",
+            "AgentAddress", "AddressID",      "Address", "AddressID",
+            "AgentAddress", "AgentID",        "Agent",   "AgentID",
+            "AgentAddress", "OrganizationID", "Agent",   "AgentID",
 
             "LocalityCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "LocalityCitation", "LocalityID", "Locality", "LocalityID",
