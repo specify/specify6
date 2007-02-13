@@ -479,20 +479,27 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
     
 	public boolean reparent( T node, T newParent )
 	{
+        if (node==null || newParent==null)
+        {
+            throw new NullPointerException("'node' and 'newParent' must both be non-null");
+        }
+        
 		if( node.getParent() == newParent )
 		{
 			return false;
 		}
 		
         T oldParent = node.getParent();
-        boolean oldParentShowingChildren = false;
-        if (oldParent!=null)
+        if (oldParent==null)
         {
-            oldParentShowingChildren = visibleNodes.contains(node);
-            if (oldParentShowingChildren)
-            {
-                hideChildren(oldParent);
-            }
+            throw new NullPointerException("'node' must already have a parent");
+        }
+        
+        
+        boolean oldParentShowingChildren = visibleNodes.contains(node);
+        if (oldParentShowingChildren)
+        {
+            hideChildren(oldParent);
         }
         hideChildren(newParent);
         dataService.moveTreeNode(node, newParent);
