@@ -247,40 +247,10 @@ public class SpecifyDBConverter
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
         
-        boolean restartFromScratch = true;
-        if (restartFromScratch)
-        {
-            Connection connection = DBConnection.getInstance().createConnection();
-            Statement stmt = connection.createStatement();
-            try
-            {
-                log.info("Dropping database "+databaseName);
-                boolean rv = stmt.execute("drop database "+ databaseName);
-                if (!rv)
-                {
-                    //throw new RuntimeException("Couldn't drop database "+databaseName);
-                }
-                log.info("Dropped database "+databaseName);
-                
-            } catch (SQLException ex)
-            {
-                log.info("Database ["+databaseName+"] didn't exist.");
-            }
-
-            stmt = connection.createStatement();
-            boolean rv = stmt.execute("create database "+ databaseName);
-            if (!rv)
-            {
-                //throw new RuntimeException("Couldn't create database "+databaseName);
-            }
-            log.info("Created database "+databaseName);
-            
-            stmt.close();
-            connection.close();
-            
-            SpecifySchemaGenerator schGen = new SpecifySchemaGenerator();
-            schGen.generateSchema("localhost", databaseName);
-        }
+        System.out.println("Preparing new database");
+        SpecifySchemaGenerator schGen = new SpecifySchemaGenerator();
+        schGen.generateSchema("localhost", databaseName);
+        System.out.println("Preparing new database: completed");
         
         // This will log us in and return true/false
         if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, "rods", "rods"))
