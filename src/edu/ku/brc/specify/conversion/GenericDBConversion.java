@@ -4475,18 +4475,318 @@ public class GenericDBConversion
         }
     }
 
-  /**
-   * This conversion method is a little wacky in that we must convert it in three parts. And instead of factoring out
-   * a way to do the 3 parts, I just duplicated the code.
-   */
-  public boolean convertAgents() throws SQLException
-  {
+    protected void duplicateAddress(final Connection newDBConn, final Long oldId, final Long newId)
+    {
+        log.info("Duplicating ["+oldId+"] to ["+newId+"]");
+        
+        List<String> agentAddrFieldNames = new ArrayList<String>();
+        getFieldNamesFromSchema(newDBConn, "address", agentAddrFieldNames);
+        String fieldList = buildSelectFieldList(agentAddrFieldNames, "address");
+        log.info(fieldList);
+        
+        StringBuilder sqlStr = new StringBuilder();
+        sqlStr.append("SELECT ");
+        sqlStr.append(fieldList);
+        sqlStr.append(" from address where AddressID = "+oldId);
+        
+        if (true)
+        {
+            log.info(sqlStr.toString());
+        }
+        
+        try
+        {
+            Statement stmt = newDBConn.createStatement();
+            ResultSet rs   = stmt.executeQuery(sqlStr.toString());
+    
+            if (rs.last())
+            {
+                setProcess(0, rs.getRow()); 
+                rs.first();
+            }
+            
+            sqlStr.setLength(0);
+            sqlStr.append("INSERT INTO address ");
+            sqlStr.append("("+fieldList+")");
+            sqlStr.append(" VALUES (");
+            
+            ResultSetMetaData metaData = rs.getMetaData();
+            int cols = metaData.getColumnCount();
+            for (int i=1;i<=cols;i++)
+            {
+                if (i == 1)
+                {
+                    sqlStr.append(newId);
+                    
+                } else
+                {
+                    sqlStr.append(",");
+                    sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(i)));
+                }
+            }
+            sqlStr.append(") ");
+            
+            rs.close();
+            stmt.close();
+            
+            Statement updateStatement = newDBConn.createStatement();
+            updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            if (true)
+            {
+                log.info(sqlStr.toString());
+            }
+            updateStatement.executeUpdate(sqlStr.toString());
+            updateStatement.clearBatch();
+            updateStatement.close();
+            updateStatement = null;
 
-      // Create the mappers here, but fill them in during the AgentAddress Process
-      IdMapperIFace agentIDMapper     = idMapperMgr.addTableMapper("agent", "AgentID");
-      IdMapperIFace addrIDMapper      = idMapperMgr.addTableMapper("address", "AddressID");
-      IdMapperIFace agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
+            
+        } catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+    }
+    
+    protected static Long nextAddressId = 0L;
+    class AddressInfo 
+    {
+        Long    oldAddrId;
+        Long    newAddrId;
+        Hashtable<Long, Boolean> agentHash = new Hashtable<Long, Boolean>();
+        Vector<Long>             newIdsToDuplicate = new Vector<Long>();
+        boolean isUsed   = false;
+        boolean wasAdded = false;
+        
+        public AddressInfo(final Long oldAddrId, final Long newAddrId, final Long agentId)
+        {
+            this.oldAddrId = oldAddrId;
+            this.newAddrId = newAddrId;
+            agentHash.put(agentId, true);
+        }
+
+        public AddressInfo(final Long oldAddrId, final Long newAddrId)
+        {
+            this.oldAddrId = oldAddrId;
+            this.newAddrId = newAddrId;
+        }
+
+        public Hashtable<Long, Boolean> getAgentHash()
+        {
+            return agentHash;
+        }
+
+        public Long getNewAddrId()
+        {
+            return newAddrId;
+        }
+
+        public Long getOldAddrId()
+        {
+            return oldAddrId;
+        }
+        public boolean isUsed()
+        {
+            return isUsed;
+        }
+        public void setUsed(boolean isUsed)
+        {
+            this.isUsed = isUsed;
+        } 
+        
+        public Long addAgent(Long agentId)
+        {
+            agentHash.put(agentId, true);
+            
+            if (agentHash.size() > 1)
+            {
+                newIdsToDuplicate.add(nextAddressId);
+                nextAddressId++;
+                return nextAddressId;
+            }
+            return newAddrId;
+        }
+        public boolean wasAdded()
+        {
+            return wasAdded;
+        }
+        public void setWasAdded(boolean wasAddedArg)
+        {
+            this.wasAdded = wasAddedArg;
+        }
+        public Vector<Long> getNewIdsToDuplicate()
+        {
+            return newIdsToDuplicate;
+        }
+    }
+    
+    class AgentInfo
+    {
+        Long oldAgentId;
+        Long newAgentId;
+        Hashtable<Long, Boolean> addrs = new Hashtable<Long, Boolean>();
+        boolean isUsed  = false;
+        boolean wasAdded = false;
+        
+        public AgentInfo(Long oldAgentId, Long newAgentId, Long addrId)
+        {
+            super();
+            this.oldAgentId = oldAgentId;
+            this.newAgentId = newAgentId;
+            addrs.put(addrId, true);
+        }
+        public AgentInfo(Long oldAgentId, Long newAgentId)
+        {
+            super();
+            this.oldAgentId = oldAgentId;
+            this.newAgentId = newAgentId;
+        }
+        public Hashtable<Long, Boolean> getAddrs()
+        {
+            return addrs;
+        }
+        public Long getNewAgentId()
+        {
+            return newAgentId;
+        }
+        public Long getOldAgentId()
+        {
+            return oldAgentId;
+        }
+        public boolean isUsed()
+        {
+            return isUsed;
+        }
+        public void setUsed(boolean isUsed)
+        {
+            this.isUsed = isUsed;
+        }
+        public boolean wasAdded()
+        {
+            return wasAdded;
+        }
+        public void setWasAdded(boolean wasAddedArg)
+        {
+            this.wasAdded = wasAddedArg;
+        }
+    }
+    
+    
+    protected void copyAgentFromOldToNew(Long oldAgentId, IdTableMapper agentIDMapper)
+    {
+        StringBuilder sql = new StringBuilder("select ");
+        
+        List<String> oldAgentFieldNames = new ArrayList<String>();
+        getFieldNamesFromSchema(oldDBConn, "agent", oldAgentFieldNames);
+        String oldFieldListStr = buildSelectFieldList(oldAgentFieldNames, "agent");
+        sql.append(oldFieldListStr);
+        sql.append(" from agent where AgentID = "+oldAgentId);
+        
+        //log.info(oldFieldListStr);
+        
+        List<String> newAgentFieldNames = new ArrayList<String>();
+        getFieldNamesFromSchema(newDBConn, "agent", newAgentFieldNames);
+        String newFieldListStr = buildSelectFieldList(newAgentFieldNames, "agent");
+        
+        //log.info(newFieldListStr);
+        
+        Hashtable<String, Integer> oldIndexFromNameMap = new Hashtable<String, Integer>();
+        int inx = 1;
+        for (String fldName : oldAgentFieldNames)
+        {
+            oldIndexFromNameMap.put(fldName, inx++);
+        }
+        
+        Hashtable<String, Integer> newIndexFromNameMap = new Hashtable<String, Integer>();
+        inx = 1;
+        for (String fldName : newAgentFieldNames)
+        {
+            newIndexFromNameMap.put(fldName, inx++);
+        }
+        
+        try
+        {
+            // So first we hash each AddressID and the value is set to 0 (false)
+            Statement stmtX = oldDBConn.createStatement();
+            ResultSet rsX   = stmtX.executeQuery(sql.toString());
+            
+            int cnt = 0;
+            while (rsX.next())
+            {
+                long agentId = rsX.getLong(1);
+                
+                StringBuilder sqlStr = new StringBuilder();
+                sqlStr.append("INSERT INTO agent ");
+                sqlStr.append("("+newFieldListStr+")");
+                sqlStr.append(" VALUES (");
+                
+                int fCnt = 0;
+                for (String fieldName : newAgentFieldNames)
+                {
+                    if (fCnt > 0) sqlStr.append(", ");
+                    
+                    Integer index = oldIndexFromNameMap.get(fieldName);
+                    if (index == null)
+                    {
+                        //System.out.println(fieldName);
+                        sqlStr.append("NULL");
+                        
+                    } else if (fCnt == 0)
+                    {
+                        sqlStr.append(agentIDMapper.get(agentId));
+                        
+                    } else
+                    {
+                        sqlStr.append(BasicSQLUtils.getStrValue(rsX.getObject(index.intValue())));
+                    }
+                    fCnt++;
+                }
+                sqlStr.append(")");
+                //log.info(sqlStr.toString());
+                
+                Statement updateStatement = newDBConn.createStatement();
+                updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                if (false)
+                {
+                    log.info(sqlStr.toString());
+                }
+                updateStatement.executeUpdate(sqlStr.toString());
+                updateStatement.clearBatch();
+                updateStatement.close();
+                updateStatement = null;
+    
+                cnt++;
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+
+        
+    }
+    
+  /**
+   * Specify 5.x points at AgentAdress instead of an Agent. The idea was that to point at an Agent and possibly a differnt address
+   * that represents what that person does. This was really confusing so we are changing it to point at an Agent instead.
+   * 
+   * So that means we need to pull apart these relationships and have all foreign keys that point to an AgentAddress now point at an Agent
+   * and we then need to add in the Agents and then add the Address to the Agents.
+   * 
+   * The AgentAdress, Agent and Address (triple) can have a NULL Address but it cannot have a NULL Agent. If there is a NULL Agent
+   * then this method will throw a RuntimeException.
+   */
+    public boolean convertAgents() throws SQLException
+    {
+        // Create the mappers here, but fill them in during the AgentAddress Process
+        IdTableMapper agentIDMapper     = idMapperMgr.addTableMapper("agent", "AgentID");
+        IdTableMapper addrIDMapper      = idMapperMgr.addTableMapper("address", "AddressID");
+        IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
       
+        log.info("Mapping Agent Ids");
+        agentIDMapper.mapAllIds();//.mapAllIds("select AgentID from agent order by AgentID"); 
+      
+        log.info("Mapping Address Ids");
+        addrIDMapper.mapAllIds();//.mapAllIds("select AddressID from address order by AddressID");
 
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "agent");
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "address");
@@ -4546,32 +4846,32 @@ public class GenericDBConversion
 
        // See comments for agent Columns
        String[] addressColumns = {"address.AddressID",
-                                   "address.TimestampModified",
-                                    "address.Address",
-                                    "address.Address2",
-                                    "address.City",
-                                    "address.State",
-                                    "address.Country",
-                                    "address.Postalcode",
-                                    "address.Remarks",
-                                    "address.TimestampCreated",
-                                    "address.LastEditedBy",
-                                    "agentaddress.IsCurrent",
-                                    "agentaddress.Phone1",
-                                    "agentaddress.Phone2",
-                                    "agentaddress.Fax",
-                                    "agentaddress.RoomOrBuilding",
-                                    "address.AgentID"};
-
+                                  "address.TimestampModified",
+                                  "address.Address",
+                                  "address.Address2",
+                                  "address.City",
+                                  "address.State",
+                                  "address.Country",
+                                  "address.Postalcode",
+                                  "address.Remarks",
+                                  "address.TimestampCreated",
+                                  "address.LastEditedBy",
+                                  "agentaddress.IsCurrent",
+                                  "agentaddress.Phone1",
+                                  "agentaddress.Phone2",
+                                  "agentaddress.Fax",
+                                  "agentaddress.RoomOrBuilding",
+                                  "address.AgentID"};
        
-       Hashtable<Long, Long> agentTracker = new Hashtable<Long, Long>();
-       Hashtable<Long, Long> addressTracker = new Hashtable<Long, Long>();
-       Hashtable<Long, Long> oldAddrIds = new Hashtable<Long, Long>();
-       Hashtable<Long, Long> oldAgentIds = new Hashtable<Long, Long>();
+       Hashtable<Long, AddressInfo> addressHash = new Hashtable<Long, AddressInfo>();
+       Hashtable<Long, AgentInfo>   agentHash   = new Hashtable<Long, AgentInfo>();
 
        // Create a Hashtable to track which IDs have been handled during the conversion process
        try
        {
+           log.info("Hashing Address Ids");
+
+           // So first we hash each AddressID and the value is set to 0 (false)
            Statement stmtX = oldDBConn.createStatement();
            ResultSet rsX   = stmtX.executeQuery("select AddressID from address order by AddressID");
            
@@ -4585,7 +4885,7 @@ public class GenericDBConversion
            do
            {
                long addrId = rsX.getLong(1);
-               oldAddrIds.put(addrId, 0L);
+               addressHash.put(addrId, new AddressInfo(addrId, addrIDMapper.get(addrId)));
                
                if (cnt % 100 == 0)
                {
@@ -4599,6 +4899,8 @@ public class GenericDBConversion
            
            setProcess(0, 0); 
            
+           // Next we hash all the Agents and set their values to 0 (false)
+           log.info("Hashing Agent Ids");
            stmtX = oldDBConn.createStatement();
            rsX   = stmtX.executeQuery("select AgentID from agent order by AgentID");
            
@@ -4612,7 +4914,7 @@ public class GenericDBConversion
            do
            {
                long agentId = rsX.getLong(1);
-               oldAgentIds.put(agentId, 0L);
+               agentHash.put(agentId, new AgentInfo(agentId, agentIDMapper.get(agentId)));
                if (cnt % 100 == 0)
                {
                   setProcess(0, cnt); 
@@ -4625,14 +4927,104 @@ public class GenericDBConversion
            
            setProcess(0, 0); 
            
+           // Now we mapp all the Agents to their Addresses AND
+           // All the Addresses to their Agents.
+           //
+           // NOTE: A single Address Record Mat be used by more than one Agent so 
+           // we will need to Duplicate the Address records later
+           //
+           log.info("Cross Mapping Agents and Addresses");
+
+           
+           stmtX = oldDBConn.createStatement();
+           rsX   = stmtX.executeQuery("SELECT AgentAddressID, AddressID, AgentID FROM agentaddress a where AddressID is not null and AgentID is not null");
+           
+           cnt = 0;
+           if (rsX.last())
+           {
+               setProcess(0, rsX.getRow()); 
+               rsX.first();
+           }
+
+           do
+           {
+               long agentAddrId = rsX.getLong(1);
+               long addrId      = rsX.getLong(2);
+               long agentId     = rsX.getLong(3);
+               
+               /////////////////////////
+               // Add Address to Agent
+               /////////////////////////
+               AgentInfo agentInfo = agentHash.get(agentId);
+               if (agentInfo == null)
+               {
+                   throw new RuntimeException("The AgentID ["+agentId+"]in AgentAddress table id["+agentAddrId+"] desn't exist");
+               }
+               agentInfo.getAddrs().put(addrId, true);
+               
+               AddressInfo addrInfo = addressHash.get(addrId);
+               if (addrInfo == null)
+               {
+                   throw new RuntimeException("The AddressID ["+addrId+"] in AgentAddress table id["+agentAddrId+"] desn't exist");
+               }
+               agentInfo.getAddrs().put(addrId, true);
+
+               if (cnt % 100 == 0)
+               {
+                  setProcess(0, cnt); 
+               }
+               cnt++;
+               
+           } while (rsX.next());
+           
+           rsX.close();
+           stmtX.close();
+           
+           setProcess(0, 0); 
+           
+           // It OK if the address is NULL, but the Agent CANNOT be NULL
+           log.info("Checking for null Agents");
+           
+           stmtX = oldDBConn.createStatement();
+           rsX   = stmtX.executeQuery("SELECT count(AgentAddressID) FROM agentaddress a where AddressID is not null and AgentID is null");
+           if (rsX.last())
+           {
+               setProcess(0, rsX.getRow()); 
+               rsX.first();
+           }
+
+           // If there is a Single Record With a NULL Agent this would be BAD!
+           long count = rsX.getLong(1);
+           if (count > 0)
+           {
+               throw new RuntimeException("There are "+count+" AgentAddress Records where the AgentID is null and the AddressId is not null!");
+           }
+           rsX.close();
+           stmtX.close();
+           
+           nextAddressId = (long)BasicSQLUtils.getNumRecords(oldDBConn, "address") + 1;
+
+           
            //////////////////////////////////////////////////////////////////////////////////
            // This does the part of AgentAddress where it has both an Address AND an Agent
            //////////////////////////////////////////////////////////////////////////////////
 
            log.info(sql.toString());
+           
+           // Example of the Query
+           //
+           // select agentaddress.AgentAddressID, agentaddress.TypeOfAgentAddressed, agentaddress.AddressID, agentaddress.AgentID, agentaddress.OrganizationID, 
+           //   agentaddress.JobTitle, agentaddress.Phone1, agentaddress.Phone2, agentaddress.Fax, agentaddress.RoomOrBuilding, agentaddress.Email, agentaddress.URL, 
+           //   agentaddress.Remarks, agentaddress.TimestampModified, agentaddress.TimestampCreated, agentaddress.LastEditedBy, agentaddress.IsCurrent, agent.AgentID, 
+           //   agent.AgentType, agent.FirstName, agent.LastName, agent.MiddleInitial, agent.Title, agent.Interests, agent.Abbreviation, agent.Name, agent.ParentOrganizationID, 
+           //   agent.Remarks, agent.TimestampModified, agent.TimestampCreated, agent.LastEditedBy, address.AddressID, address.Address, address.City, address.State, address.Country, 
+           //   address.Postalcode, address.Remarks, address.TimestampModified, address.TimestampCreated, address.LastEditedBy From agent 
+           // Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Inner Join address ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc
+           
+           // select agentaddress.AgentAddressID, agentaddress.TypeOfAgentAddressed, agentaddress.AddressID, agentaddress.AgentID, agentaddress.OrganizationID, agentaddress.JobTitle, agentaddress.Phone1, agentaddress.Phone2, agentaddress.Fax, agentaddress.RoomOrBuilding, agentaddress.Email, agentaddress.URL, agentaddress.Remarks, agentaddress.TimestampModified, agentaddress.TimestampCreated, agentaddress.LastEditedBy, agentaddress.IsCurrent, agent.AgentID, agent.AgentType, agent.FirstName, agent.LastName, agent.MiddleInitial, agent.Title, agent.Interests, agent.Abbreviation, agent.Name, agent.ParentOrganizationID, agent.Remarks, agent.TimestampModified, agent.TimestampCreated, agent.LastEditedBy, address.AddressID, address.Address, address.City, address.State, address.Country, address.Postalcode, address.Remarks, address.TimestampModified, address.TimestampCreated, address.LastEditedBy From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Inner Join address ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc
 
-           Statement           stmt      = oldDBConn.createStatement();
-           ResultSet           rs        = stmt.executeQuery(sql.toString());
+           Statement stmt = oldDBConn.createStatement();
+           ResultSet rs   = stmt.executeQuery(sql.toString());
 
            // Create Map of column name to column index number
            int inx = 1;
@@ -4643,48 +5035,65 @@ public class GenericDBConversion
            }
 
            // Figure out certain icolumn indexes we will need ater
-           long agentIdInx = indexFromNameMap.get("agent.AgentID");
-           long addrIdInx  = indexFromNameMap.get("address.AddressID");
-           long agentTypeInx  = indexFromNameMap.get("agent.AgentType");
+           int agentIdInx   = indexFromNameMap.get("agent.AgentID");
+           int addrIdInx    = indexFromNameMap.get("address.AddressID");
+           int agentTypeInx = indexFromNameMap.get("agent.AgentType");
 
-           long newAgentId = 1;
-           long newAddrId  = 1;
+           //long newAddrId         = -1;
+           //long newAgentId        = -1;
 
            long recordCnt = 0;
            while (rs.next())
            {
-               byte agentType     = rs.getByte((int)agentTypeInx);
+               byte agentType      = rs.getByte((int)agentTypeInx);
                long agentAddressId = rs.getLong(1);
                long agentId        = rs.getLong((int)agentIdInx);
                long addrId         = rs.getLong((int)addrIdInx);
+               
+               AddressInfo addrInfo     = addressHash.get(addrId);
+               AgentInfo   agentInfo    = agentHash.get(agentId);  
 
-               recordCnt++;
-               long currentNewAgentId = newAgentId;
-
+               // Now tell the AgentAddress Mapper the New ID to the Old AgentAddressID
+               agentAddrIDMapper.put(agentAddressId, agentInfo.getNewAgentId());
+               
                // Because of the old DB relationships we want to make sure we only add each agent in one time
-               boolean alreadyInserted = agentTracker.get(agentId) != null;
-               if (!alreadyInserted)
+               // So start by checking the Hashtable to see if it has already been added
+               if (!agentInfo.wasAdded())
                {
-                   // Create Agent
+                   agentInfo.setWasAdded(true);
+                   
+                    // It has not been added yet so Add it
                     StringBuilder sqlStr = new StringBuilder();
                     sqlStr.append("INSERT INTO agent ");
                     sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, LastEditedBy, Visibility, VisibilitySetBy, ParentOrganizationID)");
                     sqlStr.append(" VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
-                        //log.info(agentColumns[i]);
-
                         if (i > 0) sqlStr.append(",");
-                        //log.info(agentColumns[i]);
-                        if (agentColumns[i].equals("agent.AgentType"))
-                        {
-                           int x = 0;
-                           x++;
-                        }
+                        
                         if (i == 0)
                         {
-                            sqlStr.append(newAgentId);
+                            sqlStr.append(agentInfo.getNewAgentId());
 
+
+                        } else if (agentColumns[i].equals("agent.ParentOrganizationID"))
+                        {
+                            Object obj = rs.getObject(indexFromNameMap.get(agentColumns[i]));
+                            if (obj != null)
+                            {
+                                long oldId = rs.getLong(agentColumns[i]);
+                                Long newID = agentIDMapper.get(oldId);
+                                if (newID == null)
+                                {
+                                    log.error("Couldn't map ParentOrganizationID ["+oldId+"]");
+                                }
+                                sqlStr.append(BasicSQLUtils.getStrValue(newID));
+                                
+                            } else
+                            {
+                                sqlStr.append("NULL");
+                            }
+                            
                         } else if (agentColumns[i].equals("agent.Name"))
                         {
                             if (agentType == 1) // when it is an individual, clear the name field
@@ -4696,15 +5105,15 @@ public class GenericDBConversion
                                 sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                             }
 
-                        } 
-                        else if(agentColumns[i].equals("agent.Visibility"))//User/Security changes
+                        } else if (agentColumns[i].equals("agent.Visibility"))//User/Security changes
                         {
                             sqlStr.append(defaultVisibilityLevel);
-                        }
-                        else if(agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
+                            
+                        } else if (agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
                         {
                             sqlStr.append("NULL");
-                        }else
+                            
+                        } else
                         {
                             inx = indexFromNameMap.get(agentColumns[i]);
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
@@ -4725,16 +5134,6 @@ public class GenericDBConversion
                         updateStatement.close();
                         updateStatement = null;
 
-                        // Here we add to the agent tracker a mapping from the Old ID to the New Id
-                        agentTracker.put(agentId, newAgentId);
-                        oldAgentIds.put(agentId, 1L);
-                        // Tell the IDMapper about the mapping from NewID to the Old
-                        agentIDMapper.put(agentId, newAgentId);
-                        // Now tell the AgentAddress Mapper the New ID to the Old AgentAddressID
-                        agentAddrIDMapper.put(agentAddressId, newAgentId);
-
-                        newAgentId++;
-
                     } catch (SQLException e)
                     {
                         log.error(sqlStr.toString());
@@ -4746,17 +5145,16 @@ public class GenericDBConversion
 
                } else
                {
-                   log.info("Agent already Used ["+BasicSQLUtils.getStrValue(rs.getObject(indexFromNameMap.get("agent.LastName")))+"]");
-
-                   long newAID = agentTracker.get(agentId);
-                   agentAddrIDMapper.put(agentAddressId, newAID);
-                   currentNewAgentId = newAID;
+                   // The Agent has already been added so we use the tracker Hashtable
+                   // to find out the new Id for the old Agent Id
+                   //log.info("Agent already Used ["+BasicSQLUtils.getStrValue(rs.getObject(indexFromNameMap.get("agent.LastName")))+"]");
                }
 
                // Now make sure we only add an address in one
-               boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
-               if (!alreadyInsertedAddr)
+               if (!addrInfo.wasAdded())
                {
+                   addrInfo.setWasAdded(true);
+                   
                    StringBuilder sqlStr = new StringBuilder("INSERT INTO address ");
                    sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, LastEditedBy, IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID)");
                    sqlStr.append(" VALUES (");
@@ -4765,7 +5163,7 @@ public class GenericDBConversion
                        if (i > 0) sqlStr.append(",");
                        if (i == addressColumns.length-1)
                        {
-                           sqlStr.append(currentNewAgentId);
+                           sqlStr.append(agentId);
 
                        } else
                        {
@@ -4773,7 +5171,7 @@ public class GenericDBConversion
                            String value;
                            if (i == 0)
                            {
-                               value = Long.toString(newAddrId);
+                               value = addrInfo.getNewAddrId().toString();
 
                            } else if (inxInt == null && addressColumns[i].equals("address.Address2"))
                            {
@@ -4810,12 +5208,6 @@ public class GenericDBConversion
                        updateStatement.close();
                        updateStatement = null;
 
-                       addressTracker.put(addrId, newAddrId);
-                       oldAddrIds.put(addrId, 1L);
-
-                       addrIDMapper.put(addrId, newAddrId);
-                       newAddrId++;
-
                    } catch (SQLException e)
                    {
                        log.error(sqlStr.toString());
@@ -4830,145 +5222,30 @@ public class GenericDBConversion
                {
                    log.info("AgentAddress Records: "+ recordCnt);
                }
+               recordCnt++;
            } // while
 
            log.info("AgentAddress Records: "+ recordCnt);
            rs.close();
            stmt.close();
 
-
-           //////////////////////////////////////////////////////////////////////////////////
-           // This does the part of AgentAddress where it has JUST an Address
-           //////////////////////////////////////////////////////////////////////////////////
-           log.info("******** Doing AgentAddress JUST Address");
-
-           sql.setLength(0);
-           sql.append("select ");
-           sql.append(buildSelectFieldList(agentAddrFieldNames, "agentaddress"));
-           sql.append(", ");
-
-           getFieldNamesFromSchema(oldDBConn, "address", addrFieldNames);
-           sql.append(buildSelectFieldList(addrFieldNames, "address"));
-
-           sql.append(" From address Inner Join agentaddress ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc");
-
-           stmt = oldDBConn.createStatement();
-           rs   = stmt.executeQuery(sql.toString());
-
-           oldFieldNames.clear();
-           addNamesWithTableName(oldFieldNames, agentAddrFieldNames, "agentaddress");
-           addNamesWithTableName(oldFieldNames, addrFieldNames, "address");
-
-           indexFromNameMap.clear();
-           inx = 1;
-           for (String fldName : oldFieldNames)
+           // Now duplicate the Address Records
+           for (Long oldAddrId : addressHash.keySet())
            {
-               //log.info("["+fldName+"] "+inx+" ["+rsmd.getColumnName(inx)+"]");
-               indexFromNameMap.put(fldName, inx++);
+               AddressInfo addrInfo = addressHash.get(oldAddrId);
+               
+               for (Long newAddrId : addrInfo.getNewIdsToDuplicate())
+               {
+                   duplicateAddress(newDBConn, addrInfo.getNewAddrId(), newAddrId);
+               }
            }
-
-           addrIdInx  = indexFromNameMap.get("address.AddressID");
-
-           int newRecordsAdded = 0;
-           recordCnt = 0;
-           while (rs.next())
-           {
-               //int agentAddressId = rs.getInt(1);
-               long addrId         = rs.getLong((int)addrIdInx);
-
-               recordCnt++;
-
-               // Create Address
-               boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
-               if (!alreadyInsertedAddr)
-               {
-                   StringBuilder sqlStr = new StringBuilder("INSERT INTO address ");
-                   sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, LastEditedBy, IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID)");
-                   sqlStr.append(" VALUES (");
-                   for (int i=0;i<addressColumns.length;i++)
-                   {
-                       if (i > 0) sqlStr.append(",");
-                       if (i == addressColumns.length-1)
-                       {
-                           sqlStr.append("NULL");
-
-                       } else
-                       {
-
-                           Integer inxInt = indexFromNameMap.get(addressColumns[i]);
-                           String value;
-                           if (i == 0)
-                           {
-                               value = Long.toString(newAddrId);
-
-                           } else if (inxInt == null && addressColumns[i].equals("address.Address2"))
-                           {
-                               value = "''";
-
-                           } else if (addressColumns[i].equals("agentaddress.IsCurrent"))
-                           {
-                               value = rs.getInt(inxInt) == 0 ? "0" : "1";
-
-                           } else if (addressColumns[i].equals("address.Address"))
-                           {
-                               value = BasicSQLUtils.getStrValue(StringEscapeUtils.escapeJava(rs.getString(inxInt)));
-
-                           } else
-                           {
-                               //log.info(addressColumns[i]);
-                               value = BasicSQLUtils.getStrValue(rs.getObject(inxInt));
-                           }
-                           sqlStr.append(value);
-                       }
-                   }
-                   sqlStr.append(")");
-
-                   try
-                   {
-                       Statement updateStatement = newDBConn.createStatement();
-                       updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                       if (false)
-                       {
-                           log.info(sqlStr.toString());
-                       }
-                       updateStatement.executeUpdate(sqlStr.toString());
-                       updateStatement.clearBatch();
-                       updateStatement.close();
-                       updateStatement = null;
-
-                       addressTracker.put(addrId, newAddrId);
-                       oldAddrIds.put(addrId, 1L);
-
-                       addrIDMapper.put(addrId, newAddrId);
-                       newAddrId++;
-
-                       newRecordsAdded++;
-
-                   } catch (SQLException e)
-                   {
-                       log.error(sqlStr.toString());
-                       log.error("Count: "+recordCnt);
-                       e.printStackTrace();
-                       log.error(e);
-                       throw new RuntimeException(e);
-                   }
-               }
-
-               if (recordCnt % 250 == 0)
-               {
-                   log.info("AgentAddress (Address Only) Records: "+ recordCnt+"  newRecordsAdded "+newRecordsAdded);
-               }
-           } // while
-           log.info("AgentAddress (Address Only) Records: "+ recordCnt);
-           rs.close();
-           stmt.close();
 
            //////////////////////////////////////////////////////////////////////////////////
            // This does the part of AgentAddress where it has JUST Agent
            //////////////////////////////////////////////////////////////////////////////////
            log.info("******** Doing AgentAddress JUST Agent");
 
-           newRecordsAdded = 0;
+           int newRecordsAdded = 0;
 
            sql.setLength(0);
            sql.append("select ");
@@ -4978,8 +5255,23 @@ public class GenericDBConversion
            getFieldNamesFromSchema(oldDBConn, "agent", agentFieldNames);
            sql.append(buildSelectFieldList(agentFieldNames, "agent"));
 
-           sql.append(" From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Order By agentaddress.AgentAddressID Asc");
+           sql.append(" From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID where agentaddress.AddressID is null Order By agentaddress.AgentAddressID Asc");
 
+           
+           log.info(sql.toString());
+           
+           // Example Query
+           
+           // select agentaddress.AgentAddressID, agentaddress.TypeOfAgentAddressed, agentaddress.AddressID, agentaddress.AgentID, agentaddress.OrganizationID, 
+           //  agentaddress.JobTitle, agentaddress.Phone1, agentaddress.Phone2, agentaddress.Fax, agentaddress.RoomOrBuilding, agentaddress.Email, agentaddress.URL, 
+           //  agentaddress.Remarks, agentaddress.TimestampModified, agentaddress.TimestampCreated, agentaddress.LastEditedBy, agentaddress.IsCurrent, agent.AgentID, 
+           //  agent.AgentType, agent.FirstName, agent.LastName, agent.MiddleInitial, agent.Title, agent.Interests, agent.Abbreviation, agent.Name, agent.ParentOrganizationID, 
+           //  agent.Remarks, agent.TimestampModified, agent.TimestampCreated, agent.LastEditedBy, agent.AgentID, agent.AgentType, agent.FirstName, agent.LastName, agent.MiddleInitial, 
+           //  agent.Title, agent.Interests, agent.Abbreviation, agent.Name, agent.ParentOrganizationID, agent.Remarks, agent.TimestampModified, agent.TimestampCreated, agent.LastEditedBy 
+           // From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Order By agentaddress.AgentAddressID Asc
+           
+           // select agentaddress.AgentAddressID, agentaddress.TypeOfAgentAddressed, agentaddress.AddressID, agentaddress.AgentID, agentaddress.OrganizationID, agentaddress.JobTitle, agentaddress.Phone1, agentaddress.Phone2, agentaddress.Fax, agentaddress.RoomOrBuilding, agentaddress.Email, agentaddress.URL, agentaddress.Remarks, agentaddress.TimestampModified, agentaddress.TimestampCreated, agentaddress.LastEditedBy, agentaddress.IsCurrent, agent.AgentID, agent.AgentType, agent.FirstName, agent.LastName, agent.MiddleInitial, agent.Title, agent.Interests, agent.Abbreviation, agent.Name, agent.ParentOrganizationID, agent.Remarks, agent.TimestampModified, agent.TimestampCreated, agent.LastEditedBy, agent.AgentID, agent.AgentType, agent.FirstName, agent.LastName, agent.MiddleInitial, agent.Title, agent.Interests, agent.Abbreviation, agent.Name, agent.ParentOrganizationID, agent.Remarks, agent.TimestampModified, agent.TimestampCreated, agent.LastEditedBy From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Order By agentaddress.AgentAddressID Asc
+           
            stmt = oldDBConn.createStatement();
            rs   = stmt.executeQuery(sql.toString());
 
@@ -5002,12 +5294,18 @@ public class GenericDBConversion
            {
                long agentAddressId = rs.getLong(1);
                long agentId        = rs.getLong((int)agentIdInx);
+               
+               AgentInfo   agentInfo    = agentHash.get(agentId);  
+               
+               // Now tell the AgentAddress Mapper the New ID to the Old AgentAddressID
+               agentAddrIDMapper.put(agentAddressId, agentInfo.getNewAgentId());
 
                recordCnt++;
 
-               boolean alreadyInserted = agentTracker.get(agentId) != null;
-               if (!alreadyInserted)
+               if (!agentInfo.wasAdded())
                {
+                   agentInfo.setWasAdded(true);
+                   
                    // Create Agent
                    StringBuilder sqlStr = new StringBuilder("INSERT INTO agent ");
                    sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, LastEditedBy, Visibility, VisibilitySetBy, ParentOrganizationID)");
@@ -5017,7 +5315,7 @@ public class GenericDBConversion
                         if (i > 0) sqlStr.append(",");
                         if (i == 0)
                         {
-                            sqlStr.append(newAgentId);
+                            sqlStr.append(agentInfo.getNewAgentId());
 
 
                         }else if(agentColumns[i].equals("agent.Visibility"))//User/Security changes
@@ -5046,15 +5344,7 @@ public class GenericDBConversion
                         updateStatement.clearBatch();
                         updateStatement.close();
                         updateStatement = null;
-
-                        agentTracker.put(agentId, newAgentId);
-                        oldAgentIds.put(agentId, 1L);
-                        agentIDMapper.put(agentId, newAgentId);
-
-                        agentAddrIDMapper.put(agentAddressId, newAgentId);
-
-                        newAgentId++;
-
+                        
                         newRecordsAdded++;
 
                     } catch (SQLException e)
@@ -5077,8 +5367,32 @@ public class GenericDBConversion
 
            rs.close();
            stmt.close();
+           
+           
+           setProcess(0, BasicSQLUtils.getNumRecords(oldDBConn, "agent"));
+           setDesc("Adding Agents");
+           
+           // Now Copy all the Agents that where part of an Agent Address Conversions
+           stmt = oldDBConn.createStatement();
+           rs   = stmt.executeQuery("SELECT AgentID from agent");
+           recordCnt = 0;
+           while (rs.next())
+           {
+               Long agentId = rs.getLong(1);
+               AgentInfo agentInfo = agentHash.get(agentId);
+               if (agentInfo == null || !agentInfo.wasAdded())
+               {
+                   copyAgentFromOldToNew(agentId, agentIDMapper);
+               }
+               recordCnt++;
+               if (recordCnt % 50 == 0)
+               {
+                   setProcess((int)recordCnt);
+               }
+           }
+           setProcess((int)recordCnt);
 
-
+/*
            if (oldAddrIds.size() > 0)
            {
                //log.info("Address Record IDs not used by AgentAddress:");
@@ -5149,7 +5463,7 @@ public class GenericDBConversion
 
            }
            log.info("Agent Address SQL recordCnt "+recordCnt);
-
+*/
            return true;
 
        } catch (SQLException ex)
@@ -5158,9 +5472,13 @@ public class GenericDBConversion
            ex.printStackTrace();
            throw new RuntimeException(ex);
        }
+       
    }
 
   
+    /**
+     * 
+     */
     public void createAndFillStatTable()
     {
         try
