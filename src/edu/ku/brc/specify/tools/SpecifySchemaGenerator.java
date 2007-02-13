@@ -46,7 +46,7 @@ public class SpecifySchemaGenerator
         dbConn = DBConnection.createInstance(dbDriver, dbDialect, databaseName, connStr, user, passwd);
 
         dropAndCreateDB(databaseName);
-        writeHibPropFile(databaseName);
+        writeHibPropFile(dbDriver,dbDialect,hostname,databaseName,user,passwd);
         doGenSchema();
     }
     
@@ -74,14 +74,19 @@ public class SpecifySchemaGenerator
         connection.close();
     }
     
-    protected void writeHibPropFile(final String dbName)
+    protected void writeHibPropFile(final String dbDriver,
+    								final String dbDialect,
+    								final String hostname,
+    								final String databaseName,
+    								final String user,
+    								final String passwd)
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("hibernate.dialect=org.hibernate.dialect.MySQLDialect\n");
-        sb.append("hibernate.connection.driver_class=com.mysql.jdbc.Driver\n");
-        sb.append("hibernate.connection.url=jdbc:mysql://localhost/"+dbName+"\n");
-        sb.append("hibernate.connection.username=rods\n");
-        sb.append("hibernate.connection.password=rods\n");
+        sb.append("hibernate.connection.driver_class="+dbDriver+"\n");
+        sb.append("hibernate.dialect="+dbDialect+"\n");
+        sb.append("hibernate.connection.url=jdbc:mysql://"+hostname+"/"+databaseName+"\n");
+        sb.append("hibernate.connection.username="+user+"\n");
+        sb.append("hibernate.connection.password="+passwd+"\n");
         sb.append("hibernate.max_fetch_depth=3\n");
         sb.append("hibernate.connection.pool_size=5\n");
         sb.append("hibernate.bytecode.use_reflection_optimizer=true\n");
@@ -114,7 +119,8 @@ public class SpecifySchemaGenerator
             throw new Exception(e);
         }
         
-//        Configuration hibCfg = new Configuration();
+//        // if we can get this stuff working, we can get rid of using Ant for this purpose
+//        Configuration hibCfg = new AnnotationConfiguration();
 //        hibCfg.configure();
 //        SchemaExport schemaExporter = new SchemaExport(hibCfg);
 //        log.error("Generating schema");
@@ -125,7 +131,6 @@ public class SpecifySchemaGenerator
 //            Exception e = (Exception)o;
 //            log.error(e.getMessage());
 //        }
-
     }
     
     public static void main(String[] args) throws Exception
