@@ -426,8 +426,8 @@ public class GenericDBConversion
 
             "Collection", "OrganizationID", "Agent", "AgentID",
 
-            "GroupPerson", "GroupID", "Agent", "AgentID",
-            "GroupPerson", "MemberID", "Agent", "AgentID",
+            "GroupPersons", "GroupID", "Agent", "AgentID",
+            "GroupPersons", "MemberID", "Agent", "AgentID",
 
             // ??? "ExchangeOut", "CollectionID", "Collection", "CollectionID",
             "ExchangeOut", "SentToOrganizationID", "Agent", "AgentID",
@@ -462,21 +462,24 @@ public class GenericDBConversion
             "Habitat", "HostTaxonID", "TaxonName", "TaxonNameID",
             //"Habitat", "HabitatTypeID", "HabitatType", "HabitatTypeID",
 
-            "Author", "AgentID", "Agent", "AgentID",
-            "Author", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
+            "Authors", "AgentID", "Agent", "AgentID",
+            "Authors", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
 
             "BorrowMaterial",  "BorrowID", "Borrow", "BorrowID",
 
             //"BorrowShipment", "BorrowID", "Borrow", "BorrowID",
             //"BorrowShipment", "ShipmentID", "Shipment", "ShipmentID",
 
-            "BorrowAgent",    "BorrowID", "Borrow", "BorrowID",
-            "BorrowAgent",    "AgentAddressID", "AgentAddress", "AgentAddressID",
+            "BorrowAgents",    "BorrowID", "Borrow", "BorrowID",
+            "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"BorrowAgents",    "RoleID", "Role", "RoleID",
 
             "DeaccessionPreparation", "DeaccessionID",            "Deaccession",                 "DeaccessionID",
             "DeaccessionPreparation", "DeaccessionPreparationID", "DeaccessionCollectionObject", "DeaccessionCollectionObjectID",
-            //"DeaccessionCollectionObject", "CollectionObjectID",       "CollectionObject",            "CollectionObjectID", // not sure this is needed
+            
+            "DeaccessionCollectionObject",  "DeaccessionID",       "Deaccession",      "DeaccessionID", // not sure this is needed
+            "DeaccessionCollectionObject",  "CollectionObjectID",  "CollectionObject", "CollectionObjectID", // not sure this is needed
+            
             "DeaccessionPreparation", "PreparationID",            "Preparation",                 "PreparationID",
 
             "CollectionObjectCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
@@ -492,8 +495,8 @@ public class GenericDBConversion
             "CollectingEvent", "StratigraphyID", "Stratigraphy", "StratigraphyID",
             //"CollectingEvent", "MethodID", "Method", "MethodID",
 
-            "Collector", "CollectingEventID", "CollectingEvent", "CollectingEventID",
-            "Collector", "AgentID", "Agent", "AgentID",
+            "Collectors", "CollectingEventID", "CollectingEvent", "CollectingEventID",
+            "Collectors", "AgentID", "Agent", "AgentID",
 
             "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
             "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
@@ -594,8 +597,8 @@ public class GenericDBConversion
             //"Locality", "LatLongTypeID", "LatLongType", "LatLongTypeID",
             //"Locality", "LatLongMethodID", "LatLongMethod", "LatLongMethodID",
 
-            "DeaccessionAgent", "DeaccessionID", "Deaccession", "DeaccessionID",
-            "DeaccessionAgent", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            "DeaccessionAgents", "DeaccessionID", "Deaccession", "DeaccessionID",
+            "DeaccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"DeaccessionAgent", "RoleID", "Role", "RoleID",
 
             "ProjectCollectionObjects", "ProjectID", "Project", "ProjectID",
@@ -603,8 +606,8 @@ public class GenericDBConversion
 
             "Project", "ProjectAgentID", "Agent", "AgentID",
 
-            "LoanAgent", "LoanID", "Loan", "LoanID",
-            "LoanAgent", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            "LoanAgents", "LoanID", "Loan", "LoanID",
+            "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"LoanAgent", "RoleID", "Role", "RoleID",
 
             //"Accession", "CollectionID", "Collection", "CollectionID",
