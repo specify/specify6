@@ -189,6 +189,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      */
     protected void initTreeLists()
     {
+        listModel = new TreeDataListModel<T,D,I>(treeDef);
         showTree();
     }
     
@@ -206,7 +207,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			@Override
 			public void mouseReleased(MouseEvent e){mouseButtonReleased(e);}
 		};
-		listModel = new TreeDataListModel<T,D,I>(treeDef);
+		//listModel = new TreeDataListModel<T,D,I>(treeDef);
 		Color[] bgs = new Color[2];
 		bgs[0] = new Color(202,238,255);
 		bgs[1] = new Color(151,221,255);
