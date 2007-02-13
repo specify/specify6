@@ -42,7 +42,7 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
     protected JTextField searchBox;
 
     protected JDialog dialog;
-    protected Object returnValue;
+    protected Object selectedValue;
     
     @SuppressWarnings("unchecked")
     public TreeNodeChooser(TreeDefIface<?,?,?> treeDef)
@@ -92,25 +92,25 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
     public Object showChooser()
     {
         dialog.setVisible(true);
-        return returnValue;
+        return selectedValue;
     }
     
     public void doOK()
     {
-        returnValue = treeViewer.getSelectedNode();
+        selectedValue = treeViewer.getSelectedNode();
         dialog.setVisible(false);
     }
     
     public void doCancel()
     {
-        returnValue = null;
+        selectedValue = null;
         dialog.setVisible(false);
     }
     
     public void doNew()
     {
         //TODO: implement this somehow
-        System.out.println("TODO: New node");
+        System.err.println("TODO: New node");
     }
     
     public void doSearch()
