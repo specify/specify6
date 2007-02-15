@@ -432,14 +432,11 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		strat.setGeologicTimePeriod(null);
 	}
 
-	// temporary implementation of toString() for easier debugging
-	@Override
-	public String toString()
-	{
-		String parentName = getParent()!=null ? getParent().getName() : "none";
-		return "GeologicTimePeriod "+geologicTimePeriodId+": "+name+", child of "+parentName+", "
-				+rankId+", "+nodeNumber+", "+highestChildNodeNumber;
-	}
+    @Override
+    public String toString()
+    {
+        return (fullName!=null) ? fullName : super.toString();
+    }
 
 	// methods to complete implementation of AbstractTreeable
 
@@ -689,7 +686,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		GeologicTimePeriod i = getParent();
 		while( i != null )
 		{
-			if( i == node )
+			if( i.getId() == getId() )
 			{
 				return true;
 			}

@@ -513,9 +513,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	@Override
 	public String toString()
 	{
-		String parentName = getParent()!=null ? getParent().getName() : "none";
-		return "Geography "+geographyId+": "+name+", child of "+parentName+", "+rankId+", "
-				+nodeNumber+", "+highestChildNodeNumber;
+		return (fullName!=null) ? fullName : super.toString();
 	}
 
 	// methods to complete implementation of AbstractTreeable
@@ -775,7 +773,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		Geography i = getParent();
 		while( i != null )
 		{
-			if( i == node )
+			if( i.getId() == getId() )
 			{
 				return true;
 			}

@@ -423,13 +423,11 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		container.setLocation(null);
 	}
 
-	@Override
-	public String toString()
-	{
-		String parentName = getParent()!=null ? getParent().getName() : "none";
-		return "Location "+locationId+": "+name+", child of "+parentName+", "+rankId+", "
-				+nodeNumber+", "+highestChildNodeNumber;
-	}
+    @Override
+    public String toString()
+    {
+        return (fullName!=null) ? fullName : super.toString();
+    }
 
     @Transient
     public int getFullNameDirection()
@@ -678,7 +676,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 		Location i = getParent();
 		while( i != null )
 		{
-			if( i == node )
+			if( i.getId() == getId() )
 			{
 				return true;
 			}

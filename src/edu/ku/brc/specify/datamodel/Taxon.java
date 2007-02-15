@@ -665,13 +665,11 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         attachment.setTaxon(null);
     }
 
-	@Override
-	public String toString()
-	{
-		String parentName = getParent()!=null ? getParent().getName() : "none";
-		return "Taxon "+taxonId+": "+name+", child of "+parentName+", "+rankId+", "+nodeNumber+", "
-				+highestChildNodeNumber;
-	}
+    @Override
+    public String toString()
+    {
+        return (fullName!=null) ? fullName : super.toString();
+    }
 
     @Transient
     public int getFullNameDirection()
@@ -951,7 +949,12 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		Taxon i = getParent();
 		while( i != null )
 		{
-			if( i == node )
+            if (i==node)
+            {
+                return true;
+            }
+            
+			if( i.getId().longValue() == node.getId().longValue() )
 			{
 				return true;
 			}
