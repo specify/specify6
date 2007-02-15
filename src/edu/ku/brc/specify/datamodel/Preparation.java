@@ -385,14 +385,20 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         attr.setPreparation(null);
     }
 
-    // Delete Add Methods
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 63;
     }
@@ -423,7 +429,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     {
         if (prepType != null && obj != null && StringUtils.isNotEmpty(prepType.name) && StringUtils.isNotEmpty(obj.prepType.name))
         {
-            return prepType.name.compareTo(obj.prepType.name);
+            return prepType.name.toLowerCase().compareTo(obj.prepType.name.toLowerCase());
         }
         // else
         return timestampCreated.compareTo(obj.timestampCreated);

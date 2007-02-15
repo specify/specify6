@@ -49,6 +49,6 @@ public interface RecordSetIFace
 
     public abstract void setDataSpecificIcon(ImageIcon dataSpecificIcon);
 
-    public abstract Integer getTableId();
+    public abstract int getTableId();
 
 }

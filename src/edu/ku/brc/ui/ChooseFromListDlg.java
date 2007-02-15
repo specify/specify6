@@ -85,7 +85,7 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
      * Constructor.
      * @param frame parent frame
      * @param title the title of the dialog
-     * @param desc the list to be selected from
+     * @param desc a description of what they are to do
      * @param itemList the list to be selected from
      * @throws HeadlessException
      */

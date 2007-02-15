@@ -28,6 +28,10 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,13 +45,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
 
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -482,7 +482,15 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 7;
     }

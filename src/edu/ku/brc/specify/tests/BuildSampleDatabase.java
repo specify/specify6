@@ -209,6 +209,7 @@ public class BuildSampleDatabase
         dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
         dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
         dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
+        dataObjects.add(createPickList("PrepType",            tableType,      "preptype",            null, "PrepType",            true, -1));
         
         String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
         dataObjects.add(createPickList("PermitType", true, types));

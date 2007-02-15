@@ -79,6 +79,7 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -127,8 +128,9 @@ public class InteractionsTask extends BaseTask
     protected final int           colObjTableId;
 
     // Data Members
-    protected NavBox              infoRequestNavBox;
-    protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
+    protected NavBox                  infoRequestNavBox;
+    protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
+    protected Vector<NavBoxItemIFace> invoiceList      = new Vector<NavBoxItemIFace>();
 
    /**
      * Default Constructor
@@ -144,9 +146,9 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DB_CMD_TYPE, this);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         
-        loanTableId        = DBTableIdMgr.lookupIdByClassName(Loan.class.getName());
-        infoRequestTableId = DBTableIdMgr.lookupIdByClassName(InfoRequest.class.getName());
-        colObjTableId      = DBTableIdMgr.lookupIdByClassName(CollectionObject.class.getName());
+        loanTableId        = DBTableIdMgr.getIdByClassName(Loan.class.getName());
+        infoRequestTableId = DBTableIdMgr.getIdByClassName(InfoRequest.class.getName());
+        colObjTableId      = DBTableIdMgr.getIdByClassName(CollectionObject.class.getName());
 
     }
     
@@ -160,16 +162,23 @@ public class InteractionsTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             extendedNavBoxes.clear();
-            //labelsList.clear();
+            invoiceList.clear();
 
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            NavBoxButton roc = (NavBoxButton)addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(NEW_LOAN),  "Loan", IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, NEW_LOAN)), null);
+            
+            CommandAction cmdAction = new CommandAction(INTERACTIONS, NEW_LOAN);
+            NavBoxButton roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, true);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), "Loan", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), "Loan", IconManager.IconSize.Std16));
-            addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(InfoRequestName),  InfoRequestName, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, InfoRequestName, this)), null);
+            
+            cmdAction = new CommandAction(INTERACTIONS, InfoRequestName);
+            roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, true);// true means make it draggable
+            roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
+            
+            
             navBoxes.addElement(navBox);
     
             // These need to be loaded as Resources
@@ -197,12 +206,17 @@ public class InteractionsTask extends BaseTask
                 {
                     // XXX won't be needed when we start validating the XML
                     String tableIdStr = tcd.getParams().get("tableid");
-                    if (tableIdStr == null)
+                    if (tableIdStr != null)
                     {
-                        log.error("Interaction Command is missing the table id");
+                        //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), "Loan", IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
+                        
+                        cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
+                        cmdAction.addStringProperties(tcd.getParams());
+                        invoiceList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), "Loan", cmdAction, true));// true means make it draggable
+
                     } else
                     {
-                        addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), "Loan", IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
+                        log.error("Interaction Command is missing the table id");
                     }
                 }
             }
@@ -312,26 +326,54 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Creates a new loan from a RecordSet.
+     * @param fileNameArg the filename of the report (Invoice) to use (can be null)
      * @param recordSet the recordset to use to create the loan
      */
-    protected void printLoan(final Object data)
+    protected void printLoan(final String fileNameArg, final Object data)
     {
-        //String loanNumber = null;
         if (data instanceof RecordSetIFace)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
             
-            // XXX For Demo purposes only we need to be able to look up report and labels
-            final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
-            cmd.setProperty("file", "LoanInvoice.jrxml");
-            cmd.setProperty("title", "Loan Invoice");
-            cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run()
+            String fileName = fileNameArg;
+            if (fileName == null)
+            {
+                if (invoiceList.size() == 0)
                 {
-                    CommandDispatcher.dispatch(cmd);
+                    // XXX Need Error Dialog that there are no Invoices (can this happen?)
+                    
+                } else if (invoiceList.size() > 1) // only Count the ones that require data
+                {
+                    fileName = askForInvoiceName();
+                    
+                } else  
+                {
+                    NavBoxItemIFace nbi = invoiceList.get(0);
+                    Object nbData = nbi.getData();
+                    if (nbData instanceof CommandAction)
+                    {
+                        fileName = ((CommandAction)nbData).getPropertyAsString("file");
+                    }
                 }
-            });
+            }
+
+            if (fileName != null)
+            {
+                // XXX For Demo purposes only we need to be able to look up report and labels
+                final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
+                cmd.setProperty("file", "LoanInvoice.jrxml");
+                cmd.setProperty("title", "Loan Invoice");
+                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        CommandDispatcher.dispatch(cmd);
+                    }
+                });
+            } else
+            {
+                // XXX need error message about not having an invoice
+            }
         }
     }
     
@@ -357,7 +399,7 @@ public class InteractionsTask extends BaseTask
     {      
         DBTableIdMgr.getInClause(recordSet);
 
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
         
         DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
         
@@ -425,7 +467,7 @@ public class InteractionsTask extends BaseTask
                         DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
                         if (dataEntryTask != null)
                         {
-                            DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.lookupInfoById(loan.getTableId());
+                            DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.getInfoById(loan.getTableId());
                             dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
                         }
                         return null;
@@ -446,7 +488,47 @@ public class InteractionsTask extends BaseTask
         {
             log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
         }
+    }
+    
+    /**
+     * Displays UI that asks the user to select a predefined label.
+     * @return the name of the label file or null if cancelled
+     */
+    protected String askForInvoiceName()
+    {
+        initialize();
 
+        // XXX Need to pass in or check table type for different types of lables.
+
+        NavBoxItemIFace nbi = null;
+        if (invoiceList.size() == 1)
+        {
+            nbi = invoiceList.get(0);
+
+        } else
+        {
+            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+                                                                                            getResourceString("ChooseInvoice"), 
+                                                                                            invoiceList, 
+                                                                                            IconManager.getIcon(name, IconManager.IconSize.Std24));
+            dlg.setMultiSelect(false);
+            dlg.setModal(true);
+            dlg.setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                nbi  = dlg.getSelectedObject();
+            }
+        }
+        
+        if (nbi != null && nbi.getData() != null)
+        {
+            Object data = nbi.getData();
+            if (data instanceof CommandAction)
+            {
+                return ((CommandAction)data).getPropertyAsString("file");
+            }
+        }
+        return null;
     }
     
     /**
@@ -496,7 +578,7 @@ public class InteractionsTask extends BaseTask
      */
     protected void createInfoRequest(final RecordSetIFace recordSet)
     {
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupByShortClassName(InfoRequest.class.getSimpleName());
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getByShortClassName(InfoRequest.class.getSimpleName());
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
@@ -504,10 +586,25 @@ public class InteractionsTask extends BaseTask
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();
-        infoRequest.setRecordSet(recordSet);
+        if (recordSet != null)
+        {
+            infoRequest.setRecordSet(recordSet);
+            
+        } else
+        {
+            infoRequest.setRecordSet(askForRecordSet(CollectionObject.getClassTableId()));
+        }
         
-        createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
-        //recentFormPane.setIcon(IconManager.getIcon(INTERACTIONS, IconManager.IconSize.Std16));
+        if (infoRequest.getRecordSet() != null &&
+            infoRequest.getRecordSet().getItems() != null &&
+            infoRequest.getRecordSet().getItems().size() > 0)
+        {
+            createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
+            
+        } else
+        {
+            UICacheManager.displayErrorDlg(getResourceString("ERROR_MISSING_RS_OR_NOITEMS"));  
+        }
     }
 
     
@@ -587,7 +684,7 @@ public class InteractionsTask extends BaseTask
                         rs.setName(loan.getIdentityTitle());
                         rs.setDbTableId(loan.getTableId());
                         rs.addItem(loan.getId());
-                        printLoan(rs);
+                        printLoan(null, rs);
                     }
                 }
             } finally
@@ -666,7 +763,7 @@ public class InteractionsTask extends BaseTask
                             {
                                 dlg.getMultiView().getDataFromUI();
                                 
-                                System.out.println("["+emailPrefs.get("bodytext")+"]");
+                                //System.out.println("["+emailPrefs.get("bodytext")+"]");
                                 
                                 TableViewObj  tblViewObj = (TableViewObj)viewable;
                                 File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
@@ -874,7 +971,27 @@ public class InteractionsTask extends BaseTask
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
-
+    
+    /**
+     * Processes all Commands of type RECORD_SET.
+     * @param cmdAction the command to be processed
+     */
+    protected void processRecordSetCommands(final CommandAction cmdAction)
+    {
+        if (cmdAction.isAction("Clicked"))
+        {
+            Object srcObj = cmdAction.getSrcObj();
+            Object dstObj = cmdAction.getDstObj();
+            Object data   = cmdAction.getData();
+            
+            log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
+             
+            if (ContextMgr.getCurrentContext() == this)
+            {
+                printLoan(null, srcObj);
+            }
+        }
+    }
     /**
      * Processes all Commands of type DB_CMD_TYPE.
      * @param cmdAction the command to be processed
@@ -920,43 +1037,34 @@ public class InteractionsTask extends BaseTask
         {
             createAndSendEMail((SubPaneIFace)cmdAction.getData());
             
-        } else if (cmdAction.isAction("NewInteraction"))
-        {
-            if (cmdAction.getData() instanceof RecordSetIFace)
-            {
-                addSubPaneToMgr(DataEntryTask.createFormFor(this, name, (RecordSetIFace)cmdAction.getData()));
-
-            } else if (cmdAction.getData() instanceof Object[])
-            {
-                Object[] dataList = (Object[])cmdAction.getData();
-                if (dataList.length != 3)
-                {
-                    View   view = (View)dataList[0];
-                    String mode = (String)dataList[1];
-                    String idStr = (String)dataList[2];
-                    DataEntryTask.openView(this, view, mode, idStr);
-
-                } else
-                {
-                    log.error("The Edit Command was sent with an object Array that was not 3 components!");
-                }
-            } else
-            {
-                log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
-            }
-          
         } else if (cmdAction.isAction(PRINT_LOAN))
         {
             if (cmdAction.getData() instanceof RecordSetIFace)
             {
                 if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
                 {
-                    JOptionPane.showMessageDialog(null, getResourceString("ERROR_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
+                                                  getResourceString("ERROR_RECORDSET_TABLEID"), 
+                                                  getResourceString("Error"), 
+                                                  JOptionPane.ERROR_MESSAGE);
                     return;
+                }
+
+                printLoan(null, cmdAction.getData());
+                
+            } if (cmdAction.getData() instanceof CommandAction)
+            {
+                String tableIDStr = cmdAction.getPropertyAsString("tableid");
+                if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
+                {
+                    RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
+                    if (recordSet != null)
+                    {
+                        printLoan(cmdAction.getPropertyAsString("file"), recordSet);
+                    }
                 }
             }
 
-            printLoan(cmdAction.getData());
             
         } else if (cmdAction.isAction("CreateInfoRequest") && cmdAction.getData() instanceof RecordSet)
         {
@@ -999,8 +1107,7 @@ public class InteractionsTask extends BaseTask
                                 
                         } else if (cmdAction.isAction(InfoRequestName))
                         {
-                            createInfoRequest(rs);    
-     
+                            createInfoRequest(rs);      
                         }
                     } else
                     {
@@ -1010,6 +1117,13 @@ public class InteractionsTask extends BaseTask
                 } else if (cmdData instanceof InfoRequest)
                 {
                     createNewLoan((InfoRequest)cmdData);
+                    
+                } else if (cmdData instanceof CommandAction)
+                {
+                    if (cmdAction.isAction(InfoRequestName))
+                    {
+                        createInfoRequest(null);    
+                    }
                 }
             }
         }
@@ -1030,7 +1144,7 @@ public class InteractionsTask extends BaseTask
 
         } else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
         {
-            if (cmdAction.isAction(DataEntryTask.OPEN_VIEW))
+            if (cmdAction.isAction(DataEntryTask.VIEW_WAS_OPENED))
             {
                 adjustLoanForm((FormPane)cmdAction.getData());
             }
@@ -1038,6 +1152,12 @@ public class InteractionsTask extends BaseTask
         } else if (cmdAction.isType(INTERACTIONS))
         {
             processInteractionsCommands(cmdAction);
+            
+        } else if (cmdAction.isType(RecordSetTask.RECORD_SET))
+        {
+            processRecordSetCommands(cmdAction);
         }
+            
+
     }
 }

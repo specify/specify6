@@ -210,7 +210,7 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, false);
+            ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
             dialog.setData(selection);
             dialog.showDisplay(true);
         }
@@ -228,7 +228,7 @@ public class IconViewObj implements Viewable
                     return;
                 }
                 
-                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection,false);
+                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
                 dialog.setCloseListener(new PropertyChangeListener()
                 {
                     public void propertyChange(PropertyChangeEvent evt)
@@ -295,7 +295,7 @@ public class IconViewObj implements Viewable
                 final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
                 
                 // get an edit dialog for the object
-                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject,true);
+                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
                 dialog.setCloseListener(new PropertyChangeListener()
                 {
                     public void propertyChange(PropertyChangeEvent evt)
@@ -707,7 +707,7 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            TableInfo parentTI = DBTableIdMgr.lookupByClassName(parentDataObj.getClass().getName());
+            TableInfo parentTI = DBTableIdMgr.getByClassName(parentDataObj.getClass().getName());
             TableRelationship rel = parentTI.getRelationshipByName(cellName);
             this.dataClassName = rel.getClassName();
         }

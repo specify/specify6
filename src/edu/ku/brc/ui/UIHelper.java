@@ -86,7 +86,6 @@ import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
-import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
 
 /**
  * A Helper class that has a very wide array of misc methods for helping out. (Is that meaningless or what?)
@@ -1124,28 +1123,28 @@ public final class UIHelper
      * @param altView the current AaltView
      * @param mainComp the mainComp that this is being launched from
      * @param dataObj the data object for the dialog (cannot be NULL)
+     * @param isEditMode whether it is in edit mode
      * @param isNewObject whether it is a new object
      * @return the dialog
      */
     public static  ViewBasedDisplayIFace createDataObjectDialog(final AltView          altView, 
                                                                 final JComponent       mainComp, 
                                                                 final FormDataObjIFace dataObj, 
+                                                                final boolean          isEditMode,
                                                                 final boolean          isNewObject)
     {
-        TableInfo setTI = DBTableIdMgr.lookupByClassName(dataObj.getClass().getName());
+        TableInfo setTI = DBTableIdMgr.getByClassName(dataObj.getClass().getName());
         String defFormName = setTI.getEditObjDialog();
 
         if (StringUtils.isNotEmpty(defFormName))
         {
-            boolean isEdit  = (altView.getMode() == CreationMode.Edit) ? true : false;
-            isEdit = true;
             int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
-            String  title   = (isNewObject && isEdit) ? getResourceString("Edit") : dataObj.getIdentityTitle();
+            String  title   = (isNewObject && isEditMode) ? getResourceString("Edit") : dataObj.getIdentityTitle();
             ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
                                                                         defFormName,
                                                                         title,
                                                                         getResourceString("OK"),
-                                                                        isEdit,
+                                                                        isEditMode,
                                                                         opts,
                                                                         FRAME_TYPE.DIALOG);
             return dialog;

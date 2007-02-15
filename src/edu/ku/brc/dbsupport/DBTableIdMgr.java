@@ -19,6 +19,7 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -168,15 +169,22 @@ public class DBTableIdMgr
 		}
         log.debug("Done Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath());
 	}
+    
+    /**
+     * Returns the full collection of Tables. 
+     * @return a collection of TableInfo objects
+     */
+    public static Collection<TableInfo> getList()
+    {
+        return instance.hash.values();
+    }
 
 	/**
 	 * Returns the defualt form name for a given table ID.
-	 * 
-	 * @param id
-	 *            the ID of a table
+	 * @param id the ID of a table
 	 * @return the default form name
 	 */
-	public static String lookupDefaultFormNameById(final int id)
+	public static String getDefaultFormNameById(final int id)
 	{
 		// for now the default name will
 		TableInfo tableInfo = instance.hash.get(id);
@@ -190,11 +198,10 @@ public class DBTableIdMgr
 	/**
 	 * This looks it up by table name (not Object name) the look up is case
 	 * insensitive.
-	 * 
 	 * @param name the name
 	 * @return the id of the table
 	 */
-	public static int lookupIdByShortName(final String name)
+	public static int getIdByShortName(final String name)
 	{
 		for (TableInfo tableInfo : instance.hash.values())
 		{
@@ -217,7 +224,7 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public static int lookupIdByClassName(final String className)
+    public static int getIdByClassName(final String className)
     {
         for (TableInfo tableInfo : instance.hash.values())
         {
@@ -236,7 +243,7 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public static TableInfo lookupByClassName(final String className)
+    public static TableInfo getByClassName(final String className)
     {
         for (TableInfo tableInfo : instance.hash.values())
         {
@@ -254,7 +261,7 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public static TableInfo lookupByShortClassName(final String shortClassName)
+    public static TableInfo getByShortClassName(final String shortClassName)
     {
         for (TableInfo tableInfo : instance.hash.values())
         {
@@ -271,7 +278,7 @@ public class DBTableIdMgr
      * @param tableId the id to look up
      * @return the table info object
      */
-    public static TableInfo lookupInfoById(final int tableId)
+    public static TableInfo getInfoById(final int tableId)
     {
         return instance.hash.get(tableId);
     }

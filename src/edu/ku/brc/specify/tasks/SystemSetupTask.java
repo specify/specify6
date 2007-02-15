@@ -557,7 +557,7 @@ public class SystemSetupTask extends BaseTask
 
                 savePickList(pickList);
 
-                String viewName = DBTableIdMgr.lookupDefaultFormNameById(DBTableIdMgr.lookupIdByShortName("picklist"));
+                String viewName = DBTableIdMgr.getDefaultFormNameById(DBTableIdMgr.getIdByShortName("picklist"));
                 removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
 
             } else if (cmdAction.isAction("DeletePickList"))
@@ -567,7 +567,7 @@ public class SystemSetupTask extends BaseTask
 
                 if (recentFormPane != null && recentFormPane.getData() != null)
                 {
-                    String viewName = DBTableIdMgr.lookupDefaultFormNameById(DBTableIdMgr.lookupIdByShortName("picklist"));
+                    String viewName = DBTableIdMgr.getDefaultFormNameById(DBTableIdMgr.getIdByShortName("picklist"));
                     removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
                 }
 

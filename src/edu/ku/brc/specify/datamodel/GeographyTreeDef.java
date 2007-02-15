@@ -338,7 +338,15 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 44;
     }

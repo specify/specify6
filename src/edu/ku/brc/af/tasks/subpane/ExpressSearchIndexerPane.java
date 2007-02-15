@@ -1248,7 +1248,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     {
                         allOK = false;
                         outOfDateHash.put(nameObj.toString(), outOfDate);
-                        System.out.println("["+nameObj.toString()+"]");
+                        //System.out.println("["+nameObj.toString()+"]");
                     }
                     
                 } else

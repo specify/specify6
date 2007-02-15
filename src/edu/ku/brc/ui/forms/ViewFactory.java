@@ -1015,6 +1015,7 @@ public class ViewFactory
 
                         case textpl:
                             JTextField txt = new TextFieldFromPickListTable(adapter);
+                            changeTextFieldUIForDisplay(txt);
                             compToAdd = txt;
                             break;
                         

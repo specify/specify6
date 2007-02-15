@@ -862,15 +862,20 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
         collectingEvent.setLocality(null);
     }
 
-
-    // Delete Add Methods
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 2;
     }

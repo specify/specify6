@@ -225,7 +225,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     {
         if (value == null && StringUtils.isNotEmpty(defaultValue))
         {
-            this.setValue(Integer.parseInt((String)defaultValue));
+            this.setValue(Integer.parseInt(defaultValue));
             
         } else if (value instanceof Integer || value instanceof Long)
         {

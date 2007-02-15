@@ -12,45 +12,28 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.af.core;
+/**
+ * 
+ */
+package edu.ku.brc.ui.validation;
 
-import javax.swing.ImageIcon;
-
-import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 
 /**
  * @author rods
  *
  * @code_status Alpha
  *
+ * Created Date: Feb 15, 2007
+ *
  */
-public class NavBoxButton extends RolloverCommand implements NavBoxItemIFace
+public interface FormattedTextValidatorIFace
 {
 
-    /**
-     * Constructor.
-     */
-    public NavBoxButton()
-    {
-        // nothing to do 
-    }
-
-    /**
-     * Constructor.
-     * @param label the text label
-     * @param imgIcon the image icon
-     */
-    public NavBoxButton(String label, ImageIcon imgIcon)
-    {
-        super(label, imgIcon);
-    }
+    public boolean validate(UIFieldFormatter fomatter, String value);
     
-    /* (non-Javadoc)
-     * @see java.awt.Component#toString()
-     */
-    public String toString()
-    {
-        return label;
-    }
+    public boolean isValid();
+    
+    public String getReason();
     
 }

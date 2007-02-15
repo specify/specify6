@@ -161,24 +161,20 @@ public class BorrowAgent extends DataModelObjBase implements java.io.Serializabl
         this.borrow = borrow;
     }
 
-
-
-
-
-    // Add Methods
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    // Delete Add Methods
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 19;
     }

@@ -129,6 +129,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(Integer.parseInt(tableInfo.getTableId())) :
                                                        new ArrayList<ServiceInfo>();
 
+        //System.out.println("["+tableInfo.getTableId()+"]["+services.size()+"]");
         StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
         colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", services.size())); // add additional col defs for services
 
@@ -447,13 +448,13 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
     //--------------------------------------------------------------
 
     /**
-     *
-.    */
+     * 
+     */
     class ESTableAction implements ActionListener
     {
-        protected CommandAction cmd;
-        protected RecordSetIFace     recordSet;
-        protected JTable        estTable;
+        protected CommandAction           cmd;
+        protected RecordSetIFace          recordSet;
+        protected JTable                  estTable;
         protected ExpressResultsTableInfo estTableInfo;
 
         public ESTableAction(final CommandAction cmd,

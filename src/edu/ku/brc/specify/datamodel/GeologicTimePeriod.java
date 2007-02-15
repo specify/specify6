@@ -699,6 +699,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		return false;
 	}
 	
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getComparator()
+     */
     @Transient
 	public Comparator<? super GeologicTimePeriod> getComparator()
 	{
@@ -710,7 +713,15 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 46;
     }

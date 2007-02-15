@@ -95,7 +95,7 @@ public final class FormHelper
             FormDataObjIFace formDataObj = Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class).newInstance();
             formDataObj.initialize();
             
-            CommandDispatcher.dispatch(new CommandAction("Data", "New", formDataObj));
+            CommandDispatcher.dispatch(new CommandAction("Data", "NewObjDataCreated", formDataObj));
             
             return formDataObj;
             

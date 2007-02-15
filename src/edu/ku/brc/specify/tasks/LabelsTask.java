@@ -16,33 +16,16 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.HeadlessException;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -50,7 +33,6 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
-import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -62,15 +44,12 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
-import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.IconListCellRenderer;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostActionableDropManager;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -86,13 +65,14 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 @SuppressWarnings("serial")
 public class LabelsTask extends BaseTask
 {
+    private static final Logger log = Logger.getLogger(LabelsTask.class);
+            
     // Static Data Members
     public static final DataFlavor LABEL_FLAVOR = new DataFlavor(LabelsTask.class, "Label");
-    private static final Logger log = Logger.getLogger(LabelsTask.class);
 
     public static final String LABELS = "Labels";
 
-    public static final String DOLABELS_ACTION     = "DoLabels";
+    //public static final String DOLABELS_ACTION     = "DoLabels";
     public static final String NEWRECORDSET_ACTION = "NewRecordSet";
     public static final String PRINT_LABEL         = "PrintLabel";
 
@@ -116,30 +96,6 @@ public class LabelsTask extends BaseTask
         CommandDispatcher.register(APP_CMD_TYPE, this);
     }
 
-   /**
-     * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
-     * @param navBox the parent box for the nbi to be added to
-     * @param navBoxItemDropZone the nbi in question
-     * @return returns the new NavBoxItem
-     */
-    protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final NavBox              navBox,
-                                                                final NavBoxItemIFace     nbi,
-                                                                final Map<String, String> params)
-    {
-        NavBoxButton roc = (NavBoxButton)nbi;
-        roc.setData(params);
-
-        // When Being Dragged
-        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        roc.addDragDataFlavor(LABEL_FLAVOR);
-
-        // When something is dropped on it
-        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-
-        navBox.add(nbi);
-        labelsList.add(nbi);
-        return nbi;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
@@ -173,12 +129,14 @@ public class LabelsTask extends BaseTask
                 {
                     // XXX won't be needed when we start validating the XML
                     String tableIdStr = tcd.getParams().get("tableid");
-                    if (tableIdStr == null)
+                    if (tableIdStr != null)
                     {
-                        log.error("Label Command is missing the table id");
+                        CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, tcd.getParams());
+                        labelsList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), name, cmdAction, true));// true means make it draggable
+                        
                     } else
                     {
-                        addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), name, IconManager.IconSize.Std16, new DisplayAction(tcd)), tcd.getParams());
+                        log.error("Label Command is missing the table id");
                     }
                 }
             }
@@ -265,39 +223,37 @@ public class LabelsTask extends BaseTask
 
         // XXX Need to pass in or check table type for different types of lables.
 
+        NavBoxItemIFace nbi = null;
         if (labelsList.size() == 1)
         {
-            Map<String, String> params = convertDataToMap(labelsList.get(0).getData());
-            return params.get("file");
+            nbi = labelsList.get(0);
 
         } else
         {
-            ChooseLabel dlg = new ChooseLabel();
+            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+                                                                                            getResourceString("ChooseLabel"), 
+                                                                                            labelsList, 
+                                                                                            IconManager.getIcon(name, IconManager.IconSize.Std24));
+            dlg.setMultiSelect(false);
+            dlg.setModal(true);
             dlg.setVisible(true);
-
-            return dlg.getName();
+            if (!dlg.isCancelled())
+            {
+                nbi  = dlg.getSelectedObject();
+            }
         }
+        
+        if (nbi != null && nbi.getData() != null)
+        {
+            Object data = nbi.getData();
+            if (data instanceof CommandAction)
+            {
+                return ((CommandAction)data).getPropertyAsString("file");
+            }
+        }
+        return null;
     }
 
-    /**
-     * Displays UI that asks the user to select a predefined label.
-     * @param tableId the table id
-     * @return returns the selected RecordSet or null
-     */
-    public static RecordSetIFace askForRecordSet(final int tableId)
-    {
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), tableId);
-        if (dlg.hasRecordSets())
-        {
-            dlg.setVisible(true); // modal (waits for answer here)
-            return dlg.getSelectedRecordSet();
-
-        } else
-        {
-            return null;
-        }
-
-    }
 
     /**
      * Single place to convert the data to a Map.
@@ -328,12 +284,11 @@ public class LabelsTask extends BaseTask
         for (NavBoxItemIFace nbi : labelsList)
         {
             Object data = nbi.getData();
-            if (data != null)
+            if (data instanceof CommandAction)
             {
-                Map<String, String> attrs      = convertDataToMap(data);
-                String              tableIDStr = attrs.get("tableid");
-                boolean             needsRS    = getNeedsRecordSet(attrs.get("reqrs"));
-                
+                CommandAction cmdAction = (CommandAction)data;
+                String              tableIDStr = cmdAction.getPropertyAsString("tableid");
+                boolean             needsRS    = getNeedsRecordSet(cmdAction.getPropertyAsString("reqrs"));
                 if (StringUtils.isNumeric(tableIDStr) && (!needsRecordSet ||  needsRS))
                 {
                     if (Integer.parseInt(tableIDStr) == tableId)
@@ -345,9 +300,6 @@ public class LabelsTask extends BaseTask
                 {
                     log.error("Attr [tableid] is not numeric for["+nbi.getTitle()+"]!");
                 }
-            } else
-            {
-                log.error(" The meta data is null for ["+nbi.getTitle()+"]");
             }
         }
         return count;
@@ -367,9 +319,14 @@ public class LabelsTask extends BaseTask
             if (countLabelsWithSimilarTableIds(rs.getDbTableId(), true) > 1) // only Count the ones that require data
             {
                 fileName = askForLabelName();
+                
             } else
             {
-                fileName = convertDataToMap(oneNbi.getData()).get("file");
+                Object nbData = oneNbi.getData();
+                if (nbData instanceof CommandAction)
+                {
+                    fileName = ((CommandAction)nbData).getPropertyAsString("file");
+                }
             }
 
             if (fileName != null)
@@ -455,7 +412,10 @@ public class LabelsTask extends BaseTask
             
             log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
              
-            createLabelFromSelectedRecordSet(srcObj);
+            if (ContextMgr.getCurrentContext() == this)
+            {
+                createLabelFromSelectedRecordSet(srcObj);
+            }
         }
     }
     
@@ -465,7 +425,6 @@ public class LabelsTask extends BaseTask
      */
     protected void processLabelCommands(final CommandAction cmdAction)
     {
-        
         //---------------------------------------------------------------------------
         // This Code here needs to be refactored and moved to the NavBoxAction
         // so it can happen in a single generic place (Each task has this code)
@@ -478,38 +437,8 @@ public class LabelsTask extends BaseTask
                 return;
             }
         }*/
-        
-        
-        if (cmdAction.isAction(DOLABELS_ACTION))
-        {
-            if (cmdAction.getData() instanceof RecordSet)
-            {
-                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-                
-                // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
-                // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-                if (recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
-                {
-                    cmdAction.setProperty("file", "fish_label.jrxml");
-                    cmdAction.setProperty("title", "Fish Labels");
-                }
-
-                if (checkForALotOfLabels(recordSet))
-                {
-                    String labelFileName = cmdAction.getPropertyAsString("file");
-
-                    if (StringUtils.isNotEmpty(labelFileName))
-                    {
-                        labelFileName = askForLabelName();
-                    }
-                    
-                    if (StringUtils.isNotEmpty(labelFileName))
-                    {
-                        doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, this);
-                    }
-                }
-            }
-        } else if (cmdAction.isAction(NEWRECORDSET_ACTION))
+           
+        if (cmdAction.isAction(NEWRECORDSET_ACTION))
         {
             if (cmdAction.getData() instanceof GhostActionable)
             {
@@ -532,9 +461,16 @@ public class LabelsTask extends BaseTask
                 
                 // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
                 // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-                if (recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
+                if (recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
                 {
-                    cmdAction.setProperty("file", "LoanInvoice.jrxml");
+                    cmdAction.setProperty("file", "fish_label.jrxml");
+                    cmdAction.setProperty("title", "Fish Labels");
+                    
+                } else if (recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
+                {
+                    // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
+                    // to To things. One way to get here with a null title is to click on the Labels btn from the search results
+                    cmdAction.setProperty("file",  "LoanInvoice.jrxml");
                     cmdAction.setProperty("title", "Loan Invoice");
                 }
 
@@ -549,10 +485,23 @@ public class LabelsTask extends BaseTask
                     
                     if (StringUtils.isNotEmpty(labelFileName))
                     {
-                         Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
+                        Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
                         doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, originatingTask);
                     }
                 }
+                
+            } else
+            {
+                String tableIDStr = cmdAction.getPropertyAsString("tableid");
+                if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
+                {
+                    RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
+                    if (recordSet != null)
+                    {
+                        doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, this);
+                    }
+                }
+                
             }
         } 
     }
@@ -563,7 +512,6 @@ public class LabelsTask extends BaseTask
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        
         if (cmdAction.isType(LABELS))
         {
             processLabelCommands(cmdAction);
@@ -576,6 +524,7 @@ public class LabelsTask extends BaseTask
         {
             isInitialized = false;
             this.initialize();
+            ContextMgr.removeServicesByTask(this);
         }
 
     }
@@ -595,216 +544,4 @@ public class LabelsTask extends BaseTask
         return needsRS;
     }
 
-    //--------------------------------------------------------------
-    // Inner Classes
-    //--------------------------------------------------------------
-
-     /**
-     *
-     * @author rods
-     *
-     */
-    class DisplayAction implements ActionListener
-    {
-        private String    nameStr;
-        private String    titleStr;
-        private int       tableId;
-        private RecordSetIFace recordSet = null;
-
-
-        public DisplayAction(final TaskCommandDef tcd)
-        {
-            this.nameStr  = tcd.getParams().get("file");
-            this.titleStr = tcd.getParams().get("title");
-            this.tableId  = Integer.parseInt(tcd.getParams().get("tableid"));
-        }
-
-        public DisplayAction(final String nameStr, final String titleStr)
-        {
-            this.nameStr  = nameStr;
-            this.titleStr = titleStr;
-        }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            boolean needsRecordSets = true;
-            
-            Object data = null;
-            if (e instanceof DataActionEvent)
-            {
-                DataActionEvent dae = (DataActionEvent)e;
-                data = dae.getData();
-                if (data instanceof RecordSet)
-                {
-                    RecordSetIFace rs = (RecordSetIFace)data;
-                    if (rs.getDbTableId() != tableId)
-                    {
-                        JOptionPane.showMessageDialog(null, getResourceString("ERROR_LABELS_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-                
-                if (data instanceof Map<?,?>)
-                {
-                    needsRecordSets = getNeedsRecordSet(convertDataToMap(data).get("reqrs"));
-                }
-            }
-
-            if (needsRecordSets && (data == null || data instanceof Map))
-            {
-                ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), tableId);
-                if (dlg.getRecordSets().size() == 1)
-                {
-                    data = dlg.getRecordSets().get(0);
-                    
-                } else if (dlg.hasRecordSets() && dlg.getRecordSets().size() > 1)
-                {
-                    dlg.setVisible(true); // modal (waits for answer here)
-                    data = dlg.getSelectedRecordSet();
-                    if (data == null)
-                    {
-                        return; // User hit cancel
-                    }
-
-                } else
-                {
-                    JOptionPane.showMessageDialog(null, getResourceString("NO_RECORD_SETS"));
-                }
-            }
-
-            if (!needsRecordSets)
-            {
-                doLabels(nameStr, titleStr, null, null);
-                
-            } else if (data instanceof RecordSet)
-            {
-                doLabels(nameStr, titleStr, (RecordSetIFace)data, null);
-
-            } else
-            {
-                log.error("Data is not RecordSet");
-            }
-
-        }
-
-        public void setRecordSet(final RecordSetIFace recordSet)
-        {
-            this.recordSet = recordSet;
-        }
-
-        public RecordSetIFace getRecordSet()
-        {
-            return recordSet;
-        }
-    }
-
-
-    /**
-     * @author rods
-     *
-     */
-    public class ChooseLabel extends JDialog implements ActionListener
-    {
-        protected JButton        cancelBtn;
-        protected JButton        okBtn;
-        protected JList          list;
-        protected java.util.List recordSets;
-
-        public ChooseLabel() throws HeadlessException
-        {
-            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("ChooseLabel"), true);
-            createUI();
-            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        }
-
-        /**
-         * Creates the Default UI for Lable task
-         *
-         */
-        protected void createUI()
-        {
-
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-
-            panel.add(new JLabel(getResourceString("ChooseLabel"), JLabel.CENTER), BorderLayout.NORTH);
-
-            try
-            {
-                ListModel listModel = new AbstractListModel()
-                {
-                    public int getSize() { return labelsList.size(); }
-                    public Object getElementAt(int index)
-                    {
-                        return ((NavBoxButton)labelsList.get(index)).getLabelText();
-                    }
-                };
-
-                list = new JList(listModel);
-                list.setCellRenderer(new IconListCellRenderer(icon));
-
-                list.setVisibleRowCount(5);
-                list.addMouseListener(new MouseAdapter() {
-                    public void mouseClicked(MouseEvent e) {
-                        if (e.getClickCount() == 2) {
-                            okBtn.doClick(); //emulate button click
-                        }
-                    }
-                });
-                JScrollPane listScroller = new JScrollPane(list);
-                panel.add(listScroller, BorderLayout.CENTER);
-
-                // Bottom Button UI
-                cancelBtn         = new JButton(getResourceString("Cancel"));
-                okBtn             = new JButton(getResourceString("OK"));
-
-                okBtn.addActionListener(this);
-                getRootPane().setDefaultButton(okBtn);
-
-                ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-                btnBuilder.addGlue();
-                btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
-
-                cancelBtn.addActionListener(new ActionListener()
-                        {  public void actionPerformed(ActionEvent ae) { setVisible(false);} });
-
-                panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
-
-            } catch (Exception ex)
-            {
-                log.error(ex);
-            }
-
-            setContentPane(panel);
-            pack();
-            //setLocationRelativeTo(locationComp);
-
-        }
-
-         /* (non-Javadoc)
-         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-         */
-        public void actionPerformed(ActionEvent e)
-        {
-            // Handle clicks on the OK and Cancel buttons.
-           setVisible(false);
-        }
-
-        /* (non-Javadoc)
-         * @see java.awt.Component#getName()
-         */
-        public String getName()
-        {
-            int inx = list.getSelectedIndex();
-            if (inx != -1)
-            {
-                return convertDataToMap(labelsList.get(inx).getData()).get("file");
-
-            } else
-            {
-                return null;
-            }
-        }
-    }
 }

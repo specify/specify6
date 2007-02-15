@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -64,7 +65,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     private static final Logger log = Logger.getLogger(ChooseRecordSetDlg.class);
 
 
-    private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
+    private ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
 
     // Data Members
     protected JButton         cancelBtn;
@@ -110,6 +111,18 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
                 public Object getElementAt(int index) { return recordSets.get(index).getName(); }
             };
 
+            if (recordSets.size() > 0)
+            {
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSets.get(0).getDbTableId());
+                if (tblInfo != null)
+                {
+                    ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
+                    if (rsIcon != null)
+                    {
+                        icon = rsIcon;
+                    }
+                }
+            }
             list = new JList(listModel);
             list.setCellRenderer(new IconListCellRenderer(icon)); // icon comes from the base class (it's probably size 16)
             list.setVisibleRowCount(10);

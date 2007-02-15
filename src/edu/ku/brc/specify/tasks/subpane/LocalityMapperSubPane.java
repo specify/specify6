@@ -339,7 +339,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                 }
             }});
 
-
+        // XXX TODO FIX ME!
         String startDateStr = scrDateFormat.format(startCE.getStartDate().getTime());
         String endDateStr   = scrDateFormat.format((endCE.getEndDate() != null ? endCE.getEndDate() : endCE.getStartDate()).getTime());
 

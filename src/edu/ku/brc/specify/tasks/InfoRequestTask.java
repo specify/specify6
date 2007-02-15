@@ -149,7 +149,7 @@ public class InfoRequestTask extends BaseTask
         // XXX FIXME These value should not be hard coded here
         if (false)
         {
-            int                 tableId = DBTableIdMgr.lookupIdByShortName("InfoRequest");
+            int                 tableId = DBTableIdMgr.getIdByShortName("InfoRequest");
             DroppableFormObject dfo     = new DroppableFormObject("view valid", tableId, infoRequest);
             NavBoxItemIFace     nbi     = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), INFOREQUEST, INFOREQUEST, "Delete", dfo);
             NavBoxButton        roc     = (NavBoxButton)nbi;
@@ -267,7 +267,7 @@ public class InfoRequestTask extends BaseTask
      */
     public static void createInfoRequest(final RecordSetIFace recordSet)
     {
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupByShortClassName(InfoRequest.class.getSimpleName());
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getByShortClassName(InfoRequest.class.getSimpleName());
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         

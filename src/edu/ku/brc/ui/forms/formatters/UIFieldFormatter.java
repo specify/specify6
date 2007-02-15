@@ -101,6 +101,26 @@ public class UIFieldFormatter
         return partialDateType;
     }
     
+    public int getLength()
+    {
+        int len = 0;
+        for (UIFieldFormatterField field : fields)
+        {
+            len += field.getSize();
+        }
+        return len;
+    }
+    
+    public String toPattern()
+    {
+        StringBuilder str = new StringBuilder();
+        for (UIFieldFormatterField field : fields)
+        {
+            str.append(field.getValue());
+        }
+        return str.toString();
+    }
+    
     /**
      * @return the dateWrapper
      */

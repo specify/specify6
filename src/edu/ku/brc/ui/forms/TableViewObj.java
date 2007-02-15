@@ -26,6 +26,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.List;
@@ -70,6 +72,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -158,6 +161,7 @@ public class TableViewObj implements Viewable,
     protected List<Object>                  dataObjList     = null;
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
+    protected boolean                       isLoaded        = false;
     
     protected String                        dataClassName;
     protected String                        dataSetFieldName;
@@ -569,13 +573,14 @@ public class TableViewObj implements Viewable,
             }
         }
         
-        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, false);
+        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, MultiView.isOptionOn(options, MultiView.IS_EDITTING), false);
         if (dialog != null)
         {
             if (isEdit)
             {
                 dialog.setCloseListener(new PropertyChangeListener()
                 {
+                    @SuppressWarnings("unchecked")
                     public void propertyChange(PropertyChangeEvent evt)
                     {
                         String action = evt.getPropertyName();
@@ -591,6 +596,8 @@ public class TableViewObj implements Viewable,
                                 if (isNew)
                                 {
                                     dataObjList.add(daObj);
+                                    
+                                    Collections.sort((List)dataObjList);                          
                                     if (origDataSet != null)
                                     {
                                         origDataSet.add(daObj);
@@ -829,7 +836,16 @@ public class TableViewObj implements Viewable,
             if (dataObj instanceof Set)
             {
                 origDataSet = (Set<Object>)dataObj;
-                dataObjList.addAll(origDataSet);
+                List newList = Collections.list(Collections.enumeration(origDataSet));
+                if (newList.size() > 0)
+                {
+                    if (newList.get(0) instanceof Comparable<?>)
+                    {
+                        Collections.sort(newList);
+                    }
+                }
+                dataObjList.addAll(newList);
+
                 
             } else if (dataObj instanceof RecordSetIFace)
             {
@@ -856,6 +872,8 @@ public class TableViewObj implements Viewable,
                 dataObjList.add(dataObj);
             }
         }
+        
+        setDataIntoUI();
         
         if (table != null)
         {
@@ -901,7 +919,33 @@ public class TableViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
-        // Not applicable
+        if (dataObjList != null && model != null)
+        {
+            DataProviderSessionIFace tmpSession = session;
+            if (tmpSession == null)
+            {
+                tmpSession = DataProviderFactory.getInstance().createSession();
+                for (Object dObj : dataObjList)
+                {
+                    tmpSession.attach(dObj);
+                }
+            }
+            isLoaded = true;
+    
+            for (int i=0;i<dataObjList.size();i++)
+            {
+                for (int j=0;j<model.getColumnCount();j++)
+                {
+                    model.getValueAt(i, j);
+                }
+            }
+            
+            if (session == null && tmpSession != null)
+            {
+                tmpSession.close();
+                
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -1027,25 +1071,6 @@ public class TableViewObj implements Viewable,
     public void setSession(final DataProviderSessionIFace session)
     {
         this.session = session;
-        /*
-        if (dataObj instanceof RecordSetIFace)
-        {
-            RecordSetIFace recordSet = (RecordSetIFace)dataObj;
-            
-            DBTableIdMgr.getInClause(recordSet);
-            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
-            
-            DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
-            
-            //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            
-            String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
-            if (StringUtils.isNotBlank(sqlStr))
-            {
-                dataObjList.addAll(session.getDataList(sqlStr));
-            }
-        }
-        */
     }
 
     /* (non-Javadoc)
@@ -1283,7 +1308,7 @@ public class TableViewObj implements Viewable,
         fullObjPath.append(subFormCell.getName());
         
         String                 clsName = getParentClassName();
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupByClassName(clsName);
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getByClassName(clsName);
         
         if (tblInfo != null)
         {
@@ -1533,7 +1558,7 @@ public class TableViewObj implements Viewable,
         {
             if (StringUtils.isNotEmpty(formCell.getName()))
             {
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupByClassName(parentClassName);
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getByClassName(parentClassName);
                 if (tblInfo != null)
                 {
                     DBTableIdMgr.RelationshipType type = tblInfo.getRelType(formCell.getName());
@@ -1688,9 +1713,20 @@ public class TableViewObj implements Viewable,
         {
             if (columnList != null && dataObjList != null && dataObjList.size() > 0)
             {
+                if (!isLoaded)
+                {
+                    setDataIntoUI();
+                }
+                
                 ColumnInfo colInfo = columnList.get(column);
                 Object     rowObj  = dataObjList.get(row);
                 //log.info("["+colInfo.getFullCompName()+"]");
+                
+                if (session != null)
+                {
+                    session.attach(rowObj);
+                }
+                
 
                 /*
                 String[] fName      = new String[1];
@@ -1732,6 +1768,7 @@ public class TableViewObj implements Viewable,
                     
                 } else if (dataVal instanceof FormDataObjIFace)
                 {
+
                     FormDataObjIFace formObj = (FormDataObjIFace)dataVal;
                     Object val = DataObjFieldFormatMgr.format(dataVal, formObj.getDataClass());
                     if (val != null)

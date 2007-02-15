@@ -1391,7 +1391,7 @@
     		<rows>
 			   <row>
                    <cell type="label" labelfor="7" label="Prep Method"/>
-			       <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true" valtype="Changed"/>
+			       <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true" valtype="Changed"/>
 			   </row>
     			<row>
                     <cell type="label" labelfor="1" label="Prepared Date"/>

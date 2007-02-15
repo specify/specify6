@@ -28,6 +28,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.ImageIcon;
@@ -55,24 +57,31 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.AppResource;
+import edu.ku.brc.specify.datamodel.AppResourceData;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.CollectorActionListener;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -712,8 +721,93 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         UIHelper.centerAndShow(dialog);
                     }
                 });
+        
+        mi = UIHelper.createMenuItem(menu, "Test App Res", "T", "Test App Res", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    @SuppressWarnings("synthetic-access")
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        testAppRes();
+                    }
+                });
 
          return mb;
+    }
+
+    /**
+     * 
+     *
+     */
+    protected void testAppRes()
+    {
+        Vector<AppResourceIFace> list = new Vector<AppResourceIFace>();
+        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
+        {
+            list.add(ap);
+        } 
+        ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>(null, "Choose Me", list);
+        dlg.setVisible(true);
+        
+        AppResourceIFace appRes = dlg.getSelectedObject();
+        //System.out.println(appRes.getDataAsString());
+        
+        //AppResource ap = new AppResource();
+        //ap.initialize();
+        
+        AppResource oldAP = (AppResource)appRes;
+        
+        oldAP.setDataAsString(oldAP.getDataAsString());
+        
+        // Add it to be persisted
+        oldAP.getAppResourceDefaults().iterator().next().getPersistedAppResources().add(oldAP);
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+
+            /*ap.setName(oldAP.getName());
+            ap.setFileName(oldAP.getFileName());
+            ap.setDescription(oldAP.getDescription());
+            ap.setDataAsString(oldAP.getDataAsString());
+            ap.setLevel((short)0);
+            
+            ap.setSpecifyUser(oldAP.getSpecifyUser());*/
+            
+            
+            session.beginTransaction();
+            session.saveOrUpdate(oldAP);
+            session.commit();
+            
+            session.flush();
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            session.close();
+        }
+        
+        /*
+        session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            AppResource apNew = (AppResource)session.get(AppResource.class, ((AppResource)oldAP).getAppResourceId());
+            System.out.println(apNew.getDataAsString());
+            System.out.println(apNew.getId());
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            session.close();
+        }*/
+        
+        
     }
 
     /**

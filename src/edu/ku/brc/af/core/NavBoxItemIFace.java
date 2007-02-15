@@ -62,5 +62,11 @@ public interface NavBoxItemIFace
      * @param icon the new icon
      */
     public void setIcon(ImageIcon icon);
+    
+    /**
+     * Returns the Title.
+     * @return the title.
+     */
+    public String toString();
 
 }

@@ -82,7 +82,7 @@ public class PickListTableAdapter extends PickListDBAdapter
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         //DBTableIdMgr.getQueryForTable(tableId, recordId)
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(DBTableIdMgr.lookupIdByShortName(pickList.getTableName()));
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(DBTableIdMgr.getIdByShortName(pickList.getTableName()));
         if (tableInfo != null)
         {
             // This could be moved to DBTableIdMgr but a new method would be needed
@@ -135,7 +135,7 @@ public class PickListTableAdapter extends PickListDBAdapter
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         //DBTableIdMgr.getQueryForTable(tableId, recordId)
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(DBTableIdMgr.lookupIdByShortName(pickList.getTableName()));
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(DBTableIdMgr.getIdByShortName(pickList.getTableName()));
         if (tableInfo != null)
         {
             try

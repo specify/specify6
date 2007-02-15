@@ -145,7 +145,15 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 501;
     }

@@ -369,7 +369,15 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 47;
     }

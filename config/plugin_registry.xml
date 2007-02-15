@@ -4,63 +4,37 @@
 <plugins>
 	<core>
 	    <plugin class="edu.ku.brc.af.tasks.StartUpTask"/>
-	    
-	    <plugin class="edu.ku.brc.specify.tasks.DataEntryTask">
-	    	<service command="Edit" tableid="1" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="2" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="3" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="5" tooltip="EditRecordSetTT"/>
-	        <service command="Edit" tableid="6" tooltip="EditRecordSetTT"/>
-	        <service command="Edit" tableid="7" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="8" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="9" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="10" tooltip="EditRecordSetTT"/>
-	        <service command="Edit" tableid="41" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="50" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="51" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="52" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="65" tooltip="EditRecordSetTT"/>
-	    	<service command="Edit" tableid="69" tooltip="EditRecordSetTT"/>
-	    </plugin>
+	    <plugin class="edu.ku.brc.specify.tasks.DataEntryTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask"/>
-	    
 	    <plugin class="edu.ku.brc.specify.tasks.LocationTreeTask"/>
-	    
 	    <plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask"/>
-	    
 	    <plugin class="edu.ku.brc.specify.tasks.GtpTreeTask"/>
-	    
 	    <plugin class="edu.ku.brc.specify.tasks.LabelsTask">
 	    	<service command="DoLabels" tableid="1" tooltip="CreateLabelTT"/>
 	    	<service command="DoLabels" tableid="7" tooltip="CreateLabelTT"/>
 	    	<service command="PrintLabel" tableid="52" tooltip="CreateLabelTT"/>
 	    </plugin>
-	    
 	    <plugin class="edu.ku.brc.specify.tasks.ReportsTask"/>
-	    
+	    <!--
 	    <plugin class="edu.ku.brc.specify.tasks.LocalityMapperTask">
 	        <service command="DoLocalityMap" tableid="10" tooltip="CreateLocalityMapTT"/>
 	        <service command="DoLocalityMap" tableid="11" tooltip="CreateLocalityMapTT"/>
-	    </plugin>
+	    </plugin> -->
 	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask">
 			<service command="CreateLoan" tableid="1" tooltip="CreateLoanFromRecordSetTT"/>
 	    	<!-- <service command="CreateInfoRequest" tableid="1" tooltip="CreateInfoRequestTT"/> -->
 	    </plugin>
 		<plugin class="edu.ku.brc.af.tasks.StatsTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.QueryTask"/>
-        <plugin class="edu.ku.brc.specify.tasks.RecordSetTask">
-	    	<service command="Save" tableid="1" tooltip="CreateRecordSetTT"/>
-            <service command="Save" tableid="7" tooltip="CreateRecordSetTT"/>
-        	<service command="Save" tableid="10" tooltip="CreateRecordSetTT"/>
-        	<service command="Save" tableid="52" tooltip="CreateRecordSetTT"/>
-        </plugin>
-        <!-- <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask">
-        	<service command="Create" tableid="1" tooltip="CreateInfoRequestTT"/>
-        </plugin> -->
+        <plugin class="edu.ku.brc.specify.tasks.RecordSetTask"/>
+        <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.SystemSetupTask"/>
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>
 
 	</core>
-	<external/>
+	
+	<external>
+		
+	</external>
 </plugins>

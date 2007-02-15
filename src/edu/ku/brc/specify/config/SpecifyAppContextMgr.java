@@ -561,6 +561,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             user = (SpecifyUser)list.get(0);
             user.getAgent(); // makes sure the Agent is not lazy loaded
+            user.getAgent().getName();
+            session.evict( user.getAgent());
             SpecifyUser.setCurrentUser(user);
 
         } else

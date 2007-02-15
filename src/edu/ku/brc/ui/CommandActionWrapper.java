@@ -17,6 +17,8 @@ package edu.ku.brc.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import edu.ku.brc.ui.dnd.DataActionEvent;
+
 /**
  * Utility class for encapsulating an CommandAction into a ActionListener
  *
@@ -43,6 +45,11 @@ public class CommandActionWrapper implements ActionListener
      */
     public void actionPerformed(ActionEvent e) 
     {
+        if (e instanceof DataActionEvent)
+        {
+            DataActionEvent dataActionEv = (DataActionEvent)e;
+            commandAction.setData(dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null); // Source shouldn't ever be null
+        }
         CommandDispatcher.dispatch(commandAction);
     }
 }

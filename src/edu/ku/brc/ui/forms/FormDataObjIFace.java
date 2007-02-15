@@ -110,7 +110,7 @@ public interface FormDataObjIFace
      * Returns the internal Table Id.
      * @return the internal Table Id
      */
-    public Integer getTableId();
+    public int getTableId();
     
     /**
      * Returns whether the viewing of this class is restrictable

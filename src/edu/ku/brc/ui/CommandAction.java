@@ -33,11 +33,11 @@ public class CommandAction
     protected final String action;
     protected final int    tableId;
     
-    protected Object data;
-    protected Object srcObj;
-    protected Object dstObj;
+    protected Object       data;
+    protected Object       srcObj;
+    protected Object       dstObj;
     
-    protected boolean isConsumed = false;
+    protected boolean      isConsumed = false;
     
     protected Hashtable<String, Object> properties = null;
     
@@ -93,6 +93,42 @@ public class CommandAction
         this.data    = null;
         this.srcObj  = null;
         this.dstObj  = null;
+    }
+    
+    /**
+     * Constructs a command.
+     * @param type the type of command determines who listens for it
+     * @param action the name of the action to be performed (contract between producer and consumer)
+     * @param tableId the table id that the command is associated with
+     * @param strParams string key/value pairs that will be added to the properties
+     */
+    public CommandAction(final String type, final String action, final int tableId, final Hashtable<String, String> strParams)
+    {
+        this.type    = type;
+        this.action  = action;
+        this.tableId = tableId;
+        this.data    = null;
+        this.srcObj  = null;
+        this.dstObj  = null;
+        
+        if (strParams != null)
+        {
+            for (String key : strParams.keySet())
+            {
+                setProperty(key, strParams.get(key));
+            }
+        }
+    }
+    
+    /**
+     * Constructs a command.
+     * @param type the type of command determines who listens for it
+     * @param action the name of the action to be performed (contract between producer and consumer)
+     * @param strParams string key/value pairs that will be added to the properties
+     */
+    public CommandAction(final String type, final String action, final Hashtable<String, String> strParams)
+    {
+        this(type, action, -1, strParams);
     }
     
     /**
@@ -175,11 +211,21 @@ public class CommandAction
         return srcObj;
     }
     
+    /**
+     * Gets the property as an Object.
+     * @param name the prop name
+     * @return the value
+     */
     public Object getProperty(final String name)
     {
         return properties == null ? null : properties.get(name);
     }
     
+    /**
+     * Returns property as a String.
+     * @param name the name
+     * @return the value as a string
+     */
     public String getPropertyAsString(final String name)
     {
         if (properties != null)
@@ -190,6 +236,11 @@ public class CommandAction
         return null;
     }
     
+    /**
+     * Sets a property.
+     * @param name the name of the property
+     * @param value the value of the property
+     */
     public void setProperty(final String name, final Object value)
     {
         if (properties == null)
@@ -200,6 +251,18 @@ public class CommandAction
     }
     
     public void addProperties(final Map<String, Object> props)
+    {
+        if (props != null)
+        {
+            if (properties == null)
+            {
+                properties = new Hashtable<String, Object>();
+            }
+            properties.putAll(props);
+        }
+    }
+    
+    public void addStringProperties(final Map<String, String> props)
     {
         if (props != null)
         {

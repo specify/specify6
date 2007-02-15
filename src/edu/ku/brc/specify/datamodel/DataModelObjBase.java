@@ -29,6 +29,8 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 @MappedSuperclass
@@ -184,7 +186,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Transient
-    public abstract Integer getTableId();
+    public abstract int getTableId();
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()

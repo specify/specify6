@@ -332,6 +332,17 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
     /**
+     * Sets all validators to unchanged state.
+     */
+    public void clearValidators()
+    {
+        for (FormValidator validator : formValidators)
+        {
+            validator.setHasChanged(false);
+        }
+    }
+    
+    /**
      * Returns true if any of the validators have changed, false if it has no validators or they haven't changed.
      * @return true if any of the validators have changed, false if it has no validators or they haven't changed.
      */

@@ -160,6 +160,16 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getName()
      */
     @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
@@ -357,14 +367,19 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
-     */
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getTableId()
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 68;
     }

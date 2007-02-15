@@ -388,9 +388,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @return - 
      * Agent
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent()
     {
         return this.agent;
@@ -543,15 +543,20 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         appResourceDefault.setSpecifyUser(null);
     }
 
-    // Delete Add Methods
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 72;
     }

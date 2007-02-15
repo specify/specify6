@@ -16,11 +16,13 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -47,12 +49,18 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandActionWrapper;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -211,16 +219,16 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param navBox navBox
      * @param labelText labelText
      * @param icoonName icon name
-     * @param cmdGroup cmdGroup
-     * @param cmdStr cmdStr
+     * @param cmdType cmdType
+     * @param cmdAction cmdAction
      * @param data data
      * @return btn
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox navBox,
                                             final String labelText,
                                             final String iconName,
-                                            final String cmdGroup,
-                                            final String cmdStr,
+                                            final String cmdType,
+                                            final String cmdAction,
                                             final Object data,
                                             final int    position)
     {
@@ -229,10 +237,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
         // This is part of the "DndDeletable" Interface,
         // the object is responsible for knowing how to delete itself.
-        CommandAction delRSCmd = new CommandAction(cmdGroup, cmdStr, data);
+        CommandAction delRSCmd = new CommandAction(cmdType, cmdAction, data);
         rb.setCommandAction(delRSCmd);
 
-        if (cmdStr != null)
+        if (cmdAction != null)
         {
             JPopupMenu popupMenu = rb.getPopupMenu();
 
@@ -258,25 +266,66 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         }
         return nb;
     }
+    
+    protected NavBoxItemIFace makeDraggableAndDroppableNavBtn(final NavBox        navBox,
+                                                              final String        labelText,
+                                                              final String        iconName,
+                                                              final CommandAction cmdAction,
+                                                              final boolean       makeDraggable)
+    {
+        return makeDraggableAndDroppableNavBtn(navBox, labelText, iconName, cmdAction, makeDraggable, -1);
+    }
+    
+    protected NavBoxItemIFace makeDraggableAndDroppableNavBtn(final NavBox        navBox,
+                                                              final String        labelText,
+                                                              final String        iconName,
+                                                              final CommandAction cmdAction,
+                                                              final boolean       makeDraggable,
+                                                              final int           position)
+    {
+        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16);
+        if (cmdAction != null)
+        {
+            NavBoxButton nbb = (NavBoxButton)nb;
+            nbb.addActionListener(new CommandActionWrapper(cmdAction));
+            nb.setData(cmdAction);
+        }
+        
+        if (position == -1)
+        {
+            navBox.add(nb);
+
+        } else
+        {
+            navBox.insert(nb, false, position);
+        }
+
+        // Make the Btn Draggable
+        if (makeDraggable && nb instanceof GhostActionable)
+        {
+            ((GhostActionable)nb).createMouseInputAdapter(); // this makes it draggable
+        }
+        return nb;
+    }
 
     /**
      * Helper method to add an item to the navbox.
      * @param navBox navBox
      * @param labelText navBox
      * @param iconName icon name
-     * @param cmdGroup navBox
-     * @param cmdStr cmdStr
+     * @param cmdType cmdType
+     * @param cmdAction cmdAction
      * @param data data
      * @return btn
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox navBox,
                                             final String labelText,
                                             final String iconName,
-                                            final String cmdGroup,
-                                            final String cmdStr,
+                                            final String cmdType,
+                                            final String cmdAction,
                                             final Object data)
     {
-        return addNavBoxItem(navBox, labelText,  iconName, cmdGroup, cmdStr, data, -1);
+        return addNavBoxItem(navBox, labelText,  iconName, cmdType, cmdAction, data, -1);
     }
     
     /**
@@ -373,7 +422,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected FormPane createFormPanel(NavBoxButton nbb)
     {
         DroppableFormObject dfo = (DroppableFormObject)nbb.getData();
-        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
+        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.getDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
     }
 
     /**
@@ -616,6 +665,33 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         this.commands = cmds;
         initialize(); // initializes the Taskable
     }
+    
+
+    /**
+     * Displays UI that asks the user to select a predefined label.
+     * @param tableId the table id
+     * @return returns the selected RecordSet or null
+     */
+    public static RecordSetIFace askForRecordSet(final int tableId)
+    {
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), tableId);
+        if (dlg.hasRecordSets())
+        {
+            if (dlg.getRecordSets().size() == 1)
+            {
+                return dlg.getRecordSets().get(0);
+                
+            } else
+            {
+                dlg.setVisible(true); // modal (waits for answer here)
+                return dlg.getSelectedRecordSet();
+            }
+
+        }
+        
+        // else
+        return null;
+    }
 
     //-------------------------------------------------------
     // CommandListener Interface
@@ -667,7 +743,37 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         // do nothing
     }
 
+    //--------------------------------------------------------------
+    // NavBoxButton Helpers
+    //--------------------------------------------------------------
 
+    /**
+      * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
+      * @param navBox the parent box for the nbi to be added to
+      * @param navBoxItemDropZone the nbi in question
+      * @return returns the new NavBoxItem
+      */
+     protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final DataFlavor          dataFlavor,
+                                                                 final NavBox              navBox,
+                                                                 final NavBoxItemIFace     nbi,
+                                                                 final Map<String, String> params)
+     {
+         NavBoxButton roc = (NavBoxButton)nbi;
+         roc.setData(params);
+
+         // When Being Dragged
+         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+         roc.addDragDataFlavor(dataFlavor);
+
+         // When something is dropped on it
+         roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+
+         navBox.add(nbi);
+
+         return nbi;
+     }
+    
+    
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------

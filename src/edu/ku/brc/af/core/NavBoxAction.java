@@ -34,7 +34,7 @@ import edu.ku.brc.ui.dnd.DataActionEvent;
  * Created Date: Nov 29, 2006
  *
  */
-public class NavBoxAction  implements ActionListener
+public class NavBoxAction implements ActionListener
 {
     public static final String ORGINATING_TASK = "OriginatingTask";
     
@@ -43,19 +43,27 @@ public class NavBoxAction  implements ActionListener
     protected Taskable              originatingTask = null;
     protected String                type;
     protected String                action;
-    protected Map<String, Object>   properties = null; 
+    protected Map<String, Object>   properties      = null; 
+    protected CommandAction         cmdAction       = null;
 
 
+    /**
+     * @param tcd
+     */
     public NavBoxAction(final TaskCommandDef tcd)
     {
         this(tcd, null);
     }
 
+    /**
+     * @param tcd
+     * @param origTask
+     */
     public NavBoxAction(final TaskCommandDef tcd, Taskable origTask)
     {
         this.originatingTask = origTask;
         this.type            = tcd.getParams().get("type");
-        this.action         = tcd.getParams().get("action");
+        this.action          = tcd.getParams().get("action");
         
         this.properties = new Hashtable<String, Object>();
         this.properties.putAll(tcd.getParams());
@@ -63,11 +71,29 @@ public class NavBoxAction  implements ActionListener
         setOriginatingTask(origTask);
     }
 
+    /**
+     * Constructor.
+     * @param cmdAction the cmdAction to "fire"
+     */
+    public NavBoxAction(final CommandAction cmdAction)
+    {
+        this.cmdAction = cmdAction;
+    }
+
+    /**
+     * @param type
+     * @param action
+     */
     public NavBoxAction(final String type, final String action)
     {
         this(type, action, null);
     }
 
+    /**
+     * @param type
+     * @param action
+     * @param origTask
+     */
     public NavBoxAction(final String type, final String action, final Taskable origTask)
     {
         this.type   = type;
@@ -76,6 +102,9 @@ public class NavBoxAction  implements ActionListener
         setOriginatingTask(origTask);
     }
 
+    /**
+     * @param origTask
+     */
     public void setOriginatingTask(final Taskable origTask)
     {
         this.originatingTask = origTask;
@@ -88,17 +117,67 @@ public class NavBoxAction  implements ActionListener
             this.properties.put(ORGINATING_TASK, this.originatingTask);
         }
     }
+    
+    /**
+     * Gets the property as an Object.
+     * @param name the prop name
+     * @return the value
+     */
+    public Object getProperty(final String name)
+    {
+        return properties == null ? null : properties.get(name);
+    }
+    
+    /**
+     * Returns property as a String.
+     * @param name the name
+     * @return the value as a string
+     */
+    public String getPropertyAsString(final String name)
+    {
+        if (properties != null)
+        {
+            Object obj = properties.get(name);
+            return obj != null ? obj.toString() : null;
+        }
+        return null;
+    }
+    
+    /**
+     * Sets a property.
+     * @param name the name of the property
+     * @param value the value of the property
+     */
+    public void setProperty(final String name, final Object value)
+    {
+        if (properties == null)
+        {
+            properties = new Hashtable<String, Object>();
+        }
+        properties.put(name, value);
+    }
 
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
     public void actionPerformed(ActionEvent e)
     {
-        if (e instanceof DataActionEvent)
+        
+        if (cmdAction != null)
         {
+            CommandDispatcher.dispatch(cmdAction);
+            
+        } else
+        {
+            Object data = null;
+            if (e instanceof DataActionEvent)
+            {
+                data = ((DataActionEvent)e).getData();
+            }
+            
             if (StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(action))
             {
-                CommandAction cmd = new CommandAction(type, action, ((DataActionEvent)e).getData());
+                CommandAction cmd = new CommandAction(type, action, data);
                 cmd.addProperties(properties);
                 CommandDispatcher.dispatch(cmd);
                 

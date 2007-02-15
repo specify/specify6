@@ -321,7 +321,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     {
                         // This will be converted to a Preference
                         File imageDir = new File("demo_files");
-                        System.out.println("["+imageDir.getAbsolutePath()+"]");
+                        //System.out.println("["+imageDir.getAbsolutePath()+"]");
                         parameters.put("RPT_IMAGE_DIR", imageDir.getAbsolutePath());
                         parameters.put("itemnum", itemnum);
                         parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);

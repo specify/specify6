@@ -15,6 +15,7 @@
 package edu.ku.brc.af.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -162,20 +163,22 @@ public class ContextMgr
 
     /**
      * Register a service for other UI components to use.
-     * @param name the name of the service
+     * @param serviceName the name of the service
      * @param tableId the table ID that the service is provided for
      * @param command the command to be sent
      * @param task the task that provides the service
+     * @param iconName the name of the icon to be used
      * @param tooltip the tooltip text for any UI
      * @return a service info object that provide the service
      */
-    public static ServiceInfo registerService(final String   name, 
-                                              final int      tableId, 
+    public static ServiceInfo registerService(final String        serviceName, 
+                                              final int           tableId, 
                                               final CommandAction command, 
-                                              final Taskable task, 
-                                              final String   tooltip)
+                                              final Taskable      task, 
+                                              final String        iconName, 
+                                              final String        tooltip)
     {
-        ServiceInfo serviceInfo = new ServiceInfo(name, tableId, command, task, tooltip);
+        ServiceInfo serviceInfo = new ServiceInfo(serviceName, tableId, command, task, iconName, tooltip);
         instance.services.put(serviceInfo.getHashKey(), serviceInfo);
         List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
         if (serviceList == null)
@@ -186,16 +189,46 @@ public class ContextMgr
         serviceList.add(serviceInfo);
         return serviceInfo;
     }
+    
+    /**
+     * Removes all the ServiceInfo object that are "owned" by a task.
+     * @param task the task that owns the services
+     */
+    public static void removeServicesByTask(final Taskable task)
+    {
+        Collection<ServiceInfo> srvs = instance.services.values();
+        Vector<ServiceInfo>     list = new Vector<ServiceInfo>(srvs);
+        
+        for (ServiceInfo service : list)
+        {
+            if (service.getTask() == task)
+            {
+                instance.services.remove(service.getHashKey());
+            }
+        }
+        
+        for (Collection<ServiceInfo> srvList : instance.servicesByTable.values())
+        {
+            Vector<ServiceInfo> tmpList = new Vector<ServiceInfo>(srvList);
+            for (ServiceInfo srv : tmpList)
+            {
+                if (srv.getTask() == task)
+                {
+                    srvList.remove(srv);
+                }
+            }
+        }
+    }
 
     /**
      * Returns the ServiceInfo object for a given service and the table it is to act upon.
-     * @param name name of service to be provided
+     * @param serviceName name of service to be provided
      * @param tableId the table ID of the data to be serviced
      * @return the ServiceInfo object for a given service and the table it is to act upon.
      */
-    public static ServiceInfo checkForService(final String name, final int tableId)
+    public static ServiceInfo checkForService(final String serviceName, final int tableId)
     {
-        return instance.services.get(ServiceInfo.getHashKey(name, tableId));
+        return instance.services.get(ServiceInfo.getHashKey(serviceName, tableId));
     }
 
     /**

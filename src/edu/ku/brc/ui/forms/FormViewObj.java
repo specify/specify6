@@ -1095,6 +1095,12 @@ public class FormViewObj implements Viewable,
             session.commit();
             session.flush();
             
+            formValidator.setHasChanged(false);
+            if (mvParent != null)
+            {
+                mvParent.clearValidators();
+            }
+            
             if (list != null)
             {
                 int index = list.indexOf(dataObj);
@@ -1382,7 +1388,7 @@ public class FormViewObj implements Viewable,
         } else if (first != null)
         {
             first.requestFocus();
-            System.out.println("*["+first+"]");
+            //System.out.println("*["+first+"]");
         }
     }
 
@@ -1538,7 +1544,7 @@ public class FormViewObj implements Viewable,
     {
         recordSetItemList = new Vector<RecordSetItemIFace>(recordSet.getItems());
         
-        tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+        tableInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
         // XXX Check for Error here
         
         Object       firstDataObj = getDataObjectViaRecordSet(0);

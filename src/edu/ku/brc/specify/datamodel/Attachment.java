@@ -383,7 +383,15 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
      */
     @Override
     @Transient
-    public Integer getTableId()
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
     {
         return 41;
     }

@@ -21,7 +21,6 @@ import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -35,13 +34,14 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
-import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -57,10 +57,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.DataActionEvent;
-import edu.ku.brc.ui.dnd.GhostActionable;
-import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 /**
@@ -76,7 +73,9 @@ public class RecordSetTask extends BaseTask
     private static final Logger log = Logger.getLogger(RecordSetTask.class);
             
     // Static Data Members
-    public static final String RECORD_SET = "Record_Set";
+    public static final String RECORD_SET     = "Record_Set";
+    public static final String SAVE_RECORDSET = "Save";
+    
     public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, "RECORD_SET");
 
     // Data Members
@@ -92,6 +91,13 @@ public class RecordSetTask extends BaseTask
         
         CommandDispatcher.register(RECORD_SET, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
+        
+        // Register all Tables as being able to be saved in a RecordSet
+        // Althought some system tables we may not want, they won't be searchable anyway.
+        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getList())
+        {
+            ContextMgr.registerService(ti.getObjTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, "CreateRecordSetTT");    
+        }
     }
 
 
@@ -108,18 +114,17 @@ public class RecordSetTask extends BaseTask
             DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
             List                     recordSets = session.getDataList(RecordSet.class);
 
-            navBox = new DroppableNavBox(title);
+            navBox = new DroppableNavBox(title, RECORDSET_FLAVOR, RECORD_SET, SAVE_RECORDSET);
 
             for (Iterator iter=recordSets.iterator();iter.hasNext();)
             {
                 RecordSetIFace recordSet = (RecordSetIFace)iter.next();
                 recordSet.getItems(); // loads all lazy object 
                                       // TODO Probably don't want to do this defer it to later when they are used.
-                
                 session.evict(recordSet);
                 
                 NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, RECORD_SET, "Delete", recordSet);
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
                 if (tblInfo != null)
                 {
                     ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -145,6 +150,7 @@ public class RecordSetTask extends BaseTask
         NavBoxButton roc = (NavBoxButton)nbi;
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        
         roc.addActionListener(new RecordSetSelectedAction((NavBoxButton)nbi, (RecordSetIFace)roc.getData()));
     }
 
@@ -156,7 +162,7 @@ public class RecordSetTask extends BaseTask
     {
         NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, "Record_Set", "Delete", recordSet);
         
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
         if (tblInfo != null)
         {
             ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -344,7 +350,7 @@ public class RecordSetTask extends BaseTask
      */
     protected void processRecordSetCommands(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction("Save"))
+        if (cmdAction.isAction(SAVE_RECORDSET))
         {
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)
@@ -432,8 +438,8 @@ public class RecordSetTask extends BaseTask
                     }
                 } else
                 {
-                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.lookupInfoById(srcRecordSet.getDbTableId());
-                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.lookupInfoById(dstRecordSet.getDbTableId());
+                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.getInfoById(srcRecordSet.getDbTableId());
+                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.getInfoById(dstRecordSet.getDbTableId());
                     JOptionPane.showMessageDialog(null, 
                         String.format(getResourceString("RECORDSET_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
                             getResourceString("Error"), 
@@ -449,7 +455,7 @@ public class RecordSetTask extends BaseTask
      */
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isType(RecordSetTask.RECORD_SET))
+        if (cmdAction.isType(RECORD_SET))
         {
             processRecordSetCommands(cmdAction);
             
@@ -489,6 +495,21 @@ public class RecordSetTask extends BaseTask
             if (e instanceof DataActionEvent)
             {
                 DataActionEvent dataActionEv = (DataActionEvent)e;
+                if (dataActionEv.getSourceObj() != null)
+                {
+                    Object data = dataActionEv.getSourceObj().getData();
+                    if (data instanceof CommandAction)
+                    {
+                        CommandAction cmdAction = (CommandAction)data;
+                        //System.out.println(cmdAction.getData());
+                        cmdAction.setData(rs);
+                        CommandDispatcher.dispatch(cmdAction);
+                    } else
+                    {
+                        System.out.println(data);
+                    }
+                    
+                }
                 CommandDispatcher.dispatch(new CommandAction(RECORD_SET, src == ro ? "Clicked" : "Dropped", dataActionEv.getData(), rs, null));
             } else
             {
@@ -498,108 +519,4 @@ public class RecordSetTask extends BaseTask
         }
 
     }
-
-    /**
-     * @author rods
-     *
-     */
-    class DroppableNavBox extends NavBox implements GhostActionable
-    {
-        // DnD
-        protected List<DataFlavor> dropFlavors = new ArrayList<DataFlavor>(); 
-        protected Object data;
-        
-        /**
-         * Constructor.
-         * @param name
-         */
-        public DroppableNavBox(final String name)
-        {
-            super(name);
-            dropFlavors.add(RECORDSET_FLAVOR);
-        }
-        
-        //-----------------------------------------------
-        // GhostActionable Interface
-        //-----------------------------------------------
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
-         */
-        public void doAction(GhostActionable src)
-        {
-            if (src != null)
-            {  
-                Object dataObj = src.getData();
-                System.out.println(dataObj);
-                
-                CommandDispatcher.dispatch(new CommandAction(RECORD_SET, "Save", src.getData()));
-            }
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
-         */
-        public void setData(final Object data)
-        {
-            this.data = data;
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
-         */
-        public Object getData()
-        {
-            return data;
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
-         */
-        public Object getDataForClass(Class classObj)
-        {
-            return UIHelper.getDataForClass(data, classObj);
-        }
-       
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseInputAdapter()
-         */
-        public void createMouseInputAdapter()
-        {
-        }
-        
-        /**
-         * Returns the adaptor for tracking mouse drop gestures
-         * @return Returns the adaptor for tracking mouse drop gestures
-         */
-        public GhostMouseInputAdapter getMouseInputAdapter()
-        {
-            return null;
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
-         */
-        public BufferedImage getBufferedImage() 
-        {
-            return null;
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getDataFlavor()
-         */
-        public List<DataFlavor> getDropDataFlavors()
-        {
-            return dropFlavors;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
-         */
-        public List<DataFlavor> getDragDataFlavors()
-        {
-            return null; // this is not draggable
-        }
-    }
-
 }
