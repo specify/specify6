@@ -18,8 +18,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -64,11 +66,11 @@ public class ListSlider extends JPanel
     private JButton             removeButton;                                
     private JButton             addAllButton;                              
     private JButton             removeAllButton;      
-    private Dimension           preferredListSize = new Dimension(200,300);
+    private Dimension           preferredListSize = new Dimension(200,200);
     private Dimension           minimumListSize = new Dimension(50,50);
     private Dimension           maximumListSize = new Dimension(500,500);
     private boolean             isGrowableList = true;
-
+private DefaultListCellRenderer cellRenderer = null;
     /**
      * Constructor
      */
@@ -83,7 +85,20 @@ public class ListSlider extends JPanel
         addDataToListModel(destinationListModel, destinationData);
         setupListComponents(sourceListModel, destinationListModel);
     }
-
+    /**
+     * Constructor
+     */
+    public ListSlider(Object[] sourceData, DefaultListModel sourceModel, String sourceListTitle,
+    		Object[] destinationData, DefaultListModel destinationModel, String destinationListTitle)
+    {
+        this.sourceListTitle = sourceListTitle;
+        this.destinationListTitle = destinationListTitle;
+        this.sourceListModel = sourceModel;
+        this.destinationListModel = destinationModel;
+        addDataToListModel(sourceListModel, sourceData);
+        addDataToListModel(destinationListModel, destinationData);
+        setupListComponents(sourceListModel, destinationListModel);
+    }
     /**
      * Constructor
      */
@@ -104,9 +119,55 @@ public class ListSlider extends JPanel
         setupListComponents(sourceListModel, destinationListModel);
     }
 
+    /**
+     * Constructor
+     */
+    public ListSlider(List sourceData, String sourceListTitle, List destinationData,
+            String destinationListTitle)
+    {
+        this.sourceListTitle = sourceListTitle;
+        this.destinationListTitle = destinationListTitle;
+
+        this.sourceListModel = new DefaultListModel();
+        addDataToListModel(sourceListModel, sourceData.toArray());
+        //SortedListModel sourceSortedListModel = new SortedListModel(sourceListModel);
+
+        this.destinationListModel = new DefaultListModel();
+        addDataToListModel(destinationListModel, destinationData.toArray());
+        //SortedListModel destSortedListModel = new SortedListModel(destinationListModel);
+
+        setupListComponents(sourceListModel, destinationListModel);
+    }   
+    
+    /**
+     * Constructor
+     */
+    public ListSlider(Object[] sourceData, String sourceListTitle, Object[] destinationData,
+            String destinationListTitle)
+    {
+        this.sourceListTitle = sourceListTitle;
+        this.destinationListTitle = destinationListTitle;
+
+        this.sourceListModel = new DefaultListModel();
+        addDataToListModel(sourceListModel, sourceData);
+        //SortedListModel sourceSortedListModel = new SortedListModel(sourceListModel);
+
+        this.destinationListModel = new DefaultListModel();
+        addDataToListModel(destinationListModel, destinationData);
+        //SortedListModel destSortedListModel = new SortedListModel(destinationListModel);
+
+        setupListComponents(sourceListModel, destinationListModel);
+    }
+    
+    public void setDefaultListCellRenderer(DefaultListCellRenderer cellRenderer) 
+    {
+    	sourceList.setCellRenderer(cellRenderer);
+    	destinationList.setCellRenderer(cellRenderer);
+    }
     private void setupListComponents(DefaultListModel sourceListModel, DefaultListModel destListModel)
     {
         sourceList = new JList(sourceListModel);
+        //if(cellRenderer!=null) sourceList.setCellRenderer(cellRenderer);
         sourceList.setSelectedIndex(0);
         sourceList.addListSelectionListener(new SourceListSelectionHandler());
         sourceList.setVisibleRowCount(5);
@@ -114,6 +175,7 @@ public class ListSlider extends JPanel
         JPanel sourcePanel = getListPanel(sourceList, sourceListTitle);
 
         destinationList = new JList(destListModel);
+        //if(cellRenderer!=null)destinationList.setCellRenderer(cellRenderer);
         destinationList.setSelectedIndex(0);
         destinationList.addListSelectionListener(new DestinationListSelectionHandler());
         destinationList.setVisibleRowCount(5);
@@ -250,7 +312,7 @@ public class ListSlider extends JPanel
          JScrollPane scrollPane = new JScrollPane(list);
          scrollPane.setPreferredSize(preferredListSize);
          scrollPane.setMinimumSize(minimumListSize);
-         scrollPane.setMaximumSize(maximumListSize);
+        // scrollPane.setMaximumSize(maximumListSize);
          JPanel panel = new JPanel();
          panel.setLayout(new BorderLayout());
          panel.setBorder(BorderFactory.createTitledBorder(title));
