@@ -86,7 +86,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		}
 		for(T child: dataService.getChildNodes(t))
 		{
-			if(!visibleNodes.contains(child))
+			if(!nodeIsVisible(child))
 			{
 				return false;
 			}
@@ -104,7 +104,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	{
 		// if the node is currently invisible, change the status of the children nodes
 		// for when the node becomes visible in the future
-		if( !visibleNodes.contains(t) )
+		if( !nodeIsVisible(t) )
 		{
 			childrenWereShowing.put(t, visible);
 			return;
@@ -152,7 +152,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	{
 		if(visible)
 		{
-			if( visibleNodes.contains(t) )
+			if( nodeIsVisible(t) )
 			{
 				// already visible
 				return;
@@ -162,7 +162,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 			int addedIndex = makeNodeVisible(t);
 			if( addedIndex == -1 )
 			{
-				log.error("Code error: Unexpected behavior");
+				log.info("Node was not made visible");
 				return;
 			}
 			int sizeChange = visibleNodes.size() - origSize;
@@ -170,7 +170,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		}
 		else
 		{
-			if( !visibleNodes.contains(t) )
+			if( !nodeIsVisible(t) )
 			{
 				// already invisible
 				return;
@@ -276,7 +276,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	
 	protected void makeNodeInvisible( T t )
 	{
-		if( !visibleNodes.contains(t) )
+		if( !nodeIsVisible(t) )
 		{
 			return;
 		}
@@ -407,7 +407,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	
 	public boolean parentHasChildrenAfterNode( T parent, T child )
 	{
-		if( !visibleNodes.contains(child) )
+		if( !nodeIsVisible(child) )
 		{
 			throw new IllegalArgumentException("Must provide a child node that is visible");
 		}
@@ -495,7 +495,6 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
             throw new NullPointerException("'node' must already have a parent");
         }
         
-        
         boolean oldParentShowingChildren = visibleNodes.contains(node);
         if (oldParentShowingChildren)
         {
@@ -548,5 +547,17 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
     public List<T> findByName(String nodeName)
     {
         return dataService.findByName(treeDef, nodeName);
+    }
+    
+    protected boolean nodeIsVisible(T node)
+    {
+        for (T visibleNode: visibleNodes)
+        {
+            if (visibleNode.getTreeId().longValue() == node.getTreeId().longValue())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
