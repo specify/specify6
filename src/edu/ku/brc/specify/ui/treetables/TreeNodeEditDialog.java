@@ -44,7 +44,7 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
     {
     	T node = dataObj;
         
-        // get the appropriate set of def items for the combobox
+        // get the appropriate set of def items for the combobox model
     	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
     	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
     	
@@ -90,19 +90,6 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
             item = item.getChild();
     	}
         
-        cb.setValue(defaultItem, null);
-        form.setDataObj(node);
-    }
-    
-    @SuppressWarnings("unchecked")
-	@Override
-	protected void getData()
-    {
-        ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
-        TreeDefItemIface defItem = (TreeDefItemIface)cb.getValue();
-        T node = (T)form.getDataObj();
-        node.setDefinitionItem((I)defItem);
-        
-        super.getData();
+        super.setData(dataObj);
     }
 }
