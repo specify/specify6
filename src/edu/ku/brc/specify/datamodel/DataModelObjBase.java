@@ -29,8 +29,6 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 @MappedSuperclass

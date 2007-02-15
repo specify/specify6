@@ -572,6 +572,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         return super.getIdentityTitle();
     }
     
+    @Override
     public String toString()
     {
         if (name != null) return name;
