@@ -19,9 +19,6 @@ import javax.swing.event.ListSelectionListener;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.treeutils.TreeDataService;
-import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
-import edu.ku.brc.specify.treeutils.TreeFactory;
 
 /**
  *
@@ -34,7 +31,6 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
             extends TreeTableViewer<T,D,I> implements ListSelectionListener
 {
     protected String leafNodeName;
-    protected List<Object> nodes;
     protected List<ListSelectionListener> selectionListeners;
 
     /**
@@ -45,7 +41,6 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
     public EmbeddableTreeTableViewer(D treeDef)
     {
         super(treeDef, null, null);
-        nodes = new Vector<Object>();
         selectionListeners = new Vector<ListSelectionListener>();
     }
     
@@ -58,20 +53,20 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
     @Override
     protected void initTreeLists()
     {
+        listModel = new FilteredTreeDataListModel<T,D,I>(treeDef,leafNodeName);
         // setup a thread to load the objects from the DB
         Runnable runnable = new Runnable()
         {
             @SuppressWarnings("synthetic-access")
             public void run()
             {
-                TreeDataService<T,D,I> dataService = TreeDataServiceFactory.createService();
-                final List<T> matchingNodes = dataService.findByName(treeDef, leafNodeName);
+                final List<T> matchingNodes = listModel.findByName(leafNodeName);
 
                 // from these nodes, create a new node tree all the way up to the root
 
-                nodes.clear();
-                final T root = buildTreeFromLeafNodes(matchingNodes);
-                if (root==null)
+                //nodes.clear();
+                //final T root = buildTreeFromLeafNodes(matchingNodes);
+                if (matchingNodes.isEmpty())
                 {
                     EmbeddableTreeTableViewer.this.setSelectedNode(null);
                     EmbeddableTreeTableViewer.this.removeAll();
@@ -115,91 +110,6 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
         // do nothing
         // this method is being overridden in order to keep the popup menu from showing up
     }
-
-    @SuppressWarnings("unchecked")
-    protected T buildTreeFromLeafNodes(List<T> matchingNodes)
-    {
-        for (T node: matchingNodes)
-        {
-            buildPathToNode(node,null);
-        }
-        
-        // find the root node
-        for (Object o: nodes)
-        {
-            T node = (T)o;
-            if (node.getRankId()==0)
-            {
-                return node;
-            }
-        }
-        
-        return null;
-    }
-    
-    protected void buildPathToNode(T node, T child)
-    {
-        T newT = findNodeById(node.getTreeId());
-        if (newT!=null)
-        {
-            // the node already exists in our 'fake' node tree
-            // just add the child and return
-            if (child!=null)
-            {
-                newT.getChildren().add(child);
-                child.setParent(newT);
-            }
-            return;
-        }
-        
-        // this node doesn't yet have a mirror of it in our 'fake' node tree
-        // duplicate its values into a new node
-        newT = duplicateNodeInfo(node);
-        if (child!=null)
-        {
-            child.setParent(newT);
-        }
-        nodes.add(newT);
-        if (child!=null)
-        {
-            newT.getChildren().add(child);
-        }
-        
-        // then see if we need to continue up the tree
-        if (node.getParent()!=null)
-        {
-            buildPathToNode(node.getParent(), newT);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected T findNodeById(Long id)
-    {
-        for (Object o: nodes)
-        {
-            T node = (T)o;
-            if (node.getTreeId().longValue() == id.longValue())
-            {
-                return node;
-            }
-        }
-        return null;
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected T duplicateNodeInfo(T node)
-    {
-        T newT = TreeFactory.createNewTreeable(node, null);
-        newT.setDefinition(node.getDefinition());
-        newT.setDefinitionItem(node.getDefinitionItem());
-        newT.setName(node.getName());
-        newT.setFullName(node.getFullName());
-        newT.setRankId(node.getRankId());
-        newT.setTreeId(node.getTreeId());
-        newT.setRemarks(node.getRemarks());
-        
-        return newT;
-    }
     
     @SuppressWarnings("unchecked")
     public T getSelectedNode()
@@ -226,6 +136,11 @@ public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
             }
             lists[0].clearSelection();
         }
+    }
+    
+    public void addChildToSelectedNode()
+    {
+        addChildToSelectedNode(lists[0]);
     }
 
     public void valueChanged(ListSelectionEvent e)

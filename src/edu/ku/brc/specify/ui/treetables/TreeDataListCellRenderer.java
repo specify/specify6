@@ -395,7 +395,7 @@ public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
 			int anchorStartX = anchorBounds.getFirst();
 
 			// don't do anything for leaf nodes
-			if( treeable.getChildren().isEmpty() )
+			if( !model.hasChildren(treeable) )
 			{
 				return;
 			}

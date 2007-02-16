@@ -64,6 +64,7 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
         cancelButton.addActionListener(this);
         newButton = new JButton(getResourceString("New"));
         newButton.addActionListener(this);
+        newButton.setEnabled(false);
         String searchStr = getResourceString("Search");
         searchButton = new JButton(searchStr);
         searchButton.addActionListener(this);
@@ -109,8 +110,7 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
     
     public void doNew()
     {
-        //TODO: implement this somehow
-        System.err.println("TODO: New node");
+        treeViewer.addChildToSelectedNode();
     }
     
     public void doSearch()
@@ -159,6 +159,8 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
             return;
         }
         
-        okButton.setEnabled((treeViewer.getSelectedNode()==null) ? false : true);
+        boolean enableButtons = (treeViewer.getSelectedNode()==null) ? false : true;
+        okButton.setEnabled(enableButtons);
+        newButton.setEnabled(enableButtons);
     }
 }
