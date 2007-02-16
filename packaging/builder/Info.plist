@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+
+	<key>CFBundleName</key>
+	<string>Specify Builder</string>
+
+	<key>CFBundleVersion</key>
+	<string>6.0</string>
+	
+    <key>CFBundleGetInfoString</key>
+	<string>Specify Builder 6.0, © 1998-2007 Contributors</string>
+
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>true</string>
+	
+    <key>CFBundleIdentifier</key>
+	<string>edu.ku.nhm.brc.specifybuilder</string>
+
+	<key>CFBundleExecutable</key>
+	<string>JavaApplicationStub</string>
+
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+
+	<key>CFBundleShortVersionString</key>
+	<string>6.0</string>
+
+	<key>CFBundleSignature</key>
+	<string>SPECIFYBLDR</string>
+
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+
+	<key>CFBundleIconFile</key>
+	<string>specifybldr.icns</string>
+
+	<key>Java</key>
+	<dict>
+	    <key>WorkingDirectory</key>
+		<string>$APP_PACKAGE/Contents/Resources/Java</string>
+		<key>VMOptions</key>
+		<string>-Xms512m -Xmx764m</string>
+		<key>MainClass</key>
+		<string>edu.ku.brc.specify.tests.BuildSampleDatabase</string>
+		<key>JVMVersion</key>
+		<string>1.5*</string>
+		<key>ClassPath</key>
+			<array>
+			<string>$JAVAROOT/specify.jar</string>
+			<string>$JAVAROOT/libs/ant-launcher.jar</string>
+			<string>$JAVAROOT/libs/ant.jar</string>
+			<string>$JAVAROOT/libs/commons-beanutils.jar</string>
+			<string>$JAVAROOT/libs/commons-betwixt.jar</string>
+			<string>$JAVAROOT/libs/commons-codec.jar</string>
+			<string>$JAVAROOT/libs/commons-digester.jar</string>
+			<string>$JAVAROOT/libs/commons-httpclient.jar</string>
+			<string>$JAVAROOT/libs/commons-io.jar</string>
+			<string>$JAVAROOT/libs/commons-jexl.jar</string>
+			<string>$JAVAROOT/libs/commons-lang.jar</string>
+			<string>$JAVAROOT/libs/forms.jar</string>
+			<string>$JAVAROOT/libs/itext.jar</string>
+			<string>$JAVAROOT/libs/jasperreports.jar</string>
+			<string>$JAVAROOT/libs/jaxen.jar</string>
+			<string>$JAVAROOT/libs/jcommon.jar</string>
+			<string>$JAVAROOT/libs/jfreechart.jar</string>
+			<string>$JAVAROOT/libs/junit.jar</string>
+			<string>$JAVAROOT/libs/log4j.jar</string>
+			<string>$JAVAROOT/libs/looks.jar</string>
+			<string>$JAVAROOT/libs/lucene.jar</string>
+			<string>$JAVAROOT/libs/mail.jar</string>
+			<string>$JAVAROOT/libs/mysql-connector.jar</string>
+			<string>$JAVAROOT/libs/poi.jar</string>
+			<string>$JAVAROOT/libs/servlet-api.jar</string>
+			<string>$JAVAROOT/libs/TimingFramework.jar</string>
+			<string>$JAVAROOT/hibernate_libs/antlr.jar</string>
+			<string>$JAVAROOT/hibernate_libs/asm-attrs.jar</string>
+			<string>$JAVAROOT/hibernate_libs/asm.jar</string>
+			<string>$JAVAROOT/hibernate_libs/cglib.jar</string>
+			<string>$JAVAROOT/hibernate_libs/commons-collections.jar</string>
+			<string>$JAVAROOT/hibernate_libs/commons-logging.jar</string>
+			<string>$JAVAROOT/hibernate_libs/dom4j.jar</string>
+			<string>$JAVAROOT/hibernate_libs/ehcache.jar</string>
+			<string>$JAVAROOT/hibernate_libs/ejb3-persistence.jar</string>
+			<string>$JAVAROOT/hibernate_libs/hibernate-annotations.jar</string>
+			<string>$JAVAROOT/hibernate_libs/hibernate3.jar</string>
+			<string>$JAVAROOT/hibernate_libs/jdbc2_0-stdext.jar</string>
+			<string>$JAVAROOT/hibernate_libs/jta.jar</string>
+			<string>$JAVAROOT/activation.jar</string>
+			<string>$JAVAROOT/jdic.jar</string>
+			<string>$JAVAROOT/jdic_stub.jar</string>
+			<string>$JAVAROOT/MacAttachmentUtils.jar</string>
+			</array>
+		<key>Properties</key>
+		<dict>
+			<key>apple.laf.useScreenMenuBar</key>
+			<string>true</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

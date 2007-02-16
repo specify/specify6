@@ -46,6 +46,9 @@ public class SpecifyDBConvFrame extends JFrame
     protected JButton      closeBtn;
     protected JFrame       instance;
     
+    protected boolean      isProcessPercent = false;
+    protected int          origMax          = 0;
+    
     public SpecifyDBConvFrame()
     {
         createUI();
@@ -120,17 +123,26 @@ public class SpecifyDBConvFrame extends JFrame
     
     public synchronized void setProcess(final int min, final int max)
     {
-        processProgress.setMinimum(min);
-        processProgress.setMaximum(max);
+        processProgress.setMinimum(isProcessPercent ? 0 : min);
+        processProgress.setMaximum(isProcessPercent ? 100 : max);
         processProgress.setValue(min);
         processProgress.setString("");
+        origMax = max;
     }
     
     public synchronized void setProcess(final int value)
     {
-        processProgress.setValue(value);
-        processProgress.setString(value > 0 ? (processProgress.getValue() +" / "+ processProgress.getMaximum()) : "");
-
+        if (isProcessPercent)
+        {
+            int percent = (int)(((double)value) / ((double)origMax) * 100.0);
+            processProgress.setValue(percent);
+            processProgress.setString(value > 0 ? Integer.toString(percent) + "%" : "");
+            
+        } else
+        {
+            processProgress.setValue(value);
+            processProgress.setString(value > 0 ? (processProgress.getValue() +" / "+ processProgress.getMaximum()) : "");
+        }
     }
     
     public synchronized void setDesc(final String text)
@@ -150,4 +162,27 @@ public class SpecifyDBConvFrame extends JFrame
         processProgress.setString(" ");
         closeBtn.setText("Done");
     }
+    
+    public JButton getCloseBtn()
+    {
+        return closeBtn;
+    }
+
+    /**
+     * @return the isProcessPercent
+     */
+    public boolean isProcessPercent()
+    {
+        return isProcessPercent;
+    }
+
+    /**
+     * @param isProcessPercent the isProcessPercent to set
+     */
+    public void setProcessPercent(boolean isProcessPercent)
+    {
+        this.isProcessPercent = isProcessPercent;
+    }
+    
+    
 }

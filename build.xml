@@ -3,10 +3,12 @@
 
 	<!-- Set up properties containing important project directories -->
 	<property name="source.root" value="src" />
+	<property name="mac-src.root" value="mac-src" />
 	<property name="class.root" value="bin" />
 	<property name="lib.dir" value="libs" />
 	<property name="hibernatelib.dir" value="hibernate_libs" />
 	<property name="externallib.dir" value="external_libs" />
+	<property name="macnative.dir" value="system_dep_libs/mac" />
 	<property name="hibernate.properties" value="hibernate.properties" />
 	<property name="hibernate.cfg" value="hibernate.cfg.xml" />
 	<property name="dir.dest" value="dest" />
@@ -18,7 +20,7 @@
 	<property name="packaging" value="packaging" />
 	<property name="app.name" value="Specify" />
 	<property name="jar.name" value="specify" />
-	<property name="dist-mac" value="mac-dest" />
+	<property name="dist-mac" value="mac-dist" />
 
 
 	<!-- Set up the class path for compilation and execution -->
@@ -33,6 +35,9 @@
 			<include name="**/*.jar" />
 		</fileset>
 		<fileset dir="${externallib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${macnative.dir}">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -76,9 +81,35 @@
 		</copy>
 	</target>
 
+	<target name="dist-prepare" description="Sets up build structures for Mac-Dist">
+		<mkdir dir="${class.root}" />
+
+		<!-- Copy our property files and O/R mappings for use at runtime -->
+		<copy todir="${class.root}">
+			<fileset dir="${source.root}">
+				<include name="**/*.properties" />
+				<include name="**/*.hbm.xml" />
+				<exclude name="**/AttachmentUtils.java" />
+			</fileset>
+		</copy>
+		<mkdir dir="${mac-src.root}" />
+		<copy todir="${mac-src.root}">
+			<fileset dir="${source.root}">
+				<include name="**/*.java" />
+				<exclude name="**/AttachmentUtils.java" />
+			</fileset>
+		</copy>
+	</target>
+
 	<!-- Compile the java source of the project -->
 	<target name="compile" depends="prepare" description="Compiles all Java classes">
 		<javac srcdir="${source.root}" destdir="${class.root}" debug="on" optimize="off" deprecation="on">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="dist-compile" depends="dist-prepare" description="Compiles all Java classes for Mac-Dist">
+		<javac srcdir="${mac-src.root}" destdir="${class.root}" debug="on" optimize="off" deprecation="on">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>
@@ -143,12 +174,16 @@
 	<target name="jar" depends="compile">
 		<jar destfile="${jar.name}.jar" basedir="${class.root}" />
 	</target>
+	
+	<target name="dist-jar" depends="">
+		<jar destfile="${jar.name}.jar" basedir="${class.root}" />
+	</target>
 
 	<target name="clean-jar">
 		<delete file="${jar.name}.jar" />
 	</target>
 
-	<target name="dist-mac" depends="jar">
+	<target name="dist-mac" depends="dist-jar">
 		<property name="appdir" value="${dist-mac}/${app.name}.app" />
 
 		<mkdir dir="${dist-mac}" />
@@ -157,6 +192,7 @@
 		<mkdir dir="${appdir}/Contents/MacOS" />
 		<mkdir dir="${appdir}/Contents/Resources" />
 		<mkdir dir="${appdir}/Contents/Resources/Java" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/config" />
 
 		<!-- Copy Application Stub Compile the java source of the project -->
 		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
@@ -165,6 +201,16 @@
 		<!-- Copy info list -->
 		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents" />
 
+		<!-- Copy PkgInfo -->
+		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
+
+		<!-- Copy config dir -->
+		<copy todir="${appdir}/Contents/Resources/Java/config">
+			<fileset dir="config">
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+		
 		<!-- Copy the app -->
 		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java" />
 
@@ -175,6 +221,12 @@
 			<fileset dir="libs">
 				<include name="*.jar" />
 			</fileset>
+			<fileset dir="${hibernatelib.dir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${macnative.dir}">
+				<include name="*.jar" />
+			</fileset>
 		</copy>
 
 		<!-- Tell OS the dir is an App -->
@@ -182,5 +234,96 @@
 
 	</target>
 
+	<target name="dist-mac-bld" depends="dist-jar">
+		
+		<property name="appdir" value="${dist-mac}/SpecifyBuilder.app" />
+
+		<mkdir dir="${dist-mac}" />
+		<mkdir dir="${appdir}" />
+		<mkdir dir="${appdir}/Contents" />
+		<mkdir dir="${appdir}/Contents/MacOS" />
+		<mkdir dir="${appdir}/Contents/Resources" />
+		<mkdir dir="${appdir}/Contents/Resources/Java" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/src" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/config" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/system_dep_libs" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/system_dep_libs/mac" />
+
+		<!-- Copy Application Stub Compile the java source of the project -->
+		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
+		<exec command="chmod 755 ${appdir}/Contents/MacOS/JavaApplicationStub" />
+
+		<!-- Copy info list -->
+		<copy file="${packaging}/builder/Info.plist" todir="${appdir}/Contents" />
+
+		<!-- Copy PkgInfo -->
+		<copy file="${packaging}/builder/PkgInfo" todir="${appdir}/Contents" />
+
+		<!-- Copy hibernate.cfg.xml -->
+		<copy file="src/hibernate.cfg.xml" todir="${appdir}/Contents/Resources/Java/src" />
+
+		<!-- Copy config demo_files -->
+		<copy todir="${appdir}/Contents/Resources/Java/demo_files">
+			<fileset dir="demo_files">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy config dir -->
+		<copy todir="${appdir}/Contents/Resources/Java/config">
+			<fileset dir="config">
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy the app -->
+		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java" />
+
+		<!-- Copy the build.xml -->
+		<copy file="build.xml" todir="${appdir}/Contents/Resources/Java" />
+
+		<!-- Copy Icons -->
+		<copy file="${packaging}/builder/specifybldr.icns" todir="${appdir}/Contents/Resources" />
+
+		<copy todir="${appdir}/Contents/Resources/Java/libs">
+			<fileset dir="libs">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${appdir}/Contents/Resources/Java/hibernate_libs">
+			<fileset dir="${hibernatelib.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${appdir}/Contents/Resources/Java/external_libs">
+			<fileset dir="external_libs">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${appdir}/Contents/Resources/Java/system_dep_libs">
+			<fileset dir="system_dep_libs">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${appdir}/Contents/Resources/Java/system_dep_libs/mac">
+			<fileset dir="system_dep_libs/mac">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${appdir}/Contents/Resources/Java">
+			<fileset dir="${macnative.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- Tell OS the dir is an App -->
+		<exec command="/Developer/Tools/SetFile -a B ${appdir}" />
+
+	</target>
 
 </project>

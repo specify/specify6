@@ -104,10 +104,10 @@ public final class UIHelper
     protected static Calendar       calendar = new GregorianCalendar();
     protected static OSTYPE         oSType;
 
-    protected static Object[]       values   = new Object[2];
-    protected static DateWrapper    scrDateFormat = null;
+    protected static Object[]       values           = new Object[2];
+    protected static DateWrapper    scrDateFormat    = null;
 
-    protected static UIHelper       instance = new UIHelper();
+    protected static UIHelper       instance         = new UIHelper();
     
     static {
 
@@ -130,7 +130,7 @@ public final class UIHelper
         }
 
     }
-
+    
     /**
      * Center and make the window visible
      * @param window the window to center

@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -37,6 +38,7 @@ import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JRViewer;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -48,6 +50,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.UICacheManager;
 
 
@@ -65,6 +68,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(LabelsPane.class);
+    
+    private static boolean reportsCacheWasCleared = false;
 
     // Data Members
     protected AsynchronousFillHandle asyncFillHandler = null;
@@ -319,9 +324,15 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
                     if (recordSet != null)
                     {
-                        // This will be converted to a Preference
-                        File imageDir = new File("demo_files");
-                        //System.out.println("["+imageDir.getAbsolutePath()+"]");
+
+                        // XXX PREF - This will be converted to a Preference
+                        File imageDir = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "report_images");
+                        // XXXX RELEASE - This Reference to demo_files will need to be removed
+                        if (!imageDir.exists())
+                        {
+                            imageDir = new File("demo_files");
+                        }
+
                         parameters.put("RPT_IMAGE_DIR", imageDir.getAbsolutePath());
                         parameters.put("itemnum", itemnum);
                         parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
@@ -357,25 +368,34 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      */
     public static File checkAndCreateReportsCache()
     {
-        try
+        File path = UICacheManager.getDefaultWorkingPathSubDir("reportsCache", true); 
+        if (path == null)
         {
-            File path = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "reportsCache"); 
-            if (!path.exists())
-            {
-                if (!path.mkdir())
-                {
-                    String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
-                    log.error(msg);
-                    throw new RuntimeException(msg);
-                }
-            }
-            return path;
-
-        } catch (Exception ex)
-        {
-           log.error(ex);
+            String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
+            log.error(msg);
+            throw new RuntimeException(msg);
         }
-        return null;
+        
+        // If the JVM version (Major Version) has changed the JasperReports need to be recompiled
+        // so we remove all the ".jasper" files so they can be recompiled.
+        if (SpecifyAppContextMgr.isNewJavaVersionAtAppStart() && !reportsCacheWasCleared)
+        {
+            try
+            {
+                //FileUtils.cleanDirectory(path);
+                for (Iterator iter = FileUtils.iterateFiles(path, new String[] {"jasper"}, false);iter.hasNext();)
+                {
+                    FileUtils.forceDelete((File)iter.next());
+                }
+            } catch (Exception ex)
+            {
+               log.error(ex);
+            }
+            reportsCacheWasCleared = true;
+        }
+        
+        return path;
+
     }
 
     /**

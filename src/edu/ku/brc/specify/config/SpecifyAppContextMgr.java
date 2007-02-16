@@ -1239,4 +1239,57 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return dObj;
     }
     
+    //--------------------------------------------------------
+    // There is no greate place for this because the Pref system
+    // has to have been initialized and the Prefs are defined
+    // in package edu.ku.brc.af.prefs
+    //--------------------------------------------------------
+    
+    protected static Boolean isNewJavaVersion = null;
+    
+    /**
+     * Returns true is the Pref's java.version match the current System properties java.version and
+     * sets the Prefs appropriately (so if it has changed it will only return true the first time 
+     * is is called. (see isNewJavaVersionAtAppStart).
+     * @return true is the Pref's java.version match the current System properties java.version.
+     */
+    public static boolean isNewJavaVersion()
+    {
+        String javaVersionPropName = "java.version";
+
+        String prefsJavaVersion  = AppPreferences.getLocalPrefs().get(javaVersionPropName, null);
+        String systemJavaVersion = System.getProperty("java.version");
+        
+        boolean isNewVersion = StringUtils.isEmpty(prefsJavaVersion) || 
+                               StringUtils.isEmpty(systemJavaVersion) ||
+                               !prefsJavaVersion.equals(systemJavaVersion);
+        if (isNewVersion)
+        {
+            AppPreferences.getLocalPrefs().put(javaVersionPropName, System.getProperty("java.version"));
+        }
+        
+        if (isNewJavaVersion == null)
+        {
+            isNewJavaVersion = isNewVersion;
+        }
+        return isNewVersion;
+    }
+    
+    /**
+     * Returns whether the java.version was different when the app started, this will return 
+     * the same answer each time it is called until the application terminates.
+     * (see isNewJavaVersion).
+     * @return
+     */
+    public static boolean isNewJavaVersionAtAppStart()
+    {
+        if (isNewJavaVersion == null)
+        {
+            return isNewJavaVersion();
+        }
+        return isNewJavaVersion;
+    }
+
+
+    
 }

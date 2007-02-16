@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Vector;
@@ -185,9 +186,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         thumb.setMaxWidth(128);
 
         AttachmentManagerIface attachMgr = null;
-        //String                 location  = (UIHelper.getOSType() == UIHelper.OSTYPE.Windows) ? "AttachmentStorage" : "~/AttachmentStorage/";
         
-        String location = "demo_files/AttachmentStorage";
+        File location = UICacheManager.getDefaultWorkingPathSubDir("demo_files" + File.separator + " AttachmentStorage", true);
         try
         {
             attachMgr = new FileStoreAttachmentManager(location);
@@ -195,7 +195,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         catch (IOException e1)
         {
             log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]");
-            // TODO: fix this up
+            // TODO RELEASE -  Instead of exiting we need to disable Attchements
             System.exit(-1);
         }
         

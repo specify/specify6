@@ -39,9 +39,9 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      * Creates a new instance, setting baseDirectory to null.
      * @throws IOException 
      */
-    public FileStoreAttachmentManager(String baseDirectory) throws IOException
+    public FileStoreAttachmentManager(final File baseDirectory) throws IOException
     {
-        this.baseDirectory = baseDirectory;
+        this.baseDirectory = baseDirectory.getAbsolutePath();
         originalsDir = new File(baseDirectory + File.separator + "originals");
         thumbsDir    = new File(baseDirectory + File.separator + "thumbnails");
         

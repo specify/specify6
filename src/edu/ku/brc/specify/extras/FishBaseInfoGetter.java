@@ -71,16 +71,15 @@ public class FishBaseInfoGetter extends HTTPGetter
 
         //tmpDir = System.getProperty("java.io.tmpdir");
         // XXX Will use long term cache in future
-        tmpDir = UICacheManager.getDefaultWorkingPath() + File.separator + "cache";
-        File path = new File(tmpDir);
-        if (!path.exists())
+        File path = UICacheManager.getDefaultWorkingPathSubDir("cache", true);
+        if (path == null)
         {
-            if (!path.mkdirs())
-            {
-                String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
-                log.warn(msg);
-                throw new RuntimeException(msg);
-            }
+            tmpDir = path.getAbsolutePath();
+        } else
+        {
+            String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
+            log.warn(msg);
+            throw new RuntimeException(msg);
         }
     }
 

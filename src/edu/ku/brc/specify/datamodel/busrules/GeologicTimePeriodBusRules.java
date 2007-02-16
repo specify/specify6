@@ -23,7 +23,7 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
     
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.SimpleBusRules#getDeleteMsg(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#getDeleteMsg(java.lang.Object)
      */
     @Override
     public String getDeleteMsg(Object dataObj)
@@ -32,7 +32,7 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.SimpleBusRules#okToDelete(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
     public boolean okToDelete(Object dataObj)

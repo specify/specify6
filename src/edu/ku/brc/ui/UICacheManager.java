@@ -144,6 +144,26 @@ public class UICacheManager
     }
 
     /**
+     * Creates a File object for a Sub-Directory inside the Default Working Path Directory.
+     * If the directory doesn't exist you can have it created.  
+     * @param dirName the new or existing directory name
+     * @param createIt true to create it if it doesn't exist, false doesn't create it
+     * @return a File object to the the directory
+     */
+    public static File getDefaultWorkingPathSubDir(final String dirName, final boolean createIt)
+    {
+        File newDir = new File(getDefaultWorkingPath() + File.separator + dirName);
+        if (!newDir.exists() && createIt)
+        {
+            if (!newDir.mkdirs())
+            {
+                return null;
+            }
+        }
+        return newDir;
+    }
+
+    /**
      * Set the working directory. It is not recommended to use this because the working directory will automatically be created.
      * @param defaultWorkingPath the new and different working directory.
      */

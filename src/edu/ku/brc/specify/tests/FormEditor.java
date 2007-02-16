@@ -123,7 +123,6 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
-import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
@@ -136,8 +135,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
-import edu.ku.brc.specify.ui.LoanReturnDlg;
-import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
@@ -1220,63 +1217,6 @@ public class FormEditor implements DatabaseLoginListener
         }
     }
     
-    @SuppressWarnings("unchecked")
-    protected void createLoanSelector()
-    {
-        List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");
-        
-        List<CollectionObject> colObjs = (List<CollectionObject>)BuildSampleDatabase.getObjectsByClass(dataObjs, CollectionObject.class);
-        
-        if (true)
-        {
-            LoanSelectPrepsDlg dlg = new LoanSelectPrepsDlg(colObjs);
-            UIHelper.centerAndShow(dlg);
-            return;
-        }
-        
-        JPanel mainPanel = new JPanel();
-        
-        //mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));     
-        //mainPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        
-        PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px,", (colObjs.size()*2)-1)), mainPanel);
-        CellConstraints ccc      = new CellConstraints();
-
-        //mainPanel.setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), mainPanel.getBorder()));
- 
-        int i = 0;
-        int y = 1;
-        for (CollectionObject co : colObjs)
-        {
-            if (i > 0)
-            {
-                pbuilder.addSeparator("", ccc.xy(1,y));
-            }
-            y += 2;
-            
-            ColObjPanel p = new ColObjPanel(co);
-            //mainPanel.add(p);
-            pbuilder.add(p, ccc.xy(1,y));
-            y += 2;
-            i++;
-            if (i > 2)
-                break;
-        }
-        
-        
-        
-        JFrame frame = new JFrame("Select Preparations");
-        frame.setContentPane(new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-        //frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        frame.pack();
-
-        UIHelper.centerAndShow(frame);
-
-        
-    }
-
     /**
      * @param args args
      */
@@ -1334,19 +1274,7 @@ public class FormEditor implements DatabaseLoginListener
                 
                 FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
                 
-                JFrame frame = new JFrame();
-                LatLonUI latLonUI = new LatLonUI();
-                latLonUI.initialize(null, false);
-                
-                frame.setContentPane(latLonUI);
 
-                Locality locality = new Locality();
-                locality.initialize();
-                locality.setLatitude1(new BigDecimal("34.5678"));
-                locality.setLongitude1(new BigDecimal("-95.12345"));
-                latLonUI.setValue(locality, null);
-                frame.pack();
-                frame.setVisible(true);
                 
                 /*
 //JCollapsiblePane cp = new JCollapsiblePane();

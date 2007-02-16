@@ -53,11 +53,11 @@ import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -66,13 +66,15 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.conversion.SpecifyDBConvFrame;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -119,6 +121,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
@@ -133,24 +136,52 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class BuildSampleDatabase
 {
-    private static final Logger log      = Logger.getLogger(BuildSampleDatabase.class);
-    protected static Calendar   calendar = Calendar.getInstance();
-    protected static Session session;
-    protected static Random     rand = new Random(12345678L);
+    private final Logger         log      = Logger.getLogger(BuildSampleDatabase.class);
+    protected Calendar           calendar = Calendar.getInstance();
+    protected Session            session;
+    protected Random             rand = new Random(12345678L);
     
-    public static Session getSession()
+    protected int                steps = 0;   
+    protected SpecifyDBConvFrame frame;
+    
+    /**
+     * 
+     */
+    public BuildSampleDatabase()
+    {
+        
+        frame = new SpecifyDBConvFrame();
+        frame.setSize(new Dimension(500,125));
+        
+        frame.setTitle("Building Test Database");
+        UIHelper.centerAndShow(frame);
+        
+        frame.setProcessPercent(true);
+        frame.setOverall(0, 5);
+        
+        frame.getCloseBtn().setVisible(false);
+        
+    }
+    
+    public Session getSession()
     {
         return session;
     }
     
-    public static void setSession(Session s)
+    public void setSession(Session s)
     {
         session = s;
     }
     
-    public static List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
+    public List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         log.info("Creating single discipline database: " + disciplineName);
+        
+        int createStep = 0;
+        
+        frame.setProcess(0, 14);
+        
+        frame.setProcess(++createStep);
 
         Vector<Object> dataObjects = new Vector<Object>();
         List<Agent>    agents      = new Vector<Agent>();
@@ -183,6 +214,8 @@ public class BuildSampleDatabase
             dataObjects.add(rw);
         }
         
+        frame.setProcess(++createStep);
+        
         ////////////////////////////////
         // build the trees
         ////////////////////////////////
@@ -195,6 +228,9 @@ public class BuildSampleDatabase
         dataObjects.addAll(geos);
         dataObjects.addAll(locs);
         dataObjects.addAll(gtps);
+        
+        
+        frame.setProcess(++createStep);
         
         ////////////////////////////////
         // picklists
@@ -244,6 +280,8 @@ public class BuildSampleDatabase
         String[] prepMeth = {"C&S", "skeleton", "x-ray", "image", "EtOH"};
         dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth));
         
+        frame.setProcess(++createStep);
+        
         ////////////////////////////////
         // localities
         ////////////////////////////////
@@ -289,6 +327,9 @@ public class BuildSampleDatabase
         dataObjects.add(forestStream);
         dataObjects.add(lake);
         dataObjects.add(farmpond);
+        
+        
+        frame.setProcess(++createStep);
         
         ////////////////////////////////
         // agents and addresses
@@ -343,7 +384,7 @@ public class BuildSampleDatabase
         dataObjects.addAll(agents);
         dataObjects.addAll(addrs);
         
-        
+        frame.setProcess(++createStep);
         
         ////////////////////////////////
         // collecting events (collectors, collecting trip)
@@ -401,6 +442,8 @@ public class BuildSampleDatabase
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
         
+        frame.setProcess(++createStep);
+                
         ////////////////////////////////
         // catalog series
         ////////////////////////////////
@@ -445,6 +488,8 @@ public class BuildSampleDatabase
         dataObjects.add(colObjAttrDef);
         dataObjects.add(colObjAttr);
         
+        frame.setProcess(++createStep);
+        
         ////////////////////////////////
         // determinations (determination status)
         ////////////////////////////////
@@ -477,6 +522,8 @@ public class BuildSampleDatabase
         
         dataObjects.addAll(determs);
         
+        frame.setProcess(++createStep);
+                
         ////////////////////////////////
         // preparations (prep types)
         ////////////////////////////////
@@ -518,6 +565,8 @@ public class BuildSampleDatabase
         dataObjects.add(xray);
         dataObjects.addAll(preps);
         
+        frame.setProcess(++createStep);
+        
         ////////////////////////////////
         // accessions (accession agents)
         ////////////////////////////////
@@ -549,6 +598,9 @@ public class BuildSampleDatabase
         dataObjects.add(acc1);
         dataObjects.add(acc2);
         dataObjects.addAll(accAgents);
+        
+        frame.setProcess(++createStep);
+        
 
         ////////////////////////////////
         // loans (loan agents, shipments)
@@ -670,6 +722,9 @@ public class BuildSampleDatabase
             returns.add(lrpo);
             i++;
         }
+        
+        frame.setProcess(++createStep);
+        
 
         dataObjects.add(closedLoan);
         dataObjects.add(overdueLoan);
@@ -723,6 +778,8 @@ public class BuildSampleDatabase
             dataObjects.add(localityCitation);
         }
         
+        frame.setProcess(++createStep);
+               
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
@@ -788,6 +845,10 @@ public class BuildSampleDatabase
                 log.error("Could not create attachments", e);
             }
         }
+        
+        frame.setProcess(++createStep);
+        
+
         // done
         log.info("Done creating single discipline database: " + disciplineName);
         return dataObjects;
@@ -795,7 +856,7 @@ public class BuildSampleDatabase
 
 
 
-    public static List<Object> createSimpleGeography(final CollectionObjDef colObjDef, final String treeDefName)
+    public List<Object> createSimpleGeography(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createSimpleGeography " + treeDefName);
 
@@ -870,7 +931,7 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleGeologicTimePeriod(final CollectionObjDef colObjDef,
+    public List<Object> createSimpleGeologicTimePeriod(final CollectionObjDef colObjDef,
                                                               final String treeDefName)
     {
         log.info("createSimpleGeologicTimePeriod " + treeDefName);
@@ -924,7 +985,7 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleLocation(final CollectionObjDef colObjDef, final String treeDefName)
+    public List<Object> createSimpleLocation(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createSimpleLocation " + treeDefName);
 
@@ -1018,7 +1079,7 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
+    public List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
     {
         log.info("createSimpleTaxon " + taxonTreeDef.getName());
 
@@ -1094,7 +1155,7 @@ public class BuildSampleDatabase
         return newObjs;
     }
     
-    public static Journal createJournalsAndReferenceWork()
+    public Journal createJournalsAndReferenceWork()
     {
         Journal journal = createJournal("Fish times", "FT");
         
@@ -1107,7 +1168,7 @@ public class BuildSampleDatabase
     }
 
     @SuppressWarnings("unchecked")
-    protected static int fixNodeNumbersFromRoot( Treeable root )
+    protected int fixNodeNumbersFromRoot( Treeable root )
     {
         int nextNodeNumber = root.getNodeNumber();
         for( Treeable child: (Set<Treeable>)root.getChildren() )
@@ -1119,7 +1180,7 @@ public class BuildSampleDatabase
         return nextNodeNumber;
     }
 
-    public static void persist(Object o)
+    public void persist(Object o)
     {
         if (session != null)
         {
@@ -1128,7 +1189,7 @@ public class BuildSampleDatabase
     }
 
 
-    public static void persist(Object[] oArray)
+    public void persist(Object[] oArray)
     {
         for (Object o: oArray)
         {
@@ -1137,34 +1198,38 @@ public class BuildSampleDatabase
     }
 
 
-    public static void persist(List<?> oList)
+    public void persist(List<?> oList)
     {
+        frame.setProcess(0, oList.size());
+        int cnt = 0;
         for (Object o: oList)
         {
+            frame.setProcess(++cnt);
             persist(o);
         }
+        frame.setProcess(oList.size());
     }
 
 
-    public static void startTx()
+    public void startTx()
     {
         HibernateUtil.beginTransaction();
     }
 
 
-    public static void commitTx()
+    public void commitTx()
     {
         HibernateUtil.commitTransaction();
     }
     
 
-    public static void rollbackTx()
+    public void rollbackTx()
     {
         HibernateUtil.rollbackTransaction();
     }
     
 
-    public static Object getFirstObjectByClass( List<Object> objects, Class<?> clazz)
+    public Object getFirstObjectByClass( List<Object> objects, Class<?> clazz)
     {
         Object ret = null;
         for (Object o: objects)
@@ -1180,7 +1245,7 @@ public class BuildSampleDatabase
     
 
     @SuppressWarnings("unchecked")
-    public static <T> T getObjectByClass( List<?> objects, Class<T> clazz, int index)
+    public <T> T getObjectByClass( List<?> objects, Class<T> clazz, int index)
     {
         T ret = null;
         int i = -1;
@@ -1199,7 +1264,7 @@ public class BuildSampleDatabase
         return ret;
     }
 
-    public static List<?> getObjectsByClass( List<Object> objects, Class<?> clazz)
+    public List<?> getObjectsByClass( List<Object> objects, Class<?> clazz)
     {
         Vector<Object> rightClass = new Vector<Object>();
         for (Object o: objects)
@@ -1213,8 +1278,10 @@ public class BuildSampleDatabase
         
     }
     
-    public static void main(String[] args) throws Exception
+    protected void build()
     {
+        UICacheManager.setAppName("Specify");
+        
         Properties sysProps     = System.getProperties();
         String     databaseName = null;
         if (!((String)sysProps.get("user.name")).startsWith("rod"))
@@ -1235,13 +1302,25 @@ public class BuildSampleDatabase
         String userName = "rods";
         String password = "rods";
 
-        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-        schemaGen.generateSchema(databaseHost, databaseName);
+        try
+        {
+            frame.setDesc("Creating Database Schema for "+databaseName);
+            frame.setOverall(steps++);
+            
+            SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
+            schemaGen.generateSchema(databaseHost, databaseName);
+        } catch (Exception ex)
+        {
+            System.err.println(ex);
+        }
 
         //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
         //HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
+
+        frame.setDesc("Logging in...");
+        frame.setOverall(steps++);
 
         if (UIHelper.tryLogin("com.mysql.jdbc.Driver",
                                 "org.hibernate.dialect.MySQLDialect",
@@ -1253,6 +1332,9 @@ public class BuildSampleDatabase
             boolean single = true;
             if (single)
             {
+                frame.setDesc("Creating data...");
+                frame.setOverall(steps++);
+
                 try
                 {
                     Thumbnailer thumb = new Thumbnailer();
@@ -1261,10 +1343,11 @@ public class BuildSampleDatabase
                     thumb.setMaxHeight(128);
                     thumb.setMaxWidth(128);
 
-                    AttachmentManagerIface attachMgr;
-                    attachMgr = new FileStoreAttachmentManager("demo_files/AttachmentStorage/");
+                    File location = UICacheManager.getDefaultWorkingPathSubDir("demo_files" + File.separator + " AttachmentStorage", true);
+                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(location);
                     
-                    File origDir = new File("demo_files/AttachmentStorage/originals");
+                    /*
+                    File origDir  = new File("demo_files/AttachmentStorage/originals");
                     File thumbDir = new File("demo_files/AttachmentStorage/thumbnails");
                     
                     // clean out the originals and thumbnails directories without deleting the .svn subdir
@@ -1280,7 +1363,7 @@ public class BuildSampleDatabase
                     {
                         File f = (File)o;
                         FileUtils.forceDelete(f);
-                    }
+                    }*/
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);
@@ -1289,13 +1372,23 @@ public class BuildSampleDatabase
 
                     log.info("Persisting in-memory objects to DB");
                     
+                    frame.setProcess(0);
+                    frame.setDesc("Getting Session...");
+                    frame.setOverall(steps++);
+                    
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
 
+                    frame.setDesc("Saving data...");
+                    frame.setOverall(steps++);
+                    
                     startTx();
                     //persist(dataObjects.get(0)); // just persist the CollectionObjDef object
                     persist(dataObjects);
                     commitTx();
+                    
+                    frame.setDesc("Done Saving data...");
+                    frame.setOverall(steps++);
                     
                     if (true)
                     {
@@ -1330,6 +1423,9 @@ public class BuildSampleDatabase
                     
                     attachMgr.cleanup();
                     
+                    frame.setDesc("Build Completed.");
+                    frame.setOverall(steps++);
+                    
                     log.info("Done");
                 }
                 catch(Exception e)
@@ -1353,8 +1449,52 @@ public class BuildSampleDatabase
             log.error("Login failed");
             return;
         }
-        
         System.out.println("All done");
+    }
+    
+    public void done()
+    {
+        frame.setVisible(false);
+        frame.dispose();
+    }
+
+    
+    public static void main(String[] args) throws Exception
+    {
+        // Create Specify Application
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                
+                final BuildSampleDatabase builder = new BuildSampleDatabase();
+                
+                final SwingWorker worker = new SwingWorker()
+                {
+                    @Override
+                    public Object construct()
+                    {
+                        builder.build();
+                        
+                        return null;
+                    }
+
+                    //Runs on the event-dispatching thread.
+                    @Override
+                    public void finished()
+                    {
+
+                        builder.done();
+
+                    }
+                };
+                worker.start();
+
+            }
+            
+        });
+       
+        
+        
     }
 }
 
