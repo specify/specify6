@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -61,7 +62,7 @@ public class BasicSQLUtils
 
     protected static Connection dbConn = null;  // (it may be shared so don't close)
     
-    protected static SpecifyDBConvFrame   frame = null;
+    protected static ProgressFrame   frame = null;
 
     /**
      * Singleton
@@ -102,7 +103,7 @@ public class BasicSQLUtils
      * Sets a UI feedback frame.
      * @param frame the frame
      */
-    public static void setFrame(final SpecifyDBConvFrame frame)
+    public static void setFrame(final ProgressFrame frame)
     {
         BasicSQLUtils.frame = frame;
     }

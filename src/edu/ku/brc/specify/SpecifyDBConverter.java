@@ -39,7 +39,6 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
-import edu.ku.brc.specify.conversion.SpecifyDBConvFrame;
 import edu.ku.brc.specify.conversion.TableStats;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -56,6 +55,7 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -79,7 +79,7 @@ public class SpecifyDBConverter
     protected static int                        currentIndex      = 0;
     protected static Hashtable<String, String>  old2NewDBNames    = null;
     
-    protected static SpecifyDBConvFrame         frame             = null;
+    protected static ProgressFrame         frame             = null;
 
     /**
      * Constructor.
@@ -134,7 +134,7 @@ public class SpecifyDBConverter
                     log.error("Can't change L&F: ", e);
                 }
                 
-                frame = new SpecifyDBConvFrame();
+                frame = new ProgressFrame("Converting");
                 old2NewDBNames = new Hashtable<String, String>();
                 String[] names = {"Fish", "sp4_fish", "Accessions", "sp4_accessions", "Cranbrook", "sp4_cranbrook", "Ento", "sp4_ento"};
                 for (int i=0;i<names.length;i++)

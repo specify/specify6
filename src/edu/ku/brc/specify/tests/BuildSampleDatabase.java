@@ -78,7 +78,6 @@ import org.hibernate.Session;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.conversion.SpecifyDBConvFrame;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -129,6 +128,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
@@ -150,25 +150,15 @@ public class BuildSampleDatabase
     protected Random             rand = new Random(12345678L);
     
     protected int                steps = 0;   
-    protected SpecifyDBConvFrame frame;
+    protected ProgressFrame frame;
     
     /**
      * 
      */
     public BuildSampleDatabase()
     {
-        
-        frame = new SpecifyDBConvFrame();
-        frame.setSize(new Dimension(500,125));
-        
-        frame.setTitle("Building Test Database");
-        UIHelper.centerAndShow(frame);
-        
-        frame.setProcessPercent(true);
-        frame.setOverall(0, 5);
-        
-        frame.getCloseBtn().setVisible(false);
-        
+        // nothing here
+        // everything is done in build()
     }
     
     public Session getSession()
@@ -1300,9 +1290,9 @@ public class BuildSampleDatabase
         
     }
     
-    protected void build()
+    protected void build(String hostname, String user, String passwd)
     {
-        UICacheManager.setAppName("Specify");
+        UICacheManager.setAppName("Specify Sample DB Builder");
         
         Properties sysProps     = System.getProperties();
         String     databaseName = null;
@@ -1318,11 +1308,19 @@ public class BuildSampleDatabase
         {
             databaseName = "testfish";
         }
+
+        // setup the progress display widget
+        frame = new ProgressFrame("Building sample DB");
+        frame.setSize(new Dimension(500,125));
+        frame.setTitle("Building Test Database");
+        UIHelper.centerAndShow(frame);
+        frame.setProcessPercent(true);
+        frame.setOverall(0, 5);
+        frame.getCloseBtn().setVisible(false);
        
-        //String databaseName = "testfish_anno";
-        String databaseHost = "localhost";
-        String userName = "rods";
-        String password = "rods";
+        String databaseHost = hostname;
+        String userName = user;
+        String password = passwd;
 
         try
         {
@@ -1483,7 +1481,6 @@ public class BuildSampleDatabase
         frame.setVisible(false);
         frame.dispose();
     }
-
     
     public static void main(String[] args) throws Exception
     {
@@ -1491,16 +1488,13 @@ public class BuildSampleDatabase
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                
                 final BuildSampleDatabase builder = new BuildSampleDatabase();
-                
                 final SwingWorker worker = new SwingWorker()
                 {
                     @Override
                     public Object construct()
                     {
-                        builder.build();
-                        
+                        builder.build("localhost","rods","rods");
                         return null;
                     }
 
@@ -1508,19 +1502,12 @@ public class BuildSampleDatabase
                     @Override
                     public void finished()
                     {
-
                         builder.done();
-
                     }
                 };
                 worker.start();
-
             }
-            
         });
-       
-        
-        
     }
 }
 

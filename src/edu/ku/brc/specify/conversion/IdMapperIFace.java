@@ -20,6 +20,8 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import edu.ku.brc.ui.ProgressFrame;
+
 /**
  * A Database Hashtable that is for mapping one integer to another.
  * This is usually utilitized for ID mappings
@@ -68,7 +70,7 @@ public interface IdMapperIFace
      * Sets UI frame for progress.
      * @param frame the frame
      */
-    public void setFrame(SpecifyDBConvFrame frame);
+    public void setFrame(ProgressFrame frame);
 
 
 }

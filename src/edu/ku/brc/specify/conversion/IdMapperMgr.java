@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import edu.ku.brc.ui.ProgressFrame;
+
 
 /**
  * Manages all IdMappers and provides a way to provide foreign key mappinggs for columns in other tables. 
@@ -39,7 +41,7 @@ public class IdMapperMgr
     protected Connection                      oldConn = null;
     protected Connection                      newConn = null;
     protected Hashtable<String, IdHashMapper> idMappers = new Hashtable<String, IdHashMapper>();
-    protected SpecifyDBConvFrame              frame     = null;
+    protected ProgressFrame              frame     = null;
     /**
      * Constructor.
      */
@@ -51,7 +53,7 @@ public class IdMapperMgr
      * Sets the progress frame.
      * @param frame the frame
      */
-    public void setFrame(final SpecifyDBConvFrame frame)
+    public void setFrame(final ProgressFrame frame)
     {
         this.frame = frame;
     }

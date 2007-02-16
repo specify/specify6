@@ -410,9 +410,10 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent()
     {
+        // XXX - RELEASE (nullable should be false in final release)
         return this.agent;
     }
 

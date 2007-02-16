@@ -81,6 +81,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -146,7 +147,7 @@ public class GenericDBConversion
 
     protected SpecifyAppContextMgr appContextMgr = new SpecifyAppContextMgr();
     
-    protected SpecifyDBConvFrame   frame    = null;
+    protected ProgressFrame   frame    = null;
     protected boolean              hasFrame = false;
 
     /**
@@ -191,7 +192,7 @@ public class GenericDBConversion
      * Sets a UI feedback frame.
      * @param frame the frame
      */
-    public void setFrame(final SpecifyDBConvFrame frame)
+    public void setFrame(final ProgressFrame frame)
     {
         this.frame = frame;
         hasFrame = frame != null;

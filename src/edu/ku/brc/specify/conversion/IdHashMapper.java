@@ -22,6 +22,8 @@ import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.ProgressFrame;
+
 
 /**
  * This is a Database Table Hashtable. It doesn't support the the entire Map interface just
@@ -44,7 +46,7 @@ public class IdHashMapper implements IdMapperIFace
     protected String          mapTableName  = null;
     protected boolean         showLogErrors = true;
     
-    protected SpecifyDBConvFrame frame      = null;
+    protected ProgressFrame frame      = null;
     
     /**
      * Default Constructor for those creating derived classes.
@@ -345,7 +347,7 @@ public class IdHashMapper implements IdMapperIFace
         return sql;
     }
     
-    public void setFrame(SpecifyDBConvFrame frame)
+    public void setFrame(ProgressFrame frame)
     {
         this.frame = frame;
     }

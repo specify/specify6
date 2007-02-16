@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.conversion;
+package edu.ku.brc.ui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -23,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -38,7 +39,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * Created Date: Nov 7, 2006
  *
  */
-public class SpecifyDBConvFrame extends JFrame
+public class ProgressFrame extends JFrame
 {
     protected JProgressBar overallProgress;
     protected JProgressBar processProgress;
@@ -49,12 +50,12 @@ public class SpecifyDBConvFrame extends JFrame
     protected boolean      isProcessPercent = false;
     protected int          origMax          = 0;
     
-    public SpecifyDBConvFrame()
+    public ProgressFrame(String title)
     {
-        createUI();
+        createUI(title);
     }
     
-    protected void createUI()
+    protected void createUI(String title)
     {
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,5px,p,5px,p,10px,p"));
         CellConstraints cc         = new CellConstraints();
@@ -66,7 +67,7 @@ public class SpecifyDBConvFrame extends JFrame
         
         processProgress.setStringPainted(true);
  
-        desc.setHorizontalAlignment(JLabel.CENTER);
+        desc.setHorizontalAlignment(SwingConstants.CENTER);
         builder.add( desc, cc.xywh(1,1,3,1));
         
         builder.add( new JLabel("Process:"), cc.xy(1,3));
@@ -82,7 +83,7 @@ public class SpecifyDBConvFrame extends JFrame
         
         setSize(new Dimension(500,125));
         
-        setTitle("Converting");
+        setTitle(title);
         
         overallProgress.setIndeterminate(true);
         
@@ -188,11 +189,9 @@ public class SpecifyDBConvFrame extends JFrame
     {
         this.isProcessPercent = isProcessPercent;
     }
-
+    
     public JProgressBar getProcessProgress()
     {
         return processProgress;
     }
-    
-    
 }
