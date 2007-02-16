@@ -93,6 +93,16 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		}
 		return true;
 	}
+    
+    public boolean hasChildren(T t)
+    {
+        if (t == null)
+        {
+            return false;
+        }
+        
+        return !dataService.getChildNodes(t).isEmpty();
+    }
 	
 	protected boolean childrenWereShowing(T t)
 	{
