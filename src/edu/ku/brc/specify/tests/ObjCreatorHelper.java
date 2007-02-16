@@ -9,7 +9,6 @@ import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
@@ -64,7 +63,6 @@ import edu.ku.brc.specify.datamodel.PreparationAttr;
 import edu.ku.brc.specify.datamodel.Project;
 import edu.ku.brc.specify.datamodel.ProjectCollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -2171,7 +2169,7 @@ public class ObjCreatorHelper
     	//workbench.setFormid(formId);
     	workbench.setTimestampCreated(new Date());
     	workbench.setTimestampModified(new Date());
-    	workbench.setWorkbenchItems(new HashSet<WorkbenchDataItem>());
+    	workbench.setWorkbenchDataItems(new HashSet<WorkbenchDataItem>());
     	workbench.setWorkbenchTemplate(workbenchTemplate);
     	
         saveOrUpdate(workbench);
@@ -2179,9 +2177,9 @@ public class ObjCreatorHelper
         return workbench;
     }    
     
-    public static WorkbenchDataItem createWorkbenchDataItem(final String rowNumber, 
-                                                            final String columnNumber, 
-                                                            final String cellData, 
+    public static WorkbenchDataItem createWorkbenchDataItem(final Integer   rowNumber, 
+                                                            final Integer   columnNumber, 
+                                                            final String    cellData, 
                                                             final Workbench workbench)
     {
     	WorkbenchDataItem wbdi = new WorkbenchDataItem();
@@ -2224,12 +2222,12 @@ public class ObjCreatorHelper
         wtmi.initialize();
         
         wtmi.setCaption(caption);
-        wtmi.setDatatype(dataType);
-        wtmi.setFieldname(fieldName);
-        wtmi.setTablename(tableName);
-        wtmi.setVieworder(viewOrder);
-        wtmi.setWorkbenchTemplates(template);
-        wtmi.setTableid(tableId);
+        wtmi.setDataType(dataType);
+        wtmi.setFieldName(fieldName);
+        wtmi.setTableName(tableName);
+        wtmi.setViewOrder(viewOrder);
+        wtmi.setWorkbenchTemplate(template);
+        wtmi.setSrcTableId(tableId);
 		
         saveOrUpdate(wtmi);
         

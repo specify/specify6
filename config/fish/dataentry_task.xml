@@ -3,7 +3,8 @@
     <view sidebar="true"  name="Accession"         title="Accession"         viewset="Fish Views" view="Accession"        iconname="Accession"  tooltip="EditRecordSetTT"/>    
     <view sidebar="true"  name="Agent"             title="Agent"             viewset="Fish Views" view="Agent"            iconname="Agent"      tooltip="EditRecordSetTT"/>    
     <view sidebar="true"  name="Collection Object" title="Collection Object" viewset="Fish Views" view="CollectionObject" iconname="FishColObj" tooltip="EditRecordSetTT"/>    
-    <view sidebar="false" name="Determination"    title="Determination"      viewset="Fish Views" view="Determination"    iconname="Determination" tooltip="EditRecordSetTT"/>
+    <view sidebar="true"  name="Collecting Event"  title="Collecting Event"  viewset="Fish Views" view="CollectingEvent"  iconname="CollectingEvent" tooltip="EditRecordSetTT"/>    
+    <view sidebar="false" name="Determination"     title="Determination"      viewset="Fish Views" view="Determination"    iconname="Determination" tooltip="EditRecordSetTT"/>
     <view sidebar="false" name="Loan"              title="Loan"              viewset="Fish Views" view="Loan"             iconname="Loan"       tooltip="EditRecordSetTT"/>    
     <view sidebar="true"  name="Permit"            title="Permit"            viewset="Fish Views" view="Permit"           iconname="Permit"     tooltip="EditRecordSetTT"/> 
 </views>

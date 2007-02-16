@@ -123,7 +123,7 @@ public class RecordSetTask extends BaseTask
                                       // TODO Probably don't want to do this defer it to later when they are used.
                 session.evict(recordSet);
                 
-                NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, RECORD_SET, "Delete", recordSet);
+                NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
                 DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
                 if (tblInfo != null)
                 {
@@ -160,7 +160,7 @@ public class RecordSetTask extends BaseTask
      */
     public void saveRecordSet(final RecordSet recordSet)
     {
-        NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, "Record_Set", "Delete", recordSet);
+        NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
         
         DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
         if (tblInfo != null)
@@ -385,7 +385,7 @@ public class RecordSetTask extends BaseTask
                     saveRecordSet(rs);
                 }
             }
-        } else if (cmdAction.isAction("Delete") && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
         {
             RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
             deleteRecordSet(recordSet);

@@ -132,7 +132,7 @@ public class LabelsTask extends BaseTask
                     if (tableIdStr != null)
                     {
                         CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, tcd.getParams());
-                        labelsList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), name, cmdAction, true));// true means make it draggable
+                        labelsList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), name, cmdAction, null, true));// true means make it draggable
                         
                     } else
                     {

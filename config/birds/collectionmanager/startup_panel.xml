@@ -2,10 +2,10 @@
 <panel>
 
   <row>
-      <box title="Task List" desccol="1" valcol="2">
+      <box title="Task List" desccol="1" valcol="1">
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
-      <box title="Pre-Catalog Works Benches" desccol="1" valcol="2">
+      <box title="Pre-Catalog Works Benches" desccol="1" valcol="1">
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
   </row>

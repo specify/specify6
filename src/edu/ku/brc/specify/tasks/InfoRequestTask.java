@@ -19,8 +19,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -51,7 +49,6 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -145,28 +142,9 @@ public class InfoRequestTask extends BaseTask
      * @param infoRequest the infoRequest to be added
      */
     protected void addInfoRequest(final InfoRequest infoRequest)
-    {
-        // XXX FIXME These value should not be hard coded here
-        if (false)
-        {
-            int                 tableId = DBTableIdMgr.getIdByShortName("InfoRequest");
-            DroppableFormObject dfo     = new DroppableFormObject("view valid", tableId, infoRequest);
-            NavBoxItemIFace     nbi     = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), INFOREQUEST, INFOREQUEST, "Delete", dfo);
-            NavBoxButton        roc     = (NavBoxButton)nbi;
-            roc.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    createFormPanel((NavBoxButton)ae.getSource());
-                }
-            });
-            addDraggableDataFlavors(roc);
-        } else
-        {
-            
-            NavBoxItemIFace nbi = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), INFOREQUEST, INFOREQUEST, "Delete", infoRequest);
-            setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
-        }
+    {           
+        NavBoxItemIFace nbi = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), INFOREQUEST, new CommandAction(INFOREQUEST, DELETE_CMD_ACT, infoRequest), infoRequest);
+        setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
     }
     
     /**
@@ -557,7 +535,7 @@ public class InfoRequestTask extends BaseTask
                 
                 saveInfoRequest(infoRequest, (RecordSetIFace)data);
             }
-        } else if (cmdAction.isAction("Delete") && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
         {
             InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
             deleteInfoRequest(inforRequest);

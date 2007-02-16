@@ -376,7 +376,7 @@ public class CreateTestWorkbenches
             	String rowData = "";
             	for(int j = 0; j < smallarray.length; j++) {
             		 rowData = smallarray[j];
-            		 dataitems[i][j] = ObjCreatorHelper.createWorkbenchDataItem("" + i +"", "" + j +"",rowData, workbench);
+            		 dataitems[i][j] = ObjCreatorHelper.createWorkbenchDataItem(i, j,rowData, workbench);
             		 
             	}
             	

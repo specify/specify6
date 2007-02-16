@@ -33,6 +33,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -59,7 +61,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      protected String                            remarks;
      protected Set<Workbench>                    workbenches;
      protected Set<WorkbenchTemplateMappingItem> workbenchTemplateMappingItems;
-
+     protected SpecifyUser                       specifyUser;
 
     // Constructors
 
@@ -80,11 +82,13 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     public void initialize()
     {
         super.init();
+        
         workbenchTemplateId = null;
         name = null;
         remarks = null;
         workbenches = new HashSet<Workbench>();
-        workbenchTemplateMappingItems = new HashSet<WorkbenchTemplateMappingItem>();   
+        workbenchTemplateMappingItems = new HashSet<WorkbenchTemplateMappingItem>();
+        specifyUser = null;
     }
     
     // End Initializer
@@ -166,7 +170,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * 
      */
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchTemplates")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchTemplate")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<WorkbenchTemplateMappingItem> getWorkbenchTemplateMappingItems() 
     {
@@ -176,6 +180,19 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     public void setWorkbenchTemplateMappingItems(Set<WorkbenchTemplateMappingItem> workbenchTemplateMappingItems) 
     {
         this.workbenchTemplateMappingItems = workbenchTemplateMappingItems;
+    }
+    
+    /**
+     * 
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
+    public SpecifyUser getSpecifyUser() {
+        return this.specifyUser;
+    }
+    
+    public void setSpecifyUser(SpecifyUser owner) {
+        this.specifyUser = owner;
     }
 
     public void addWorkbenchDataItem(Workbench workbench)

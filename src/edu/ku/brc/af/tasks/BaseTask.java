@@ -219,33 +219,30 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param navBox navBox
      * @param labelText labelText
      * @param icoonName icon name
-     * @param cmdType cmdType
-     * @param cmdAction cmdAction
+     * @param delCmdAction delCmdAction
      * @param data data
      * @return btn
      */
-    protected NavBoxItemIFace addNavBoxItem(final NavBox navBox,
-                                            final String labelText,
-                                            final String iconName,
-                                            final String cmdType,
-                                            final String cmdAction,
-                                            final Object data,
-                                            final int    position)
+    protected NavBoxItemIFace addNavBoxItem(final NavBox        navBox,
+                                            final String        labelText,
+                                            final String        iconName,
+                                            final CommandAction delCmdAction,
+                                            final Object        data,
+                                            final int           position)
     {
         NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16);
         NavBoxButton rb = (NavBoxButton)nb;
 
         // This is part of the "DndDeletable" Interface,
         // the object is responsible for knowing how to delete itself.
-        CommandAction delRSCmd = new CommandAction(cmdType, cmdAction, data);
-        rb.setCommandAction(delRSCmd);
+        rb.setDeleteCommandAction(delCmdAction);
 
-        if (cmdAction != null)
+        if (delCmdAction != null)
         {
             JPopupMenu popupMenu = rb.getPopupMenu();
 
             JMenuItem delMenuItem = new JMenuItem(getResourceString("Delete"));
-            delMenuItem.addActionListener(new RSAction(delRSCmd));
+            delMenuItem.addActionListener(new RSAction(delCmdAction));
             popupMenu.add(delMenuItem);
         }
 
@@ -262,7 +259,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         {
             GhostActionable ga = (GhostActionable)nb;
             ga.createMouseInputAdapter(); // this makes it draggable
-            ga.setData(data);
+            ga.setData(data != null ? data : this);
         }
         return nb;
     }
@@ -271,15 +268,17 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                                               final String        labelText,
                                                               final String        iconName,
                                                               final CommandAction cmdAction,
+                                                              final CommandAction delCmdAction,
                                                               final boolean       makeDraggable)
     {
-        return makeDraggableAndDroppableNavBtn(navBox, labelText, iconName, cmdAction, makeDraggable, -1);
+        return makeDraggableAndDroppableNavBtn(navBox, labelText, iconName, cmdAction, delCmdAction, makeDraggable, -1);
     }
     
     protected NavBoxItemIFace makeDraggableAndDroppableNavBtn(final NavBox        navBox,
                                                               final String        labelText,
                                                               final String        iconName,
                                                               final CommandAction cmdAction,
+                                                              final CommandAction delCmdAction,
                                                               final boolean       makeDraggable,
                                                               final int           position)
     {
@@ -288,7 +287,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         {
             NavBoxButton nbb = (NavBoxButton)nb;
             nbb.addActionListener(new CommandActionWrapper(cmdAction));
-            nb.setData(cmdAction);
+            nbb.setData(cmdAction);
+            nbb.setDeleteCommandAction(delCmdAction);
         }
         
         if (position == -1)
@@ -313,19 +313,18 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param navBox navBox
      * @param labelText navBox
      * @param iconName icon name
-     * @param cmdType cmdType
      * @param cmdAction cmdAction
+     * @param delCmdAction delCmdAction
      * @param data data
      * @return btn
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox navBox,
                                             final String labelText,
                                             final String iconName,
-                                            final String cmdType,
-                                            final String cmdAction,
+                                            final CommandAction delCmdAction,
                                             final Object data)
     {
-        return addNavBoxItem(navBox, labelText,  iconName, cmdType, cmdAction, data, -1);
+        return addNavBoxItem(navBox, labelText,  iconName, delCmdAction, data, -1);
     }
     
     /**

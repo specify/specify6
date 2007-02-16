@@ -2043,20 +2043,20 @@ public class DataBuilder
         return usergroup;
     }
 
-    public static Workbench createWorkbench(final String name, final String remarks, final String exportInstName,
-    //final Integer formId,
+    public static Workbench createWorkbench(final SpecifyUser user,
+                                            final String name, 
+                                            final String remarks, 
+                                            final String exportInstName,
                                             final WorkbenchTemplate workbenchTemplate)
     {
         Workbench workbench = new Workbench();
         workbench.initialize();
+        
         workbench.setName(name);
+        workbench.setSpecifyUser(user);
         workbench.setRemarks(remarks);
         workbench.setExportInstitutionName(exportInstName);
-        //workbench.setFormid(formId);
-        workbench.setTimestampCreated(new Date());
-        workbench.setTimestampModified(new Date());
-        workbench.setWorkbenchItems(new HashSet<WorkbenchDataItem>());
-        //workbench.setW
+
         workbench.setWorkbenchTemplate(workbenchTemplate);
 
         persist(workbench);
@@ -2064,9 +2064,9 @@ public class DataBuilder
         return workbench;
     }
 
-    public static WorkbenchDataItem createWorkbenchDataItem(final String rowNumber,
-                                                            final String columnNumber,
-                                                            final String cellData,
+    public static WorkbenchDataItem createWorkbenchDataItem(final Integer   rowNumber,
+                                                            final Integer   columnNumber,
+                                                            final String    cellData,
                                                             final Workbench workbench)
     {
         WorkbenchDataItem wbdi = new WorkbenchDataItem();
@@ -2077,44 +2077,53 @@ public class DataBuilder
         //wbdi.setRowOfData(rowData);
         wbdi.setCellData(cellData);
         wbdi.setWorkbench(workbench);
-
+        
+        workbench.getWorkbenchDataItems().add(wbdi);
+        
         persist(wbdi);
 
         return wbdi;
     }
 
-    public static WorkbenchTemplate createWorkbenchTemplate(final String name, final String remarks)
+    public static WorkbenchTemplate createWorkbenchTemplate(final SpecifyUser user,
+                                                            final String name, 
+                                                            final String remarks)
     {
         WorkbenchTemplate wbt = new WorkbenchTemplate();
         wbt.initialize();
 
+        wbt.setSpecifyUser(user);
         wbt.setName(name);
         wbt.setRemarks(remarks);
 
+        user.getWorkbenchTemplates().add(wbt);
+        
         persist(wbt);
 
         return wbt;
     }
 
-    public static WorkbenchTemplateMappingItem createMappingItem(final String tableName,
-                                                                 final Integer tableId,
-                                                                 final String fieldName,
-                                                                 final String caption,
-                                                                 final String dataType,
-                                                                 final Integer viewOrder,
-                                                                 final WorkbenchTemplate template)
+    public static WorkbenchTemplateMappingItem createWorkbenchMappingItem(final String tableName,
+                                                                          final Integer tableId,
+                                                                          final String fieldName,
+                                                                          final String caption,
+                                                                          final String dataType,
+                                                                          final Integer viewOrder,
+                                                                          final WorkbenchTemplate template)
     {
         WorkbenchTemplateMappingItem wtmi = new WorkbenchTemplateMappingItem();
         wtmi.initialize();
 
         wtmi.setCaption(caption);
-        wtmi.setDatatype(dataType);
-        wtmi.setFieldname(fieldName);
-        wtmi.setTablename(tableName);
-        wtmi.setVieworder(viewOrder);
-        wtmi.setWorkbenchTemplates(template);
-        wtmi.setTableid(tableId);
-
+        wtmi.setDataType(dataType);
+        wtmi.setFieldName(fieldName);
+        wtmi.setTableName(tableName);
+        wtmi.setViewOrder(viewOrder);
+        wtmi.setWorkbenchTemplate(template);
+        wtmi.setSrcTableId(tableId);
+        
+        template.getWorkbenchTemplateMappingItems().add(wtmi);
+        
         persist(wtmi);
 
         return wtmi;

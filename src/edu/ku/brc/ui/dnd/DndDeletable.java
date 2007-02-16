@@ -45,7 +45,7 @@ public interface DndDeletable
      * The command that will be dispatched when "deleteRequest" is called
      * @param cmdAction the command that will delete the object from itself container
      */
-    public void setCommandAction(final CommandAction cmdAction);
+    public void setDeleteCommandAction(final CommandAction cmdAction);
     
     /**
      * The name of the object being deleted

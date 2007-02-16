@@ -168,14 +168,14 @@ public class InteractionsTask extends BaseTask
             NavBox navBox = new NavBox(getResourceString("Actions"));
             
             CommandAction cmdAction = new CommandAction(INTERACTIONS, NEW_LOAN);
-            NavBoxButton roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, true);// true means make it draggable
+            NavBoxButton roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, null, true);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), "Loan", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), "Loan", IconManager.IconSize.Std16));
             
             cmdAction = new CommandAction(INTERACTIONS, InfoRequestName);
-            roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, true);// true means make it draggable
+            roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, null, true);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
             
@@ -212,7 +212,7 @@ public class InteractionsTask extends BaseTask
                         
                         cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
-                        invoiceList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), "Loan", cmdAction, true));// true means make it draggable
+                        invoiceList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true));// true means make it draggable
 
                     } else
                     {
@@ -231,7 +231,7 @@ public class InteractionsTask extends BaseTask
             {
                 InfoRequest infoRequest = (InfoRequest)iter.next();
                 
-                NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, INTERACTIONS, "Delete", infoRequest);
+                NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
                 setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
             }      
             navBoxes.addElement(infoRequestNavBox);
@@ -1013,7 +1013,7 @@ public class InteractionsTask extends BaseTask
                 if (cmdAction.isAction(INSERT_CMD_ACT))
                 {
                     InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
-                    NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, INTERACTIONS, "Delete", infoRequest);
+                    NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
                     setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                 }
             }
@@ -1078,7 +1078,7 @@ public class InteractionsTask extends BaseTask
         {
             returnLoan();
             
-        } else if (cmdAction.isAction("Delete") && cmdAction.getData() instanceof InfoRequest)
+        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof InfoRequest)
         {
             InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
             deleteInfoRequest(inforRequest);

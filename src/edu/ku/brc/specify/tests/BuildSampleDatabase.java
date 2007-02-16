@@ -52,6 +52,10 @@ import static edu.ku.brc.specify.tests.DataBuilder.createTaxonChildren;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.tests.DataBuilder.createWorkbench;
+import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchDataItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchMappingItem;
+import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchTemplate;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -120,6 +124,10 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -778,6 +786,20 @@ public class BuildSampleDatabase
             dataObjects.add(localityCitation);
         }
         
+        ////////////////////////////////
+        // Workbeanch
+        ////////////////////////////////
+        WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, "BasicTemplate", "These are the remarks");
+        Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
+        WorkbenchTemplateMappingItem wbtmi = createWorkbenchMappingItem("CollectionObject", 
+                                                                        1, "fieldNumber", "Field Number", "string", 1, wbTemplate);
+        WorkbenchDataItem wbdi = createWorkbenchDataItem(1, 1, "RS-100",  workBench);
+
+        dataObjects.add(wbTemplate);
+        dataObjects.add(workBench);
+        dataObjects.add(wbtmi);
+        dataObjects.add(wbdi);
+        
         frame.setProcess(++createStep);
                
         ////////////////////////////////
@@ -1304,6 +1326,8 @@ public class BuildSampleDatabase
 
         try
         {
+            frame.getProcessProgress().setIndeterminate(true);
+            frame.getProcessProgress().setString("");
             frame.setDesc("Creating Database Schema for "+databaseName);
             frame.setOverall(steps++);
             
@@ -1373,6 +1397,8 @@ public class BuildSampleDatabase
                     log.info("Persisting in-memory objects to DB");
                     
                     frame.setProcess(0);
+                    frame.getProcessProgress().setIndeterminate(true);
+                    frame.getProcessProgress().setString("");
                     frame.setDesc("Getting Session...");
                     frame.setOverall(steps++);
                     

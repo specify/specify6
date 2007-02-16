@@ -63,7 +63,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
      protected Integer groupPermissionLevel;
      protected Integer allPermissionLevel;
      protected WorkbenchTemplate workbenchTemplate;
-     protected Set<WorkbenchDataItem> workbenchItems;
+     protected Set<WorkbenchDataItem> workbenchDataItems;
      protected SpecifyUser specifyUser;
      protected UserGroup group;
 
@@ -94,7 +94,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         groupPermissionLevel = null;
         allPermissionLevel = null;
         workbenchTemplate = null;
-        workbenchItems = new HashSet<WorkbenchDataItem>();       
+        workbenchDataItems = new HashSet<WorkbenchDataItem>();       
         specifyUser = null;
         group = null;
     }
@@ -250,13 +250,14 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
      * 
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbench")
-    public Set<WorkbenchDataItem> getWorkbenchItems() {
-        return this.workbenchItems;
+    public Set<WorkbenchDataItem> getWorkbenchDataItems() {
+        return this.workbenchDataItems;
     }
     
-    public void setWorkbenchItems(Set<WorkbenchDataItem> workbenchItems) {
-        this.workbenchItems = workbenchItems;
+    public void setWorkbenchDataItems(Set<WorkbenchDataItem> workbenchDataItems) {
+        this.workbenchDataItems = workbenchDataItems;
     }
+    
     /**
      * 
      */
@@ -285,7 +286,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     
     public void addWorkbnechDataItem(WorkbenchDataItem item)
     {
-        workbenchItems.add(item);
+        workbenchDataItems.add(item);
         item.setWorkbench(this);
         //item.set
     }
@@ -296,7 +297,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
      */
     public void removeWorkbenchDataItem(final WorkbenchDataItem item)
     {
-        this.workbenchItems.remove(item);
+        this.workbenchDataItems.remove(item);
         item.setWorkbench(null);
     }  
     

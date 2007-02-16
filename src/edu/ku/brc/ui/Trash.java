@@ -176,12 +176,12 @@ public class Trash extends JComponent implements GhostActionable
     }
 
     /* (non-Javadoc)
-     * @see java.awt.Component#paint(java.awt.Graphics)
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     @Override
-    public void paint(Graphics g)
+    public void paintComponent(Graphics g)
     {
-        super.paint(g);
+        super.paintComponent(g);
         
         g.drawImage(imgIcon.getImage(), 0, 0, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
         /*

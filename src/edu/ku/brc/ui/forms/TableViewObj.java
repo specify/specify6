@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -921,6 +920,7 @@ public class TableViewObj implements Viewable,
     {
         if (dataObjList != null && model != null)
         {
+
             DataProviderSessionIFace tmpSession = session;
             if (tmpSession == null)
             {

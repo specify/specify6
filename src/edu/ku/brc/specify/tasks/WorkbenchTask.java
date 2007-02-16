@@ -32,15 +32,20 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -54,13 +59,17 @@ import edu.ku.brc.ui.UICacheManager;
 public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
-	public static final DataFlavor WORKBENCH_FLAVOR = new DataFlavor(WorkbenchTask.class, "Workbench");
     
-    public static final String WORKBENCH = "Workbench";
-    public static final String IMPORT_FIELD_NOTEBOOK = "Import Field Note Book";
+	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
+    public static final String     WORKBENCH             = "Workbench";
+    public static final String     NEW_WORKBENCH         = "New Workbench";
+    public static final String     NEW_TEMPLATE          = "New Template";
+    public static final String     EDIT_TEMPLATE         = "Edit Template";
+    public static final String     EDIT_WORKBENCH        = "Edit Workbench";
+    public static final String     IMPORT_FIELD_NOTEBOOK = "Import Field Note Book";
     
 
-    protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
+    protected Vector<ToolBarDropDownBtn>  tbList = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>          menus  = new Vector<JComponent>();
 
 	/**
@@ -85,19 +94,43 @@ public class WorkbenchTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             NavBox navBox = new NavBox(getResourceString("File"));
-            navBox.add(NavBox.createBtn(getResourceString("New_Workbench"), name, IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn(getResourceString("New_Template"), name, IconManager.IconSize.Std16));
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Workbench"), name, new CommandAction(WORKBENCH, NEW_WORKBENCH), null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Template"), name, new CommandAction(WORKBENCH, NEW_TEMPLATE), null, false);// true means make it draggable
             navBoxes.addElement(navBox);
-            //
+            
             navBox = new NavBox(getResourceString("Templates"));
-            navBox.add(NavBox.createBtn(getResourceString("Field_Book_Entry"),  name, IconManager.IconSize.Std16, new NavBoxAction(WORKBENCH, IMPORT_FIELD_NOTEBOOK)));
-            navBox.add(NavBox.createBtn(getResourceString("Label_Entry"), name, IconManager.IconSize.Std16));
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            
+            List list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            for (Object obj : list)
+            {
+                WorkbenchTemplate wbTemplate = (WorkbenchTemplate)obj;
+                CommandAction cmd = new CommandAction(WORKBENCH, EDIT_TEMPLATE);
+                cmd.setProperty("template", wbTemplate);
+                RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(navBox, wbTemplate.getName(), name, cmd, new CommandAction(WORKBENCH, DELETE_CMD_ACT, wbTemplate), true);// true means make it draggable
+                roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+            }
+            
+            //navBox.add(NavBox.createBtn(getResourceString("Field_Book_Entry"),  name, IconManager.IconSize.Std16, new NavBoxAction(WORKBENCH, IMPORT_FIELD_NOTEBOOK)));
+            //navBox.add(NavBox.createBtn(getResourceString("Label_Entry"), name, IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
 
             navBox = new NavBox(getResourceString("Workbenches"));
-            navBox.add(NavBox.createBtn(getResourceString("Lawrence_River"), name,IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn(getResourceString("Smith_Collection"), name, IconManager.IconSize.Std16));
+            list = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            for (Object obj : list)
+            {
+                Workbench workBench = (Workbench)obj;
+                CommandAction cmd = new CommandAction(WORKBENCH, EDIT_WORKBENCH);
+                cmd.setProperty("workbench", workBench);
+                RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(navBox, workBench.getName(), name, cmd, new CommandAction(WORKBENCH, DELETE_CMD_ACT, workBench), true);// true means make it draggable
+                roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+            }
+            
+            //navBox.add(NavBox.createBtn(getResourceString("Lawrence_River"), name,IconManager.IconSize.Std16));
+            //navBox.add(NavBox.createBtn(getResourceString("Smith_Collection"), name, IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
+            
+            session.close();
         }
     }
 
@@ -228,7 +261,36 @@ public class WorkbenchTask extends BaseTask
      */
     protected void processWorkbenchCommands(final CommandAction cmdAction)
     {
-        
+        if (cmdAction.isAction(EDIT_TEMPLATE))
+        {
+            WorkbenchTemplate template = (WorkbenchTemplate)cmdAction.getProperty("template");
+            log.info("Trying to edit template "+template.getName());
+            
+        } else if (cmdAction.isAction(EDIT_WORKBENCH))
+        {
+            Workbench workbench = (Workbench)cmdAction.getProperty("workbench");
+            log.info("Trying to edit workbench "+workbench.getName());
+            
+        } else if (cmdAction.isAction(NEW_TEMPLATE))
+        {
+            log.info("Trying to create template ");
+            
+        } else if (cmdAction.isAction(NEW_WORKBENCH))
+        {
+            log.info("Trying to create workbench ");
+            
+        } else if (cmdAction.isAction(DELETE_CMD_ACT))
+        {
+            if (cmdAction.getData() instanceof Workbench)
+            {
+                log.info("Delete a Workbench ["+((Workbench)cmdAction.getData()).getName()+"]");
+                
+            } else if (cmdAction.getData() instanceof WorkbenchTemplate)
+            {
+                log.info("Delete a Workbench ["+((WorkbenchTemplate)cmdAction.getData()).getName()+"]");
+            }
+            
+        }
     }
     
     /* (non-Javadoc)

@@ -1,30 +1,15 @@
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+/*
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version
+ * 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along with this library;
+ * if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307 USA
  */
 package edu.ku.brc.specify.datamodel;
 
@@ -39,53 +24,54 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
-
+ * 
  */
 @Entity
-@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @Table(name = "workbenchtemplatemappingitem")
-public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable {
+public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable
+{
 
-    // Fields    
+    // Fields
 
-     protected Long workbenchTemplateMappingItemId;
-     protected String tablename;
-     protected Integer tableid;
-     protected String fieldname;
-     protected String caption;
-     protected Integer vieworder;
-     protected String datatype;
-     protected WorkbenchTemplate workbenchTemplates;
-
+    protected Long              workbenchTemplateMappingItemId;
+    protected String            tableName;
+    protected Integer           srcTableId;
+    protected String            fieldName;
+    protected String            caption;
+    protected Integer           viewOrder;
+    protected String            dataType;
+    protected WorkbenchTemplate workbenchTemplate;
 
     // Constructors
 
     /** default constructor */
-    public WorkbenchTemplateMappingItem() 
+    public WorkbenchTemplateMappingItem()
     {
         //
     }
-    
+
     /** constructor with id */
-    public WorkbenchTemplateMappingItem(Long workbenchTemplateMappingItemId) 
+    public WorkbenchTemplateMappingItem(Long workbenchTemplateMappingItemId)
     {
         this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
-   
+
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
         workbenchTemplateMappingItemId = null;
-        tablename = null;
-        tableid = null;
-        fieldname = null;
+        tableName = null;
+        srcTableId = null;
+        fieldName = null;
         caption = null;
-        vieworder = null;
-        datatype = null;
-        workbenchTemplates = null;
+        viewOrder = null;
+        dataType = null;
+        workbenchTemplate = null;
     }
+
     // End Initializer
 
     // Property accessors
@@ -96,13 +82,14 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchTemplateMappingItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getWorkbenchTemplateMappingItemId() 
+    public Long getWorkbenchTemplateMappingItemId()
     {
         return this.workbenchTemplateMappingItemId;
     }
 
     /**
      * Generic Getter for the ID Property.
+     * 
      * @returns ID Property.
      */
     @Transient
@@ -112,7 +99,9 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         return this.workbenchTemplateMappingItemId;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
     @Transient
@@ -121,8 +110,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         return WorkbenchTemplateMappingItem.class;
     }
-    
-    public void setWorkbenchTemplateMappingItemId(Long workbenchTemplateMappingItemId) 
+
+    public void setWorkbenchTemplateMappingItemId(Long workbenchTemplateMappingItemId)
     {
         this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
@@ -131,47 +120,55 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      * 
      */
     @Column(name = "TableName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getTablename() {
-        return this.tablename;
+    public String getTableName()
+    {
+        return this.tableName;
     }
-    
-    public void setTablename(String tablename) {
-        this.tablename = tablename;
+
+    public void setTableName(String tableName)
+    {
+        this.tableName = tableName;
     }
 
     /**
      * 
      */
     @Column(name = "TableId", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public Integer getTableid() {
-        return this.tableid;
+    public Integer getSrcTableId()
+    {
+        return this.srcTableId;
     }
-    
-    public void setTableid(Integer tableid) {
-        this.tableid = tableid;
+
+    public void setSrcTableId(Integer srcTableId)
+    {
+        this.srcTableId = srcTableId;
     }
 
     /**
      * 
      */
     @Column(name = "FieldName", unique = false, nullable = true, insertable = true, updatable = true)
-    public String getFieldname() {
-        return this.fieldname;
+    public String getFieldName()
+    {
+        return this.fieldName;
     }
-    
-    public void setFieldname(String fieldname) {
-        this.fieldname = fieldname;
+
+    public void setFieldName(String fieldName)
+    {
+        this.fieldName = fieldName;
     }
 
     /**
      * 
      */
     @Column(name = "Caption", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getCaption() {
+    public String getCaption()
+    {
         return this.caption;
     }
-    
-    public void setCaption(String caption) {
+
+    public void setCaption(String caption)
+    {
         this.caption = caption;
     }
 
@@ -179,24 +176,28 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      * 
      */
     @Column(name = "ViewOrder", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getVieworder() {
-        return this.vieworder;
+    public Integer getViewOrder()
+    {
+        return this.viewOrder;
     }
-    
-    public void setVieworder(Integer vieworder) {
-        this.vieworder = vieworder;
+
+    public void setViewOrder(Integer viewOrder)
+    {
+        this.viewOrder = viewOrder;
     }
 
     /**
      * 
      */
     @Column(name = "DataType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getDatatype() {
-        return this.datatype;
+    public String getDataType()
+    {
+        return this.dataType;
     }
-    
-    public void setDatatype(String datatype) {
-        this.datatype = datatype;
+
+    public void setDataType(String dataType)
+    {
+        this.dataType = dataType;
     }
 
     /**
@@ -204,16 +205,19 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
-    public WorkbenchTemplate getWorkbenchTemplates() {
-        return this.workbenchTemplates;
-    }
-    
-    public void setWorkbenchTemplates(WorkbenchTemplate workbenchTemplates) {
-        this.workbenchTemplates = workbenchTemplates;
+    public WorkbenchTemplate getWorkbenchTemplate()
+    {
+        return this.workbenchTemplate;
     }
 
+    public void setWorkbenchTemplate(WorkbenchTemplate workbenchTemplate)
+    {
+        this.workbenchTemplate = workbenchTemplate;
+    }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override
@@ -222,7 +226,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         return getClassTableId();
     }
-    
+
     /**
      * @return the Table ID for the class.
      */
@@ -230,6 +234,5 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         return 82;
     }
-
 
 }

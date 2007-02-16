@@ -22,7 +22,6 @@ import java.awt.Dimension;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.event.TableModelEvent;
 
@@ -55,9 +54,9 @@ public class RecordSetTableViewObj extends TableViewObj
     
     // UI stuff
     protected JPanel  southPanel;
-    protected JButton editButton;
-    protected JButton newButton;
-    protected JButton deleteButton;
+    //protected JButton editButton;
+    //protected JButton newButton;
+    //protected JButton deleteButton;
     
     protected boolean dataTypeError;
     
@@ -198,6 +197,10 @@ public class RecordSetTableViewObj extends TableViewObj
             // throw exception
         }
 
+        if (session == null)
+        {
+            session = tempSession;
+        }
         setDataIntoUI();
     }
     

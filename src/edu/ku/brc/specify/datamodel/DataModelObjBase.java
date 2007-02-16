@@ -36,8 +36,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace
 {
     protected PropertyChangeSupport changes;
     
-    protected Date timestampCreated;
-    protected Date timestampModified;
+    protected Date   timestampCreated;
+    protected Date   timestampModified;
     protected String lastEditedBy;
     
     
@@ -53,9 +53,9 @@ public abstract class DataModelObjBase implements FormDataObjIFace
     public void init()
     {
         Date now = new Date();
-        timestampCreated = now;
+        timestampCreated  = now;
         timestampModified = now;
-        lastEditedBy=null;
+        lastEditedBy      = null;
     }
     
     /* (non-Javadoc)

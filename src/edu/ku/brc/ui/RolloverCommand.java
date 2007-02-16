@@ -173,25 +173,31 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             JMenuItem renameMenuItem = new JMenuItem(getResourceString("Rename"));
             renameMenuItem.addActionListener(actionListener);
             popupMenu.add(renameMenuItem);
-            MouseListener mouseListener = new MouseAdapter() {
-                  private void showIfPopupTrigger(MouseEvent mouseEvent) {
-                    if (mouseEvent.isPopupTrigger() && popupMenu.getComponentCount() > 0) {
-                      popupMenu.show(mouseEvent.getComponent(),
-                        mouseEvent.getX(),
-                        mouseEvent.getY());
-                    }
+            
+            MouseListener mouseListener = new MouseAdapter() 
+            {
+                  private boolean showIfPopupTrigger(MouseEvent mouseEvent) {
+                      if (mouseEvent.isPopupTrigger() && popupMenu.getComponentCount() > 0) 
+                      {
+                          popupMenu.show(mouseEvent.getComponent(),
+                          mouseEvent.getX(),
+                          mouseEvent.getY());
+                          return true;
+                      }
+                      return false;
                   }
                   @Override
-                public void mousePressed(MouseEvent mouseEvent) {
+                  public void mousePressed(MouseEvent mouseEvent) 
+                  {
                     showIfPopupTrigger(mouseEvent);
                   }
                   @Override
-                public void mouseReleased(MouseEvent mouseEvent) {
-                    showIfPopupTrigger(mouseEvent);
+                  public void mouseReleased(MouseEvent mouseEvent) 
+                  {
+                      showIfPopupTrigger(mouseEvent);
                   }
-                };
-                //iconLabel.addMouseListener (mouseListener);
-            addMouseListener (mouseListener);
+            };
+            addMouseListener(mouseListener);
         }
     }
 
@@ -736,11 +742,11 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
     /**
      * The command that will be dispatched when "deleteRequest" is called
-     * @param cmdAction the command that will delete the object from itself container
+     * @param deleteCmdAction the command that will delete the object from itself container
      */
-    public void setCommandAction(final CommandAction cmdAction)
+    public void setDeleteCommandAction(final CommandAction deleteCmdAction)
     {
-        deleteCmdAction = cmdAction;
+        this.deleteCmdAction = deleteCmdAction;
     }
 
     /**

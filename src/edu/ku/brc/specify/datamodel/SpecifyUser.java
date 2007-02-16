@@ -68,6 +68,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected Set<CollectionObjDef>   collectionObjDefs;//
     protected Set<RecordSet>          recordSets;//
     private Set<Workbench>            workbenches;
+    private Set<WorkbenchTemplate>    workbenchTemplates;
     protected Set<AppResource>        appResources;
     protected Set<UserGroup>          userGroups;//
     protected Set<AppResourceDefault> appResourceDefaults;//
@@ -121,6 +122,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         collectionObjDefs = new HashSet<CollectionObjDef>();
         recordSets = new HashSet<RecordSet>();
         workbenches = new HashSet<Workbench>();
+        workbenchTemplates = new HashSet<WorkbenchTemplate>();
         appResources = new HashSet<AppResource>();
         userGroups = new HashSet<UserGroup>();
         appResourceDefaults = new HashSet<AppResourceDefault>();
@@ -382,6 +384,24 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     public void setWorkbenches(Set<Workbench> workbench)
     {
         this.workbenches = workbench;
+    }
+
+    /**
+     * @param workbench - 
+     * void
+     */
+    public void setWorkbenchTemplates(Set<WorkbenchTemplate> workbenchTemplates)
+    {
+        this.workbenchTemplates = workbenchTemplates;
+    }
+
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    public Set<WorkbenchTemplate> getWorkbenchTemplates()
+    {
+        return this.workbenchTemplates;
     }
 
     /**

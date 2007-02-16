@@ -132,6 +132,11 @@ public class SpecifyDBConvFrame extends JFrame
     
     public synchronized void setProcess(final int value)
     {
+        if (processProgress.isIndeterminate())
+        {
+            processProgress.setIndeterminate(false);
+        }
+        
         if (isProcessPercent)
         {
             int percent = (int)(((double)value) / ((double)origMax) * 100.0);
@@ -182,6 +187,11 @@ public class SpecifyDBConvFrame extends JFrame
     public void setProcessPercent(boolean isProcessPercent)
     {
         this.isProcessPercent = isProcessPercent;
+    }
+
+    public JProgressBar getProcessProgress()
+    {
+        return processProgress;
     }
     
     
