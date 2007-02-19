@@ -118,7 +118,8 @@ public class DataBuilder
                                     final String firstName,
                                     final String middleInit,
                                     final String lastName,
-                                    final String abbreviation)
+                                    final String abbreviation,
+                                    final String email)
     {
         // Create Collection Object Definition
         Agent agent = new Agent();
@@ -129,6 +130,7 @@ public class DataBuilder
         agent.setMiddleInitial(middleInit);
         agent.setAbbreviation(abbreviation);
         agent.setTitle(title);
+        agent.setEmail(email);
 
         persist(agent);
         return agent;

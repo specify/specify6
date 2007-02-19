@@ -44,6 +44,8 @@ public class DBConnection
     protected String dbDialect; // needed for Hibernate
     protected String dbName;
     
+    protected boolean argHaveBeenChecked = false;
+    
     protected Connection connection = null;
      
     protected String     errMsg = "";
@@ -79,30 +81,34 @@ public class DBConnection
         Connection con = null;
         try
         {
-            if (StringUtils.isEmpty(dbConnectionStr))
+            if (!argHaveBeenChecked)
             {
-                errMsg = getResourceString("NO_DB_NAME");
-                return null;
-            }
-            if (StringUtils.isEmpty(dbConnectionStr))
-            {
-                errMsg = getResourceString("NO_DB_CONN_STR");
-                return null;
-            }
-            if (StringUtils.isEmpty(dbUsername))
-            {
-                errMsg = getResourceString("NO_DB_USERNAME");//"The Username is empty.";
-                return null;
-            }
-            if (StringUtils.isEmpty(dbPassword))
-            {
-                errMsg = getResourceString("NO_DB_PASSWORD");//"The Password is empty.";
-                return null;
-            }
-            if (StringUtils.isEmpty(dbDriver))
-            {
-                errMsg = getResourceString("NO_DB_DRIVER");
-                return null;
+                if (StringUtils.isEmpty(dbConnectionStr))
+                {
+                    errMsg = getResourceString("NO_DB_NAME");
+                    return null;
+                }
+                if (StringUtils.isEmpty(dbConnectionStr))
+                {
+                    errMsg = getResourceString("NO_DB_CONN_STR");
+                    return null;
+                }
+                if (StringUtils.isEmpty(dbUsername))
+                {
+                    errMsg = getResourceString("NO_DB_USERNAME");//"The Username is empty.";
+                    return null;
+                }
+                if (StringUtils.isEmpty(dbPassword))
+                {
+                    errMsg = getResourceString("NO_DB_PASSWORD");//"The Password is empty.";
+                    return null;
+                }
+                if (StringUtils.isEmpty(dbDriver))
+                {
+                    errMsg = getResourceString("NO_DB_DRIVER");
+                    return null;
+                }
+                argHaveBeenChecked = true;
             }
             Class.forName(dbDriver); // load driver
             
@@ -135,8 +141,9 @@ public class DBConnection
      */
     public void setUsernamePassword(final String dbUsername, final String dbPassword)
     {
-        this.dbUsername   = dbUsername;
+        this.dbUsername = dbUsername;
         this.dbPassword = dbPassword;
+        argHaveBeenChecked = false;
     }
     
     /**
@@ -146,6 +153,7 @@ public class DBConnection
     public void setDatabaseName(final String dbName)
     {
         this.dbName = dbName;
+        argHaveBeenChecked = false;
     }
     
     /**
@@ -155,6 +163,7 @@ public class DBConnection
     public void setDriver(final String dbDriver)
     {
         this.dbDriver = dbDriver;
+        argHaveBeenChecked = false;
     }
     
     /**
@@ -164,6 +173,7 @@ public class DBConnection
     public void setDialect(final String dbDialect)
     {
         this.dbDialect = dbDialect;
+        argHaveBeenChecked = false;
     }
     
     /**
@@ -174,6 +184,7 @@ public class DBConnection
     public void setConnectionStr(final String dbConnectionStr)
     {
         this.dbConnectionStr = dbConnectionStr;
+        argHaveBeenChecked = false;
     }
     
     /**

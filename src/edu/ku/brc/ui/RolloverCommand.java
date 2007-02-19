@@ -558,9 +558,8 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         addMouseMotionListener(mouseDropAdapter);
     }
 
-    /**
-     * Returns the adaptor for tracking mouse drop gestures
-     * @return Returns the adaptor for tracking mouse drop gestures
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getMouseInputAdapter()
      */
     public GhostMouseInputAdapter getMouseInputAdapter()
     {

@@ -32,7 +32,9 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
@@ -40,6 +42,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.conversion.TableStats;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -52,6 +55,8 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.tests.BuildSampleDatabase;
+import edu.ku.brc.specify.tests.DataBuilder;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -199,51 +204,29 @@ public class SpecifyDBConverter
         System.out.println("************************************************************");
         System.out.println("From "+oldDatabaseName+" to "+databaseName);
         System.out.println("************************************************************");
-      
-        
-        if (false)
-        {
-            // This will log us in and return true/false
-            if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, "rods", "rods"))
-            {
-                throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
-            }
-            DBConnection oldDB = DBConnection.createInstance("com.mysql.jdbc.Driver", null,
-                                                            oldDatabaseName,
-                                                            "jdbc:mysql://localhost/"+oldDatabaseName,
-                                                            "rods",
-                                                            "rods");
-            Connection oldConnection = oldDB.createConnection();
-            List<String> oldNames = BasicSQLUtils.getTableNames(oldConnection);
-            Hashtable<String, String> oldNameHash = new Hashtable<String, String>();
-            for (String name : oldNames)
-            {
-                oldNameHash.put(name, name);
-            }
-            Connection connection = DBConnection.getInstance().createConnection();
-            List<String> newNames = BasicSQLUtils.getTableNames(connection);
-            for (String tableName : newNames)
-            {
-                if (oldNameHash.get(tableName) != null)
-                {
-                    TableStats ts = new TableStats(oldConnection, tableName, connection, tableName);
-                    ts.collectStats();
-                    ts.compareStats();
-                    break;
-                }
-            }
-            connection.close();
-            return;
-        }
 
         HibernateUtil.shutdown();
         
+        Properties initPrefs = BuildSampleDatabase.getInitializePrefs(databaseName);
+        
+        String userName = initPrefs.getProperty("initializer.username", "rods");
+        String password = initPrefs.getProperty("initializer.password", "rods");
+        String server   = initPrefs.getProperty("initializer.server", "jdbc:mysql://localhost/");
+        String dialect  = initPrefs.getProperty("initializer.dialect", "org.hibernate.dialect.MySQLDialect");
+        String driver   = initPrefs.getProperty("initializer.dialect", "com.mysql.jdbc.Driver");
+        if (!server.endsWith("/"))
+        {
+            server = server + "/";
+        }
+        
         // This will log us in and return true/false
         // This will connect without specifying a DB, which allows us to create the DB
-        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/", "rods", "rods"))
+        if (!UIHelper.tryLogin(driver, dialect, databaseName, server + databaseName, userName, password))
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
+        
+        DataBuilder.setSession(HibernateUtil.getNewSession());
         
         System.out.println("Preparing new database");
         SpecifySchemaGenerator schGen = new SpecifySchemaGenerator();
@@ -353,9 +336,41 @@ public class SpecifyDBConverter
                 boolean convertCatalogSeriesDef = false;
                 if (convertCatalogSeriesDef || doAll)
                 {
-                    String userType =  databaseName.toLowerCase().indexOf("accessions") > -1 ? "Accessions" : "Collection Manager";
-                    long specifyUserId = conversion.createDefaultUser("rods", userType);
-                    conversion.convertCollectionObjectDefs(specifyUserId);
+                    DataBuilder.getSession().beginTransaction();
+                    
+                    String           username         = initPrefs.getProperty("initializer.username", "rods");
+                    String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+                    String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
+                    String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
+                    String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
+                    String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
+                    String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+                    String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
+                    
+                    UserGroup userGroup = DataBuilder.createUserGroup("admin2");
+                    
+                    Criteria criteria = DataBuilder.getSession().createCriteria(Agent.class);
+                    criteria.add(Restrictions.eq("lastName", lastName));
+                    criteria.add(Restrictions.eq("firstName", firstName));
+                    
+                    Agent userAgent = null;
+                    List list = criteria.list();
+                    if (list != null && list.size() == 1)
+                    {
+                        userAgent = (Agent)list.get(0);
+                    } else
+                    {
+                        userAgent = DataBuilder.createAgent(title, firstName, lastName, midInit, abbrev, email);
+                    }
+                    
+                    SpecifyUser specifyUser = DataBuilder.createSpecifyUser(username, email, (short)0, userGroup, userType);
+                    specifyUser.setAgent(userAgent);
+                    
+                    DataBuilder.getSession().getTransaction().commit();
+
+                    conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId());
+                    SpecifyUser.setCurrentUser(specifyUser);
+                    
 
                 } else
                 {
@@ -518,7 +533,21 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
 
+                System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+                System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
                 
+                // Initialize the Prefs
+                AppPreferences remoteProps = AppPreferences.getRemote();
+                
+                for (Object key : initPrefs.keySet())
+                {
+                    String keyStr = (String)key;
+                    if (!keyStr.startsWith("initializer."))
+                    {
+                        remoteProps.put(keyStr, (String)initPrefs.get(key)); 
+                    }
+                }
+                AppPreferences.getRemote().flush();
                 
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
@@ -611,6 +640,8 @@ public class SpecifyDBConverter
             frame.setTitle("Done - " + databaseName);
             frame.incOverall();
             frame.processDone();
+            
+            DataBuilder.getSession().close();
 
         } catch (Exception ex)
         {

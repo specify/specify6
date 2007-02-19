@@ -28,14 +28,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -66,6 +71,7 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
@@ -164,7 +170,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
         System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
         System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
-        System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",           "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl"); // needed for treequerycbx components
+        System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",        "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl"); // needed for treequerycbx components
         
         IconManager.setApplicationClass(Specify.class);
         UICacheManager.getInstance(); // initializes it first thing
@@ -732,6 +738,28 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     }
                 });
 
+        JMenu prefsMenu = new JMenu("Prefs Import/Export");
+        menu.add(prefsMenu);
+        mi = UIHelper.createMenuItem(prefsMenu, "Import", "I", "Import Prefs", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    @SuppressWarnings("synthetic-access")
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        importPrefs();
+                    }
+                });
+
+        mi = UIHelper.createMenuItem(prefsMenu, "Export", "E", "Export Prefs", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    @SuppressWarnings("synthetic-access")
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        exportPrefs();
+                    }
+                });
+
          return mb;
     }
 
@@ -994,8 +1022,60 @@ public class Specify extends JPanel implements DatabaseLoginListener
             dbLoginPanel.getWindow().setVisible(false);
             dbLoginPanel = null;
         }
+    }
+    
+    protected void importPrefs()
+    {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX LOCALIZE
+        {
+            File destFile = chooser.getSelectedFile();
+            
+            Properties properties = new Properties();
+            try
+            {
+                properties.load(new FileInputStream(destFile));
+                AppPreferences remotePrefs = AppPreferences.getRemote();
+                
+                for (Object key : properties.keySet())
+                {
+                    String keyStr = (String)key;
+                    remotePrefs.getProperties().put(keyStr, properties.get(key)); 
+                }
+                
+            } catch (Exception ex)
+            {
+                log.error(ex); // XXX Error Dialog
+            }
+            
+        } else 
+        {
+            throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX LOCALIZE
+        } 
+    }
 
-
+    protected void exportPrefs()
+    {
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        Properties     props       = remotePrefs.getProperties();
+        try
+        {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX LOCALIZE
+            {
+                File destFile = chooser.getSelectedFile();
+                props.store(new FileOutputStream(destFile), "User Prefs");
+            } else 
+            {
+                throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX LOCALIZE
+            } 
+            
+        } catch (Exception ex)
+        {
+            log.error(ex); // XXX Error Dialog
+        }
     }
 
     //---------------------------------------------------------

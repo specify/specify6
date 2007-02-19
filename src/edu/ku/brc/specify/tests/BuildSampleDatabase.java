@@ -59,6 +59,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchTemplate;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -75,6 +76,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
@@ -150,7 +152,8 @@ public class BuildSampleDatabase
     protected Random             rand = new Random(12345678L);
     
     protected int                steps = 0;   
-    protected ProgressFrame frame;
+    protected ProgressFrame      frame;
+    protected Properties         initPrefs = null;
     
     /**
      * 
@@ -177,7 +180,7 @@ public class BuildSampleDatabase
         
         int createStep = 0;
         
-        frame.setProcess(0, 14);
+        frame.setProcess(0, 15);
         
         frame.setProcess(++createStep);
 
@@ -187,13 +190,23 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        Agent            userAgent        = createAgent("Mr.", "Rod", "C", "Spears", "rs");
+        String           username         = initPrefs.getProperty("initializer.username", "rods");
+        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
+        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        
+        Agent            userAgent        = createAgent(title, firstName, lastName, midInit, abbrev, email);
         UserGroup        userGroup        = createUserGroup(disciplineName);
-        SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short) 0, userGroup, "CollectionManager");
+        SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         DataType         dataType         = createDataType(disciplineName);
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
         CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
         
+        SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
 
         //dataType.addCollectionObjDef(collectionObjDef);
@@ -334,19 +347,15 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating agents and addresses");
 
-        agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "js"));
-        agents.add(createAgent("Mr.", "James", "H", "Beach", "jb"));
-        agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk"));
+        if (!lastName.equals("Stewart")) agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "js", "jds@ku.edu"));
+        if (!lastName.equals("Beach")) agents.add(createAgent("Mr.", "James", "H", "Beach", "jb", "beach@ku.edu"));
+        if (!lastName.equals("Kumin")) agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk", "megkumin@ku.edu"));
+        if (!lastName.equals("Spears")) agents.add(createAgent("Mr.", "Rod", "C", "Spears", "rcs", "rods@ku.edu"));
+        if (!lastName.equals("Bentley")) agents.add(createAgent("Mr.", "Andy", "D", "Bentley", "AB", "abentley@ku.edu"));
+        if (!lastName.equals("Timmons")) agents.add(createAgent("Sir", "Dudley", "X", "Timmons", "dxt", ""));
+        if (!lastName.equals("Carew")) agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc", ""));
         agents.add(userAgent);
-        agents.add(createAgent("Mr.", "Andy", "D", "Bentley", "AB"));
-        agents.add(createAgent("Sir", "Dudley", "X", "Simmons", "dxs"));
-        agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc"));
-        
-        // e-mail addresses
-        agents.get(0).setEmail("jds@ku.edu");
-        agents.get(1).setEmail("beach@ku.edu");
-        agents.get(2).setEmail("megkumin@ku.edu");
-        agents.get(3).setEmail("rods@ku.edu");
+
         
         Agent ku = new Agent();
         ku.initialize();
@@ -1290,9 +1299,9 @@ public class BuildSampleDatabase
         
     }
     
-    protected void build(String hostname, String user, String passwd)
+    protected void build()
     {
-        UICacheManager.setAppName("Specify Sample DB Builder");
+        UICacheManager.setAppName("Specify");
         
         Properties sysProps     = System.getProperties();
         String     databaseName = null;
@@ -1318,9 +1327,25 @@ public class BuildSampleDatabase
         frame.setOverall(0, 5);
         frame.getCloseBtn().setVisible(false);
        
-        String databaseHost = hostname;
-        String userName = user;
-        String password = passwd;
+        //String databaseName = "testfish_anno";
+        
+        System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+
+        initPrefs = getInitializePrefs(databaseName);
+        
+        String userName     = initPrefs.getProperty("initializer.username", "rods");
+        String password     = initPrefs.getProperty("initializer.password", "rods");
+        String server       = initPrefs.getProperty("initializer.server",   "jdbc:mysql://localhost/");
+        String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
+        String dialect      = initPrefs.getProperty("initializer.dialect",  "org.hibernate.dialect.MySQLDialect");
+        String driver       = initPrefs.getProperty("initializer.dialect",  "com.mysql.jdbc.Driver");
+        
+        if (!server.endsWith("/"))
+        {
+            server = server + "/";
+        }
+
 
         try
         {
@@ -1344,12 +1369,7 @@ public class BuildSampleDatabase
         frame.setDesc("Logging in...");
         frame.setOverall(steps++);
 
-        if (UIHelper.tryLogin("com.mysql.jdbc.Driver",
-                                "org.hibernate.dialect.MySQLDialect",
-                                databaseName,
-                                "jdbc:mysql://" + databaseHost + "/" + databaseName,
-                                userName,
-                                password))
+        if (UIHelper.tryLogin(driver, dialect, databaseName, server + databaseName, userName, password))
         {
             boolean single = true;
             if (single)
@@ -1447,6 +1467,20 @@ public class BuildSampleDatabase
                     
                     attachMgr.cleanup();
                     
+                    frame.setDesc("Copying Preferences...");
+                    frame.setOverall(steps++);
+                    AppPreferences remoteProps = AppPreferences.getRemote();
+                    
+                    for (Object key : initPrefs.keySet())
+                    {
+                        String keyStr = (String)key;
+                        if (!keyStr.startsWith("initializer."))
+                        {
+                            remoteProps.put(keyStr, (String)initPrefs.get(key)); 
+                        }
+                    }
+                    AppPreferences.getRemote().flush();
+                    
                     frame.setDesc("Build Completed.");
                     frame.setOverall(steps++);
                     
@@ -1481,6 +1515,27 @@ public class BuildSampleDatabase
         frame.setVisible(false);
         frame.dispose();
     }
+    public static Properties getInitializePrefs(final String databaseName)
+    {
+        Properties properties = new Properties();
+        try
+        {
+            String base = UICacheManager.getDefaultWorkingPath();
+            File initFile = new File(base + File.separator + (databaseName != null ? (databaseName + "_") : "") + "init.prefs");
+            if (initFile.exists())
+            {
+                properties.load(new FileInputStream(initFile));
+            } else
+            {
+                System.out.println("Couldn't find ["+initFile.getAbsolutePath()+"]");
+            }
+            
+        } catch (Exception ex)
+        {
+            System.err.println(ex); // XXX Error Dialog
+        }
+        return properties;
+    }
     
     public static void main(String[] args) throws Exception
     {
@@ -1494,7 +1549,7 @@ public class BuildSampleDatabase
                     @Override
                     public Object construct()
                     {
-                        builder.build("localhost","rods","rods");
+                        builder.build();
                         return null;
                     }
 

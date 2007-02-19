@@ -57,7 +57,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -148,7 +147,7 @@ public class GenericDBConversion
 
     protected SpecifyAppContextMgr appContextMgr = new SpecifyAppContextMgr();
     
-    protected ProgressFrame   frame    = null;
+    protected ProgressFrame        frame    = null;
     protected boolean              hasFrame = false;
 
     /**
@@ -962,7 +961,14 @@ public class GenericDBConversion
      * @param userName the user name
      * @return the record id
      */
-    public long createDefaultUser(final String userName, final String userType)
+    public long createDefaultUser(final String userName, 
+                                  final String userType, 
+                                  final String title,
+                                  final String firstName,
+                                  final String middleInit,
+                                  final String lastName,
+                                  final String abbreviation,
+                                  final String email)
     {
         //TODO: rewrite the following table descriptions
         /*
@@ -991,52 +997,6 @@ public class GenericDBConversion
 
         try
         {
-            if (oldDBName.contains("accession"))
-            {
-                Statement  stmt = newDBConn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT AgentID FROM agent order by AgentID desc limit 0,1");
-                rs.first();
-                Long id = rs.getLong(1) + 1;
-                rs.close();
-                stmt.close();
-                
-                Statement  updateStatement = newDBConn.createStatement();
-                StringBuilder sqlStr = new StringBuilder();
-                sqlStr.append("INSERT INTO agent ");
-                sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, LastEditedBy, Visibility, VisibilitySetBy, ParentOrganizationID)");
-                sqlStr.append(" VALUES ("+id+","+getStrValue(new Date())+",");
-                sqlStr.append(Agent.PERSON + ",");
-                sqlStr.append("'Registrar',");
-                sqlStr.append("'Lori', 'Schlenker', '', 'Mrs.', '', 'LS', 'Lori Schlenker', 'lschlenk@ku.edu', '', '', ");
-                sqlStr.append(getStrValue(new Date())+", '', 0, 0, NULL)");
-                log.info(sqlStr.toString());
-                updateStatement.executeUpdate(sqlStr.toString());
-                updateStatement.clearBatch();
-                updateStatement.close();
-                updateStatement = null;  
-            }
-            
-            Statement stmt = newDBConn.createStatement();
-            ResultSet rs;
-            if (oldDBName.equals("sp4_fish"))
-            {
-                rs   = stmt.executeQuery("SELECT AgentID, Email FROM agent where lastname = \"Bentley\"");
-                
-            } else if (oldDBName.equals("sp4_accessions"))
-            {
-                rs   = stmt.executeQuery("SELECT AgentID, Email FROM agent where lastname = \"Schlenker\"");
-                
-            } else
-            {
-                rs   = stmt.executeQuery("SELECT AgentID, Email FROM agent limit 0,1");
-            }
-            rs.first();
-            Long AgentID = rs.getLong(1);
-            String email = rs.getString(2);
-            rs.close();
-            stmt.close();
-
-            
             Statement  updateStatement = newDBConn.createStatement();
 
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "usergroup");
@@ -1058,10 +1018,10 @@ public class GenericDBConversion
             strBuf.append("'" + nowStr + "',"); // TimestampModified
             strBuf.append("NULL,"); // LastEditedBy
             strBuf.append("'"+userName+"',");
-            strBuf.append("'"+email+"',");
+            strBuf.append("'"+"email@email.edu"+"',");
             strBuf.append("'"+userType+"',");
             strBuf.append("0,");
-            strBuf.append(AgentID);
+            strBuf.append("NULL");
             //strBuf.append(userGroupId+")");
             strBuf.append(")");
             updateStatement.executeUpdate(strBuf.toString());
