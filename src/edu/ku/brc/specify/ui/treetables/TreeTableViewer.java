@@ -370,8 +370,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         toParent0.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel0.add(toggle0);
         toggle0.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        buttonPanel0.add(showDescend0);
-//        showDescend0.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         buttonPanel0.add(Box.createRigidArea(new Dimension(20,20)));
         
@@ -395,7 +393,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         allButtons.add(wholeTree0);
         allButtons.add(toParent0);
         allButtons.add(toggle0);
-//        allButtons.add(showDescend0);
         allButtons.add(newChild0);
         allButtons.add(editNode0);
         allButtons.add(deleteNode0);
@@ -513,8 +510,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         toParent1.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel1.add(toggle1);
         toggle1.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        buttonPanel1.add(showDescend1);
-//        showDescend1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         buttonPanel1.add(Box.createRigidArea(new Dimension(20,20)));
         
@@ -538,7 +533,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         allButtons.add(wholeTree1);
         allButtons.add(toParent1);
         allButtons.add(toggle1);
-//        allButtons.add(showDescend1);
         allButtons.add(newChild1);
         allButtons.add(editNode1);
         allButtons.add(deleteNode1);
@@ -833,13 +827,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	protected void editSelectedNodeOK(T node)
 	{
-		boolean nameChanged = !node.getName().equals(nameBeforeEditDialogShown);
-		Boolean levelIsInFullName = node.getDefinitionItem().getIsInFullName();
-		
-        if( nameChanged && levelIsInFullName != null && levelIsInFullName.booleanValue() )
-        {
-        	node.fixFullNameForAllDescendants();
-        }
+        // TODO: implement this to work in a session-less environment
+//		boolean nameChanged = !node.getName().equals(nameBeforeEditDialogShown);
+//		Boolean levelIsInFullName = node.getDefinitionItem().getIsInFullName();
+//		
+//        if( nameChanged && levelIsInFullName != null && levelIsInFullName.booleanValue() )
+//        {
+//        	node.fixFullNameForAllDescendants();
+//        }
 
 		listModel.nodeValuesChanged(node);
 	}
