@@ -213,7 +213,7 @@ public class SpecifyDBConverter
         String password = initPrefs.getProperty("initializer.password", "rods");
         String server   = initPrefs.getProperty("initializer.server", "jdbc:mysql://localhost/");
         String dialect  = initPrefs.getProperty("initializer.dialect", "org.hibernate.dialect.MySQLDialect");
-        String driver   = initPrefs.getProperty("initializer.dialect", "com.mysql.jdbc.Driver");
+        String driver   = initPrefs.getProperty("initializer.driver",   "com.mysql.jdbc.Driver");
         if (!server.endsWith("/"))
         {
             server = server + "/";
@@ -542,7 +542,7 @@ public class SpecifyDBConverter
                 for (Object key : initPrefs.keySet())
                 {
                     String keyStr = (String)key;
-                    if (!keyStr.startsWith("initializer."))
+                    if (!keyStr.startsWith("initializer.") && !keyStr.startsWith("useragent."))
                     {
                         remoteProps.put(keyStr, (String)initPrefs.get(key)); 
                     }
