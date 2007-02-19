@@ -666,7 +666,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
 
-            File dir = XMLHelper.getConfigDir(discipline + File.separator + userType);
+            File dir = XMLHelper.getConfigDir(discipline.toLowerCase() + File.separator + userType);
             if (dir.exists())
             {
                 AppResourceDefault appResDef = createAppResourceDefFromDir(dir);

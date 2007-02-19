@@ -106,6 +106,10 @@ public class StatsPane extends BaseSubPane
         try
         {
             rootElement = AppContextMgr.getInstance().getResourceAsDOM(resourceName);
+            if (rootElement == null)
+            {
+                throw new RuntimeException("Couldn't find resource ["+resourceName+"]");
+            }
 
             // count up rows and column
             StringBuilder rowsDef = new StringBuilder(128);
