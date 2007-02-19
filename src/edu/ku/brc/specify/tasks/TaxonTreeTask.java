@@ -104,6 +104,8 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 			{
 				public void actionPerformed(ActionEvent e)
 				{
+                    // TODO this won't work now that we are session-less
+                    // reimplement this to work in a session-less environment
 					Taxon taxon = ttv.getSelectedNode(popup.getList());
 					System.out.println("Get associated collection objects for " + taxon.getFullName());
 					
@@ -117,7 +119,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 				}
 			});
 			popup.add(getCollObjs);
-			
 		}
 
 		return ttv;
