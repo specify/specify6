@@ -34,6 +34,7 @@ import org.dom4j.io.SAXReader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -130,7 +131,8 @@ public class DatamodelGenerator
                          element.attributeValue("table"), 
                          element.attributeValue("lazy"), 
                          tableMetaData.getId(), 
-                         tableMetaData.getDisplay());
+                         tableMetaData.getDisplay(),
+                         tableMetaData.isForWorkBench());
 
 	}
 
@@ -199,7 +201,8 @@ public class DatamodelGenerator
 			File dir = new File(hbmPath);
 
 			String path = dir.getAbsolutePath();
-			dir = new File(path.substring(0, path.lastIndexOf(File.separator)));
+            log.info(path);
+			//dir = new File(path.substring(0, path.lastIndexOf(File.separator)));
 
 			// This filter only returns directories
 			FileFilter fileFilter = new FileFilter()
@@ -247,12 +250,18 @@ public class DatamodelGenerator
 
 					Element root = doc.getRootElement();
 					if (root == null)
+                    {
 						log.error("Could not get root of document");
+                        return null;
+                    }
 
 					Element classNode = (Element) root.selectSingleNode("class");
 					if (classNode == null)
+                    {
 						log.error("Could not get class node of document");
-					else
+                        return null;
+                        
+                    } else
 					{
 						Table table = createTable(classNode);
 						tableList.add(table);
@@ -439,14 +448,15 @@ public class DatamodelGenerator
 			{
 				for (Iterator i = dbNode.elementIterator("table"); i.hasNext();)
 				{
-					Element element    = (Element)i.next();
-					String tablename   = element.attributeValue("name");
-					String defaultView = element.attributeValue("view");
-					String id          = element.attributeValue("id");
+					Element element     = (Element)i.next();
+					String tablename    = element.attributeValue("name");
+					String defaultView  = element.attributeValue("view");
+                    String id           = element.attributeValue("id");
+                    boolean isWorkBench = XMLHelper.getAttr(element, "workbench", false);
                     
 					log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
- 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element)));
+ 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isWorkBench));
                     
 				}
                 

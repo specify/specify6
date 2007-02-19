@@ -27,6 +27,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.ImageIcon;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -285,6 +286,7 @@ public class IconManager
             Element root  = XMLHelper.readDOMFromConfigDir("icons.xml");
             if (root != null)
             {
+                Hashtable<String, String> aliases = new Hashtable<String, String>();
                 List<?> boxes = root.selectNodes("/icons/icon");
                 for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
@@ -293,7 +295,13 @@ public class IconManager
                     String name  = iconElement.attributeValue("name");
                     String sizes = iconElement.attributeValue("sizes");
                     String file  = iconElement.attributeValue("file");
-                    if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
+                    String alias  = iconElement.attributeValue("alias");
+                    
+                    if (StringUtils.isNotEmpty(alias))
+                    {
+                        aliases.put(name, alias);
+                        
+                    } else if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
                     {
                         //log.info("["+name+"]["+sizes+"]["+file+"]");
                         IconEntry entry = register(name, file, IconManager.IconSize.Std32);
@@ -313,6 +321,15 @@ public class IconManager
                            String sz = st.nextToken();
                            register(name, file, getSizeFromInt(Integer.parseInt(sz)));
                        }
+                    }
+                }
+                
+                for (String name : aliases.keySet())
+                {
+                    IconEntry entry = instance.entries.get(aliases.get(name));
+                    if (entry != null)
+                    {
+                        instance.entries.put(name, entry);
                     }
                 }
             } else

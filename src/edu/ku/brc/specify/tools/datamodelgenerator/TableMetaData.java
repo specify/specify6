@@ -12,17 +12,19 @@ public class TableMetaData
 	private String id;
     private String className;
     private Display display;
+    private boolean isForWorkBench;
 
 	/**
 	 * @param id
 	 * @param className
 	 * @param display
 	 */
-	public TableMetaData(final String id, final String className, final Display display)
+	public TableMetaData(final String id, final String className, final Display display, final boolean isForWorkBench)
 	{
 		this.id = id;
         this.className = className;
         this.display = display;
+        this.isForWorkBench = isForWorkBench;
 	}
 
 	public String getId()
@@ -43,6 +45,11 @@ public class TableMetaData
     public Display getDisplay()
     {
         return display;
+    }
+
+    public boolean isForWorkBench()
+    {
+        return isForWorkBench;
     }
 
 }

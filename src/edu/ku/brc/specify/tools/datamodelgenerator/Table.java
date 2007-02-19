@@ -17,6 +17,7 @@ public class Table implements Comparable<Table>
 	private String                   table;
 	private String                   lazy;
 	private String                   tableId;
+    private boolean                  workbench;
 	private Collection<Field>        fields        = new ArrayList<Field>();
 	private Collection<Id>           ids           = new ArrayList<Id>();
 	private Collection<Relationship> relationships = new ArrayList<Relationship>();
@@ -32,13 +33,15 @@ public class Table implements Comparable<Table>
                  String table, 
                  String lazy,
                  String tableId, 
-                 Display display)
+                 Display display,
+                 boolean workbench)
 	{
 		this.name = name;
 		this.table = table;
 		this.lazy = lazy;
 		this.tableId = tableId;
         this.display = display;
+        this.workbench = workbench;
 	}
 
 	/**
@@ -192,6 +195,11 @@ public class Table implements Comparable<Table>
     public Display getDisplay()
     {
         return display;
+    }
+
+    public boolean getWorkbench()
+    {
+        return workbench;
     }
 
     // Comparable

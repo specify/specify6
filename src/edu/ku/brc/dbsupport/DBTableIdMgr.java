@@ -20,18 +20,23 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.util.DatamodelHelper;
 
@@ -94,8 +99,10 @@ public class DBTableIdMgr
 					Element tableNode = (Element) i.next();
 					classname = tableNode.attributeValue("classname");
                     
-					String tablename       = tableNode.attributeValue("table");
-					int    tableId         = Integer.parseInt(tableNode.attributeValue("tableid"));
+					String  tablename      = tableNode.attributeValue("table");
+					int     tableId        = Integer.parseInt(tableNode.attributeValue("tableid"));
+                    boolean isWorkbench    = XMLHelper.getAttr(tableNode, "workbench", false);
+
 					String primaryKeyField = null;
                     
 					// iterate through child elements of id nodes, there should only be 1
@@ -120,6 +127,7 @@ public class DBTableIdMgr
 					//log.debug("Populating hashtable for class: " + classname);
                     
                     TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
+                    tblInfo.setForWorkBench(isWorkbench);
 					instance.hash.put(tableId, tblInfo); 
                     
                     Element idElement = (Element)tableNode.selectSingleNode("id");
@@ -138,7 +146,15 @@ public class DBTableIdMgr
                         tblInfo.setDataObjFormatter(getAttr(displayElement, "dataobjformatter", null));
                         tblInfo.setSearchDialog(getAttr(displayElement,     "searchdlg", null));
                         tblInfo.setNewObjDialog(getAttr(displayElement,     "newobjdlg", null));
-                        tblInfo.setObjTitle(getAttr(displayElement,         "objtitle", null));
+                        tblInfo.setObjTitle(getAttr(displayElement,         "objtitle", ""));
+                    } else
+                    {
+                        tblInfo.setDefaultFormName("");
+                        tblInfo.setUiFormatter("");
+                        tblInfo.setDataObjFormatter("");
+                        tblInfo.setSearchDialog("");
+                        tblInfo.setNewObjDialog("");
+                        tblInfo.setObjTitle("");  
                     }
                     
                     for (Iterator<?> ir = tableNode.elementIterator("relationship"); ir.hasNext();)
@@ -151,6 +167,25 @@ public class DBTableIdMgr
                                 irNode.attributeValue("columnname"));
                         tblInfo.getRelationships().add(tblRel);
                     }
+                    
+                    for (Iterator<?> ir = tableNode.elementIterator("field"); ir.hasNext();)
+                    {
+                        Element irNode = (Element) ir.next();
+                        
+                        int len = -1;
+                        String lenStr = irNode.attributeValue("length");
+                        if (StringUtils.isNotEmpty(lenStr) && StringUtils.isNumeric(lenStr))
+                        {
+                            len = Integer.parseInt(lenStr);
+                        }
+                        FieldInfo fieldInfo = new FieldInfo(tblInfo,
+                                irNode.attributeValue("column"),
+                                irNode.attributeValue("name"),
+                                irNode.attributeValue("type"),
+                                len);
+                        tblInfo.addField(fieldInfo);
+                    }
+                    Collections.sort(tblInfo.getFields());
 				}
 			} else
 			{
@@ -396,13 +431,14 @@ public class DBTableIdMgr
 	// ------------------------------------------------------
 	// Inner Classes
 	// ------------------------------------------------------
-	public class TableInfo
+	public class TableInfo implements Comparable<TableInfo>
 	{
-		protected int    tableId;
-		protected String className;
-		protected String tableName;
-		protected String primaryKeyName;
-		protected Class<?>  classObj;
+		protected int      tableId;
+		protected String   className;
+		protected String   tableName;
+		protected String   primaryKeyName;
+		protected Class<?> classObj;
+        protected boolean  isForWorkBench   = false;
         
         // ID Fields
         protected String idColumnName;
@@ -418,6 +454,7 @@ public class DBTableIdMgr
         protected String objTitle;      // Human readable name
         
         protected Set<TableRelationship> relationships;
+        protected List<FieldInfo>        fields;
 
 		public TableInfo(final int    tableId, 
                          final String className, 
@@ -438,6 +475,7 @@ public class DBTableIdMgr
 				e.printStackTrace();
 			}
             relationships = new HashSet<TableRelationship>();
+            fields        = new Vector<FieldInfo>();
 		}
 
 		public String getShortClassName()
@@ -582,6 +620,16 @@ public class DBTableIdMgr
             this.idType = idType;
         }
 
+        public boolean isForWorkBench()
+        {
+            return isForWorkBench;
+        }
+
+        public void setForWorkBench(boolean isForWorkBench)
+        {
+            this.isForWorkBench = isForWorkBench;
+        }
+
         public TableRelationship getRelationshipByName(String name)
         {
             for (TableRelationship tr: relationships)
@@ -606,6 +654,33 @@ public class DBTableIdMgr
                 }
             }
             return null;
+        }
+        
+        public void addField(final FieldInfo fieldInfo)
+        {
+            fields.add(fieldInfo);
+        }
+        
+        public List<FieldInfo> getFields()
+        {
+            return fields;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        public String toString()
+        {
+            return StringUtils.isNotEmpty(objTitle) ? objTitle : tableName;
+        }
+        
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(TableInfo obj)
+        {
+            return toString().compareTo(obj.toString());
         }
 
 	}
@@ -646,6 +721,63 @@ public class DBTableIdMgr
             return type;
         }
         
+    }
+    
+    public class FieldInfo implements Comparable<FieldInfo>
+    {
+        protected TableInfo tableInfo;
+        protected String    column;
+        protected String    name;
+        protected String    type;
+        protected int       length;
+        
+        public FieldInfo(TableInfo tableInfo, String column, String name, String type, int length)
+        {
+            super();
+            this.tableInfo = tableInfo;
+            this.column = column;
+            this.name = name;
+            this.type = type;
+            this.length = length;
+        }
+
+        public String getColumn()
+        {
+            return column;
+        }
+
+        public int getLength()
+        {
+            return length;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public TableInfo getTableInfo()
+        {
+            return tableInfo;
+        }
+
+        public String getType()
+        {
+            return type;
+        }
+        
+        public String toString()
+        {
+            return name;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(FieldInfo obj)
+        {
+            return name.compareTo(obj.name);
+        }
     }
 
 	/**

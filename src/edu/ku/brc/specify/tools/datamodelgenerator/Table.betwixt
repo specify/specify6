@@ -6,6 +6,7 @@
 		<attribute name="tableid" property="tableId"/>
 		<attribute name="lazy" property="lazy"/>
 		<attribute name="view" property="defaultView"/>
+		<attribute name="workbench" property="workbench"/>
 		<addDefaults/>
 	</element>
 </info>
