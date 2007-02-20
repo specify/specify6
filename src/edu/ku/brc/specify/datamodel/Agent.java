@@ -41,6 +41,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 
 import java.io.File;
@@ -57,6 +58,9 @@ import edu.ku.brc.util.AttachmentUtils;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "agent")
+@org.hibernate.annotations.Table(appliesTo="agent", indexes =
+    {   @Index (name="LastNameIDX", columnNames={"LastName"}),
+        @Index (name="FirstNameIDX", columnNames={"FirstName"})  })
 public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
