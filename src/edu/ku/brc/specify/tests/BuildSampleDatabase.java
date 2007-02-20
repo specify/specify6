@@ -61,6 +61,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -79,7 +80,6 @@ import org.hibernate.Session;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -1299,36 +1299,41 @@ public class BuildSampleDatabase
         
     }
     
-    protected void build()
+    protected void build() throws SQLException
     {
         UICacheManager.setAppName("Specify");
         
         Properties sysProps     = System.getProperties();
-        String     databaseName = null;
+        String     dbName = null;
         if (!((String)sysProps.get("user.name")).startsWith("rod"))
         {
-            databaseName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
-            if (databaseName==null)
+            dbName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
+            if (dbName==null)
             {
                 System.err.println("You must specify a database name.");
                 return; 
             }
         } else
         {
-            databaseName = "testfish";
+            dbName = "testfish";
         }
+        final String databaseName = dbName;
 
         // setup the progress display widget
-        frame = new ProgressFrame("Building sample DB");
-        frame.setSize(new Dimension(500,125));
-        frame.setTitle("Building Test Database");
-        UIHelper.centerAndShow(frame);
-        frame.setProcessPercent(true);
-        frame.setOverall(0, 5);
-        frame.getCloseBtn().setVisible(false);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                frame = new ProgressFrame("Building sample DB");
+                frame.setSize(new Dimension(500,125));
+                frame.setTitle("Building Test Database");
+                UIHelper.centerAndShow(frame);
+                frame.setProcessPercent(true);
+                frame.setOverall(0, 5);
+                frame.getCloseBtn().setVisible(false);
+            }
+        });
        
-        //String databaseName = "testfish_anno";
-        
         System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
 
@@ -1343,39 +1348,50 @@ public class BuildSampleDatabase
         
         if (!server.endsWith("/"))
         {
-            server = server + "/";
+            server += "/";
         }
 
-
-        try
+        SwingUtilities.invokeLater(new Runnable()
         {
-            frame.getProcessProgress().setIndeterminate(true);
-            frame.getProcessProgress().setString("");
-            frame.setDesc("Creating Database Schema for "+databaseName);
-            frame.setOverall(steps++);
-            
-            SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-            schemaGen.generateSchema(databaseHost, databaseName);
-        } catch (Exception ex)
-        {
-            System.err.println(ex);
-        }
+            public void run()
+            {
+                frame.getProcessProgress().setIndeterminate(true);
+                frame.getProcessProgress().setString("");
+                frame.setDesc("Creating Database Schema for "+databaseName);
+                frame.setOverall(steps++);
+            }
+        });
+        
+        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
+        schemaGen.generateSchema(databaseHost, databaseName);
 
         //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
         //HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
 
-        frame.setDesc("Logging in...");
-        frame.setOverall(steps++);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                frame.setDesc("Logging in...");
+                frame.setOverall(steps++);
+            }
+        });
 
         if (UIHelper.tryLogin(driver, dialect, databaseName, server + databaseName, userName, password))
         {
             boolean single = true;
             if (single)
             {
-                frame.setDesc("Creating data...");
-                frame.setOverall(steps++);
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        frame.setDesc("Creating data...");
+                        frame.setOverall(steps++);
+                    }
+                });
 
                 try
                 {
@@ -1388,6 +1404,7 @@ public class BuildSampleDatabase
                     File location = UICacheManager.getDefaultWorkingPathSubDir("demo_files" + File.separator + " AttachmentStorage", true);
                     AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(location);
                     
+                    // TODO: find a way to do this stuff without blowing away the .svn directory
                     /*
                     File origDir  = new File("demo_files/AttachmentStorage/originals");
                     File thumbDir = new File("demo_files/AttachmentStorage/thumbnails");
@@ -1414,25 +1431,43 @@ public class BuildSampleDatabase
 
                     log.info("Persisting in-memory objects to DB");
                     
-                    frame.setProcess(0);
-                    frame.getProcessProgress().setIndeterminate(true);
-                    frame.getProcessProgress().setString("");
-                    frame.setDesc("Getting Session...");
-                    frame.setOverall(steps++);
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            frame.setProcess(0);
+                            frame.getProcessProgress().setIndeterminate(true);
+                            frame.getProcessProgress().setString("");
+                            frame.setDesc("Getting Session...");
+                            frame.setOverall(steps++);
+                        }
+                    });
                     
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
 
-                    frame.setDesc("Saving data...");
-                    frame.setOverall(steps++);
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            frame.setDesc("Saving data...");
+                            frame.setOverall(steps++);
+                        }
+                    });
                     
                     startTx();
                     //persist(dataObjects.get(0)); // just persist the CollectionObjDef object
                     persist(dataObjects);
                     commitTx();
                     
-                    frame.setDesc("Done Saving data...");
-                    frame.setOverall(steps++);
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            frame.setDesc("Done Saving data...");
+                            frame.setOverall(steps++);
+                        }
+                    });
                     
                     if (true)
                     {
@@ -1467,8 +1502,14 @@ public class BuildSampleDatabase
                     
                     attachMgr.cleanup();
                     
-                    frame.setDesc("Copying Preferences...");
-                    frame.setOverall(steps++);
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            frame.setDesc("Copying Preferences...");
+                            frame.setOverall(steps++);
+                        }
+                    });
                     AppPreferences remoteProps = AppPreferences.getRemote();
                     
                     for (Object key : initPrefs.keySet())
@@ -1481,8 +1522,14 @@ public class BuildSampleDatabase
                     }
                     AppPreferences.getRemote().flush();
                     
-                    frame.setDesc("Build Completed.");
-                    frame.setOverall(steps++);
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            frame.setDesc("Build Completed.");
+                            frame.setOverall(steps++);
+                        }
+                    });
                     
                     log.info("Done");
                 }
@@ -1512,9 +1559,16 @@ public class BuildSampleDatabase
     
     public void done()
     {
-        frame.setVisible(false);
-        frame.dispose();
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                frame.setVisible(false);
+                frame.dispose();
+            }
+        });
     }
+    
     public static Properties getInitializePrefs(final String databaseName)
     {
         Properties properties = new Properties();
@@ -1539,30 +1593,9 @@ public class BuildSampleDatabase
     
     public static void main(String[] args) throws Exception
     {
-        // Create Specify Application
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-                final BuildSampleDatabase builder = new BuildSampleDatabase();
-                final SwingWorker worker = new SwingWorker()
-                {
-                    @Override
-                    public Object construct()
-                    {
-                        builder.build();
-                        return null;
-                    }
-
-                    //Runs on the event-dispatching thread.
-                    @Override
-                    public void finished()
-                    {
-                        builder.done();
-                    }
-                };
-                worker.start();
-            }
-        });
+        final BuildSampleDatabase builder = new BuildSampleDatabase();
+        builder.build();
+        builder.done();
     }
 }
 
