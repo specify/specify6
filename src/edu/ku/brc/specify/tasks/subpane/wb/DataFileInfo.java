@@ -58,7 +58,7 @@ public class DataFileInfo
     /**
      * @param inputFile
      */
-    public DataFileInfo(File inputFile)
+    public DataFileInfo(final File inputFile)
     {
         super();
         this.inputFile = inputFile;
@@ -146,7 +146,7 @@ public class DataFileInfo
                                 break;
                                 
                             default:
-                                System.out.println("unsuported cell type");
+                                //System.out.println("unsuported cell type");
                                 skip = true;
                                 break;
                         }
@@ -158,6 +158,7 @@ public class DataFileInfo
                             
                         } else if (!skip)
                         {
+                            //System.out.println("Cell #" + cellNum + " " + type+"  "+value);
                             if (firstRowHasNames)
                             {
                                 colInfo.add(new ColumnInfo(cellNum, type, value, null));
@@ -175,14 +176,20 @@ public class DataFileInfo
                 numRows++;
             }
             
-            System.out.println("Rows["+numRows+"]  Cols["+numCols+"]");
+            //System.out.println("Rows["+numRows+"]  Cols["+numCols+"]");
 
         } catch (IOException ex)
         {
             ex.printStackTrace();
         }
+        
+        Collections.sort(colInfo);
     }
     
+    /**
+     * Load the contents into a workbench.
+     * @param workbench the workbench to have adata added to it.
+     */
     public void loadData(final Workbench workbench)
     {
         String path = inputFile.getAbsolutePath().toLowerCase();
@@ -196,6 +203,11 @@ public class DataFileInfo
         } 
     }
     
+    /**
+     * Load the data from an Excel spreadsheet.
+     * @param workbench the workbench to be added to
+     * @param firstRowHasNames whether the first row should be skipped
+     */
     protected void loadDataFromXLS(Workbench workbench, final boolean firstRowHasNames)
     {
         DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
@@ -245,7 +257,7 @@ public class DataFileInfo
                     int cellNum = cell.getCellNum();
                     
                     WorkbenchTemplateMappingItem wbtmi   = wbtmiList.get(cellNum);
-                    String                       typeStr = wbtmi.getDataType();
+                    //String                       typeStr = wbtmi.getDataType();
                     
                     //System.out.println(wbtmiList.get(cellNum).getDataType());
                     
@@ -284,13 +296,14 @@ public class DataFileInfo
                             break;
                             
                         default:
-                            System.out.println("unsuported cell type");
+                            //System.out.println("unsuported cell type");
                             skip = true;
                             break;
                     }
                     
                     if (!skip)
                     {
+                        //System.out.println("DATA Cell #" + cellNum + " " + type+"  "+value);
                         WorkbenchDataItem wbdi = new WorkbenchDataItem();
                         wbdi.initialize();
                         wbdi.setCellData(value);
@@ -342,12 +355,12 @@ public class DataFileInfo
     //---------------------------------------------------------------------------
     //--
     //---------------------------------------------------------------------------
-    public class ColumnInfo
+    public class ColumnInfo  implements Comparable<ColumnInfo>
     {
-        protected int    colInx;
-        protected int    colType;
-        protected String colName;
-        protected String data;
+        protected Integer colInx;
+        protected int     colType;
+        protected String  colName;
+        protected String  data;
         
         public ColumnInfo(int colInx, int colType, String colName, String data)
         {
@@ -382,7 +395,14 @@ public class DataFileInfo
         {
             this.colName = colName;
         }
-        
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(ColumnInfo obj)
+        {
+            return colInx.compareTo(obj.colInx);
+        }
         
     }
 

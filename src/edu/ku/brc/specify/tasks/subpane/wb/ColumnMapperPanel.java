@@ -159,8 +159,8 @@ public class ColumnMapperPanel extends JPanel
         CellConstraints cc      = new CellConstraints();
 
         builder.add(new JLabel(getResourceString("WB_DATFILE_COLUMNS"), JLabel.CENTER), cc.xy(1, 1));
-        builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"), JLabel.CENTER), cc.xy(5, 1));
-        builder.add(new JLabel("WB_DATAOBJ_FIELDS", JLabel.CENTER), cc.xy(5, 5));
+        builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     JLabel.CENTER), cc.xy(5, 1));
+        builder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  JLabel.CENTER), cc.xy(5, 5));
         
         dataFileColPanel = new JPanel();
         //leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));

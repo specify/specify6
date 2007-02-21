@@ -432,6 +432,7 @@ public class WorkbenchTask extends BaseTask
             workbench.initialize();
             workbench.setSpecifyUser(SpecifyUser.getCurrentUser());
             workbench.setWorkbenchTemplate(workbenchTemplate);
+            workbenchTemplate.getWorkbenches().add(workbench);
             
             try
             {

@@ -14,27 +14,12 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.io.File;
-
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
-
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.ui.CsvTableModel;
-import edu.ku.brc.ui.JustifiedTableCellRenderer;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * PLaceholder for Workbench Pane
@@ -46,7 +31,7 @@ import edu.ku.brc.ui.forms.persist.View;
  */
 public class WorkbenchPane extends BaseSubPane
 {
-    private static final Logger log = Logger.getLogger(WorkbenchPane.class);
+    //private static final Logger log = Logger.getLogger(WorkbenchPane.class);
 
     protected JTable     table;
     protected Workbench  workbench;
