@@ -7,12 +7,12 @@
 package edu.ku.brc.specify.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 
@@ -35,7 +35,7 @@ public class SpecifySchemaGenerator
         // do nothing
     }
     
-    public synchronized void generateSchema(String hostname, String databaseName) throws SQLException
+    public synchronized void generateSchema(String hostname, String databaseName) throws SQLException, IOException
     {
         String dbDriver = "com.mysql.jdbc.Driver";
         String dbDialect = "org.hibernate.dialect.MySQLDialect";
@@ -79,7 +79,7 @@ public class SpecifySchemaGenerator
     								final String hostname,
     								final String databaseName,
     								final String user,
-    								final String passwd)
+    								final String passwd) throws IOException
     {
         StringBuilder sb = new StringBuilder();
         sb.append("hibernate.connection.driver_class="+dbDriver+"\n");
@@ -91,27 +91,19 @@ public class SpecifySchemaGenerator
         sb.append("hibernate.connection.pool_size=5\n");
         sb.append("hibernate.bytecode.use_reflection_optimizer=true\n");
 
-        try
-        {
-            XMLHelper.setContents(new File("src" + File.separator + "hibernate.properties"), sb.toString());
-
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+        XMLHelper.setContents(new File("src" + File.separator + "hibernate.properties"), sb.toString());
     }
 
     protected void doGenSchema()
     {
         // Let Apache Ant do all of the real work
         Project project = new Project();
-		project.init();
-		project.setBasedir(".");
-		ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
-		project.executeTarget("genschema");
-        
-// // if we can get this stuff working, we can get rid of using Ant for this
-// purpose
+        project.init();
+        project.setBasedir(".");
+        ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
+        project.executeTarget("genschema");
+
+//        // if we can get this stuff working, we can get rid of using Ant for this purpose
 //        Configuration hibCfg = new AnnotationConfiguration();
 //        hibCfg.configure();
 //        SchemaExport schemaExporter = new SchemaExport(hibCfg);
@@ -125,9 +117,9 @@ public class SpecifySchemaGenerator
 //        }
     }
     
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws SQLException, IOException
     {
         SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-        schemaGen.generateSchema("localhost", "junkorama");
+        schemaGen.generateSchema("localhost", "testdb");
     }
 }
