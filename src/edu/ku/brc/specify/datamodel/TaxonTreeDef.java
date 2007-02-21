@@ -26,6 +26,7 @@ import java.util.Set;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name="taxontreedef")
+@org.hibernate.annotations.Proxy(lazy = false)
 public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
 	protected Long				    taxonTreeDefId;
@@ -151,7 +152,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.treeEntries = treeEntries;
 	}
 
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="treeDef")
+    @OneToMany(cascade={}, fetch=FetchType.EAGER, mappedBy="treeDef")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.LOCK} )
 	public Set<TaxonTreeDefItem> getTreeDefItems()
 	{

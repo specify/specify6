@@ -29,6 +29,7 @@ import java.util.Set;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "taxontreedefitem")
+@org.hibernate.annotations.Proxy(lazy = false)
 public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
 	protected Long				    taxonTreeDefItemId;
@@ -198,8 +199,8 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         this.fullNameSeparator = fullNameSeparator;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public TaxonTreeDef getTreeDef()
 	{
@@ -211,8 +212,8 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.treeDef = treeDef;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public TaxonTreeDefItem getParent()
 	{
@@ -225,7 +226,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;

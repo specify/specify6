@@ -51,6 +51,7 @@ import java.util.Set;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "locationtreedefitem")
+@org.hibernate.annotations.Proxy(lazy = false)
 public class LocationTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Location,LocationTreeDef,LocationTreeDefItem>
 {
 
@@ -222,7 +223,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public LocationTreeDef getTreeDef()
 	{
@@ -235,7 +236,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public LocationTreeDefItem getParent()
 	{

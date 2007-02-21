@@ -37,6 +37,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "taxon")
+@org.hibernate.annotations.Proxy(lazy = false)
 public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
     /**
@@ -485,7 +486,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.acceptedChildren = acceptedChildren;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AcceptedID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Taxon getAcceptedTaxon()

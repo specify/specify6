@@ -1,30 +1,8 @@
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+/**
+ * Copyright (C) 2006  The University of Kansas
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
  */
 package edu.ku.brc.specify.datamodel;
 
@@ -48,6 +26,7 @@ import java.util.Set;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "locationtreedef")
+@org.hibernate.annotations.Proxy(lazy = false)
 public class LocationTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
 {
 	protected Long				   locationTreeDefId;
@@ -211,16 +190,16 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		setLocationTreeDefId(id);
 	}
 
-	public void addTreeEntry(Location taxon)
+	public void addTreeEntry(Location loc)
 	{
-		treeEntries.add(taxon);
-		taxon.setDefinition(this);
+		treeEntries.add(loc);
+        loc.setDefinition(this);
 	}
 
-	public void removeTreeEntry(Location taxon)
+	public void removeTreeEntry(Location loc)
 	{
-		treeEntries.remove(taxon);
-		taxon.setDefinition(null);
+		treeEntries.remove(loc);
+        loc.setDefinition(null);
 	}
 
 	public void addTreeDefItem(LocationTreeDefItem item)

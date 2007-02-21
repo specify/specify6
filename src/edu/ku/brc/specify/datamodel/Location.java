@@ -1,30 +1,8 @@
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+/**
+ * Copyright (C) 2006  The University of Kansas
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
  */
 package edu.ku.brc.specify.datamodel;
 
@@ -42,7 +20,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -58,7 +36,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "location")
-public class Location extends DataModelObjBase implements java.io.Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
+@org.hibernate.annotations.Proxy(lazy = false)
+public class Location extends DataModelObjBase implements Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
 
     /**
      * A <code>Logger</code> object used for all log messages eminating from
@@ -295,7 +274,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.LOCK })
+    @Cascade( { CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LocationTreeDef getDefinition()
 	{
@@ -308,7 +287,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LocationTreeDefItem getDefinitionItem()
 	{
@@ -325,7 +304,7 @@ public class Location extends DataModelObjBase implements java.io.Serializable, 
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Location getParent()
 	{
