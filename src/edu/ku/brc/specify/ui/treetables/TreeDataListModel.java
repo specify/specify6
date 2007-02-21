@@ -511,8 +511,8 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
             hideChildren(oldParent);
         }
         hideChildren(newParent);
-        dataService.moveTreeNode(node, newParent);
-
+        dataService.moveTreeNode(node, newParent, root);
+        
         // we have to make sure to re-show the children in the correct order
         // in case one of the parents is a descendant of the other parent
         Integer newParentRank = newParent.getRankId();

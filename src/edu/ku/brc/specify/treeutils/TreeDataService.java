@@ -70,7 +70,7 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @param node the node to be moved
      * @param newParent the new parent node
      */
-    public void moveTreeNode(T node, T newParent);
+    public void moveTreeNode(T node, T newParent, T rootNode);
     
     // deprecated methods from session-based implementations
     public void saveTreeDef(D treeDef,List<I> deletedItems);

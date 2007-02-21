@@ -6,16 +6,20 @@
  */
 package edu.ku.brc.specify.treeutils;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.hibernate.EmptyInterceptor;
+import org.hibernate.Hibernate;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.type.Type;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -42,16 +46,18 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
 
-	//protected Session session;
-	
+    static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
+    
 	public HibernateTreeDataServiceImpl()
 	{
-		// do nothing
+        log.trace("enter");
+        log.trace("exit");
 	}
 	
 	@SuppressWarnings("unchecked")
     public synchronized List<T> findByName(D treeDef, String name)
     {
+        log.trace("enter");
         Vector<T> results = new Vector<T>();
         Class<T> nodeClass = treeDef.getNodeClass();
         
@@ -74,16 +80,30 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         
         Collections.sort(results,new TreePathComparator<T,D,I>(true));
         session.close();
+        log.trace("exit");
         return results;
     }
     
     public synchronized Set<T> getChildNodes(T parent)
     {
+        log.trace("enter");
+        if (Hibernate.isInitialized(parent.getChildren()))
+        {
+            log.trace("exit");
+            return parent.getChildren();
+        }
+        
         Session session = getNewSession(parent);
         Set<T> children = parent.getChildren();
         // to force Set loading
-        children.size();
+        int childCount = children.size();
+        log.debug(childCount + " child(ren) of " + parent.getName() + " loaded");
+        for (T child: children)
+        {
+            log.debug("\t" + nodeDebugInfo(child));
+        }
         session.close();
+        log.trace("exit");
         return children;
     }
     
@@ -97,6 +117,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public synchronized T getRootNode(D treeDef)
 	{
+        log.trace("enter");
 		T root = null;
 		
         Session session = getNewSession(treeDef);
@@ -110,11 +131,21 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         
         session.close();
+        if (root!=null)
+        {
+            log.debug("Root node: " + nodeDebugInfo(root));
+        }
+        else
+        {
+            log.debug("No root node");
+        }
+        log.trace("exit");
 		return root;
 	}
 
 	public synchronized void saveTreeDef(D treeDef, List<I> deletedItems)
 	{
+        log.trace("enter");
         Session session = getNewSession(treeDef);
 
         Transaction tx = session.beginTransaction();
@@ -155,6 +186,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 session.close();
             }
         }
+        log.trace("exit");
 	}
 
 	/* (non-Javadoc)
@@ -163,6 +195,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public synchronized List<D> getAllTreeDefs(Class<D> treeDefClass)
 	{
+        log.trace("enter");
         Session session = getNewSession();
 
         Query q = session.createQuery("FROM " + treeDefClass.getSimpleName());
@@ -180,6 +213,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		}
         
         session.close();
+        log.trace("exit");
 		return defs;
 	}
 	
@@ -189,6 +223,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public synchronized D getTreeDef(Class<D> defClass, long defId)
 	{
+        log.trace("enter");
         Session session = getNewSession();
 		String className = defClass.getSimpleName();
 		String idFieldName = className.toLowerCase().substring(0,1) + className.substring(1) + "Id";
@@ -200,6 +235,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         def.getTreeDefItems().size();
         
         session.close();
+        log.trace("exit");
 		return def;
 	}
 
@@ -208,25 +244,32 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     public synchronized boolean canDeleteNode(T node)
     {
+        log.trace("enter");
         Session session = getNewSession(node);
         BusinessRulesIFace busRules = TreeFactory.createBusinessRules(node);
         boolean ok = busRules.okToDelete(node);
         session.close();
+        log.trace("exit");
         return ok;
     }
     
     public synchronized boolean canAddChildToNode(T node)
     {
+        log.trace("enter");
         if (node.getDefinitionItem().getChild() != null)
         {
+            log.trace("exit");
             return true;
         }
+        log.trace("exit");
         return false;
     }
     
     public synchronized int getDescendantCount(T node)
-    {
+    { 
+        log.trace("enter");
         Session session = getNewSession(node);
+        log.debug("refreshing " + nodeDebugInfo(node));
         session.refresh(node);
         Integer nodeNum = node.getNodeNumber();
         Integer highChild = node.getHighestChildNodeNumber();
@@ -242,6 +285,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         
         session.close();
+        log.trace("exit");
         return descCnt;
    }
     
@@ -251,6 +295,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     @SuppressWarnings("null")
     public synchronized void deleteTreeNode(T node)
     {
+        log.trace("enter");
         Session session = getNewSession(node);
 
         // refresh the node data so we have correct information for the following calculation
@@ -305,11 +350,13 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         
         commitTransaction(session, tx);
+        log.trace("exit");
     }
     
     @SuppressWarnings("null")
     public synchronized void addNewChild(T parent, T child)
     {
+        log.trace("enter");
         Session session = getNewSession(parent,child);
         Transaction tx = session.beginTransaction();
         
@@ -362,26 +409,24 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         session.save(child);
         
         commitTransaction(session, tx);
+        log.trace("exit");
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#moveTreeNode(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
-    public synchronized void moveTreeNode(T node, T newParent)
+    public synchronized void moveTreeNode(T node, T newParent, T rootNode)
     {
-        Session session = getNewSession(node,newParent);
+        log.trace("enter");
+        log.debug("Moving ["+nodeDebugInfo(node)+"] to ["+nodeDebugInfo(newParent)+"]");
+        Session session = getNewSession(node,newParent,rootNode);
         Transaction tx = session.beginTransaction();
         
+        log.debug("refreshing " + nodeDebugInfo(node));
         session.refresh(node);
+        log.debug("refreshing " + nodeDebugInfo(newParent));
         session.refresh(newParent);
-        
-        // get the root node, then refresh it
-        T tmpNode = node;
-        while (tmpNode.getParent()!=null)
-        {
-            tmpNode = tmpNode.getParent();
-        }
-        T rootNode = tmpNode;
+        log.debug("refreshing " + nodeDebugInfo(rootNode));
         session.refresh(rootNode);
         
         // fix up the parent/child pointers for the effected nodes
@@ -391,6 +436,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             oldParent.removeChild(node);
         }
         newParent.addChild(node);
+        node.setParent(newParent);
         
         session.saveOrUpdate(node);
         if (oldParent!=null)
@@ -513,7 +559,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             step6Query.executeUpdate();
         }
         
+        log.debug("committing JDBC transaction to update node numbers");
         commitTransaction(session, tx);
+        log.trace("exit");
     }
     
     /**
@@ -524,7 +572,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     private Session getNewSession(Object... objects )
     {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        log.trace("enter");
+
+        Session session = HibernateUtil.getSessionFactory().openSession(loadLogger);
         for (Object o: objects)
         {
             if (o!=null)
@@ -537,6 +587,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 }
             }
         }
+        log.trace("exit");
         return session;
     }
     
@@ -550,6 +601,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     private boolean commitTransaction(Session session, Transaction tx)
     {
+        log.trace("enter");
         boolean result = true;
         try
         {
@@ -558,9 +610,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         catch (Exception ex)
         {
             result = false;
-            log.error("Error while committing transaction to DB");
+            log.error("Error while committing transaction to DB",ex);
             tx.rollback();
-            log.error(ex);
         }
         finally
         {
@@ -569,6 +620,28 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 session.close();
             }
         }
+        log.trace("exit");
         return result;
+    }
+    
+    private String nodeDebugInfo(Object o)
+    {
+        if (o instanceof Treeable)
+        {
+            Treeable<?,?,?> t = (Treeable)o;
+            return t.getTreeId() + " " + t.getName() + " 0x" + Integer.toHexString(t.hashCode());
+        }
+        return o.toString();
+    }
+
+    public static class HibernateLoadLogger extends EmptyInterceptor
+    {
+        @Override
+        public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
+        {
+            String className = entity.getClass().getSimpleName();
+            log.debug("loaded " + className + " (" + id + ") at 0x" + entity.hashCode());
+            return false;
+        }
     }
 }
