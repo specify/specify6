@@ -30,10 +30,18 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class AttachmentIconMapper implements ObjectIconMapper
 {
+    /** A Logger for handling all output coming from this class. */
     private static final Logger log = Logger.getLogger(AttachmentIconMapper.class);
+    
+    /** A cache of the thumbnails for the Attachments that are handled. */
     protected Hashtable<Attachment,ImageIcon> thumbnailCache;
+    
+    /** A list of all Attachments for which a thumbnail generating thread has started. */
     protected List<Attachment> thumbGenStarted;
     
+    /**
+     * Create an instance.
+     */
     public AttachmentIconMapper()
     {
         thumbnailCache = new Hashtable<Attachment, ImageIcon>();
@@ -132,6 +140,8 @@ public class AttachmentIconMapper implements ObjectIconMapper
             t.start();
         }
         
+        // based on the MIME type of the attachment, return the appropriate icon
+        // TODO: this can easily be configured via an XML file instead of hard coding
         String mimeType = a.getMimeType();
         
         if (mimeType == null)

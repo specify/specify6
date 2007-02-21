@@ -1,10 +1,9 @@
 /**
- * Copyright (C) ${year}  The University of Kansas
+ * Copyright (C) 2006 The University of Kansas
  *
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
-
 package edu.ku.brc.util;
 
 import java.io.File;
@@ -27,17 +26,21 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /** The base directory path of where the files will be stored. */
     protected String baseDirectory;
     
+    /** The directory inside the base that will store the original files. */
     protected File originalsDir;
+    
+    /** The directory inside the base that will store the thumbnail files. */
     protected File thumbsDir;
     
-    /** A collection of all files created by calls to setStorageLocationIntoAttachment
+    /** 
+     * A collection of all files created by calls to setStorageLocationIntoAttachment
      * that have not yet been filled by calls to storeAttachmentFile.
      */
     protected Vector<String> unfilledFiles;
     
     /**
      * Creates a new instance, setting baseDirectory to null.
-     * @throws IOException 
+     * @throws IOException if either of the storage directories is not writable
      */
     public FileStoreAttachmentManager(final File baseDirectory) throws IOException
     {
@@ -45,9 +48,11 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         originalsDir = new File(baseDirectory + File.separator + "originals");
         thumbsDir    = new File(baseDirectory + File.separator + "thumbnails");
         
+        // create the directories, if they don't already exist
         originalsDir.mkdirs();
         thumbsDir.mkdirs();
         
+        // make sure the directories are writable
         if (!originalsDir.canWrite())
         {
             throw new IOException("Storage directory not writable: " + originalsDir.getAbsolutePath());
@@ -60,6 +65,9 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         unfilledFiles = new Vector<String>();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#setStorageLocationIntoAttachment(edu.ku.brc.specify.datamodel.Attachment)
+     */
     public void setStorageLocationIntoAttachment(Attachment attachment)
     {
         String attName = attachment.getOrigFilename();
@@ -67,17 +75,21 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         String suffix = ".att";
         if (lastPeriod!=-1)
         {
+            // Make sure the file extension (if any) remains the same so the host
+            // filesystem still sees the files as the proper types.  This is simply
+            // to make the files browsable from a system file browser.
             suffix = ".att" + attName.substring(lastPeriod);
         }
         try
         {
+            // find an unused filename in the originals dir
             File storageFile = File.createTempFile("sp6-", suffix, originalsDir);
             attachment.setAttachmentLocation(storageFile.getName());
             unfilledFiles.add(attachment.getAttachmentLocation());
         }
         catch (IOException e)
         {
-            // TODO What to do here?
+            // TODO What should we do in this case?
             e.printStackTrace();
         }
     }
@@ -116,17 +128,20 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public void storeAttachmentFile(Attachment attachment, File attachmentFile, File thumbnail) throws IOException
     {
+        // copy the original into the storage system
         String attachLoc = attachment.getAttachmentLocation();
-        
         File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
         FileUtils.copyFile(attachmentFile, origFile);
         
+        // copy the thumbnail, if any, into the storage system
         if (thumbnail!=null)
         {
             File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
             FileUtils.copyFile(thumbnail, thumbFile);
         }
         
+        // since we have now made use of the temp file we created earlier, we don't
+        // need to keep track of it as an 'unfilled' file to be cleaned up later
         unfilledFiles.remove(attachment.getAttachmentLocation());
     }
 
@@ -176,6 +191,8 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public void cleanup()
     {
+        // delete all of the temp files we created that were never used for storing
+        // attachment originals
         for (String unusedFile: unfilledFiles)
         {
             File f = new File(originalsDir.getAbsolutePath() + File.separator + unusedFile);

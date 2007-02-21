@@ -1,5 +1,5 @@
 /**
- * Copyright (C) ${year}  The University of Kansas
+ * Copyright (C) 2006 The University of Kansas
  *
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 

@@ -19,10 +19,10 @@ import edu.ku.brc.specify.ui.RepresentativeTextFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
- * An extension of {@link DefaultListCellRenderer} that can appropriately
- * handle objects that implement {@link FormDataObjIFace}. This classes
- * relies on a {@link RepresentativeIconFactory} to provide the icons.
- *
+ * An extension of {@link DefaultListCellRenderer} that delegates out the 
+ * task of producing an appropriate text and icon representation of the rendered
+ * objects.
+ * 
  * @author jstewart
  * @code_status Complete
  */
@@ -34,8 +34,12 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
     public TrayListCellRenderer()
     {
         super();
+        
+        // remember, DefaultListCellRenderer extends JLabel,
+        // so we can set any JLabel properties we want
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
+        this.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     /* (non-Javadoc)
@@ -47,15 +51,13 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
         JLabel l = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if(value instanceof FormDataObjIFace)
         {
+            // ask for the text representation of the object
             String text = RepresentativeTextFactory.getInstance().getString(value);
             l.setText(text);
+            // ask for the icon representation of the object
             ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value);
             l.setIcon(icon);
         }
-       
-        l.setHorizontalTextPosition(SwingConstants.CENTER);
-        l.setHorizontalAlignment(SwingConstants.CENTER);
-       
         return l;
     }
 }

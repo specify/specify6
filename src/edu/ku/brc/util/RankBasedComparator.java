@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 
 /**
- * A compartor to be used in sorting {@link Rankable} objects
+ * A comparator to be used in sorting {@link Rankable} objects
  * based on their ranks.
  *
  * @code_status Complete
