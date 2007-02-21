@@ -42,6 +42,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,11 +52,15 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -69,6 +74,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -80,10 +86,16 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.dom4j.Element;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -104,6 +116,8 @@ import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.XMLHelper;
@@ -133,7 +147,10 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.plugins.latlon.LatLonUI;
+import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
+import edu.ku.brc.specify.tasks.subpane.wb.DataFileInfo;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
@@ -141,6 +158,7 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
+import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.Viewable;
@@ -1217,13 +1235,53 @@ public class FormEditor implements DatabaseLoginListener
         }
     }
     
+    public static void importXLS()
+    {
+        try {
+            InputStream input = new FileInputStream(new File( "/home/rods/Documents/_GuyanaTripX.xls" ));
+            POIFSFileSystem fs = new POIFSFileSystem( input );
+            HSSFWorkbook wb = new HSSFWorkbook(fs);
+            HSSFSheet sheet = wb.getSheetAt(0);
+            
+            // Iterate over each row in the sheet
+            Iterator rows = sheet.rowIterator();
+            while( rows.hasNext() ) {           
+                HSSFRow row = (HSSFRow) rows.next();
+                System.out.println( "Row #" + row.getRowNum() );
+ 
+                // Iterate over each cell in the row and print out the cell's content
+                Iterator cells = row.cellIterator();
+                while( cells.hasNext() ) {
+                    HSSFCell cell = (HSSFCell) cells.next();
+                    System.out.println( "Cell #" + cell.getCellNum() );
+                    switch ( cell.getCellType() ) {
+                        case HSSFCell.CELL_TYPE_NUMERIC:
+                            System.out.println( cell.getNumericCellValue() );
+                            break;
+                        case HSSFCell.CELL_TYPE_STRING:
+                            System.out.println( cell.getStringCellValue() );
+                            break;
+                        default:
+                            System.out.println( "unsuported sell type" );
+                            break;
+                    }
+                }
+                
+            }
+            
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
     /**
      * @param args args
      */
     public static void main(String[] args)
     {
 
-        if (true)
+        
+        if (false)
         {
             EMailHelper.sendMsgAsGMail("smtp.gmail.com",  "rodspears@gmail.com", "", "rodspears@gmail.com",
                            "rods@ku.edu", "Test", "test", EMailHelper.HTML_TEXT, null);
@@ -1233,6 +1291,68 @@ public class FormEditor implements DatabaseLoginListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
+                System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
+                System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+                System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
+                System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
+                System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
+                System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+                System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
+                System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",        "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl"); // needed for treequerycbx components
+                
+                IconManager.setApplicationClass(Specify.class);
+                UICacheManager.getInstance(); // initializes it first thing
+                UICacheManager.setAppName("Specify");
+                
+                if (UIHelper.tryLogin( "com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", "testfish", "jdbc:mysql://localhost/testfish", "rods", "rods"))
+                {
+                    DataFileInfo dataFileInfo = new DataFileInfo(new File("/home/rods/Documents/_GuyanaTripX.xls"));
+
+                    IconManager.setApplicationClass(Specify.class);
+                    
+                    JDialog dlg = new JDialog((Frame)null, "Column Mapper", true);
+                    //dlg.setModal(true);
+                    GhostGlassPane glassPane = new GhostGlassPane();
+                    dlg.setGlassPane(glassPane);
+                    UICacheManager.register(UICacheManager.GLASSPANE, glassPane);
+                    ColumnMapperPanel mapper = new ColumnMapperPanel(dlg, dataFileInfo);
+                    dlg.setContentPane(mapper);
+                    dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    //frame.setSize(new Dimension(500,500));
+                    dlg.pack();
+                    UIHelper.centerAndShow(dlg);
+                    
+                    if (!mapper.isCancelled())
+                    {
+                        try
+                        {
+                            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                            
+                            SpecifyUser specifyUser = null;
+                            List list = session.getDataList(SpecifyUser.class, "name", "rods");
+                            if (list.size() == 1)
+                            {
+                                specifyUser = (SpecifyUser)list.get(0);
+                                SpecifyUser.setCurrentUser(specifyUser);
+                            }
+                            WorkbenchTemplate wbt = mapper.createWorkbenchTemplate();
+                            session.beginTransaction();
+                            session.save(wbt);
+                            session.commit();
+                            session.flush();
+                            session.close();
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                    
+
+                    if (true) return;                    
+                }
+
+                
                 /*
                 List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");       
                 List<Loan> loans = (List<Loan>)BuildSampleDatabase.getObjectsByClass(dataObjs, Loan.class);
@@ -1273,7 +1393,6 @@ public class FormEditor implements DatabaseLoginListener
                 
                 
                 FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
-                
 
                 
                 /*

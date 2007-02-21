@@ -29,7 +29,7 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @Table(name = "workbenchtemplatemappingitem")
-public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable
+public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplateMappingItem>
 {
 
     // Fields
@@ -213,6 +213,14 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setWorkbenchTemplate(WorkbenchTemplate workbenchTemplate)
     {
         this.workbenchTemplate = workbenchTemplate;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(WorkbenchTemplateMappingItem obj)
+    {
+        return viewOrder.compareTo(obj.viewOrder);
     }
 
     /*

@@ -74,8 +74,6 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -357,7 +355,7 @@ public class TableViewObj implements Viewable,
             
             if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
             {
-                if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn)
+                if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn && saveBtn != null)
                 {
                     //addSaveBtn();
                     comps.add(saveBtn);
@@ -817,6 +815,8 @@ public class TableViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     public void setDataObj(final Object dataObj)
     {
+        this.dataObj = dataObj;
+        
         if (dataObj instanceof List)
         {
             origDataSet = null;
@@ -848,7 +848,7 @@ public class TableViewObj implements Viewable,
                 
             } else if (dataObj instanceof RecordSetIFace)
             {
-                this.dataObj = dataObj;
+                //this.dataObj = dataObj;
                 /*
                 RecordSetIFace recordSet = (RecordSetIFace)dataObj;
                 
@@ -1722,7 +1722,7 @@ public class TableViewObj implements Viewable,
                 Object     rowObj  = dataObjList.get(row);
                 //log.info("["+colInfo.getFullCompName()+"]");
                 
-                if (session != null)
+                if (session != null && rowObj instanceof FormDataObjIFace)
                 {
                     session.attach(rowObj);
                 }
@@ -1748,19 +1748,7 @@ public class TableViewObj implements Viewable,
                     return null;
                 }
                 
-                Object dataVal = dataValues[0];
-                
-                if (dataVal instanceof Agent)
-                {
-                    int x = 0;
-                    x++;
-                }
-                
-                if (dataVal instanceof Preparation)
-                {
-                    int x = 0;
-                    x++;
-                }
+                Object dataVal           = dataValues[0];
                 String dataObjFormatName = colInfo.getDataObjFormatName();
                 if (StringUtils.isNotEmpty(dataObjFormatName))
                 {

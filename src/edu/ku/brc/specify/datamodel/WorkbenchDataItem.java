@@ -33,7 +33,7 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @Table(name = "workbenchdataitem")
-public class WorkbenchDataItem extends DataModelObjBase implements java.io.Serializable
+public class WorkbenchDataItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
 
     // Fields
@@ -170,7 +170,25 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     {
         this.workbench = workbench;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(WorkbenchDataItem obj)
+    {
+        return columnNumber.compareTo(obj.columnNumber);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     */
+    @Transient
+    @Override
+    public boolean isIndexable()
+    {
+        return false;
+    }
+    
     /*
      * (non-Javadoc)
      * 

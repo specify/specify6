@@ -371,7 +371,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         File path = UICacheManager.getDefaultWorkingPathSubDir("reportsCache", true); 
         if (path == null)
         {
-            String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
+            String msg = "The reportsCache directory is empty.";
             log.error(msg);
             throw new RuntimeException(msg);
         }

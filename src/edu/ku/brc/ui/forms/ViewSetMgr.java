@@ -119,6 +119,14 @@ public class ViewSetMgr
         }
     }
 
+    /**
+     * Adds a ViewSet that is already built.
+     * @param viewSet the viewset
+     */
+    public void addViewSet(final ViewSet viewSet)
+    {
+        viewsHash.put(viewSet.getName(), viewSet);
+    }
     
     /**
      * Clear and cleans all the view sets

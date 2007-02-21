@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -58,10 +59,24 @@ public class DatamodelGenerator
 	 * @param element the XML node
 	 * @return Field object
 	 */
-	private Field createField(final Element element)
+	private Field createField(final String tableName, final Element element)
 	{
+        String type = element.attributeValue("type");
+        if (StringUtils.isEmpty(type))
+        {
+            String precision = element.attributeValue("precision");
+            String scale     = element.attributeValue("scale");
+            if (StringUtils.isNotEmpty(precision) && StringUtils.isNotEmpty(scale))
+            {
+                type = "java.math.BigDecimal";
+
+            } else
+            {
+                throw new RuntimeException("No type defined for field ["+element.attributeValue("name")+"] Table["+tableName+"]");
+            }
+        }
 		return new Field(element.attributeValue("name"), 
-                element.attributeValue("type"), 
+                type, 
                 element.attributeValue("column"), 
                 element.attributeValue("length"));
 	}
@@ -270,7 +285,7 @@ public class DatamodelGenerator
 						for (Iterator i = classNode.elementIterator("property"); i.hasNext();)
 						{
 							Element element = (Element) i.next();
-							table.addField(createField(element));
+							table.addField(createField(table.getName(), element));
 						}
 
 						// iterate through child elements of id node

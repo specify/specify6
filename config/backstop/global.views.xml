@@ -167,6 +167,26 @@
                 <altview name="ReferenceWork Edit" viewdef="ReferenceWork" label="Edit" mode="edit" validated="true"/>                
             </altviews>
         </view>
+        
+        <view name="WorkbenchTemplate"
+            class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"
+            resourcelabels="false">
+            <desc><![CDATA[The WorkbenchTemplate Form.]]></desc>
+            <altviews>
+                <!-- <altview name="WorkbenchTemplate View" viewdef="WorkbenchTemplate" label="View" mode="view" validated="false"/>    -->            
+                <altview name="WorkbenchTemplate Edit" viewdef="WorkbenchTemplate" label="Edit" mode="edit" validated="true" default="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="Workbench"
+            class="edu.ku.brc.specify.datamodel.Workbench"
+            resourcelabels="false">
+            <desc><![CDATA[The Workbench Form.]]></desc>
+            <altviews>
+                <altview name="Workbench View" viewdef="Workbench" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="Workbench Edit" viewdef="Workbench" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
     </views>
 
     <!-- #############################################################################################
@@ -786,6 +806,52 @@
                 <row>
                     <cell type="label" labelfor="7" label="Library #"/>
                     <cell type="field" id="7" name="libraryNumber" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="WorkbenchTemplate"
+            class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The WorkbenchTemplate form]]></desc>
+            <columnDef>p,2px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="50" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" cols="40"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form" 
+            name="Workbench"
+            class="edu.ku.brc.specify.datamodel.Workbench"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The WorkbenchTemplate form]]></desc>
+            <columnDef>p,2px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="50" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Export Institutio"/>
+                    <cell type="field" id="2" name="exportInstitutionName" uitype="text" cols="50"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" cols="40"/>
                 </row>
             </rows>
         </viewdef>

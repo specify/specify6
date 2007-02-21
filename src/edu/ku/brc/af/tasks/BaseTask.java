@@ -347,7 +347,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Adds a SubPane to the Mgr and caches a pointer to it and clear the starterPane data member.
      * @param subPane the subpane in question
      */
-    protected void addSubPaneToMgr(final SubPaneIFace subPane)
+    protected SubPaneIFace addSubPaneToMgr(final SubPaneIFace subPane)
     {
         if (starterPane != null)
         {
@@ -358,7 +358,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         {
             SubPaneMgr.getInstance().addPane(subPane);
         }
-
+        return subPane;
     }
 
     /**

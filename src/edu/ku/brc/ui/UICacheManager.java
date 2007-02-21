@@ -499,13 +499,63 @@ public class UICacheManager
         return recent == null || !recent.isVisible() ? instance.components.get(TOPFRAME) : recent;
     }
 
-     /**
-      * Display an Error dialog.
+    /**
+     * Display an Error dialog.
      * @param msg the message to be displayed
      */
     public static void displayErrorDlg(final String msg)
     {
          JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("error"), JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Display an Error dialog that gets its string from the resource bundle.
+     * @param msg the message to be displayed
+     */
+    public static void displayErrorDlgLocalized(final String key)
+    {
+         JOptionPane.showMessageDialog(getMostRecentFrame(), getResourceString(key), getResourceString("error"), JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Display an Confirmation Dialog where everything comes ffrom the bundle.
+     * @param titleKey the key to the dialog title
+     * @param msgKey the key to the dialog message
+     * @param keyBtn1 the key to the first button 
+     * @param keyBtn2 the key to the second button
+     * @param iconOption the icon to show
+     * @return true is YES false if NO
+     */
+    public static boolean displayConfirm(final String title, 
+                                         final String msg,
+                                         final String keyBtn1,
+                                         final String keyBtn2,
+                                         final int    iconOption)
+    {
+        // Custom button text
+        Object[] options = { keyBtn1, keyBtn2 };
+        
+        return JOptionPane.showOptionDialog(getMostRecentFrame(), msg, 
+                title, JOptionPane.YES_NO_OPTION,
+                iconOption, null, options, options[1]) == JOptionPane.YES_OPTION;
+    }
+
+    /**
+     * Display an Confirmation Dialog where everything comes ffrom the bundle.
+     * @param titleKey the key to the dialog title
+     * @param msgKey the key to the dialog message
+     * @param keyBtn1 the key to the first button 
+     * @param keyBtn2 the key to the second button
+     * @param iconOption the icon to show
+     * @return true is YES false if NO
+     */
+    public static boolean displayConfirmLocalized(final String titleKey, 
+                                                  final String msgKey,
+                                                  final String keyBtn1,
+                                                  final String keyBtn2,
+                                                  final int    iconOption)
+    {
+        return displayConfirm(getResourceString(titleKey), getResourceString(msgKey), getResourceString(keyBtn1), getResourceString(keyBtn1), iconOption);
     }
 
     //----------------------------------------------------------------------------------

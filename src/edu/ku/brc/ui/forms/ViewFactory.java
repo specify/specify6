@@ -1335,9 +1335,12 @@ public class ViewFactory
                 
                 fv.setName(formViewDef.getName()); // For Debugging
 
-                for (String id : enableRules.keySet())
+                if (enableRules != null)
                 {
-                    fv.addEnableRule(id, enableRules.get(id));
+                    for (String id : enableRules.keySet())
+                    {
+                        fv.addEnableRule(id, enableRules.get(id));
+                    }
                 }
 
                 // Load up labels and associate them with their component

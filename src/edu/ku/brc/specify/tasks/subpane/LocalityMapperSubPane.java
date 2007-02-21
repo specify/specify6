@@ -199,7 +199,11 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                 startCE = collectingEvent;
                 endCE   = collectingEvent;
             }
-
+            // XXX TODO FIX ME!
+            if (startCE == null || endCE == null)
+            {
+                return;
+            }
             // There may be an End Date that is further out than than the End Date of the last item
             // with the latest Start Date
             if (startCE.getStartDate().compareTo(collectingEvent.getStartDate()) > 1)
@@ -212,6 +216,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             {
                 endCE = collectingEvent;
             }
+
         	Hashtable<String, Object> map = new Hashtable<String, Object>();
 
         	Set<CollectionObject> colObjs = collectingEvent.getCollectionObjects();
@@ -340,6 +345,10 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             }});
 
         // XXX TODO FIX ME!
+        if (startCE == null || endCE == null)
+        {
+            return;
+        }
         String startDateStr = scrDateFormat.format(startCE.getStartDate().getTime());
         String endDateStr   = scrDateFormat.format((endCE.getEndDate() != null ? endCE.getEndDate() : endCE.getStartDate()).getTime());
 

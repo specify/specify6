@@ -32,7 +32,7 @@ public class CommandActionWrapper implements ActionListener
     private CommandAction commandAction;
     
     /**
-     * Constructor with Commandaction
+     * Constructor with Commandaction.
      * @param commandAction the command action to send
      */
     public CommandActionWrapper(final CommandAction commandAction)

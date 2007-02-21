@@ -27,7 +27,8 @@ import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
- * Class that manages all the forms for a given view set (which is read from a single file)
+ * Class that manages all the View (forms) for a given view set (which is read from a single file).<br><br>
+ * NOTE: ViewSets can have "transient" Views and ViewDefs. These are created dynamically in memory and are not persisted.
 
  * @code_status Beta
  **
@@ -42,14 +43,17 @@ public class ViewSet implements Comparable<ViewSet>
     public enum Type {System, User}
 
 
-    protected Type             type      = Type.User;
-    protected String           name      = null;
-    protected String           title     = null;
-    protected String           fileName  = null;
-    protected File             dirPath   = null;
+    protected Type                       type              = Type.User;
+    protected String                     name              = null;
+    protected String                     title             = null;
+    protected String                     fileName          = null;
+    protected File                       dirPath           = null;
 
-    protected Hashtable<String, View>    views    = null;
-    protected Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
+    protected boolean                    hasLoadedViews    = false;
+    protected Hashtable<String, View>    transientViews    = null;
+    protected Hashtable<String, ViewDef> transientViewDefs = null;
+    protected Hashtable<String, View>    views             = new Hashtable<String, View>();
+    protected Hashtable<String, ViewDef> viewDefs          = new Hashtable<String, ViewDef>();
 
     /**
      * Default Constructor.
@@ -118,9 +122,15 @@ public class ViewSet implements Comparable<ViewSet>
             //{
             //    fv.cleanUp();
             //}
-            views.clear();
-            views = null; // will force it to be reloaded.
+            views.clear();    
         }
+        
+        if (views != null)
+        {
+            viewDefs.clear();
+        }
+        
+        hasLoadedViews = false;
     }
 
     /**
@@ -128,7 +138,7 @@ public class ViewSet implements Comparable<ViewSet>
      */
     protected void loadViews()
     {
-        if ( (ALWAYS_LOAD || views == null) && dirPath != null && fileName != null)
+        if ((ALWAYS_LOAD || !hasLoadedViews) && dirPath != null && fileName != null)
         {
             try
             {
@@ -137,10 +147,28 @@ public class ViewSet implements Comparable<ViewSet>
             } catch (FileNotFoundException ex)
             {
                 log.error(ex);
+                
             } catch (Exception ex)
             {
                 log.error(ex);
                 ex.printStackTrace();
+            }
+        }
+        
+        // Add any Transient Views back in after reloading the ViewSet
+        if (transientViews != null)
+        {
+            for (String viewName : transientViews.keySet())
+            {
+                views.put(viewName, transientViews.get(viewName));
+            }
+        }
+        
+        if (transientViewDefs != null)
+        {
+            for (String viewName : transientViewDefs.keySet())
+            {
+                viewDefs.put(viewName, transientViewDefs.get(viewName));
             }
         }
     }
@@ -164,25 +192,17 @@ public class ViewSet implements Comparable<ViewSet>
     public Map<String, View> getViews()
     {
         loadViews();
+        
         return views;
     }
 
     /**
-     * Sets the Views.
-     * @param views the vector of new views
+     * Returns all the ViewDefs.
+     * @return all the ViewDefs.
      */
-    public void setViews(final Hashtable<String, View> views)
+    public Hashtable<String, ViewDef> getViewDefs()
     {
-        this.views = views;
-    }
-
-    /**
-     * Sets the ViewDefs.
-     * @param viewDefs the vector of new views
-     */
-    public void setViewDefs(final Hashtable<String, ViewDef> viewDefs)
-    {
-        this.viewDefs = viewDefs;
+        return viewDefs;
     }
 
     /**
@@ -238,6 +258,73 @@ public class ViewSet implements Comparable<ViewSet>
     {
         return type == Type.System;
     }
+    
+    /**
+     * Adds a dynamic or transient View; which is a View that is not read from the database or a file.
+     * @param view the in memory View
+     */
+    public void addTransientView(final View view)
+    {
+        if (transientViews == null)
+        {
+            transientViews = new Hashtable<String, View>();
+            
+        } else if (transientViews.get(view.getName()) != null)
+        {
+            throw new RuntimeException("Transient View Name ["+view.getName()+"] is already being used!");
+        }
+        
+        transientViews.put(view.getName(), view);
+        views.put(view.getName(), view);
+    }
+
+    /**
+     * Adds a dynamic or transient ViewDef; which is a View that is not read from the database or a file.
+     * @param viewDef the in memory ViewDef
+     */
+    public void addTransientViewDef(final ViewDef viewDef)
+    {
+        if (transientViewDefs == null)
+        {
+            transientViewDefs = new Hashtable<String, ViewDef>();
+            
+        } else if (transientViews.get(viewDef.getName()) != null)
+        {
+            throw new RuntimeException("Transient View Name ["+viewDef.getName()+"] is already being used!");
+        }
+        
+        transientViewDefs.put(viewDef.getName(), viewDef);
+        viewDefs.put(viewDef.getName(), viewDef);
+    }
+
+    /**
+     * Adds a dynamic or transient View; which is a View that is not read from the database or a file.
+     * @param view the in memory View
+     */
+    public void removeTransientView(final View view)
+    {
+        if (transientViews != null)
+        {
+            transientViews.remove(view.getName());
+            views.remove(view.getName());
+            view.cleanUp();
+        }
+        
+    }
+
+    /**
+     * Adds a dynamic or transient ViewDef; which is a View that is not read from the database or a file.
+     * @param viewDef the in memory ViewDef
+     */
+    public void removeTransientViewDef(final ViewDef viewDef)
+    {
+        if (transientViewDefs != null)
+        {
+            transientViewDefs.remove(viewDef.getName());
+            viewDefs.remove(viewDef.getName());
+            viewDef.cleanUp();
+        }
+    }
 
     /**
      * Loads the ViewSet from a DOM element.
@@ -247,15 +334,13 @@ public class ViewSet implements Comparable<ViewSet>
     {
         if (rootDOM != null)
         {
-            // Do these first so the view can check their altViews against them
-            Hashtable<String, ViewDef> newViewDefs = new Hashtable<String, ViewDef>(); // will eventually be moved to where it can be reused
-            ViewLoader.getViewDefs(rootDOM, newViewDefs);
-            setViewDefs(newViewDefs);
+            viewDefs.clear();
+            views.clear();
 
+            // Do these first so the view can check their altViews against them            
+            ViewLoader.getViewDefs(rootDOM, viewDefs);
 
-            Hashtable<String, View> newViews = new Hashtable<String, View>(); // will eventually be moved to where it can be reused
-
-            String viewsName = ViewLoader.getViews(rootDOM, newViews, newViewDefs);
+            String viewsName = ViewLoader.getViews(rootDOM, views, viewDefs);
             if (doSetName)
             {
                 name = viewsName;
@@ -266,7 +351,7 @@ public class ViewSet implements Comparable<ViewSet>
                 log.error(msg);
                 throw new ConfigurationException(msg);
             }
-            setViews(newViews);
+
 
         } else
         {
@@ -274,6 +359,7 @@ public class ViewSet implements Comparable<ViewSet>
             log.error(msg);
             throw new ConfigurationException(msg);
         }
+        hasLoadedViews = true;
     }
 
     /**

@@ -151,7 +151,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     }
 
-
+    /**
+     * Returns the backstop ViewSetMgr.
+     * @return the backstop ViewSetMgr.
+     */
+    public ViewSetMgr getBackstopViewSetMgr()
+    {
+        return backStopViewSetMgr;
+    }
+    
     /**
      * Returns the list of Discipline objects.
      * @return the list of Discipline objects

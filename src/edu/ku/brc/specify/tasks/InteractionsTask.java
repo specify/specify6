@@ -603,7 +603,7 @@ public class InteractionsTask extends BaseTask
             
         } else
         {
-            UICacheManager.displayErrorDlg(getResourceString("ERROR_MISSING_RS_OR_NOITEMS"));  
+            UICacheManager.displayErrorDlgLocalized("ERROR_MISSING_RS_OR_NOITEMS");  
         }
     }
 

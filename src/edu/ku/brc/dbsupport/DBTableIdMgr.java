@@ -73,6 +73,15 @@ public class DBTableIdMgr
 	{
         // do nothing
 	}
+    
+    /**
+     * Returns the singleton.
+     * @return the singleton.
+     */
+    public static DBTableIdMgr getInstance()
+    {
+        return instance;
+    }
 
 	/**
 	 * Reads in datamodel input file and populates the hashtable of teh
@@ -204,6 +213,20 @@ public class DBTableIdMgr
 		}
         log.debug("Done Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath());
 	}
+    
+    /**
+     * Helper to create a FieldInfo Object.
+     * @param tableInfo TableInfo Object (owner)
+     * @param column the column name
+     * @param name the field name
+     * @param type the type of field it is
+     * @param length the length of the field
+     * @return the FieldInfo object
+     */
+    public static FieldInfo createFieldInfo(TableInfo tableInfo, String column, String name, String type, int length)
+    {
+        return instance.new FieldInfo(tableInfo, column, name, type, length);
+    }
     
     /**
      * Returns the full collection of Tables. 
@@ -768,7 +791,7 @@ public class DBTableIdMgr
         
         public String toString()
         {
-            return name;
+            return column;
         }
         
         /* (non-Javadoc)

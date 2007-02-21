@@ -13,7 +13,7 @@
                 <generator class="native"/>
             </id>
             
-            <property name="RecordId" not-null="true" unique="false"/>
+            <property name="RecordId" type="java.lang.Long" not-null="true" unique="false"/>
             
             <!-- Associations -->
             
