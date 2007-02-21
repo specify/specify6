@@ -511,7 +511,20 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade( { 
+        //CascadeType.ALL,
+        CascadeType.DELETE,
+        CascadeType.DELETE_ORPHAN,
+        CascadeType.EVICT,
+        CascadeType.LOCK,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        //CascadeType.REFRESH,
+        CascadeType.REMOVE,
+        CascadeType.REPLICATE,
+        CascadeType.SAVE_UPDATE
+    })
+    
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;
@@ -589,7 +602,19 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade( {
+        //CascadeType.ALL,
+        CascadeType.DELETE,
+        CascadeType.DELETE_ORPHAN,
+        CascadeType.EVICT,
+        CascadeType.LOCK,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        //CascadeType.REFRESH,
+        CascadeType.REMOVE,
+        CascadeType.REPLICATE,
+        CascadeType.SAVE_UPDATE
+        })
     public Set<Attachment> getAttachments()
     {
         return attachments;
