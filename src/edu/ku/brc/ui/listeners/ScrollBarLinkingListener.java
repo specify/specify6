@@ -9,7 +9,7 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.JScrollBar;
 
 /**
- * Provides a generic way to link the movement of a set of JScrollbars.
+ * This class provides a generic way to link the movement of a set of JScrollbars.
  *
  * @code_status Complete
  * @author jstewart
@@ -24,7 +24,6 @@ public class ScrollBarLinkingListener implements AdjustmentListener
 	
 	/**
 	 * Constructs an instance with an empty set of scrollbars to monitor.
-	 *
 	 */
 	public ScrollBarLinkingListener()
 	{
@@ -75,20 +74,22 @@ public class ScrollBarLinkingListener implements AdjustmentListener
 	}
 
 	/**
-	 * Updates all scroll bar models to value "equal" values.
+	 * Updates all scroll bar models to "equal" values.
 	 *
 	 * @see java.awt.event.AdjustmentListener#adjustmentValueChanged(java.awt.event.AdjustmentEvent)
 	 * @param e the triggering adjustment event
 	 */
 	public void adjustmentValueChanged(AdjustmentEvent e)
 	{
-		// think of the model for each bar being the range
-		// minimum <==> max-extent
 		if( !enabled )
 		{
 			return;
 		}
 		
+		// think of the model for each bar being the range
+		// minimum <==> max-extent
+		
+		// get the 'value' of the scrollbar that was moved
 		BoundedRangeModel model = ((JScrollBar)e.getSource()).getModel();
 		int value  = model.getValue();
 		int extent = model.getExtent();
@@ -96,13 +97,17 @@ public class ScrollBarLinkingListener implements AdjustmentListener
 		
 		double percent = (double)value / (double)(max-extent);
 
+		// synchronize so no scrollbars can be added or removed during the adjustment
 		synchronized( this )
 		{
+			// set all of the scrollbars to have the same value (same percent along their ranges)
 			for( JScrollBar sb: scrollBars )
 			{
 				BoundedRangeModel model2 = sb.getModel();
 				int extent2 = model2.getExtent();
 				int max2    = model2.getMaximum();
+				
+				// disable temporarily so we don't get in an infinite loop
 				enabled = false;
 				model2.setValue((int)(percent * (max2-extent2)));
 				enabled = true;
@@ -110,6 +115,12 @@ public class ScrollBarLinkingListener implements AdjustmentListener
 		}
 	}
 
+//	/**
+//	 * Creates a bunch of JLabels inside a bunch of JScrollPanes.  The scrollbars get linked together
+//	 * to show the use of this class.
+//	 *
+//	 * @param args ignored
+//	 */
 //	public static void main(String[] args)
 //	{
 //		JLabel l1 = new JLabel("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
