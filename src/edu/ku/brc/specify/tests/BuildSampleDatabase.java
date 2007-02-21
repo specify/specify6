@@ -1591,7 +1591,7 @@ public class BuildSampleDatabase
         return properties;
     }
     
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws SQLException
     {
         final BuildSampleDatabase builder = new BuildSampleDatabase();
         builder.build();

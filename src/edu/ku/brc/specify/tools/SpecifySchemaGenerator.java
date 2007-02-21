@@ -35,7 +35,7 @@ public class SpecifySchemaGenerator
         // do nothing
     }
     
-    public synchronized void generateSchema(String hostname, String databaseName) throws Exception
+    public synchronized void generateSchema(String hostname, String databaseName) throws SQLException
     {
         String dbDriver = "com.mysql.jdbc.Driver";
         String dbDialect = "org.hibernate.dialect.MySQLDialect";
@@ -50,7 +50,7 @@ public class SpecifySchemaGenerator
         doGenSchema();
     }
     
-    protected void dropAndCreateDB(final String dbName) throws Exception
+    protected void dropAndCreateDB(final String dbName) throws SQLException
     {
         Connection connection = dbConn.createConnection();
         Statement stmt = connection.createStatement();
@@ -101,25 +101,17 @@ public class SpecifySchemaGenerator
         }
     }
 
-    protected void doGenSchema() throws Exception
+    protected void doGenSchema()
     {
         // Let Apache Ant do all of the real work
         Project project = new Project();
-        try
-        {
-            project.init();
-            project.setBasedir(".");
-
-            ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
-
-            project.executeTarget("genschema");
-
-        } catch (BuildException e)
-        {
-            throw new Exception(e);
-        }
+		project.init();
+		project.setBasedir(".");
+		ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
+		project.executeTarget("genschema");
         
-//        // if we can get this stuff working, we can get rid of using Ant for this purpose
+// // if we can get this stuff working, we can get rid of using Ant for this
+// purpose
 //        Configuration hibCfg = new AnnotationConfiguration();
 //        hibCfg.configure();
 //        SchemaExport schemaExporter = new SchemaExport(hibCfg);
