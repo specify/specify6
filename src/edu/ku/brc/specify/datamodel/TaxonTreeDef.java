@@ -129,7 +129,8 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
         this.fullNameDirection = fullNameDirection;
     }
 
-    @OneToOne(mappedBy="taxonTreeDef")
+    @OneToOne(mappedBy="taxonTreeDef", fetch=FetchType.EAGER)
+    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
     public CollectionObjDef getCollObjDef()
 	{
 		return this.collObjDef;
@@ -141,7 +142,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	}
 
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="definition")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.LOCK} )
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -153,7 +154,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	}
 
     @OneToMany(cascade={}, fetch=FetchType.EAGER, mappedBy="treeDef")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.LOCK} )
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<TaxonTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
