@@ -23,6 +23,7 @@ import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
+ * This class is an implementation of ObjectIconMapper that handles Attachment objects.
  *
  * @code_status Alpha
  * @author jstewart

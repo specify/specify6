@@ -16,12 +16,17 @@ import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
+ * This class is an implementation of both {@link ObjectTextMapper} and {@link ObjectIconMapper}
+ * that handles {@link Preparation} objects.
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
  */
 public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMapper
 {
+    /**
+     * Create an instance.
+     */
     public PreparationIconTextMapper()
     {
         // do nothing
