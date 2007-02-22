@@ -17,6 +17,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * @code_status Alpha
  * @author jstewart
  */
+@SuppressWarnings("serial")
 public class FilteredTreeDataListModel<T extends Treeable<T,D,I>,
                                         D extends TreeDefIface<T,D,I>,
                                         I extends TreeDefItemIface<T,D,I>>
@@ -36,17 +37,17 @@ public class FilteredTreeDataListModel<T extends Treeable<T,D,I>,
         hideChildren(root);
     }
 
-//    @Override
-//    public void addNewChild(T parent, T child)
-//    {
-//        super.setChildrenVisible(parent, false);
-//        
-//        //nodesMatchingFilter.add(child);
-//        super.addNewChild(parent, child);
-//        //makeNodeVisible(child);
-//        
-//        super.setChildrenVisible(parent, true);
-//    }
+    @Override
+    public void addNewChild(T parent, T child)
+    {
+        super.setChildrenVisible(parent, false);
+        
+        super.addNewChild(parent, child);
+        nodesMatchingFilter.add(child);
+        makeNodeVisible(child);
+        
+        super.setChildrenVisible(parent, true);
+    }
 
     @Override
     protected int makeNodeVisible(T t)
@@ -59,7 +60,36 @@ public class FilteredTreeDataListModel<T extends Treeable<T,D,I>,
         return -1;
     }
     
-    protected boolean matchesFilter(T t)
+    @Override
+	protected void makeNodeInvisible(T t)
+    {
+		if (matchesFilter(t))
+		{
+			super.makeNodeInvisible(t);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.ui.treetables.TreeDataListModel#allChildrenAreVisible(edu.ku.brc.specify.datamodel.Treeable)
+	 */
+	@Override
+	public boolean allChildrenAreVisible(T t)
+	{
+		if( t == null )
+		{
+			return false;
+		}
+		for(T child: dataService.getChildNodes(t))
+		{
+			if(nodeIsVisible(child))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected boolean matchesFilter(T t)
     {
         if (nodesMatchingFilter == null)
         {
