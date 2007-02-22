@@ -364,6 +364,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         
         parent.addChild(child);
         
+        child.fixFullNameForAllDescendants();
+        
         // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
         boolean doNodeNumberUpdate = true;
         
