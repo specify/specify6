@@ -32,6 +32,7 @@ import edu.ku.brc.ui.UICacheManager;
  * @code_status Alpha
  * @author jstewart
  */
+@SuppressWarnings("serial")
 public class TreeNodeChooser extends JPanel implements ActionListener, ListSelectionListener
 {
     protected EmbeddableTreeTableViewer<?,?,?> treeViewer;

@@ -25,6 +25,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * @code_status Alpha
  * @author jstewart
  */
+@SuppressWarnings("serial")
 public class EmbeddableTreeTableViewer <T extends Treeable<T,D,I>,
                                         D extends TreeDefIface<T,D,I>,
                                         I extends TreeDefItemIface<T,D,I>>

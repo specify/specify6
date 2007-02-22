@@ -75,7 +75,7 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
             }
         }
         
-    	I defaultItem = node.getDefinitionItem();
+    	//I defaultItem = node.getDefinitionItem();
         
         I item = topItem;
     	boolean done = false;
