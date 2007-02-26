@@ -815,8 +815,8 @@ public class BuildSampleDatabase
                 Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
                 bigEye.setLoan(closedLoan);
                 
-                String[] names  = {"Beach",     "Stewart",  "Spears",  "Kumin"};
-                String[] photos = {"beach.jpg", "josh.jpg", "rod.jpg", "meg.jpg"};
+                String[] names  = {"Beach",     "Stewart",  "Spears",  "Kumin",   "Bentley"};
+                String[] photos = {"beach.jpg", "josh.jpg", "rod.jpg", "meg.jpg", "andy.jpg"};
                 for (Agent agent : agents)
                 {
                     for (int i=0;i<names.length;i++)
