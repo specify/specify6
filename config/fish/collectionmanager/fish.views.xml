@@ -102,7 +102,7 @@
         </view>
         
         <view name="CollectorsIconView"
-            class="edu.ku.brc.specify.datamodel.Collectors"
+            class="edu.ku.brc.specify.datamodel.Collector"
             resourcelabels="false">
             <desc><![CDATA[The Collectors Icon View.]]></desc>
             <altviews>
