@@ -1959,9 +1959,16 @@ public class FormViewObj implements Viewable,
                     }
 
                     fieldInfo.getSubView().setParentDataObj(dataObj);
-                    
-                    Object[] values = UIHelper.getFieldValues(fieldInfo.getFormCell(), dataObj, dg);
-                    data = values[0];
+                    try // XXX RELEASE remove try block
+                    {
+                        Object[] values = UIHelper.getFieldValues(fieldInfo.getFormCell(), dataObj, dg);
+                        data = values[0];
+                        
+                    } catch (NullPointerException ex)
+                    {
+                        log.error("FieldCell["+fieldInfo.getFormCell().getName()+" data["+dataObj+"]");
+                        throw new RuntimeException(ex);
+                    }
                     //data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
                     
                     if (data != null)

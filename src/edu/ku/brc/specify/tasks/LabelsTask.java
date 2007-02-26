@@ -131,7 +131,8 @@ public class LabelsTask extends BaseTask
                     String tableIdStr = tcd.getParams().get("tableid");
                     if (tableIdStr != null)
                     {
-                        CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, tcd.getParams());
+                        CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, null);
+                        cmdAction.addStringProperties(tcd.getParams());
                         labelsList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), name, cmdAction, null, true));// true means make it draggable
                         
                     } else
@@ -298,7 +299,7 @@ public class LabelsTask extends BaseTask
                     }
                 } else
                 {
-                    log.error("Attr [tableid] is not numeric for["+nbi.getTitle()+"]!");
+                    log.error("Attr [tableid] value["+tableIDStr+"] is not numeric for["+nbi.getTitle()+"]!");
                 }
             }
         }

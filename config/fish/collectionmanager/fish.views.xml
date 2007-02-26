@@ -689,7 +689,7 @@
         <viewdef
             type="iconview"
             name="CollectorsIconView"
-            class="edu.ku.brc.specify.datamodel.Collectors"
+            class="edu.ku.brc.specify.datamodel.Collector"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Collectors Icon Viewer]]></desc>

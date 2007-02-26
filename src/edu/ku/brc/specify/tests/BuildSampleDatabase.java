@@ -200,7 +200,7 @@ public class BuildSampleDatabase
         String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         
-        Agent            userAgent        = createAgent(title, firstName, lastName, midInit, abbrev, email);
+        Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
         UserGroup        userGroup        = createUserGroup(disciplineName);
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         DataType         dataType         = createDataType(disciplineName);
@@ -815,22 +815,22 @@ public class BuildSampleDatabase
                 Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
                 bigEye.setLoan(closedLoan);
                 
-                String joshPhotoPath = attachmentFilesLoc + "josh.jpg";
-                Attachment joshPhoto = createAttachment(joshPhotoPath, "image/jpeg", 0);
-                joshPhoto.setAgent(agents.get(0));
-    
-                String beachPhotoPath = attachmentFilesLoc + "beach.jpg";
-                Attachment beachPhoto = createAttachment(beachPhotoPath, "image/jpeg", 2);
-                beachPhoto.setAgent(agents.get(1));
-    
-                String megPhotoPath = attachmentFilesLoc + "meg.jpg";
-                Attachment megPhoto = createAttachment(megPhotoPath, "image/jpeg", 0);
-                megPhoto.setAgent(agents.get(2));
-    
-                String rodPhotoPath = attachmentFilesLoc + "rod.jpg";
-                Attachment rodPhoto = createAttachment(rodPhotoPath, "image/jpeg", 0);
-                rodPhoto.setAgent(agents.get(3));
-    
+                String[] names  = {"Beach",     "Stewart",  "Spears",  "Kumin"};
+                String[] photos = {"beach.jpg", "josh.jpg", "rod.jpg", "meg.jpg"};
+                for (Agent agent : agents)
+                {
+                    for (int i=0;i<names.length;i++)
+                    {
+                        if (agent.getLastName() != null && agent.getLastName().startsWith(names[i]))
+                        {
+                            String photoPath = attachmentFilesLoc + photos[i];
+                            Attachment photoAttachment = createAttachment(photoPath, "image/jpeg", 0);
+                            photoAttachment.setAgent(agent);
+                            dataObjects.add(photoAttachment);
+                        }
+                    }
+                }
+                    
                 String giftPdfPath = attachmentFilesLoc + "2004-18.pdf";
                 Attachment giftPDF = createAttachment(giftPdfPath, "application/pdf", 0);
                 giftPDF.setLoan(closedLoan);
@@ -852,10 +852,6 @@ public class BuildSampleDatabase
 //                beakerAsBeach.setAgent(agents.get(1));
                 
                 dataObjects.add(bigEye);
-                dataObjects.add(joshPhoto);
-                dataObjects.add(beachPhoto);
-                dataObjects.add(megPhoto);
-                dataObjects.add(rodPhoto);
                 dataObjects.add(giftPDF);
                 dataObjects.add(accPDF);
                 dataObjects.add(sharkVideo);

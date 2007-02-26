@@ -327,18 +327,20 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         if (metaDataHash == null)
         {
             metaDataHash = new Hashtable<String, String>(); 
-        }
-        
-        if (StringUtils.isNotEmpty(metaData))
-        {
-            for (String pair : metaData.split(";"))
+            
+            if (StringUtils.isNotEmpty(metaData))
             {
-                if (StringUtils.isNotEmpty(pair))
+                for (String pair : metaData.split(";"))
                 {
-                    String[] tokens = pair.split("=");
-                    if (tokens != null && tokens.length == 2)
+                    if (StringUtils.isNotEmpty(pair))
                     {
-                        metaDataHash.put(tokens[0], tokens[1]);
+                        System.out.println("["+pair+"]");
+                        String[] tokens = pair.split("=");
+                        if (tokens != null && tokens.length == 2)
+                        {
+                            System.out.println("["+tokens[0]+"]["+tokens[1]+"]");
+                            metaDataHash.put(tokens[0], tokens[1]);
+                        }
                     }
                 }
             }
