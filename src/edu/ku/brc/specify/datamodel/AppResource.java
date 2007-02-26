@@ -334,11 +334,9 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
                 {
                     if (StringUtils.isNotEmpty(pair))
                     {
-                        System.out.println("["+pair+"]");
                         String[] tokens = pair.split("=");
                         if (tokens != null && tokens.length == 2)
                         {
-                            System.out.println("["+tokens[0]+"]["+tokens[1]+"]");
                             metaDataHash.put(tokens[0], tokens[1]);
                         }
                     }
