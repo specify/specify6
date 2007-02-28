@@ -30,7 +30,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;
 
 /**
@@ -60,8 +59,10 @@ public class NavBox extends JPanel implements NavBoxIFace
         this.name = name;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
-        setBorder(BorderFactory.createEmptyBorder(15, 2, 2, 2));
-        setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
+        setBorder(BorderFactory.createEmptyBorder(20, 4, 4, 4));
+        //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
+        setBackground(Color.WHITE);
+        setOpaque(true);
     }
     
     /**
@@ -146,6 +147,8 @@ public class NavBox extends JPanel implements NavBoxIFace
             mgr.invalidate();
             mgr.doLayout();
         }
+        item.getUIComponent().setBackground(getBackground());
+        item.getUIComponent().setOpaque(true);
         return item.getUIComponent();
     }
        
@@ -207,10 +210,10 @@ public class NavBox extends JPanel implements NavBoxIFace
     @Override
     public Dimension getPreferredSize()
     {
-        Dimension size = super.getPreferredSize();
-        FontMetrics fm = this.getFontMetrics(getFont());
-        int width = fm.stringWidth(name);
-        Insets insets = getBorder().getBorderInsets(this);
+        Dimension  size    = super.getPreferredSize();
+        FontMetrics fm     = this.getFontMetrics(getFont());
+        int         width  = fm.stringWidth(name);
+        Insets      insets = getBorder().getBorderInsets(this);
         width += insets.left + insets.right;
         size.width = Math.max(size.width, width);
         return size;
@@ -218,17 +221,17 @@ public class NavBox extends JPanel implements NavBoxIFace
         
 
     /* (non-Javadoc)
-     * @see java.awt.Component#paint(java.awt.Graphics)
+     * @see java.awt.Component#paintComponent(java.awt.Graphics)
      */
     @Override
-    public void paint(Graphics g)
+    public void paintComponent(Graphics g)
     {
-        super.paint(g);
+        super.paintComponent(g);
         
         Dimension dim = getSize();
         
-        FontMetrics fm = g.getFontMetrics();
-        int strW = fm.stringWidth(name);
+        FontMetrics fm   = g.getFontMetrics();
+        int         strW = fm.stringWidth(name);
         
         int x = (dim.width - strW) / 2;
         Insets ins = getBorder().getBorderInsets(this);
@@ -237,10 +240,12 @@ public class NavBox extends JPanel implements NavBoxIFace
         int lineW = dim.width - ins.left - ins.right;
         //g.setColor(Color.BLUE.darker().darker());
         //g.drawString(name, x+1, y+1);
-        g.setColor(Color.BLUE.darker());
-        g.drawString(name, x, y);
+        //g.setColor(Color.BLUE.darker());
         x = ins.left;
-        y += fm.getDescent() + fm.getLeading();
+        int txtY = y;
+        //g.drawString(name, x, y);
+        y++;
+        //y += fm.getDescent() + fm.getLeading();
 
         g.setColor(Color.LIGHT_GRAY.brighter());
         g.drawLine(x, y,   x+lineW, y);
@@ -248,6 +253,9 @@ public class NavBox extends JPanel implements NavBoxIFace
         x++;
         g.setColor(Color.LIGHT_GRAY);
         g.drawLine(x, y,   x+lineW, y);
+        
+        g.setColor(Color.BLUE.darker());
+        g.drawString(name, x, txtY);
     }
     
     
