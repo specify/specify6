@@ -77,7 +77,7 @@ public class GoogleEarthExporter implements RecordSetExporter
             kmlGen.outputToFile(tmpFile.getAbsolutePath());
             AttachmentUtils.openFile(tmpFile);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
