@@ -6,8 +6,9 @@
  */
 package edu.ku.brc.specify.exporters;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -96,11 +97,16 @@ public class GoogleEarthExporter implements RecordSetExporter
      */
     public String getName()
     {
-        return "Google Earth";
+        return getResourceString("GoogleEarth");
     }
 
     public String getIconName()
     {
         return "GoogleEarth";
+    }
+    
+    public String getDescription()
+    {
+        return getResourceString("GoogleEarth_Description");
     }
 }

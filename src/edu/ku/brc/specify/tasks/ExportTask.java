@@ -10,7 +10,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -23,10 +22,9 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.exporters.DiGIRExporter;
@@ -85,8 +83,6 @@ public class ExportTask extends BaseTask
         super(EXPORT, getResourceString(EXPORT));
         
         CommandDispatcher.register(EXPORT, this);
-        //CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
-        //CommandDispatcher.register(APP_CMD_TYPE, this);
     }
 
 
@@ -105,7 +101,7 @@ public class ExportTask extends BaseTask
             extendedNavBoxes.clear();
             exportersList.clear();
 
-            NavBox navBox = new NavBox(name);
+            NavBox navBox = new NavBox(getResourceString("Formats")+ "/" + getResourceString("Applications"));
             
             // for each registered exporter, create a TaskCommandDef for it
             for (Class<? extends RecordSetExporter> exporterClass: exportersRegistry)
@@ -148,7 +144,14 @@ public class ExportTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        starterPane = new SimpleDescPane(name, this, "Welcome to the Specify Data Exporter");
+        StringBuilder htmlDesc = new StringBuilder("<h3>Welcome to the Specify Data Exporter</h3>");
+        htmlDesc.append("<p>Exporters installed:<ul>");
+        for (RecordSetExporter exporter: loadedExporters)
+        {
+            htmlDesc.append("<li><b>" + exporter.getName() + "</b><p>" + exporter.getDescription());
+        }
+        htmlDesc.append("</ul>");
+        starterPane = new HtmlDescPane(name, this, htmlDesc.toString());
         return starterPane;
     }
 

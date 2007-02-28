@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.exporters;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -50,5 +51,10 @@ public class RecordSetExporterAdapter implements RecordSetExporter
     public String getIconName()
     {
         return ExportTask.EXPORT;
+    }
+
+    public String getDescription()
+    {
+        return "A simple exporter that shows a basic implementation of the RecordSetExporter interface.  This export format is not intended for production use.";
     }
 }

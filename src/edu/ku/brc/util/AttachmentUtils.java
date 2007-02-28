@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import javax.activation.FileTypeMap;
 
@@ -104,8 +105,13 @@ public class AttachmentUtils
         }
     }
     
-    public static void openFile(File f) throws IOException
+    public static void openFile(File f) throws Exception
     {
         Desktop.getDesktop().open(f);
+    }
+    
+    public static void openURI(URI uri) throws Exception
+    {
+        Desktop.getDesktop().browse(uri);
     }
 }

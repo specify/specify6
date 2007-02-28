@@ -16,6 +16,7 @@ public interface RecordSetExporter
 {
     public String getName();
     public String getIconName();
+    public String getDescription();
     public Class<?>[] getHandledClasses();
 	public void exportRecordSet(RecordSet data);
 }
