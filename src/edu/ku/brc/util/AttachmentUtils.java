@@ -103,4 +103,9 @@ public class AttachmentUtils
             System.out.println(AttachmentUtils.getMimeType(name));
         }
     }
+    
+    public static void openFile(File f) throws IOException
+    {
+        Desktop.getDesktop().open(f);
+    }
 }
