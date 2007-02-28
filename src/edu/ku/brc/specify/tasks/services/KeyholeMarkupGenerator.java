@@ -65,6 +65,15 @@ public class KeyholeMarkupGenerator
 		events.add(ce);
 		labels.add(label);
 	}
+    
+    /**
+     * Clears all data from the generator's data sets.
+     */
+    public void clear()
+    {
+        events.clear();
+        labels.clear();
+    }
 
 	/**
 	 * Sets the speciesToImageMapper.
