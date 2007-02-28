@@ -168,6 +168,15 @@
             </altviews>
         </view>
         
+        <view name="Taxon"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            resourcelabels="false">
+            <desc><![CDATA[Taxon Node Form]]></desc>
+            <altviews>
+                <altview name="Taxon Edit" viewdef="Taxon" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
         <view name="WorkbenchTemplate"
             class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"
             resourcelabels="false">
@@ -806,6 +815,60 @@
                 <row>
                     <cell type="label" labelfor="7" label="Library #"/>
                     <cell type="field" id="7" name="libraryNumber" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+                <viewdef
+            type="form"
+            name="Taxon"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <columnDef>p,3dlu,p,8dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
+                	<cell type="field" id="defItemComboBox" uitype="combobox" name="definitionItem"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ser_num" label="Taxonomic Serial Number"/>
+                    <cell type="field" id="ser_num" uitype="text" name="taxonomicSerialNumber"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="guid" label="GUID"/>
+                    <cell type="field" id="guid" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="commonName" label="Common Name"/>
+                    <cell type="field" id="commonName" uitype="text"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="author" label="Author"/>
+                    <cell type="field" id="author" uitype="text"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="source" label="Source"/>
+                    <cell type="field" id="source" uitype="text"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="evp" label="Environmental Protection Status"/>
+                    <cell type="field" id="evp" uitype="text" name="environmentalProtectionStatus"/>
                 </row>
             </rows>
         </viewdef>
