@@ -17,6 +17,7 @@
     <icon name="Pie_Chart"  file="piechart.gif" sizes="all"/>
     <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
     <icon name="Record_Set" file="recordset.gif" sizes="all"/>
+    <icon name="Export"     file="recordset.gif" sizes="all"/>
     <icon name="Agent"            file="agent.gif" sizes="all"/>
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
     <icon name="People"           file="emblem-people.png" sizes="all"/>
@@ -56,6 +57,8 @@
     <icon name="Preparation"       alias="cs"/>
     <icon name="Preparation Type"  alias="PrepType"/>
     <icon name="CatalogSeries"     alias="Collection"/>
+    
+    <icon name="DiGIR" alias="CollectionObject"/>
     
     <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
 

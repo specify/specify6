@@ -30,6 +30,7 @@
         <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.SystemSetupTask"/>
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask"/>
+	    <!--<plugin class="edu.ku.brc.specify.tasks.ExportTask"/>-->
 	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>
 
 	</core>
