@@ -38,6 +38,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.event.ChangeEvent;
@@ -70,7 +71,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     protected JButton              arrowBtn          = null;
     protected boolean              popupVisible      = false;
     protected String               statusBarHintText = null;
-    
+    protected boolean overRideButtonBorder = false;
     protected List<JComponent>     menus    = null;
     protected List<ActionListener> listeners = new ArrayList<ActionListener>();
     
@@ -162,7 +163,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     {
         mainBtn   = new JButton(label, icon);
         
-        mainBtn.setBorder(new EmptyBorder(1,4,1,4));
+        if(!overRideButtonBorder)mainBtn.setBorder(new EmptyBorder(1,4,1,4));
         mainBtn.setIconTextGap(1); 
         mainBtn.setMargin(new Insets(0,0,0,0));
         mainBtn.getModel().addChangeListener(this);
@@ -175,7 +176,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         }
 
         arrowBtn = new JButton(dropDownArrow);
-        arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
+        //if(!overRideButtonBorder)arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);
         arrowBtn.setMargin(new Insets(3, 3, 3, 3));
@@ -191,7 +192,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         
         raisedBorder = new SoftBevelBorder(BevelBorder.RAISED);
         emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
-        setBorder(emptyBorder);
+        if(!overRideButtonBorder)setBorder(emptyBorder);
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
         {
@@ -208,7 +209,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             @Override
             public void mouseExited(MouseEvent e) 
             {
-                setBorder(emptyBorder);
+               if(!overRideButtonBorder) setBorder(emptyBorder);
                 UICacheManager.displayStatusBarText(null);
                 repaint();
                 
@@ -233,7 +234,10 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
 
           mainBtn.addActionListener(this);
     }
-    
+    public void setOverrideBorder(boolean val, Border border){
+        overRideButtonBorder = val;
+        if(val)setBorder(border);
+    }
     /**
      * Adds listener.
      * @param al the action listener

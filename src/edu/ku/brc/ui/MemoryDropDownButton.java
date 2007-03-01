@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.border.Border;
 
 /**
  *
@@ -60,13 +61,18 @@ public class MemoryDropDownButton extends DropDownButton
     			fixMainButtonState();
     		}
         };
-        
+         if(overRideButtonBorder)mainBtn.setBorder(raisedBorder);
         lastChosen.addPropertyChangeListener(changeListener);
     }
 
+//    public void setOverrideBorder(Border border){
+//        overRideButtonBorder = border;
+//        if(overRideButtonBorder)mainBtn.setBorder(overRideButtonBorder);
+//    }
 	@Override
 	public void actionPerformed(ActionEvent ae)
 	{
+        //if(overRideButtonBorder)mainBtn.setBorder(raisedBorder);
 		Object source = ae.getSource();
         if(source == arrowBtn)
         {
@@ -80,16 +86,20 @@ public class MemoryDropDownButton extends DropDownButton
         	lastChosen.removePropertyChangeListener("enabled",changeListener);
             lastChosen = (JMenuItem)source;
             lastChosen.addPropertyChangeListener("enabled",changeListener);
+            fixMainButtonState();
         }
         else
         {
         	lastChosen.doClick();
         }
+        //if(overRideButtonBorder!=null)mainBtn.setBorder(overRideButtonBorder);
 	}
 	
 	protected void fixMainButtonState()
 	{
 		System.out.println("Fixing button state");
 		mainBtn.setEnabled(lastChosen.isEnabled());
+        mainBtn.setText(lastChosen.getText());
+        //if(overRideButtonBorder)mainBtn.setBorder(raisedBorder);
 	}
 }
