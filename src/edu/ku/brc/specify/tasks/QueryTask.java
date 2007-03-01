@@ -30,6 +30,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.specify.tasks.subpane.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -113,6 +114,7 @@ public class QueryTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         return starterPane = new SQLQueryPane(name, this, false, false);
+        //return starterPane = new QueryBldrPane(name, this);
     }
 
     /*

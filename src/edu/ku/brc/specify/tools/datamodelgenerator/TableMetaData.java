@@ -13,18 +13,24 @@ public class TableMetaData
     private String className;
     private Display display;
     private boolean isForWorkBench;
+    private boolean isForQuery;
 
 	/**
 	 * @param id
 	 * @param className
 	 * @param display
 	 */
-	public TableMetaData(final String id, final String className, final Display display, final boolean isForWorkBench)
+	public TableMetaData(final String  id, 
+                         final String  className, 
+                         final Display display, 
+                         final boolean isForWorkBench,
+                         final boolean isForQuery)
 	{
-		this.id = id;
-        this.className = className;
-        this.display = display;
+		this.id             = id;
+        this.className      = className;
+        this.display        = display;
         this.isForWorkBench = isForWorkBench;
+        this.isForQuery     = isForQuery;
 	}
 
 	public String getId()
@@ -50,6 +56,11 @@ public class TableMetaData
     public boolean isForWorkBench()
     {
         return isForWorkBench;
+    }
+
+    public boolean isForQuery()
+    {
+        return isForQuery;
     }
 
 }

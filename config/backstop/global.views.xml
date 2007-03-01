@@ -192,8 +192,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Workbench Form.]]></desc>
             <altviews>
-                <altview name="Workbench View" viewdef="Workbench" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Workbench Edit" viewdef="Workbench" label="Edit" mode="edit" validated="true"/>                
+                <!-- <altview name="Workbench View" viewdef="Workbench" label="View" mode="view" validated="false" default="true"/> -->        
+                <altview name="Workbench Edit" viewdef="Workbench" label="Edit" mode="edit" validated="true" default="true"/>                
             </altviews>
         </view>
     </views>

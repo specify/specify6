@@ -7,6 +7,7 @@
 		<attribute name="lazy" property="lazy"/>
 		<attribute name="view" property="defaultView"/>
 		<attribute name="workbench" property="workbench"/>
+		<attribute name="query" property="query"/>
 		<addDefaults/>
 	</element>
 </info>

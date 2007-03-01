@@ -38,6 +38,7 @@ import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -111,6 +112,7 @@ public class DBTableIdMgr
 					String  tablename      = tableNode.attributeValue("table");
 					int     tableId        = Integer.parseInt(tableNode.attributeValue("tableid"));
                     boolean isWorkbench    = XMLHelper.getAttr(tableNode, "workbench", false);
+                    boolean isQuery        = XMLHelper.getAttr(tableNode, "query", false);
 
 					String primaryKeyField = null;
                     
@@ -137,6 +139,7 @@ public class DBTableIdMgr
                     
                     TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
                     tblInfo.setForWorkBench(isWorkbench);
+                    tblInfo.setForQuery(isQuery);
 					instance.hash.put(tableId, tblInfo); 
                     
                     Element idElement = (Element)tableNode.selectSingleNode("id");
@@ -155,7 +158,7 @@ public class DBTableIdMgr
                         tblInfo.setDataObjFormatter(getAttr(displayElement, "dataobjformatter", null));
                         tblInfo.setSearchDialog(getAttr(displayElement,     "searchdlg", null));
                         tblInfo.setNewObjDialog(getAttr(displayElement,     "newobjdlg", null));
-                        tblInfo.setObjTitle(getAttr(displayElement,         "objtitle", ""));
+                        
                     } else
                     {
                         tblInfo.setDefaultFormName("");
@@ -163,7 +166,6 @@ public class DBTableIdMgr
                         tblInfo.setDataObjFormatter("");
                         tblInfo.setSearchDialog("");
                         tblInfo.setNewObjDialog("");
-                        tblInfo.setObjTitle("");  
                     }
                     
                     for (Iterator<?> ir = tableNode.elementIterator("relationship"); ir.hasNext();)
@@ -462,6 +464,7 @@ public class DBTableIdMgr
 		protected String   primaryKeyName;
 		protected Class<?> classObj;
         protected boolean  isForWorkBench   = false;
+        protected boolean  isForQuery       = false;
         
         // ID Fields
         protected String idColumnName;
@@ -497,6 +500,7 @@ public class DBTableIdMgr
 				log.error("Trying to find class: " + className + " but class was not found");
 				e.printStackTrace();
 			}
+            this.objTitle = UICacheManager.getResourceString(this.classObj.getSimpleName());
             relationships = new HashSet<TableRelationship>();
             fields        = new Vector<FieldInfo>();
 		}
@@ -598,11 +602,6 @@ public class DBTableIdMgr
             return objTitle;
         }
 
-        public void setObjTitle(String objTitle)
-        {
-            this.objTitle = objTitle;
-        }
-
         public String getSearchDialog()
         {
             return searchDialog;
@@ -651,6 +650,16 @@ public class DBTableIdMgr
         public void setForWorkBench(boolean isForWorkBench)
         {
             this.isForWorkBench = isForWorkBench;
+        }
+
+        public boolean isForQuery()
+        {
+            return isForQuery;
+        }
+
+        public void setForQuery(boolean isForQuery)
+        {
+            this.isForQuery = isForQuery;
         }
 
         public TableRelationship getRelationshipByName(String name)

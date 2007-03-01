@@ -278,7 +278,7 @@ public class WorkbenchTask extends BaseTask
                             null, // className,
                             null, // idFieldName,
                             true, // isEdit,
-                            0);
+                            MultiView.HIDE_SAVE_BTN);
                     editorDlg.setData(wbt);
                     editorDlg.setModal(true);
                     
@@ -445,7 +445,7 @@ public class WorkbenchTask extends BaseTask
                         null, // className,
                         null, // idFieldName,
                         true, // isEdit,
-                        0);
+                        MultiView.HIDE_SAVE_BTN);
                 
                 editorDlg.setData(workbench);
                 editorDlg.setModal(true);

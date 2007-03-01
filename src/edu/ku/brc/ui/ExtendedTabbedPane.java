@@ -11,7 +11,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
 
 /**
@@ -66,8 +65,6 @@ public class ExtendedTabbedPane extends JTabbedPane
      */
     protected void init()
     {
-        //setBackground(Color.WHITE);
-        
         itself = this;
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {

@@ -147,7 +147,8 @@ public class DatamodelGenerator
                          element.attributeValue("lazy"), 
                          tableMetaData.getId(), 
                          tableMetaData.getDisplay(),
-                         tableMetaData.isForWorkBench());
+                         tableMetaData.isForWorkBench(),
+                         tableMetaData.isForQuery());
 
 	}
 
@@ -468,10 +469,11 @@ public class DatamodelGenerator
 					String defaultView  = element.attributeValue("view");
                     String id           = element.attributeValue("id");
                     boolean isWorkBench = XMLHelper.getAttr(element, "workbench", false);
+                    boolean isQuery     = XMLHelper.getAttr(element, "query", false);
                     
 					log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
- 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isWorkBench));
+ 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isWorkBench, isQuery));
                     
 				}
                 

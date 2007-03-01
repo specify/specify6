@@ -17,7 +17,6 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +28,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,7 +48,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.FieldInfo;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -59,7 +56,12 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.subpane.FieldNameRenderer;
+import edu.ku.brc.specify.tasks.subpane.TableFieldPair;
+import edu.ku.brc.specify.tasks.subpane.TableNameRenderer;
+import edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace;
 import edu.ku.brc.ui.IconManager;
+
 
 /**
  * This panel is enables a user to make all the columns from a data file (XLS) to our Database schema.
@@ -73,7 +75,7 @@ import edu.ku.brc.ui.IconManager;
  */
 public class ColumnMapperPanel extends JPanel
 {
-    protected Vector<DBTableIdMgr.TableInfo> tableInfoList = new Vector<DBTableIdMgr.TableInfo>();
+    protected Vector<TableInfo>              tableInfoList = new Vector<TableInfo>();
     protected JList                          fieldList;
     protected JList                          tableList;
     protected JButton                        mapToBtn;
@@ -87,7 +89,7 @@ public class ColumnMapperPanel extends JPanel
     protected JPanel                         dataFileColPanel;
     protected Vector<FieldMappingPanel>      mappingItems = new Vector<FieldMappingPanel>();
     protected int                            currentInx = -1;
-    protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableField>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableField>>();
+    protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>>();
     
     protected DataFileInfo                   dataFileInfo;
     
@@ -123,9 +125,9 @@ public class ColumnMapperPanel extends JPanel
         {
             if (ti.isForWorkBench() && StringUtils.isNotEmpty(ti.toString()))
             {
-                tableInfoList.add(ti); 
+                tableInfoList.add(new TableInfo(ti)); 
                 
-                Vector<TableField> fldList = new Vector<TableField>();
+                Vector<TableFieldPair> fldList = new Vector<TableFieldPair>();
                 if (ti.getClassObj() == Geography.class)
                 {
                     addGeographyFields(ti, fldList);
@@ -144,7 +146,7 @@ public class ColumnMapperPanel extends JPanel
                     {
                         if (skipHash.get(fi.getColumn()) == null)
                         {
-                            fldList.add(new TableField(ti, fi));
+                            fldList.add(new TableFieldPair(ti, fi));
                         }
                     }
                 }
@@ -163,13 +165,12 @@ public class ColumnMapperPanel extends JPanel
         builder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  JLabel.CENTER), cc.xy(5, 5));
         
         dataFileColPanel = new JPanel();
-        //leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         dataFileColPanel.setLayout(new NavBoxLayoutManager(0,2));
         JScrollPane sp = new JScrollPane(dataFileColPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         builder.add(sp, cc.xywh(1, 3, 1, 5));
         
         tableList = new JList(tableInfoList);
-        tableList.setCellRenderer(new TableNameRenderer());
+        tableList.setCellRenderer(new TableNameRenderer(IconManager.IconSize.Std24));
         
         sp = new JScrollPane(tableList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         builder.add(sp, cc.xy(5, 3));
@@ -178,7 +179,7 @@ public class ColumnMapperPanel extends JPanel
             public void valueChanged(ListSelectionEvent e)
             {
                 fieldList.setSelectedIndex(-1);
-                fillFieldList((DBTableIdMgr.TableInfo)tableList.getSelectedValue());
+                fillFieldList(((TableInfo)tableList.getSelectedValue()).getTableInfo());
             }
         });
         
@@ -195,7 +196,7 @@ public class ColumnMapperPanel extends JPanel
         builder.add(arrowBuilder.getPanel(), cc.xy(3, 7));
         
         fieldList = new JList(new DefaultListModel());
-        fieldList.setCellRenderer(new FieldNameRenderer());
+        fieldList.setCellRenderer(new FieldNameRenderer(IconManager.IconSize.Std16));
         
         sp = new JScrollPane(fieldList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         builder.add(sp, cc.xy(5, 7));
@@ -209,8 +210,8 @@ public class ColumnMapperPanel extends JPanel
         
         fieldList.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e) {
-                TableField fieldItem = (TableField)fieldList.getSelectedValue();
-                if (fieldItem != null && !fieldItem.isMapped() && currentInx != -1 && e.getClickCount() == 2)
+                TableFieldPair fieldItem = (TableFieldPair)fieldList.getSelectedValue();
+                if (fieldItem != null && !fieldItem.isInUse() && currentInx != -1 && e.getClickCount() == 2)
                 {
                     map();
                     
@@ -298,8 +299,8 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void updateEnabledState()
     {
-        TableField fieldItem = (TableField)fieldList.getSelectedValue();
-        mapToBtn.setEnabled(fieldItem != null && !fieldItem.isMapped() && currentInx > -1);
+        TableFieldPair fieldItem = (TableFieldPair)fieldList.getSelectedValue();
+        mapToBtn.setEnabled(fieldItem != null && !fieldItem.isInUse() && currentInx > -1);
         
         unmapBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped());
         
@@ -348,7 +349,7 @@ public class ColumnMapperPanel extends JPanel
     {
         DefaultListModel model = (DefaultListModel)fieldList.getModel();
         model.clear();
-        for (TableField fi : tableFieldList.get(tableInfo))
+        for (TableFieldPair fi : tableFieldList.get(tableInfo))
         {
             model.addElement(fi);
         }
@@ -360,17 +361,17 @@ public class ColumnMapperPanel extends JPanel
     protected void map()
     {
         unmap(mappingItems.get(currentInx)); // unmap a current one if there is one
-        map((TableField)fieldList.getSelectedValue());
+        map((TableFieldPair)fieldList.getSelectedValue());
 
     }
     
     /**
-     * Mapp the FieldMappingPanel to the TableField.
+     * Mapp the FieldMappingPanel to the TableFieldPair.
      * @param tblField
      */
-    protected void map(final TableField tblField)
+    protected void map(final TableFieldPair tblField)
     {
-        tblField.setMapped(true);
+        tblField.setInUse(true);
         FieldMappingPanel fmp = mappingItems.get(currentInx);
         fmp.setIcon(IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
         fmp.setTableField(tblField);
@@ -385,10 +386,10 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void unmap(FieldMappingPanel fmp)
     {
-        TableField fieldInfo = fmp.getTableField();
+        TableFieldPair fieldInfo = fmp.getTableField();
          if (fieldInfo != null)
          {
-             fieldInfo.setMapped(false);
+             fieldInfo.setInUse(false);
              fmp.setTableField(null);
              fmp.setIcon(null);
          }
@@ -398,18 +399,18 @@ public class ColumnMapperPanel extends JPanel
     }
     
     /**
-     * CReates "fake" TableField entries for mapping tree items.
+     * CReates "fake" TableFieldPair entries for mapping tree items.
      * XXX Here we need to go get the TreeDefItems.
      * @param tableinfo x
      * @param fields x
      * @param fieldNames x
      */
-    protected void addFields(final DBTableIdMgr.TableInfo tableInfo, final Vector<TableField> fields, final String[] fieldNames)
+    protected void addFields(final DBTableIdMgr.TableInfo tableInfo, final Vector<TableFieldPair> fields, final String[] fieldNames)
     {
         for (String fieldName : fieldNames)
         {
             DBTableIdMgr.FieldInfo fieldInfo = DBTableIdMgr.createFieldInfo(tableInfo, fieldName, fieldName, "java.lang.String", 64);
-            fields.add(new TableField(tableInfo, fieldInfo));
+            fields.add(new TableFieldPair(tableInfo, fieldInfo));
         }
     }
     
@@ -418,7 +419,7 @@ public class ColumnMapperPanel extends JPanel
      * @param tableinfo the table info
      * @param fields the list to be filled in 
      */
-    protected void addGeographyFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableField> fields)
+    protected void addGeographyFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
     {
         addFields(tableinfo, fields, new String[] {"Continent", "Country", "State", "County"});
 
@@ -429,7 +430,7 @@ public class ColumnMapperPanel extends JPanel
      * @param tableinfo the table info
      * @param fields the list to be filled in 
      */
-    protected void addTaxonFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableField> fields)
+    protected void addTaxonFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
     {
         addFields(tableinfo, fields, new String[] {"Species", "Genius"});
     }
@@ -439,7 +440,7 @@ public class ColumnMapperPanel extends JPanel
      * @param tableinfo the table info
      * @param fields the list to be filled in 
      */
-    protected void addLocationFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableField> fields)
+    protected void addLocationFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
     {
         addFields(tableinfo, fields, new String[] {"Building", "Floor", "Room", "Rack", "Shelf"});  
     }
@@ -465,13 +466,13 @@ public class ColumnMapperPanel extends JPanel
      * TRies to find a Field Name in our Data Model from the column name of the data.
      * @param ti the TableInfo Object used to get all the mappable field names for the table.
      * @param fieldName the field name
-     * @return TableField object representing the mappable Field for a Table
+     * @return TableFieldPair object representing the mappable Field for a Table
      */
-    protected TableField getFieldInfo(final DBTableIdMgr.TableInfo ti, final String fieldName)
+    protected TableFieldPair getFieldInfo(final DBTableIdMgr.TableInfo ti, final String fieldName)
     {
         if (ti != null)
         {
-            for (TableField tblField : tableFieldList.get(ti))
+            for (TableFieldPair tblField : tableFieldList.get(ti))
             {
                 //System.out.println("["+tblField.getFieldInfo().getColumn().toLowerCase()+"]["+fieldName.toLowerCase()+"]");
                 String tblFieldName = tblField.getFieldInfo().getColumn().toLowerCase();
@@ -494,7 +495,7 @@ public class ColumnMapperPanel extends JPanel
         for (FieldMappingPanel fmp : mappingItems)
         {
             String     fieldName     = StringUtils.deleteWhitespace(fmp.getFieldName().toLowerCase());
-            TableField tblField      = null;
+            TableFieldPair tblField      = null;
             
             if (fieldName.indexOf("date") > -1)
             {
@@ -561,7 +562,7 @@ public class ColumnMapperPanel extends JPanel
         for (FieldMappingPanel fmp : mappingItems)
         {
             DataFileInfo.ColumnInfo colInfo  = fmp.getColInfo();
-            TableField              tblField = fmp.getTableField();
+            TableFieldPair              tblField = fmp.getTableField();
             
             if (fmp.isMapped())
             {
@@ -583,138 +584,7 @@ public class ColumnMapperPanel extends JPanel
         
         return wbTemplate;
     }
-    
-    //------------------------------------------------------------
-    //- Renderer for the Table List
-    //------------------------------------------------------------
-    
-    class TableNameRenderer extends DefaultListCellRenderer 
-    {
-        public TableNameRenderer() 
-        {
-            // Don't paint behind the component
-                this.setOpaque(false);
-            }
 
-        public Component getListCellRendererComponent(JList list,
-                                                      Object value,   // value to display
-                                                      int index,      // cell index
-                                                      boolean iss,    // is the cell selected
-                                                      boolean chf)    // the list and the cell have the focus
-        {
-            super.getListCellRendererComponent(list, value, index, iss, chf);
-
-            DBTableIdMgr.TableInfo ti = (DBTableIdMgr.TableInfo)value;
-            setIcon(IconManager.getIcon(ti.getObjTitle(), IconManager.IconSize.Std24));
-            
-            if (iss) {
-                setOpaque(true);
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-                list.setSelectedIndex(index);
-
-            } else {
-                this.setOpaque(false);
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-
-            setText(ti.getObjTitle());
-            return this;
-        }
-    }
-
-    //------------------------------------------------------------
-    //- Renderer for the Field List
-    //------------------------------------------------------------
-    class FieldNameRenderer extends DefaultListCellRenderer 
-    {
-        public FieldNameRenderer() 
-        {
-            // Don't paint behind the component
-                this.setOpaque(false);
-            }
-
-        public Component getListCellRendererComponent(JList list,
-                                                      Object value,   // value to display
-                                                      int index,      // cell index
-                                                      boolean iss,    // is the cell selected
-                                                      boolean chf)    // the list and the cell have the focus
-        {
-            super.getListCellRendererComponent(list, value, index, iss, chf);
-
-            TableField tblField = (TableField)value;
-            setIcon(tblField.isMapped() ? checkMark : blankIcon16);
-            
-            if (iss) {
-                setOpaque(true);
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-                list.setSelectedIndex(index);
-
-            } else {
-                this.setOpaque(false);
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-
-            setText(tblField.getFieldInfo().getColumn());
-            return this;
-        }
-    }
-
-    //------------------------------------------------------------
-    //- Data Object for the Field List
-    //------------------------------------------------------------
-    class TableField implements Comparable<TableField>
-    {
-        protected DBTableIdMgr.TableInfo tableinfo;
-        protected DBTableIdMgr.FieldInfo fieldInfo;
-        protected boolean                isMapped = false;
-        
-        public TableField(DBTableIdMgr.TableInfo tableinfo, FieldInfo fieldInfo)
-        {
-            super();
-            this.tableinfo = tableinfo;
-            this.fieldInfo = fieldInfo;
-        }
-
-        public boolean isMapped()
-        {
-            return isMapped;
-        }
-
-        public void setMapped(boolean isMapped)
-        {
-            this.isMapped = isMapped;
-        }
-
-        public DBTableIdMgr.FieldInfo getFieldInfo()
-        {
-            return fieldInfo;
-        }
-
-        public DBTableIdMgr.TableInfo getTableinfo()
-        {
-            return tableinfo;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        public String toString()
-        {
-            return fieldInfo.toString();// + (isMapped ? "  (Mapped)" : "");
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(TableField obj)
-        {
-            return fieldInfo.toString().compareTo(obj.fieldInfo.toString());
-        }       
-    }
     
     //------------------------------------------------------------
     //- The Panel that is used to display each Data File Column
@@ -732,7 +602,7 @@ public class ColumnMapperPanel extends JPanel
         protected JLabel    iconLabel;
         protected ImageIcon icon;
         
-        protected TableField              tblField = null;
+        protected TableFieldPair              tblField = null;
         protected DataFileInfo.ColumnInfo colInfo = null;
         
         protected FieldMappingPanel thisItem;
@@ -785,7 +655,7 @@ public class ColumnMapperPanel extends JPanel
             });
         }
         
-        public void setTableField(final TableField fieldInfoArg) // make this FieldInfo
+        public void setTableField(final TableFieldPair fieldInfoArg) // make this FieldInfo
         {
             tblField = fieldInfoArg;
             mappingLabel.setText(fieldInfoArg != null ? fieldInfoArg.getFieldInfo().getColumn() : noMappingStr);
@@ -821,7 +691,7 @@ public class ColumnMapperPanel extends JPanel
         /**
          * @return the TableInfo object
          */
-        public TableField getTableField()
+        public TableFieldPair getTableField()
         {
             return tblField;
         }
@@ -844,7 +714,51 @@ public class ColumnMapperPanel extends JPanel
         {
             return fieldLabel.getText();
         }
+    }
+    
+    //------------------------------------------------------------------
+    //-- 
+    //------------------------------------------------------------------
+    class TableInfo implements TableNameRendererIFace, Comparable<TableInfo>
+    {
+        protected DBTableIdMgr.TableInfo tableInfo;
         
+        public TableInfo(final DBTableIdMgr.TableInfo tableInfo)
+        {
+            this.tableInfo = tableInfo;
+        }
+
+        /**
+         * @return the tableInfo
+         */
+        public DBTableIdMgr.TableInfo getTableInfo()
+        {
+            return tableInfo;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace#getIconName()
+         */
+        public String getIconName()
+        {
+            return tableInfo.getClassObj().getSimpleName();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace#getTitle()
+         */
+        public String getTitle()
+        {
+            return tableInfo.toString();
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(TableInfo obj)
+        {
+            return tableInfo.toString().compareTo(obj.tableInfo.toString());
+        }
     }
     
 }

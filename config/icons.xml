@@ -16,7 +16,7 @@
     <icon name="Statistics" file="stats.gif" sizes="all"/>
     <icon name="Pie_Chart"  file="piechart.gif" sizes="all"/>
     <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
-    <icon name="Record_Set" file="recordset.gif" sizes="all"/>
+    <icon name="Record_Set" file="bundle.png" sizes="all"/>
     <icon name="Export"     file="recordset.gif" sizes="all"/>
     <icon name="Agent"            file="agent.gif" sizes="all"/>
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
@@ -40,14 +40,19 @@
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
     <icon name="Search"      file="search.gif" sizes="all"/>
     <icon name="LocalityMapper" file="map.png" sizes="all"/>
-    <icon name="PrepType"    file="preptype.png" sizes="all"/>
-    <icon name="Loan"        file="loans.gif" sizes="all"/>
-    <icon name="SystemSetup" file="system.png" sizes="all"/>
-    <icon name="Stratigraphy" file="strat_icon32x32.gif" sizes="all"/>
+    <icon name="PrepType"      file="preptype.png" sizes="all"/>
+    <icon name="Loan"          file="loans.gif" sizes="all"/>
+    <icon name="SystemSetup"   file="system.png" sizes="all"/>
+    <icon name="Stratigraphy"  file="strat_icon32x32.gif" sizes="all"/>
     <icon name="CollectingTrip" file="canoe.png" sizes="all"/>
-    <icon name="Collection"   file="package.png" sizes="all"/>
+    <icon name="Collection"    file="package.png" sizes="all"/>
     <icon name="CatalogSeries" file="package.png" sizes="all"/>
-    
+    <icon name="Journal"       file="journal.png" sizes="all"/>
+    <icon name="CollectionObjectCitation" file="citation.png" sizes="all"/>
+    <icon name="Address"       file="address.png" sizes="all"/>
+    <icon name="ReferenceWork" file="referencework.png" sizes="all"/>
+    <icon name="Author"        file="author.png" sizes="all"/>
+
     <!-- Aliases -->
     <icon name="Accession Agent"   alias="AccessionAgent"/>
     <icon name="Attachment"        alias="unknown"/>
@@ -57,6 +62,12 @@
     <icon name="Preparation"       alias="cs"/>
     <icon name="Preparation Type"  alias="PrepType"/>
     <icon name="CatalogSeries"     alias="Collection"/>
+    <icon name="DeterminationCitation" alias="CollectionObjectCitation"/>
+    <icon name="LocalityCitation"  alias="CollectionObjectCitation"/>
+    <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
+    <icon name="DeterminationCitaton" alias="CollectionObjectCitation"/>
+    <icon name="LocalityCitation"  alias="CollectionObjectCitation"/>
+    <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
     
     <icon name="DiGIR" alias="CollectionObject"/>
     
@@ -70,7 +81,9 @@
     <icon name="UpArrow"       file="up.png"            sizes="16"/>
     <icon name="DownArrow"     file="down.png"          sizes="16"/>
     <icon name="BlankIcon"     file="blank32x32.png"    sizes="all"/>
-
+    <icon name="PlusSign"      file="plussign.gif"      sizes="16"/>
+    <icon name="GrayDot"       file="graydot.gif"      sizes="16"/>
+    
 
     <icon name="FirstRec" file="first.gif" sizes="NonStd"/>
     <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>

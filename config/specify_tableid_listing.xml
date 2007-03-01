@@ -10,7 +10,7 @@
     
 <tableIdMapping>
     <database>
-        <table name="edu.ku.brc.specify.datamodel.Accession" id="7" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.Accession" id="7" workbench="true" query="true">
             <display objtitle="Accession" view="Accession" dataobjformatter="" uiformatter="AccessionNumber" searchdlg="AccessionSearch" newobjdlg="AccessionDisplay"/>        
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAgent" id="12">
@@ -34,48 +34,48 @@
         <table name="edu.ku.brc.specify.datamodel.AttachmentMetadata" id="42"/>
         <table name="edu.ku.brc.specify.datamodel.AttributeDef" id="16"/>
         <table name="edu.ku.brc.specify.datamodel.Author" id="17"/>
-        <table name="edu.ku.brc.specify.datamodel.Borrow" id="18"/>
+        <table name="edu.ku.brc.specify.datamodel.Borrow" id="18" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowAgent" id="19"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" id="20"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" id="21"/>
-        <table name="edu.ku.brc.specify.datamodel.CatalogSeries" id="23" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.CatalogSeries" id="23" workbench="true" query="true">
             <display objtitle="Collection"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.CollectingEvent" id="10" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.CollectingEvent" id="10" workbench="true" query="true">
             <display view="CollectingEvent" objtitle="Collecting Event" />
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" id="25"/>
-        <table name="edu.ku.brc.specify.datamodel.CollectingTrip" id="87" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.CollectingTrip" id="87" workbench="true" query="true">
             <display objtitle="Collecting Trip"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjDef" id="26"/>
-        <table name="edu.ku.brc.specify.datamodel.CollectionObject" id="1" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.CollectionObject" id="1" workbench="true" query="true">
             <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="" newobjdlg=""/>        
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" id="28"/>
-        <table name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" id="29"/>
+        <table name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" id="29" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.Collector" id="30"/>
         <table name="edu.ku.brc.specify.datamodel.Container" id="31"/>
         <table name="edu.ku.brc.specify.datamodel.ContainerItem" id="32"/>
         <table name="edu.ku.brc.specify.datamodel.DataType" id="33"/>
-        <table name="edu.ku.brc.specify.datamodel.Deaccession" id="34"/>
+        <table name="edu.ku.brc.specify.datamodel.Deaccession" id="34" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.DeaccessionAgent" id="35"/>
         <table name="edu.ku.brc.specify.datamodel.DeaccessionPreparation" id="36"/>
-        <table name="edu.ku.brc.specify.datamodel.Determination" id="9" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.Determination" id="9" workbench="true" query="true">
             <display objtitle="Determination" view="Determination" dataobjformatter="Determination"  searchdlg="DeterminationSearch" newobjdlg="DeterminationDisplay"/>            
         </table>
-        <table name="edu.ku.brc.specify.datamodel.DeterminationCitation" id="38"/>
+        <table name="edu.ku.brc.specify.datamodel.DeterminationCitation" id="38" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" id="88">
             <display objtitle="Determination Status" view="DeterminationStatus" searchdlg="" newobjdlg=""/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" id="39"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" id="40"/>
-        <table name="edu.ku.brc.specify.datamodel.Geography" id="3" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.Geography" id="3" workbench="true" query="true">
             <display objtitle="Geography" view="Geography" dataobjformatter="Geography" searchdlg="GeographySearch" newobjdlg="GeographyDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeographyTreeDef" id="44"/>
         <table name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" id="45"/>
-        <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" id="46" workbench="false">
+        <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" id="46" workbench="false"  query="true">
             <display objtitle="Geologic Time Period"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" id="47"/>
@@ -84,51 +84,51 @@
         <table name="edu.ku.brc.specify.datamodel.InfoRequest" id="50">
             <display view="InfoRequest"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Journal" id="51">
+        <table name="edu.ku.brc.specify.datamodel.Journal" id="51" query="true">
             <display view="Journal"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Loan" id="52">
+        <table name="edu.ku.brc.specify.datamodel.Loan" id="52" query="true">
         	<display view="Loan"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanAgent" id="53"/>
         <table name="edu.ku.brc.specify.datamodel.LoanPhysicalObject" id="54"/>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" id="55"/>
-        <table name="edu.ku.brc.specify.datamodel.Locality" id="2" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.Locality" id="2" workbench="true" query="true">
             <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.LocalityCitation" id="57"/>
-        <table name="edu.ku.brc.specify.datamodel.Location" id="58"/>
+        <table name="edu.ku.brc.specify.datamodel.LocalityCitation" id="57" query="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Location" id="58" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.LocationTreeDef" id="59"/>
         <table name="edu.ku.brc.specify.datamodel.LocationTreeDefItem" id="60"/>
         <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" id="61"/>
-        <table name="edu.ku.brc.specify.datamodel.Permit" id="6">
+        <table name="edu.ku.brc.specify.datamodel.Permit" id="6" query="true">
             <display objtitle="Permit" view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.PickList" id="500">
             <display view="PickList"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.PickListItem" id="501"/>
-        <table name="edu.ku.brc.specify.datamodel.Preparation" id="63" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.Preparation" id="63" workbench="true" query="true">
             <display objtitle="Preparation" view="Preparation" newobjdlg="PreparationDisplay"/>
 		</table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" id="64"/>
-        <table name="edu.ku.brc.specify.datamodel.PrepType" id="65">
+        <table name="edu.ku.brc.specify.datamodel.PrepType" id="65" query="true">
             <display objtitle="Preparation Type" view="PrepType" searchdlg="PrepTypeSearch" newobjdlg="PrepTypeDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Project" id="66"/>
         <table name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" id="67"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSet" id="68"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSetItem" id="502"/>
-        <table name="edu.ku.brc.specify.datamodel.ReferenceWork" id="69">
+        <table name="edu.ku.brc.specify.datamodel.ReferenceWork" id="69" query="true">
             <display view="ReferenceWork"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" id="70"/>
+        <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" id="70" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.Shipment" id="71"/>
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" id="72"/>
-        <table name="edu.ku.brc.specify.datamodel.Stratigraphy" id="73" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.Stratigraphy" id="73" workbench="true" query="true">
             <display view="Stratigraphy" objtitle="Stratigraphy"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Taxon" id="4" workbench="true">
+        <table name="edu.ku.brc.specify.datamodel.Taxon" id="4" workbench="true" query="true">
             <display objtitle="Taxon" view="Taxon" dataobjformatter="Taxon" searchdlg="TaxonSearch" newobjdlg="TaxonDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" id="75"/>

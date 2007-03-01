@@ -159,8 +159,10 @@ public class LabelsTask extends BaseTask
                          final RecordSetIFace recordSet, 
                          final Taskable originatingTask)
     {
+        int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent((LabelsPane)starterPane) : -1;
+        
         LabelsPane labelsPane;
-        if (starterPane == null)
+        if (startPaneIndex == -1)
         {
             labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this);
             addSubPaneToMgr(labelsPane);
@@ -168,12 +170,11 @@ public class LabelsTask extends BaseTask
         } else
         {
             labelsPane  = (LabelsPane)starterPane;
-            SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
             
-            starterPane = null;
+            SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
         }
         labelsPane.createReport(labelName, recordSet);
-
+        starterPane = null;
     }
 
     /**
