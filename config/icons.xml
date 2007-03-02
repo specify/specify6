@@ -69,7 +69,7 @@
     <icon name="LocalityCitation"  alias="CollectionObjectCitation"/>
     <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
     
-    <icon name="DiGIR" alias="CollectionObject"/>
+    <icon name="DiGIR"             file="DigirShovel.png"/>
     
     <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
 
