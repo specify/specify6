@@ -6,18 +6,18 @@
  */
 package edu.ku.brc.specify.tools;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.helpers.XMLHelper;
 
 /**
  *
@@ -35,7 +35,7 @@ public class SpecifySchemaGenerator
         // do nothing
     }
     
-    public synchronized void generateSchema(String hostname, String databaseName) throws SQLException, IOException
+    public synchronized void generateSchema(String hostname, String databaseName) throws SQLException
     {
         String dbDriver = "com.mysql.jdbc.Driver";
         String dbDialect = "org.hibernate.dialect.MySQLDialect";
@@ -46,8 +46,8 @@ public class SpecifySchemaGenerator
         dbConn = DBConnection.createInstance(dbDriver, dbDialect, databaseName, connStr, user, passwd);
 
         dropAndCreateDB(databaseName);
-        writeHibPropFile(dbDriver,dbDialect,hostname,databaseName,user,passwd);
-        doGenSchema();
+        //writeHibPropFile(dbDriver,dbDialect,hostname,databaseName,user,passwd);
+        doGenSchema(dbDriver,dbDialect,hostname,databaseName,user,passwd);
     }
     
     protected void dropAndCreateDB(final String dbName) throws SQLException
@@ -74,50 +74,85 @@ public class SpecifySchemaGenerator
         connection.close();
     }
     
-    protected void writeHibPropFile(final String dbDriver,
-    								final String dbDialect,
-    								final String hostname,
-    								final String databaseName,
-    								final String user,
-    								final String passwd) throws IOException
+//    protected void writeHibPropFile(final String dbDriver,
+//    								final String dbDialect,
+//    								final String hostname,
+//    								final String databaseName,
+//    								final String user,
+//    								final String passwd) throws IOException
+//    {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("hibernate.connection.driver_class="+dbDriver+"\n");
+//        sb.append("hibernate.dialect="+dbDialect+"\n");
+//        sb.append("hibernate.connection.url=jdbc:mysql://"+hostname+"/"+databaseName+"\n");
+//        sb.append("hibernate.connection.username="+user+"\n");
+//        sb.append("hibernate.connection.password="+passwd+"\n");
+//        sb.append("hibernate.max_fetch_depth=3\n");
+//        sb.append("hibernate.connection.pool_size=5\n");
+//        sb.append("hibernate.bytecode.use_reflection_optimizer=true\n");
+//
+//        XMLHelper.setContents(new File("src" + File.separator + "hibernate.properties"), sb.toString());
+//    }
+    
+    protected Properties getHibernateProperties(final String dbDriver,
+                                                final String dbDialect,
+                                                final String hostname,
+                                                final String databaseName,
+                                                final String user,
+                                                final String passwd)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("hibernate.connection.driver_class="+dbDriver+"\n");
-        sb.append("hibernate.dialect="+dbDialect+"\n");
-        sb.append("hibernate.connection.url=jdbc:mysql://"+hostname+"/"+databaseName+"\n");
-        sb.append("hibernate.connection.username="+user+"\n");
-        sb.append("hibernate.connection.password="+passwd+"\n");
-        sb.append("hibernate.max_fetch_depth=3\n");
-        sb.append("hibernate.connection.pool_size=5\n");
-        sb.append("hibernate.bytecode.use_reflection_optimizer=true\n");
-
-        XMLHelper.setContents(new File("src" + File.separator + "hibernate.properties"), sb.toString());
+        Properties props = new Properties();
+        props.setProperty("hibernate.connection.driver_class", dbDriver);
+        props.setProperty("hibernate.dialect",                 dbDialect);
+        props.setProperty("hibernate.connection.url",          "jdbc:mysql://"+hostname+"/"+databaseName);
+        props.setProperty("hibernate.connection.username",     user);
+        props.setProperty("hibernate.connection.password",     passwd);
+        props.setProperty("hibernate.max_fetch_depth",         "3");
+        props.setProperty("hibernate.connection.pool_size",    "5");
+        props.setProperty("hibernate.format_sql",              "true");
+        
+        return props;
     }
 
-    protected void doGenSchema()
+    protected void doGenSchema(final String dbDriver,
+                                final String dbDialect,
+                                final String hostname,
+                                final String databaseName,
+                                final String user,
+                                final String passwd)
     {
-        // Let Apache Ant do all of the real work
-        Project project = new Project();
-        project.init();
-        project.setBasedir(".");
-        ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
-        project.executeTarget("genschema");
-
-//        // if we can get this stuff working, we can get rid of using Ant for this purpose
-//        Configuration hibCfg = new AnnotationConfiguration();
-//        hibCfg.configure();
-//        SchemaExport schemaExporter = new SchemaExport(hibCfg);
-//        log.error("Generating schema");
-//        schemaExporter.execute(false, true, false, false);
-//        List<?> exceptions = schemaExporter.getExceptions();
-//        for (Object o: exceptions)
-//        {
-//            Exception e = (Exception)o;
-//            log.error(e.getMessage());
-//        }
+//        // Let Apache Ant do all of the real work
+//        Project project = new Project();
+//        project.init();
+//        project.setBasedir(".");
+//        ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
+//        project.executeTarget("genschema");
+//
+        // if we can get this stuff working, we can get rid of using Ant for this purpose
+        Configuration hibCfg = new AnnotationConfiguration();
+        hibCfg.setProperties(getHibernateProperties(dbDriver, dbDialect, hostname, databaseName, user, passwd));
+        hibCfg.configure();
+        
+        SchemaExport schemaExporter = new SchemaExport(hibCfg);
+        schemaExporter.setDelimiter(";");
+        
+        log.error("Generating schema");
+        boolean printToScreen = false;
+        boolean exportToDb    = true;
+        log.info("Creating the DB schema");
+        schemaExporter.create(printToScreen, exportToDb);
+        log.info("DB schema creation completed");
+        
+        // log the exceptions that occurred
+        List<?> exceptions = schemaExporter.getExceptions();
+        for (Object o: exceptions)
+        {
+            Exception e = (Exception)o;
+            log.error(e.getMessage());
+        }
     }
     
-    public static void main(String[] args) throws SQLException, IOException
+    public static void main(String[] args) throws SQLException
     {
         SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
         schemaGen.generateSchema("localhost", "testdb");

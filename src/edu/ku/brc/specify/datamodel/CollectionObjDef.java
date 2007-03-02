@@ -244,7 +244,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      */
     @ManyToOne
     @Cascade( {CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="GeographyTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
+    @JoinColumn(name="GeographyTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeographyTreeDef getGeographyTreeDef() {
         return this.geographyTreeDef;
     }
@@ -258,7 +258,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      */
     @ManyToOne
     @Cascade( {CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="GeologicTimePeriodTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
+    @JoinColumn(name="GeologicTimePeriodTreeDefID", unique=true, nullable=false, insertable=true, updatable=true)
     public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
         return this.geologicTimePeriodTreeDef;
     }
@@ -272,7 +272,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      */
     @ManyToOne
     @Cascade( {CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="LocationTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
+    @JoinColumn(name="LocationTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
     public LocationTreeDef getLocationTreeDef() {
         return this.locationTreeDef;
     }

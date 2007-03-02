@@ -60,7 +60,6 @@ import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchTemplate;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -1296,7 +1295,7 @@ public class BuildSampleDatabase
         
     }
     
-    protected void build() throws SQLException, IOException
+    protected void build() throws SQLException
     {
         UICacheManager.setAppName("Specify");
         
@@ -1588,7 +1587,7 @@ public class BuildSampleDatabase
         return properties;
     }
     
-    public static void main(String[] args) throws SQLException, IOException
+    public static void main(String[] args) throws SQLException
     {
         final BuildSampleDatabase builder = new BuildSampleDatabase();
         builder.build();

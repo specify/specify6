@@ -521,6 +521,7 @@ public class CreateTestDatabases
 
             GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
             GeographyTreeDefItem state   = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
+            @SuppressWarnings("unused")
             GeographyTreeDefItem county  = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
 
             // Create the planet Earth.

@@ -167,7 +167,11 @@ public class HibernateUtil {
             config.setProperty("hibernate.connection.url", connection);
             config.setProperty("hibernate.dialect", dbConn.getDialect());
             config.setProperty("hibernate.connection.driver_class", driver);
-            config.setProperty("hibernate.bytecode.use_reflection_optimizer", "true");
+            
+            // commenting out this line to avoid use of CGLIB
+            // see http://www.hibernate.org/hib_docs/v3/reference/en/html/session-configuration.html
+            // search for hibernate.cglib.use_reflection_optimizer (which is the old name of the prop)
+            //config.setProperty("hibernate.bytecode.use_reflection_optimizer", "true");
         }  
         else 
         {
@@ -391,12 +395,12 @@ public class HibernateUtil {
             }
             //log.info("getSession ["+Thread.currentThread().hashCode()+"]["+s.hashCode()+"]");
             return s;
-        } else
-        {
-            Session s = getSessionFactory().getCurrentSession();
-            //log.info("getSession ["+Thread.currentThread().hashCode()+"]["+s.hashCode()+"]");
-            return s;
         }
+        
+        // else
+        Session s = getSessionFactory().getCurrentSession();
+        //log.info("getSession ["+Thread.currentThread().hashCode()+"]["+s.hashCode()+"]");
+        return s;
     }
 
     /**
@@ -566,11 +570,11 @@ public class HibernateUtil {
                 session.disconnect();
             }
             return session;
-        } else
-        {
-            log.error("Using CMT/JTA, intercepted not supported disconnect call.");
-            return null;
         }
+        
+        // else
+        log.error("Using CMT/JTA, intercepted not supported disconnect call.");
+        return null;
     }
 
     /**

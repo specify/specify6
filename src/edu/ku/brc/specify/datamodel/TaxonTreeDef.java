@@ -26,7 +26,7 @@ import java.util.Set;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name="taxontreedef")
-@org.hibernate.annotations.Proxy(lazy = false)
+//@org.hibernate.annotations.Proxy(lazy = false)
 public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
 	protected Long				    taxonTreeDefId;

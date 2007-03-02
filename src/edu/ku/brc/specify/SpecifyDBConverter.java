@@ -34,14 +34,12 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
-import edu.ku.brc.specify.conversion.TableStats;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -117,7 +115,7 @@ public class SpecifyDBConverter
         logger = LogManager.getLogger(edu.ku.brc.dbsupport.HibernateUtil.class);
         if (logger != null)
         {
-            logger.setLevel(Level.ERROR);
+            logger.setLevel(Level.INFO);
             System.out.println("Setting "+ logger.getName() + " to " + logger.getLevel());
         }
         
@@ -354,7 +352,7 @@ public class SpecifyDBConverter
                     criteria.add(Restrictions.eq("firstName", firstName));
                     
                     Agent userAgent = null;
-                    List list = criteria.list();
+                    List<?> list = criteria.list();
                     if (list != null && list.size() == 1)
                     {
                         userAgent = (Agent)list.get(0);
