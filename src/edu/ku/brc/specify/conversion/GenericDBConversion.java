@@ -1156,18 +1156,24 @@ public class GenericDBConversion
                 taxonomyTypeIDToTaxonomyName.put(taxonomyTypeID, taxonomyTypeName);
 
                 /*
-                CollectionObjDef
-                +-----------------------------+-------------+------+-----+---------+----------------+
-                | CollectionObjDefID          | int(11)     | NO   | PRI |         | auto_increment |
-                | Name                        | varchar(64) | YES  |     |         |                |
-                | Discipline                  | varchar(64) | YES  |     |         |                |
-                | DataTypeID                  | int(11)     | YES  | MUL |         |                |
-                | SpecifyUserID               | int(11)     | YES  | MUL |         |                |
-                | GeographyTreeDefID          | int(11)     | YES  | MUL |         |                |
-                | GeologicTimePeriodTreeDefID | int(11)     | YES  | MUL |         |                |
-                | LocationTreeDefID           | int(11)     | YES  | MUL |         |                |
-                +-----------------------------+-------------+------+-----+---------+----------------+
-                */
+                 * CollectionObjDef
+                 * +-----------------------------+-------------+------+-----+---------+----------------+
+                 * | Field                       | Type        | Null | Key | Default | Extra          |
+                 * +-----------------------------+-------------+------+-----+---------+----------------+
+                 * | CollectionObjDefID          | bigint(20)  | NO   | PRI | NULL    | auto_increment | 
+                 * | TimestampCreated            | datetime    | NO   |     |         |                | 
+                 * | TimestampModified           | datetime    | NO   |     |         |                | 
+                 * | LastEditedBy                | varchar(50) | YES  |     | NULL    |                | 
+                 * | Name                        | varchar(64) | YES  |     | NULL    |                | 
+                 * | Discipline                  | varchar(64) | YES  |     | NULL    |                | 
+                 * | GeologicTimePeriodTreeDefID | bigint(20)  | NO   | UNI |         |                | 
+                 * | TaxonTreeDefID              | bigint(20)  | NO   | MUL |         |                | 
+                 * | SpecifyUserID               | bigint(20)  | NO   | MUL |         |                | 
+                 * | LocationTreeDefID           | bigint(20)  | NO   | MUL |         |                | 
+                 * | GeographyTreeDefID          | bigint(20)  | NO   | MUL |         |                | 
+                 * | DataTypeID                  | bigint(20)  | NO   | MUL |         |                | 
+                 * +-----------------------------+-------------+------+-----+---------+----------------+
+                 */
 
                 // use the old CollectionObjectTypeName as the new CollectionObjDef name
 
@@ -1255,7 +1261,7 @@ public class GenericDBConversion
         } catch (SQLException e)
         {
             e.printStackTrace();
-            log.error(e);
+            log.error(e); 
             throw new RuntimeException(e);
         }
         return false;

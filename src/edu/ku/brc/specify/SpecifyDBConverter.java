@@ -454,6 +454,32 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     frame.incOverall();
                 }
+                
+                frame.setDesc("Converting Geography");
+                log.info("Converting Geography");
+                boolean doGeography = false;
+                if (!databaseName.startsWith("accessions") && (doGeography || doAll))
+                {
+                    GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
+                    conversion.convertGeography(treeDef);
+                    frame.incOverall();
+                    conversion.convertLocality();
+                    frame.incOverall();
+                } else
+                {
+                    frame.incOverall();
+                    frame.incOverall();
+                }
+
+                frame.setDesc("Creating Location");
+                log.info("Creating Location");
+                boolean doLocation = false;
+                if( doLocation || doAll )
+                {
+                    conversion.buildSampleLocationTreeDef();
+                }
+                frame.incOverall();
+                
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
                 boolean doTaxonomy = false;
@@ -503,31 +529,6 @@ public class SpecifyDBConverter
                     }
                     
                 	conversion.copyTaxonRecords();
-                }
-                frame.incOverall();
-
-                frame.setDesc("Converting Geography");
-                log.info("Converting Geography");
-                boolean doGeography = false;
-                if (!databaseName.startsWith("accessions") && (doGeography || doAll))
-                {
-                	GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
-                	conversion.convertGeography(treeDef);
-                    frame.incOverall();
-                	conversion.convertLocality();
-                    frame.incOverall();
-                } else
-                {
-                    frame.incOverall();
-                    frame.incOverall();
-                }
-
-                frame.setDesc("Creating Location");
-                log.info("Creating Location");
-                boolean doLocation = false;
-                if( doLocation || doAll )
-                {
-                	conversion.buildSampleLocationTreeDef();
                 }
                 frame.incOverall();
 
