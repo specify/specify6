@@ -28,20 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -49,7 +35,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
 
@@ -73,9 +73,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	protected Integer						nodeNumber;
 	protected Integer						highestChildNodeNumber;
 	protected String						standard;
-	protected Float							start;
+	protected Float							startPeriod;
 	protected Float							startUncertainty;
-	protected Float							end;
+	protected Float							endPeriod;
 	protected Float							endUncertainty;
 	private GeologicTimePeriodTreeDef		definition;
 	private GeologicTimePeriodTreeDefItem	definitionItem;
@@ -109,9 +109,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		nodeNumber = null;
 		highestChildNodeNumber = null;
 		standard = null;
-		start = null;
+		startPeriod = null;
 		startUncertainty = null;
-		end = null;
+		endPeriod = null;
 		endUncertainty = null;
 		definition = null;
 		definitionItem = null;
@@ -248,15 +248,15 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.standard = standard;
 	}
 
-    @Column(name = "End", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-	public Float getEnd()
+    @Column(name = "EndPeriod", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+	public Float getEndPeriod()
 	{
-		return end;
+		return endPeriod;
 	}
 
-	public void setEnd(Float end)
+	public void setEndPeriod(Float end)
 	{
-		this.end = end;
+		this.endPeriod = end;
 	}
 
     @Column(name = "EndUncertainty", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
@@ -270,15 +270,15 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.endUncertainty = endUncertainty;
 	}
 
-    @Column(name = "Start", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-	public Float getStart()
+    @Column(name = "StartPeriod", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+	public Float getStartPeriod()
 	{
-		return start;
+		return startPeriod;
 	}
 
-	public void setStart(Float start)
+	public void setStartPeriod(Float start)
 	{
-		this.start = start;
+		this.startPeriod = start;
 	}
 
     @Column(name = "AgeStartUncertainty", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
@@ -295,7 +295,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
 	public String getRemarks()
 	{
 		return this.remarks;

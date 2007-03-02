@@ -28,12 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -43,11 +49,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -308,7 +309,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
      */
-    @Column(name = "VerbatimLocality", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "VerbatimLocality", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getVerbatimLocality() {
         return this.verbatimLocality;
     }
@@ -332,7 +333,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).
      */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
     public String getRemarks() {
         return this.remarks;
     }

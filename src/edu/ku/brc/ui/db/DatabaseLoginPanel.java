@@ -230,7 +230,7 @@ public class DatabaseLoginPanel extends JPanel
         moreBtn       = new JCheckBox("More", forwardImgIcon); // XXX I18N
 
         // Extra
-        dbDrivers = DatabaseDriverInfo.loadDatabaseDriverInfo();
+        dbDrivers    = DatabaseDriverInfo.getDriversList();
         dbDriverCBX  = new JComboBox(dbDrivers);
         if (dbDrivers.size() > 0)
         {

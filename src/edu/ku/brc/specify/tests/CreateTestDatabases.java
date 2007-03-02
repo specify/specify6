@@ -68,6 +68,7 @@ import org.hibernate.criterion.Restrictions;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
@@ -1675,13 +1676,19 @@ public class CreateTestDatabases
     public void main(String args[]) throws Exception
     {
         SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-        schemaGen.generateSchema("localhost", "testfish");
+
         
         String databaseName = "testfish";
-        String userName = "rods";
-        String password = "rods";
+        String userName     = "rods";
+        String password     = "rods";
+        String hostname     = "localhost";
 
-        if (UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, userName, password))
+        DatabaseDriverInfo dbdriverInfo = DatabaseDriverInfo.getDriver("MySQL");
+        schemaGen.generateSchema(dbdriverInfo, hostname, databaseName, userName, password);
+
+        if (UIHelper.tryLogin(dbdriverInfo.getDriverClassName(), 
+                              dbdriverInfo.getDialectClassName(), 
+                              databaseName, dbdriverInfo.getConnectionStr(hostname, databaseName), userName, password))
         {
             createSingleDiscipline("Fish","fish");
 

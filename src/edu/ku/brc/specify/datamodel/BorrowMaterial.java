@@ -28,6 +28,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,9 +42,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
 
@@ -174,7 +174,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Notes concerning the return of the material
      */
-    @Column(name = "OutComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "OutComments", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getOutComments() {
         return this.outComments;
     }
@@ -186,7 +186,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Notes concerning the receipt of the material
      */
-    @Column(name = "InComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "InComments", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getInComments() {
         return this.inComments;
     }

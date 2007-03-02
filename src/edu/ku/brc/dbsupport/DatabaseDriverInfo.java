@@ -17,6 +17,7 @@ package edu.ku.brc.dbsupport;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.FileInputStream;
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -42,13 +43,15 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
 {
     private static final Logger log  = Logger.getLogger(DatabaseDriverInfo.class);
     
+    protected static WeakReference<Vector<DatabaseDriverInfo>> driverList = null;
+    
     protected String name;
     protected String driver;
     protected String dialect;
     protected String connectionFormat;
     
     /**
-     * Constructor
+     * Constructor.
      * @param name name of the driver (human readable)
      * @param driver the JDBC Driver Class name
      * @param dialect the Hibernate Dialect Class Name
@@ -63,17 +66,17 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     }
     
     /**
-     * Returns the connection string
+     * Returns the connection string.
      * @param server the server (machine name or IP addr)
      * @param database the database name
      * @return the full connection string
      */
     public String getConnectionStr(final String server, final String database)
     {
-        if (StringUtils.isEmpty(database))
-        {
-            return null;
-        }
+        //if (StringUtils.isEmpty(database))
+        //{
+        //    return null;
+        //}
         
         String connStr = connectionFormat.replaceFirst("DATABASE", database);
         return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr;
@@ -124,12 +127,49 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         return name.compareTo(obj.name);
     }
     
+    //-------------------------------------------------------------------------------
+    //-- Static Methods
+    //-------------------------------------------------------------------------------
+    
+    /**
+     * Returns a driver by name from the list of drivers.
+     * @param drvName the name of the driver
+     * @param dbDrivers the driver list
+     * @return the driver info
+     */
+    public static  DatabaseDriverInfo getDriver(final String drvName)
+    {
+        int inx = Collections.binarySearch(getDriversList(), new DatabaseDriverInfo(drvName, null, null, null));
+        return inx == -1 ? null : getDriversList().get(inx);
+    }
+    
+    /**
+     * Reads in the disciplines file (is loaded when the class is loaded).
+     * @return Reads in the disciplines file (is loaded when the class is loaded).
+     */
+    public static Vector<DatabaseDriverInfo> getDriversList()
+    {
+        Vector<DatabaseDriverInfo> list = null;
+        
+        if (driverList != null)
+        {
+            list = driverList.get();
+        }
+        
+        if (list == null)
+        {
+            driverList = new WeakReference<Vector<DatabaseDriverInfo>>(loadDatabaseDriverInfo());
+        }
+        
+        return driverList.get();
+    }
+    
     /**
      * Reads the Form Registry. The forms are loaded when needed and onlu one ViewSet can be the "core" ViewSet which is where most of the forms
      * reside. This could also be thought of as the "default" set of forms.
      * @return the list of info objects
      */
-    public static Vector<DatabaseDriverInfo> loadDatabaseDriverInfo()
+    protected static Vector<DatabaseDriverInfo> loadDatabaseDriverInfo()
     {
         Vector<DatabaseDriverInfo> dbDrivers = new Vector<DatabaseDriverInfo>();
         try

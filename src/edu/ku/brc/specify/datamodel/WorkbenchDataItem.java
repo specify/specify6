@@ -117,7 +117,7 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @Column(name = "CellData", length = 65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "CellData", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getCellData()
     {
         return this.cellData;

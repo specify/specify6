@@ -749,9 +749,9 @@ public class DataBuilder
         {
             parent.getChildren().add(gtp);
         }
-        gtp.setStart(startMYA);
+        gtp.setStartPeriod(startMYA);
         gtp.setStartUncertainty(0.0f);
-        gtp.setEnd(endMYA);
+        gtp.setEndPeriod(endMYA);
         gtp.setEndUncertainty(0.0f);
         GeologicTimePeriodTreeDefItem defItem = gtptd.getDefItemByRank(rankId);
         if (defItem != null)

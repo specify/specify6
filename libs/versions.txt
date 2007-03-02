@@ -18,12 +18,13 @@ Hibernate								3.2.1 GA
    jta									dist w/ hibernate
 ant										1.7.0
 	ant-launcher						dist w/ ant
+Derby                                   10.2.2.0
 commons-httpclient						3.0.1
 commons-lang							2.2
 commons-jexl							1.1
 commons-beanutils (all-in-one JAR)		1.7.0
 commons-betwixt							0.8
-commons-io								1.2
+commons-io								1.3.1
 jaxen									1.1
 forms (JGoodies)						1.0.7
 looks (JGoodies)						2.1.1

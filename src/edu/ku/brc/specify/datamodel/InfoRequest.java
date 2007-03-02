@@ -28,12 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Calendar;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -42,11 +48,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Calendar;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -108,8 +109,8 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
         {
             Connection conn = DBConnection.getInstance().createConnection();
             Statement  stmt = conn.createStatement();
-            ResultSet  rs   = stmt.executeQuery("select number from inforequest order by Number desc limit 0,1");
-            if (rs.first())
+            ResultSet  rs   = stmt.executeQuery("select number from inforequest order by Number desc");
+            if (rs.next())
             {
                 String numStr = rs.getString(1);
                 int num = Integer.parseInt(numStr.substring(6,8));
@@ -238,7 +239,8 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
     public String getRemarks() {
         return this.remarks;
     }

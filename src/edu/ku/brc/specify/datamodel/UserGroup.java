@@ -28,19 +28,19 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-
-import java.util.HashSet;
-import java.util.Set;
 
 
 
@@ -155,7 +155,8 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
     public String getRemarks() {
         return this.remarks;
     }

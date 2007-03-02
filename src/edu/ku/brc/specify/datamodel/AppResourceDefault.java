@@ -28,6 +28,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,10 +44,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
 

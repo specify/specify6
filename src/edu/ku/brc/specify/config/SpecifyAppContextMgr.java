@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -86,9 +85,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
 {
     private static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
 
-    protected Hashtable<String, Discipline>    hash            = new Hashtable<String, Discipline>();
     protected List<AppResourceDefault>         appResourceList = new ArrayList<AppResourceDefault>();
     protected Hashtable<String, List<ViewSet>> viewSetHash     = new Hashtable<String, List<ViewSet>>();
+    
 
     protected String         databaseName          = null;
     protected String         userName              = null;
@@ -104,7 +103,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public SpecifyAppContextMgr()
     {
-        init();
+        // no-op
     }
 
     /* (non-Javadoc)
@@ -117,71 +116,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
 
     /**
-     * Reads in the disciplines file (is loaded when the class is loaded).
-     */
-    protected void init()
-    {
-        try
-        {
-            Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("disciplines.xml")));
-            if (root != null)
-            {
-                for ( Iterator i = root.elementIterator( "discipline" ); i.hasNext(); )
-                {
-                    Element disciplineNode = (Element) i.next();
-
-                    String name   = getAttr(disciplineNode, "name", null);
-                    String title  = getAttr(disciplineNode, "title", null);
-                    int    type   = getAttr(disciplineNode, "type", 0);
-
-                    Discipline discipline = new Discipline(name, title, type);
-                    hash.put(discipline.getName(), discipline);
-                }
-            } else
-            {
-                String msg = "The root element for the document was null!";
-                log.error(msg);
-                throw new ConfigurationException(msg);
-            }
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
-        }
-
-    }
-
-    /**
      * Returns the backstop ViewSetMgr.
      * @return the backstop ViewSetMgr.
      */
     public ViewSetMgr getBackstopViewSetMgr()
     {
         return backStopViewSetMgr;
-    }
-    
-    /**
-     * Returns the list of Discipline objects.
-     * @return the list of Discipline objects
-     */
-    public List<Discipline> getDisciplines()
-    {
-        List<Discipline> list = new ArrayList<Discipline>();
-        for (Enumeration<Discipline> e=hash.elements();e.hasMoreElements();)
-        {
-            list.add(e.nextElement());
-        }
-        return list;
-    }
-
-    /**
-     * Returns a Discipline by name.
-     * @param name the name of the discipline
-     * @return a Discipline by name.
-     */
-    public Discipline getDiscipline(final String name)
-    {
-        return hash.get(name);
     }
 
     /**
@@ -200,24 +140,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public String getUserName()
     {
         return userName;
-    }
-
-    /**
-     * Returns a Discipline by title.
-     * @param title the title of the discipline
-     * @return a Discipline by title.
-     */
-    public Discipline getByTitle(final String title)
-    {
-        for (Enumeration<Discipline> e=hash.elements();e.hasMoreElements();)
-        {
-            Discipline dis = e.nextElement();
-            if (title.equals(dis.getTitle()))
-            {
-                return dis;
-            }
-        }
-        return null;
     }
     
     /**
@@ -270,16 +192,25 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             if (askToSelect)
             {
-                String queryStr = "select distinct cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
-                List list = sessionArg.getDataList(queryStr);
-                if (list.size() == 1)
+                String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                Hashtable<String, CatalogSeries> catSeriesHash = new Hashtable<String, CatalogSeries>();
+                for (Object obj : sessionArg.getDataList(queryStr))
                 {
-                    catSeries.add((CatalogSeries)list.get(0));
+                    CatalogSeries cs = (CatalogSeries)obj;
+                    catSeriesHash.put(cs.getSeriesName(), cs);
+                }
+                
+                if (catSeriesHash.size() == 1)
+                {
+                    catSeries.add(catSeriesHash.elements().nextElement());
                     CatalogSeries.setCurrentCatalogSeries(catSeries);
 
-                } else if (list.size() > 0)
+                } else if (catSeriesHash.size() > 0)
                 {
                     //Collections.sort(list); // Why doesn't this work?
+                    
+                    List<CatalogSeries> list = new Vector<CatalogSeries>();
+                    list.addAll(catSeriesHash.values());
 
                     CheckboxChooserDlg<CatalogSeries> dlg = new CheckboxChooserDlg<CatalogSeries>((Frame)UICacheManager.get(UICacheManager.FRAME),
                                                                                                   "Choose a Catalog Series", 
@@ -548,8 +479,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
      */
-    public CONTEXT_STATUS setContext(final String databaseName,
-                                     final String userName,
+    public CONTEXT_STATUS setContext(final String  databaseName,
+                                     final String  userName,
                                      final boolean startingOver)
     {
         log.debug("setting context - databaseName: " + databaseName + " userName: " + userName);
@@ -594,7 +525,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             currentStatus  = currentStatus == CONTEXT_STATUS.Initial ? CONTEXT_STATUS.Error : CONTEXT_STATUS.Ignore;
             return currentStatus;
         }
-        Hashtable<String, String> disciplineHash = new Hashtable<String, String>();
+        Hashtable<String, String> dispHash = new Hashtable<String, String>();
         
         String userType = user.getUserType();
         log.debug("User["+user.getName()+"] Type["+userType+"]");
@@ -620,7 +551,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             CatalogSeries.getCurrentCatalogSeries().clear();
             CollectionObjDef.setCurrentCollectionObjDef(null);
             
-            disciplineHash.put(userType, userType);
+            dispHash.put(userType, userType);
             
         } else
         {
@@ -652,7 +583,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     log.debug("  ColObjDef["+cod.getName()+"]");
                     
-                    disciplineHash.put(cod.getDiscipline(), cod.getDiscipline());
+                    dispHash.put(cod.getDiscipline(), cod.getDiscipline());
                     
                     AppResourceDefault appResourceDef = find(appResDefList, user, cs, cod);
                     if (appResourceDef != null)
@@ -670,7 +601,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
 
         // Add Backstop for Discipline and User Type
-        for (String discipline : disciplineHash.keySet())
+        for (String discipline : dispHash.keySet())
         {
             log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
 
@@ -694,7 +625,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
 
         // Add Backstop for just the Discipline
-        for (String discipline : disciplineHash.keySet())
+        for (String discipline : dispHash.keySet())
         {
             log.debug("***** Trying add Backstop for ["+discipline+"]");
             File dir = XMLHelper.getConfigDir(discipline);

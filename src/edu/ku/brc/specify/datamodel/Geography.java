@@ -28,20 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -49,7 +35,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
@@ -183,7 +183,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.name = name;
 	}
 
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
 	public String getRemarks()
 	{
 		return remarks;

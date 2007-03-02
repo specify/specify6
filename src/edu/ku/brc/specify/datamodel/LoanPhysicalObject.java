@@ -28,6 +28,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,9 +44,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
 
@@ -166,7 +166,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Comments on item when loaned
      */
-    @Column(name = "OutComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "OutComments", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getOutComments() {
         return this.outComments;
     }
@@ -178,7 +178,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      *      * Comments on item when returned
      */
-    @Column(name = "InComments", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "InComments", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getInComments() {
         return this.inComments;
     }

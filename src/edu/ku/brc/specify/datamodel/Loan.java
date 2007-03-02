@@ -28,6 +28,13 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,6 +42,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -44,13 +52,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -145,8 +146,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
                 if (conn != null)
                 {
                     Statement  stmt = conn.createStatement();
-                    ResultSet  rs   = stmt.executeQuery("select LoanNumber from loan order by LoanNumber desc limit 0,1");
-                    if (rs.first())
+                    ResultSet  rs   = stmt.executeQuery("select LoanNumber from loan order by LoanNumber desc");
+                    if (rs.next())
                     {
                         String numStr = rs.getString(1);
                         int num = Integer.parseInt(numStr.substring(6,8));
@@ -282,7 +283,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -294,7 +296,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Text1", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -306,7 +308,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Text2", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }

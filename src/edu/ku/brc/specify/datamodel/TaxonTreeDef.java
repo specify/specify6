@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,9 +21,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @SuppressWarnings("serial")
 @Entity
@@ -107,7 +107,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		this.name = name;
 	}
 
-    @Column(name="Remarks", length=65535, unique=false, nullable=true, insertable=true, updatable=true)
+    @Column(name="Remarks", length=255, unique=false, nullable=true, insertable=true, updatable=true)
 	public String getRemarks()
 	{
 		return this.remarks;

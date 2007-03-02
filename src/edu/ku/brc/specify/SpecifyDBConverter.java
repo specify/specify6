@@ -34,6 +34,7 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
@@ -82,7 +83,7 @@ public class SpecifyDBConverter
     protected static int                        currentIndex      = 0;
     protected static Hashtable<String, String>  old2NewDBNames    = null;
     
-    protected static ProgressFrame         frame             = null;
+    protected static ProgressFrame              frame             = null;
 
     /**
      * Constructor.
@@ -144,7 +145,7 @@ public class SpecifyDBConverter
                 {
                     old2NewDBNames.put(names[i], names[++i]);
                 }
-                UICacheManager.setAppName("SpecifyDBConverter");
+                UICacheManager.setAppName("Specify");
                 
                 dbNamesToConvert = selectedDBsToConvert(names);
                 currentIndex = 0;
@@ -188,7 +189,7 @@ public class SpecifyDBConverter
             worker.start();
         }
     }
-    
+
     /**
      * Convert old Database to New 
      * @param oldDatabaseName name of an old database
@@ -207,19 +208,25 @@ public class SpecifyDBConverter
         
         Properties initPrefs = BuildSampleDatabase.getInitializePrefs(databaseName);
         
-        String userName = initPrefs.getProperty("initializer.username", "rods");
-        String password = initPrefs.getProperty("initializer.password", "rods");
-        String server   = initPrefs.getProperty("initializer.server", "jdbc:mysql://localhost/");
-        String dialect  = initPrefs.getProperty("initializer.dialect", "org.hibernate.dialect.MySQLDialect");
-        String driver   = initPrefs.getProperty("initializer.driver",   "com.mysql.jdbc.Driver");
-        if (!server.endsWith("/"))
+        String userName     = initPrefs.getProperty("initializer.username", "rods");
+        String password     = initPrefs.getProperty("initializer.password", "rods");
+        String driverName   = initPrefs.getProperty("initializer.driver",   "MySQL");
+        String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
+
+        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
+        if (driverInfo == null)
         {
-            server = server + "/";
+            throw new RuntimeException("COuldn't find driver by name ["+driverInfo+"] in driver list.");
         }
         
         // This will log us in and return true/false
         // This will connect without specifying a DB, which allows us to create the DB
-        if (!UIHelper.tryLogin(driver, dialect, databaseName, server + databaseName, userName, password))
+        if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                driverInfo.getDialectClassName(), 
+                databaseName, 
+                driverInfo.getConnectionStr(databaseHost, databaseName), 
+                userName, 
+                password))
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
@@ -227,8 +234,10 @@ public class SpecifyDBConverter
         DataBuilder.setSession(HibernateUtil.getNewSession());
         
         System.out.println("Preparing new database");
-        SpecifySchemaGenerator schGen = new SpecifySchemaGenerator();
-        schGen.generateSchema("localhost", databaseName);
+        
+        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
+        schemaGen.generateSchema(driverInfo, databaseHost, databaseName, userName, password);
+        
         System.out.println("Preparing new database: completed");
         
         // This will log us in and return true/false

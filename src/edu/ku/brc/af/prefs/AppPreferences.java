@@ -123,7 +123,7 @@ public class AppPreferences
      */
     public static void shutdownRemotePrefs()
     {
-        // Flush and shutdown the Local Store
+        // Flush and shutdown the Remote Store
         try
         {
             if (instanceRemote != null)
@@ -132,6 +132,27 @@ public class AppPreferences
                 instanceRemote.listeners.clear();
                 instanceRemote.appPrefsIO = null;
                 instanceRemote = null;
+            }
+        } catch (BackingStoreException ex)
+        {
+           log.error(ex); 
+        }
+    }
+
+    /**
+     * Flushes the values and then terminates the Prefs so a new one can be created.
+     */
+    public static void shutdownLocalPrefs()
+    {
+        // Flush and shutdown the Local Store
+        try
+        {
+            if (instanceLocal != null)
+            {
+                instanceLocal.flush();
+                instanceLocal.listeners.clear();
+                instanceLocal.appPrefsIO = null;
+                instanceLocal = null;
             }
         } catch (BackingStoreException ex)
         {

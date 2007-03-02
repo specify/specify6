@@ -881,7 +881,7 @@ public class GenericDBConversion
      */
     public String getStandardDisciplineName(final String name)
     {
-        Discipline discipline = appContextMgr.getDiscipline(name.toLowerCase());
+        Discipline discipline = Discipline.getDiscipline(name.toLowerCase());
         if (discipline != null)
         {
             return discipline.getName();
@@ -1135,7 +1135,7 @@ public class GenericDBConversion
                     continue;
                 }
                 
-                Discipline discipline = appContextMgr.getDiscipline(disciplineName);
+                Discipline discipline = Discipline.getDiscipline(disciplineName);
                 if (discipline == null)
                 {
                     log.error("**** discipline couldn't be found in our Discipline lookup in SpecifyAppContextMgr["+disciplineName+"]");
@@ -4233,8 +4233,8 @@ public class GenericDBConversion
     	allTime.setRankId(0);
     	allTime.setName("Time");
         allTime.setFullName("Time");
-    	allTime.setStart(100000f);
-    	allTime.setEnd(0f);
+    	allTime.setStartPeriod(100000f);
+    	allTime.setEndPeriod(0f);
     	allTime.setEndUncertainty(0f);
     	allTime.setTimestampCreated(now);
     	allTime.setTimestampModified(now);
@@ -4279,9 +4279,9 @@ public class GenericDBConversion
     		gtp.setDefinitionItem(defItem);
     		gtp.setRankId(rank);
     		gtp.setDefinition(treeDef);
-    		gtp.setStart(lower);
+    		gtp.setStartPeriod(lower);
     		gtp.setStartUncertainty(lError);
-    		gtp.setEnd(upper);
+    		gtp.setEndPeriod(upper);
     		gtp.setEndUncertainty(uError);
     		gtp.setStandard(std);
     		gtp.setRemarks(rem);
@@ -4354,11 +4354,11 @@ public class GenericDBConversion
     		return false;
     	}
     	
-    	Float startParent = parent.getStart();
-    	Float endParent   = parent.getEnd();
+    	Float startParent = parent.getStartPeriod();
+    	Float endParent   = parent.getEndPeriod();
     	
-    	Float startChild  = child.getStart();
-    	Float endChild    = child.getEnd();
+    	Float startChild  = child.getStartPeriod();
+    	Float endChild    = child.getEndPeriod();
     	
     	// remember, the numbers represent MYA (millions of yrs AGO)
     	// so the logic seems a little backwards
@@ -4489,12 +4489,12 @@ public class GenericDBConversion
         }
     }
 
-    protected void duplicateAddress(final Connection newDBConn, final Long oldId, final Long newId)
+    protected void duplicateAddress(final Connection newDBConnArg, final Long oldId, final Long newId)
     {
         log.info("Duplicating ["+oldId+"] to ["+newId+"]");
         
         List<String> agentAddrFieldNames = new ArrayList<String>();
-        getFieldNamesFromSchema(newDBConn, "address", agentAddrFieldNames);
+        getFieldNamesFromSchema(newDBConnArg, "address", agentAddrFieldNames);
         String fieldList = buildSelectFieldList(agentAddrFieldNames, "address");
         log.info(fieldList);
         
@@ -4510,7 +4510,7 @@ public class GenericDBConversion
         
         try
         {
-            Statement stmt = newDBConn.createStatement();
+            Statement stmt = newDBConnArg.createStatement();
             ResultSet rs   = stmt.executeQuery(sqlStr.toString());
     
             if (rs.last())
@@ -4543,7 +4543,7 @@ public class GenericDBConversion
             rs.close();
             stmt.close();
             
-            Statement updateStatement = newDBConn.createStatement();
+            Statement updateStatement = newDBConnArg.createStatement();
             updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
             if (true)
             {
@@ -5059,10 +5059,10 @@ public class GenericDBConversion
            long recordCnt = 0;
            while (rs.next())
            {
-               byte agentType      = rs.getByte((int)agentTypeInx);
+               byte agentType      = rs.getByte(agentTypeInx);
                long agentAddressId = rs.getLong(1);
-               long agentId        = rs.getLong((int)agentIdInx);
-               long addrId         = rs.getLong((int)addrIdInx);
+               long agentId        = rs.getLong(agentIdInx);
+               long addrId         = rs.getLong(addrIdInx);
                
                AddressInfo addrInfo     = addressHash.get(addrId);
                AgentInfo   agentInfo    = agentHash.get(agentId);  
@@ -5307,7 +5307,7 @@ public class GenericDBConversion
            while (rs.next())
            {
                long agentAddressId = rs.getLong(1);
-               long agentId        = rs.getLong((int)agentIdInx);
+               long agentId        = rs.getLong(agentIdInx);
                
                AgentInfo   agentInfo    = agentHash.get(agentId);  
                

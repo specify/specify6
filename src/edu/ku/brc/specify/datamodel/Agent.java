@@ -28,12 +28,18 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -42,12 +48,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
-
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.HashSet;
-import java.util.Set;
 
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.AttachmentUtils;
@@ -116,7 +116,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<BorrowAgent>              borrowAgents;
     protected Set<AccessionAgent>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
-    protected Set<SpecifyUser> specifyUsers;
+    protected Set<SpecifyUser>              specifyUsers;
     
     protected static Agent                  currentUserAgent = null;
 
@@ -365,7 +365,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     /**
      *
      */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
     public String getRemarks() {
         return this.remarks;
     }

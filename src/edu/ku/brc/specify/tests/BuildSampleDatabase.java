@@ -58,12 +58,16 @@ import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchMappingItem;
 import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchTemplate;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -71,15 +75,32 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.ButtonBarFactory;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
+
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -155,13 +176,14 @@ public class BuildSampleDatabase
     protected ProgressFrame      frame;
     protected Properties         initPrefs = null;
     
+    protected SetupDialog        setupDlg = null;
+    
     /**
      * 
      */
     public BuildSampleDatabase()
     {
         // nothing here
-        // everything is done in build()
     }
     
     public Session getSession()
@@ -174,6 +196,61 @@ public class BuildSampleDatabase
         session = s;
     }
     
+    /**
+     * Creates a single discipline collection.
+     * @param colObjDefName the name of the Collection Obj Def to use
+     * @param disciplineName the discipline name
+     * @return the entire list of DB object to be persisted
+     */
+    public List<Object> createEmptyDiscipline(final String colObjDefName, 
+                                              final String disciplineName,
+                                              final String username, 
+                                              final String userType, 
+                                              final String firstName, 
+                                              final String lastName, 
+                                              final String email)
+    {
+        Vector<Object> dataObjects = new Vector<Object>();
+
+        Agent            userAgent        = createAgent("", firstName, "", lastName, "", email);
+        UserGroup        userGroup        = createUserGroup(disciplineName);
+        SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
+        DataType         dataType         = createDataType(disciplineName);
+        TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
+        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
+
+        SpecifyUser.setCurrentUser(user);
+        user.setAgent(userAgent);
+
+        dataObjects.add(collectionObjDef);
+        dataObjects.add(userGroup);
+        dataObjects.add(user);
+        dataObjects.add(dataType);
+        dataObjects.add(taxonTreeDef);
+        dataObjects.add(userAgent);
+        
+        List<Object> taxa = createSimpleTaxon(collectionObjDef.getTaxonTreeDef());
+        List<Object> geos = createSimpleGeography(collectionObjDef, "Geography");
+        List<Object> locs = createSimpleLocation(collectionObjDef, "Location");
+        List<Object> gtps = createSimpleGeologicTimePeriod(collectionObjDef, "Geologic Time Period");
+
+        dataObjects.addAll(taxa);
+        dataObjects.addAll(geos);
+        dataObjects.addAll(locs);
+        dataObjects.addAll(gtps);
+        
+        CatalogSeries catalogSeries = createCatalogSeries("Fish", "Fish", collectionObjDef);
+        dataObjects.add(catalogSeries);
+
+        return dataObjects;
+    }
+    
+    /**
+     * Creates a single discipline collection.
+     * @param colObjDefName the name of the Collection Obj Def to use
+     * @param disciplineName the discipline name
+     * @return the entire list of DB object to be persisted
+     */
     public List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         log.info("Creating single discipline database: " + disciplineName);
@@ -1222,6 +1299,7 @@ public class BuildSampleDatabase
         for (Object o: oList)
         {
             frame.setProcess(++cnt);
+            //System.out.println(cnt + " " + o.getClass().getSimpleName());
             persist(o);
         }
         frame.setProcess(oList.size());
@@ -1281,7 +1359,13 @@ public class BuildSampleDatabase
         return ret;
     }
 
-    public List<?> getObjectsByClass( List<Object> objects, Class<?> clazz)
+    /**
+     * Returns a list of database object by class from the arg list.
+     * @param objects the list of object (source)
+     * @param clazz the class to use to filter
+     * @return the new list of objects
+     */
+    protected List<?> getObjectsByClass(final List<Object> objects, Class<?> clazz)
     {
         Vector<Object> rightClass = new Vector<Object>();
         for (Object o: objects)
@@ -1295,71 +1379,282 @@ public class BuildSampleDatabase
         
     }
     
-    protected void build() throws SQLException
+    /**
+     * Creates the dialog to find out what database and what database driver to use. 
+     */
+    protected void buildSetup()
     {
         UICacheManager.setAppName("Specify");
         
-        Properties sysProps     = System.getProperties();
-        String     dbName = null;
-        if (!((String)sysProps.get("user.name")).startsWith("rod"))
-        {
-            dbName = JOptionPane.showInputDialog("Enter the name of the sample DB to create");
-            if (dbName==null)
-            {
-                System.err.println("You must specify a database name.");
-                return; 
-            }
-        } else
-        {
-            dbName = "testfish";
-        }
-        final String databaseName = dbName;
-
-        // setup the progress display widget
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                frame = new ProgressFrame("Building sample DB");
-                frame.setSize(new Dimension(500,125));
-                frame.setTitle("Building Test Database");
-                UIHelper.centerAndShow(frame);
-                frame.setProcessPercent(true);
-                frame.setOverall(0, 5);
-                frame.getCloseBtn().setVisible(false);
-            }
-        });
-       
-        System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
-
-        initPrefs = getInitializePrefs(databaseName);
+        System.setProperty("derby.system.home", UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
         
-        String userName     = initPrefs.getProperty("initializer.username", "rods");
-        String password     = initPrefs.getProperty("initializer.password", "rods");
-        String server       = initPrefs.getProperty("initializer.server",   "jdbc:mysql://localhost/");
-        String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
-        String dialect      = initPrefs.getProperty("initializer.dialect",  "org.hibernate.dialect.MySQLDialect");
-        String driver       = initPrefs.getProperty("initializer.driver",   "com.mysql.jdbc.Driver");
-        
-        if (!server.endsWith("/"))
-        {
-            server += "/";
-        }
+        System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
 
+        Properties backstopPrefs = getInitializePrefs(null);
+        
+        String driverName   = backstopPrefs.getProperty("initializer.drivername",   "MySQL");
+        String databaseName = backstopPrefs.getProperty("initializer.databasename", "testfish");        
+            
+        setupDlg = new SetupDialog(databaseName, driverName);
+         
+        final SwingWorker worker = new SwingWorker()
+        {
+            @Override
+            public Object construct()
+            {
+                UIHelper.centerAndShow(setupDlg);
+                try
+                {
+                    int seconds = 10;
+                    while (seconds > 0)
+                    {
+                        setupDlg.setTitle(Integer.toString(seconds));
+                        Thread.sleep(1000); 
+                        seconds--;
+                    }
+                    
+                    if (setupDlg != null)
+                    {
+                        setupDlg.closeDlg(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // ignore
+                }
+                return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void finished()
+            {
+                // no-op
+            }
+        };
+        worker.start();
+
+    }
+    
+    /** 
+     * Starts the Build on a swinf worker thread.
+     * 
+     * @throws SQLException
+     * @throws IOException
+     */
+    protected void startBuild(final String dbName, final String driverName)
+    {
+        final SwingWorker worker = new SwingWorker()
+        {
+            @Override
+            public Object construct()
+            {
+                try
+                {
+                    if (false) // XXX Debug
+                    {
+                        Discipline discipline = Discipline.getDiscipline("fish");
+                        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
+                        buildEmptyDatabase(driverInfo, "localhost", "mydata", "rods", "rods", "Rod", "Spears", "rods@ku.edu", discipline);
+
+                    } else
+                    {
+                        build(dbName, driverName);
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                
+                frame.setVisible(false);
+                frame.dispose();
+                
+                return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            @Override
+            public void finished()
+            {
+
+            }
+        };
+        worker.start();
+    }
+    
+    /** 
+     * Drops, Creates and Builds the Database.
+     * 
+     * @throws SQLException
+     * @throws IOException
+     */
+    public boolean buildEmptyDatabase(final DatabaseDriverInfo driverInfo,
+                                      final String hostName, 
+                                      final String dbName, 
+                                      final String username, 
+                                      final String password, 
+                                      final String firstName, 
+                                      final String lastName, 
+                                      final String email,
+                                      final Discipline  discipline) throws SQLException, IOException
+    {
+        frame = new ProgressFrame("Building OnRamp Database");
+        frame.setSize(new Dimension(500,125));
+        frame.setTitle("Building OnRamp Database");
+        UIHelper.centerAndShow(frame);
+        frame.setProcessPercent(true);
+        frame.setOverall(0, 4);
+        frame.getCloseBtn().setVisible(false);
+
+        steps = 0;
+        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
                 frame.getProcessProgress().setIndeterminate(true);
                 frame.getProcessProgress().setString("");
-                frame.setDesc("Creating Database Schema for "+databaseName);
+                frame.setDesc("Creating Database Schema for "+dbName);
+                frame.setOverall(steps++);
+            }
+        });
+        
+        try
+        {
+            SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
+            schemaGen.generateSchema(driverInfo, hostName, dbName, username, password);
+            
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    frame.getProcessProgress().setIndeterminate(true);
+                    frame.getProcessProgress().setString("");
+                    frame.setDesc("Logging into "+dbName+"....");
+                    frame.setOverall(steps++);
+                }
+            });
+            
+            if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                    driverInfo.getDialectClassName(), 
+                    dbName, 
+                    driverInfo.getConnectionStr(hostName, dbName), 
+                    username, 
+                    password))
+            {
+                return false;
+
+            }         
+            
+            setSession(HibernateUtil.getCurrentSession());
+
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    frame.getProcessProgress().setIndeterminate(true);
+                    frame.getProcessProgress().setString("");
+                    frame.setDesc("Creating database "+dbName+"....");
+                    frame.setOverall(steps++);
+                }
+            });
+            
+            Thumbnailer thumb = new Thumbnailer();
+            thumb.registerThumbnailers("config/thumbnail_generators.xml");
+            thumb.setQuality(.5f);
+            thumb.setMaxHeight(128);
+            thumb.setMaxWidth(128);
+
+            AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UICacheManager.getDefaultWorkingPathSubDir("AttachmentStorage", true));
+            AttachmentUtils.setAttachmentManager(attachMgr);
+            AttachmentUtils.setThumbnailer(thumb);
+            
+            List<Object> dataObjects = createEmptyDiscipline(discipline.getTitle(), 
+                                                             discipline.getName(),
+                                                             username,
+                                                             "CollectionManager",
+                                                             firstName,
+                                                             lastName,
+                                                             email);
+            
+
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    frame.getProcessProgress().setIndeterminate(true);
+                    frame.getProcessProgress().setString("");
+                    frame.setDesc("Saving data into "+dbName+"....");
+                    frame.setOverall(steps++);
+                }
+            });
+            
+            startTx();
+            persist(dataObjects);
+            commitTx();
+            HibernateUtil.getCurrentSession().close();
+            
+            frame.setVisible(false);
+            frame.dispose();
+            
+            return true;
+            
+        } catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    /** 
+     * Drops, Creates and Builds the Database.
+     * 
+     * @throws SQLException
+     * @throws IOException
+     */
+    protected void build(final String dbName, final String driverName) throws SQLException, IOException
+    {
+        
+        frame = new ProgressFrame("Building sample DB");
+        frame.setSize(new Dimension(500,125));
+        frame.setTitle("Building Test Database");
+        UIHelper.centerAndShow(frame);
+        frame.setProcessPercent(true);
+        frame.setOverall(0, 5);
+        frame.getCloseBtn().setVisible(false);
+
+        System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+
+        initPrefs = getInitializePrefs(dbName);
+        
+        String userName     = initPrefs.getProperty("initializer.username", "rods");
+        String password     = initPrefs.getProperty("initializer.password", "rods");
+        String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
+
+        steps = 0;
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                frame.getProcessProgress().setIndeterminate(true);
+                frame.getProcessProgress().setString("");
+                frame.setDesc("Creating Database Schema for "+dbName);
                 frame.setOverall(steps++);
             }
         });
         
         SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-        schemaGen.generateSchema(databaseHost, databaseName);
+        //schemaGen.generateSchema(databaseHost, databaseName);
+        
+        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
+        if (driverInfo == null)
+        {
+            throw new RuntimeException("COuldn't find driver by name ["+driverInfo+"] in driver list.");
+        }
+        schemaGen.generateSchema(driverInfo, databaseHost, dbName, userName, password);
 
         //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
@@ -1375,7 +1670,12 @@ public class BuildSampleDatabase
             }
         });
 
-        if (UIHelper.tryLogin(driver, dialect, databaseName, server + databaseName, userName, password))
+        if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                              driverInfo.getDialectClassName(), 
+                              dbName, 
+                              driverInfo.getConnectionStr(databaseHost, dbName), 
+                              userName, 
+                              password))
         {
             boolean single = true;
             if (single)
@@ -1397,28 +1697,7 @@ public class BuildSampleDatabase
                     thumb.setMaxHeight(128);
                     thumb.setMaxWidth(128);
 
-                    File location = UICacheManager.getDefaultWorkingPathSubDir("demo_files" + File.separator + " AttachmentStorage", true);
-                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(location);
-                    
-                    // TODO: find a way to do this stuff without blowing away the .svn directory
-                    /*
-                    File origDir  = new File("demo_files/AttachmentStorage/originals");
-                    File thumbDir = new File("demo_files/AttachmentStorage/thumbnails");
-                    
-                    // clean out the originals and thumbnails directories without deleting the .svn subdir
-                    Collection<?> files = FileUtils.listFiles(origDir, null, false);
-                    for (Object o: files)
-                    {
-                        File f = (File)o;
-                        FileUtils.forceDelete(f);
-                    }
-                    
-                    files = FileUtils.listFiles(thumbDir, null, false);
-                    for (Object o: files)
-                    {
-                        File f = (File)o;
-                        FileUtils.forceDelete(f);
-                    }*/
+                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UICacheManager.getDefaultWorkingPathSubDir("AttachmentStorage", true));
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);
@@ -1427,17 +1706,12 @@ public class BuildSampleDatabase
 
                     log.info("Persisting in-memory objects to DB");
                     
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
-                            frame.setProcess(0);
-                            frame.getProcessProgress().setIndeterminate(true);
-                            frame.getProcessProgress().setString("");
-                            frame.setDesc("Getting Session...");
-                            frame.setOverall(steps++);
-                        }
-                    });
+
+                    frame.setProcess(0);
+                    frame.getProcessProgress().setIndeterminate(true);
+                    frame.getProcessProgress().setString("");
+                    frame.setDesc("Getting Session...");
+                    frame.setOverall(steps++);
                     
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
@@ -1456,14 +1730,10 @@ public class BuildSampleDatabase
                     persist(dataObjects);
                     commitTx();
                     
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
-                            frame.setDesc("Done Saving data...");
-                            frame.setOverall(steps++);
-                        }
-                    });
+
+                    frame.setDesc("Done Saving data...");
+                    frame.setOverall(steps++);
+
                     
                     if (true)
                     {
@@ -1498,14 +1768,10 @@ public class BuildSampleDatabase
                     
                     attachMgr.cleanup();
                     
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
-                            frame.setDesc("Copying Preferences...");
-                            frame.setOverall(steps++);
-                        }
-                    });
+
+                    frame.setDesc("Copying Preferences...");
+                    frame.setOverall(steps++);
+
                     AppPreferences remoteProps = AppPreferences.getRemote();
                     
                     for (Object key : initPrefs.keySet())
@@ -1518,14 +1784,10 @@ public class BuildSampleDatabase
                     }
                     AppPreferences.getRemote().flush();
                     
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
-                            frame.setDesc("Build Completed.");
-                            frame.setOverall(steps++);
-                        }
-                    });
+
+                    frame.setDesc("Build Completed.");
+                    frame.setOverall(steps++);
+
                     
                     log.info("Done");
                 }
@@ -1550,21 +1812,15 @@ public class BuildSampleDatabase
             log.error("Login failed");
             return;
         }
+        
         System.out.println("All done");
     }
     
-    public void done()
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                frame.setVisible(false);
-                frame.dispose();
-            }
-        });
-    }
-    
+    /**
+     * Returns the Properties by database name.
+     * @param databaseName the database
+     * @return the properties
+     */
     public static Properties getInitializePrefs(final String databaseName)
     {
         Properties properties = new Properties();
@@ -1587,11 +1843,133 @@ public class BuildSampleDatabase
         return properties;
     }
     
-    public static void main(String[] args) throws SQLException
+    
+    // XXX may want to use the Logon Dialog in the future
+    class SetupDialog extends JDialog
     {
-        final BuildSampleDatabase builder = new BuildSampleDatabase();
-        builder.build();
-        builder.done();
+        protected String             databaseName;
+        protected DatabaseDriverInfo dbDriver;
+        protected boolean            isCancelled = false;
+        
+        protected JTextField         databaseNameTxt;
+        protected JComboBox          drivers;
+        protected Vector<DatabaseDriverInfo> driverList;
+        protected boolean            wasClosed = false;
+        
+        /**
+         * Creates a dialog for entering database name and selecting the appropriate driver.
+         * @param databaseName 
+         * @param dbDriverName
+         */
+        public SetupDialog(final String databaseName, final String dbDriverName)
+        {
+            super();
+            
+            driverList = DatabaseDriverInfo.getDriversList();
+            int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null, null));
+            
+            drivers     = new JComboBox(driverList);
+            drivers.setSelectedIndex(inx);
+            
+            databaseNameTxt = new JTextField(databaseName);
+            
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,10px,p"));
+            CellConstraints cc         = new CellConstraints();
+            builder.add(new JLabel("Database Name:", JLabel.RIGHT), cc.xy(1,1));
+            builder.add(databaseNameTxt,                            cc.xy(3,1));
+            builder.add(new JLabel("Driver:", JLabel.RIGHT),        cc.xy(1,3));
+            builder.add(drivers,                                    cc.xy(3,3));
+            
+            JButton okBtn     = new JButton("OK");
+            JButton cancelBtn = new JButton("Cancel");
+            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,5,3,1));
+            
+            cancelBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    closeDlg(true);
+                }
+             });
+             
+            okBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    closeDlg(false);
+                }
+             });
+            
+            builder.setDefaultDialogBorder();
+            setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            setContentPane(builder.getPanel());
+            pack();
+            Dimension dim = getPreferredSize();
+            dim.width = 300;
+            setSize(dim);
+        }
+        
+        public void closeDlg(final boolean wasCancelled)
+        {
+            if (!wasClosed)
+            {
+                isCancelled = wasCancelled;
+                if (!isCancelled)
+                {
+                    databaseName = databaseNameTxt.getText();
+                    if (StringUtils.isEmpty(databaseName))
+                    {
+                        isCancelled = true;
+                        
+                    } else if (drivers.getSelectedIndex() > -1)
+                    {
+                        dbDriver = (DatabaseDriverInfo)drivers.getSelectedItem();
+                    } else
+                    {
+                        isCancelled = true;
+                    }
+                }
+                setVisible(false);
+                
+                if (!isCancelled)
+                {
+                    try
+                    {
+                        startBuild(databaseName, dbDriver.getName());
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+                wasClosed = true;
+                setupDlg.dispose();
+                setupDlg = null;
+            }
+        }
+    }
+    
+    public static void main(String[] args) throws SQLException, IOException
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                
+                try
+                {
+                    if (!System.getProperty("os.name").equals("Mac OS X"))
+                    {
+                        UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                        PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                
+                BuildSampleDatabase builder = new BuildSampleDatabase();
+                builder.buildSetup();
+            }
+        });
     }
 }
-

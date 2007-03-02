@@ -85,6 +85,7 @@ public class UICacheManager
 
     protected String         defaultWorkingPath = null;
     protected String         appName            = null;
+    protected boolean        useCurrentLocation = false;
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
     
@@ -132,15 +133,29 @@ public class UICacheManager
      * One Windows it is ...\<i>&lt;user name&gt;</i>\Application Data\&lt;application name&gt;<br>
      * On Unix based platforms it will create a directory of the "application name" with a "." in front. 
      * For example: <code>/home/john/.specify</code>
+     * @param useCurrent whether to use the current directory or the user home directory
+     * @return Returns the "working" directory which is platform specific.
+     */
+    public static String getDefaultWorkingPath(final boolean useCurrent)
+    {
+        if (instance.defaultWorkingPath == null)
+        {
+            instance.defaultWorkingPath = getUserDataDir(useCurrent);
+        }
+        return instance.defaultWorkingPath;
+    }
+
+    /**
+     * Returns the "working" directory which is platform specific. It will create one if one is not created
+     * <b>NOTE: The application name must be set first.</b><br>
+     * One Windows it is ...\<i>&lt;user name&gt;</i>\Application Data\&lt;application name&gt;<br>
+     * On Unix based platforms it will create a directory of the "application name" with a "." in front. 
+     * For example: <code>/home/john/.specify</code>
      * @return Returns the "working" directory which is platform specific.
      */
     public static String getDefaultWorkingPath()
     {
-        if (instance.defaultWorkingPath == null)
-        {
-            instance.defaultWorkingPath = getUserDataDir();
-        }
-        return instance.defaultWorkingPath;
+        return getDefaultWorkingPath(instance.useCurrentLocation);
     }
 
     /**
@@ -178,25 +193,51 @@ public class UICacheManager
      */
     public static String getUserDataDir()
     {
+        return getUserDataDir(instance.useCurrentLocation);
+    }
+    
+    /**
+     * Get the "user" based working directory that is platform specific and requires the "application name" be set first. 
+     * @param useCurrentLoc true use current
+     * @return the string to a platform specify user data directory for the application name.
+     */
+    public static String getUserDataDir(final boolean useCurrentLoc)
+    {
         if (instance.appName == null)
         {
             throw new RuntimeException("The AppName has not been set into the UICacheManger!");
         }
         
         String base;
-        if (System.getProperty("os.name").indexOf("Windows") > -1)
+        if (useCurrentLoc)
         {
-            base = System.getenv("APPDATA") + File.separator + instance.appName;
+            File   file     = new File(".");
+            String fullPath = file.getAbsolutePath();
+            fullPath        = fullPath.substring(0, fullPath.length()-1);
+            if (System.getProperty("os.name").indexOf("Windows") > -1)
+            {
+                base = fullPath + instance.appName;
+            } else
+            {
+                base = fullPath + "." + instance.appName;
+            }
+            
         } else
         {
-            base = System.getProperty("user.home") + File.separator + "." + instance.appName;
-        }
-        File baseDir = new File(base);
-        if (!baseDir.exists())
-        {
-            if (!baseDir.mkdir())
+            if (System.getProperty("os.name").indexOf("Windows") > -1)
             {
-                throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+baseDir.getAbsolutePath()+"]");
+                base = System.getenv("APPDATA") + File.separator + instance.appName;
+            } else
+            {
+                base = System.getProperty("user.home") + File.separator + "." + instance.appName;
+            }
+            File baseDir = new File(base);
+            if (!baseDir.exists())
+            {
+                if (!baseDir.mkdir())
+                {
+                    throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+baseDir.getAbsolutePath()+"]");
+                }
             }
         }
         return base;
@@ -667,6 +708,15 @@ public class UICacheManager
             adjustAllFonts(instance.baseFont, newBaseFont);
         }
         instance.baseFont = newBaseFont;
+    }
+
+    /**
+     * Indicates whether we should use the current location as the default working path.
+     * @param useCurrentLocation true/false.
+     */
+    public static void setUseCurrentLocation(boolean useCurrentLocation)
+    {
+        instance.useCurrentLocation = useCurrentLocation;
     }
 
 }

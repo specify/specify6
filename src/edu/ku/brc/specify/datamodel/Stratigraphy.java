@@ -28,19 +28,20 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
 
@@ -209,7 +210,8 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
     public String getRemarks() {
         return this.remarks;
     }
@@ -221,7 +223,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Text1", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -233,7 +235,7 @@ public class Stratigraphy extends DataModelObjBase implements java.io.Serializab
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Text2", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }

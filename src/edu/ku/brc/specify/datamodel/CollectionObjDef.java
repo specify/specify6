@@ -28,6 +28,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,9 +47,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
 
  */
@@ -60,21 +60,21 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     
     // Fields
 
-     protected Long collectionObjDefId;
-     protected String name;
-     protected String discipline;
-     protected DataType dataType;
-     protected Set<CatalogSeries> catalogSeries;
-     protected SpecifyUser specifyUser;
-     protected Set<AttributeDef> attributeDefs;
-     protected GeographyTreeDef geographyTreeDef;
-     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
-     protected LocationTreeDef locationTreeDef;
-     protected TaxonTreeDef taxonTreeDef;
-     protected Set<Locality> localities;
-     protected Set<AppResourceDefault> appResourceDefaults;
-     private Set<CollectionObject> collectionObjects;
-     private Set<UserPermission> userPermissions;
+    protected Long                      collectionObjDefId;
+    protected String                    name;
+    protected String                    discipline;
+    protected DataType                  dataType;
+    protected Set<CatalogSeries>        catalogSeries;
+    protected SpecifyUser               specifyUser;
+    protected Set<AttributeDef>         attributeDefs;
+    protected GeographyTreeDef          geographyTreeDef;
+    protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
+    protected LocationTreeDef           locationTreeDef;
+    protected TaxonTreeDef              taxonTreeDef;
+    protected Set<Locality>             localities;
+    protected Set<AppResourceDefault>   appResourceDefaults;
+    protected Set<CollectionObject>     collectionObjects;
+    protected Set<UserPermission>       userPermissions;
      
 
     // Constructors

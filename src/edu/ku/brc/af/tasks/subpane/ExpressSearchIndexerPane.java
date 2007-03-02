@@ -493,7 +493,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             if (dbConnection != null)
             {
-                dbStatement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
                 log.debug("SQL ["+tableInfo.getBuildSql()+"]");
 

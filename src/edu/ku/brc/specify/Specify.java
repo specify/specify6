@@ -144,33 +144,65 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private ImageIcon specifyImageIcon    = null;
     //private ImageIcon userSplashImageIcon = null;
 
-
-     /**
+    /**
      * Constructor.
      */
     public Specify()
     {
+        
+    }
+    
+    /**
+     * The very very first step in initializing Specify. 
+     */
+    protected void preStartUp()
+    {
+        UICacheManager.setUseCurrentLocation(true);
+        
         //UIHelper.attachUnhandledException();
         
-        //log.info("CURRENT THREAD: "+Thread.currentThread().hashCode()+"  "+SwingUtilities.isEventDispatchThread());
-        
-    	// we simply need to create this class, not use it
+        // we simply need to create this class, not use it
         //@SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
         new MacOSAppHandler(this);
 
         // Name factories
-        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
-        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
-        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
-        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
-        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
-        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
-        System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",        "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl"); // needed for treequerycbx components
+        setUpSystemProperties();
         
         IconManager.setApplicationClass(Specify.class);
-        UICacheManager.getInstance(); // initializes it first thing
-        UICacheManager.setAppName("Specify");
+        UICacheManager.setAppName("Specify");        
+    }
+    
+    /**
+     * Starts up Specify with the initializer that enables the user to create a new empty database. 
+     */
+    public void startWithInitializer()
+    {
+        preStartUp();
+        
+        if (true)
+        {
+            SpecifyInitializer specifyInitializer = new SpecifyInitializer();
+            specifyInitializer.setup(this);
+            
+        } else
+        {
+            startUp();
+        }
+    }
+    
+    /**
+     * Start up without the initializer, assumes there is at least one database to connect to.
+     */
+    public void startUp()
+    {
+        // This sets a global flag to tell Specify to put the User Data directory in the user's
+        // home directory,
+        if (!SpecifyInitializer.setUseCurrentLocation())
+        {
+            UICacheManager.setUseCurrentLocation(false);
+        }
+
+        System.setProperty("derby.system.home", UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
         
         // Attachment related helpers
         Thumbnailer thumb = new Thumbnailer();
@@ -189,7 +221,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         AttachmentManagerIface attachMgr = null;
         
-        File location = UICacheManager.getDefaultWorkingPathSubDir("demo_files" + File.separator + " AttachmentStorage", true);
+        File location = UICacheManager.getDefaultWorkingPathSubDir("AttachmentStorage", true);
         try
         {
             attachMgr = new FileStoreAttachmentManager(location);
@@ -240,25 +272,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
 //            // TODO Auto-generated catch block
 //            e1.printStackTrace();
 //        }
-
-        try
-        {
-            //System.out.println(System.getProperty("os.name"));
-
-            if (!System.getProperty("os.name").equals("Mac OS X"))
-            {
-                UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
-            }
-
-            //UIManager.setLookAndFeel(new PlasticLookAndFeel());
-            //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        }
-        catch (Exception e)
-        {
-            log.error("Can't change L&F: ", e);
-        }
         
         // Setup base font AFTER setting Look and Feel
         UICacheManager.setBaseFont((new JLabel()).getFont());
@@ -275,6 +288,22 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
+    }
+    
+    /**
+     * Setup all the System properties. This names all the needed factories. 
+     */
+    protected void setUpSystemProperties()
+    {
+        // Name factories
+        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UICacheManager
+        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
+        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
+        System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",        "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl");  // needed for treequerycbx components
     }
 
     /**
@@ -1160,14 +1189,39 @@ public class Specify extends JPanel implements DatabaseLoginListener
    */
   public static void main(String[] args)
   {
-
-
       // Create Specify Application
       SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
-              //@SuppressWarnings("unused") Specify specify = new Specify();
-              new Specify();
+              try
+              {
+                  if (!System.getProperty("os.name").equals("Mac OS X"))
+                  {
+                      UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                      PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
+                  }
+              }
+              catch (Exception e)
+              {
+                  log.error("Can't change L&F: ", e);
+              }
+              
+              
+              // Startup Specify
+              Specify specify = new Specify();
+              
+              boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
+              if (startAsWorkBench)
+              {
+                  specify.startWithInitializer(); // For a WorkBench Only Release  
+                  
+              } else
+              {
+                  // THis type of start up ALWAYS assumes the .Specify directory is in there "home" directory.
+                  specify.preStartUp();
+                  specify.startUp();    
+              }
+              
               
               /* This is needed for Debugging - rods
               final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 

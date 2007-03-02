@@ -18,6 +18,9 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -26,6 +29,10 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Projections;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -40,13 +47,18 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UICacheManager;
@@ -427,6 +439,78 @@ public class LabelsTask extends BaseTask
      */
     protected void processLabelCommands(final CommandAction cmdAction)
     {
+        if (true)
+        {
+            Session session = HibernateUtil.getNewSession();
+            
+            String s = "select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = 0 and (lpo.quantityresolved < lpo.quantity) and (loan.IsClosed = 0 or loan.IsClosed is null)";
+            
+            /*
+            Criteria criteria = session.createCriteria(LoanPhysicalObject.class);
+            Calendar startDate = Calendar.getInstance();
+            Calendar endDate = Calendar.getInstance();
+            endDate.add(Calendar.DAY_OF_MONTH, 7);
+
+            if (startDate != null) {
+                criteria.add(Expression.ge("date", startDate));
+            }
+            if (endDate != null) {
+                criteria.add(Expression.le("date", endDate));
+            }
+            List results = criteria.list();
+            for (Object data : results)
+            {
+                System.out.println(((LoanPhysicalObject)data).getIdentityTitle());
+            }
+            */
+            
+            Calendar startDate = Calendar.getInstance();
+            Calendar endDate  = Calendar.getInstance();
+            //startDate.add(Calendar.DAY_OF_MONTH, -1);
+            //endDate.add(Calendar.DAY_OF_MONTH, 7);
+            startDate.clear(Calendar.HOUR_OF_DAY);
+            startDate.clear(Calendar.MINUTE);
+            startDate.clear(Calendar.SECOND);
+            
+            //endDate.clear(Calendar.HOUR_OF_DAY);
+            //endDate.clear(Calendar.MINUTE);
+            //endDate.clear(Calendar.SECOND);
+            
+            Calendar today = Calendar.getInstance();
+            startDate.clear();
+            startDate.set(Calendar.YEAR, today.get(Calendar.YEAR));
+            startDate.set(Calendar.MONTH, today.get(Calendar.MONTH));
+            startDate.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+
+            today.add(Calendar.DAY_OF_MONTH, 7);
+            endDate.clear();
+            endDate.set(Calendar.YEAR, today.get(Calendar.YEAR));
+            endDate.set(Calendar.MONTH, today.get(Calendar.MONTH));
+            endDate.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+
+
+            //System.out.println(startDate+"  "+endDate);
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+            System.out.print(sdf.format(startDate.getTime()));
+            System.out.println(" * "+sdf.format(endDate.getTime()));//new Date(startDate.get(Calendar.YEAR), startDate.get(Calendar.MONTH), startDate.get(Calendar.DAY_OF_MONTH))));
+            
+
+            Criteria criteria = session.createCriteria(CollectionObject.class);
+            if (startDate != null) {
+                criteria.add(Expression.ge("timestampCreated", startDate.getTime()));
+            }
+            if (endDate != null) {
+                criteria.add(Expression.le("timestampCreated", endDate.getTime()));
+            }
+            criteria.setProjection(Projections.rowCount());
+            List results = criteria.list();
+            for (Object data : results)
+            {
+                //System.out.println(((CollectionObject)data).getIdentityTitle());
+                System.out.println(data);
+            }
+            return;
+        }
         //---------------------------------------------------------------------------
         // This Code here needs to be refactored and moved to the NavBoxAction
         // so it can happen in a single generic place (Each task has this code)

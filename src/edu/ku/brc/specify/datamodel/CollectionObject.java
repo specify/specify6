@@ -28,22 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -51,7 +35,23 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -174,8 +174,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
                 if (conn != null)
                 {
                     Statement  stmt = conn.createStatement();
-                    ResultSet  rs   = stmt.executeQuery("select CatalogNumber from collectionobject order by CatalogNumber desc limit 0,1");
-                    if (rs.first())
+                    ResultSet  rs   = stmt.executeQuery("select CatalogNumber from collectionobject order by CatalogNumber desc"); // can't use  limit 0,1
+                    if (rs.next())
                     {
                         Float catNum = rs.getFloat(1);
                         catalogNumber = catNum + 1;
@@ -271,7 +271,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
-    @Column(name = "Text1", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Text1", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText1() {
         return this.text1;
     }
@@ -283,7 +283,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Text2", length=255, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
@@ -355,7 +355,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
-    @Column(name = "Remarks", length=65535, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
     public String getRemarks() {
         return this.remarks;
     }

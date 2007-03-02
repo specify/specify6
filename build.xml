@@ -160,7 +160,7 @@
 	<target name="genschema">
 		<hibernatetool destdir="${source.root}">
 			<annotationconfiguration propertyFile="src/${hibernate.properties}" configurationfile="src/${hibernate.cfg}" />
-			<hbm2ddl format="true"/>
+			<hbm2ddl format="true" outputfilename="specify.sql"/>
 		</hibernatetool>
 	</target>
 

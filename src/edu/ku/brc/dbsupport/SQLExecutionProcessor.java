@@ -191,7 +191,7 @@ public class SQLExecutionProcessor implements Runnable
                 {
                     dbStatement.close();
                 }
-                dbStatement = dbConnection.createStatement();
+                dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
                 log.debug("SQL ["+sqlStr+"]");
                 if (sqlStr.toLowerCase().indexOf("select") == 0)
