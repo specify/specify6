@@ -31,6 +31,7 @@ import edu.ku.brc.specify.exporters.DiGIRExporter;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.exporters.RecordSetExporter;
 import edu.ku.brc.specify.exporters.RecordSetExporterAdapter;
+import edu.ku.brc.specify.exporters.WebPageExporter;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -134,6 +135,7 @@ public class ExportTask extends BaseTask
         exportersRegistry.add(RecordSetExporterAdapter.class);
         exportersRegistry.add(GoogleEarthExporter.class);
         exportersRegistry.add(DiGIRExporter.class);
+        exportersRegistry.add(WebPageExporter.class);
         
         // TODO: implement this to read an XML file and instantiate one copy of each exporter
     }

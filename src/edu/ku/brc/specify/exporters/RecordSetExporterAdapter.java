@@ -6,7 +6,6 @@
  */
 package edu.ku.brc.specify.exporters;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;

@@ -84,6 +84,7 @@
     <icon name="PlusSign"      file="plussign.gif"      sizes="16"/>
     <icon name="GrayDot"       file="graydot.gif"      sizes="16"/>
     
+    <icon name="WebPage"       file="html.png"          sizes="all"/>
 
     <icon name="FirstRec" file="first.gif" sizes="NonStd"/>
     <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>
