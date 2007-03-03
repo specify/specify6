@@ -276,6 +276,16 @@ public class BuildSampleDatabase
         String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         
+        System.out.println("----- User Agent -----");
+        System.out.println("Userame:   "+username);
+        System.out.println("Title:     "+title);
+        System.out.println("FirstName: "+firstName);
+        System.out.println("LastName:  "+lastName);
+        System.out.println("MidInit:   "+midInit);
+        System.out.println("Abbrev:    "+abbrev);
+        System.out.println("Email:     "+email);
+        System.out.println("UserType:  "+userType);
+        
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
         UserGroup        userGroup        = createUserGroup(disciplineName);
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);

@@ -439,7 +439,7 @@ public class LabelsTask extends BaseTask
      */
     protected void processLabelCommands(final CommandAction cmdAction)
     {
-        if (true)
+        if (false)
         {
             Session session = HibernateUtil.getNewSession();
             
@@ -511,6 +511,7 @@ public class LabelsTask extends BaseTask
             }
             return;
         }
+        
         //---------------------------------------------------------------------------
         // This Code here needs to be refactored and moved to the NavBoxAction
         // so it can happen in a single generic place (Each task has this code)

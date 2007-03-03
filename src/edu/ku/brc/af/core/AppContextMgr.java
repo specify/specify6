@@ -107,8 +107,9 @@ public abstract class AppContextMgr
         // else
         String factoryNameStr = AccessController.doPrivileged(new PrivilegedAction<String>() {
                 public String run() {
-                    return System.getProperty(
-                    "edu.ku.brc.af.core.AppContextMgrFactory");}});
+                    return System.getProperty(factoryName);
+                    }
+                });
             
         if (factoryNameStr != null) 
         {

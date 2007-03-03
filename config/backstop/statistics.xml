@@ -67,7 +67,7 @@
          <xaxis>Years</xaxis>
          <yaxis>Number of Specimens</yaxis>
        </chartinfo>
-      <sql type="builtin" className="edu.ku.brc.specify.dbsupport.CatalogedByYearCustomQuery"/>
+       <sql type="custom" name="CatalogedByYearCustomQuery"/>
     </stat>
 
     <stat name="Temporial Periods" display="Bar Chart">
@@ -76,7 +76,7 @@
          <xaxis>Years</xaxis>
          <yaxis>Number of Specimens</yaxis>
        </chartinfo>
-      <sql type="builtin" className="edu.ku.brc.specify.dbsupport.CatByPrev10YearsCustomQuery"/>
+      <sql type="custom" name="CatByPrev10YearsCustomQuery"/>
     </stat>
 
     <stat name="Percentage Grow Last 5 Years" display="Bar Chart">
@@ -85,7 +85,7 @@
          <xaxis>Years</xaxis>
          <yaxis>Percentage</yaxis>
        </chartinfo>
-       <sql type="builtin" className="edu.ku.brc.specify.dbsupport.PercentageGrowthCustomQuery"/>
+      <sql type="custom" name="PercentageGrowthCustomQuery"/>
     </stat>
 
     <stat name="Specimens by Country" display="Bar Chart">
@@ -284,7 +284,7 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID 
               <xaxis>Months</xaxis>
               <yaxis>Number of Visitors</yaxis>
           </chartinfo>
-          <sql type="builtin" className="edu.ku.brc.specify.dbsupport.WebStatsVisitorsCustomQuery"/>
+          <sql type="custom" name="WebStatsVisitorsCustomQuery"/>
       </stat>
 
       <stat name="Web Stats Top 5 Taxon" display="Bar Chart">
@@ -293,7 +293,7 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID 
               <xaxis>Species</xaxis>
               <yaxis>Number of Hits</yaxis>
           </chartinfo>
-          <sql type="builtin" className="edu.ku.brc.specify.dbsupport.WebStatsTaxonCustomQuery"/>
+          <sql type="custom" name="WebStatsTaxonCustomQuery"/>
       </stat>
 
 
