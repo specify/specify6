@@ -975,6 +975,7 @@ public class BuildSampleDatabase
         
         // create the geo tree def items
         GeographyTreeDefItem root = createGeographyTreeDefItem(null, geoTreeDef, "GeoRoot", 0);
+        root.setIsEnforced(true);
         GeographyTreeDefItem cont = createGeographyTreeDefItem(root, geoTreeDef, "Continent", 100);
         GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
         GeographyTreeDefItem state = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
