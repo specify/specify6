@@ -288,7 +288,7 @@ public class QueryBldrPane extends BaseSubPane
     {
         DefaultListModel model = (DefaultListModel)fieldList.getModel();
         model.clear();
-        System.out.println(tableInfo+" "+tableFieldList.get(tableInfo));
+        //System.out.println(tableInfo+" "+tableFieldList.get(tableInfo));
         for (TableFieldPair fi : tableFieldList.get(tableInfo))
         {
             model.addElement(fi);

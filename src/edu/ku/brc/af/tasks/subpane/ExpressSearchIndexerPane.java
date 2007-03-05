@@ -75,6 +75,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.SwingWorker;
@@ -182,7 +183,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     protected void startCheckOutOfDateProcess()
     {
-        Vector<QueryResultsContainer> list = new Vector<QueryResultsContainer>();
+        Vector<QueryResultsContainerIFace> list = new Vector<QueryResultsContainerIFace>();
 
         noIndexFile = isLuceneEmpty();
 
@@ -259,7 +260,6 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     col = 1;
                     row += 2;
                 }
-                
             }
 
             resultsPanel = builder.getPanel();
@@ -307,23 +307,23 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         int row = 1;
         builder.add(label, cc.xywh(1,row,3,1));
-        row+=2;
+        row += 2;
         builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
-        row+=2;
+        row += 2;
         builder.add(resultsPanel, cc.xywh(1,row,3,1));
-        row+=2;
+        row += 2;
         builder.add(forceChkbx, cc.xywh(1,row, 3, 1));
-        row+=2;
+        row += 2;
         builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
-        row+=2;
+        row += 2;
         builder.add(configureBtn, cc.xy(1,row));
         builder.add(buildBtn, cc.xy(3,row));
-        row+=2;
+        row += 2;
 
         explainLabel = new JLabel(getResourceString("UpdatingES"), JLabel.CENTER);
         //explainLabel.setFont(new Font(getFont().getFontName(), Font.ITALIC, getFont().getSize()));
         builder.add(explainLabel, cc.xywh(1,row,3,1));
-        row+=2;
+        row += 2;
 
         //builder.getPanel().setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         builder.getPanel().setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), BorderFactory.createEmptyBorder(5,5,5,5)));
@@ -1275,7 +1275,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void resultsInError(final QueryResultsContainer qrc)
+    public void resultsInError(final QueryResultsContainerIFace qrc)
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
 

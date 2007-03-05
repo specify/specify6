@@ -74,9 +74,7 @@ public class DroppableNavBox extends NavBox implements GhostActionable
     {
         if (src != null)
         {  
-            Object dataObj = src.getData();
-            System.out.println(dataObj);
-            
+            //System.out.println(src.getData());
             CommandDispatcher.dispatch(new CommandAction(cmdType, cmdAction, src.getData()));
         }
     }

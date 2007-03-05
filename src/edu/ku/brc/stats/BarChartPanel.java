@@ -30,7 +30,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
@@ -188,7 +188,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void resultsInError(final QueryResultsContainer qrc)
+    public void resultsInError(final QueryResultsContainerIFace qrc)
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
 

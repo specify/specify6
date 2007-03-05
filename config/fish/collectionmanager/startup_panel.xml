@@ -9,19 +9,19 @@
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
   </row>
-
+<!--
    <row>
       <box title="Loans">
         <item title="Items On Loan">
-            <sql><statement><![CDATA[select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <sql type="custom" name="ItemsOnLoan"><statement><![CDATA[select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement></sql>
             <link>ListOnLoan</link>
         </item>
         <item title="Overdue Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
+            <sql type="custom" name="OverDueLoans"><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
             <link>OverdueLoansList</link>
         </item>
         <item title="Open Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loan.IsGift = false and (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <sql type="custom" name="OpenLoans"><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loan.IsGift = false and (IsClosed = false or IsClosed is null)]]></statement></sql>
             <link>ListOnLoan</link>
         </item>
       </box>
@@ -30,23 +30,22 @@
 		  <link colid="6">OverdueLookup</link>
       </box>
    </row>
-
+-->
     <row>
-      <box title="Data Entry">
-        <item title="Cataloged in Last 7 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
-            <link>CatalogedLast7DaysDetail</link>
-        </item>
-        <item title="Cataloged in Last 30 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
-            <link>CatalogedLastMonth</link>
-        </item>
-        <item title="Cataloged in Last Year">
-            <sql><statement><![CDATA[select count(*) from collectionobject WHERE DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
-            <link>CatalogedLastYear</link>
-        </item>
-      </box>
-  </row>
+        <box title="Data Entry">
+            <item title="Cataloged in Last 7 Days">
+                <sql type="custom" name="CatalogedLast7Days"/>
+                <link>CatalogedLast7DaysDetail</link>
+            </item>
+            <item title="Cataloged in Last 30 Days">
+                <sql type="custom" name="CatalogedLast30Days"/>
+                <link>CatalogedLastMonth</link>
+            </item>
+            <item title="Cataloged in Last Year">
+                <sql type="custom" name="CatalogedLastYear"/>
+                <link>CatalogedLastYear</link>
+            </item>
+        </box>  </row>
   
     
     <!--

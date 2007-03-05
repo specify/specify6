@@ -5,16 +5,14 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import org.apache.log4j.Logger;
-
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.dbsupport.SQLExecutionListener;
-import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.CustomQueryListener;
 
 /**
  *
@@ -30,75 +28,64 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
  *
  */
 @SuppressWarnings("serial")
-public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecutionListener
+public class StatGroupTableFromCustomQuery extends StatGroupTable implements CustomQueryListener
 {
     // Static Data Members
-    private static final Logger log = Logger.getLogger(StatGroupTableFromQuery.class);
+    //private static final Logger log = Logger.getLogger(StatGroupTableFromCustomQuery.class);
 
     // Data Members
-    protected SQLExecutionProcessor sqle;
-
-    protected int     descCol;
-    protected int     valCol;
-    protected String  linkStr = null;
-    protected int     colId   = -1;
+    protected String  linkStr       = null;
+    protected int     colId         = -1;
     protected String  noResultsMsg;
-    protected boolean hasData = false;
+    protected boolean hasData       = false;
 
     /**
-     * Constructor that describes where we get everything from
+     * Constructor that describes where we get everything from.
      * @param name the name or title
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
      */
-    public StatGroupTableFromQuery(final String name,
-                                   final String[] columnNames,
-                                   final String sql,
-                                   final int    descCol,
-                                   final int    valCol,
-                                   final String noResultsMsg)
+    public StatGroupTableFromCustomQuery(final String   name,
+                                         final String[] columnNames,
+                                         final String   sql,
+                                         final String   noResultsMsg)
     {
         super(name, columnNames);
 
-        this.descCol = descCol;
-        this.valCol  = valCol;
         this.noResultsMsg = noResultsMsg;
 
         StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
         model.addDataItem(statItem);
 
-        sqle = new SQLExecutionProcessor(this, sql);
-        sqle.start();
+        CustomQuery customQuery = CustomQueryFactory.getInstance().getQuery(sql);
+        customQuery.execute(this);
+
     }
 
     /**
-     * Constructor that describes where we get everything from
+     * Constructor that describes where we get everything from.
      * @param name the name or title
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
      * @param useSeparator use non-border separator titles
      */
-    public StatGroupTableFromQuery(final String   name,
-                                   final String[] columnNames,
-                                   final String   sql,
-                                   final int      descCol,
-                                   final int      valCol,
-                                   boolean        useSeparator,
-                                   final String   noResultsMsg)
+    public StatGroupTableFromCustomQuery(final String   name,
+                                         final String[] columnNames,
+                                         final String   sql,
+                                         boolean        useSeparator,
+                                         final String   noResultsMsg)
     {
         super(name, columnNames, useSeparator, 100); // this is an arbitrary number only to tell it to make scrollbars
 
-        this.descCol = descCol;
-        this.valCol  = valCol;
         this.noResultsMsg = noResultsMsg;
 
         StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
         model.addDataItem(statItem);
 
-        sqle = new SQLExecutionProcessor(this, sql);
-        sqle.start();
+        CustomQuery customQuery = CustomQueryFactory.getInstance().getQuery(sql);
+        customQuery.execute(this);
     }
 
     /**
@@ -150,65 +137,52 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
     }
 
     //-----------------------------------------------------
-    //-- SQLExecutionListener
+    //-- CustomQueryListener
     //-----------------------------------------------------
 
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
+     * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
-    public synchronized void exectionDone(final SQLExecutionProcessor processor, final java.sql.ResultSet resultSet)
+    public void exectionDone(final CustomQuery customQuery)
     {
         model.clear();
         hasData = true;
 
-        List<Object> data = new Vector<Object>();
-        try
+        List<?> results = customQuery.getResults();
+
+        if (results != null && results.size() > 0)
         {
-            if (resultSet.first())
+            for (int i=0;i<results.size();i++)
             {
-                do
-                {
-                    data.add(resultSet.getObject(descCol));
-                    data.add(resultSet.getObject(valCol));
-                    data.add(colId > 0 ? resultSet.getObject(colId) : null);
-
-                } while (resultSet.next());
-
-
-                for (int i=0;i<data.size();i++)
-                {
-                    String desc     = data.get(i++).toString();
-                    Object val      = data.get(i++);
-                    Object colIdObj = data.get(i);
-                    String columnId = colIdObj != null ? colIdObj.toString() : null;
-                    StatDataItem statItem = new StatDataItem(desc, linkStr == null || columnId == null ? null : (linkStr+",id="+columnId), false);
-                    statItem.setValue(val);
-                    model.addDataItem(statItem);
-                }
-                data.clear();
-            } else
-            {
-                addNoneAvailableMsg(noResultsMsg);
+                String desc     = results.get(i++).toString();
+                Object val      = results.get(i++);
+                Object colIdObj = results.get(i);
+                String columnId = colIdObj != null ? colIdObj.toString() : null;
+                
+                StatDataItem statItem = new StatDataItem(desc, linkStr == null || columnId == null ? null : (linkStr+",id="+columnId), false);
+                statItem.setValue(val);
+                model.addDataItem(statItem);
             }
-            model.fireNewData();
-
-        } catch (Exception ex)
+            results.clear();
+            
+        } else
         {
-            log.error(ex);
-            ex.printStackTrace();
+            addNoneAvailableMsg(noResultsMsg);
         }
-
+        model.fireNewData();
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
+     * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQuery)
      */
-    public synchronized void executionError(final SQLExecutionProcessor processor, final Exception ex)
+    public void executionError(CustomQuery customQuery)
     {
         addNoneAvailableMsg(getResourceString("GetStatsError"));
-
+        
     }
+    
+    
+
 
 
 }

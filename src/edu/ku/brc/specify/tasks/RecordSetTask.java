@@ -506,7 +506,7 @@ public class RecordSetTask extends BaseTask
                         CommandDispatcher.dispatch(cmdAction);
                     } else
                     {
-                        System.out.println(data);
+                        log.debug(data);
                     }
                     
                 }

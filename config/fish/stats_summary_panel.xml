@@ -18,7 +18,7 @@
             </sql>
         </item>
         <item title="Unique Families" useprogress="true">
-            <sql>
+            <sql type="custom" name="UniqueFamilies">
                 <statement>
                   <![CDATA[create temporary table Families1 select TaxonID from determination where DeterminationStatusID = 1]]>
                 </statement>

@@ -17,7 +17,9 @@ package edu.ku.brc.stats;
 import java.awt.Color;
 import java.util.Vector;
 
+import edu.ku.brc.dbsupport.CustomQueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsSerializedGetter;
@@ -53,8 +55,8 @@ public class StatDataItem implements QueryResultsListener
     protected boolean hasStarted        = false;
     protected boolean hasData           = false;
 
-    protected Vector<QueryResultsContainer> qrcs       = new Vector<QueryResultsContainer>();
-    protected Vector<VALUE_TYPE>            valuesType = new Vector<VALUE_TYPE>();
+    protected Vector<QueryResultsContainerIFace> qrcs       = new Vector<QueryResultsContainerIFace>();
+    protected Vector<VALUE_TYPE>                 valuesType = new Vector<VALUE_TYPE>();
 
      // XXX need to get Colors from L&F
     protected Color      linkColor      = Color.BLUE;
@@ -84,22 +86,51 @@ public class StatDataItem implements QueryResultsListener
      * @param formatStr optional format string (%d or %5.2% etc)
      */
     public StatDataItem(final String description, 
+                        final String type, 
                         final String sql, 
                         final String link, 
                         final boolean useProgress,
                         final String formatStr)
     {
         this(description, link, useProgress);
-        this.sql = sql;
+        
+        if (type.equals("sql"))
+        {
+            this.sql = sql;
+    
+            QueryResultsContainer qrc = new QueryResultsContainer(sql);
+            qrc.add(new QueryResultsDataObj(1, 1, formatStr));
+    
+            qrcs.addElement(qrc);
+    
+        } else
+        {
+            CustomQueryResultsContainer qrc = new CustomQueryResultsContainer(sql);
+            qrc.add(new QueryResultsDataObj(1, 1, formatStr));
+    
+            qrcs.addElement(qrc);
 
-        QueryResultsContainer qrc = new QueryResultsContainer(sql);
-        qrc.add(new QueryResultsDataObj(1, 1, formatStr));
-
+  
+        }
+        
+        valuesType.addElement(VALUE_TYPE.Value);     
+        startUp();
+    }
+    
+    /**
+     * Adds Custom Query for Stat instead of Query String
+     * @param customQuery the custom query
+     */
+    public void addCustomQuery(final String     customQueryName,
+                               final VALUE_TYPE valType,
+                               final String     formatStr)
+    {
+        CustomQueryResultsContainer qrc = new CustomQueryResultsContainer(customQueryName);
+        qrc.add( new QueryResultsDataObj(1, 1, formatStr));
+        valuesType.addElement(VALUE_TYPE.Value);
         qrcs.addElement(qrc);
 
-        valuesType.addElement(VALUE_TYPE.Value);
-
-        startUp();
+        //return qrc;
     }
     
     
@@ -269,7 +300,7 @@ public class StatDataItem implements QueryResultsListener
 
         Vector<Object> list = new Vector<Object>();
         int inx = 0;
-        for (QueryResultsContainer qrc : qrcs)
+        for (QueryResultsContainerIFace qrc : qrcs)
         {
             for (QueryResultsDataObj qrcdo : qrc.getQueryResultsDataObjs())
             {
@@ -302,7 +333,7 @@ public class StatDataItem implements QueryResultsListener
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void resultsInError(final QueryResultsContainer qrc)
+    public void resultsInError(final QueryResultsContainerIFace qrc)
     {
         value = "N/A"; // XXX I18N
         model.fireNewData();

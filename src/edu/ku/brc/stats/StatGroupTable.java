@@ -214,7 +214,7 @@ public class StatGroupTable extends JPanel
      * Adds StatItem to group
      * @param item the item to be added
      */
-    public void addDataItem(StatDataItem item)
+    public void addDataItem(final StatDataItem item)
     {
         model.addDataItem(item);
     }

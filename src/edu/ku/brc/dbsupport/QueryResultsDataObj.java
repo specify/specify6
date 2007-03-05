@@ -58,7 +58,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Constructs with object. Sometimes it is convient for the owner to pre-seed the value.
+     * Constructs with object with a format..
      * @param result the value of the object
      * @param formatStr the string format
      */
@@ -72,7 +72,7 @@ public class QueryResultsDataObj
     /**
      * Constructs with object. Sometimes it is convient for the owner to pre-seed the value.
      */
-    public QueryResultsDataObj(Object result)
+    public QueryResultsDataObj(final Object result)
     {
         this(result, null);
     }

@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * A singleton that remembers all the information needed for creating a Database connection. 
@@ -35,7 +34,7 @@ import org.apache.log4j.Logger;
  */
 public class DBConnection
 {
-    private static final Logger log = Logger.getLogger(DBConnection.class);
+    //private static final Logger log = Logger.getLogger(DBConnection.class);
     
     protected String dbUsername;
     protected String dbPassword;
@@ -112,7 +111,7 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"]");
+            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"]");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (Exception ex)

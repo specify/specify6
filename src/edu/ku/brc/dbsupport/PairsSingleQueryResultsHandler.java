@@ -30,9 +30,9 @@ import java.util.Vector;
  */
 public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
 {
-    private QueryResultsGetter    getter    = null;
-    private QueryResultsContainer container = null;
-    private QueryResultsListener  listener  = null;
+    private QueryResultsGetter         getter    = null;
+    private QueryResultsContainerIFace container = null;
+    private QueryResultsListener       listener  = null;
 
     /**
      * Default Constructor
@@ -40,6 +40,7 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
      */
     public PairsSingleQueryResultsHandler()
     {
+        // no-op
     }
     
     //-------------------------------------------
@@ -47,17 +48,17 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
     //-------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, java.util.List)
+     * @see edu.ku.brc.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.dbsupport.QueryResultsListener, java.util.List)
      */
-    public void init(final QueryResultsListener listenerArg, final java.util.List<QueryResultsContainer> list)
+    public void init(final QueryResultsListener listenerArg, final java.util.List<QueryResultsContainerIFace> list)
     {
         throw new RuntimeException("PairsSingleQueryResultsHandler can't handle more than one QueryResultsContainer!");
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, edu.ku.brc.specify.dbsupport.QueryResultsContainer)
+     * @see edu.ku.brc.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.dbsupport.QueryResultsListener, edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    public void init(final QueryResultsListener listenerArg, final QueryResultsContainer containerArg)
+    public void init(final QueryResultsListener listenerArg, final QueryResultsContainerIFace containerArg)
     {
         this.listener  = listenerArg;
         this.container = containerArg;   

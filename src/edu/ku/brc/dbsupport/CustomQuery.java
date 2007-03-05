@@ -15,6 +15,8 @@
 
 package edu.ku.brc.dbsupport;
 
+import java.util.List;
+
 /**
  * Custom Queries must know how to vend a collection of QueryResultsContainers that need to be processed
  *
@@ -26,10 +28,40 @@ package edu.ku.brc.dbsupport;
 public interface CustomQuery
 {
 
+    public boolean isExecutable();
+    
+    /**
+     * Synchronous execution of the query
+     * @return true if executed correctly
+     */
+    public boolean execute();
+    
+    /**
+     * Aysnchronous execution of a query callback notification is on 
+     * @param cql the listener for the results of the exectute
+     * @return
+     */
+    public void execute(CustomQueryListener cql);
+    
+    /**
+     * Returns a list of results.
+     * @return the list of results
+     */
+    public List<?> getDataObjects();
+    
+    /**
+     * @return
+     */
+    public List<QueryResultsDataObj> getResults();
+    
     /**
      * Return a collection QueryResultsContainers that need to be processed
      * @return Return a collection QueryResultsContainers that need to be processed
      */
-    public java.util.List<QueryResultsContainer> getQueryDefinition();
+    public List<QueryResultsContainerIFace> getQueryDefinition();
+    
+    public String getName();
+    
+    //public void clear();
     
 }

@@ -92,6 +92,7 @@
 			<string>$JAVAROOT/activation.jar</string>
 			<string>$JAVAROOT/jdic.jar</string>
 			<string>$JAVAROOT/jdic_stub.jar</string>
+			<string>$JAVAROOT/derby.jar</string>
 			<string>$JAVAROOT/MacAttachmentUtils.jar</string>
 			</array>
 		<key>Properties</key>

@@ -13,26 +13,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.specify.dbsupport.customqueries;
 
+import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 
 /**
- * Custom Query for calculating the how many items were calculated for each year
+ * A custom query for creating percentage of growth for each year
  *
  * @code_status Unknown (auto-generated)
  * 
  * @author rods
- * 
+ *
  */
-public class CatalogedByYearCustomQuery implements CustomQuery
+public class PercentageGrowthCustomQuery implements CustomQuery
 {
-
-    public CatalogedByYearCustomQuery()
+    public PercentageGrowthCustomQuery()
     {
         
     }
@@ -40,9 +44,53 @@ public class CatalogedByYearCustomQuery implements CustomQuery
     //-------------------------------------------
     // CustomQuery Interface
     //-------------------------------------------
-    public java.util.List<QueryResultsContainer> getQueryDefinition()
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#isExecutable()
+     */
+    public boolean isExecutable()
     {
-        Vector<QueryResultsContainer> list = new Vector<QueryResultsContainer>();
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#execute()
+     */
+    public boolean execute()
+    {
+        throw new NotImplementedException("execute is not implemented!");
+    }
+   
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#getResults()
+     */
+    public List<QueryResultsDataObj> getResults()
+    {
+        throw new NotImplementedException("getResults is not implemented!");
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#execute(edu.ku.brc.dbsupport.CustomQueryListener)
+     */
+    public void execute(final CustomQueryListener cql)
+    {
+        throw new NotImplementedException();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#getDataObjects()
+     */
+    public List<?> getDataObjects()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#getQueryDefinition()
+     */
+    public List<QueryResultsContainerIFace> getQueryDefinition()
+    {
+        Vector<QueryResultsContainerIFace> list = new Vector<QueryResultsContainerIFace>();
         QueryResultsContainer ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2001-01-01' and TimestampCreated > '1999-12-31'; ");
         ndbrc.add(new QueryResultsDataObj("2002"));
         ndbrc.add(new QueryResultsDataObj(1, 1));
@@ -77,4 +125,12 @@ public class CatalogedByYearCustomQuery implements CustomQuery
         return list;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#getName()
+     */
+    public String getName()
+    {
+        // TODO Auto-generated method stub
+        return getClass().getSimpleName();
+    }
 }

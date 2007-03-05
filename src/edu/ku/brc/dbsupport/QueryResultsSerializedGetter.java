@@ -14,8 +14,13 @@
  */
 
 package edu.ku.brc.dbsupport;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
+
 
 /**
  * Processes a list of QueryResultsContainer objects (Note: Each QueryResultsContainer contains an SQL statement)
@@ -26,17 +31,19 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class QueryResultsSerializedGetter implements SQLExecutionListener
+public class QueryResultsSerializedGetter implements QRCProcessorListener
 {
+    private static final Logger log = Logger.getLogger(QueryResultsSerializedGetter.class);
+    
     // Data Members
-    protected SQLExecutionProcessor         sqlProc;
-    protected Vector<QueryResultsContainer> qrcs        = new Vector<QueryResultsContainer>();
-    protected boolean                       hasFailed   = false;
-    protected QueryResultsListener          listener;
+    protected Vector<QueryResultsContainerIFace> qrcs        = new Vector<QueryResultsContainerIFace>();
+    protected boolean                            hasFailed   = false;
+    protected QueryResultsListener               listener;
     
     // For Serialized Processing
-    protected boolean                       hasProcessingStarted   = false;
-    protected int                           currentProcessingIndex;
+    protected boolean                            hasProcessingStarted   = false;
+    protected int                                currentProcessingIndex;
+    protected Connection                         connection             = null;
 
     /**
      * Constructs a QueryResultsSerializedGetter for parallel processing.
@@ -62,7 +69,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
      * Adds a QueryResultsContainer and starts its execution on a separate thread.
      * @param qrc the container to be executed
      */
-    public void add(final QueryResultsContainer qrc)
+    public void add(final QueryResultsContainerIFace qrc)
     {
         qrcs.addElement(qrc);
     }
@@ -71,7 +78,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
      * Adds a QueryResultsContainer and starts its execution on a separate thread.
      * @param qrcsArg the collection of containers to be executed
      */
-    public void add(final List<QueryResultsContainer> qrcsArg)
+    public void add(final List<QueryResultsContainerIFace> qrcsArg)
     {
         this.qrcs.addAll(qrcsArg);
         
@@ -83,16 +90,19 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
      * Creates a SQLExec for the QueryResultsContainer and starts it up.
      * @param qrc the container to be executed
      */
-    protected void startContainer(final QueryResultsContainer qrc)
+    protected void startContainer(final QueryResultsContainerIFace qrc)
     {
         if (hasProcessingStarted)
         {
             throw new RuntimeException("Processing has already started!.");
         }
         
-        sqlProc = new SQLExecutionProcessor(this, qrc.getSql());
-        sqlProc.setAutoCloseConnection(false);
-        sqlProc.start();        
+        if (connection == null)
+        {
+            connection = DBConnection.getInstance().createConnection();
+        }
+        
+        qrc.start(this, connection);     
     }
     
     /**
@@ -123,7 +133,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
      * Returns a list of QueryResultsContainers.
      * @return Returns a list of QueryResultsContainers
      */
-    public List<QueryResultsContainer> getQueryResultsContainers()
+    public List<QueryResultsContainerIFace> getQueryResultsContainers()
     {
         return qrcs;
     }
@@ -134,59 +144,66 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
      */
     public void clear()
     {
-        for (QueryResultsContainer qrc : qrcs)
+        for (QueryResultsContainerIFace qrc : qrcs)
         {
             qrc.clear();
         }
         qrcs.clear();
         
+        if (connection != null)
+        {
+            try
+            {
+                connection.close();
+                connection = null;
+                
+            } catch (SQLException ex)
+            {
+                log.error(ex);
+            }
+        }
     }
     
-     //-----------------------------------------------------
-    //-- SQLExecutionListener
     //-----------------------------------------------------
-
-
+    //-- QRCProcessorListener
+    //-----------------------------------------------------
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
+     * @see edu.ku.brc.dbsupport.QRCProcessorListener#exectionDone(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    public synchronized void exectionDone(final SQLExecutionProcessor processor, final java.sql.ResultSet resultSet)
-    {
-        
-        QueryResultsContainer qrc = qrcs.elementAt(currentProcessingIndex);
-        if (resultSet != null)
-        {
-            qrc.processResultSet(resultSet);
-        }
-        
+    public synchronized void exectionDone(final QueryResultsContainerIFace qrc)
+    { 
         currentProcessingIndex++;
         if (currentProcessingIndex == qrcs.size())
         {
             listener.allResultsBack();
-            sqlProc.close();
+            
+            if (connection != null)
+            {
+                try
+                {
+                    connection.close();
+                    connection = null;
+                    
+                } catch (SQLException ex)
+                {
+                    log.error(ex);
+                }
+            }
             
         } else
         {
-            qrc = qrcs.elementAt(currentProcessingIndex);
-            
-            SQLExecutionProcessor newSqlProc = new SQLExecutionProcessor(sqlProc.getDbConnection(), this, qrc.getSql());
-            newSqlProc.setAutoCloseConnection(false);
-            newSqlProc.start();  
-            
-            sqlProc.closeStatement();
-            sqlProc = newSqlProc;
-        }
-     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
-     */
-    public synchronized void executionError(final SQLExecutionProcessor processor, final Exception ex)
-    {
-        // XXX listener.allResultsBack(); // should we call this or not?????
-        
-        hasFailed = true;   
+            QueryResultsContainerIFace nxtQRC = qrcs.elementAt(currentProcessingIndex);
+            nxtQRC.start(this, connection);
+        } 
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QRCProcessorListener#executionError(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
+     */
+    public synchronized void executionError(final QueryResultsContainerIFace qrc)
+    {
+        hasFailed = true;
+    }
     
 }

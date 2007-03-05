@@ -14,6 +14,7 @@
  */
 
 package edu.ku.brc.dbsupport;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -27,13 +28,14 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class QueryResultsGetter
+public class QueryResultsGetter implements QRCProcessorListener
 {
     // Data Members
-    protected Vector<SQLExec>               sqlExecList = new Vector<SQLExec>();
-    protected Vector<QueryResultsContainer> qrcs        = new Vector<QueryResultsContainer>();
-    protected boolean                       hasFailed   = false;
-    protected QueryResultsListener          listener;
+    protected Hashtable<QueryResultsContainerIFace, Boolean> doneHash= new Hashtable<QueryResultsContainerIFace, Boolean>();
+    protected Vector<QueryResultsContainerIFace> qrcs      = new Vector<QueryResultsContainerIFace>();
+    protected int                                doneCount = 0;
+    protected boolean                            hasFailed = false;
+    protected QueryResultsListener               listener;
     
     /**
      * Creates a getter to go get (in parallel) all the containers and their values.
@@ -42,29 +44,26 @@ public class QueryResultsGetter
     public QueryResultsGetter(final QueryResultsListener listener)
     {
        this.listener = listener;
-       
     }
     
     /**
      * Adds a QueryResultsContainer to be processed.
      * @param qrc the QueryResultsContainer to be processed
      */
-    public void add(QueryResultsContainer qrc)
+    public void add(final QueryResultsContainerIFace qrc)
     {
+        doneHash.put(qrc, false);
         qrcs.addElement(qrc);
-        
-        SQLExec sqle = new SQLExec(qrc, this);
-        sqlExecList.addElement(sqle);
-        sqle.init();
+        qrc.start(this, null);
     }
     
     /**
      * Adds a QueryResultsContainer and starts its execution on a separate thread .
      * @param qrcsArg the collection of containers to be executed
      */
-    public void add(final List<QueryResultsContainer> qrcsArg)
+    public void add(final List<QueryResultsContainerIFace> qrcsArg)
     {
-        for (QueryResultsContainer qrc : qrcsArg)
+        for (QueryResultsContainerIFace qrc : qrcsArg)
         {
             add(qrc); // this needs to be done after everything has been added to the qrc
         }
@@ -74,7 +73,7 @@ public class QueryResultsGetter
      * Returns the collection of QueryResultsContainer.
      * @return Returns the collection of QueryResultsContainer
      */
-    public List<QueryResultsContainer> getQueryResultsContainers()
+    public List<QueryResultsContainerIFace> getQueryResultsContainers()
     {
         return qrcs;
     }
@@ -85,11 +84,11 @@ public class QueryResultsGetter
      */
     public boolean isDoneProcessing()
     {
-        for (SQLExec sqle : sqlExecList)
+        for (Boolean bool : doneHash.values())
         {
-            if (!sqle.isProcessed())
+            if (!bool.booleanValue())
             {
-                 return false;
+                return false;
             }
         }
         return true;
@@ -101,138 +100,38 @@ public class QueryResultsGetter
      */
     public void clear()
     {
-        for (SQLExec sqle : sqlExecList)
+        for (QueryResultsContainerIFace qrci : qrcs)
         {
-            sqle.clear();
+            qrci.clear();
         }
-        sqlExecList.clear();
-        
-        for (QueryResultsContainer qrc : qrcs)
-        {
-            qrc.clear();
-        }
+
         qrcs.clear();
-        
+        doneHash.clear();
     }
-    
-    /**
-     * Called when a container is done processing.
-     *
-     * @param qrc the container that is done
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QRCProcessorListener#exectionDone(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    protected synchronized void containerIsDone(final QueryResultsContainer qrc)
+    public synchronized void exectionDone(final QueryResultsContainerIFace qrc)
     {
+        doneHash.put(qrc, true);
         if (isDoneProcessing())
         {
             if (!hasFailed)
             {
                 listener.allResultsBack();
             }
-        }
+        } 
     }
-    
-    /**
-     * Called when a container has an error.
-     *
-     * @param qrc the container that is in error
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QRCProcessorListener#executionError(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    protected synchronized void containerIsInError(final QueryResultsContainer qrc)
+    public synchronized void executionError(final QueryResultsContainerIFace qrc)
     {
+        doneHash.put(qrc, true);
         hasFailed = true;
         listener.resultsInError(qrc);
-        
-        // XXX Maybe here we tell all remain queries to stop ?
     }
-    
-    
-    
-    //----------------------------------------------------------
-    //-- Inner Classes
-    //----------------------------------------------------------
-    /**
-     * This is a class that associated the SQLExecutionProcessor and the Container and 
-     * provides the needed parallelism
-     */
-    class SQLExec implements SQLExecutionListener
-    {
-        protected QueryResultsContainer  qrc;
-        protected SQLExecutionProcessor  sqlProc;
-        protected boolean                isProcessed = false;
-        protected QueryResultsGetter     getter      = null;
-        
-        /**
-         * Creates a mini-processor that knows how to 
-         * @param qrc the container to be processed
-         * @param getter the getter that own this guy
-         */
-        public SQLExec(final QueryResultsContainer qrc, final QueryResultsGetter getter)
-        {
-            this.qrc    = qrc;
-            this.getter = getter;
-        }
-        
-        /**
-         * Starts up the query
-         *
-         */
-        public void init()
-        {
-            sqlProc = new SQLExecutionProcessor(this, qrc.getSql());
-            sqlProc.start();
-        }
-
-        /**
-         * @return return the container
-         */
-        public QueryResultsContainer getQueryResultsContainer()
-        {
-            return qrc;
-        }
-        
-        /**
-         * @return returns whether it has been processed or not
-         */
-        public boolean isProcessed()
-        {
-            return
-            isProcessed;
-        }
-
-        
-        /**
-         * Clean up all data 
-         */
-        public void clear()
-        {
-            qrc     = null;
-            sqlProc = null;
-            getter  = null;
-        }
-        
-        //-----------------------------------------------------
-        //-- SQLExecutionListener
-        //-----------------------------------------------------
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
-         */
-        public synchronized void exectionDone(final SQLExecutionProcessor processor, final java.sql.ResultSet resultSet)
-        {
-            isProcessed = true;
-            qrc.processResultSet(resultSet);
-            getter.containerIsDone(qrc);
-         }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
-         */
-        public synchronized void executionError(final SQLExecutionProcessor processor, final Exception ex)
-        {
-            hasFailed = true;
-            getter.containerIsInError(qrc);
-        }
-       
-    }
-
 
 }

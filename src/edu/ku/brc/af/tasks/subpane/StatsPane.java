@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -39,6 +40,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
 import edu.ku.brc.stats.StatGroupTable;
+import edu.ku.brc.stats.StatGroupTableFromCustomQuery;
 import edu.ku.brc.stats.StatGroupTableFromQuery;
 import edu.ku.brc.stats.StatsMgr;
 
@@ -119,7 +121,7 @@ public class StatsPane extends BaseSubPane
             for (Object obj : rows)
             {
                 Element rowElement = (Element)obj;
-                List<?>    boxes      = rowElement.selectNodes("box");
+                List<?>    boxes   = rowElement.selectNodes("box");
                 maxCols = Math.max(maxCols, boxes.size());
                 if (rowsDef.length() > 0)
                 {
@@ -182,28 +184,47 @@ public class StatsPane extends BaseSubPane
 
                         if (descCol > -1 && valCol > -1 && sqlElement != null)
                         {
-                            String linkStr = null;
-                            int colId      = -1;
-                            Element link = (Element)boxElement.selectSingleNode("link");
+                            boolean isCustom = !getAttr(sqlElement, "type", "sql").equals("sql");
+                            String  linkStr  = null;
+                            int     colId    = -1;
+                            Element link     = (Element)boxElement.selectSingleNode("link");
                             if (link != null)
                             {
                                 linkStr = link.getTextTrim();
                                 colId   = Integer.parseInt(link.attributeValue("colid"));
                             }
+                            
+                            //System.out.println("["+getAttr(sqlElement, "type", "sql")+"]["+isCustom+"]");
                             try
                             {
-                                StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"),
-                                                                                        new String[] {getAttr(boxElement, "desctitle", " "),
-                                                                                                      getAttr(boxElement, "valtitle", " ")},
-                                                                                        sqlElement.getText(),
-                                                                                        descCol,
-                                                                                        valCol,
-                                                                                        useSeparatorTitles,
-                                                                                        getAttr(boxElement, "noresults", null));
-                                group.setLinkInfo(linkStr, colId);
-                                comp = group;
+                                if (isCustom)
+                                {
+                                    StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(boxElement.attributeValue("title"),
+                                                                                            new String[] {getAttr(boxElement, "desctitle", " "),
+                                                                                                          getAttr(boxElement, "valtitle", " ")},
+                                                                                            sqlElement.getText(),
+                                                                                            useSeparatorTitles,
+                                                                                            getAttr(boxElement, "noresults", null));
+                                    group.setLinkInfo(linkStr, colId);
+                                    comp = group;
+                                    group.relayout();
+                                    
+                                } else
+                                {
+                                    StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"),
+                                            new String[] {getAttr(boxElement, "desctitle", " "),
+                                                          getAttr(boxElement, "valtitle", " ")},
+                                            sqlElement.getText(),
+                                            descCol,
+                                            valCol,
+                                            useSeparatorTitles,
+                                            getAttr(boxElement, "noresults", null));
+                                    group.setLinkInfo(linkStr, colId);
+                                    comp = group;
+                                    group.relayout();
+                                }
     
-                                group.relayout();
+                                
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
@@ -212,6 +233,7 @@ public class StatsPane extends BaseSubPane
 
                         } else
                         {
+                            
                             List<?> items = boxElement.selectNodes("item");
                             StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"),
                                                                            new String[] {getAttr(boxElement, "desctitle", " "), getAttr(boxElement, "valtitle", " ")},
@@ -231,36 +253,63 @@ public class StatsPane extends BaseSubPane
                                 }
 
                                 StatDataItem statItem   = new StatDataItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
-                                List<?>      statements = itemElement.selectNodes("sql/statement");
+                                
+                                Element subSqlElement  = (Element)itemElement.selectSingleNode("sql");
+                                boolean isSubSQLCustom = !getAttr(subSqlElement, "type", "sql").equals("sql");
 
-                                if (statements.size() == 1)
+                                if (isSubSQLCustom)
                                 {
-                                    
+                                    // XXX refactor this with code below
                                     String formatStr = null;
                                     Element formatNode = (Element)itemElement.selectSingleNode("sql/format");
                                     if (formatNode != null)
                                     {
                                         formatStr = formatNode.getTextTrim();
                                     }
-                                    statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatDataItem.VALUE_TYPE.Value, formatStr);
 
-                                } else if (statements.size() > 0)
-                                {
-                                    int cnt = 0;
-                                    for (Object stObj : statements)
+                                    String name = getAttr(subSqlElement, "name", null);
+                                    if (StringUtils.isNotEmpty(name))
                                     {
-                                        Element stElement = (Element)stObj;
-                                        int    vRowInx = getAttr(stElement, "row", -1);
-                                        int    vColInx = getAttr(stElement, "col", -1);
-                                        String format  = getAttr(stElement, "format", null);
-                                        if (vRowInx == -1 || vColInx == -1)
+                                        statItem.addCustomQuery(name, StatDataItem.VALUE_TYPE.Value, formatStr);
+                                        
+                                    } else
+                                    {
+                                        log.error("Name is empty for box item ["+getAttr(itemElement, "title", "N/A")+"]");
+                                    }
+                                    
+                                } else
+                                {
+                                    List<?> statements = itemElement.selectNodes("sql/statement");
+    
+                                    if (statements.size() == 1)
+                                    {
+                                        
+                                        String formatStr = null;
+                                        Element formatNode = (Element)itemElement.selectSingleNode("sql/format");
+                                        if (formatNode != null)
                                         {
-                                            statItem.add(stElement.getText(), format); // ignore return object
-                                        } else
-                                        {
-                                            statItem.add(stElement.getText(), vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value, format); // ignore return object
+                                            formatStr = formatNode.getTextTrim();
                                         }
-                                        cnt++;
+                                        statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatDataItem.VALUE_TYPE.Value, formatStr);
+    
+                                    } else if (statements.size() > 0)
+                                    {
+                                        int cnt = 0;
+                                        for (Object stObj : statements)
+                                        {
+                                            Element stElement = (Element)stObj;
+                                            int    vRowInx = getAttr(stElement, "row", -1);
+                                            int    vColInx = getAttr(stElement, "col", -1);
+                                            String format  = getAttr(stElement, "format", null);
+                                            if (vRowInx == -1 || vColInx == -1)
+                                            {
+                                                statItem.add(stElement.getText(), format); // ignore return object
+                                            } else
+                                            {
+                                                statItem.add(stElement.getText(), vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value, format); // ignore return object
+                                            }
+                                            cnt++;
+                                        }
                                     }
                                 }
                                 groupTable.addDataItem(statItem);

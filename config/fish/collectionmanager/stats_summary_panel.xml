@@ -19,26 +19,8 @@
         </item>
         <item title="Unique Families" useprogress="true">
             <sql>
-                <statement>
-                  <![CDATA[create temporary table Families1 select TaxonID from determination where DeterminationStatusID = 1]]>
-                </statement>
-                <statement>
-                  <![CDATA[create temporary table Families2 select DISTINCT tax.TaxonID,tax.nodenumber from Families1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Families1.TaxonID]]>
-                </statement>
-               <statement>
-                  <![CDATA[create temporary table Families3 select DISTINCT tx.TaxonID from Families2, taxon as tx where tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
-                </statement>
                 <statement row="1" col="1">
-                  <![CDATA[select count(*) from Families3]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Families1]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Families2]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Families3]]>
+                    <![CDATA[select count(*) from (select DISTINCT tx.TaxonID from (select DISTINCT tax.TaxonID,tax.nodenumber from (select TaxonID from determination where DeterminationStatusID = 1) as Families1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Families1.TaxonID) as Families2, taxon as tx where tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber) as Familes3]]>
                 </statement>
             </sql>
         </item>
@@ -165,7 +147,22 @@
 		<sql><![CDATA[select TypeStatusName, count(determinationid) AS DeterminationCount from determination where TypeStatusName is not null group by TypeStatusName]]></sql>
     </box>
   </row>
-
+    <row>
+        <box title="Data Entry">
+            <item title="Cataloged in Last 7 Days">
+                <sql type="custom" name="CatalogedLast7Days"/>
+                <link>CatalogedLast7DaysDetail</link>
+            </item>
+            <item title="Cataloged in Last 30 Days">
+                <sql type="custom" name="CatalogedLast30Days"/>
+                <link>CatalogedLastMonth</link>
+            </item>
+            <item title="Cataloged in Last Year">
+                <sql type="custom" name="CatalogedLastYear"/>
+                <link>CatalogedLastYear</link>
+            </item>
+        </box>
+    </row>
 </panel>
 
 <!--

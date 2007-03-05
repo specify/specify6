@@ -80,14 +80,15 @@ public class SpecifyInitializer
      */
     public static boolean setUseCurrentLocation()
     {
-        File file = new File(UICacheManager.getUserDataDir(true));
+        File file = new File(UICacheManager.getUserDataDir(true)); // Check current ocation first
+        //System.err.println(file.getAbsolutePath());
         if (file.exists())
         {
             UICacheManager.setUseCurrentLocation(true);
             
         } else
         {
-            file = new File(UICacheManager.getUserDataDir(false));
+            file = new File(UICacheManager.getUserDataDir(false)); // Check user data location
             if (file.exists())
             {
                 UICacheManager.setUseCurrentLocation(false);

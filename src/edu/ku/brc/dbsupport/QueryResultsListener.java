@@ -38,6 +38,6 @@ public interface QueryResultsListener
      *
      * @param qrc the container in error
      */
-    public void resultsInError(final QueryResultsContainer qrc);
+    public void resultsInError(final QueryResultsContainerIFace qrc);
     
 }

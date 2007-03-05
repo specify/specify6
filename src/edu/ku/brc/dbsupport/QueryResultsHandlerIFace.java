@@ -41,7 +41,7 @@ public interface QueryResultsHandlerIFace
      * @param listener the listener to be notified
      * @param list the list of QueryResultsContainers to be queried for
      */
-    public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainer> list);
+    public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list);
     
     /**
       * Initializes the handler with a listener and a list of containers. The listener is notified when all the results
@@ -49,7 +49,7 @@ public interface QueryResultsHandlerIFace
      * @param listener the listener to be notified
      * @param qrc the single container
      */
-    public void init(final QueryResultsListener listener, final QueryResultsContainer qrc);
+    public void init(final QueryResultsListener listener, final QueryResultsContainerIFace qrc);
      
     /**
      * This tells the handler to issue the Queries and wait for the results.

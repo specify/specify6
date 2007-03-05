@@ -34,6 +34,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsGetter;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
@@ -201,7 +202,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
     /* (non-Javadoc)
      * @see edu.ku.brc.af.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.af.dbsupport.QueryResultsContainer)
      */
-    public void resultsInError(final QueryResultsContainer qrc)
+    public void resultsInError(final QueryResultsContainerIFace qrc)
     {
         // do nothing
     }

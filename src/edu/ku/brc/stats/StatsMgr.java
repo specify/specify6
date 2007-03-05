@@ -2,6 +2,7 @@ package edu.ku.brc.stats;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,8 +40,9 @@ import edu.ku.brc.ui.forms.persist.View;
  */
 public class StatsMgr
 {
-
     private static final Logger log = Logger.getLogger(StatsMgr.class);
+    
+    protected static WeakReference<Element> statDOM = null;
 
     protected static final String DISPLAY   = "display";
     protected static final String BAR_CHART = "bar chart";
@@ -51,23 +53,50 @@ public class StatsMgr
 
     // Data Members
     protected static StatsMgr instance = new StatsMgr();
-    protected static Element  statDOM;
-
 
     /**
      * Singleton Constructor.
      */
     protected StatsMgr()
     {
+
+    }
+    
+    /**
+     * Returns the Statistics DOM.
+     * @return the Statistics DOM.
+     */
+    protected static Element getDOM()
+    {
+        Element dom = null;
+        if (statDOM != null)
+        {
+            dom = statDOM.get();
+        }
+        
+        if (dom == null)
+        {
+            statDOM = new WeakReference<Element>(loadDOM());
+        }
+        return dom;
+    }
+     
+    /**
+     * Load the Statistics DOM.
+     * @return return s the DOM
+     */
+    protected static Element loadDOM()
+    {
+        Element dom = null;
         try
         {
-            statDOM  = AppContextMgr.getInstance().getResourceAsDOM("Statistics"); // Describes each Statistic, its SQL and how it is to be displayed
+            dom  = AppContextMgr.getInstance().getResourceAsDOM("Statistics"); // Describes each Statistic, its SQL and how it is to be displayed
             
         } catch (Exception ex)
         {
             log.error(ex);
-            statDOM  = null;
         }
+        return dom;
     }
     
     /**
@@ -77,15 +106,7 @@ public class StatsMgr
      */
     public static Element getStatisticDOMElement(final String name)
     {
-        if (statDOM != null)
-        {
-            return (Element)statDOM.selectSingleNode("/statistics/stat[@name='"+name+"']");
-            
-        } else
-        {
-            log.error("Stat DOM has not been loaded or was loaded in error!");
-        }
-        return null;
+        return (Element)getDOM().selectSingleNode("/statistics/stat[@name='"+name+"']");
     }
 
     /**
@@ -234,8 +255,8 @@ public class StatsMgr
     protected JPanel createStatPaneInternal(final String statName)
     {
         String nameStr;
-        String idStr = null;
-        int inx = statName.indexOf(',');
+        String idStr    = null;
+        int    inx      = statName.indexOf(',');
         if (inx == -1)
         {
             nameStr = statName;
@@ -245,7 +266,7 @@ public class StatsMgr
             idStr   = statName.substring(inx+4, statName.length());
         }
 
-        Element element = (Element)statDOM.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
+        Element element = (Element)getDOM().selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
         if (element != null)
         {
             String displayType = element.attributeValue(DISPLAY).toLowerCase();
@@ -282,9 +303,9 @@ public class StatsMgr
                     throw new RuntimeException("sql element is null!");
                 }
 
-                StatsTask statTask = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
+                StatsTask    statTask  = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
                 SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), statTask, true, true);
-                String sqlStr = sqlElement.getTextTrim();
+                String       sqlStr    = sqlElement.getTextTrim();
                 if (idStr != null)
                 {
                     int substInx = sqlStr.lastIndexOf("%s");

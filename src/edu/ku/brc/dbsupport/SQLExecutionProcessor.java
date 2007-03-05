@@ -44,18 +44,18 @@ public class SQLExecutionProcessor implements Runnable
     protected boolean              isAutoCloseConnection = true;
 
     /**
-     * Constructs a an object to execute an SQL staement and then notify the listener.
+     * Constructs a an object to execute an SQL staement and then notify the listener. Sets isAutoCloseConnection to true, override with "setAutoCloseConnection".
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
     public SQLExecutionProcessor(final SQLExecutionListener listener, final String sqlStr)
     {
-        this.listener = listener;
-        this.sqlStr   = trimStr(sqlStr);
+        this(null, listener, sqlStr);
     }
 
     /**
-     * Constructs a an object to execute an SQL staement and then notify the listener.
+     * Constructs a an object to execute an SQL staement and then notify the listener. 
+     * Sets isAutoCloseConnection to true if there is a conection, false is connection is null which means it will create one; override with "setAutoCloseConnection".
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
@@ -64,6 +64,8 @@ public class SQLExecutionProcessor implements Runnable
         this.dbConnection = dbConnection;
         this.listener     = listener;
         this.sqlStr       = trimStr(sqlStr);
+        
+        this.isAutoCloseConnection = dbConnection == null;
     }
 
     /**
@@ -104,6 +106,15 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
+     * Returns the sql string.
+     * @return the sqlStr
+     */
+    public String getSqlStr()
+    {
+        return sqlStr;
+    }
+
+    /**
      * Close the DB Connection for this SQL statement.
      *
      */
@@ -117,7 +128,7 @@ public class SQLExecutionProcessor implements Runnable
                 dbStatement = null;
             }
 
-            if (dbConnection != null)
+            if (dbConnection != null && isAutoCloseConnection)
             {
                 dbConnection.close();
                 dbConnection = null;
@@ -191,6 +202,7 @@ public class SQLExecutionProcessor implements Runnable
                 {
                     dbStatement.close();
                 }
+                
                 dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
                 log.debug("SQL ["+sqlStr+"]");

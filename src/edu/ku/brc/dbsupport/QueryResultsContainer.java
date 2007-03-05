@@ -15,10 +15,15 @@
 
 package edu.ku.brc.dbsupport;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Logger;
+
 
 /**
  * A class that conatains a collection of QueryResultsDatObjects and a single SQL statement to be executed.
@@ -30,21 +35,25 @@ import org.apache.log4j.Logger;
  * @author rods
  *
  */
-public class QueryResultsContainer
+public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExecutionListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(QueryResultsContainer.class);
     
     // Data Members
     protected String                      sql;
-    protected Vector<QueryResultsDataObj> qrdos = new Vector<QueryResultsDataObj>();
+    protected Vector<QueryResultsDataObj> qrdos     = new Vector<QueryResultsDataObj>();
+    
+    protected QRCProcessorListener        listener  = null;
+    protected SQLExecutionProcessor       sqlProc;
+    protected boolean                     hasFailed = false;
     
     /**
      * Default constuctor.
      */
     public QueryResultsContainer()
     {
-        
+        // no-op
     }
     
     /**
@@ -80,31 +89,35 @@ public class QueryResultsContainer
      */
     protected void processResultSet(final java.sql.ResultSet resultSet)
     {
-        try
+        if (resultSet != null)
         {
-            if (resultSet.first())
+            try
             {
-                int prvRow = 1;
-                for (QueryResultsDataObj qrdo : qrdos) 
+                if (resultSet.first())
                 {
-                    if (qrdo.isProcessable())
+                    int prvRow = 1;
+                    for (QueryResultsDataObj qrdo : qrdos) 
                     {
-                        int col = qrdo.getCol();
-                        int row = qrdo.getRow();
-                        if (row-1 == prvRow)
+                        if (qrdo.isProcessable())
                         {
-                            resultSet.next();
-                        } else if (row != prvRow) 
-                        {
-                            resultSet.absolute(row);
+                            int col = qrdo.getCol();
+                            int row = qrdo.getRow();
+                            if (row-1 == prvRow)
+                            {
+                                resultSet.next();
+                                
+                            } else if (row != prvRow) 
+                            {
+                                resultSet.absolute(row);
+                            }
+                            qrdo.setResult(resultSet.getObject(col)); // XXX Clone ???
                         }
-                        qrdo.setResult(resultSet.getObject(col)); // XXX Clone ???
                     }
                 }
+            } catch (Exception ex)
+            {
+                log.error(ex);
             }
-        } catch (Exception ex)
-        {
-            log.error(ex);
         }
     }
 
@@ -137,6 +150,78 @@ public class QueryResultsContainer
             qrdo.clear();
         }
         qrdos.clear();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QueryResultsContainerIFace#start(edu.ku.brc.dbsupport.QRCProcessorListener, java.sql.Connection)
+     */
+    public synchronized void start(final QRCProcessorListener listener, final Connection connection)
+    {
+        this.listener = listener;
+
+        sqlProc = new SQLExecutionProcessor(connection, this, sql);
+        sqlProc.start();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QueryResultsContainerIFace#hasFailed()
+     */
+    public synchronized boolean hasFailed()
+    {
+        return hasFailed;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
+     */
+    public synchronized void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
+    {
+        processResultSet(resultSet);
+        
+        // For Debug (although it is called with null results when it is a "create temporary table")
+        //if (resultSet == null)
+        //{
+        //    log.error(sqlProc.getSqlStr());
+        //}
+        
+        sqlProc.close(); // skips close if isAutoClose is set to false or a connect was passed in
+        sqlProc = null;
+
+        
+        final QueryResultsContainer thisItem = this;
+        if (listener != null)
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    listener.exectionDone(thisItem);
+                    
+                }
+            });
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
+     */
+    public synchronized void executionError(final SQLExecutionProcessor process, final Exception ex)
+    {
+        hasFailed = true;
+        sqlProc.close(); // skips close if isAutoClose is set to false or a connect was passed in
+        sqlProc = null;
+        
+        final QueryResultsContainer thisItem = this;
+        if (listener != null)
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    listener.executionError(thisItem);
+                    
+                }
+            });
+            
+        }
     }
     
 }

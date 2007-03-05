@@ -26,6 +26,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
 import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsGetter;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
@@ -158,7 +159,7 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void resultsInError(final QueryResultsContainer qrc)
+    public void resultsInError(final QueryResultsContainerIFace qrc)
     {
 
     }

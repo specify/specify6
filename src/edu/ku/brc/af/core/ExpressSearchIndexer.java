@@ -48,6 +48,7 @@ import org.dom4j.Element;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.SwingWorker;
@@ -134,7 +135,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      */
     protected void startCheckOutOfDateProcess()
     {
-        Vector<QueryResultsContainer> list = new Vector<QueryResultsContainer>();
+        Vector<QueryResultsContainerIFace> list = new Vector<QueryResultsContainerIFace>();
 
         noIndexFile = isLuceneEmpty();
 
@@ -1050,7 +1051,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void resultsInError(final QueryResultsContainer qrc)
+    public void resultsInError(final QueryResultsContainerIFace qrc)
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
 
