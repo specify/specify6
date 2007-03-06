@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.Vector;
@@ -14,7 +16,11 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeDataService;
+import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.util.RankBasedComparator;
 
 /**
@@ -25,7 +31,9 @@ import edu.ku.brc.util.RankBasedComparator;
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
+public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
+                                      D extends TreeDefIface<T,D,I>,
+                                      I extends TreeDefItemIface<T,D,I>>
 										extends AbstractTableModel
 {
 	public static final int NAME_COL        = 0;
@@ -34,9 +42,12 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
 	public static final int ENFORCED_COL    = 3;
     public static final int TEXT_BEFORE_COL = 4;
     public static final int TEXT_AFTER_COL  = 5;
+    public static final int SEPARATOR_COL   = 6;
 	
 	/** A Vector of TreeDefItemIface objects holding the table data. */
 	protected Vector<I> tableData;
+    
+    protected TreeDataService<T,D,I> dataService;
 	
 	/**
      * Creates a new TreeDefEditorTableModel from the given set of def items.
@@ -45,6 +56,7 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
 	 */
 	public TreeDefEditorTableModel(Set<? extends I> defItems)
 	{
+        dataService = TreeDataServiceFactory.createService();
 		tableData = new Vector<I>(defItems);
 		Collections.sort(tableData,new RankBasedComparator());
 	}
@@ -54,7 +66,7 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
 	 */
 	public int getColumnCount()
 	{
-		return 6;
+		return 7;
 	}
 
 	/* (non-Javadoc)
@@ -96,6 +108,10 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
             case TEXT_AFTER_COL:
             {
                 return row.getTextAfter();
+            }
+            case SEPARATOR_COL:
+            {
+                return row.getFullNameSeparator();
             }
 		}
 		return null;
@@ -140,6 +156,11 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
                 row.setTextAfter((String)aValue);
                 break;
             }
+            case SEPARATOR_COL:
+            {
+                row.setFullNameSeparator((String)aValue);
+                break;
+            }
 		}
 	}
 
@@ -155,6 +176,7 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
 			case REMARKS_COL:
             case TEXT_BEFORE_COL:
             case TEXT_AFTER_COL:
+            case SEPARATOR_COL:
 			{
 				return String.class;
 			}
@@ -177,27 +199,31 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
 		{
 			case NAME_COL:
 			{
-				return "Name";
+				return getResourceString("Name");
 			}
 			case REMARKS_COL:
 			{
-				return "Remarks";
+				return getResourceString("Remarks");
 			}
 			case FULLNAME_COL:
 			{
-				return "In Full Name";
+				return getResourceString("InFullName");
 			}
 			case ENFORCED_COL:
 			{
-				return "Enforced";
+				return getResourceString("Enforced");
 			}
             case TEXT_BEFORE_COL:
             {
-                return "Text Before";
+                return getResourceString("TextBefore");
             }
             case TEXT_AFTER_COL:
             {
-                return "Text After";
+                return getResourceString("TextAfter");
+            }
+            case SEPARATOR_COL:
+            {
+                return getResourceString("Separator");
             }
 		}
 		return null;
@@ -209,16 +235,7 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
-		if( tableData.get(rowIndex).getParent() == null )
-		{
-			if( columnIndex == ENFORCED_COL )
-			{
-                // don't allow editing of the "isEnforced" field in the root tree def item 
-				return false;
-			}
-			return true;
-		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -228,23 +245,17 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
      * @param index the location of the new row
 	 * @param element the new row data
 	 */
-	public void add(int index, I element)
+	public int add(I newDefItem, I parentDefItem)
 	{
-		tableData.add(index,element);
-		fireTableRowsInserted(index,index);
-	}
-
-	/**
-     * Adds a new row to the end of the table model.
-     * 
-     * @see java.util.Vector#add(Object)
-	 * @param o the new row data
-	 */
-	public void add(I o)
-	{
-		tableData.add(o);
-		int index = tableData.indexOf(o);
-		fireTableRowsInserted(index,index);
+        boolean success = dataService.addNewTreeDefItem(newDefItem, parentDefItem);
+	    if (success)
+        {
+            int addedIndex = tableData.indexOf(parentDefItem) + 1;
+            tableData.add(addedIndex,newDefItem);
+            fireTableRowsInserted(addedIndex,addedIndex);
+            return addedIndex;
+        }
+        return -1;
 	}
 
 	/**
@@ -279,29 +290,18 @@ public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
 	 * @param index the row index
 	 * @return the removed row
 	 */
-	public I remove(int index)
+	public boolean remove(int index)
 	{
-		I deleted = tableData.remove(index);
-		fireTableRowsDeleted(index,index);
-		return deleted;
-	}
-
-	/**
-     * Removes the given row from the table model.
-     * 
-     * @see java.util.Vector#remove(Object)
-	 * @param o the row data object
-	 * @return true if the data object was in the table model, false otherwise
-	 */
-	public boolean remove(Object o)
-	{
-		int index = tableData.indexOf(o);
-		boolean deleted = tableData.remove(o);
-		
-		if(deleted)
-		{
-			fireTableRowsDeleted(index,index);
-		}
-		return deleted;
+		I deleted = tableData.get(index);
+        boolean removed = dataService.deleteTreeDefItem(deleted);
+        
+        if (removed)
+        {
+            tableData.remove(index);
+            fireTableRowsDeleted(index,index);
+            return true;
+        }
+        
+        return false;
 	}
 }

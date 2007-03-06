@@ -248,7 +248,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.standard = standard;
 	}
 
-    @Column(name = "EndPeriod", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    @Column(name = "EndPeriod", unique = false, nullable = true, insertable = true, updatable = true)
 	public Float getEndPeriod()
 	{
 		return endPeriod;
@@ -259,7 +259,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.endPeriod = end;
 	}
 
-    @Column(name = "EndUncertainty", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    @Column(name = "EndUncertainty", unique = false, nullable = true, insertable = true, updatable = true)
 	public Float getEndUncertainty()
 	{
 		return endUncertainty;
@@ -270,7 +270,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.endUncertainty = endUncertainty;
 	}
 
-    @Column(name = "StartPeriod", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    @Column(name = "StartPeriod", unique = false, nullable = true, insertable = true, updatable = true)
 	public Float getStartPeriod()
 	{
 		return startPeriod;
@@ -281,7 +281,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.startPeriod = start;
 	}
 
-    @Column(name = "AgeStartUncertainty", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    @Column(name = "StartUncertainty", unique = false, nullable = true, insertable = true, updatable = true)
 	public Float getStartUncertainty()
 	{
 		return startUncertainty;

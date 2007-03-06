@@ -355,7 +355,7 @@
             
             <desc><![CDATA[Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
@@ -373,6 +373,18 @@
                 <row>
                     <cell type="label" labelfor="4" label="Is Enforced?"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Text Before"/>
+                    <cell type="field" id="5" name="textBefore"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Text After"/>
+                    <cell type="field" id="6" name="textAfter"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Separator"/>
+                    <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
             </rows>
         </viewdef>

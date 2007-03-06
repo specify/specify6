@@ -143,52 +143,68 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		return root;
 	}
 
-	public synchronized void saveTreeDef(D treeDef, List<I> deletedItems)
-	{
+    public synchronized boolean addNewTreeDefItem(I newDefItem, I parent)
+    {
         log.trace("enter");
-        Session session = getNewSession(treeDef);
-
+        
+        I origChild = parent.getChild();
+        D treeDef = parent.getTreeDef();
+        
+        Session session = getNewSession(newDefItem,treeDef,parent,origChild);
         Transaction tx = session.beginTransaction();
-		
-		// save the TreeDefinitionIface object itself
-		session.saveOrUpdate(treeDef);
-		
-		// save all of the TreeDefinitionItemIface objects
-		for(I o: treeDef.getTreeDefItems())
-		{
-			session.saveOrUpdate(o);
-		}
-		
-		// delete all of the tree def items that were deleted by the user
-		for(I item: deletedItems)
-		{
-			// ignore the items with null ID
-			// they were probably created, then deleted, before ever being persisted
-			if(item.getTreeDefItemId() != null)
-			{
-				session.delete(item);
-			}
-		}
-		
-		try
-		{
-			tx.commit();
-		}
-		catch( Exception ex )
-		{
-			log.error("Failed to save tree data to DB",ex);
-			tx.rollback();
-		}
-        finally
+        
+        parent.setChild(newDefItem);
+        if (origChild!=null)
         {
-            if (session.isOpen())
-            {
-                session.close();
-            }
+            origChild.setParent(newDefItem);
         }
-        log.trace("exit");
-	}
+        treeDef.getTreeDefItems().add(newDefItem);
 
+        session.saveOrUpdate(newDefItem);
+        session.save(treeDef);
+        session.saveOrUpdate(newDefItem.getChild());
+        session.saveOrUpdate(newDefItem.getParent());
+
+        boolean success = commitTransaction(session, tx);
+        log.trace("exit");
+        return success;
+    }
+    
+    public synchronized boolean deleteTreeDefItem(I defItem)
+    {
+        log.trace("enter");
+        Session session = getNewSession(defItem);
+        Transaction tx = session.beginTransaction();
+        
+        boolean canDelete = defItem.canBeDeleted();
+        if (!canDelete)
+        {
+            log.trace("exit");
+            return false;
+        }
+        
+        I parent = defItem.getParent();
+        I child = defItem.getChild();
+        defItem.setParent(null);
+        defItem.setChild(null);
+        
+        parent.setChild(child);
+        if (child!=null)
+        {
+            child.setParent(parent);
+        }
+        
+        defItem.getTreeDef().getTreeDefItems().remove(defItem);
+        defItem.setTreeDef(null);
+        session.delete(defItem);
+        session.saveOrUpdate(parent);
+        session.saveOrUpdate(child);
+        
+        boolean success = commitTransaction(session, tx);
+        log.trace("exit");
+        return success;
+    }
+    
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getAllTreeDefs(java.lang.Class)
 	 */

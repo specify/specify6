@@ -86,7 +86,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/** Cell renderer for displaying individual nodes in the tree. */
 	protected TreeDataListCellRenderer<T,D,I> listCellRenderer;
 	/** A header for the tree, displaying the names of the visible levels. */
-	protected TreeDataListHeader[] listHeaders;
+	@SuppressWarnings("unchecked")
+    protected TreeDataListHeader[] listHeaders;
 	
 	protected JPanel[] treeListPanels;
     

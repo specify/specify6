@@ -72,6 +72,6 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public void moveTreeNode(T node, T newParent, T rootNode);
     
-    // deprecated methods from session-based implementations
-    public void saveTreeDef(D treeDef,List<I> deletedItems);
+    public boolean addNewTreeDefItem(I newDefItem, I parentDefItem);
+    public boolean deleteTreeDefItem(I defItem);
 }

@@ -205,7 +205,10 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
             ((FormViewObj)form).saveObject();
         }
         
-        callback.editCompleted((T)dataObj);
+        if (callback!=null)
+        {
+            callback.editCompleted((T)dataObj);
+        }
     }
     
     /**
@@ -218,7 +221,10 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
     {
         setVisible(false);
 
-    	callback.editCancelled((T)form.getDataObj());
+        if (callback!=null)
+        {
+            callback.editCancelled((T)form.getDataObj());
+        }
     }
     
     /**

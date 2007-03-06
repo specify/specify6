@@ -14,40 +14,28 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellEditor;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.treeutils.TreeDataService;
-import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.JStatusBar;
@@ -71,9 +59,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	// Non-GUI members
 	//////////////////
 	
-	protected TreeDataService<T,D,I> dataService;
 	protected D displayedDef;
-	protected Vector<I> deletedItems;
 
 	//////////////
 	// GUI widgets
@@ -87,7 +73,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	
 	// main user interaction widget
 	protected JTable defItemsTable;
-	protected TreeDefEditorTableModel<I> tableModel;
+	protected TreeDefEditorTableModel<T,D,I> tableModel;
 	
 	// north panel widgets
 	protected JLabel defNameLabel;
@@ -98,10 +84,9 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	// south panel widgets
 	protected JButton deleteItemButton;
 	protected JButton newItemButton;
+    protected JButton editItemButton;
 	
 	protected Color errorColor;
-	
-	protected boolean unsavedChanges;
 	
 	/**
 	 *
@@ -113,21 +98,20 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	public TreeDefinitionEditor(D treeDef, String name, Taskable task)
 	{
 		super(name,task);
-		dataService = TreeDataServiceFactory.createService();
-		displayedDef = dataService.getTreeDef((Class<D>)treeDef.getClass(),treeDef.getTreeDefId());
-		if(displayedDef == null)
-		{
-			throw new RuntimeException("Tree data service unable to locate the specified tree defintion in the DB");
-		}
-		deletedItems = new Vector<I>();
-		
+        
+        if (treeDef==null)
+        {
+            throw new NullPointerException("treeDef must be non-null");
+        }
+        
+		displayedDef = treeDef;
+        
 		initUI();
+        
 		messageLabel.setText("Please wait while the tree is prepared");
 		messageLabel.setIcon(null);
 		add(messageLabel);
 		repaint();
-		
-		unsavedChanges = false;
 		
 		initTreeDefEditorComponent(displayedDef);
 	}
@@ -140,30 +124,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	@Override
 	public boolean aboutToShutdown()
 	{
-		if(!unsavedChanges)
-		{
-			return true;
-		}
-		
-		// show a popup to ask user about unsaved changes
-		String save = getResourceString("Save");
-		String discard = getResourceString("Discard");
-		String cancel = getResourceString("Cancel");
-		JOptionPane popup = new JOptionPane("Save changes before closing?",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_CANCEL_OPTION,null,new String[] {cancel,discard,save});
-		JDialog dialog = popup.createDialog(this,"Unsaved Changes");
-		SubPaneMgr.getInstance().showPane(this);
-		dialog.setVisible(true);
-		Object userOpt = popup.getValue();
-		if(userOpt == save)
-		{
-			saveToDb();
-			return true;
-		}
-		else if(userOpt == cancel)
-		{
-			return false;
-		}
-
 		return true;
 	}
 
@@ -219,54 +179,53 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 				deleteItem(defItemsTable.getSelectedRow());
 			}
 		});
-		newItemButton = new JButton("New");
-		newItemButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				newItem(defItemsTable.getSelectedRow());
-			}
-		});
+        newItemButton = new JButton("New");
+        newItemButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                newItem(defItemsTable.getSelectedRow());
+            }
+        });
+        editItemButton = new JButton("Edit");
+        editItemButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                editTreeDefItem(defItemsTable.getSelectedRow());
+            }
+        });
 		
 		// add south panel widgets
 		southPanel.add(Box.createHorizontalGlue());
 		southPanel.add(deleteItemButton);
-		southPanel.add(Box.createRigidArea(horizSpacer));
-		southPanel.add(newItemButton);
+        southPanel.add(Box.createRigidArea(horizSpacer));
+        southPanel.add(newItemButton);
+        southPanel.add(Box.createRigidArea(horizSpacer));
+        southPanel.add(editItemButton);
 		
 		enableSelectionSensativeButtons(false);
 	}
-	
+    
 	protected void initTreeDefEditorComponent(D treeDef)
 	{
 		Set<I> defItems = treeDef.getTreeDefItems();
-		tableModel = new TreeDefEditorTableModel<I>(defItems);
+		tableModel = new TreeDefEditorTableModel<T,D,I>(defItems);
 		defItemsTable = new JTable(tableModel);
-		defItemsTable.setRowHeight(24);
-        TableCellEditor stringCellEditor = new DefaultCellEditor(new JTextField());
-        defItemsTable.setDefaultEditor(String.class, stringCellEditor);
-        TableCellEditor booleanCellEditor = new DefaultCellEditor(new JCheckBox());
-        defItemsTable.setDefaultEditor(Boolean.class, booleanCellEditor);
-        CellEditorListener editListener = new CellEditorListener()
+        defItemsTable.addMouseListener(new MouseAdapter()
         {
-            public void editingCanceled(ChangeEvent e)
+            @Override
+            public void mouseClicked(MouseEvent e)
             {
-                // ignore this ?
-            }
-            public void editingStopped(ChangeEvent e)
-            {
-                unsavedChanges = true;
-            }
-        };
-        stringCellEditor.addCellEditorListener(editListener);
-        booleanCellEditor.addCellEditorListener(editListener);
-        tableModel.addTableModelListener(new TableModelListener()
-        {
-            public void tableChanged(TableModelEvent e)
-            {
-                System.out.println("table data change detected");
+                if (e.getClickCount()==2)
+                {
+                    int index = defItemsTable.getSelectedRow();
+                    editTreeDefItem(index);
+                }
             }
         });
+		defItemsTable.setRowHeight(24);
+
 		addSelectionListener();
 		defItemsTable.setRowSelectionAllowed(true);
 		defItemsTable.setColumnSelectionAllowed(false);
@@ -286,6 +245,32 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		repaint();
 	}
 	
+    protected void editTreeDefItem(int index)
+    {
+        if (index==-1)
+        {
+            return;
+        }
+        
+        log.info("Edit row " + index);
+        I defItem = tableModel.get(index);
+        
+        showItemEditDialog(defItem, "Edit Tree Level", null, false);
+        
+        tableModel.fireTableRowsUpdated(index, index);
+    }
+
+    protected void showItemEditDialog(I defItem, String title, EditDialogCallback<I> callback, boolean isNewItem )
+    {
+        log.debug("showing item edit dialog");
+        
+        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(defItem);
+        EditFormDialog<I> editDialog = new EditFormDialog<I>(formsNames.first,formsNames.second,title,callback,isNewItem);
+        editDialog.setModal(true);
+        editDialog.setData(defItem);
+        editDialog.setVisible(true);
+    }
+    
 	protected void addSelectionListener()
 	{
 		ListSelectionListener sl = new ListSelectionListener()
@@ -307,15 +292,11 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		defItemsTable.getSelectionModel().addListSelectionListener(sl);
 	}
 	
-//    protected void addEditListener()
-//    {
-//        defItemsTable.add
-//    }
-    
 	protected void enableSelectionSensativeButtons(boolean enable)
 	{
 		deleteItemButton.setEnabled(enable);
 		newItemButton.setEnabled(enable);
+        editItemButton.setEnabled(enable);
 	}
 	
 	public void clearStatus()
@@ -346,40 +327,51 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 			return;
 		}
 		
-		I parent = tableModel.get(index);
-		I newItem = (I)TreeFactory.createNewTreeDefItem(parent.getClass(),null,"New Level");
+		final I parent = tableModel.get(index);
+        final I origChild = parent.getChild();
+		final I newItem = (I)TreeFactory.createNewTreeDefItem(parent.getClass(),null,"New Level");
 
-		// just set the parent item to have it available after the edit form is gone
+        // we can only set the pointers from the newItem side right now
+        // otherwise, if the user cancels, we end up with 'dirty' collections in the other objects
+        newItem.setTreeDef(displayedDef);
 		newItem.setParent(parent);
+        if (origChild!=null)
+        {
+            newItem.setChild(origChild);
+            newItem.setRankId( (int)(.5 * (origChild.getRankId() + parent.getRankId())));
+        }
+        else
+        {
+            newItem.setRankId( parent.getRankId() + 20);
+        }
+        
+        EditDialogCallback<I> callback = new EditDialogCallback<I>()
+        {
+            public void editCancelled(I dataObj)
+            {
+                // undo the parent/child changes that we made
+                newItem.setTreeDef(null);
+                newItem.setParent(null);
+                newItem.setChild(null);
+            }
 
-		I child = parent.getChild();
-		
-		// fix up the rest of the parent/child pointers
-		if( child != null )
-		{
-			child.setParent(newItem);
-			newItem.setChild(child);
-			newItem.setRankId( (int)(.5 * (child.getRankId() + parent.getRankId())) );
-		}
-		else
-		{
-			newItem.setRankId( parent.getRankId() + 200 );
-		}
-		parent.setChild(newItem);
-		
-		displayedDef.getTreeDefItems().add(newItem);
-		newItem.setTreeDef(displayedDef);
-		
-		int insertIndex = tableModel.indexOf(parent)+1;
-		tableModel.add(insertIndex,newItem);
-		
-		showMessage("New def item added");
-		defItemsTable.getSelectionModel().setSelectionInterval(insertIndex,insertIndex);
-		unsavedChanges = true;
+            public void editCompleted(I dataObj)
+            {
+                int addedIndex = tableModel.add(newItem,parent);
+                
+                if (addedIndex != -1)
+                {
+                    showMessage("New tree level added");
+                    defItemsTable.getSelectionModel().setSelectionInterval(addedIndex,addedIndex);
+                }
+            }
+        };
+        
+        showItemEditDialog(newItem,"Edit Tree Level",callback,true);
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to handle the creation and editing of a new TreeDefinitionIface object.
+	// Methods to handle the editing of a new TreeDefinitionIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
@@ -394,7 +386,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 			public void editCompleted(D dataObj)
 			{
 				defNameLabel.setText(dataObj.getName());
-				unsavedChanges = true;
 			}
 			public void editCancelled(D dataObj)
 			{
@@ -416,7 +407,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to handle the editing of an existing TreeDefinitionItemIface object.
+	// Methods to handle the deletion of an existing TreeDefinitionItemIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
 	
 	protected void deleteItem(int index)
@@ -425,58 +416,15 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		{
 			return;
 		}
-		
-		
-		I item = tableModel.get(index);
-
-		if(!item.canBeDeleted())
-		{
-			//TODO: make this some sort of message on the GUI
-			log.warn("Tree definition item cannot be deleted.  Tree nodes reference this def item.");
-			showError("Item cannot be deleted");
-			return;
-		}
-		
-		I parent = item.getParent();
-		I child = item.getChild();
-
-		// detach this object from the rest of the def items
-		item.setParent(null);
-		item.setChild(null);
-		if(parent!=null)
-		{
-			parent.setChild(null);
-		}
-		if(child!=null)
-		{
-			child.setParent(null);
-		}
-		
-		// if both parent and child existed, tie them together.
-		if(parent!=null && child!=null)
-		{
-			parent.setChild(child);
-			child.setParent(parent);
-		}
-		
-		item.setTreeDef(null);
-		displayedDef.getTreeDefItems().remove(item);
-		deletedItems.add(item);
-		
-		tableModel.remove(item);
-		showMessage("Item deleted");
-		
-		unsavedChanges = true;
-	}
-	
-	/////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to handle saving to DB
-	/////////////////////////////////////////////////////////////////////////////////////////
-	
-	public void saveToDb()
-	{
-		dataService.saveTreeDef(displayedDef,deletedItems);
-		showMessage("Tree Definition Saved");
-		unsavedChanges = false;
+        
+        boolean removed = tableModel.remove(index);
+		if (removed)
+        {
+		    showMessage("Tree level deleted");
+        }
+        else
+        {
+            showMessage("Unable to delete selected tree level");
+        }
 	}
 }
