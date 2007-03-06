@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @code_status Beta
  * 
- * @author rods
+ * @author rods, jstewart
  *
  */
 public interface BusinessRulesIFace
@@ -69,6 +69,23 @@ public interface BusinessRulesIFace
      */
     public String getDeleteMsg(Object dataObj);
     
+    /**
+     * Called BEFORE committing a transaction in which the passed in data object will
+     * be saved to the DB.  This can be called on newly created objects or existing data
+     * objects that have been editted.
+     * 
+     * @param dataObj the object being saved
+     */
+    public void beforeSave(Object dataObj);
+    
+    /**
+     * Called AFTER committing a transaction in which the passed in data object will
+     * be saved to the DB.  This can be called on newly created objects or existing data
+     * objects that have been editted.
+     * 
+     * @param dataObj the object that was saved
+     */
+    public void afterSave(Object dataObj);
     
     public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon);
     

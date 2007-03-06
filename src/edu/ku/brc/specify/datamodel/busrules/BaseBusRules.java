@@ -199,6 +199,21 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public abstract boolean okToDelete(Object dataObj);
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterSave(java.lang.Object)
+     */
+    public void afterSave(Object dataObj)
+    {
+        // do nothing
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
+     */
+    public void beforeSave(Object dataObj)
+    {
+        // do nothing
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusinessRules(java.lang.Object)
