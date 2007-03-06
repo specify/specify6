@@ -55,7 +55,7 @@ import org.hibernate.annotations.CascadeType;
 public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable 
 {
 
-    // Fields    
+     // Fields    
 
      protected Long                              workbenchTemplateId;
      protected String                            name;
@@ -63,11 +63,13 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      protected Set<Workbench>                    workbenches;
      protected Set<WorkbenchTemplateMappingItem> workbenchTemplateMappingItems;
      protected SpecifyUser                       specifyUser;
+     protected String                            srcFilePath;
 
     // Constructors
 
     /** default constructor */
-    public WorkbenchTemplate() {
+    public WorkbenchTemplate() 
+    {
         //
     }
     
@@ -85,11 +87,12 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         super.init();
         
         workbenchTemplateId = null;
-        name = null;
-        remarks = null;
-        workbenches = new HashSet<Workbench>();
+        name                = null;
+        srcFilePath         = null;
+        remarks             = null;
+        workbenches         = new HashSet<Workbench>();
         workbenchTemplateMappingItems = new HashSet<WorkbenchTemplateMappingItem>();
-        specifyUser = null;
+        specifyUser         = null;
     }
     
     // End Initializer
@@ -143,6 +146,25 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         this.name = name;
     }
 
+    /**
+     * Returns the path to the original File.
+     * @return the path to the original File.
+     */
+    @Column(name = "SrcFilePath", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getSrcFilePath()
+    {
+        return srcFilePath;
+    }
+
+    /**
+     * Sets the path to the original file.
+     * @param srcFilePath the path.
+     */
+    public void setSrcFilePath(String srcFilePath)
+    {
+        this.srcFilePath = srcFilePath;
+    }
+    
     /**
      * 
      */

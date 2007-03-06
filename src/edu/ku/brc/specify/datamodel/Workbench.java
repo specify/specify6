@@ -60,19 +60,20 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
 
     // Fields    
 
-     protected Long workbenchId;
-     protected String name;
-     protected Integer dbTableId;
-     protected String remarks;
-     protected Integer formId;
-     protected String exportInstitutionName;
-     protected Integer ownerPermissionLevel;
-     protected Integer groupPermissionLevel;
-     protected Integer allPermissionLevel;
-     protected WorkbenchTemplate workbenchTemplate;
-     protected Set<WorkbenchDataItem> workbenchDataItems;
-     protected SpecifyUser specifyUser;
-     protected UserGroup group;
+    protected Long                   workbenchId;
+    protected String                 name;
+    protected Integer                dbTableId;
+    protected String                 remarks;
+    protected Integer                formId;
+    protected String                 exportInstitutionName;
+    protected Integer                ownerPermissionLevel;
+    protected Integer                groupPermissionLevel;
+    protected Integer                allPermissionLevel;
+    protected WorkbenchTemplate      workbenchTemplate;
+    protected Set<WorkbenchDataItem> workbenchDataItems;
+    protected SpecifyUser            specifyUser;
+    protected UserGroup              group;
+    protected String                 srcFilePath;
 
      // TRansient Data
      protected Vector<WorkbenchRow> rows;
@@ -85,7 +86,8 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     }
     
     /** constructor with id */
-    public Workbench(Long workbenchId) {
+    public Workbench(Long workbenchId) 
+    {
         this.workbenchId = workbenchId;
     }
    
@@ -100,11 +102,12 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         remarks = null;
         formId = null;
         exportInstitutionName = null;
+        srcFilePath = null;
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel = null;
         workbenchTemplate = null;
-        workbenchDataItems = new HashSet<WorkbenchDataItem>();       
+        workbenchDataItems = new HashSet<WorkbenchDataItem>();
         specifyUser = null;
         group = null;
         rows = new Vector<WorkbenchRow>();
@@ -209,6 +212,26 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     
     public void setExportInstitutionName(String exportInstitutionName) {
         this.exportInstitutionName = exportInstitutionName;
+    }
+    
+
+    /**
+     * Returns the path to the original File.
+     * @return the path to the original File.
+     */
+    @Column(name = "SrcFilePath", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getSrcFilePath()
+    {
+        return srcFilePath;
+    }
+
+    /**
+     * Sets the path to the original file.
+     * @param srcFilePath the path.
+     */
+    public void setSrcFilePath(String srcFilePath)
+    {
+        this.srcFilePath = srcFilePath;
     }
     /**
      * 

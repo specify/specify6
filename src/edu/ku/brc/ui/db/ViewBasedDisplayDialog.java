@@ -163,6 +163,15 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
         }
     }
 
+    /**
+     * Returns true if cancelled.
+     * @return true if cancelled.
+     */
+    public boolean isCancelled()
+    {
+        return mainPanel.isCancelled();
+    }
+
     //------------------------------------------------------------
     //-- ViewBasedDisplayIFace Interface
     //------------------------------------------------------------

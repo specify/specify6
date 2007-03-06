@@ -37,9 +37,10 @@ public class WorkbenchFormPane extends FormPane
 {
 
     /**
-     * @param name
-     * @param task
-     * @param desc
+     * Create a Form Pane for the Workbench.
+     * @param name the name of the pane
+     * @param task the owning task
+     * @param desc a description of the pane
      */
     public WorkbenchFormPane(String name, Taskable task, String desc)
     {
@@ -47,13 +48,15 @@ public class WorkbenchFormPane extends FormPane
     }
 
     /**
-     * @param name
-     * @param task
-     * @param viewSetName
-     * @param viewName
-     * @param mode
-     * @param data
-     * @param options
+     * Create a Form Pane for the Workbench.
+     * 
+     * @param name the name of the pane
+     * @param task the owning task
+     * @param viewSetName the viewSet name
+     * @param viewName the view name
+     * @param mode the mode (edit or View)
+     * @param data the data to be placed in the form
+     * @param options the MultiView options
      */
     public WorkbenchFormPane(String name, Taskable task, String viewSetName, String viewName,
             String mode, Object data, int options)
@@ -62,18 +65,22 @@ public class WorkbenchFormPane extends FormPane
     }
 
     /**
-     * @param name
-     * @param task
-     * @param view
-     * @param mode
-     * @param data
-     * @param options
+     * Create a Form Pane for the Workbench.
+     * @param name the name of the pane
+     * @param task the owning task
+     * @param view the view to use to create the form
+     * @param mode the mode (edit or View)
+     * @param data the data to be placed in the form
+     * @param options the MultiView options
      */
     public WorkbenchFormPane(String name, Taskable task, View view, String mode, Object data, int options)
     {
         super(name, task, view, mode, data, options);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.FormPane#aboutToShutdown()
+     */
     @Override
     public boolean aboutToShutdown()
     {
@@ -99,6 +106,9 @@ public class WorkbenchFormPane extends FormPane
         return super.aboutToShutdown();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.FormPane#shutdown()
+     */
     @Override
     public void shutdown()
     {

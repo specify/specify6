@@ -75,6 +75,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     protected JButton        cancelBtn    = null;
     protected JPanel         contentPanel;
     protected Window         parentWin;
+    protected boolean        isCancelled = false;
 
     /**
      * Constructor.
@@ -228,6 +229,15 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         return cancelBtn;
     }
 
+    /**
+     * Returns true if cancelled.
+     * @return true if cancelled.
+     */
+    public boolean isCancelled()
+    {
+        return isCancelled;
+    }
+
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
@@ -241,6 +251,11 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             if (isOkButton)
             {
                 multiView.getDataFromUI();
+                isCancelled = false;
+                
+            } else
+            {
+                isCancelled = true;
             }
             propertyChangeListener.propertyChange(new PropertyChangeEvent(this, isOkButton ? "OK" : "Cancel", null, null));
         }
