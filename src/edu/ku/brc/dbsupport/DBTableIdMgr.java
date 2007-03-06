@@ -39,6 +39,7 @@ import org.dom4j.io.SAXReader;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -140,6 +141,8 @@ public class DBTableIdMgr
                     TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
                     tblInfo.setForWorkBench(isWorkbench);
                     tblInfo.setForQuery(isQuery);
+                    tblInfo.setBusinessRule(XMLHelper.getAttr(tableNode, "businessrule", null));
+                    
 					instance.hash.put(tableId, tblInfo); 
                     
                     Element idElement = (Element)tableNode.selectSingleNode("id");
@@ -452,6 +455,65 @@ public class DBTableIdMgr
         }
         return null;
     }
+    
+    /**
+     * Returns a business rule object for a given class.
+     * @param data the data that might have a business rule class
+     * @return the business rule object or null
+     */
+    public static BusinessRulesIFace getBusinessRule(Object data)
+    {
+        if (data != null)
+        {
+            return getBusinessRule(data.getClass());
+        }
+        return null;
+    }
+
+    /**
+     * Returns a business rule object for a given class name.
+     * @param classOfObj the class to look up
+     * @return the business rule object or null
+     */
+    public static BusinessRulesIFace getBusinessRule(String className)
+    {
+        try
+        {
+            return getBusinessRule(Class.forName(className));
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+        return null;
+    }
+
+    /**
+     * Returns a business rule object for a given class.
+     * @param classOfObj the class to look up
+     * @return the business rule object or null
+     */
+    public static BusinessRulesIFace getBusinessRule(Class classOfObj)
+    {
+        TableInfo ti = getByClassName(classOfObj.getName());
+        if (ti != null)
+        {
+            String br = ti.getBusinessRule();
+            if (StringUtils.isNotEmpty(br))
+            {
+                try
+                {
+                    return (BusinessRulesIFace)Class.forName(br).newInstance();
+                    
+                } catch (Exception ex)
+                {
+                    log.error("Bad Busniess Rule class name["+br+"]");
+                    log.error(ex);
+                }
+            }
+        }
+        return null;
+    }
 
 	// ------------------------------------------------------
 	// Inner Classes
@@ -465,6 +527,7 @@ public class DBTableIdMgr
 		protected Class<?> classObj;
         protected boolean  isForWorkBench   = false;
         protected boolean  isForQuery       = false;
+        protected String   businessRule;
         
         // ID Fields
         protected String idColumnName;
@@ -660,6 +723,16 @@ public class DBTableIdMgr
         public void setForQuery(boolean isForQuery)
         {
             this.isForQuery = isForQuery;
+        }
+
+        public String getBusinessRule()
+        {
+            return businessRule;
+        }
+
+        public void setBusinessRule(String busniessRule)
+        {
+            this.businessRule = busniessRule;
         }
 
         public TableRelationship getRelationshipByName(String name)

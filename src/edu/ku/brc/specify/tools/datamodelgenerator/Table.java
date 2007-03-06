@@ -19,6 +19,7 @@ public class Table implements Comparable<Table>
 	private String                   tableId;
     private boolean                  workbench;
     private boolean                  query;
+    private String                   businessRule;
 	private Collection<Field>        fields        = new ArrayList<Field>();
 	private Collection<Id>           ids           = new ArrayList<Id>();
 	private Collection<Relationship> relationships = new ArrayList<Relationship>();
@@ -36,7 +37,8 @@ public class Table implements Comparable<Table>
                  String tableId, 
                  Display display,
                  boolean workbench,
-                 boolean query)
+                 boolean query, 
+                 String businessRule)
 	{
 		this.name      = name;
 		this.table     = table;
@@ -45,6 +47,7 @@ public class Table implements Comparable<Table>
         this.display   = display;
         this.workbench = workbench;
         this.query     = query;
+        this.businessRule = businessRule;
 	}
 
 	/**
@@ -208,6 +211,11 @@ public class Table implements Comparable<Table>
     public boolean getQuery()
     {
         return query;
+    }
+
+    public String getBusinessRule()
+    {
+        return businessRule;
     }
 
     // Comparable

@@ -14,6 +14,7 @@ public class TableMetaData
     private Display display;
     private boolean isForWorkBench;
     private boolean isForQuery;
+    private String businessRule;
 
 	/**
 	 * @param id
@@ -24,13 +25,15 @@ public class TableMetaData
                          final String  className, 
                          final Display display, 
                          final boolean isForWorkBench,
-                         final boolean isForQuery)
+                         final boolean isForQuery,
+                         final String businessRule)
 	{
 		this.id             = id;
         this.className      = className;
         this.display        = display;
         this.isForWorkBench = isForWorkBench;
         this.isForQuery     = isForQuery;
+        this.businessRule   = businessRule;
 	}
 
 	public String getId()
@@ -61,6 +64,11 @@ public class TableMetaData
     public boolean isForQuery()
     {
         return isForQuery;
+    }
+
+    public String getBusinessRule()
+    {
+        return businessRule;
     }
 
 }

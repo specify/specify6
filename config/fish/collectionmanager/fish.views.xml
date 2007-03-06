@@ -4,7 +4,6 @@
     <views>
         <view name="Accession"
               class="edu.ku.brc.specify.datamodel.Accession"
-              busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules"
               resourcelabels="false">
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
@@ -50,7 +49,6 @@
 
         <view name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
-            busrules="edu.ku.brc.specify.datamodel.busrules.AgentBusRules"
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
             <altviews defaultmode="view" selector="agentType">
@@ -115,7 +113,6 @@
 
         <view name="CollectionObject"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
             resourcelabels="false"
             >
             <desc><![CDATA[The Collection Object form.]]></desc>
@@ -160,7 +157,6 @@
         
         <view name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
-            busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
@@ -171,7 +167,6 @@
         
         <view name="LoanItems"
             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
-            busrules="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRule"
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
@@ -220,7 +215,6 @@
 
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
-            busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRules"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews  defaultmode="view">
@@ -275,7 +269,6 @@
         
         <view name="Shipment"
             class="edu.ku.brc.specify.datamodel.Shipment"
-            busrules="edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules"
             resourcelabels="false">
             <desc><![CDATA[Shipment Subform within the Loan Object form.]]></desc>
             <altviews>

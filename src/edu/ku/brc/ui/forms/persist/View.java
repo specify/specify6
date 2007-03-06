@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
 /**
@@ -231,18 +232,24 @@ public class View implements Comparable<View>
      */
     public BusinessRulesIFace getBusinessRule()
     {
-        if (businessRule == null && StringUtils.isNotEmpty(businessRulesClassName))
+        if (businessRule == null)
         {
-            try 
+            if (StringUtils.isNotEmpty(businessRulesClassName))
             {
-                businessRule =  (BusinessRulesIFace)Class.forName(businessRulesClassName).newInstance();
-                 
-            } catch (Exception e) 
+                try 
+                {
+                    businessRule =  (BusinessRulesIFace)Class.forName(businessRulesClassName).newInstance();
+                     
+                } catch (Exception e) 
+                {
+                    
+                    InternalError error = new InternalError("Can't instantiate BusinessRulesIFace [" + businessRulesClassName + "]");
+                    error.initCause(e);
+                    throw error;
+                }
+            } else
             {
-                
-                InternalError error = new InternalError("Can't instantiate BusinessRulesIFace [" + businessRulesClassName + "]");
-                error.initCause(e);
-                throw error;
+                businessRule = DBTableIdMgr.getBusinessRule(className);
             }
         }
         

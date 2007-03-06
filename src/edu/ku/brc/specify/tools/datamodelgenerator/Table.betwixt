@@ -8,6 +8,7 @@
 		<attribute name="view" property="defaultView"/>
 		<attribute name="workbench" property="workbench"/>
 		<attribute name="query" property="query"/>
+		<attribute name="businessrule" property="businessRule"/>
 		<addDefaults/>
 	</element>
 </info>

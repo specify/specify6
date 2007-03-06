@@ -148,7 +148,8 @@ public class DatamodelGenerator
                          tableMetaData.getId(), 
                          tableMetaData.getDisplay(),
                          tableMetaData.isForWorkBench(),
-                         tableMetaData.isForQuery());
+                         tableMetaData.isForQuery(),
+                         tableMetaData.getBusinessRule());
 
 	}
 
@@ -471,9 +472,15 @@ public class DatamodelGenerator
                     boolean isWorkBench = XMLHelper.getAttr(element, "workbench", false);
                     boolean isQuery     = XMLHelper.getAttr(element, "query", false);
                     
+                    String busRule      = "";
+                    Element brElement = (Element)element.selectSingleNode("businessrule");
+                    if (brElement != null)
+                    {
+                        busRule = brElement.getTextTrim();
+                    }
 					log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
- 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isWorkBench, isQuery));
+ 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isWorkBench, isQuery, busRule));
                     
 				}
                 
@@ -498,6 +505,7 @@ public class DatamodelGenerator
 	 */
 	public static void main(String[] args)
 	{
+        System.out.println("Starting...");
 		List<Table>        tableList              = new ArrayList<Table>(100);
 		DatamodelGenerator datamodelWriter        = new DatamodelGenerator();
 		String             tableIdListingFilePath = DatamodelHelper.getTableIdFilePath();
@@ -520,6 +528,7 @@ public class DatamodelGenerator
 			log.error("Could not find table/ID listing file for input ");
 		}
         log.info("Done.");
+        System.out.println("Done.");
 	}
 
 }
