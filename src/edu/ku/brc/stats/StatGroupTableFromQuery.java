@@ -90,8 +90,8 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
     {
         super(name, columnNames, useSeparator, 100); // this is an arbitrary number only to tell it to make scrollbars
 
-        this.descCol = descCol;
-        this.valCol  = valCol;
+        this.descCol      = descCol;
+        this.valCol       = valCol;
         this.noResultsMsg = noResultsMsg;
 
         StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
@@ -169,7 +169,10 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
             {
                 do
                 {
-                    data.add(resultSet.getObject(descCol));
+                    if (descCol != -1)
+                    {
+                        data.add(resultSet.getObject(descCol));
+                    }
                     data.add(resultSet.getObject(valCol));
                     data.add(colId > 0 ? resultSet.getObject(colId) : null);
 
@@ -178,7 +181,7 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
 
                 for (int i=0;i<data.size();i++)
                 {
-                    String desc     = data.get(i++).toString();
+                    String desc     = descCol != -1 ? data.get(i++).toString() : "";
                     Object val      = data.get(i++);
                     Object colIdObj = data.get(i);
                     String columnId = colIdObj != null ? colIdObj.toString() : null;

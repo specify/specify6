@@ -41,7 +41,7 @@ determination.TaxonID, determination.DeterminationStatusID
 FROM collectionobject 
 INNER JOIN determination 
 ON collectionobject.CollectionObjectID = determination.CollectionObjectID 
-WHERE determination.DeterminationStatusID = 1) e1 
+WHERE determination.Name = 'Current') e1 
 INNER JOIN taxon 
 ON e1.TaxonID = taxon.TaxonID) e2 
 INNER JOIN preparation 

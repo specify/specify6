@@ -155,9 +155,9 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.QueryResultsContainerIFace#start(edu.ku.brc.dbsupport.QRCProcessorListener, java.sql.Connection)
      */
-    public synchronized void start(final QRCProcessorListener listener, final Connection connection)
+    public synchronized void start(final QRCProcessorListener listenerArg, final Connection connection)
     {
-        this.listener = listener;
+        this.listener = listenerArg;
 
         sqlProc = new SQLExecutionProcessor(connection, this, sql);
         sqlProc.start();

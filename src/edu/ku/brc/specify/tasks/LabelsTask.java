@@ -26,7 +26,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -42,7 +41,6 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
@@ -429,33 +427,6 @@ public class LabelsTask extends BaseTask
      */
     protected void processLabelCommands(final CommandAction cmdAction)
     {
-        if (false)
-        {
-            Session session = HibernateUtil.getNewSession();
-            
-            String s = "select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = 0 and (lpo.quantityresolved < lpo.quantity) and (loan.IsClosed = 0 or loan.IsClosed is null)";
-            
-            /*
-            Criteria criteria = session.createCriteria(LoanPhysicalObject.class);
-            Calendar startDate = Calendar.getInstance();
-            Calendar endDate = Calendar.getInstance();
-            endDate.add(Calendar.DAY_OF_MONTH, 7);
-
-            if (startDate != null) {
-                criteria.add(Expression.ge("date", startDate));
-            }
-            if (endDate != null) {
-                criteria.add(Expression.le("date", endDate));
-            }
-            List results = criteria.list();
-            for (Object data : results)
-            {
-                System.out.println(((LoanPhysicalObject)data).getIdentityTitle());
-            }
-            */
-            
-            return;
-        }
         
         //---------------------------------------------------------------------------
         // This Code here needs to be refactored and moved to the NavBoxAction

@@ -51,7 +51,7 @@ public class StatGroupTableModel extends AbstractTableModel
     public StatGroupTableModel(final StatGroupTable statGroupTable, final String[] columnNames)
     {
         this.statGroupTable = statGroupTable;
-        this.columnNames = columnNames;
+        this.columnNames    = columnNames;
     }
 
     
@@ -105,7 +105,7 @@ public class StatGroupTableModel extends AbstractTableModel
      */
     public int getColumnCount()
     {
-        return 2; // XXX Hard Coded for now becuse StatDataItem can only handle two columns
+        return columnNames.length;
     }
 
 
@@ -114,14 +114,14 @@ public class StatGroupTableModel extends AbstractTableModel
      */
     public Class<?> getColumnClass(int column)
     {
-        
-        Object val = null;
-        if (column == 1 && data.size() > 0)
+        int    dataInx = columnNames.length == 2 ? 1 : 0;
+        if (column == dataInx && data.size() > 0)
         {
             StatDataItem sdi = data.get(0);
-            val = sdi.getValue();
+            Object val = sdi.getValue();
+            return val == null ? String.class : val.getClass();
         }
-        return column == 0 ? String.class : (val == null ? String.class : val.getClass());
+        return String.class;
     }
 
 
@@ -142,11 +142,16 @@ public class StatGroupTableModel extends AbstractTableModel
         if (row < data.size() && column < 2)
         {
             StatDataItem sdi = data.get(row);
-            return column == 0 ? sdi.getDescription() : sdi.getValue();
-
-            //return data.get(row);
+            if (columnNames.length == 1)
+            {
+                return sdi.getValue();
+                
+            } else 
+            {
+                return column == 0 ? sdi.getDescription() : sdi.getValue();
+            }
         }
-        return "";
+        return "XXX";
     }
 
 

@@ -62,6 +62,10 @@ public class SpecifyCustomQueryFactory extends CustomQueryFactory
         {
             return new CustomStatQueries(CustomStatQueries.Type.CatalogedLastYear);
             
+        } else if (queryName.equals("OverdueLoans"))
+        {
+            return new CustomStatQueries(CustomStatQueries.Type.OverdueLoans);
+            
         } else 
         {
             try

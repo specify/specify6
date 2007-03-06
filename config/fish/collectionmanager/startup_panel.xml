@@ -2,13 +2,37 @@
 <panel>
 
   <row>
+      <!--
       <box title="Task List" desccol="1" valcol="1">
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
-      <box title="Pre-Catalog Works Benches" desccol="1" valcol="1">
+      -->
+      <box title="OnRamp Data Sets" valcol="1" valtitle="OnRamp">
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
   </row>
+    
+    <row>
+        <box title="Loans">
+            <item title="Items On Loan">
+                <sql><statement><![CDATA[select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = 0 and quantityresolved < quantity and (IsClosed = 0 or IsClosed is null)]]></statement></sql>
+                <link>ListOnLoan</link>
+            </item>
+            
+            <item title="Items On Loan">
+                <sql type="jta" name="ItemsOnLoan"><statement><![CDATA[select count(loanPhysicalObjectId) AS ItemsOnLoanCount from LoanPhysicalObject lpo Inner Join lpo.loan l where (l.isGift = false) and (quantityResolved < quantity and (isClosed = false or isClosed is null))]]></statement></sql>
+                <link>ListOnLoan</link>
+            </item>
+            <item title="Overdue Loans">
+                <sql type="custom" name="OverdueLoans"/>
+                <link>OverdueLoansList</link>
+            </item>
+            <item title="Open Loans">
+                <sql type="jta" name="OpenLoans"><statement><![CDATA[select count(loanId) as OpenLoanCount from Loan l where l.isGift = false and (isClosed = false or isClosed is null)]]></statement></sql>
+                <link>ListOnLoan</link>
+            </item>
+        </box>
+    </row>   
 <!--
    <row>
       <box title="Loans">
@@ -31,6 +55,7 @@
       </box>
    </row>
 -->
+
     <row>
         <box title="Data Entry">
             <item title="Cataloged in Last 7 Days">
@@ -46,7 +71,7 @@
                 <link>CatalogedLastYear</link>
             </item>
         </box>  </row>
-  
+
     
     <!--
     <row>

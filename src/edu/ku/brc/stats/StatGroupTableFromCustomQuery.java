@@ -45,6 +45,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
+     * @param noResultsMsg the message to display when there is no results
      */
     public StatGroupTableFromCustomQuery(final String   name,
                                          final String[] columnNames,
@@ -66,10 +67,37 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
     /**
      * Constructor that describes where we get everything from.
      * @param name the name or title
+     * @param jtaQuery the JTA CustomQuery Processor
+     * @param descCol the column where the description comes form
+     * @param valCol the column where the value comes from
+     * @param useSeparator use non-border separator titles
+     * @param noResultsMsg the message to display when there is no results
+     */
+    public StatGroupTableFromCustomQuery(final String      name,
+                                         final String[]    columnNames,
+                                         final CustomQuery jtaQuery,
+                                         boolean           useSeparator,
+                                         final String      noResultsMsg)
+    {
+        super(name, columnNames);
+
+        this.noResultsMsg = noResultsMsg;
+
+        StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
+        model.addDataItem(statItem);
+
+        jtaQuery.execute(this);
+
+    }
+
+    /**
+     * Constructor that describes where we get everything from.
+     * @param name the name or title
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
      * @param useSeparator use non-border separator titles
+     * @param noResultsMsg the message to display when there is no results
      */
     public StatGroupTableFromCustomQuery(final String   name,
                                          final String[] columnNames,

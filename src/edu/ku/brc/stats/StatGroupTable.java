@@ -127,8 +127,15 @@ public class StatGroupTable extends JPanel
 
         table.addMouseListener(new LinkListener());
 
-        table.getColumnModel().getColumn(0).setCellRenderer(new MyTableCellRenderer(JLabel.LEFT));
-        table.getColumnModel().getColumn(1).setCellRenderer(new MyTableCellRenderer(JLabel.RIGHT));
+        if (table.getColumnModel().getColumnCount() == 1)
+        {
+            table.getColumnModel().getColumn(0).setCellRenderer(new MyTableCellRenderer(JLabel.CENTER, 1));
+            
+        } else
+        {
+            table.getColumnModel().getColumn(0).setCellRenderer(new MyTableCellRenderer(JLabel.LEFT, 2));
+            table.getColumnModel().getColumn(1).setCellRenderer(new MyTableCellRenderer(JLabel.RIGHT, 2));
+        }
 
 
         //table.setRowSelectionAllowed(true);
@@ -393,10 +400,14 @@ public class StatGroupTable extends JPanel
     // cell must be displayed.
     class MyTableCellRenderer extends JLabel implements TableCellRenderer
     {
+        protected  int numCols;
+        
         @SuppressWarnings("unchecked")
-        public MyTableCellRenderer(final int alignment)
+        public MyTableCellRenderer(final int alignment, final int numCols)
         {
             super("", alignment);
+            
+            this.numCols = numCols;
 
             /*
             //Map map = getFont().getAttributes();
@@ -407,36 +418,6 @@ public class StatGroupTable extends JPanel
             setFont(newFont);
             setForeground(Color.blue);
             */
-        }
-
-        public void paint(Graphics g)
-        {
-            super.paint(g);
-            /*
-            Dimension size = getSize();
-
-            Insets insets = new Insets(0,0,0,0);
-            this.getInsets(insets);
-            FontMetrics fm = getFontMetrics(getFont());
-            g.setColor(getForeground());
-            int strWidth = fm.stringWidth(getText());
-
-            int x;
-            int y = insets.top + fm.getAscent()+1;
-            if (this.getHorizontalAlignment() == JLabel.LEFT)
-            {
-                x = insets.left;
-
-            } else if (this.getHorizontalAlignment() == JLabel.RIGHT)
-            {
-                x = size.width-insets.left-strWidth;
-
-            } else
-            {
-                x = (size.width - strWidth) / 2;
-            }
-            g.drawLine(x,y, x + strWidth, y);
-*/
         }
 
         // This method is called each time a cell in a column
@@ -451,28 +432,33 @@ public class StatGroupTable extends JPanel
             StatDataItem sdi = getStatDataItem(renderTable, rowIndex);
             if (sdi != null)
             {
+                setIcon(null);
 
-                /*if (sdi.isUseProgress())
+                setForeground(StringUtils.isNotEmpty(sdi.getLink()) ? Color.BLUE : Color.BLACK);
+
+                if (numCols == 1)
                 {
-                    setIcon(progressIcon);
-                    setText("");
+                    Object val  = sdi.getValue();
+                    String valStr = val != null ? val.toString() : "";
+                    
+                    // Configure the component with the specified value
+                    setText(valStr);
 
+                    // Set tool tip if desired
+                    setToolTipText(valStr);    
+                    
                 } else
-                {*/
-                    setIcon(null);
-
+                {
                     String desc = sdi.getDescription();
                     Object val  = sdi.getValue();
-
-                    setForeground(StringUtils.isNotEmpty(sdi.getLink()) ? Color.BLUE : Color.BLACK);
-
                     String valStr = val != null ? val.toString() : "";
+                    
                     // Configure the component with the specified value
                     setText(vColIndex == 0 ? desc : valStr);
 
                     // Set tool tip if desired
-                    setToolTipText(desc + " " + valStr);
-                //}
+                    setToolTipText(desc + " " + valStr);                }
+
 
             } else
             {

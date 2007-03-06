@@ -17,6 +17,7 @@ package edu.ku.brc.stats;
 import java.awt.Color;
 import java.util.Vector;
 
+import edu.ku.brc.dbsupport.CustomQuery;
 import edu.ku.brc.dbsupport.CustomQueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
@@ -100,17 +101,13 @@ public class StatDataItem implements QueryResultsListener
     
             QueryResultsContainer qrc = new QueryResultsContainer(sql);
             qrc.add(new QueryResultsDataObj(1, 1, formatStr));
-    
             qrcs.addElement(qrc);
     
         } else
         {
             CustomQueryResultsContainer qrc = new CustomQueryResultsContainer(sql);
             qrc.add(new QueryResultsDataObj(1, 1, formatStr));
-    
             qrcs.addElement(qrc);
-
-  
         }
         
         valuesType.addElement(VALUE_TYPE.Value);     
@@ -129,8 +126,20 @@ public class StatDataItem implements QueryResultsListener
         qrc.add( new QueryResultsDataObj(1, 1, formatStr));
         valuesType.addElement(VALUE_TYPE.Value);
         qrcs.addElement(qrc);
-
-        //return qrc;
+    }
+    
+    /**
+     * Adds Custom Query for Stat instead of Query String
+     * @param customQuery the custom query
+     */
+    public void addCustomQuery(final CustomQuery customQuery,
+                               final VALUE_TYPE  valType,
+                               final String      formatStr)
+    {
+        CustomQueryResultsContainer qrc = new CustomQueryResultsContainer(customQuery);
+        qrc.add( new QueryResultsDataObj(1, 1, formatStr));
+        valuesType.addElement(VALUE_TYPE.Value);
+        qrcs.addElement(qrc);
     }
     
     

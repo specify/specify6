@@ -26,6 +26,7 @@ import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Loan;
 
 /**
  * @author rod
@@ -37,7 +38,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
  */
 public class CustomStatQueries implements CustomQuery
 {
-    public enum Type {CatalogedLast7Days, CatalogedLast30Days, CatalogedLastYear};
+    public enum Type {CatalogedLast7Days, CatalogedLast30Days, CatalogedLastYear, OverdueLoans};
 
     protected Type                      type;
     protected List<QueryResultsDataObj> qrdoResults = null;
@@ -48,7 +49,7 @@ public class CustomStatQueries implements CustomQuery
      * Constrcutor.
      * @param type type of query to execute.
      */
-    public CustomStatQueries(Type type)
+    public CustomStatQueries(final Type type)
     {
         this.type = type;
     }
@@ -90,6 +91,8 @@ public class CustomStatQueries implements CustomQuery
                 
             case CatalogedLastYear :
                 return catalogedLastXDays(365);
+            case OverdueLoans:
+                return overdueLoans();
         }
         
         return false;
@@ -164,13 +167,11 @@ public class CustomStatQueries implements CustomQuery
         */
         
         Session  session  = HibernateUtil.getNewSession();
+        
         Criteria criteria = session.createCriteria(CollectionObject.class);
-        if (startDate != null) {
-            criteria.add(Expression.ge("timestampCreated", startDate.getTime()));
-        }
-        if (endDate != null) {
-            criteria.add(Expression.le("timestampCreated", endDate.getTime()));
-        }
+        criteria.add(Expression.ge("timestampCreated", startDate.getTime()));
+        criteria.add(Expression.le("timestampCreated", endDate.getTime()));
+
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();
         
@@ -181,6 +182,36 @@ public class CustomStatQueries implements CustomQuery
         //}
         session.close();
 
+        return true;
+    }
+    
+    protected boolean overdueLoans()
+    {
+        //String sql = "select loanId from Loan where (not (currentDueDate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0;
+        //select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)
+            
+        Session  session  = HibernateUtil.getNewSession();
+        
+        Calendar endDate = Calendar.getInstance();
+        Calendar today   = Calendar.getInstance();
+        endDate.clear();
+        endDate.set(Calendar.YEAR,         today.get(Calendar.YEAR));
+        endDate.set(Calendar.MONTH,        today.get(Calendar.MONTH));
+        endDate.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+        
+        Criteria criteria = session.createCriteria(Loan.class);
+        criteria.add(Expression.isNotNull("currentDueDate"));
+        criteria.add(Expression.ge("currentDueDate", endDate));
+
+        criteria.setProjection(Projections.rowCount());
+        resultsList = criteria.list();
+        
+        for (Object data : resultsList)
+        {
+            System.out.println("overdueLoans "+data);
+        }
+        session.close();
+        
         return true;
     }
 

@@ -44,13 +44,22 @@ public class CustomQueryResultsContainer implements QueryResultsContainerIFace
     protected boolean                     hasFailed     = false;
     
     /**
-     * Constructs it with the SQL statment to be executed.
-     * @param customQueryName the SQL statement to be executed
+     * Constructs it with the name of the Custom Query to be executed.
+     * @param customQueryName the Sname of the Custom Query to be executed
      */
     public CustomQueryResultsContainer(final String customQueryName)
     {
         customQuery = CustomQueryFactory.getInstance().getQuery(customQueryName);
         //log.debug(customQuery.getName());
+    }
+
+    /**
+     * Constructs it with the Custom Query to be executed.
+     * @param customQuery the Custom Query to be executed
+     */
+    public CustomQueryResultsContainer(final CustomQuery customQuery)
+    {
+        this.customQuery = customQuery;
     }
 
     /**
@@ -87,11 +96,11 @@ public class CustomQueryResultsContainer implements QueryResultsContainerIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.QueryResultsContainerIFace#start(edu.ku.brc.dbsupport.QRCProcessorListener, java.sql.Connection)
      */
-    public synchronized void start(final QRCProcessorListener listener, final Connection connection)
+    public synchronized void start(final QRCProcessorListener listenerArg, final Connection connection)
     {
         // NOTE: We ignore the connection
         
-        this.listener = listener;
+        this.listener = listenerArg;
         
         final CustomQueryResultsContainer thisItem = this;
 
@@ -111,7 +120,7 @@ public class CustomQueryResultsContainer implements QueryResultsContainerIFace
             {
                 if (inError)
                 {
-                    listener.executionError(thisItem);
+                    listenerArg.executionError(thisItem);
                     hasFailed = true;
                     
                 } else
@@ -128,7 +137,7 @@ public class CustomQueryResultsContainer implements QueryResultsContainerIFace
                             //log.debug("Processing Results Data: "+list.get(col-1));
                         }
                     }
-                    listener.exectionDone(thisItem);
+                    listenerArg.exectionDone(thisItem);
                     hasFailed = false;
                 }
             }
