@@ -283,7 +283,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                    <cell type="field" id="defItemComboBox" uitype="combobox" name="definitionItem"/>
                 </row>
             </rows>
         </viewdef>
@@ -310,7 +310,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                    <cell type="field" id="defItemComboBox" uitype="combobox" name="definitionItem"/>
                 </row>
             </rows>
         </viewdef>
@@ -337,7 +337,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                    <cell type="field" id="defItemComboBox" uitype="combobox" name="definitionItem"/>
                 </row>
             </rows>
         </viewdef>
