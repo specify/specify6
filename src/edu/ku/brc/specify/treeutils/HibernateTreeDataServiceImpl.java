@@ -162,7 +162,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 
         session.saveOrUpdate(newDefItem);
         session.save(treeDef);
-        session.saveOrUpdate(newDefItem.getChild());
+        if (origChild!=null)
+        {
+        	session.saveOrUpdate(origChild);
+        }
         session.saveOrUpdate(newDefItem.getParent());
 
         boolean success = commitTransaction(session, tx);
