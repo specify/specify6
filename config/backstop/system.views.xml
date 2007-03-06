@@ -86,7 +86,6 @@
         
         <view name="PrepType"
             class="edu.ku.brc.specify.datamodel.PrepType"
-            busrules="edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules"            
             resourcelabels="false">
             <desc><![CDATA[The PrepType Object form.]]></desc>
             <altviews>
@@ -97,7 +96,6 @@
         
         <view name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
-            busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"            
             resourcelabels="false">
             <desc><![CDATA[The DeterminationStatus Object form.]]></desc>
             <altviews>
@@ -108,7 +106,6 @@
         
         <view name="DataType"
             class="edu.ku.brc.specify.datamodel.DataType"
-            busrules="edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules"            
             resourcelabels="false">
             <desc><![CDATA[The DataType Object form.]]></desc>
             <altviews>
@@ -119,7 +116,6 @@
         
         <view name="CollectionObjDef"
             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjDefBusRules"            
             resourcelabels="false">
             <desc><![CDATA[The DataType Object form.]]></desc>
             <altviews>
