@@ -35,6 +35,18 @@ public class LocationBusRules extends BaseBusRules
         return super.getDeleteMsg(dataObj);
     }
 
+    @Override
+    public void afterSave(Object dataObj)
+    {
+        System.err.println("afterSave() on Location object");
+    }
+
+    @Override
+    public void beforeSave(Object dataObj)
+    {
+        System.err.println("beforeSave() on Location object");
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
@@ -52,15 +64,23 @@ public class LocationBusRules extends BaseBusRules
         {
             return false;
         }
-        
-        // check all children
-        for (Location locChild: loc.getChildren())
+
+        if (!okToDelete("location", "ParentID", loc.getId()))
         {
-            if (!okToDelete(locChild))
-            {
-                return false;
-            }
+            return false;
         }
+
+        // for now, you can only delete Locations that have no children
+        // we'll have to figure out a good way to check all the children later
+        
+//        // check all children
+//        for (Location locChild: loc.getChildren())
+//        {
+//            if (!okToDelete(locChild))
+//            {
+//                return false;
+//            }
+//        }
         
         return true;
     }
