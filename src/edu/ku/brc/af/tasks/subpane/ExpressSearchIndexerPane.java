@@ -89,7 +89,7 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
  * A pane enables the user to see (and control) the indexing process for express search.<BR>
- * NOTE: This creates the index cache locality, it doesn't support is being on the network.
+ * NOTE: This creates the index cache locally, it doesn't support is being on the network.
  *
  * For each table defined in search_config.xml they are parsed into a ExpressResultsTableInfo object
  * which is used for doing the indexing amd for doing the search results
