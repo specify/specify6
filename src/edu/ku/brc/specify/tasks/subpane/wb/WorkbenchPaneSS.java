@@ -40,7 +40,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 
@@ -66,12 +65,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
         
-        FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
+        FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "top:p:g, p, center:p:g");
         PanelBuilder    builder    = new PanelBuilder(formLayout, this);
         CellConstraints cc         = new CellConstraints();
 
         SpreadSheet spreadsheet = new SpreadSheet(new GridTableModel());
-        spreadsheet.setBackground(Color.WHITE);
+        //spreadsheet.setBackground(Color.WHITE);
         initColumnSizes(spreadsheet);
         
         builder.add(spreadsheet.getScrollPane(), cc.xy(1,1));
@@ -129,11 +128,22 @@ public class WorkbenchPaneSS extends BaseSubPane
             //XXX: Before Swing 1.1 Beta 2, use setMinWidth instead.
             column.setPreferredWidth(Math.max(maxWidth, cellWidth));
             
-            //column.setCellEditor(new GridCellEditor());
+            column.setCellEditor(new GridCellEditor());
         }
         
         //tableArg.setCellEditor(new GridCellEditor());
 
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
+     */
+    public boolean aboutToShutdown()
+    {
+        super.aboutToShutdown();
+        
+        return true;
     }
 
     

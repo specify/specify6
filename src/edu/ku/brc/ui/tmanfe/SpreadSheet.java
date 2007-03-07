@@ -1,13 +1,39 @@
 package edu.ku.brc.ui.tmanfe;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.util.EventObject;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+
+import edu.ku.brc.ui.UIHelper;
 
 /***************************************************************************************************
  * 
@@ -15,7 +41,7 @@ import java.util.*;
  * run as an application.
  * 
  * @version 1.0 July-2002
- * @author Thierry Manf�
+ * @author Thierry Manf, Rod Spears
  * 
  **************************************************************************************************/
 public class SpreadSheet extends JTable
@@ -26,21 +52,12 @@ public class SpreadSheet extends JTable
      */
     public static final boolean DEBUG = true;
 
-    private JScrollPane         _scp;
-    private CellMenu            _popupMenu;
-    private TableModel          _model;
-    private int                 _numRow;
-    private int                 _numCol;
+    private JScrollPane         scrollPane;
+    private CellMenu            popupMenu;
 
     //private int                 _editedModelRow;
     //private int                 _editedModelCol;
 
-    /*
-     * GUI components used to tailored the SpreadSheet.
-     */
-    private CellRenderer        _renderer;
-    private Font                _cellFont;
-    // private FontMetrics _metrics;
 
     // Cells selected.
     private Object[]            _selection;
@@ -56,34 +73,23 @@ public class SpreadSheet extends JTable
      */
     public SpreadSheet(final TableModel model)
     {
-        super();
+        super(model);
         buildSpreadsheet(model);
     }
 
     protected void buildSpreadsheet(final TableModel model)
     {
-        _model = model;
+        this.setShowGrid(true);
 
-        _numRow = model.getRowCount();
-        _numCol = model.getColumnCount();
 
-        _cellFont = new Font("Times", Font.PLAIN, 12);
+        int numRows = model.getRowCount();
 
         // Create the JScrollPane that includes the Table
-        _scp = new JScrollPane(this);
-
-        // Create the rendeder for the cells
-        _renderer = new CellRenderer();
-        try
-        {
-            setDefaultRenderer(Class.forName("java.lang.Object"), _renderer);
-        } catch (ClassNotFoundException ex)
-        {
-            if (DEBUG)
-                System.out.println("SpreadSheet() Can't modify renderer");
-        }
-
-        setModel(_model);
+        scrollPane = new JScrollPane(this);
+        
+        setModel(model);
+        
+        //setRowHeight(new JTextField().getPreferredSize().height+5);
 
         /*
          * Tune the selection mode
@@ -129,12 +135,10 @@ public class SpreadSheet extends JTable
         TableCellRenderer aRenderer = getTableHeader().getDefaultRenderer();
         if (aRenderer == null)
         {
-            System.out.println(" Aouch !");
             aColumn = getColumnModel().getColumn(0);
             aRenderer = aColumn.getHeaderRenderer();
             if (aRenderer == null)
             {
-                System.out.println(" Aouch Aouch !");
                 throw new RuntimeException("Can'r get default renderer!");
             }
         }
@@ -145,49 +149,78 @@ public class SpreadSheet extends JTable
 
         Border      border  = (Border)UIManager.getDefaults().get("TableHeader.cellBorder");
         Insets      insets  = border.getBorderInsets(tableHeader);
-        FontMetrics metrics = getFontMetrics(_cellFont);
+        FontMetrics metrics = getFontMetrics(aComponent.getFont());
         rowHeight = insets.bottom + metrics.getHeight() + insets.top;
 
+        
         /*
          * Creating a panel to be used as the row header.
          * 
          * Since I'm not using any LayoutManager, a call to setPreferredSize().
          */
         JPanel pnl = new JPanel((LayoutManager)null);
-        Dimension dim = new Dimension(metrics.stringWidth("9999") + insets.right + insets.left, rowHeight * _numRow);
+        Dimension dim = new Dimension(metrics.stringWidth("9999") + insets.right + insets.left, rowHeight * numRows);
         pnl.setPreferredSize(dim);
+        
+        class MyNumLabel extends JComponent
+        {
+            protected String rowNum;
+            protected Font font;
+            
+            public MyNumLabel(int rowNum, final Font font)
+            {
+                this.rowNum = Integer.toString(rowNum);
+                this.font = font;
+            }
+
+            /* (non-Javadoc)
+             * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+             */
+            @Override
+            protected void paintComponent(Graphics g)
+            {
+                super.paintComponent(g);
+                g.setFont(font);
+                //Insets insets = getInsets();
+                Dimension size = this.getSize();
+                FontMetrics fm = getFontMetrics(font);
+                int width = fm.stringWidth(rowNum);
+                int y = size.height - ((size.height - fm.getAscent()) / 2);// - insets.bottom;
+                //System.out.println(fm.getAscent() + " " + Integer.toString((size.width - width) / 2) + " " + Integer.toString(y) + " " + size.height);
+                g.drawString(rowNum, (size.width - width) / 2, y);
+            }
+            
+        }
 
         // Adding the row header labels
         dim.height = rowHeight;
-        for (int ii = 0; ii < _numRow; ii++)
+        boolean isMac = UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX;
+        for (int ii = 0; ii < numRows; ii++)
         {
-            JLabel lbl = new JLabel(Integer.toString(ii + 1), SwingConstants.CENTER);
-            lbl.setFont(aFont);
-            lbl.setBackground(aBackground);
-            lbl.setForeground(aForeground);
-            lbl.setBorder(border);
-            lbl.setBounds(0, ii * dim.height, dim.width, dim.height);
-            pnl.add(lbl);
+            if (isMac)
+            {
+                JLabel lbl = new JLabel(Integer.toString(ii + 1), SwingConstants.CENTER);
+                lbl.setFont(aFont);
+                lbl.setBackground(aBackground);
+                lbl.setOpaque(true);
+                lbl.setForeground(aForeground);
+                lbl.setBorder(border);
+                lbl.setBounds(0, ii * dim.height, dim.width, dim.height);
+                
+            } else
+            {
+                MyNumLabel lbl = new MyNumLabel(ii+1, aComponent.getFont());
+                lbl.setBounds(0, ii * dim.height, dim.width, dim.height);
+                pnl.add(lbl);
+            }
         }
 
         JViewport vp = new JViewport();
-        dim.height = rowHeight * _numRow;
+        dim.height = rowHeight * numRows;
         vp.setViewSize(dim);
         vp.setView(pnl);
-        _scp.setRowHeader(vp);
+        scrollPane.setRowHeader(vp);
 
-        // Set resize policy and make sure
-        // the table's size is tailored
-        // as soon as it gets drawn.
-        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        Dimension dimScpViewport = getPreferredScrollableViewportSize();
-        if (_numRow > 30)
-            dimScpViewport.height = 30 * rowHeight;
-        else dimScpViewport.height = _numRow * rowHeight;
-        if (_numCol > 15)
-            dimScpViewport.width = 15 * getColumnModel().getTotalColumnWidth() / _numCol;
-        else dimScpViewport.width = getColumnModel().getTotalColumnWidth();
-        setPreferredScrollableViewportSize(dimScpViewport);
         resizeAndRepaint();
     }
 
@@ -237,7 +270,7 @@ public class SpreadSheet extends JTable
 
     public JScrollPane getScrollPane()
     {
-        return _scp;
+        return scrollPane;
     }
 
     public void processMouseEvent(MouseEvent ev)
@@ -251,17 +284,17 @@ public class SpreadSheet extends JTable
 
             if (_selection != null)
             {
-                if (_popupMenu == null)
-                    _popupMenu = new CellMenu(this);
+                if (popupMenu == null)
+                    popupMenu = new CellMenu(this);
 
-                if (_popupMenu.isVisible())
-                    _popupMenu.setVisible(false);
+                if (popupMenu.isVisible())
+                    popupMenu.setVisible(false);
                 else
                 {
-                    _popupMenu.setTargetCells(_selection);
+                    popupMenu.setTargetCells(_selection);
                     Point p = getLocationOnScreen();
-                    _popupMenu.setLocation(p.x + ev.getX() + 1, p.y + ev.getY() + 1);
-                    _popupMenu.setVisible(true);
+                    popupMenu.setLocation(p.x + ev.getX() + 1, p.y + ev.getY() + 1);
+                    popupMenu.setVisible(true);
                 }
             }
 
@@ -269,14 +302,10 @@ public class SpreadSheet extends JTable
         super.processMouseEvent(ev);
     }
 
-    protected void release()
-    {
-        _model = null;
-    }
 
     public void setVisible(boolean flag)
     {
-        _scp.setVisible(flag);
+        scrollPane.setVisible(flag);
     }
 
     /*
