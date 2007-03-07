@@ -202,6 +202,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.ViewSetObj"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Workbench"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchDataItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchRow"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem"/>
 		

@@ -18,12 +18,8 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -44,16 +40,14 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
-import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.DataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchFormPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPane;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
@@ -63,17 +57,7 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewSetMgr;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.FormCell;
-import edu.ku.brc.ui.forms.persist.FormCellField;
-import edu.ku.brc.ui.forms.persist.FormCellLabel;
-import edu.ku.brc.ui.forms.persist.FormRow;
-import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.forms.persist.ViewSet;
-import edu.ku.brc.ui.forms.persist.FormCellField.FieldType;
 
 /**
  * Placeholder for additional work.
@@ -125,7 +109,7 @@ public class WorkbenchTask extends BaseTask
             NavBox navBox = new NavBox(getResourceString("Actions"));
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Workbench"),    name, new CommandAction(WORKBENCH, NEW_WORKBENCH),     null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Template"),     name, new CommandAction(WORKBENCH, NEW_TEMPLATE),      null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_TemplateFile"), name, new CommandAction(WORKBENCH, NEW_TEMPLATE_FILE), null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("ImportData"),       name, new CommandAction(WORKBENCH, NEW_TEMPLATE_FILE), null, false);// true means make it draggable
             navBoxes.addElement(navBox);
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -375,14 +359,21 @@ public class WorkbenchTask extends BaseTask
     protected View createTransientView(final WorkbenchTemplate wbt,
                                        final String            viewName)
     {
-        View view = new View("Dynamic", viewName, getResourceString("WORKBENCH"), Workbench.class.getName(), "", "", false, "");
+        View view = null;
+        /*
+        View view = new View("Dynamic", viewName, getResourceString("Workbench"), Workbench.class.getName(), "", "", false, "");
 
         Set<WorkbenchTemplateMappingItem>    wbtmiSet  = wbt.getWorkbenchTemplateMappingItems();
         Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
         wbtmiList.addAll(wbtmiSet);
         Collections.sort(wbtmiList);
 
-        FormViewDef formViewDef = new FormViewDef(ViewDef.ViewType.form,  viewName + "Workbench Form", Workbench.WorkbenchRow.class.getName(), "edu.ku.brc.ui.forms.DataGetterForGrid", "", "");
+        FormViewDef formViewDef = new FormViewDef(ViewDef.ViewType.form,  
+                                                  viewName + "Workbench Form", 
+                                                  Workbench.WorkbenchRow.class.getName(),
+                                                  "edu.ku.brc.specify.tasks.subpane.wb.DataGetterForGrid", 
+                                                  "edu.ku.brc.specify.tasks.subpane.wb.DataSetterForGrid", 
+                                                  "");
         formViewDef.setColumnDef("p,2px,p");
         formViewDef.setRowDef(UIHelper.createDuplicateJGoodiesDef("p", "2px", wbtmiList.size()));
         
@@ -461,7 +452,7 @@ public class WorkbenchTask extends BaseTask
         viewSet.addTransientView(view);
         viewSet.addTransientViewDef(formViewDef);
         viewSet.addTransientViewDef(gridViewDef);
-        
+        */
         return view;
         
     }
@@ -612,25 +603,33 @@ public class WorkbenchTask extends BaseTask
                 tmpSession.attach(workbench);
             }
             
-            View view = createTransientView(workbench.getWorkbenchTemplate(), workbench.getWorkbenchId().toString());
-    
-            WorkbenchFormPane formPane = new WorkbenchFormPane(createWorkbenchName(workbench), 
-                                                               this, 
-                                                               view, 
-                                                               "edit", 
-                                                               null, 
-                                                               MultiView.VIEW_SWITCHER | MultiView.IS_EDITTING | MultiView.RESULTSET_CONTROLLER);
-            
-            formPane.getViewable().setSession(tmpSession);
-    
-            formPane.setIcon(getImageIcon());
-            
-            formPane.getMultiView().setSession(tmpSession);
-            formPane.getMultiView().setData(workbench.getWorkbenchRows());
-            
-            addSubPaneToMgr(formPane);
-            
-            formPane.getMultiView().setSession(null);
+            if (true)
+            {
+                WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(createWorkbenchName(workbench), this, workbench);
+                addSubPaneToMgr(workbenchPane);
+                
+            } else
+            {
+                View view = createTransientView(workbench.getWorkbenchTemplate(), workbench.getWorkbenchId().toString());
+        
+                WorkbenchFormPane formPane = new WorkbenchFormPane(createWorkbenchName(workbench), 
+                                                                   this, 
+                                                                   view, 
+                                                                   "edit", 
+                                                                   null, 
+                                                                   MultiView.VIEW_SWITCHER | MultiView.IS_EDITTING | MultiView.RESULTSET_CONTROLLER);
+                
+                formPane.getViewable().setSession(tmpSession);
+        
+                formPane.setIcon(getImageIcon());
+                
+                formPane.getMultiView().setSession(tmpSession);
+                formPane.getMultiView().setData(workbench.getWorkbenchRows());
+                
+                addSubPaneToMgr(formPane);
+                
+                formPane.getMultiView().setSession(null);
+            }
             
             if (session == null && tmpSession != null)
             {
@@ -657,7 +656,9 @@ public class WorkbenchTask extends BaseTask
             session.attach(workbenchTemplate);
             
             workbench = createNewWorkbenchDataObj(workbenchTemplate, wbTemplateIsNew);
+            workbench.addRow();
             
+            /*
             for (WorkbenchTemplateMappingItem item : workbenchTemplate.getWorkbenchTemplateMappingItems())
             {
                 WorkbenchDataItem wbdi = new WorkbenchDataItem();
@@ -666,7 +667,7 @@ public class WorkbenchTask extends BaseTask
                 wbdi.setColumnNumber(item.getViewOrder());
                 wbdi.setRowNumber(1);
                 workbench.addWorkbenchDataItem(wbdi);
-            }
+            }*/
 
             session.beginTransaction();
             session.save(workbench);

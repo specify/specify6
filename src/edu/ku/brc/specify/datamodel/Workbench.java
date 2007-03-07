@@ -30,7 +30,6 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -56,7 +55,8 @@ import org.hibernate.annotations.Cascade;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbench")
-public class Workbench extends DataModelObjBase implements java.io.Serializable {
+public class Workbench extends DataModelObjBase implements java.io.Serializable 
+{
 
     // Fields    
 
@@ -70,13 +70,14 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     protected Integer                groupPermissionLevel;
     protected Integer                allPermissionLevel;
     protected WorkbenchTemplate      workbenchTemplate;
-    protected Set<WorkbenchDataItem> workbenchDataItems;
+    protected Set<WorkbenchRow>      workbenchRows;
     protected SpecifyUser            specifyUser;
     protected UserGroup              group;
     protected String                 srcFilePath;
 
      // TRansient Data
-     protected Vector<WorkbenchRow> rows;
+    protected Vector<WorkbenchRow> rows        = new Vector<WorkbenchRow>();
+    protected Vector<WorkbenchRow> deletedRows = new Vector<WorkbenchRow>();
      
     // Constructors
 
@@ -96,21 +97,23 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     public void initialize()
     {
         super.init();
-        workbenchId = null;
-        name = null;
-        dbTableId = null;
-        remarks = null;
-        formId = null;
+        workbenchId           = null;
+        name                  = null;
+        dbTableId             = null;
+        remarks               = null;
+        formId                = null;
         exportInstitutionName = null;
-        srcFilePath = null;
-        ownerPermissionLevel = null;
-        groupPermissionLevel = null;
-        allPermissionLevel = null;
-        workbenchTemplate = null;
-        workbenchDataItems = new HashSet<WorkbenchDataItem>();
-        specifyUser = null;
-        group = null;
-        rows = new Vector<WorkbenchRow>();
+        srcFilePath           = null;
+        ownerPermissionLevel  = null;
+        groupPermissionLevel  = null;
+        allPermissionLevel    = null;
+        workbenchTemplate     = null;
+        workbenchRows         = new HashSet<WorkbenchRow>();
+        specifyUser           = null;
+        group                 = null;
+        
+        rows.clear();
+        deletedRows.clear();
     }
     // End Initializer
 
@@ -287,22 +290,22 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbench")
     // @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    public Set<WorkbenchDataItem> getWorkbenchDataItems() 
+    public Set<WorkbenchRow> getWorkbenchRows() 
     {
         if (rows == null)
         {
             rows = new Vector<WorkbenchRow>();
         }
-        return this.workbenchDataItems;
+        return this.workbenchRows;
     }
     
-    public void setWorkbenchDataItems(Set<WorkbenchDataItem> workbenchDataItems) 
+    public void setWorkbenchRows(Set<WorkbenchRow> workbenchDataItems) 
     {
         if (rows == null)
         {
             rows = new Vector<WorkbenchRow>();
         }
-        this.workbenchDataItems = workbenchDataItems;
+        this.workbenchRows = workbenchDataItems;
     }
     
     /**
@@ -331,21 +334,36 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
         this.group = group;
     }
     
-    public void addWorkbenchDataItem(WorkbenchDataItem item)
+    public void addWorkbenchDataItem(WorkbenchRow item)
     {
-        workbenchDataItems.add(item);
+        workbenchRows.add(item);
         item.setWorkbench(this);
-        //item.set
+        
+        if (rows == null)
+        {
+            rows = new Vector<WorkbenchRow>();
+        }
+        rows.add(item);
+        Collections.sort(rows);
     }
     
     /**
      * @param item - 
      * void
      */
-    public void removeWorkbenchDataItem(final WorkbenchDataItem item)
+    public void removeWorkbenchDataItem(final WorkbenchRow item)
     {
-        this.workbenchDataItems.remove(item);
+        this.workbenchRows.remove(item);
         item.setWorkbench(null);
+        
+        if (rows != null)
+        {
+            rows.remove(item);
+        } else
+        {
+            throw new RuntimeException("Why isn't this object in the list?");
+        }
+        
     }  
     
     /* (non-Javadoc)
@@ -378,78 +396,85 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable 
     }
     
     @Transient
-    public List<WorkbenchRow> getWorkbenchRows()
+    public List<WorkbenchRow> getWorkbenchRowsAsList()
     { 
         if (rows.size() == 0)
         {
-            buildData(getWorkbenchDataItems());
+            rows.addAll(workbenchRows);
             Collections.sort(rows);
         }
         return rows;
     }
     
-    public void buildData(final Set<WorkbenchDataItem> items)
+    //----------------------------------------------------
+    // Row Helper methods
+    //----------------------------------------------------
+
+    /**
+     * Return all the rows that are to be deleted.
+     * @return all the rows that are to be deleted.
+     */
+    @Transient
+    public Vector<WorkbenchRow> getDeletedRows()
     {
-        Hashtable<Integer, WorkbenchRow> rowHash = new Hashtable<Integer, WorkbenchRow>();
-        for (WorkbenchDataItem wbdi : items)
-        {
-            WorkbenchRow wbr = rowHash.get(wbdi.getRowNumber());
-            if (wbr == null)
-            {
-                wbr = new WorkbenchRow(this, wbdi.getRowNumber());
-                rows.add(wbr);
-                rowHash.put(wbdi.getRowNumber(), wbr);
-            }
-            wbr.add(wbdi);
-        }
-        
-        for (Integer row : rowHash.keySet())
-        {
-            WorkbenchRow wbr = rowHash.get(row);
-            Collections.sort(wbr.getItems());
-        }
-        rowHash.clear();
+        return deletedRows;
     }
     
-    public class WorkbenchRow implements Comparable<WorkbenchRow>
+    /**
+     * Appends a new rows to the workbench.
+     * @return the new row
+     */
+    public WorkbenchRow addRow()
     {
-        protected Workbench                 workbench;
-        protected Integer                   rowNum;
-        protected Vector<WorkbenchDataItem> items = new Vector<WorkbenchDataItem>();
-        
-        public WorkbenchRow(final Workbench workbench, final int rowNum)
-        {
-            this.workbench = workbench;
-            this.rowNum    = rowNum;
-        }
-        
-        public void add(WorkbenchDataItem item)
-        {
-            items.add(item);
-        }
-        
-        public Vector<WorkbenchDataItem> getItems()
-        {
-            return items;
-        }
-
-        public String getData(final int col)
-        {
-            if (col < items.size())
-            {
-                return items.get(col).getCellData();
-            } else
-            {
-                return "";
-            }
-        }
-        
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(WorkbenchRow obj)
-        {
-            return rowNum.compareTo(obj.rowNum);
-        }
+        WorkbenchRow wbRow = new WorkbenchRow(this, rows.size());
+        rows.add(wbRow);
+        workbenchRows.add(wbRow);
+        return wbRow;
     }
+    
+    /**
+     * Inserts a new row and returns it.
+     * @param rowIndex the index where the row is to be inserted
+     * @return the new row
+     */
+    public WorkbenchRow insertRow(final int rowIndex)
+    {
+        if (rowIndex < 0)
+        {
+            throw new RuntimeException("Row Index is less than zero ["+rowIndex+"]");
+        }
+        
+        if (rowIndex >= rows.size())
+        {
+            return addRow();
+        }
+        
+        WorkbenchRow workbenchRow = new WorkbenchRow(this, rowIndex);
+        for (int i=rowIndex;i<rows.size();i++)
+        {
+            rows.get(i).setRowNumber(i+1);
+        }
+        rows.insertElementAt(workbenchRow, rowIndex);
+        workbenchRows.add(workbenchRow);
+        return workbenchRow;
+    }
+    
+    /**
+     * Remove a Row.
+     * @param rowIndex the row to remove
+     * @return the rows that was removed.
+     */
+    public WorkbenchRow deleteRow(final int rowIndex)
+    {
+        WorkbenchRow wbRow = rows.get(rowIndex);
+        rows.remove(rowIndex);
+        for (int i=rowIndex+1;i<rows.size();i++)
+        {
+            rows.get(i).setRowNumber(i-1);
+        }
+        deletedRows.add(wbRow);
+        workbenchRows.remove(wbRow);
+        return wbRow;
+    }
+
 }

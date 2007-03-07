@@ -118,7 +118,6 @@ import edu.ku.brc.ui.validation.ValidationListener;
  * <br>
  * Implements AppPrefsChangeListener to be notified of changes to the BG Required Field color or the date formatting.
  * 
- * @code_status Beta
  *
  * @author rods
  *

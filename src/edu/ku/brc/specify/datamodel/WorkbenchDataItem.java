@@ -35,14 +35,12 @@ import javax.persistence.Transient;
 @Table(name = "workbenchdataitem")
 public class WorkbenchDataItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
-
     // Fields
-
-    protected Long      workbenchDataItemId;
-    protected String    cellData;
-    protected Integer   rowNumber;
-    protected Integer   columnNumber;
-    protected Workbench workbench;
+    protected Long         workbenchDataItemId;
+    protected String       cellData;
+    protected Integer      rowNumber;
+    protected Integer      columnNumber;
+    protected WorkbenchRow workbenchRow;
 
     // Constructors
 
@@ -51,6 +49,17 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     {
         //
     }
+
+    public WorkbenchDataItem(final WorkbenchRow workbenchRow, final String cellData, final Integer rowNumber, final Integer columnNumber)
+    {
+       initialize();
+       this.cellData     = cellData;
+       this.rowNumber    = rowNumber;
+       this.columnNumber = columnNumber;
+       this.workbenchRow = workbenchRow;
+       workbenchRow.getWorkbenchDataItems().add(this);
+    }
+
 
     /** constructor with id */
     public WorkbenchDataItem(Long workbenchDataItemId)
@@ -64,10 +73,10 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     {
         super.init();
         workbenchDataItemId = null;
-        cellData = null;
-        rowNumber = null;
-        columnNumber = null;
-        workbench = null;
+        cellData            = null;
+        rowNumber           = null;
+        columnNumber        = null;
+        workbenchRow        = null;
     }
 
     // End Initializer
@@ -160,15 +169,15 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "WorkbenchID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Workbench getWorkbench()
+    @JoinColumn(name = "WorkbenchRowID", unique = false, nullable = false, insertable = true, updatable = true)
+    public WorkbenchRow getWorkbenchRow()
     {
-        return this.workbench;
+        return this.workbenchRow;
     }
 
-    public void setWorkbench(Workbench workbench)
+    public void setWorkbenchRow(WorkbenchRow workbenchRow)
     {
-        this.workbench = workbench;
+        this.workbenchRow = workbenchRow;
     }
     
     /* (non-Javadoc)

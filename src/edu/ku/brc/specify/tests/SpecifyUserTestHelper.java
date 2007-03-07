@@ -14,12 +14,8 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
-import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -108,18 +104,18 @@ public class SpecifyUserTestHelper
         log.info("deleteUserGroupFromDB(): " + groupId);
         boolean isDeleted = false;
         try {
-            Session session = startHibernateTransaction();
+            HibernateUtil.beginTransaction();
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserGroup.class);
             java.util.List list = criteria.list();
             
             for(int i = 0; i< list.size(); i++) {
                 UserGroup group = (UserGroup)list.get(i);
                 if(group.getUserGroupId().equals(groupId)) {
-                    session.delete(group);
+                    HibernateUtil.getCurrentSession().delete(group);
                     isDeleted = true;                   
                 }
             }
-            stopHibernateTransaction();
+            HibernateUtil.commitTransaction();
             return isDeleted;
         } catch (Exception ex) {
             log.error("******* " + ex);
@@ -137,18 +133,18 @@ public class SpecifyUserTestHelper
         log.info("deleteSpecifyUserDB(): " + userId);
         boolean isDeleted = false;
         try {
-            Session session = startHibernateTransaction();
+            HibernateUtil.beginTransaction();
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
             java.util.List list = criteria.list();
             
             for(int i = 0; i< list.size(); i++) {
                 SpecifyUser user = (SpecifyUser)list.get(i);
                 if(user.getId().equals(userId)) {
-                    session.delete(user);
+                    HibernateUtil.getCurrentSession().delete(user);
                     isDeleted = true;                   
                 }
             }
-            stopHibernateTransaction();
+            HibernateUtil.commitTransaction();
             return isDeleted;
         } catch (Exception ex) {
             log.error("******* " + ex);
@@ -166,18 +162,18 @@ public class SpecifyUserTestHelper
         log.info("deleteUserPermissionFromDB(): " + permId);
         boolean isDeleted = false;
         try {
-            Session session = startHibernateTransaction();
+            HibernateUtil.beginTransaction();
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserPermission.class);
             java.util.List list = criteria.list();
             
             for(int i = 0; i< list.size(); i++) {
                 UserPermission perm = (UserPermission)list.get(i);
                 if(perm.getId().equals(permId)) {
-                    session.delete(perm);
+                    HibernateUtil.getCurrentSession().delete(perm);
                     isDeleted = true;                   
                 }
             }
-            stopHibernateTransaction();
+            HibernateUtil.commitTransaction();
             return isDeleted;
         } catch (Exception ex) {
             log.error("******* " + ex);

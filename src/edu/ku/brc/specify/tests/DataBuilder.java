@@ -81,8 +81,10 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.datamodel.UserPermission;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 
@@ -162,14 +164,14 @@ public class DataBuilder
         return attrDef;
     }
 
-    public static CollectionObjDef createCollectionObjDef(final String name,
-                                                          final String disciplineName,
-                                                          final DataType dataType,
-                                                          final SpecifyUser user,
-                                                          final TaxonTreeDef taxonTreeDef,
+    public static CollectionObjDef createCollectionObjDef(final String           name,
+                                                          final String           disciplineName,
+                                                          final DataType         dataType,
+                                                          final SpecifyUser      user,
+                                                          final TaxonTreeDef     taxonTreeDef,
                                                           final GeographyTreeDef geographyTreeDef,
                                                           final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
-                                                          final LocationTreeDef locationTreeDef)
+                                                          final LocationTreeDef  locationTreeDef)
     {
         CollectionObjDef colObjDef = new CollectionObjDef();
         colObjDef.initialize();
@@ -1978,11 +1980,10 @@ public class DataBuilder
         return shipment;
     }
 
-    public static SpecifyUser createSpecifyUser(final String name,
-                                                final String email,
-                                                final Short privLevel,
-                                                final UserGroup userGroup,
-                                                final String userType)
+    public static SpecifyUser createSpecifyUser(final String    name,
+                                                final String    email,
+                                                final Short     privLevel,
+                                                final String    userType)
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
@@ -1994,6 +1995,62 @@ public class DataBuilder
         specifyuser.setUserType(userType);
         persist(specifyuser);
         return specifyuser;
+    }
+    
+    public static SpecifyUser createSpecifyUser(final String    name,
+                                                final String    email,
+                                                final Short     privLevel,
+                                                final UserGroup userGroup,
+                                                final String    userType)
+    {
+        SpecifyUser specifyuser = new SpecifyUser();
+        specifyuser.initialize();
+        specifyuser.setEmail(email);
+        specifyuser.setPrivLevel(privLevel);
+        //specifyuser.setU
+        //specifyuser.setUserGroup(userGroup);
+        specifyuser.setName(name);
+        specifyuser.setUserType(userType);
+        persist(specifyuser);
+        return specifyuser;
+    }
+    
+    public static SpecifyUser createSpecifyUser(final String name,
+                                                final String email,
+                                                final Short privLevel,
+                                                final UserGroup[] userGroups,
+                                                final String userType)
+    {
+        SpecifyUser specifyuser = new SpecifyUser();
+        specifyuser.initialize();
+        specifyuser.setEmail(email);
+        specifyuser.setPrivLevel(privLevel);
+        //specifyuser.setUserGroup(userGroup);
+        specifyuser.setName(name);
+        specifyuser.setUserType(userType);
+        if (userGroups!=null) 
+        {
+            for (UserGroup group : userGroups)
+            {
+                specifyuser.addUserGroups(group);
+            }
+        }
+        persist(specifyuser);
+        return specifyuser;
+    }
+    
+    public static UserPermission createUserPermission(SpecifyUser owner, 
+                                                      CollectionObjDef objDef, 
+                                                      boolean adminPrivilege, 
+                                                      boolean dataAccessPrivilege)
+    {
+        UserPermission permission = new UserPermission();
+        permission.setAdminPrivilege(adminPrivilege);
+        permission.setCollectionObjDef(objDef);
+        permission.setDataAccessPrivilege(dataAccessPrivilege);
+        permission.setSpecifyUser(owner);
+        persist(permission);
+        return permission;
     }
 
     public static Stratigraphy createStratigraphy(final String superGroup,
@@ -2066,21 +2123,24 @@ public class DataBuilder
         return workbench;
     }
 
-    public static WorkbenchDataItem createWorkbenchDataItem(final Integer   rowNumber,
-                                                            final Integer   columnNumber,
-                                                            final String    cellData,
-                                                            final Workbench workbench)
+    public static WorkbenchRow createWorkbenchRow(final Workbench workbench,
+                                                  final int rowNumber)
     {
-        WorkbenchDataItem wbdi = new WorkbenchDataItem();
-        wbdi.initialize();
+        WorkbenchRow workbenchRow = new WorkbenchRow(workbench, rowNumber);
+        // workbench.initialize(); // not needed with this constructor
 
-        wbdi.setRowNumber(rowNumber);
-        wbdi.setColumnNumber(columnNumber);
-        //wbdi.setRowOfData(rowData);
-        wbdi.setCellData(cellData);
-        wbdi.setWorkbench(workbench);
+        persist(workbenchRow);
+
+        return workbenchRow;
+    }
+
+    public static WorkbenchDataItem createWorkbenchDataItem(final WorkbenchRow workbenchRow,
+                                                            final String       cellData,
+                                                            final Integer      columnNumber)
+    {
         
-        workbench.getWorkbenchDataItems().add(wbdi);
+        WorkbenchDataItem wbdi = workbenchRow.setData(cellData, columnNumber);
+        wbdi.setRowNumber(workbenchRow.getRowNumber());
         
         persist(wbdi);
 

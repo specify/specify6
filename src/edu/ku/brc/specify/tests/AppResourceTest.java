@@ -35,7 +35,7 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
- * Tests the AppResources. But first make sure you run CreateTestDatabases.
+ * Tests the AppResources.
  * 
  * @author rods
  *
@@ -78,7 +78,7 @@ public class AppResourceTest extends TestCase
 
     
     /**
-     * Make sure you first run CreateTestDatabases
+     * 
      */
     public void testAppResources()
     {

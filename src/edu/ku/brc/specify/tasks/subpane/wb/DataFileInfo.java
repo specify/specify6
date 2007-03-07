@@ -35,7 +35,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.DateWrapper;
 
@@ -226,8 +226,6 @@ public class DataFileInfo
             wbtmiList.addAll(wbtmiSet);
             Collections.sort(wbtmiList);
             
-            Hashtable<Integer, Boolean> colTracker = new Hashtable<Integer, Boolean>();
-            
             boolean firstRow = true;
             // Iterate over each row in the sheet
             Iterator rows = sheet.rowIterator();
@@ -243,8 +241,8 @@ public class DataFileInfo
                     continue;
                 }
                 
-                colTracker.clear();
-                int col = 0; 
+                WorkbenchRow wbRow = workbench.addRow();
+                
                 // Iterate over each cell in the row and print out the cell's content
                 Iterator cells = row.cellIterator();
                 while (cells.hasNext())
@@ -304,30 +302,9 @@ public class DataFileInfo
                     if (!skip)
                     {
                         //System.out.println("DATA Cell #" + cellNum + " " + type+"  "+value);
-                        WorkbenchDataItem wbdi = new WorkbenchDataItem();
-                        wbdi.initialize();
-                        wbdi.setCellData(value);
-                        wbdi.setColumnNumber(cellNum);
-                        wbdi.setRowNumber(numRows);
-                        workbench.addWorkbenchDataItem(wbdi);
-                        colTracker.put(cellNum, true);
-                        col++;
+                        wbRow.setData(value, cellNum);
                     }
                 }
-                
-                for (int i=0;i<wbtmiList.size();i++)
-                {
-                    if (colTracker.get(i) == null)
-                    {
-                        WorkbenchDataItem wbdi = new WorkbenchDataItem();
-                        wbdi.initialize();
-                        wbdi.setCellData("");
-                        wbdi.setColumnNumber(i);
-                        wbdi.setRowNumber(numRows);
-                        workbench.addWorkbenchDataItem(wbdi);
-                    }
-                }
-                numRows++;
             }
 
         } catch (IOException ex)

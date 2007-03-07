@@ -13,13 +13,15 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.HibernateHelper.startHibernateTransaction;
-import static edu.ku.brc.specify.tests.HibernateHelper.stopHibernateTransaction;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserPermission;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.setSession;
+
+import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
+import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.tests.DataBuilder.createUserPermission;
+import static edu.ku.brc.specify.tests.DataBuilder.setSession;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteSpecifyUserDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserGroupFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserPermissionFromDB;
@@ -32,10 +34,11 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.UserPermission;
 
@@ -70,7 +73,7 @@ public class SpecifyUserTest extends TestCase
 
         super.setUp();
         AppPreferenceHelper.setupPreferences();
-        startHibernateTransaction();
+        HibernateUtil.beginTransaction();
     }
 
     /*
@@ -81,7 +84,7 @@ public class SpecifyUserTest extends TestCase
     protected void tearDown() throws Exception
     {
         super.tearDown();
-        stopHibernateTransaction();
+        HibernateUtil.commitTransaction();
     }
 
     public void testCreateSingleUser()
@@ -95,7 +98,7 @@ public class SpecifyUserTest extends TestCase
         try
         {
             log.info("Creating SpecifyUser");
-            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, null, testUserRole);
+            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short)0, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
             assertTrue("SpecifyUser was not found in th database.", isSpecifyUserInDB(testUser.getId()));
@@ -120,17 +123,17 @@ public class SpecifyUserTest extends TestCase
         try
         {
             log.info("Creating SpecifyUser");
-            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, null, testUserRole);
+            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
             log.info("Checking if the SpecifyUser exists in the database ID: " + testUser.getId());
             assertTrue("SpecifyUser was not found in th database.", isSpecifyUserInDB(testUser.getId()));
-            stopHibernateTransaction();
-            startHibernateTransaction();
+            HibernateUtil.commitTransaction();
+            HibernateUtil.beginTransaction();
             boolean shouldNotBeCreated = false;
             try
             {
                 log.info("Creating 2nd SpecifyUser with same name - this should not be possible");
-                SpecifyUser testUser2 = createSpecifyUser(testUserName, testUserEmail, (short) 0, null, testUserRole);
+                SpecifyUser testUser2 = createSpecifyUser(testUserName, testUserEmail, (short) 0, testUserRole);
                 if (testUser2 == null)
                 {
                     shouldNotBeCreated = true;
@@ -179,9 +182,10 @@ public class SpecifyUserTest extends TestCase
         log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         log.info("Testing creating and deleting SpecifyUser with UserGroup");
         log.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        String testUserName = "testuser";
+        
+        String testUserName  = "testuser";
         String testUserEmail = "testuser@ku.edu";
-        String testUserRole = "Test Role";
+        String testUserRole  = "Test Role";
         String testGroupName = "testgroup";
 
         try
@@ -196,7 +200,7 @@ public class SpecifyUserTest extends TestCase
             UserGroup[] userGroups = { group };
 
             log.info("Creating SpecifyUser");
-            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, userGroups, testUserRole);
+            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short)0, userGroups, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
 
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
@@ -204,13 +208,15 @@ public class SpecifyUserTest extends TestCase
                     isSpecifyUserInDB(testUser.getId()));
             log.info("deleteing SpecifyUser from the database ID: " + testUser.getId());
             assertTrue("SpecifyUser failed to be deleted from the database.", deleteSpecifyUserDB(testUser.getId()));
-            stopHibernateTransaction();
-            startHibernateTransaction();
-            assertTrue("UserGroup should not have been deleted when SpecifyUser was deleted.",
-                    isUserGroupInDB(group.getId()));
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+            assertTrue("UserGroup should not have been deleted when SpecifyUser was deleted.", isUserGroupInDB(group.getId()));
             log.info("deleteing UserGroup from the database ID: " + group.getId());
+            
             assertTrue("UserGroup failed to be deleted from teh database.", deleteUserGroupFromDB(group.getId()));
             assertFalse("UserGroup should have been deleted.", isUserGroupInDB(group.getId()));
+            
         } catch (Exception ex)
         {
             log.error("******* " + ex);
@@ -233,8 +239,8 @@ public class SpecifyUserTest extends TestCase
             assertNotNull("UserGroup created is null. ", group);
             log.info("checking if the UserGroup exists in the database ID: " + group.getId());
             assertTrue("UserGroup was not found in th database.", isUserGroupInDB(group.getId()));
-            stopHibernateTransaction();
-            startHibernateTransaction();
+            HibernateUtil.commitTransaction();
+            HibernateUtil.beginTransaction();
             boolean shouldNotBeCreated = false;
             try
             {
@@ -277,9 +283,10 @@ public class SpecifyUserTest extends TestCase
         {
             log.info("Creating SpecifyUser");
             log.info("createSpecifyUser");
-            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, null, "CollectionManager");
+            SpecifyUser  user         = createSpecifyUser("rods", "rods@ku.edu", (short)0, "CollectionManager");
+            TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
 
-            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, null, testUserRole);
+            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
             assertTrue("SpecifyUser was not found in th database.", isSpecifyUserInDB(testUser.getId()));
@@ -296,7 +303,8 @@ public class SpecifyUserTest extends TestCase
             HibernateUtil.commitTransaction();
 
             log.info("createCollectionObjDef");
-            CollectionObjDef collectionObjDef =  edu.ku.brc.specify.tests.CreateTestDatabases.createCollectionObjDef(dataType, user, "fish", "fish");
+            CollectionObjDef collectionObjDef =  createCollectionObjDef("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
+
             //createCollectionObjDef(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
 
             
@@ -331,26 +339,35 @@ public class SpecifyUserTest extends TestCase
         String testUserRole = "Test Role";
         try
         {
+            Agent            userAgent        = createAgent("", "John", "", "Doe", "", "jd@ku.edu");
+            UserGroup        userGroup        = createUserGroup("fish");
+            TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
+
             log.info("Creating SpecifyUser");
-            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, null, testUserRole);
+            SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
+            testUser.setAgent(userAgent);
             
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
             assertTrue("SpecifyUser was not found in th database.", isSpecifyUserInDB(testUser.getId()));
+            
             log.info("createDataType");
             DataType         dataType         = createDataType("fish");
+            
             log.info("createSpecifyUser");
-            SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", (short)0, null, "CollectionManager");
+            SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", (short)0, userGroup, "CollectionManager");
 
-            CollectionObjDef collectionObjDef =  edu.ku.brc.specify.tests.CreateTestDatabases.createCollectionObjDef(dataType, user, "fish", "fish");
+            CollectionObjDef collectionObjDef =  createCollectionObjDef("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
             
             UserPermission permission = createUserPermission(testUser, collectionObjDef, true, true);
             assertNotNull("UserPermission is null", permission);
-            stopHibernateTransaction();
-            startHibernateTransaction();
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
             assertTrue("SpecifyUser failed to be deleted from the database.", deleteSpecifyUserDB(testUser.getId()));
-            stopHibernateTransaction();
-            startHibernateTransaction();
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
             assertFalse("UserPermission failed to be deleted from db when SpecifyUser was.",isUserPermissionInDB(permission.getId() ));
 
         } catch (Exception ex)

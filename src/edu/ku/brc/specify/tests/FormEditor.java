@@ -15,29 +15,6 @@
 package edu.ku.brc.specify.tests;
 
 
-import static edu.ku.brc.specify.tests.CreateTestDatabases.createAgentsInMemory;
-import static edu.ku.brc.specify.tests.CreateTestDatabases.createGeographies;
-import static edu.ku.brc.specify.tests.CreateTestDatabases.createLocations;
-import static edu.ku.brc.specify.tests.CreateTestDatabases.createTaxonomy;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEvent;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDeterminationStatus;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeologicTimePeriodTreeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocationTreeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparationAttr;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createTaxonTreeDef;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
@@ -365,6 +342,9 @@ public class FormEditor implements DatabaseLoginListener
      */
     public CollectionObject[] createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
+        CollectionObject[] colObjs = null;
+        
+        /*
         UserGroup        userGroup        = createUserGroup(disciplineName);
         SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
         DataType         dType            = createDataType(disciplineName);
@@ -412,7 +392,7 @@ public class FormEditor implements DatabaseLoginListener
                             1501015.1f, "RCS106", agents[5], 45,
                             1601016.1f, "RCS107", agents[0], 55,
                             1701017.1f, "RCS108", agents[1], 65};
-        CollectionObject[] colObjs = new CollectionObject[values.length/4];
+        colObjs = new CollectionObject[values.length/4];
         for (int i=0;i<values.length;i+=4)
         {
             colObjs[i/4] = createCollectionObject((Float)values[i],
@@ -474,7 +454,7 @@ public class FormEditor implements DatabaseLoginListener
             createPreparationAttr(prepAttrDefSize, preps[i], null, 100.0);
             createPreparationAttr(prepAttrDefSex,  preps[i], i % 2 == 0 ? "Male" : "Female", null);
         }
-
+*/
         return colObjs;
 
     }
@@ -621,6 +601,7 @@ public class FormEditor implements DatabaseLoginListener
             } else
             */
 
+            /*
             if (false)
             {
                 if (currViewSetName.equals("Fish Views") && currViewName.equals("Accession"))
@@ -644,7 +625,7 @@ public class FormEditor implements DatabaseLoginListener
                     }
                     multiView.setData(dataObj);
                 }
-            }
+            }*/
 
             if (currViewSetName.equals("Fish Views") && currViewName.equals("FishBase"))
             {

@@ -148,6 +148,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -879,7 +880,8 @@ public class BuildSampleDatabase
         Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
         WorkbenchTemplateMappingItem wbtmi = createWorkbenchMappingItem("CollectionObject", 
                                                                         1, "fieldNumber", "Field Number", "string", 1, wbTemplate);
-        WorkbenchDataItem wbdi = createWorkbenchDataItem(1, 1, "RS-100",  workBench);
+        WorkbenchRow wbRow = workBench.addRow();
+        WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-100", 1);
 
         dataObjects.add(wbTemplate);
         dataObjects.add(workBench);

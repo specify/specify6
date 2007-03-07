@@ -1,6 +1,7 @@
 package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
+import static edu.ku.brc.specify.tests.DataBuilder.*;
 
 import java.awt.HeadlessException;
 import java.io.File;
@@ -56,7 +57,6 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.BuildSampleDatabase;
 import edu.ku.brc.specify.tests.DataBuilder;
-import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ProgressFrame;
@@ -566,9 +566,9 @@ public class SpecifyDBConverter
                     BasicSQLUtils.deleteAllRecordsFromTable("usergroup");
                     BasicSQLUtils.deleteAllRecordsFromTable("collectionobjdef");
 
-                    DataType          dataType  = ObjCreatorHelper.createDataType("Animal");
-                    UserGroup         userGroup = ObjCreatorHelper.createUserGroup("Fish");
-                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
+                    DataType          dataType  = createDataType("Animal");
+                    UserGroup         userGroup = createUserGroup("Fish");
+                    SpecifyUser       user      = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
 
 
 

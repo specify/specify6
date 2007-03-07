@@ -15,9 +15,10 @@
 /**
  * 
  */
-package edu.ku.brc.ui.forms;
+package edu.ku.brc.specify.tasks.subpane.wb;
 
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.ui.forms.DataObjectGettable;
 
 /**
  * @author rods
@@ -34,12 +35,12 @@ public class DataGetterForGrid implements DataObjectGettable
      * @see edu.ku.brc.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String)
      */
     public Object getFieldValue(Object dataObj, String fieldName)
-    {
+    {/*
         if (dataObj instanceof Workbench.WorkbenchRow)
         {
             Workbench.WorkbenchRow wbr = (Workbench.WorkbenchRow)dataObj;
             return wbr.getData(Integer.parseInt(fieldName));
-        }
+        }*/
         return "";
     }
 
@@ -48,7 +49,6 @@ public class DataGetterForGrid implements DataObjectGettable
      */
     public boolean usesDotNotation()
     {
-        // TODO Auto-generated method stub
         return false;
     }
 

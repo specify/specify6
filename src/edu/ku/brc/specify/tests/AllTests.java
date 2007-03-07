@@ -33,12 +33,10 @@ public class AllTests
         //$JUnit-BEGIN$
         suite.addTestSuite(PopupDlgTests.class);
         suite.addTestSuite(AppResourceTest.class);
-        suite.addTestSuite(WorkbenchTest.class);
         suite.addTestSuite(AppContextTests.class);
         suite.addTestSuite(SpecifyUserTest.class);
         suite.addTestSuite(PreferenceTest.class);
         suite.addTestSuite(ViewSetMgrTests.class);
-        suite.addTestSuite(DBSchemaTest.class);
         suite.addTestSuite(TestFormFactory.class);
         
         //$JUnit-END$
