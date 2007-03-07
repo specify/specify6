@@ -468,12 +468,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     }
 
     /**
-     * Performs a query and then indexes all the results for each orw and column
+     * Performs a query and then indexes all the results for each row and column
      * @param writer the lucene writer
-     * @param tableInfo info describing the table (hold the table ID)
+     * @param tableInfo info describing the table (table ID, etc)
      */
     public long indexQuery(final IndexWriter writer, ExpressResultsTableInfo tableInfo)
     {
+        // Don't internationalize this string.  It's in the exact format needed
+        // by Lucene to do date range queries.
         DateFormat formatter    = new SimpleDateFormat("yyyyMMdd");
 
         Connection dbConnection = DBConnection.getInstance().createConnection();
