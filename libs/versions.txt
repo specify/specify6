@@ -39,3 +39,4 @@ TimingFramework							? it's old
 junit									4.1
 mysql-connector-java					5.0.4
 itext									1.4.8
+javacsv									2.0
