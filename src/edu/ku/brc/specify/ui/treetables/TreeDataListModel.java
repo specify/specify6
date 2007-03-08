@@ -462,12 +462,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
     
     public boolean canDeleteNode(T node)
     {
-        if (node==null)
-        {
-            return false;
-        }
-        
-        return dataService.canDeleteNode(node);
+        return dataService.canDelete(node);
     }
     
     public void deleteNode(T node)

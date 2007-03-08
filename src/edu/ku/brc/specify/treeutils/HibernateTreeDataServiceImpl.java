@@ -21,6 +21,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -173,18 +174,43 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return success;
     }
     
+    /**
+     * Determines, based on the registered business rules, if the given object
+     * can be deleted safely.
+     * 
+     * @param o the object the check
+     * @param s the Hibernate Session managing that Object
+     * @return true if the Object is deletable
+     */
+    public synchronized boolean canDelete(Object o)
+    {
+        if (o==null)
+        {
+            return false;
+        }
+        
+        BusinessRulesIFace busRule = DBTableIdMgr.getBusinessRule(o);
+        
+        // we assume that no business rules = no complaints about deleting the object
+        if (busRule==null)
+        {
+            return true;
+        }
+        
+        return busRule.okToDelete(o);
+    }
+    
     public synchronized boolean deleteTreeDefItem(I defItem)
     {
         log.trace("enter");
-        Session session = getNewSession(defItem);
-        Transaction tx = session.beginTransaction();
-        
-        boolean canDelete = defItem.canBeDeleted();
-        if (!canDelete)
+        if (!canDelete(defItem))
         {
             log.trace("exit");
             return false;
         }
+        
+        Session session = getNewSession(defItem);
+        Transaction tx = session.beginTransaction();
         
         I parent = defItem.getParent();
         I child = defItem.getChild();
@@ -258,20 +284,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		return def;
 	}
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#canDeleteNode(edu.ku.brc.specify.datamodel.Treeable)
-     */
-    public synchronized boolean canDeleteNode(T node)
-    {
-        log.trace("enter");
-        Session session = getNewSession(node);
-        BusinessRulesIFace busRules = TreeFactory.createBusinessRules(node);
-        boolean ok = busRules.okToDelete(node);
-        session.close();
-        log.trace("exit");
-        return ok;
-    }
-    
     public synchronized boolean canAddChildToNode(T node)
     {
         log.trace("enter");

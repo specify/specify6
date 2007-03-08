@@ -30,13 +30,12 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
     
     // manipulation and inspection of tree nodes
     /**
-     * Checks the business rules for the given node (and its children) to see if the
-     * node can be deleted.
+     * Checks the business rules for the given object to see if it can be deleted.
      * 
-     * @param node the node to check
-     * @return true if the node can be deleted w/o violating any business rules
+     * @param o the object to check
+     * @return true if the object can be deleted w/o violating any business rules
      */
-    public boolean canDeleteNode(T node);
+    public boolean canDelete(Object o);
     
     /**
      * Determines if a child node can be added to this node.

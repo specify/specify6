@@ -304,4 +304,15 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
         
         return false;
 	}
+    
+    public boolean isDeletable(int index)
+    {
+        if (index<0 || index>tableData.size()-1)
+        {
+            return false;
+        }
+        
+        I defItem = tableData.get(index);
+        return dataService.canDelete(defItem);
+    }
 }

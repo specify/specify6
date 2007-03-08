@@ -114,6 +114,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		repaint();
 		
 		initTreeDefEditorComponent(displayedDef);
+        
+        selectionValueChanged();
 	}
 	
 	public D getDisplayedTreeDef()
@@ -203,8 +205,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         southPanel.add(newItemButton);
         southPanel.add(Box.createRigidArea(horizSpacer));
         southPanel.add(editItemButton);
-		
-		enableSelectionSensativeButtons(false);
 	}
     
 	protected void initTreeDefEditorComponent(D treeDef)
@@ -278,25 +278,36 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 			public void valueChanged(ListSelectionEvent e)
 			{
 				clearStatus();
-				
-				if(defItemsTable.getSelectedRow() == -1)
-				{
-					enableSelectionSensativeButtons(false);
-				}
-				else
-				{
-					enableSelectionSensativeButtons(true);
-				}
+				selectionValueChanged();
 			}
 		};
 		defItemsTable.getSelectionModel().addListSelectionListener(sl);
 	}
 	
-	protected void enableSelectionSensativeButtons(boolean enable)
+	protected void selectionValueChanged()
 	{
-		deleteItemButton.setEnabled(enable);
-		newItemButton.setEnabled(enable);
-        editItemButton.setEnabled(enable);
+        int selectionIndex = defItemsTable.getSelectedRow();
+        
+        if (selectionIndex==-1)
+        {
+            deleteItemButton.setEnabled(false);
+            newItemButton.setEnabled(false);
+            editItemButton.setEnabled(false);
+        }
+        else
+        {
+            if (tableModel.isDeletable(selectionIndex))
+            {
+                deleteItemButton.setEnabled(true);
+            }
+            else
+            {
+                deleteItemButton.setEnabled(false);
+            }
+            newItemButton.setEnabled(true);
+            editItemButton.setEnabled(true);
+        }
+            
 	}
 	
 	public void clearStatus()

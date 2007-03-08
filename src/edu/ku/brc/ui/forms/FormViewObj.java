@@ -1072,6 +1072,11 @@ public class FormViewObj implements Viewable,
                 return;
             }
             
+            if (businessRules != null)
+            {
+                businessRules.beforeSave(dataObj);
+            }
+            
             FormHelper.updateLastEdittedInfo(dataObj);
             
             // Delete the cached Items
@@ -1087,7 +1092,12 @@ public class FormViewObj implements Viewable,
                 session.commit();
                 session.flush();
             }
-            
+
+            if (businessRules != null)
+            {
+                businessRules.afterSave(dataObj);
+            }
+
             session.beginTransaction();
             
             Object dObj = session.merge(dataObj);
