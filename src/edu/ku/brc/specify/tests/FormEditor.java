@@ -127,7 +127,7 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
-import edu.ku.brc.specify.tasks.subpane.wb.DataFileInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
@@ -1287,7 +1287,7 @@ public class FormEditor implements DatabaseLoginListener
                 
                 if (UIHelper.tryLogin( "com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", "testfish", "jdbc:mysql://localhost/testfish", "rods", "rods"))
                 {
-                    DataFileInfo dataFileInfo = new DataFileInfo(new File("/home/rods/Documents/_GuyanaTripX.xls"));
+                    ImportDataFileInfo dataFileInfo = new ImportDataFileInfo(new File("/home/rods/Documents/_GuyanaTripX.xls"));
 
                     IconManager.setApplicationClass(Specify.class);
                     

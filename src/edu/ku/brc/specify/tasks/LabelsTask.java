@@ -16,6 +16,8 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import it.businesslogic.ireport.gui.MainFrame;
+
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -45,6 +48,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.specify.tools.IReportSpecify.*;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -75,6 +79,7 @@ public class LabelsTask extends BaseTask
     //public static final String DOLABELS_ACTION     = "DoLabels";
     public static final String NEWRECORDSET_ACTION = "NewRecordSet";
     public static final String PRINT_LABEL         = "PrintLabel";
+    public static final String OPEN_EDITOR         = "OpenEditor";
 
     // Data Members
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -83,6 +88,8 @@ public class LabelsTask extends BaseTask
     // temp data
     protected NavBoxItemIFace         oneNbi           = null;
 
+    //iReport MainFrame
+    private static MainFrameSpecify iReportMainFrame   = null;   
     /**
      *
      *
@@ -90,6 +97,8 @@ public class LabelsTask extends BaseTask
     public LabelsTask()
     {
         super(LABELS, getResourceString(LABELS));
+ 
+        iReportMainFrame = null;
         
         CommandDispatcher.register(LABELS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
@@ -141,7 +150,9 @@ public class LabelsTask extends BaseTask
                     }
                 }
             }
-
+            
+            navBox.add(NavBox.createBtn(getResourceString("LabelEditor"),  "Loan", IconManager.IconSize.Std16, new NavBoxAction(LABELS, OPEN_EDITOR))); // I18N
+            
             navBoxes.addElement(navBox);
         }
 
@@ -506,9 +517,38 @@ public class LabelsTask extends BaseTask
                 }
                 
             }
-        } 
+        } else if (cmdAction.isAction(OPEN_EDITOR))
+        {
+            if (cmdAction.getData() == null) //no dropping yet.
+            {
+                openIReportEditor(cmdAction);
+            }
+   }
+ 
     }
     
+    /**
+     * OpenTheIReport editor
+     * @param cmdAction the command to be processed
+     */
+    private void openIReportEditor(final CommandAction cmdAction) 
+    {
+       if (iReportMainFrame == null)
+       {
+           MainFrame.reportClassLoader.rescanLibDirectory();
+           Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
+           Map args = MainFrameSpecify.getArgs();
+           iReportMainFrame = new MainFrameSpecify(args);
+       }
+        SwingUtilities.invokeLater( new Runnable()
+        {
+            public void run()
+            {
+                iReportMainFrame.setVisible(true);
+            }
+        });
+    }
+        
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
@@ -529,9 +569,7 @@ public class LabelsTask extends BaseTask
             this.initialize();
             ContextMgr.removeServicesByTask(this);
         }
-
     }
-    
     /**
      * Returns the boolean value of "reqrs" from the metaData and true if it doesn't exist.
      * @param needsRSStr the string value of the map
