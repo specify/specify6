@@ -114,7 +114,9 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LocationBusRules</businessrule>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocationTreeDef" id="59"/>
-        <table name="edu.ku.brc.specify.datamodel.LocationTreeDefItem" id="60"/>
+        <table name="edu.ku.brc.specify.datamodel.LocationTreeDefItem" id="60">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.LocationBusRules</businessrule>            
+		</table>
         <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" id="61"/>
         <table name="edu.ku.brc.specify.datamodel.Permit" id="6" query="true">
             <display objtitle="Permit" view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>

@@ -826,7 +826,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" relationshipname="treeDefItems"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDefs"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" table="locationtreedefitem" tableid="60" workbench="false" query="false">
+    <table classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" table="locationtreedefitem" tableid="60" workbench="false" query="false" businessrule="edu.ku.brc.specify.datamodel.busrules.LocationBusRules">
       <field column="Name" name="name" type="java.lang.String" length="64"/>
       <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
       <field column="RankID" name="rankId" type="java.lang.Integer"/>
