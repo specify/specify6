@@ -31,15 +31,15 @@ import edu.ku.brc.ui.forms.Viewable;
 public abstract class BaseBusRules implements BusinessRulesIFace
 {
     protected List<String> errorList = new Vector<String>();
-    protected Class<?>     dataClass;
+    protected Class<?>[] dataClasses;
     
     /**
      * The data class that is used within the busniess rules.
      * @param dataClass the data class
      */
-    public BaseBusRules(final Class<?> dataClass)
+    public BaseBusRules(final Class<?> ... dataClasses)
     {
-        this.dataClass = dataClass;
+        this.dataClasses = dataClasses;
     }
     
     /* (non-Javadoc)
@@ -47,7 +47,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public void fillForm(Object dataObj, Viewable viewable)
     {
-        
+        //
     }
     
     /* (non-Javadoc)
@@ -222,11 +222,22 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     {
         errorList.clear();
         
-        if (dataObj == null || !(dataObj.getClass() == dataClass))
+        if (dataObj == null)
         {
             return STATUS.Error;
-        }       
-        return STATUS.OK;
+        }
+        
+        Class<?> dataObjClass = dataObj.getClass();
+        for (Class<?> clazz: dataClasses)
+        {
+            // if dataObjClass is an extension of one of the handled classes...
+            if (clazz.isAssignableFrom(dataObjClass))
+            {
+                return STATUS.OK;
+            }
+        }
+        // if we get this far, this class of object isn't handled by these business rules
+        return STATUS.Error;
     }
 
     /* (non-Javadoc)

@@ -7,7 +7,11 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 
 /**
  *
@@ -16,9 +20,11 @@ import edu.ku.brc.specify.datamodel.Location;
  */
 public class LocationBusRules extends BaseBusRules
 {
+    protected static final Logger log = Logger.getLogger(LocationBusRules.class);
+    
     public LocationBusRules()
     {
-        super(Location.class);
+        super(Location.class, LocationTreeDefItem.class);
     }
 
     /* (non-Javadoc)
@@ -47,14 +53,27 @@ public class LocationBusRules extends BaseBusRules
         System.err.println("beforeSave() on Location object");
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
-     */
     @Override
     public boolean okToDelete(Object dataObj)
     {
-        Location loc = (Location)dataObj;
+        if (dataObj instanceof Location)
+        {
+            return okToDeleteLocation((Location)dataObj);
+        }
         
+        if (dataObj instanceof LocationTreeDefItem)
+        {
+            return okToDeleteLocDefItem((LocationTreeDefItem)dataObj);
+        }
+        
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
+     */
+    public boolean okToDeleteLocation(Location loc)
+    {
         if (!okToDelete("preparation", "LocationID", loc.getId()))
         {
             return false;
@@ -69,18 +88,23 @@ public class LocationBusRules extends BaseBusRules
         {
             return false;
         }
-
-        // for now, you can only delete Locations that have no children
-        // we'll have to figure out a good way to check all the children later
         
-//        // check all children
-//        for (Location locChild: loc.getChildren())
-//        {
-//            if (!okToDelete(locChild))
-//            {
-//                return false;
-//            }
-//        }
+        return true;
+    }
+    
+    public boolean okToDeleteLocDefItem(LocationTreeDefItem defItem)
+    {
+        // never let the root level be deleted
+        if (defItem.getRankId() == 0)
+        {
+            return false;
+        }
+        
+        // don't let 'used' levels be deleted
+        if (!okToDelete("location", "LocationTreeDefItemID", defItem.getId()))
+        {
+            return false;
+        }
         
         return true;
     }
