@@ -1,0 +1,167 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
+package edu.ku.brc.specify.tasks.subpane.wb;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+
+import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.ui.DateWrapper;
+
+/**
+ * @author timbo
+ *
+ * @code_status Alpha
+ *
+ *Imports xls data to workbenches.
+ */
+public class XLSImport implements DataImport
+{
+    ConfigureXLSImport config;
+    
+    public XLSImport(ConfigureDataImport config)
+    {
+        setConfig(config);
+    }
+
+    /* (non-Javadoc)
+     * Loads data from the file configured by the config member into a workbench.
+     * @param workbench - the workbench to be loaded
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImport#getData(edu.ku.brc.specify.datamodel.Workbench)
+     */
+    public void getData(Workbench workbench)
+    {
+        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting",
+                "scrdateformat");
+        try
+        {
+            InputStream input = new FileInputStream(config.getFile());
+            POIFSFileSystem fs = new POIFSFileSystem(input);
+            HSSFWorkbook workBook = new HSSFWorkbook(fs);
+            HSSFSheet sheet = workBook.getSheetAt(0);
+            int numRows = 0;
+
+            // Calculate the number of rows and columns
+
+            Set<WorkbenchTemplateMappingItem> wbtmiSet = workbench.getWorkbenchTemplate()
+                    .getWorkbenchTemplateMappingItems();
+            Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
+            wbtmiList.addAll(wbtmiSet);
+            Collections.sort(wbtmiList);
+
+            // Iterate over each row in the sheet
+            Iterator rows = sheet.rowIterator();
+            while (rows.hasNext())
+            {
+                HSSFRow row = (HSSFRow) rows.next();
+
+                //System.out.println("Row #" + row.getRowNum());
+
+                if (numRows == 0 && config.getFirstRowHasHeaders())
+                {
+                    numRows++;
+                    continue;
+                }
+
+                WorkbenchRow wbRow = workbench.addRow();
+
+                // Iterate over each cell in the row and print out the cell's content
+                Iterator cells = row.cellIterator();
+                while (cells.hasNext())
+                {
+                    HSSFCell cell = (HSSFCell) cells.next();
+                    int type = cell.getCellType();
+                    String value = "";
+                    boolean skip = false;
+
+                    int cellNum = cell.getCellNum();
+
+                    WorkbenchTemplateMappingItem wbtmi = wbtmiList.get(cellNum);
+                    //String                       typeStr = wbtmi.getDataType();
+
+                    //System.out.println(wbtmiList.get(cellNum).getDataType());
+
+                    switch (type)
+                    {
+                        case HSSFCell.CELL_TYPE_NUMERIC:
+                            if (wbtmi.getDataType().indexOf("date") > -1)
+                            {
+                                value = scrDateFormat.getSimpleDateFormat().format(
+                                        cell.getDateCellValue());
+
+                            } else if (wbtmi.getDataType().indexOf("int") > -1)
+                            {
+                                double numeric = cell.getNumericCellValue();
+                                value = Integer.toString((int) numeric);
+
+                            } else
+                            {
+                                double numeric = cell.getNumericCellValue();
+                                value = Double.toString(numeric);
+                            }
+                            break;
+
+                        case HSSFCell.CELL_TYPE_STRING:
+                            value = cell.getStringCellValue();
+                            break;
+
+                        case HSSFCell.CELL_TYPE_BLANK:
+                            value = "";
+                            type = HSSFCell.CELL_TYPE_STRING;
+                            break;
+
+                        case HSSFCell.CELL_TYPE_BOOLEAN:
+                            boolean bool = cell.getBooleanCellValue();
+                            value = Boolean.toString(bool);
+                            //type = HSSFCell.CELL_TYPE_STRING;
+                            break;
+
+                        default:
+                            //System.out.println("unsuported cell type");
+                            skip = true;
+                            break;
+                    }
+
+                    if (!skip)
+                    {
+                        wbRow.setData(value, cellNum);
+                    }
+                }
+                numRows++;
+            }
+
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public void setConfig(ConfigureDataImport config)
+    {
+        this.config = (ConfigureXLSImport) config;
+    }
+
+    public ConfigureDataImport getConfig()
+    {
+        return this.config;
+    }
+
+}

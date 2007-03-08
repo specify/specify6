@@ -44,7 +44,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
-import edu.ku.brc.specify.tasks.subpane.wb.DataFileInfo;
+//import edu.ku.brc.specify.tasks.subpane.wb.DataFileInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchFormPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -280,9 +281,10 @@ public class WorkbenchTask extends BaseTask
         
         if (file != null && file.exists())
         {
-            DataFileInfo dataFileInfo = new DataFileInfo(file);
-
-            JDialog           dlg    = new JDialog((Frame)null, "Column Mapper", true);
+           // DataFileInfo dataFileInfo = new DataFileInfo(file);
+            ImportDataFileInfo dataFileInfo = new ImportDataFileInfo(file);
+            
+             JDialog           dlg    = new JDialog((Frame)null, "Column Mapper", true);
             ColumnMapperPanel mapper = new ColumnMapperPanel(dlg, dataFileInfo);
             dlg.setContentPane(mapper);
             dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -531,7 +533,7 @@ public class WorkbenchTask extends BaseTask
      * @param wbTemplateIsNew the WorkbenchTemplate is brand new (not reusing an existing template)
      * @return the new Workbench data object
      */
-    protected Workbench createWorkbench(final DataFileInfo      dataFileInfo, 
+    protected Workbench createWorkbench(final ImportDataFileInfo      dataFileInfo, 
                                         final WorkbenchTemplate wbt,
                                         final boolean           wbTemplateIsNew)
     {

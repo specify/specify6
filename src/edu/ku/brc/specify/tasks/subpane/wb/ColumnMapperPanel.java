@@ -91,7 +91,7 @@ public class ColumnMapperPanel extends JPanel
     protected int                            currentInx = -1;
     protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>>();
     
-    protected DataFileInfo                   dataFileInfo;
+    protected ImportDataFileInfo                   dataFileInfo;
     
     protected ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
     protected ImageIcon blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
@@ -102,7 +102,7 @@ public class ColumnMapperPanel extends JPanel
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public ColumnMapperPanel(final JDialog dlg, final DataFileInfo dataFileInfo)
+    public ColumnMapperPanel(final JDialog dlg, final ImportDataFileInfo dataFileInfo)
     {
         this.dlg          = dlg;
         this.dataFileInfo = dataFileInfo;
@@ -240,7 +240,7 @@ public class ColumnMapperPanel extends JPanel
             }
         });
         
-        for (DataFileInfo.ColumnInfo colInfo : dataFileInfo.getColInfo())
+        for (ImportColumnInfo colInfo : dataFileInfo.getColInfo())
         {
             addMappingItem(colInfo, null);
         }
@@ -287,7 +287,7 @@ public class ColumnMapperPanel extends JPanel
      * @param colInfo the Column Info about the Data File column
      * @param icon the icon it should use to describe what it has been mapped to
      */
-    protected void addMappingItem(final DataFileInfo.ColumnInfo colInfo, final ImageIcon icon)
+    protected void addMappingItem(final ImportColumnInfo colInfo, final ImageIcon icon)
     {
         FieldMappingPanel fmp = new FieldMappingPanel(colInfo, icon);
         mappingItems.add(fmp);
@@ -561,7 +561,7 @@ public class ColumnMapperPanel extends JPanel
         int order = 0;
         for (FieldMappingPanel fmp : mappingItems)
         {
-            DataFileInfo.ColumnInfo colInfo  = fmp.getColInfo();
+            ImportColumnInfo colInfo  = fmp.getColInfo();
             TableFieldPair              tblField = fmp.getTableField();
             
             if (fmp.isMapped())
@@ -603,7 +603,7 @@ public class ColumnMapperPanel extends JPanel
         protected ImageIcon icon;
         
         protected TableFieldPair              tblField = null;
-        protected DataFileInfo.ColumnInfo colInfo = null;
+        protected ImportColumnInfo colInfo = null;
         
         protected FieldMappingPanel thisItem;
         
@@ -612,7 +612,7 @@ public class ColumnMapperPanel extends JPanel
          * @param fieldName the field Name
          * @param icon the icon to use once it is mapped
          */
-        public FieldMappingPanel(final DataFileInfo.ColumnInfo colInfo, final ImageIcon icon)
+        public FieldMappingPanel(final ImportColumnInfo colInfo, final ImageIcon icon)
         {
             this.colInfo = colInfo;
             
@@ -701,7 +701,7 @@ public class ColumnMapperPanel extends JPanel
          * Returns the ColumnInfo object.
          * @return the ColumnInfo object.
          */
-        public DataFileInfo.ColumnInfo getColInfo()
+        public ImportColumnInfo getColInfo()
         {
             return colInfo;
         }
