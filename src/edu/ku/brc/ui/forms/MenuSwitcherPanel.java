@@ -62,9 +62,9 @@ public class MenuSwitcherPanel extends JPanel
      * @param altViewsListArg
      */
     public MenuSwitcherPanel(final MultiView       mvParent, 
-                            final View            view, 
-                            final AltView         altView, 
-                            final Vector<AltView> altViewsList)
+                             final View            view, 
+                             final AltView         altView, 
+                             final Vector<AltView> altViewsList)
     {
         super();
         

@@ -127,7 +127,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         bgColor = new Color(Math.min(bgColor.getRed()+20, 255), 
                             Math.min(bgColor.getGreen()+20, 255), 
                             Math.min(bgColor.getBlue()+20, 255));
-        System.out.println(bgColor);
+        //System.out.println(bgColor);
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(bgColor), BorderFactory.createEmptyBorder(4, 4, 4, 4)));
         
         for (int i=0;i<types.length;i++)

@@ -40,6 +40,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
@@ -169,7 +170,9 @@ public class WorkbenchTask extends BaseTask
     protected void addWorkbenchToNavBox(final Workbench workbench)
     {
         CommandAction cmd = new CommandAction(WORKBENCH, EDIT_WORKBENCH);
-        cmd.setProperty("workbench", workbench);
+        RecordSet rs = new RecordSet(workbench.getName(), Workbench.getClassTableId());
+        rs.addItem(workbench.getWorkbenchId());
+        cmd.setProperty("workbench", rs);
         RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
                                                                                new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbench), 
                                                                                true);// true means make it draggable
@@ -829,7 +832,10 @@ public class WorkbenchTask extends BaseTask
             
         } else if (cmdAction.isAction(EDIT_WORKBENCH))
         {
-            Workbench workbench = (Workbench)cmdAction.getProperty("workbench");
+            RecordSet                recordSet = (RecordSet)cmdAction.getProperty("workbench");
+            DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+            Workbench                workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
+            session.close();
             createEditorForWorkbench(workbench, null);
             
         } else if (cmdAction.isAction(NEW_TEMPLATE))

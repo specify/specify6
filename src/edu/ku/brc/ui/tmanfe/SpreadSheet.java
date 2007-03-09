@@ -9,16 +9,21 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -27,13 +32,12 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import edu.ku.brc.ui.UIHelper;
+
 
 /***************************************************************************************************
  * 
@@ -52,78 +56,57 @@ public class SpreadSheet extends JTable
      */
     public static final boolean DEBUG = true;
 
-    private JScrollPane         scrollPane;
-    private CellMenu            popupMenu;
+    protected SpreadSheetModel   model;
+    protected JScrollPane        scrollPane;
+    protected JPopupMenu         popupMenu;
+    
+    protected boolean            useRowScrolling = false;
 
-    //private int                 _editedModelRow;
-    //private int                 _editedModelCol;
-
-
-    // Cells selected.
-    private Object[]            _selection;
+    // Members needed for the RowHeader    
+    protected int                rowLabelWidth   = 0;     // the width of the each row's label
+    protected JPanel             rowHeaderPanel;
+    protected RHCellMouseAdapter rhCellMouseAdapter;
+    protected Border             cellBorder      = null;
+    protected Font               cellFont;
+    
+    // Cell Selection
+    protected boolean            mouseDown = false;
+    private boolean              rowSelectionStarted = false;
+    private int                  rowAnchor = 0;
+    
 
     /**
-     * Build SpreadSheet of numCol columns and numRow rows.
-     * 
-     * @param cells[numRow][numColumn] If not null, the cells to be used in the spreadsheet. It must be a two dimensional
-     *  rectangular array. If null, the cells are automatically created.
-     * @param numRow The number of rows
-     * @param numCol The number of columns
-     * 
+     * Constructor for Spreadsheet from model
+     * @param model
      */
-    public SpreadSheet(final TableModel model)
+    public SpreadSheet(final SpreadSheetModel model)
     {
         super(model);
-        buildSpreadsheet(model);
+        
+        this.model = model;
+        
+        buildSpreadsheet();
     }
 
-    protected void buildSpreadsheet(final TableModel model)
+    /**
+     * @param model
+     */
+    protected void buildSpreadsheet()
     {
+        TableModel model = getModel();
+        
         this.setShowGrid(true);
 
-
         int numRows = model.getRowCount();
-
-        // Create the JScrollPane that includes the Table
+        
         scrollPane = new JScrollPane(this);
-        
-        setModel(model);
-        
-        //setRowHeight(new JTextField().getPreferredSize().height+5);
 
-        /*
-         * Tune the selection mode
-         */
-
+        
         // Allows row and collumn selections to exit at the same time
         setCellSelectionEnabled(true);
 
+        setRowSelectionAllowed(true);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-
-        getSelectionModel().addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent ev)
-            {
-
-                int selRow[] = getSelectedRows();
-                int selCol[] = getSelectedColumns();
-
-                _selection = new Object[selRow.length * selCol.length];
-
-                int indice = 0;
-                for (int r = 0; r < selRow.length; r++)
-                {
-                    for (int c = 0; c < selCol.length; c++)
-                    {
-                        //int rr = selRow[r];
-                        //int cc = convertColumnIndexToModel(selCol[c]);
-                        _selection[indice] = indice;//_model.cells[selRow[r]][convertColumnIndexToModel(selCol[c])];
-                        indice++;
-                    }
-                }
-
-            }
-        });
 
         // Create a row-header to display row numbers.
         // This row-header is made of labels whose Borders,
@@ -131,99 +114,126 @@ public class SpreadSheet extends JTable
         // the one used for the table column headers.
         // Also ensure that the row-header labels and the table
         // rows have the same height.
-        TableColumn       aColumn   = getColumnModel().getColumn(0);
-        TableCellRenderer aRenderer = getTableHeader().getDefaultRenderer();
-        if (aRenderer == null)
+        TableColumn       column   = getColumnModel().getColumn(0);
+        TableCellRenderer renderer = getTableHeader().getDefaultRenderer();
+        if (renderer == null)
         {
-            aColumn = getColumnModel().getColumn(0);
-            aRenderer = aColumn.getHeaderRenderer();
-            if (aRenderer == null)
-            {
-                throw new RuntimeException("Can'r get default renderer!");
-            }
+            column = getColumnModel().getColumn(0);
+            renderer = column.getHeaderRenderer();
         }
-        Component aComponent = aRenderer.getTableCellRendererComponent(this, aColumn.getHeaderValue(), false, false, -1, 0);
-        Font aFont = aComponent.getFont();
-        Color aBackground = aComponent.getBackground();
-        Color aForeground = aComponent.getForeground();
+        
+        // Calculate Row Height
+        Component   cellRenderComp = renderer.getTableCellRendererComponent(this, column.getHeaderValue(), false, false, -1, 0);
+        cellFont                   = cellRenderComp.getFont();
+        cellBorder                 = (Border)UIManager.getDefaults().get("TableHeader.cellBorder");
+        Insets      insets         = cellBorder.getBorderInsets(tableHeader);
+        FontMetrics metrics        = getFontMetrics(cellFont);
 
-        Border      border  = (Border)UIManager.getDefaults().get("TableHeader.cellBorder");
-        Insets      insets  = border.getBorderInsets(tableHeader);
-        FontMetrics metrics = getFontMetrics(aComponent.getFont());
         rowHeight = insets.bottom + metrics.getHeight() + insets.top;
 
-        
         /*
-         * Creating a panel to be used as the row header.
-         * 
-         * Since I'm not using any LayoutManager, a call to setPreferredSize().
+         * Create the Row Header Panel
          */
-        JPanel pnl = new JPanel((LayoutManager)null);
-        Dimension dim = new Dimension(metrics.stringWidth("9999") + insets.right + insets.left, rowHeight * numRows);
-        pnl.setPreferredSize(dim);
+        rowHeaderPanel = new JPanel((LayoutManager)null);
+        rowLabelWidth  = metrics.stringWidth("9999") + insets.right + insets.left;
         
-        class MyNumLabel extends JComponent
-        {
-            protected String rowNum;
-            protected Font font;
-            
-            public MyNumLabel(int rowNum, final Font font)
-            {
-                this.rowNum = Integer.toString(rowNum);
-                this.font = font;
-            }
+        Dimension dim  = new Dimension(rowLabelWidth, rowHeight * numRows);
+        rowHeaderPanel.setPreferredSize(dim); // need to call this when no layout manager is used.
 
-            /* (non-Javadoc)
-             * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-             */
-            @Override
-            protected void paintComponent(Graphics g)
-            {
-                super.paintComponent(g);
-                g.setFont(font);
-                //Insets insets = getInsets();
-                Dimension size = this.getSize();
-                FontMetrics fm = getFontMetrics(font);
-                int width = fm.stringWidth(rowNum);
-                int y = size.height - ((size.height - fm.getAscent()) / 2);// - insets.bottom;
-                //System.out.println(fm.getAscent() + " " + Integer.toString((size.width - width) / 2) + " " + Integer.toString(y) + " " + size.height);
-                g.drawString(rowNum, (size.width - width) / 2, y);
-            }
-            
-        }
 
+        rhCellMouseAdapter = new RHCellMouseAdapter(this);
+        
         // Adding the row header labels
-        dim.height = rowHeight;
-        boolean isMac = UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX;
         for (int ii = 0; ii < numRows; ii++)
         {
-            if (isMac)
-            {
-                JLabel lbl = new JLabel(Integer.toString(ii + 1), SwingConstants.CENTER);
-                lbl.setFont(aFont);
-                lbl.setBackground(aBackground);
-                lbl.setOpaque(true);
-                lbl.setForeground(aForeground);
-                lbl.setBorder(border);
-                lbl.setBounds(0, ii * dim.height, dim.width, dim.height);
-                
-            } else
-            {
-                MyNumLabel lbl = new MyNumLabel(ii+1, aComponent.getFont());
-                lbl.setBounds(0, ii * dim.height, dim.width, dim.height);
-                pnl.add(lbl);
-            }
+            addRow(ii, ii+1, false);
         }
 
-        JViewport vp = new JViewport();
+        JViewport viewPort = new JViewport();
         dim.height = rowHeight * numRows;
-        vp.setViewSize(dim);
-        vp.setView(pnl);
-        scrollPane.setRowHeader(vp);
+        viewPort.setViewSize(dim);
+        viewPort.setView(rowHeaderPanel);
+        scrollPane.setRowHeader(viewPort);
 
         resizeAndRepaint();
     }
+    
+    /**
+     * Appends a new Row onto the spreadsheet.
+     * @param rowInx the last index
+     * @param adjustPanelSize whether to resize the header panel
+     */
+    protected void addRow(final int rowInx, final int rowNum, final boolean adjustPanelSize)
+    {
+        RowHeaderLabel lbl = new RowHeaderLabel(rowNum, cellFont);
+        lbl.setBounds(0, rowInx * rowHeight, rowLabelWidth, rowHeight);
+        //System.out.println(rowNum+"  "+lbl.getBounds());
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            lbl.setBorder(cellBorder);
+        }
+        lbl.addMouseListener(rhCellMouseAdapter);
+        //lbl.addMouseMotionListener(rhCellMouseAdapter);
+        rowHeaderPanel.add(lbl);
+        
+        if (adjustPanelSize)
+        {
+            Dimension dim = new Dimension(rowLabelWidth, rowHeight * (rowInx+1));
+            rowHeaderPanel.setPreferredSize(dim);
+            rowHeaderPanel.setSize(dim);
+            resizeAndRepaint();
+        }
+    }
+    
+    /**
+     * Appends a new row onto the Spreadsheet. 
+     */
+    public void addRow()
+    {
+        addRow(getModel().getRowCount()-1, getModel().getRowCount(), true);
+        
+    }
+    
+    /**
+     * Must be called AFTER the model has been adjusted.
+     * @param rowInx the row index that was removed
+     */
+    public void removeRow(final int rowInx)
+    {
+        int rowCount = getModel().getRowCount();
+        
+        Component comp = rowHeaderPanel.getComponent(rowCount);
+        remove(comp);
 
+        Dimension dim = new Dimension(rowLabelWidth, rowHeight * (rowCount));
+        rowHeaderPanel.setPreferredSize(dim);
+        rowHeaderPanel.setSize(dim);
+        
+        resizeAndRepaint();
+        
+        if (rowCount > -1)
+        {
+            if (rowInx >= rowCount)
+            {
+                setRowSelectionInterval(rowCount-1, rowCount-1);
+            } else
+            {
+                setRowSelectionInterval(rowInx, rowInx);
+            }
+            setColumnSelectionInterval(0, 6);
+        }
+    }
+
+    /**
+     * Scrolls to a specified row.
+     * @param row the row to scroll to (zero-based)
+     */
+    public void scrollToRow(final int row)
+    {
+        Rectangle r = getCellRect(row, 0, true);
+        scrollRectToVisible( r );
+    }
+    
     /**
      * Invoked when a cell edition starts. This method overrides and calls that of its super class.
      * 
@@ -234,16 +244,7 @@ public class SpreadSheet extends JTable
      */
     public boolean editCellAt(int row, int column, EventObject ev)
     {
-
-        //if (_editedModelRow != -1)
-        //    _model.setDisplayMode(_editedModelRow, _editedModelCol);
-
-        //_editedModelRow = row;
-        //_editedModelCol = convertColumnIndexToModel(column);
-
-        //_model.setEditMode(row, convertColumnIndexToModel(column));
-        return super.editCellAt(row, column, ev);
-
+        return mouseDown ? false : super.editCellAt(row, column, ev);
     }
 
     /**
@@ -268,36 +269,103 @@ public class SpreadSheet extends JTable
         super.editingCanceled(ev);
     }
 
+    /**
+     * @return the scroll pane.
+     */
     public JScrollPane getScrollPane()
     {
         return scrollPane;
     }
+    
+    protected JPopupMenu createMenuForSelection(final Point pnt)
+    {
+        final int row = rowAtPoint(pnt);
+        //int col = columnAtPoint(pnt);
+        
+        JPopupMenu pMenu = new JPopupMenu();
+        
+        if (getSelectedColumnCount() == 1)
+        {
+            final int[] rows = getSelectedRows();
+            //for (int i : colsrows) System.out.println()
+            if (row == rows[0])
+            {
+                JMenuItem mi = pMenu.add(new JMenuItem("Fill Down"));
+                mi.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        model.fill(getSelectedColumn(), row, rows);
+                        popupMenu.setVisible(false);
+                    }
+                });
+            } else if (row == rows[rows.length-1])
+            {
+                JMenuItem mi = pMenu.add(new JMenuItem("Fill Up"));
+                mi.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        model.fill(getSelectedColumn(), row, rows);
+                        popupMenu.setVisible(false);
+                    }
+                });
+            }
+        }
+        
+        JMenuItem mi = pMenu.add(new JMenuItem("Clear Cell(s)"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                model.clearCells(getSelectedRows(), getSelectedColumns());
+                popupMenu.setVisible(false);
+            }
+        });
+        
+        mi = pMenu.add(new JMenuItem("Delete Row(s)"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                model.deleteRows(getSelectedRows());
+                popupMenu.setVisible(false);
+            }
+        });
+        return pMenu;
+    }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#processMouseEvent(java.awt.event.MouseEvent)
+     */
     public void processMouseEvent(MouseEvent ev)
     {
 
         int type = ev.getID();
         int modifiers = ev.getModifiers();
+        
+        mouseDown = type == MouseEvent.MOUSE_PRESSED;
 
         if ((type == MouseEvent.MOUSE_RELEASED) && (modifiers == InputEvent.BUTTON3_MASK))
         {
-
-            if (_selection != null)
+            
+            if (getSelectedRowCount() > 0)
             {
-                if (popupMenu == null)
-                    popupMenu = new CellMenu(this);
+                if (popupMenu != null)
+                {
+                    popupMenu.setVisible(false);
+                }
+
+                popupMenu = createMenuForSelection(ev.getPoint());
 
                 if (popupMenu.isVisible())
-                    popupMenu.setVisible(false);
-                else
                 {
-                    popupMenu.setTargetCells(_selection);
+                    popupMenu.setVisible(false);
+                    
+                } else
+                {
+                    //popupMenu.setTargetCells(_selection);
                     Point p = getLocationOnScreen();
                     popupMenu.setLocation(p.x + ev.getX() + 1, p.y + ev.getY() + 1);
                     popupMenu.setVisible(true);
                 }
             }
-
         }
         super.processMouseEvent(ev);
     }
@@ -306,6 +374,90 @@ public class SpreadSheet extends JTable
     public void setVisible(boolean flag)
     {
         scrollPane.setVisible(flag);
+    }
+    
+    /**
+     * @return
+     */
+    public int getMaxUnitIncrement()
+    {
+        if (getModel() == null)
+        {
+            return 0;
+        }
+        int cols = getModel().getColumnCount();
+        if (cols > 0)
+        {
+            cols--;
+        }
+        double unit = getPreferredSize().width / cols;
+        return (int)unit;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTable#getScrollableBlockIncrement(java.awt.Rectangle, int, int)
+     */
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction)
+    {
+        if (useRowScrolling)
+        {
+            if (orientation == SwingConstants.HORIZONTAL)
+            {
+                return visibleRect.width - getMaxUnitIncrement();
+            }
+            return visibleRect.height - getMaxUnitIncrement();
+        }
+        
+        return super.getScrollableBlockIncrement(visibleRect, orientation, direction);
+
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTable#getScrollableTracksViewportHeight()
+     */
+    public boolean getScrollableTracksViewportHeight()
+    {
+        return useRowScrolling ? false : super.getScrollableTracksViewportHeight();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTable#getScrollableTracksViewportWidth()
+     */
+    public boolean getScrollableTracksViewportWidth()
+    {
+        return useRowScrolling ? false : super.getScrollableTracksViewportWidth();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTable#getScrollableUnitIncrement(java.awt.Rectangle, int, int)
+     */
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction)
+    {
+        if (useRowScrolling)
+        {
+            // Get the current position.
+            int currentPosition = 0;
+            if (orientation == SwingConstants.HORIZONTAL)
+            {
+                currentPosition = visibleRect.x;
+            }
+            else 
+            {
+                currentPosition = visibleRect.y;
+            }
+
+            // Return the number of pixels between currentPosition
+            // and the nearest tick mark in the indicated direction.
+            if (direction < 0)
+            {
+                int newPosition = currentPosition - (currentPosition / getMaxUnitIncrement()) * getMaxUnitIncrement();
+                return (newPosition == 0) ? getMaxUnitIncrement() : newPosition;
+            } else
+            {
+                return ((currentPosition / getMaxUnitIncrement()) + 1) * getMaxUnitIncrement() - currentPosition;
+            }
+        }
+        return super.getScrollableUnitIncrement(visibleRect, orientation, direction);
     }
 
     /*
@@ -354,4 +506,108 @@ public class SpreadSheet extends JTable
 
     }
 
+    
+    //------------------------------------------------------------------------------
+    //-- Inner Classes
+    //------------------------------------------------------------------------------
+    class RowHeaderLabel extends JComponent
+    {
+        protected String rowNumStr;
+        protected int    rowNum;
+        protected Font   font;
+   
+        protected int    labelWidth  = Integer.MAX_VALUE;     
+        protected int    labelheight = Integer.MAX_VALUE;     
+        
+        public RowHeaderLabel(int rowNum, final Font font)
+        {
+            this.rowNum    = rowNum;
+            this.rowNumStr = Integer.toString(rowNum);
+            this.font      = font;
+        }
+
+        public int getRowNum()
+        {
+            return rowNum;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+         */
+        @Override
+        protected void paintComponent(Graphics g)
+        {
+            super.paintComponent(g);
+            
+            g.setFont(font);
+            
+            if (labelWidth == Integer.MAX_VALUE)
+            {
+                FontMetrics fm = getFontMetrics(font);
+                labelheight = fm.getAscent();
+                labelWidth  = fm.stringWidth(rowNumStr);
+            }
+            
+            Insets    ins  = getInsets();
+            Dimension size = this.getSize();
+            int y = size.height - ((size.height - labelheight) / 2) - ins.bottom;
+            
+            g.drawString(rowNumStr, (size.width - labelWidth) / 2, y);
+        }
+    }
+    
+    /**
+     * MouseAdaptter for selecting rows by clicking and dragging on the Row Headers.
+     */
+    class RHCellMouseAdapter extends MouseAdapter
+    {
+        protected JTable table;
+        
+        public RHCellMouseAdapter(final JTable table)
+        {
+            this.table = table;
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+         */
+        @Override
+        public void mousePressed(MouseEvent e) 
+        { 
+            RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
+            int row    = lbl.getRowNum()-1;
+            rowSelectionStarted = true;
+            table.setRowSelectionInterval(row, row);
+            table.setColumnSelectionInterval(0, 6);
+            table.getSelectionModel().setValueIsAdjusting(true);
+            rowAnchor = row;
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
+         */
+        @Override
+        public void mouseReleased(MouseEvent e) 
+        {
+            rowSelectionStarted = false;
+            table.getSelectionModel().setValueIsAdjusting(false);
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
+         */
+        @Override
+        public void mouseEntered(MouseEvent e) 
+        {
+            if (rowSelectionStarted)
+            {
+                RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
+                int row    = lbl.getRowNum();
+                rowSelectionStarted = true;
+                table.setRowSelectionInterval(rowAnchor, row);
+                table.setColumnSelectionInterval(0, 6);
+            }
+        }
+
+    }
 }

@@ -30,7 +30,6 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -396,7 +395,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable
     }
     
     @Transient
-    public List<WorkbenchRow> getWorkbenchRowsAsList()
+    public Vector<WorkbenchRow> getWorkbenchRowsAsList()
     { 
         if (rows.size() == 0)
         {
@@ -457,6 +456,16 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable
         rows.insertElementAt(workbenchRow, rowIndex);
         workbenchRows.add(workbenchRow);
         return workbenchRow;
+    }
+    
+    /**
+     * Returns a Row.
+     * @param rowIndex the row to be returned
+     * @return the row to be returned
+     */
+    public WorkbenchRow getRow(final int rowIndex)
+    {
+        return rows.get(rowIndex);
     }
     
     /**

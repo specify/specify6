@@ -35,15 +35,14 @@ public class DropDownMenuInfo
     protected ImageIcon imageIcon;
     protected String    tooltip;
     
-    public DropDownMenuInfo(String label, 
-                    ImageIcon imageIcon, 
-                    String tooltip)
+    public DropDownMenuInfo(final String    label, 
+                            final ImageIcon imageIcon, 
+                            final String    tooltip)
     {
         super();
         this.label = label;
         this.imageIcon = imageIcon;
         this.tooltip = tooltip;
-
     }
     
     public String getLabel()

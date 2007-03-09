@@ -93,6 +93,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     /** constructor with id */
     public RecordSet(final String name, final int dbTableId) 
     {
+        initialize();
         this.name = name;
         this.dbTableId = dbTableId;
     }
