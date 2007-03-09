@@ -1,36 +1,54 @@
 All these jars were distributed with iReport 1.3.0.
 
-
+antlr-2.7.5.jar
+asm-attrs.jar
+asm.jar
 barbecue-1.1.jar
 bsh-1.3.0.jar
 cglib-2.1.jar
+cincom-jr-xmla.jar
+commons-beanutils-1.5.jar
+commons-collections-2.1.jar
 commons-dbcp-1.2.1.jar
+commons-digester-1.7.jar
 commons-javaflow-20060411.jar
+commons-logging-1.0.2.jar
 commons-logging-api-1.0.2.jar
 commons-pool-1.3.jar
+dom4j-1.6.jar
+ehcache-1.1.jar
 eigenbase-properties.jar
 eigenbase-resgen.jar
 eigenbase-xom.jar
 flexdock-0.4.1.jar
 groovy-all-1.0-beta-10.jar
+hibernate3.jar
 hsqldb-1.7.1.jar
-iReport.jar									1.3.0
-iReport_versions.txt
+iReport.jar							1.3.0
+itext-1.3.1.jar
 jakarta-bcel-20050813.jar
 JasperBabylon-1.0.0.jar
+jasperreports-1.3.0.jar
 javacup.jar
 jcmdline-1.0.2.jar
+jcommon-1.0.0.jar
 jdt-compiler-3.1.1.jar
+jfreechart-1.0.0.jar
 jpa.jar
 jr-bsh-compiler.jar
 jsmoothgen-ant-0.9.7.jar
 jta.jar
 jxl-2.6.jar
+log4j-1.2.8.jar
+looks-2.0-rc.jar
 microba-0.4.1-bin.jar
 mondrian-2.0.1.jar
+mysql-connector-java-3.1.11-bin.jar
 nsisant-1.1.jar
 png-encoder-1.5.jar
+poi-2.0-final-20040126.jar
 rex.jar
+saaj-api-1.3.jar
 servlet.jar
 spring-2.0-m2.jar
 spring-context-2.0-m2.jar
