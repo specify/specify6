@@ -34,7 +34,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 import edu.ku.brc.ui.UIHelper;
 
@@ -63,16 +62,16 @@ public class SpreadSheet extends JTable
     protected boolean            useRowScrolling = false;
 
     // Members needed for the RowHeader    
-    protected int                rowLabelWidth   = 0;     // the width of the each row's label
+    protected int                rowLabelWidth       = 0;     // the width of the each row's label
     protected JPanel             rowHeaderPanel;
     protected RHCellMouseAdapter rhCellMouseAdapter;
-    protected Border             cellBorder      = null;
+    protected Border             cellBorder          = null;
     protected Font               cellFont;
     
     // Cell Selection
-    protected boolean            mouseDown = false;
+    protected boolean            mouseDown           = false;
     private boolean              rowSelectionStarted = false;
-    private int                  rowAnchor = 0;
+    private int                  rowAnchor           = 0;
     
 
     /**
@@ -93,8 +92,7 @@ public class SpreadSheet extends JTable
      */
     protected void buildSpreadsheet()
     {
-        TableModel model = getModel();
-        
+       
         this.setShowGrid(true);
 
         int numRows = model.getRowCount();
@@ -220,7 +218,7 @@ public class SpreadSheet extends JTable
             {
                 setRowSelectionInterval(rowInx, rowInx);
             }
-            setColumnSelectionInterval(0, 6);
+            setColumnSelectionInterval(0, model.getColumnCount()-1);
         }
     }
 
@@ -578,7 +576,7 @@ public class SpreadSheet extends JTable
             int row    = lbl.getRowNum()-1;
             rowSelectionStarted = true;
             table.setRowSelectionInterval(row, row);
-            table.setColumnSelectionInterval(0, 6);
+            table.setColumnSelectionInterval(0, model.getColumnCount()-1);
             table.getSelectionModel().setValueIsAdjusting(true);
             rowAnchor = row;
         }
@@ -605,7 +603,7 @@ public class SpreadSheet extends JTable
                 int row    = lbl.getRowNum();
                 rowSelectionStarted = true;
                 table.setRowSelectionInterval(rowAnchor, row);
-                table.setColumnSelectionInterval(0, 6);
+                table.setColumnSelectionInterval(0, model.getColumnCount()-1);
             }
         }
 

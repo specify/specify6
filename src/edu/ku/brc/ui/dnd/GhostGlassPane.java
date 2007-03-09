@@ -36,16 +36,19 @@ public class GhostGlassPane extends JPanel
     private final int   ANIMATION_DELAY = 500;
     private final float STD_ALPHA       = 0.7f;
 
-    protected BufferedImage dragged = null;
-    protected Point location = new Point(0, 0);
-    protected Point oldLocation = new Point(0, 0);
+    protected BufferedImage dragged     = null;
+    protected Point         location    = new Point(0, 0);
+    protected Point         oldLocation = new Point(0, 0);
 
-    protected int width;
-    protected int height;
-    protected Rectangle visibleRect = null;
+    protected int           width;
+    protected int           height;
+    protected Rectangle     visibleRect = null;
 
-    protected float zoom  = 1.0f;
-    protected float alpha = STD_ALPHA;
+    protected float         zoom        = 1.0f;
+    protected float         alpha       = STD_ALPHA;
+    
+    protected Point        newPnt    = new Point();
+    protected Point        oldPnt    = new Point();
 
     protected ImagePaintMode paintPositionMode = ImagePaintMode.DRAG;
 
@@ -61,7 +64,7 @@ public class GhostGlassPane extends JPanel
      * Sets the image that will be draged on the glass pane
      * @param dragged the buffered image
      */
-    public void setImage(BufferedImage dragged)
+    public void setImage(final BufferedImage dragged)
     {
         setImage(dragged, dragged == null ? 0 : dragged.getWidth());
     }
@@ -108,21 +111,72 @@ public class GhostGlassPane extends JPanel
     }
 
     /**
+     * Returns the point on the glass pane of the object being dragged.
+     * @return the point on the glass pane of the object being dragged.
+     */
+    public Point getPoint()
+    {
+        return location;
+    }
+
+    /**
      * Return the rect for painting
      * @return Return the rect for painting
      */
     protected Rectangle getRepaintRect()
     {
-        int x = (int) (location.getX() - (width * zoom / 2)) - 5;
-        int y = (int) (location.getY() - (height * zoom / 2)) - 5;
+        calcPoints();
+        
+        //int x = (int) (location.getX() - (width * zoom / 2)) - 5;
+        //int y = (int) (location.getY() - (height * zoom / 2)) - 5;
+        int x = newPnt.x - 5;
+        int y = newPnt.y - 5;
 
-        int x2 = (int) (oldLocation.getX() - (width * zoom / 2)) - 5;
-        int y2 = (int) (oldLocation.getY() - (height * zoom / 2)) - 5;
+        int x2 = oldPnt.x - 5;
+        int y2 = oldPnt.y - 5;
 
         int w  = (int) (this.width * zoom + 10.0);
-        int h = (int) (this.height * zoom + 10.0);
+        int h  = (int) (this.height * zoom + 10.0);
 
         return new Rectangle(x, y, w, h).union(new Rectangle(x2, y2, w, h));
+    }
+    
+    protected void calcPoints()
+    {
+        double widthZoom  = width * zoom;
+        double heightZoom = height * zoom;
+        
+        newPnt.x = 0;
+        newPnt.y = 0;
+        if (paintPositionMode == ImagePaintMode.DRAG)
+        {
+            newPnt.x = (int) (location.getX() - (widthZoom / 2));
+            newPnt.y = (int) (location.getY() - (heightZoom / 2));
+            
+            oldPnt.x = (int) (oldLocation.getX() - (widthZoom / 2));
+            oldPnt.y = (int) (oldLocation.getY() - (heightZoom / 2));
+
+        } else if (paintPositionMode == ImagePaintMode.CENTERED)
+        {
+            Dimension size = getSize();
+            int w = size.width  - dragged.getWidth();
+            int h = size.height - dragged.getHeight();
+            
+            newPnt.x = (w / 2) + (int)location.getX();
+            newPnt.y = (h / 2) + (int)location.getY();
+
+            oldPnt.x = (w / 2) + (int)oldLocation.getX();
+            oldPnt.y = (h / 2) + (int)oldLocation.getY();
+
+        }  else if (paintPositionMode == ImagePaintMode.ABSOLUTE)
+        {
+            newPnt.x = (int)location.getX();
+            newPnt.y = (int)location.getY();
+
+            oldPnt.x = (int)oldLocation.getX();
+            oldPnt.y = (int)oldLocation.getY();
+        }
+
     }
 
     /* (non-Javadoc)
@@ -141,43 +195,29 @@ public class GhostGlassPane extends JPanel
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                             RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int x = 0;
-        int y = 0;
-        if (paintPositionMode == ImagePaintMode.DRAG)
-        {
-            x = (int) (location.getX() - (width * zoom / 2));
-            y = (int) (location.getY() - (height * zoom / 2));
-
-        } else if (paintPositionMode == ImagePaintMode.CENTERED)
-        {
-            Dimension size = getSize();
-            x = ((size.width - dragged.getWidth()) / 2) + (int)location.getX();
-            y = ((size.height - dragged.getHeight()) / 2) + (int)location.getY();
-
-        }  else if (paintPositionMode == ImagePaintMode.ABSOLUTE)
-        {
-            x = (int)location.getX();
-            y = (int)location.getY();
-
-        }
-
+        double widthZoom  = width * zoom;
+        double heightZoom = height * zoom;
+        
+        calcPoints();
+        
         if (visibleRect != null)
         {
             g2.setClip(visibleRect);
         }
 
-        RoundRectangle2D rectangle = new RoundRectangle2D.Double(x - 1.0, y - 1.0,
-                                                                 (double) width * zoom + 1.0,
-                                                                 (double) height * zoom + 1.0,
-                                                                 8.0, 8.0);
-        if (visibleRect != null) {
+        RoundRectangle2D rectangle = new RoundRectangle2D.Double(newPnt.x - 1.0, newPnt.y - 1.0, widthZoom + 1.0, heightZoom + 1.0, 8.0, 8.0);
+        
+        if (visibleRect != null) 
+        {
             Area clip = new Area(visibleRect);
             g2.setClip(clip);
-        } else {
+            
+        } else 
+        {
             g2.setClip(rectangle);
         }
 
-        g2.drawImage(dragged, x, y, (int) (width * zoom), (int) (height * zoom), null);
+        g2.drawImage(dragged, newPnt.x, newPnt.y, (int)widthZoom, (int)heightZoom, null);
         g2.dispose();
     }
 
@@ -207,6 +247,19 @@ public class GhostGlassPane extends JPanel
         this.visibleRect = visibleRectArg;
         new Timer(1000 / 30, new FadeOutAnimation()).start();
     }
+    
+    /**
+     * Cleanup after drag and drop 
+     */
+    public void finishedWithDragAndDrop()
+    {
+        setVisible(false);
+        zoom = 1.0f;
+        alpha = 0.6f;
+        visibleRect = null;
+        dragged = null;
+        DragAndDropLock.setLocked(false);  
+    }
 
     //------------------------------------------------------------
     // Inner Class
@@ -227,12 +280,8 @@ public class GhostGlassPane extends JPanel
             if (elapsed > ANIMATION_DELAY)
             {
                 ((Timer) e.getSource()).stop();
-                setVisible(false);
-                zoom = 1.0f;
-                alpha = 0.6f;
-                visibleRect = null;
-                dragged = null;
-                DragAndDropLock.setLocked(false);
+                finishedWithDragAndDrop();
+                
             } else
             {
                 alpha = 0.6f - (0.6f * elapsed / ANIMATION_DELAY);

@@ -50,7 +50,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace
      * This can be called in order to initialize the fields common to all DataModelObjBase
      * implementations.
      */
-    public void init()
+    protected void init()
     {
         Date now = new Date();
         timestampCreated  = now;

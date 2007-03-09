@@ -242,6 +242,11 @@ public class IconManager
         return icon;
     }
     
+    /**
+     * Gets an icon as it's "base" size or meaning its opriginal size.
+     * @param iconName the name of the icon
+     * @return the un-sized icon
+     */
     public static ImageIcon getIcon(final String iconName)
     {
         if (iconName == null)
@@ -371,7 +376,7 @@ public class IconManager
     }
 
     /**
-     * Returns a Standard Size icon
+     * Returns a Standard Size icon (32x32 pixels).
      * @param imageName the name of the icon/image
      * @return Returns a Standard Size icon
      */

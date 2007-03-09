@@ -42,6 +42,11 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Integer           viewOrder;
     protected String            dataType;
     protected WorkbenchTemplate workbenchTemplate;
+    
+    protected Integer            tabOrder;
+    protected Integer            xCoord;
+    protected Integer            yCoord;
+    protected Boolean            carryForward;
 
     // Constructors
 
@@ -62,6 +67,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void initialize()
     {
         super.init();
+        
         workbenchTemplateMappingItemId = null;
         tableName = null;
         srcTableId = null;
@@ -70,6 +76,10 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         viewOrder = null;
         dataType = null;
         workbenchTemplate = null;
+        tabOrder = null;
+        xCoord   = -1;
+        yCoord   = -1;
+        carryForward = false;
     }
 
     // End Initializer
@@ -200,6 +210,50 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.dataType = dataType;
     }
 
+    @Column(name = "TabOrder", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getTabOrder()
+    {
+        return tabOrder;
+    }
+
+    public void setTabOrder(Integer tabOrder)
+    {
+        this.tabOrder = tabOrder;
+    }
+
+    @Column(name = "XCoord", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getXCoord()
+    {
+        return xCoord;
+    }
+
+    public void setXCoord(Integer coord)
+    {
+        xCoord = coord;
+    }
+
+    @Column(name = "YCoord", unique = false, nullable = true, insertable = true, updatable = true)
+   public Integer getYCoord()
+    {
+        return yCoord;
+    }
+
+    public void setYCoord(Integer coord)
+    {
+        yCoord = coord;
+    }
+
+    @Column(name="CarryForward",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getCarryForward()
+    {
+        return carryForward;
+    }
+
+    public void setCarryForward(Boolean carryForward)
+    {
+        this.carryForward = carryForward;
+    }
+
     /**
      * 
      */
@@ -221,6 +275,14 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public int compareTo(WorkbenchTemplateMappingItem obj)
     {
         return viewOrder.compareTo(obj.viewOrder);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return caption != null ? caption : fieldName;
     }
 
     /*

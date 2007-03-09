@@ -270,8 +270,11 @@ public class ResultSetController implements ValidationListener
      */
     public void setIndex(final int index)
     {
+        int oldInx = currentInx;
         currentInx = index;
         updateUI(); 
+        notifyListenersAboutToChangeIndex(oldInx, currentInx);
+        notifyListeners();
     }
     
     

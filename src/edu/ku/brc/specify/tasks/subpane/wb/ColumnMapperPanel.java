@@ -562,7 +562,7 @@ public class ColumnMapperPanel extends JPanel
         for (FieldMappingPanel fmp : mappingItems)
         {
             ImportColumnInfo colInfo  = fmp.getColInfo();
-            TableFieldPair              tblField = fmp.getTableField();
+            TableFieldPair   tblField = fmp.getTableField();
             
             if (fmp.isMapped())
             {
@@ -575,7 +575,9 @@ public class ColumnMapperPanel extends JPanel
                 item.setFieldName(tblField.getFieldInfo().getName());
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());
-                item.setViewOrder(order++);
+                item.setViewOrder(order);
+                item.setTabOrder(order);  // set initial tab order to the view order
+                order++;
                 item.setWorkbenchTemplate(wbTemplate);
                 
                 items.add(item);

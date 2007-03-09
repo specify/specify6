@@ -82,7 +82,10 @@
     <icon name="DownArrow"     file="down.png"          sizes="16"/>
     <icon name="BlankIcon"     file="blank32x32.png"    sizes="all"/>
     <icon name="PlusSign"      file="plussign.gif"      sizes="16"/>
-    <icon name="GrayDot"       file="graydot.gif"      sizes="16"/>
+    <icon name="MinusSign"     file="minussign.gif"     sizes="16"/>
+    <icon name="InsertSign"    file="insertsign.gif"     sizes="16"/>
+    <icon name="GrayDot"       file="graydot.gif"       sizes="16"/>
+    <icon name="Eraser"        file="eraser.gif"        sizes="NonStd"/>
     
     <icon name="WebPage"       file="html.png"          sizes="all"/>
 

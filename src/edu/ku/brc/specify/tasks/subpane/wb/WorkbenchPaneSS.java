@@ -19,6 +19,8 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -45,7 +47,6 @@ import javax.swing.table.TableModel;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -58,6 +59,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
@@ -65,14 +67,24 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.ViewDef;
+import edu.ku.brc.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 
-
-public class WorkbenchPaneSS extends BaseSubPane
+/**
+ * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
+ * 
+ * @author rods
+ *
+ * @code_status Beta
+ *
+ * Created Date: Mar 6, 2007
+ *
+ */
+public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerListener
 {
     private static final Logger log = Logger.getLogger(WorkbenchPaneSS.class);
+    
+    private enum PanelType {Spreadsheet, Form}
 
     protected SpreadSheet spreadSheet;
     protected Workbench   workbench;
@@ -82,16 +94,23 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected GridTableModel model;
     
-    protected JButton     saveBtn       = null;
-    protected JButton     deleteRowsBtn = null;
-    protected JButton     cellCellsBtn  = null;
-    protected JButton     insertRowBtn  = null;
-    protected JButton     addRowsBtn    = null;
+    protected JButton     saveBtn         = null;
+    protected JButton     deleteRowsBtn   = null;
+    protected JButton     cellCellsBtn    = null;
+    protected JButton     insertRowBtn    = null;
+    protected JButton     addRowsBtn      = null;
+    protected JButton     carryForwardBtn = null;
     
-    protected FormPane    formPane;
+    protected int         currentRow      = 0;
+    
+    
+    protected FormPane            formPane;
+    protected ResultSetController resultsetController;
+    
     
     protected CardLayout  cardLayout      = null;
     protected JPanel      mainPanel;
+    protected PanelType   currentPanelType = PanelType.Spreadsheet;
     
     protected JPanel      controllerPane;
     protected CardLayout  cpCardLayout      = null;
@@ -108,9 +127,15 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         super(name, task);
         
+        removeAll();
+        
+        if (workbench == null)
+        {
+            return;
+        }
         this.workbench = workbench;
         
-        removeAll();
+
         
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
@@ -122,8 +147,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 wbdi.getCellData();
             }
-        }
-        
+        } 
 
         model       = new GridTableModel(workbench, headers);
         spreadSheet = new SpreadSheet(model);
@@ -148,12 +172,12 @@ public class WorkbenchPaneSS extends BaseSubPane
                     boolean enable = spreadSheet.getSelectedRow() > -1;
                     cellCellsBtn.setEnabled(enable);
                     insertRowBtn.setEnabled(enable);  
-                    deleteRowsBtn.setEnabled(enable);  
+                    deleteRowsBtn.setEnabled(enable); 
+
+                    setCurrentRow( spreadSheet.getSelectedRow());
                 }
             }
         });
-
-        
         
         saveBtn = new JButton(UICacheManager.getResourceString("Save"));
         saveBtn.setEnabled(false);
@@ -164,20 +188,17 @@ public class WorkbenchPaneSS extends BaseSubPane
                 saveObject();
             }
         });
-        
-        deleteRowsBtn = new JButton(UICacheManager.getResourceString("Delete Row(s)"));
-        deleteRowsBtn.setEnabled(false);
-        deleteRowsBtn.addActionListener(new ActionListener()
+       
+        ActionListener deleteAction = new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 model.deleteRows(spreadSheet.getSelectedRows());
             }
-        });
+        };
+        deleteRowsBtn = createIconBtn("MinusSign", "WB_DELETE_ROW", deleteAction);
         
-        cellCellsBtn = new JButton(UICacheManager.getResourceString("Clear Cell(s)"));
-        cellCellsBtn.setEnabled(false);
-        cellCellsBtn.addActionListener(new ActionListener()
+        cellCellsBtn = createIconBtn("Eraser", "WB_CLEAR_CELLS", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -185,31 +206,41 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
-        insertRowBtn = new JButton(UICacheManager.getResourceString("Insert Row"));
-        insertRowBtn.setEnabled(false);
-        insertRowBtn.addActionListener(new ActionListener()
+        ActionListener insertAction = new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 model.insertRow(spreadSheet.getSelectedRow());
+                resultsetController.setIndex(getCurrentRow());
             }
-        });
+        };
+        
+        insertRowBtn = createIconBtn("InsertSign", "WB_INSERT_ROW", insertAction);
 
-        addRowsBtn = new JButton(UICacheManager.getResourceString("Add Row"));
-        //addRowsBtn.setEnabled(false);
-        addRowsBtn.addActionListener(new ActionListener()
+        addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 model.appendRow();
+                resultsetController.setIndex(getCurrentRow());
             }
         });
+        addRowsBtn.setEnabled(true);
+
+        carryForwardBtn = createIconBtn("PlusSign", "WB_ADD_ROW", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                configCarryFoward();
+            }
+        });
+        carryForwardBtn.setEnabled(true);
 
         
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps = { addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn, saveBtn, };
-        PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+UIHelper.createDuplicateJGoodiesDef("f:p:g", "2px", comps.length-1)+",2px,p,2px,", "p:g"));
+        JComponent[] comps      = { addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn};
+        PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+UIHelper.createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
 
         int x = 3;
         for (JComponent c : comps)
@@ -220,27 +251,56 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         mainPanel = new JPanel(cardLayout = new CardLayout());
         
-        formPane = new FormPane(workbench);
-        ResultSetController rsc = new ResultSetController(null, true, true, "XXXX", model.getRowCount());
-        rsc.addListener(formPane);
+        formPane = new FormPane(this, workbench);
         
-        mainPanel.add(((SpreadSheet)spreadSheet).getScrollPane(), "0");
-        mainPanel.add(formPane, "1");
+        PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "p"));
+        resultsetController  = new ResultSetController(null, true, true, "XXXX", model.getRowCount());
+        resultsetController.addListener(formPane);
+        resultsetController.addListener(this);
+        resultsetController.getNewRecBtn().addActionListener(insertAction);
+        resultsetController.getDelRecBtn().addActionListener(deleteAction);
+        rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
+        
+        mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
+        mainPanel.add(formPane, PanelType.Form.toString());
         
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
-        controllerPane.add(controlBar.getPanel(), "0");
-        controllerPane.add(rsc.getPanel(), "1");
+        controllerPane.add(controlBar.getPanel(), PanelType.Spreadsheet.toString());
+        controllerPane.add(rsPanel.getPanel(), PanelType.Form.toString());
         
-        FormLayout      formLayout = new FormLayout("f:p:g,5px,p", "fill:p:g, 5px, p");
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
         PanelBuilder    builder    = new PanelBuilder(formLayout, this);
 
-        builder.add(mainPanel, cc.xywh(1,1,3,1));
-        builder.add(controllerPane, cc.xy(1,3));
-        builder.add(createSwitcher(), cc.xy(3,3));
+        builder.add(mainPanel,        cc.xywh(1,1,7,1));
+        builder.add(controllerPane,   cc.xy(1,3));
+        builder.add(carryForwardBtn,  cc.xy(3,3));
+        builder.add(saveBtn,          cc.xy(5,3));
+        builder.add(createSwitcher(), cc.xy(7,3));
+
     }
     
     /**
-     * @return
+     * Helper method for creating icon buttons (XXX this should be refactored so others can use it)
+     * @param iconName the name of the icon
+     * @param toolTipTextKey the the yet to be localized key for the tooltip string
+     * @param al the action listener
+     * @return the button
+     */
+    protected JButton createIconBtn(final String               iconName, 
+                                    final String               toolTipTextKey, 
+                                    final ActionListener       al)
+    {
+        JButton btn = new JButton(IconManager.getIcon(iconName));
+        btn.setToolTipText(getResourceString(toolTipTextKey));
+        btn.setMargin(new Insets(0,0,0,0));
+        btn.addActionListener(al);
+        btn.setEnabled(false);
+        return btn;
+    }
+    
+    /**
+     * The grid to form switcher.
+     * @return The grid to form switcher.
      */
     public DropDownButtonStateful createSwitcher()
     {
@@ -256,7 +316,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         switcher.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                showPanel(switcher.getCurrentIndex());
+                showPanel(switcher.getCurrentIndex() == 0 ? PanelType.Spreadsheet : PanelType.Form);
             }
         });
         switcher.validate();
@@ -266,20 +326,44 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * @param value
+     * Shows the grid or the form.
+     * @param value the panel number
      */
-    public void showPanel(final int panelNum)
+    public void showPanel(final PanelType panelType)
     {
-        String key = Integer.toString(panelNum);
-        cardLayout.show(mainPanel, key);
-        cpCardLayout.show(controllerPane, key);
+        currentPanelType = panelType;
         
-        boolean show = panelNum == 0;
+        cardLayout.show(mainPanel, currentPanelType.toString());
+        cpCardLayout.show(controllerPane, currentPanelType.toString());
+        
+        
+        
+       boolean isSpreadsheet = currentPanelType == PanelType.Spreadsheet;
+       if (isSpreadsheet)
+       {
+           // Showing Spreadsheet and hiding form
+           setCurrentRow(resultsetController.getCurrentIndex());
+           if (model.getRowCount() > 0)
+           {
+               spreadSheet.setRowSelectionInterval(getCurrentRow(), getCurrentRow());
+               spreadSheet.setColumnSelectionInterval(0, model.getColumnCount()-1);
+               spreadSheet.scrollToRow(Math.min(getCurrentRow()+4, model.getRowCount()));
+           }
+           
+       } else
+       {
+           // Showing Form and hiding Spreadsheet
+           setCurrentRow(spreadSheet.getSelectedRow());
+           if (model.getRowCount() > 0)
+           {
+               resultsetController.setIndex(getCurrentRow());
+           }
+       }
             
        JComponent[] comps = { addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn};
        for (JComponent c : comps)
        {
-           c.setVisible(show);
+           c.setVisible(isSpreadsheet);
        }
     }
     
@@ -287,12 +371,45 @@ public class WorkbenchPaneSS extends BaseSubPane
      * Set that there has been a change.
      * @param changed true or false
      */
-    protected void setChanged(final boolean changed)
+    public void setChanged(final boolean changed)
     {
         hasChanged = changed;
         saveBtn.setEnabled(hasChanged);
     }
     
+    
+    /**
+     * Returns the currently selected row in the Spreasdsheet or form.
+     * @return the currently selected row in the Spreasdsheet or form.
+     */
+    public int getCurrentRow()
+    {
+        return currentRow;
+    }
+
+    /**
+     * Sets the currently selected row in the Spreasdsheet or form.
+     * @param currentRow the current row
+     */
+    public void setCurrentRow(int curRow)
+    {
+        if (curRow > -1 && this.currentRow != curRow)
+        {
+            this.currentRow = curRow;
+            
+            if (currentPanelType == PanelType.Form)
+            {
+                if (curRow != spreadSheet.getSelectedRow())
+                {
+                    spreadSheet.setRowSelectionInterval(curRow, curRow);
+                }
+            } else
+            {
+                resultsetController.setIndex(curRow);
+            }
+        }
+    }
+
     /**
      * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
      * @param tableArg the table that should have it's columns adjusted
@@ -333,14 +450,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 //System.out.println(i+" "+maxWidth);
             }
 
-            /*
-            if (DEBUG) {
-                System.out.println("Initializing width of column "
-                                   + i + ". "
-                                   + "headerWidth = " + headerWidth
-                                   + "; cellWidth = " + cellWidth);
-            }*/
-
             //XXX: Before Swing 1.1 Beta 2, use setMinWidth instead.
             column.setPreferredWidth(Math.max(maxWidth, cellWidth));
             
@@ -351,6 +460,43 @@ public class WorkbenchPaneSS extends BaseSubPane
 
     }
     
+    public void configCarryFoward()
+    {
+        Vector<WorkbenchTemplateMappingItem> items           = new Vector<WorkbenchTemplateMappingItem>();
+        Vector<WorkbenchTemplateMappingItem> selectedObjects = new Vector<WorkbenchTemplateMappingItem>();
+        items.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        
+        for (WorkbenchTemplateMappingItem item : items)
+        {
+            if (item.getCarryForward())
+            {
+                selectedObjects.add(item);
+            }
+        }
+        
+        Collections.sort(items);
+        CheckboxChooserDlg<WorkbenchTemplateMappingItem> dlg = new CheckboxChooserDlg<WorkbenchTemplateMappingItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                "Choose Fields to Carry Forward:", items);
+        dlg.setSelectedObjects(selectedObjects);
+        dlg.setModal(true);
+        dlg.setVisible(true);  
+        
+        if (!dlg.isCancelled())
+        {
+            for (WorkbenchTemplateMappingItem item : items)
+            {
+                item.setCarryForward(false);
+            }
+            for (WorkbenchTemplateMappingItem item : dlg.getSelectedObjects())
+            {
+                item.setCarryForward(true);
+            }
+        }
+    }
+    
+    /**
+     * Save the Data. 
+     */
     protected void saveObject()
     {
 
@@ -478,10 +624,44 @@ public class WorkbenchPaneSS extends BaseSubPane
         return true;
     }
 
+    //------------------------------------------------------------
+    // ResultSetControllerListener
+    //------------------------------------------------------------
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
+     */
+    public boolean indexAboutToChange(int oldIndex, int newIndex)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-    
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexChanged(int)
+     */
+    public void indexChanged(int newIndex)
+    {
+        setCurrentRow(newIndex);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#newRecordAdded()
+     */
+    public void newRecordAdded()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+
+    //------------------------------------------------------------
+    // Inner Classes
+    //------------------------------------------------------------
+
+
     class GridCellEditor extends AbstractCellEditor implements TableCellEditor
     {
         protected JTextField textField = new JTextField();
@@ -534,7 +714,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             //log.info("Index: "+switcherComp.getCurrentIndex());
             
-            showPanel(((DropDownButtonStateful)ae.getSource()).getCurrentIndex());
+            showPanel(((DropDownButtonStateful)ae.getSource()).getCurrentIndex() == 0 ? PanelType.Spreadsheet : PanelType.Form);
         }
     }
 }

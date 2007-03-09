@@ -66,27 +66,26 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
     }
 
     /**
-     * @param delimiter -
-     *            the column delimiter
-     * @param charset -
-     *            the character set used in the file (e.g. ISO-8859-1)
-     * @param escapeMode -
-     *            method used to escape reserved characters (backslash or doubled)
+     * @param delimiterArg -nthe column delimiter
+     * @param charsetArg - the character set used in the file (e.g. ISO-8859-1)
+     * @param escapeModeArg -  method used to escape reserved characters (backslash or doubled)
      * @return CsvReader for inputFile
      */
-    private CsvReader makeReader(char delimiter, Charset charset, int escapeMode)
+    private CsvReader makeReader(char delimiterArg, Charset charsetArg, int escapeModeArg)
     {
         try
         {
             InputStream input = new FileInputStream(inputFile);
-            CsvReader result = new CsvReader(input, delimiter, charset);
-            result.setEscapeMode(escapeMode);
+            CsvReader result = new CsvReader(input, delimiterArg, charsetArg);
+            result.setEscapeMode(escapeModeArg);
             return result;
+            
         } catch (FileNotFoundException ex)
         {
             ex.printStackTrace();
-            return null;
         }
+        
+        return null;
     }
 
     /**

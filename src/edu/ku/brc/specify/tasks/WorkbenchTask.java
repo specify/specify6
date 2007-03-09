@@ -45,10 +45,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
-//import edu.ku.brc.specify.tasks.subpane.wb.DataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchFormPane;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -184,7 +182,7 @@ public class WorkbenchTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new WorkbenchPane(name, this,null);
+        return starterPane = new WorkbenchPaneSS(name, this, null);
     }
     
     /* (non-Javadoc)

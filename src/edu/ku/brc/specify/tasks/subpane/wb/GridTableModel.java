@@ -42,6 +42,14 @@ public class GridTableModel extends SpreadSheetModel
         this.workbench   = workbench;
         this.headers     = headers;
     }
+    
+    /**
+     * Fires off a change notiication for the spreasheet. 
+     */
+    public void fireDataChanged()
+    {
+        fireTableDataChanged();
+    }
 
     /* (non-Javadoc)
      * @see javax.swing.table.TableModel#getColumnCount()
@@ -117,11 +125,6 @@ public class GridTableModel extends SpreadSheetModel
             fireDataChanged();
         }
     }
-    
-    public void fireDataChanged()
-    {
-        fireTableDataChanged();
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#appendRow()
@@ -129,7 +132,20 @@ public class GridTableModel extends SpreadSheetModel
     @Override
     public void appendRow()
     {
-        workbench.addRow();
+        if (getRowCount() > 0)
+        {
+            WorkbenchRow wbRow  = workbench.getWorkbenchRowsAsList().get(getRowCount()-1);
+            WorkbenchRow newRow = workbench.addRow();
+            
+            // Do Carry Forward
+            for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+            {
+                if (wbdmi.getCarryForward())
+                {
+                    newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
+                }
+            }    
+        }
         
         if (spreadSheet != null)
         {
@@ -213,8 +229,17 @@ public class GridTableModel extends SpreadSheetModel
     @Override
     public void insertRow(int rowInx)
     {
-        //WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(index);
-        workbench.insertRow(rowInx);
+        WorkbenchRow wbRow  = workbench.getWorkbenchRowsAsList().get(rowInx);
+        WorkbenchRow newRow = workbench.insertRow(rowInx);
+        
+        // Do Carry Forward
+        for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+        {
+            if (wbdmi.getCarryForward())
+            {
+                newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
+            }
+        }
 
         if (spreadSheet != null)
         {

@@ -2181,6 +2181,7 @@ public class DataBuilder
         wtmi.setFieldName(fieldName);
         wtmi.setTableName(tableName);
         wtmi.setViewOrder(viewOrder);
+        wtmi.setTabOrder(viewOrder);  // set initial tab order to the view order
         wtmi.setWorkbenchTemplate(template);
         wtmi.setSrcTableId(tableId);
         
