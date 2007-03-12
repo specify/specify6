@@ -31,7 +31,7 @@ public class LocationBusRules extends BaseBusRules
     /**
      * A logger that emits any and all messages from this class.
      */
-    protected static final Logger log = Logger.getLogger(LocationBusRules.class);
+    private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
     
     /**
      * Creates a new {@link BusinessRulesIFace} instance capable of handling
@@ -63,7 +63,8 @@ public class LocationBusRules extends BaseBusRules
     @Override
     public void afterSave(Object dataObj)
     {
-        System.err.println("afterSave() on Location object");
+        log.debug("enter");
+        log.debug("exit");
     }
 
     /* (non-Javadoc)
@@ -72,18 +73,21 @@ public class LocationBusRules extends BaseBusRules
     @Override
     public void beforeSave(Object dataObj)
     {
-        System.err.println("beforeSave() on Location object");
+        log.debug("enter");
         if (dataObj instanceof Location)
         {
             beforeSaveLocation((Location)dataObj);
+            log.debug("exit");
             return;
         }
         
         if (dataObj instanceof LocationTreeDefItem)
         {
             beforeSaveLocationTreeDefItem((LocationTreeDefItem)dataObj);
+            log.debug("exit");
             return;
         }
+        log.debug("exit");
     }
     
     /**

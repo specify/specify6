@@ -10,6 +10,8 @@ import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -23,6 +25,8 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
  */
 public class GeologicTimePeriodBusRules extends BaseBusRules
 {
+    private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
+    
     public GeologicTimePeriodBusRules()
     {
         super(GeologicTimePeriod.class,GeologicTimePeriodTreeDefItem.class);
@@ -54,7 +58,8 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
     @Override
     public void afterSave(Object dataObj)
     {
-        System.err.println("afterSave() on GeologicTimePeriod object");
+        log.debug("enter");
+        log.debug("exit");
     }
 
     /* (non-Javadoc)
@@ -63,18 +68,21 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
     @Override
     public void beforeSave(Object dataObj)
     {
-        System.err.println("beforeSave() on GeologicTimePeriod object");
+        log.debug("enter");
         if (dataObj instanceof GeologicTimePeriod)
         {
             beforeSaveGeologicTimePeriod((GeologicTimePeriod)dataObj);
+            log.debug("exit");
             return;
         }
         
         if (dataObj instanceof GeologicTimePeriodTreeDefItem)
         {
             beforeSaveGeologicTimePeriodTreeDefItem((GeologicTimePeriodTreeDefItem)dataObj);
+            log.debug("exit");
             return;
         }
+        log.debug("exit");
     }
     
     /**
