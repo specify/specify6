@@ -170,6 +170,7 @@
     <icon name="Taxon_Tree"         file="taxon.gif"    sizes="all"/>
 
     <icon name="TreeDefEditor"      file="taxon.gif"    sizes="all"/>
+    <icon name="TreeViewer"			file="taxon.gif"	sizes="all"/>
     
     <!-- MIME type icons -->
     <icon name="audio"              file="audio.png"    sizes="all"/>

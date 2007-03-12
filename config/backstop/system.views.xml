@@ -48,21 +48,21 @@
             </altviews>
         </view>
 
-        <view name="TreeDefItem"
-            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+        <view name="LocationTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
             resourcelabels="false">
-            <desc><![CDATA[TreeDefItem Node Form]]></desc>
+            <desc><![CDATA[LocationTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Tree Def Item Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Tree Def Item Edit" viewdef="LocationTreeDefItem" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
-        <view name="RootTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+        <view name="RootLocationTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
             resourcelabels="false">
-            <desc><![CDATA[TreeDefItem Node Form]]></desc>
+            <desc><![CDATA[Root LocationTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Root Tree Def Item Edit" viewdef="RootTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Root Tree Def Item Edit" viewdef="RootLocationTreeDefItem" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -344,12 +344,12 @@
         
         <viewdef
             type="form"
-            name="TreeDefItem"
-            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+            name="LocationTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Tree Definition Item Form]]></desc>
+            <desc><![CDATA[Location Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
@@ -387,12 +387,12 @@
 
         <viewdef
             type="form"
-            name="RootTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+            name="RootLocationTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Tree Definition Item Form]]></desc>
+            <desc><![CDATA[Root Location Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
