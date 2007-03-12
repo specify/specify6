@@ -18,6 +18,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionListener;
@@ -271,7 +272,7 @@ public class InputPanel extends JPanel implements GhostActionable
      */
     public int getItemWidth()
     {
-        return getPreferredSize().width + 10;
+        return getSize().width + 10;
     }
 
     /**
@@ -280,7 +281,7 @@ public class InputPanel extends JPanel implements GhostActionable
      */
     public int getItemHeight()
     {
-        return getPreferredSize().height;
+        return getSize().height;
     }
 
     /**
@@ -319,6 +320,10 @@ public class InputPanel extends JPanel implements GhostActionable
         g2.setRenderingHints(hints);
 
         paint(g2);
+        
+        g2.setColor(Color.GRAY);
+        Rectangle r = getBounds();
+        g2.drawRect(0, 0, r.width-1, r.height-1);
         
         g2.dispose();
     }

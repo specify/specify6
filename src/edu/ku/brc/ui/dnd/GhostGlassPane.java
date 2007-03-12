@@ -47,8 +47,9 @@ public class GhostGlassPane extends JPanel
     protected float         zoom        = 1.0f;
     protected float         alpha       = STD_ALPHA;
     
-    protected Point        newPnt    = new Point();
-    protected Point        oldPnt    = new Point();
+    protected Point         newPnt      = new Point();
+    protected Point         oldPnt      = new Point();
+    protected Point         offset      = new Point();
 
     protected ImagePaintMode paintPositionMode = ImagePaintMode.DRAG;
 
@@ -84,6 +85,19 @@ public class GhostGlassPane extends JPanel
         }
 
         this.dragged = dragged;
+    }
+    
+    public void setOffset(final Point offset)
+    {
+        this.offset.setLocation(offset);
+    }
+
+    /**
+     * @return the offset
+     */
+    public Point getOffset()
+    {
+        return offset;
     }
 
     /**
@@ -170,11 +184,11 @@ public class GhostGlassPane extends JPanel
 
         }  else if (paintPositionMode == ImagePaintMode.ABSOLUTE)
         {
-            newPnt.x = (int)location.getX();
-            newPnt.y = (int)location.getY();
+            newPnt.x = (int)location.getX() - offset.x;
+            newPnt.y = (int)location.getY() - offset.y;
 
-            oldPnt.x = (int)oldLocation.getX();
-            oldPnt.y = (int)oldLocation.getY();
+            oldPnt.x = (int)oldLocation.getX() - offset.x;
+            oldPnt.y = (int)oldLocation.getY() - offset.y;
         }
 
     }

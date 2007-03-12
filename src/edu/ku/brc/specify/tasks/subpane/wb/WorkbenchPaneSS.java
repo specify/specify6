@@ -59,7 +59,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.ui.CheckboxChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
@@ -475,7 +475,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         
         Collections.sort(items);
-        CheckboxChooserDlg<WorkbenchTemplateMappingItem> dlg = new CheckboxChooserDlg<WorkbenchTemplateMappingItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
                 "Choose Fields to Carry Forward:", items);
         dlg.setSelectedObjects(selectedObjects);
         dlg.setModal(true);
@@ -593,7 +593,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                         List<BusinessRulesDataItem> dataToSaveList = businessRules.getStandAloneDataItems(dataObj);
                         if (dataToSaveList.size() > 0)
                         {
-                            CheckboxChooserDlg<BusinessRulesDataItem> dlg = new CheckboxChooserDlg<BusinessRulesDataItem>("Save", "Check the items you would like to have saved.", dataToSaveList);
+                            ToggleButtonChooserDlg<BusinessRulesDataItem> dlg = new ToggleButtonChooserDlg<BusinessRulesDataItem>("Save", "Check the items you would like to have saved.", dataToSaveList);
                             UIHelper.centerAndShow(dlg);
                             dataToSaveList = dlg.getSelectedObjects();
                             for (BusinessRulesDataItem item : dataToSaveList)

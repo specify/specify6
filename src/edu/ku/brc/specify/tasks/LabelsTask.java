@@ -15,11 +15,11 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -47,8 +47,8 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
+import edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify;
 import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.specify.tools.IReportSpecify.*;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -74,7 +74,7 @@ public class LabelsTask extends BaseTask
     // Static Data Members
     public static final DataFlavor LABEL_FLAVOR = new DataFlavor(LabelsTask.class, "Label");
 
-    public static final String LABELS = "Labels";
+    public static final String     LABELS = "Labels";
 
     //public static final String DOLABELS_ACTION     = "DoLabels";
     public static final String NEWRECORDSET_ACTION = "NewRecordSet";
@@ -163,19 +163,21 @@ public class LabelsTask extends BaseTask
      * @param labelName the name of lable (the file name)
      * @param labelTitle the localized title to be displayed as the tab title
      * @param recordSet the recordSet to be turned into labels
+     * @param params parameters for the report
      * @param originatingTask the Taskable requesting the the labels be made
      */
-    public void doLabels(final String labelName, 
-                         final String labelTitle, 
-                         final RecordSetIFace recordSet, 
-                         final Taskable originatingTask)
+    public void doLabels(final String              labelName, 
+                         final String              labelTitle, 
+                         final RecordSetIFace      recordSet, 
+                         final Map<String, Object> params,
+                         final Taskable            originatingTask)
     {
         int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent((LabelsPane)starterPane) : -1;
         
         LabelsPane labelsPane;
         if (startPaneIndex == -1)
         {
-            labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this);
+            labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this, params);
             addSubPaneToMgr(labelsPane);
             
         } else
@@ -184,7 +186,7 @@ public class LabelsTask extends BaseTask
             
             SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
         }
-        labelsPane.createReport(labelName, recordSet);
+        labelsPane.createReport(labelName, recordSet, params);
         starterPane = null;
     }
 
@@ -220,7 +222,7 @@ public class LabelsTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         //starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
-        LabelsPane labelsPane = new LabelsPane(name, this);
+        LabelsPane labelsPane = new LabelsPane(name, this, null);
         labelsPane.setLabelText("Welcome to Specify's Label Maker");
         starterPane = labelsPane;
         return starterPane;
@@ -344,7 +346,7 @@ public class LabelsTask extends BaseTask
 
             if (fileName != null)
             {
-                doLabels(fileName, "Labels", (RecordSetIFace)data, this);
+                doLabels(fileName, "Labels", (RecordSetIFace)data, null, this);
             }
         }
     }
@@ -469,6 +471,24 @@ public class LabelsTask extends BaseTask
             }
         } else if (cmdAction.isAction(PRINT_LABEL))
         {
+            String              paramList = cmdAction.getPropertyAsString("params");
+            Map<String, Object> params    = null;
+            if (StringUtils.isNotEmpty(paramList))
+            {
+                params = new Hashtable<String, Object>();
+                for (String nameValuePair : StringUtils.split(paramList, ";"))
+                {
+                    String[] pair = StringUtils.split(nameValuePair, "=");
+                    if (pair.length == 2)
+                    {
+                        params.put(pair[0], pair[1]);
+                    } else
+                    {
+                        log.error("Unevent sets of named/value pairs for labels/reports params.");
+                    }
+                }
+            }
+            
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
@@ -488,6 +508,7 @@ public class LabelsTask extends BaseTask
                     cmdAction.setProperty("title", "Loan Invoice");
                 }
 
+
                 if (checkForALotOfLabels(recordSet))
                 {
                     String labelFileName = cmdAction.getPropertyAsString("file");
@@ -500,7 +521,7 @@ public class LabelsTask extends BaseTask
                     if (StringUtils.isNotEmpty(labelFileName))
                     {
                         Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                        doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, originatingTask);
+                        doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask);
                     }
                 }
                 
@@ -512,7 +533,7 @@ public class LabelsTask extends BaseTask
                     RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
                     if (recordSet != null)
                     {
-                        doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, this);
+                        doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this);
                     }
                 }
                 

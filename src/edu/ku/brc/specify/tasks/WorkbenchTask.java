@@ -19,31 +19,48 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.subpane.BarChartPane;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
+import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
+import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchFormPane;
@@ -51,6 +68,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
@@ -79,11 +97,16 @@ public class WorkbenchTask extends BaseTask
     public static final String     EDIT_TEMPLATE         = "Edit Template";
     public static final String     EDIT_WORKBENCH        = "Edit Workbench";
     public static final String     IMPORT_FIELD_NOTEBOOK = "Import Field Note Book";
+    public static final String     WB_GENUS_REPORT       = "GenusReport";
+    public static final String     PRINT_REPORT          = "PrintReport";
+    
     
     protected NavBox                      templateNavBox;
     protected NavBox                      workbenchNavBox;
     protected Vector<ToolBarDropDownBtn>  tbList         = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>          menus          = new Vector<JComponent>();
+    
+    protected Vector<NavBoxItemIFace>     reportsList    = new Vector<NavBoxItemIFace>();
 
 	/**
 	 * Constructor. 
@@ -110,12 +133,52 @@ public class WorkbenchTask extends BaseTask
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Workbench"),    name, new CommandAction(WORKBENCH, NEW_WORKBENCH),     null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Template"),     name, new CommandAction(WORKBENCH, NEW_TEMPLATE),      null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("ImportData"),       name, new CommandAction(WORKBENCH, NEW_TEMPLATE_FILE), null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("Genus"),            name, new CommandAction(WORKBENCH, WB_GENUS_REPORT), null, false);// true means make it draggable
             navBoxes.addElement(navBox);
+            
+            // Then add
+            if (commands != null)
+            {
+                NavBox reportsNavBox = new NavBox(getResourceString("Reports"));
+                navBoxes.addElement(reportsNavBox);
+                for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
+                {
+                    Map<String, String> params = ap.getMetaDataMap();
+                    String tableid = params.get("tableid");
+                    
+                    if (StringUtils.isNotEmpty(tableid) && Integer.parseInt(tableid) == 79)
+                    {
+                        params.put("title", ap.getDescription());
+                        params.put("file", ap.getName());
+                        //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
+                        
+                        commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+                    }
+                }
+                
+                for (TaskCommandDef tcd : commands)
+                {
+                    // XXX won't be needed when we start validating the XML
+                    String tableIdStr = tcd.getParams().get("tableid");
+                    if (tableIdStr != null)
+                    {
+                        //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), "Loan", IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
+                        
+                        CommandAction cmdAction = new CommandAction(WORKBENCH, PRINT_REPORT, Workbench.getClassTableId());
+                        cmdAction.addStringProperties(tcd.getParams());
+                        reportsList.add(makeDraggableAndDroppableNavBtn(reportsNavBox, tcd.getName(), "Reports", cmdAction, null, true));// true means make it draggable
+
+                    } else
+                    {
+                        log.error("Interaction Command is missing the table id");
+                    }
+                }
+            }
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                templateNavBox = new NavBox(getResourceString("Templates"));           
+                templateNavBox = new NavBox(getResourceString("Templates"), true);           
                 List list      = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
                 for (Object obj : list)
                 {
@@ -168,7 +231,7 @@ public class WorkbenchTask extends BaseTask
     protected void addWorkbenchToNavBox(final Workbench workbench)
     {
         CommandAction cmd = new CommandAction(WORKBENCH, EDIT_WORKBENCH);
-        RecordSet rs = new RecordSet(workbench.getName(), Workbench.getClassTableId());
+        RecordSet     rs  = new RecordSet(workbench.getName(), Workbench.getClassTableId());
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
         RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
@@ -813,6 +876,98 @@ public class WorkbenchTask extends BaseTask
 
     }
     
+    protected void doReport(final RecordSet rs)
+    {
+        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+        Workbench                workbench = session.get(Workbench.class, rs.getItems().iterator().next().getRecordId());
+        WorkbenchTemplate        workbenchTemplate = workbench.getWorkbenchTemplate();
+        Set<WorkbenchTemplateMappingItem> mappings = workbenchTemplate.getWorkbenchTemplateMappingItems();
+        Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>();
+        items.addAll(mappings);
+        session.close();
+        
+
+        Collections.sort(items);
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
+                (Frame)UICacheManager.get(UICacheManager.FRAME),
+                "Select a Field:", 
+                "Choose which field to report on:", 
+                items, 
+                null, 
+                ToggleButtonChooserDlg.Type.RadioButton);
+        dlg.setModal(true);
+        dlg.setVisible(true);  
+        
+        if (!dlg.isCancelled())
+        {
+            WorkbenchTemplateMappingItem mapping = dlg.getSelectedObject();
+            final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
+            cmd.setProperty("file", "wb_items.jrxml");
+            cmd.setProperty("title", "Workbench Summary");
+            cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+            cmd.setProperty("params", "colnum="+mapping.getViewOrder()+";"+"title="+mapping.getCaption());
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    CommandDispatcher.dispatch(cmd);
+                }
+            });
+        }
+
+    }
+    
+    protected void doGenusReport(final Workbench workbench)
+    {
+        final Vector<Object> data = new Vector<Object>();
+        try
+        {
+            String sql = "select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on " +
+                "di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId = " +
+                workbench.getWorkbenchId() + " and ColumnNumber = 4  group by CellData order by rw.RowNumber asc, di.ColumnNumber asc) t1 order by Cnt desc";
+            Connection conn = DBConnection.getInstance().createConnection();
+            Statement  stmt = conn.createStatement();
+            
+            
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                data.add(rs.getString(1));
+                data.add(rs.getInt(2));
+            }
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+        
+        QueryResultsHandlerIFace qrhi = new QueryResultsHandlerIFace()
+        {
+            public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list) {}
+            public void init(final QueryResultsListener listener, final QueryResultsContainerIFace qrc){}
+            public void startUp(){ }
+            public void cleanUp() {}
+
+                       
+
+            public java.util.List<Object> getDataObjects()
+            {
+                return data;
+            }
+
+            public boolean isPairs()
+            {
+                return true;
+            }
+        };
+        
+        BarChartPane chart = new BarChartPane("Genus Counts", this);
+        chart.setHandler(qrhi);
+        chart.allResultsBack();
+        addSubPaneToMgr(chart);
+        
+    }
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -855,6 +1010,24 @@ public class WorkbenchTask extends BaseTask
             if (workbenchTemplate != null)
             {
                 createNewWorkbench(workbenchTemplate, false);
+            }
+            
+        } else if (cmdAction.isAction(PRINT_REPORT))
+        {
+            RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");
+            if (recordSet == null)
+            {
+                Object data = cmdAction.getData();
+                if (data instanceof CommandAction)
+                {
+                    recordSet = (RecordSet)((CommandAction)data).getProperty("workbench");
+                }
+            }
+            if (recordSet != null)
+            {
+
+    
+                doReport(recordSet);
             }
             
         } else if (cmdAction.isAction(DELETE_CMD_ACT))

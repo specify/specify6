@@ -20,7 +20,10 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Vector;
 
@@ -44,16 +47,34 @@ import edu.ku.brc.ui.IconManager;
 @SuppressWarnings("serial")
 public class NavBox extends JPanel implements NavBoxIFace
 {
-    private String             name;
-    private NavBoxIFace.Scope  scope;
-    private NavBoxMgr          mgr;
-    private Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
+    protected String             name;
+    protected NavBoxIFace.Scope  scope;
+    protected NavBoxMgr          mgr;
+    protected Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
+    
+    protected boolean            collapsed             = false;
+    protected ImageIcon          icon                  = null;
+    protected ImageIcon          collapsableIconOpen   = null;
+    protected ImageIcon          collapsableIconClosed = null;
+    protected Rectangle          iconRect              = null;
+    protected int                minHeight             = -1;
+     
     
     /**
      * Constructor (with name).
      * @param name the name of the NavBox.
      */
     public NavBox(final String name)
+    {
+        this(name, false);
+    }
+    
+    /**
+     * Constructor (with name).
+     * @param name the name of the NavBox.
+     * @param collapsable indicates whether the NavBox can be collapsable
+     */
+    public NavBox(final String name, final boolean collapsable)
     {
         super();
         this.name = name;
@@ -63,6 +84,35 @@ public class NavBox extends JPanel implements NavBoxIFace
         //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
         setBackground(Color.WHITE);
         setOpaque(true);
+        
+        /*
+        if (collapsable)
+        {
+            collapsableIconOpen   = IconManager.getIcon("Minimize");
+            collapsableIconClosed = IconManager.getIcon("Maximize");
+            
+            addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e)
+                {
+                    if (iconRect != null && iconRect.contains(e.getPoint()))
+                    {
+                        collapsed = !collapsed;
+                        if (collapsed)
+                        {
+                            icon = collapsableIconClosed;
+                            setSize(getSize().width, minHeight);
+                        } else
+                        {
+                            icon = collapsableIconOpen;
+                            setSize(getPreferredSize());
+                        }
+                        validate();
+                        invalidate();
+                        doLayout();
+                    }
+                }
+            });
+        }*/        
     }
     
     /**
@@ -210,12 +260,17 @@ public class NavBox extends JPanel implements NavBoxIFace
     @Override
     public Dimension getPreferredSize()
     {
-        Dimension  size    = super.getPreferredSize();
+        Dimension   size   = super.getPreferredSize();
         FontMetrics fm     = this.getFontMetrics(getFont());
         int         width  = fm.stringWidth(name);
         Insets      insets = getBorder().getBorderInsets(this);
         width += insets.left + insets.right;
         size.width = Math.max(size.width, width);
+        
+        if (collapsed)
+        {
+            size.height = minHeight;
+        }
         return size;
     }
         
@@ -250,12 +305,25 @@ public class NavBox extends JPanel implements NavBoxIFace
         g.setColor(Color.LIGHT_GRAY.brighter());
         g.drawLine(x, y,   x+lineW, y);
         y++;
+        minHeight = y;
+        
         x++;
         g.setColor(Color.LIGHT_GRAY);
         g.drawLine(x, y,   x+lineW, y);
         
         g.setColor(Color.BLUE.darker());
         g.drawString(name, x, txtY);
+        
+        if (collapsableIconOpen != null)
+        {
+            if (iconRect == null)
+            {
+                iconRect   = getBounds();
+                iconRect.x = iconRect.width - collapsableIconOpen.getIconWidth();
+                iconRect.y = 0;
+            }
+            g.drawImage(icon.getImage(), iconRect.x, iconRect.y, null);
+        }
     }
     
     

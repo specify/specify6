@@ -128,10 +128,13 @@
     <icon name="ValidationError"   file="validation-error.gif" sizes="NonStd"/>
     
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
-    <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
+    <icon name="Green Arrow Up"   file="green_arrow_up.gif" sizes="16"/>
 
-    <icon name="Down" file="down.png" sizes="NonStd"/>
-    <icon name="Forward" file="forward.png" sizes="NonStd"/>
+    <icon name="Down"             file="down.png" sizes="NonStd"/>
+    <icon name="Forward"          file="forward.png" sizes="NonStd"/>
+    
+    <icon name="Minimize"         file="minimize.gif" sizes="16"/>
+    <icon name="Maximize"         file="maximize.gif" sizes="16"/>
     
     <icon name="Checkmark" file="stock-apply.png" sizes="all"/>
     

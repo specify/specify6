@@ -921,7 +921,7 @@ public class FormViewObj implements Viewable,
                         List<BusinessRulesDataItem> dataToSaveList = businessRules.getStandAloneDataItems(dataObj);
                         if (dataToSaveList.size() > 0)
                         {
-                            CheckboxChooserDlg<BusinessRulesDataItem> dlg = new CheckboxChooserDlg<BusinessRulesDataItem>("Save", "Check the items you would like to have saved.", dataToSaveList);
+                            ToggleButtonChooserDlg<BusinessRulesDataItem> dlg = new ToggleButtonChooserDlg<BusinessRulesDataItem>("Save", "Check the items you would like to have saved.", dataToSaveList);
                             UIHelper.centerAndShow(dlg);
                             dataToSaveList = dlg.getSelectedObjects();
                             for (BusinessRulesDataItem item : dataToSaveList)

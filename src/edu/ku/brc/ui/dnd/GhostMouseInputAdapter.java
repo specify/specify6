@@ -81,7 +81,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         this.glassPane       = glassPane;
         this.action          = action;
         this.ghostActionable = ghostActionable;
-        this.listeners = new ArrayList<GhostDropListener>();
+        this.listeners       = new ArrayList<GhostDropListener>();
     }
 
     public ImagePaintMode getPaintPositionMode()
@@ -114,7 +114,9 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
      */
     protected void startDrag(Component c, int button, Point pnt)
     {
-
+        Point pos = c.getLocation();
+        pos.x = pnt.x - pos.x;
+        pos.y = pnt.y - pos.y;
         //System.out.println(button+" startDrag "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked()+"  dragButtonIndex "+dragButtonIndex);
 
         if (DragAndDropLock.isLocked() || button != dragButtonIndex)
@@ -135,6 +137,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
         BufferedImage bi = ghostActionable.getBufferedImage();
         glassPane.setPoint(p, paintPositionMode);
+        glassPane.setOffset(pos);
         glassPane.setImage(bi, bi.getWidth());
         glassPane.repaint();
 
@@ -146,7 +149,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     @Override
     public void mousePressed(MouseEvent e)
     {
-        //System.out.println("mousePressed");
+        //System.out.println("mousePressed "+e.getPoint());
         firstPosition.setLocation(e.getPoint());
     }
 
@@ -269,7 +272,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
             if (Math.abs(firstPosition.x - pnt.x) > 3 || Math.abs(firstPosition.y - pnt.y) > 3)
             {
-                 startDrag(e.getComponent(), e.getButton(), pnt);
+                 startDrag(e.getComponent(), e.getButton(), firstPosition);
 
             } else
             {

@@ -67,7 +67,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
     /**
      * Constructor that describes where we get everything from.
      * @param name the name or title
-     * @param jtaQuery the JTA CustomQuery Processor
+     * @param jtaQuery the JPA CustomQuery Processor
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
      * @param useSeparator use non-border separator titles

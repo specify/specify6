@@ -56,7 +56,7 @@ import edu.ku.brc.stats.StatsMgr;
 @SuppressWarnings("serial")
 public class StatsPane extends BaseSubPane
 {
-    protected enum QueryType {SQL, JTA, CUSTOM};
+    protected enum QueryType {SQL, JPA, CUSTOM};
     
     // Static Data Members
     private static final Logger log = Logger.getLogger(StatsPane.class);
@@ -154,7 +154,6 @@ public class StatsPane extends BaseSubPane
             int spacing        = SPACING;
 
             FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString());
-            //FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p):g", "p:g", maxCols), rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
 
@@ -243,7 +242,7 @@ public class StatsPane extends BaseSubPane
                                         group.relayout();
                                     } break;
                                     
-                                    case JTA :
+                                    case JPA :
                                     {
                                         StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(boxElement.attributeValue("title"),
                                                                                         colNames,
@@ -340,7 +339,7 @@ public class StatsPane extends BaseSubPane
                                         }
                                     } break;
                                     
-                                    case JTA :
+                                    case JPA :
                                     {
                                         List<?> statements = itemElement.selectNodes("sql/statement");
                                         statItem.addCustomQuery(new JTAQuery(((Element)statements.get(0)).getText()), StatDataItem.VALUE_TYPE.Value, formatStr);

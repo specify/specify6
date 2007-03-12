@@ -156,7 +156,11 @@ public class GridTableModel extends SpreadSheetModel
         
         if (spreadSheet != null)
         {
-            spreadSheet.scrollToRow(spreadSheet.getRowCount()-1);
+            int lastRow = spreadSheet.getRowCount()-1;
+            spreadSheet.scrollToRow(lastRow);
+            spreadSheet.setRowSelectionInterval(lastRow, lastRow);
+            spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
+
         }
     }
 
@@ -205,7 +209,7 @@ public class GridTableModel extends SpreadSheetModel
             {
                 spreadSheet.setRowSelectionInterval(currentRow, currentRow);
             }
-            spreadSheet.setColumnSelectionInterval(0, 6);
+            spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
         }
     }
 
@@ -251,6 +255,8 @@ public class GridTableModel extends SpreadSheetModel
         if (spreadSheet != null)
         {
             spreadSheet.scrollToRow(rowInx);
+            spreadSheet.setRowSelectionInterval(rowInx, rowInx);
+            spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
         }
         //setChanged(true);
     }

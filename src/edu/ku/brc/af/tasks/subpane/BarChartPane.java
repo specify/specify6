@@ -122,9 +122,6 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
 
         doLayout();
         repaint();
-        
-
-  
     }
     
     /*

@@ -47,7 +47,7 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
-import edu.ku.brc.ui.CheckboxChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -212,7 +212,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     List<CatalogSeries> list = new Vector<CatalogSeries>();
                     list.addAll(catSeriesHash.values());
 
-                    CheckboxChooserDlg<CatalogSeries> dlg = new CheckboxChooserDlg<CatalogSeries>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                    ToggleButtonChooserDlg<CatalogSeries> dlg = new ToggleButtonChooserDlg<CatalogSeries>((Frame)UICacheManager.get(UICacheManager.FRAME),
                                                                                                   "Choose a Catalog Series", 
                                                                                                   list); // TODO I18N
                     //dlg.setSelectedObjects(catSeries);

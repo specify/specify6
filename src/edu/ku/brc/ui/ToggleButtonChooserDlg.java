@@ -25,16 +25,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -50,15 +54,19 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
  *
  */
 @SuppressWarnings("serial")
-public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, ActionListener
+public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener, ActionListener
 {
+    public enum Type {Checkbox, RadioButton}
+    
     // Data Members
-    protected JButton        cancelBtn;
-    protected JButton        okBtn;
-    protected List<T>        items;
-    protected List<JCheckBox> checkBoxes = new ArrayList<JCheckBox>(5);
-    protected ImageIcon      icon        = null;
-    protected boolean        isCancelled = false;
+    protected JButton               cancelBtn;
+    protected JButton               okBtn;
+    protected List<T>               items;
+    protected Vector<JToggleButton> butons      = new Vector<JToggleButton>(10);
+    protected ImageIcon             icon        = null;
+    protected boolean               isCancelled = false;
+    
+    protected ButtonGroup           group       = null;
 
     /**
      * Constructor.
@@ -68,7 +76,7 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
      * @param items the list to be selected from
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final Frame   parentFrame, 
+    public ToggleButtonChooserDlg(final Frame   parentFrame, 
                               final String  title, 
                               final List<T> listItems) throws HeadlessException
     {
@@ -82,12 +90,12 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
      * @param items the list to be selected from
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final Frame   parentFrame, 
+    public ToggleButtonChooserDlg(final Frame   parentFrame, 
                               final String  title,
                               final String  desc, 
                               final List<T> listItems) throws HeadlessException
     {
-        this(parentFrame, title, desc, listItems, null);
+        this(parentFrame, title, desc, listItems, null, Type.Checkbox);
     }
 
     /**
@@ -99,18 +107,19 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final Frame     parentFrame, 
+    public ToggleButtonChooserDlg(final Frame     parentFrame, 
                               final String    title, 
                               final String    desc, 
                               final List<T>   listItems, 
-                              final ImageIcon icon) throws HeadlessException
+                              final ImageIcon icon, 
+                              final Type      uiType) throws HeadlessException
     {
         super(parentFrame, true);
         
-        this.items = listItems;
-        this.icon  = icon;
+        this.items  = listItems;
+        this.icon   = icon;
 
-        createUI(title, desc);
+        createUI(title, desc, uiType);
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
@@ -120,7 +129,7 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
      * @param title dialog title
      * @param desc description label above list (optional)
      */
-    protected void createUI(final String title, final String desc)
+    protected void createUI(final String title, final String desc, final Type uiType)
     {
         setTitle(title);
         
@@ -129,6 +138,7 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
         {
             JLabel lbl = new JLabel(desc, SwingConstants.CENTER);
             panel.add(lbl, BorderLayout.NORTH);
+            panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
 
         JPanel listPanel = new JPanel();
@@ -137,21 +147,30 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
         listPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
         listPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), listPanel.getBorder()));
 
+        group = uiType == Type.Checkbox ? null : new ButtonGroup();
 
         for (Object obj : items)
         {
-            JCheckBox chkbx = new JCheckBox(obj.toString());
-            chkbx.setOpaque(false);
-            chkbx.addChangeListener(this);
-            checkBoxes.add(chkbx);
-            listPanel.add(chkbx);
+            JToggleButton togBtn;
+            if (uiType == Type.Checkbox)
+            {
+                togBtn = new JCheckBox(obj.toString());
+            } else
+            {
+                togBtn = new JRadioButton(obj.toString());
+                group.add(togBtn);
+            }
+            togBtn.setOpaque(false);
+            togBtn.addChangeListener(this);
+            butons.add(togBtn);
+            listPanel.add(togBtn);
         }
 
-        if (checkBoxes.size() > 0)
+        if (butons.size() > 0)
         {
-            JCheckBox chkbx = checkBoxes.get(0);
-            Dimension dim = getPreferredSize();
-            dim.height = chkbx.getPreferredSize().height * 10;
+            JToggleButton togBtn = butons.get(0);
+            Dimension     dim    = getPreferredSize();
+            dim.height = togBtn.getPreferredSize().height * 10;
             listPanel.setPreferredSize(dim);
         }
 
@@ -166,15 +185,12 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
         getRootPane().setDefaultButton(okBtn);
 
         ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-        //btnBuilder.addGlue();
-
         btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
 
         cancelBtn.addActionListener(new ActionListener()
                     {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
 
         panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
-
 
         setContentPane(panel);
         pack();
@@ -197,9 +213,9 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
     public T getSelectedObject()
     {
         int inx = 0;
-        for (JCheckBox cb : checkBoxes)
+        for (JToggleButton tb : butons)
         {
-            if (cb.isSelected())
+            if (tb.isSelected())
             {
                 return items.get(inx);
             }
@@ -217,11 +233,11 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
         for (T obj : selectedItems)
         {
             int inx = 0;
-            for (JCheckBox cb : checkBoxes)
+            for (JToggleButton tb : butons)
             {
                 if (obj == items.get(inx))
                 {
-                    cb.setSelected(true);
+                    tb.setSelected(true);
                     break;
                 }
                 inx++;
@@ -237,9 +253,9 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
     {
         List<T> list = new ArrayList<T>(5);
         int inx = 0;
-        for (JCheckBox cb : checkBoxes)
+        for (JToggleButton tb : butons)
         {
-            if (cb.isSelected())
+            if (tb.isSelected())
             {
                 list.add(items.get(inx));
             }

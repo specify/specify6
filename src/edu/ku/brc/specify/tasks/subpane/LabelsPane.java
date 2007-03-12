@@ -78,17 +78,23 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 
     protected RecordSetIFace         recordSet        = null;
     protected File                   cachePath        = null;
+    
+    protected Map<String, Object>    params           = null;
 
     /**
      * Constructor.
      * @param name name of subpanel
      * @param task the owning task
+     * @param params parameters for the report
      */
     public LabelsPane(final String name,
-                      final Taskable task)
+                      final Taskable task, 
+                      final Map<String, Object> params)
     {
         super(name, task);
         
+        this.params = params;
+       
         cachePath = checkAndCreateReportsCache();
         
         refreshCacheFromDatabase("jrxml/label");
@@ -215,10 +221,14 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * Starts the report creation process
      * @param fileName the XML file name of the report definition
      * @param recrdSet the recordset to use to fill the labels
-     */
-    public void createReport(final String mainReportName, final RecordSetIFace recrdSet)
+     * @param params parameters for the report
+    */
+    public void createReport(final String mainReportName, 
+                             final RecordSetIFace recrdSet, 
+                             final Map<String, Object> params)
     {
         this.recordSet = recrdSet;
+        this.params = params;
      
         refreshCacheFromDatabase("jrxml/label");
         refreshCacheFromDatabase("jrxml/report");
@@ -337,11 +347,21 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         parameters.put("itemnum", itemnum);
                         parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
                     }
+                    
+                    // Add external parameters
+                    if (params != null)
+                    {
+                        for (String key : params.keySet())
+                        {
+                            parameters.put(key, params.get(key));
+                        }
+                    }
 
                     progressLabel.setText(getResourceString("JasperReportFilling"));
                     asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getInstance().getConnection());
                     asyncFillHandler.addListener(this);
                     asyncFillHandler.startFill();
+                    
                 } else
                 {
                     log.error("jasperReport came back null ["+compiledFile.getAbsolutePath()+"]");
