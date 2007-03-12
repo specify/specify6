@@ -195,14 +195,14 @@ public class TreeFactory
 			return new Pair<String,String>("SystemSetup","TreeDefEditor");
 		}
 		
-		if( node instanceof TreeDefItemIface<?,?,?>)
+		if( node instanceof LocationTreeDefItem)
 		{
 			TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
 			if (defItem.getParent() == null)
 			{
-				return new Pair<String, String>("SystemSetup","RootTreeDefItem");
+				return new Pair<String, String>("SystemSetup","RootLocationTreeDefItem");
 			}
-			return new Pair<String, String>("SystemSetup","TreeDefItem");
+			return new Pair<String, String>("SystemSetup","LocationTreeDefItem");
 		}
 		
 		return null;
@@ -220,6 +220,7 @@ public class TreeFactory
 		defItem.setName("Root");
 		defItem.setRankId(0);
 		defItem.setIsEnforced(true);
+        defItem.setIsInFullName(false);
 		
 		Location rootNode = new Location();
 		rootNode.initialize();

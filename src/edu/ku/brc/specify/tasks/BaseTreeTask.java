@@ -55,6 +55,9 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     protected Vector<TreeDefinitionEditor<T,D,I>> visibleTreeDefEditors;
     
     protected Class<D> treeDefClass;
+    
+    protected NavBoxItemIFace defEditorNavBox;
+    protected NavBoxItemIFace treeViewerNavBox;
     	
 	protected BaseTreeTask(final String name, final String title)
 	{
@@ -86,16 +89,31 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		finderWidget = new TreeNodeFindWidget(this);
 		find.add((NavBoxItemIFace)(finderWidget));
 		
-        NavBox admin = new NavBox(getResourceString("AdministrationTasks"));
+        final NavBox admin = new NavBox(getResourceString("AdministrationTasks"));
         ActionListener openTreeDefEd = new ActionListener()
         {
         	public void actionPerformed(ActionEvent ae)
         	{
-        		openTreeDefEditor();
+                // switch the visible nav box out for the other one
+                if (admin.getItems().contains(defEditorNavBox))
+                {
+                    admin.remove(defEditorNavBox);
+                    admin.add(treeViewerNavBox);
+                }
+                else
+                {
+                    admin.remove(treeViewerNavBox);
+                    admin.add(defEditorNavBox);
+                }
+        		switchView();
         	}
         };
-        String btnLabel = getResourceString("TreeDefEditor");
-        admin.add(NavBox.createBtn(btnLabel,"TreeDefEditorIcon", IconManager.IconSize.Std16,openTreeDefEd));
+        String defEditorLabel = getResourceString("TreeDefEditor");
+        defEditorNavBox = NavBox.createBtn(defEditorLabel,"TreeDefEditorIcon", IconManager.IconSize.Std16,openTreeDefEd);
+        admin.add(defEditorNavBox);
+        
+        String treeViewerLabel = getResourceString("TreeViewer");
+        treeViewerNavBox = NavBox.createBtn(treeViewerLabel, "TreeViewer", IconManager.IconSize.Std16,openTreeDefEd);
 
         navBoxes.addElement(actions);
 		navBoxes.addElement(find);
@@ -193,6 +211,35 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     {
     	TreeTableViewer<T,D,I> ttv = (TreeTableViewer<T,D,I>)SubPaneMgr.getInstance().getCurrentSubPane();
     	ttv.findNext(key,where,wrap);
+    }
+    
+    public void switchView()
+    {
+        SubPaneMgr paneMgr = SubPaneMgr.getInstance();
+        SubPaneIFace curSubPane = paneMgr.getCurrentSubPane();
+        if(curSubPane instanceof TreeTableViewer)
+        {
+            TreeTableViewer<T,D,I> ttv = (TreeTableViewer<T,D,I>)paneMgr.getCurrentSubPane();
+            if(ttv.aboutToShutdown())
+            {
+                paneMgr.removePane(ttv);
+
+                String editorName = getResourceString("TreeDefEditor");
+                TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(ttv.getTreeDef(),editorName,this);
+                visibleTreeDefEditors.add(defEditor);
+                paneMgr.addPane(defEditor);
+            }
+        }
+        else if (curSubPane instanceof TreeDefinitionEditor)
+        {
+            TreeDefinitionEditor<T,D,I> tde = (TreeDefinitionEditor<T,D,I>)paneMgr.getCurrentSubPane();
+            if (tde.aboutToShutdown())
+            {
+                paneMgr.removePane(tde);
+                
+                showTree(tde.getDisplayedTreeDef());
+            }
+        }
     }
     
     public void openTreeDefEditor()
