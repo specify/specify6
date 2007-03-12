@@ -10,6 +10,8 @@ import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
 
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -23,9 +25,11 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
  */
 public class TaxonBusRules extends BaseBusRules
 {
+    private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
+    
     public TaxonBusRules()
     {
-        super(Taxon.class);
+        super(Taxon.class,TaxonTreeDefItem.class);
     }
     
     /* (non-Javadoc)
@@ -53,7 +57,8 @@ public class TaxonBusRules extends BaseBusRules
     @Override
     public void afterSave(Object dataObj)
     {
-        System.err.println("afterSave() on Taxon object");
+        log.debug("enter");
+        log.debug("exit");
     }
 
     /* (non-Javadoc)
@@ -62,18 +67,22 @@ public class TaxonBusRules extends BaseBusRules
     @Override
     public void beforeSave(Object dataObj)
     {
-        System.err.println("beforeSave() on Taxon object");
+        log.debug("enter");
+        System.err.println("beforeSave()");
         if (dataObj instanceof Taxon)
         {
             beforeSaveTaxon((Taxon)dataObj);
+            log.debug("exit");
             return;
         }
         
         if (dataObj instanceof TaxonTreeDefItem)
         {
             beforeSaveTaxonTreeDefItem((TaxonTreeDefItem)dataObj);
+            log.debug("exit");
             return;
         }
+        log.debug("exit");
     }
     
     /**
@@ -86,6 +95,7 @@ public class TaxonBusRules extends BaseBusRules
      */
     protected void beforeSaveTaxon(Taxon taxon)
     {
+        log.debug("enter");
         // check to see if this node is brand new
         if (taxon.getId() == null)
         {
@@ -95,6 +105,7 @@ public class TaxonBusRules extends BaseBusRules
             
             String fullname = TreeHelper.generateFullname(taxon);
             taxon.setFullName(fullname);
+            log.debug("exit");
             return;
         }
         // else
@@ -199,6 +210,7 @@ public class TaxonBusRules extends BaseBusRules
         }
         
         session.close();
+        log.debug("exit");
     }
     
     /**
@@ -211,6 +223,7 @@ public class TaxonBusRules extends BaseBusRules
      */
     protected void beforeSaveTaxonTreeDefItem(TaxonTreeDefItem defItem)
     {
+        log.debug("enter");
         // we need a way to determine if the 'isInFullname' value changed
         // load a fresh copy from the DB and get the values needed for comparison
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
@@ -292,6 +305,7 @@ public class TaxonBusRules extends BaseBusRules
         // else don't change anything
         
         session.close();
+        log.debug("exit");
     }
     
     private String makeNotNull(String s)

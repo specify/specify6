@@ -66,6 +66,60 @@
             </altviews>
         </view>
         
+        <view name="GeographyTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[GeographyTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Tree Def Item Edit" viewdef="GeographyTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="RootGeographyTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[Root GeographyTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Root Tree Def Item Edit" viewdef="RootGeographyTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="GeologicTimePeriodTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[GeologicTimePeriodTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Tree Def Item Edit" viewdef="GeologicTimePeriodTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="RootGeologicTimePeriodTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[Root GeologicTimePeriodTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Root Tree Def Item Edit" viewdef="RootGeologicTimePeriodTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="TaxonTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[TaxonTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Tree Def Item Edit" viewdef="TaxonTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="RootTaxonTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[Root TaxonTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Root Tree Def Item Edit" viewdef="RootTaxonTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
         <view name="TreeDefEditor"
             class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
             resourcelabels="false">
@@ -393,6 +447,216 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Root Location Tree Definition Item Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GeographyTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[GeographyTreeDefItem Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Text Before"/>
+                    <cell type="field" id="5" name="textBefore"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Text After"/>
+                    <cell type="field" id="6" name="textAfter"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Separator"/>
+                    <cell type="field" id="7" name="fullNameSeparator"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="RootGeographyTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Root GeographyTreeDefItem Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GeologicTimePeriodTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[GeologicTimePeriodTreeDefItem Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Text Before"/>
+                    <cell type="field" id="5" name="textBefore"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Text After"/>
+                    <cell type="field" id="6" name="textAfter"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Separator"/>
+                    <cell type="field" id="7" name="fullNameSeparator"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="RootGeologicTimePeriodTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Root GeologicTimePeriodTreeDefItem Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="TaxonTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[TaxonTreeDefItem Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Text Before"/>
+                    <cell type="field" id="5" name="textBefore"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Text After"/>
+                    <cell type="field" id="6" name="textAfter"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Separator"/>
+                    <cell type="field" id="7" name="fullNameSeparator"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="RootTaxonTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Root TaxonTreeDefItem Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             

@@ -25,7 +25,7 @@ public class GeographyBusRules extends BaseBusRules
 {
     public GeographyBusRules()
     {
-        super(Geography.class);
+        super(Geography.class,GeographyTreeDefItem.class);
     }
     
     /* (non-Javadoc)

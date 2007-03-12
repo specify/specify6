@@ -25,7 +25,7 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
 {
     public GeologicTimePeriodBusRules()
     {
-        super(GeologicTimePeriod.class);
+        super(GeologicTimePeriod.class,GeologicTimePeriodTreeDefItem.class);
     }
     
 

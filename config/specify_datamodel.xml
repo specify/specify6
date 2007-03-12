@@ -577,7 +577,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" relationshipname="treeDefItems"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDefs"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" table="geographytreedefitem" tableid="45" lazy="true" workbench="false" query="false">
+    <table classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" table="geographytreedefitem" tableid="45" lazy="true" workbench="false" query="false" businessrule="edu.ku.brc.specify.datamodel.busrules.GeographyBusRules">
       <field column="Name" name="name" type="java.lang.String" length="64"/>
       <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
       <field column="RankID" name="rankId" type="java.lang.Integer"/>
@@ -623,7 +623,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" relationshipname="treeDefItems"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDefs"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" table="geologictimeperiodtreedefitem" tableid="48" lazy="true" workbench="false" query="false">
+    <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" table="geologictimeperiodtreedefitem" tableid="48" lazy="true" workbench="false" query="false" businessrule="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules">
       <field column="Name" name="name" type="java.lang.String" length="64"/>
       <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
       <field column="RankID" name="rankId" type="java.lang.Integer"/>
@@ -1153,7 +1153,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" relationshipname="treeDefItems"/>
       <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDef"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" table="taxontreedefitem" tableid="77" lazy="true" workbench="false" query="false">
+    <table classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" table="taxontreedefitem" tableid="77" lazy="true" workbench="false" query="false" businessrule="edu.ku.brc.specify.datamodel.busrules.TaxonBusRules">
       <field column="Name" name="name" type="java.lang.String" length="64"/>
       <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
       <field column="RankID" name="rankId" type="java.lang.Integer"/>

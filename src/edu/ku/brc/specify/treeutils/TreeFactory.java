@@ -195,16 +195,46 @@ public class TreeFactory
 			return new Pair<String,String>("SystemSetup","TreeDefEditor");
 		}
 		
-		if( node instanceof LocationTreeDefItem)
-		{
-			TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
-			if (defItem.getParent() == null)
-			{
-				return new Pair<String, String>("SystemSetup","RootLocationTreeDefItem");
-			}
-			return new Pair<String, String>("SystemSetup","LocationTreeDefItem");
-		}
-		
+        if( node instanceof GeographyTreeDefItem)
+        {
+            TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
+            if (defItem.getParent() == null)
+            {
+                return new Pair<String, String>("SystemSetup","RootGeographyTreeDefItem");
+            }
+            return new Pair<String, String>("SystemSetup","GeographyTreeDefItem");
+        }
+        
+        if( node instanceof GeologicTimePeriodTreeDefItem)
+        {
+            TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
+            if (defItem.getParent() == null)
+            {
+                return new Pair<String, String>("SystemSetup","RootGeologicTimePeriodTreeDefItem");
+            }
+            return new Pair<String, String>("SystemSetup","GeologicTimePeriodTreeDefItem");
+        }
+        
+        if( node instanceof LocationTreeDefItem)
+        {
+            TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
+            if (defItem.getParent() == null)
+            {
+                return new Pair<String, String>("SystemSetup","RootLocationTreeDefItem");
+            }
+            return new Pair<String, String>("SystemSetup","LocationTreeDefItem");
+        }
+        
+        if( node instanceof TaxonTreeDefItem)
+        {
+            TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
+            if (defItem.getParent() == null)
+            {
+                return new Pair<String, String>("SystemSetup","RootTaxonTreeDefItem");
+            }
+            return new Pair<String, String>("SystemSetup","TaxonTreeDefItem");
+        }
+        
 		return null;
 	}
 	

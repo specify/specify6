@@ -83,13 +83,17 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeographyBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeographyTreeDef" id="44"/>
-        <table name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" id="45"/>
+        <table name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" id="45">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.GeographyBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" id="46" workbench="false"  query="true">
             <display objtitle="Geologic Time Period"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" id="47"/>
-        <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" id="48"/>
+        <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" id="48">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
+        </table>
         <table name="edu.ku.brc.specify.datamodel.GroupPerson" id="49"/>
         <table name="edu.ku.brc.specify.datamodel.InfoRequest" id="50">
             <display view="InfoRequest"/>
@@ -155,7 +159,9 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" id="75"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDef" id="76"/>
-        <table name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" id="77"/>
+        <table name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" id="77">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.UserGroup" id="78"/>
         <table name="edu.ku.brc.specify.datamodel.UserPermission" id="89"/>
         <table name="edu.ku.brc.specify.datamodel.ViewSetObj" id="86"/>
