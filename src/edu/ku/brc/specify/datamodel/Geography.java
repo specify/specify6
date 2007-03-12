@@ -537,38 +537,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	{
 		return definitionItem.getFullNameSeparator();
 	}
-
-	/**
-	 * Determines if the given Geography can be deleted.  This method checks wether or not
-	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
-	 * currently referring to this node, <code>true</code> is returned.
-	 * 
-	 * @see #canBeDeleted(Treeable)
-	 * @param geo the node to check
-	 * @return <code>true</code> if deletable
-	 */
-	public boolean canBeDeleted()
-	{
-		// force all collections to be loaded
-		boolean noLocs = getLocalities().isEmpty();
-
-		boolean descendantsDeletable = true;
-		for( Geography child : getChildren() )
-		{
-			if( !child.canBeDeleted() )
-			{
-				descendantsDeletable = false;
-				break;
-			}
-		}
-
-		if( noLocs&&descendantsDeletable )
-		{
-			return true;
-		}
-
-		return false;
-	}
 	
 	/**
 	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree

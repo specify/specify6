@@ -25,7 +25,10 @@ import java.util.Set;
 import edu.ku.brc.util.Nameable;
 import edu.ku.brc.util.Rankable;
 
-public interface TreeDefItemIface<N,D,I> extends Rankable, Nameable
+public interface TreeDefItemIface<N extends Treeable<N,D,I>,
+                                  D extends TreeDefIface<N,D,I>,
+                                  I extends TreeDefItemIface<N,D,I>>
+                                    extends Rankable, Nameable
 {
 	public void initialize();
 	

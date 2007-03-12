@@ -250,7 +250,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE })
 	public Set<Location> getTreeEntries()
 	{
 		return this.treeEntries;

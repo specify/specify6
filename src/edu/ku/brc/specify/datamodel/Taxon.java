@@ -739,39 +739,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         //TODO: finish this impl
     }
 
-    /**
-	 * Determines if the Taxon can be deleted.  This method checks whether or not
-	 * the given Taxon is referenced by any foreign key contraints.  If no FKs are
-	 * currently referring to this node, <code>true</code> is returned.
-	 * 
-	 * @return <code>true</code> if deletable
-	 */
-	public boolean canBeDeleted()
-	{
-		// force all collections to be loaded
-		boolean noCitations = getTaxonCitations().isEmpty();
-		boolean noAcceptedChildren = getAcceptedChildren().isEmpty();
-		boolean noAttachments = getAttachments().isEmpty();
-		boolean noDeter = getDeterminations().isEmpty();
-
-		boolean descendantsDeletable = true;
-		for( Taxon child : getChildren() )
-		{
-			if( !child.canBeDeleted() )
-			{
-				descendantsDeletable = false;
-				break;
-			}
-		}
-
-		if( noCitations&&noAcceptedChildren&&noAttachments&&noDeter&&descendantsDeletable )
-		{
-			return true;
-		}
-
-		return false;
-	}
-
 	/**
 	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
 	 * definition items and following the parent pointer until we hit the root node.  Also used

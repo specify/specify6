@@ -284,7 +284,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	 * 
 	 */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE })
 	public Set<GeologicTimePeriod> getTreeEntries()
 	{
 		return this.treeEntries;

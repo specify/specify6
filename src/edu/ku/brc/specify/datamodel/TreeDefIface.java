@@ -32,8 +32,10 @@ import java.util.Set;
 
 import edu.ku.brc.util.Nameable;
 
-public interface TreeDefIface<N,D,I>
-	extends Nameable
+public interface TreeDefIface<N extends Treeable<N,D,I>,
+                              D extends TreeDefIface<N,D,I>,
+                              I extends TreeDefItemIface<N,D,I>>
+	                            extends Nameable
 {
     /**
      * An indicator that node full names should start with highest order

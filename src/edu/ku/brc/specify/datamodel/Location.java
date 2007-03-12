@@ -422,37 +422,6 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
     }
 
 	/**
-	 * Determines if the Location can be deleted.  This method checks whether or not
-	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
-	 * currently referring to this node, <code>true</code> is returned.
-	 * 
-	 * @return <code>true</code> if deletable
-	 */
-	public boolean canBeDeleted()
-	{
-		// force all collections to be loaded
-		boolean noConts = getContainers().isEmpty();
-		boolean noPreps = getPreparations().isEmpty();
-
-		boolean descendantsDeletable = true;
-		for( Location child : getChildren() )
-		{
-			if( !child.canBeDeleted() )
-			{
-				descendantsDeletable = false;
-				break;
-			}
-		}
-
-		if( noConts&&noPreps&&descendantsDeletable )
-		{
-			return true;
-		}
-
-		return false;
-	}
-	
-	/**
 	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
 	 * definition items and following the parent pointer until we hit the root node.  Also used
 	 * in the process is a "direction indicator" for the tree determining whether the name

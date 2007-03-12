@@ -454,36 +454,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     }
 
 	/**
-	 * Determines if the GeologicTimePeriod can be deleted.  This method checks wether or not
-	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
-	 * currently referring to this node, <code>true</code> is returned.
-	 * 
-	 * @return <code>true</code> if deletable
-	 */
-	public boolean canBeDeleted()
-	{
-		// force all collections to be loaded
-		boolean noStrats = getStratigraphies().isEmpty();
-
-		boolean descendantsDeletable = true;
-		for( GeologicTimePeriod child : getChildren() )
-		{
-			if( !child.canBeDeleted() )
-			{
-				descendantsDeletable = false;
-				break;
-			}
-		}
-
-		if( noStrats&&descendantsDeletable )
-		{
-			return true;
-		}
-
-		return false;
-	}
-	
-	/**
 	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
 	 * definition items and following the parent pointer until we hit the root node.  Also used
 	 * in the process is a "direction indicator" for the tree determining whether the name

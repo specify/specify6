@@ -227,7 +227,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE })
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;

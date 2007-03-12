@@ -60,7 +60,10 @@ import edu.ku.brc.util.Rankable;
  * 
  * @author jstewart
  */
-public interface Treeable<N,D,I> extends Rankable, Nameable
+public interface Treeable<N extends Treeable<N,D,I>,
+                          D extends TreeDefIface<N,D,I>,
+                          I extends TreeDefItemIface<N,D,I>>
+                            extends Rankable, Nameable
 {
 	/**
 	 * An indicator that node full names should start with highest order
@@ -182,10 +185,9 @@ public interface Treeable<N,D,I> extends Rankable, Nameable
 	public int getFullNameDirection();
 	public String getFullNameSeparator();
 	
-	public int getDescendantCount();
 	public boolean childrenAllowed();
-	public boolean canBeDeleted();
 	public List<N> getAllDescendants();
+    public int getDescendantCount();
 	public List<N> getAllAncestors();
 	public void fixFullNameForAllDescendants();
 	
