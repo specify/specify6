@@ -36,8 +36,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
-import edu.ku.brc.dbsupport.QueryResultsListener;
-import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
 
 
@@ -50,7 +48,7 @@ import edu.ku.brc.ui.IconManager;
  *
  */
 @SuppressWarnings("serial")
-public class BarChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
+public class BarChartPane extends ChartPane
 {
     // Static Data Members
     

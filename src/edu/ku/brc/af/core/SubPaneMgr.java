@@ -416,7 +416,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     public void closeCurrent()
     {
         SubPaneIFace subPane = this.getCurrentSubPane();
-        if(subPane.aboutToShutdown())
+        if(subPane != null && subPane.aboutToShutdown())
         {
         	this.removePane(subPane);
         }

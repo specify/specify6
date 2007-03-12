@@ -50,6 +50,8 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.BarChartPane;
+import edu.ku.brc.af.tasks.subpane.ChartPane;
+import edu.ku.brc.af.tasks.subpane.PieChartPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -97,8 +99,9 @@ public class WorkbenchTask extends BaseTask
     public static final String     EDIT_TEMPLATE         = "Edit Template";
     public static final String     EDIT_WORKBENCH        = "Edit Workbench";
     public static final String     IMPORT_FIELD_NOTEBOOK = "Import Field Note Book";
-    public static final String     WB_GENUS_REPORT       = "GenusReport";
+    public static final String     WB_BARCHART           = "WB_BARCHART";
     public static final String     PRINT_REPORT          = "PrintReport";
+    public static final String     WB_TOP10_REPORT       = "WB_TOP10_REPORT";
     
     
     protected NavBox                      templateNavBox;
@@ -133,7 +136,8 @@ public class WorkbenchTask extends BaseTask
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Workbench"),    name, new CommandAction(WORKBENCH, NEW_WORKBENCH),     null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Template"),     name, new CommandAction(WORKBENCH, NEW_TEMPLATE),      null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("ImportData"),       name, new CommandAction(WORKBENCH, NEW_TEMPLATE_FILE), null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("Genus"),            name, new CommandAction(WORKBENCH, WB_GENUS_REPORT), null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("Chart"),            name, new CommandAction(WORKBENCH, WB_BARCHART), null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("Top 10"),            name, new CommandAction(WORKBENCH, WB_TOP10_REPORT), null, false);// true means make it draggable
             navBoxes.addElement(navBox);
             
             // Then add
@@ -903,7 +907,7 @@ public class WorkbenchTask extends BaseTask
             WorkbenchTemplateMappingItem mapping = dlg.getSelectedObject();
             final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
             cmd.setProperty("file", "wb_items.jrxml");
-            cmd.setProperty("title", "Workbench Summary");
+            cmd.setProperty("title", "OnRamp Summary");
             cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
             cmd.setProperty("params", "colnum="+mapping.getViewOrder()+";"+"title="+mapping.getCaption());
             
@@ -917,54 +921,97 @@ public class WorkbenchTask extends BaseTask
 
     }
     
-    protected void doGenusReport(final Workbench workbench)
+    protected void doGenusReport(final CommandAction cmdAction, final boolean doBarChart)
     {
-        final Vector<Object> data = new Vector<Object>();
-        try
+        RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");
+        if (recordSet == null)
         {
-            String sql = "select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on " +
-                "di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId = " +
-                workbench.getWorkbenchId() + " and ColumnNumber = 4  group by CellData order by rw.RowNumber asc, di.ColumnNumber asc) t1 order by Cnt desc";
-            Connection conn = DBConnection.getInstance().createConnection();
-            Statement  stmt = conn.createStatement();
-            
-            
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next())
+            Object data = cmdAction.getData();
+            if (data instanceof CommandAction)
             {
-                data.add(rs.getString(1));
-                data.add(rs.getInt(2));
+                recordSet = (RecordSet)((CommandAction)data).getProperty("workbench");
             }
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
         }
         
-        QueryResultsHandlerIFace qrhi = new QueryResultsHandlerIFace()
+        if (recordSet == null)
         {
-            public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list) {}
-            public void init(final QueryResultsListener listener, final QueryResultsContainerIFace qrc){}
-            public void startUp(){ }
-            public void cleanUp() {}
-
-                       
-
-            public java.util.List<Object> getDataObjects()
-            {
-                return data;
-            }
-
-            public boolean isPairs()
-            {
-                return true;
-            }
-        };
+            return;
+        }
         
-        BarChartPane chart = new BarChartPane("Genus Counts", this);
-        chart.setHandler(qrhi);
-        chart.allResultsBack();
-        addSubPaneToMgr(chart);
+        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+        Workbench                workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
+        WorkbenchTemplate        workbenchTemplate = workbench.getWorkbenchTemplate();
+        Set<WorkbenchTemplateMappingItem> mappings = workbenchTemplate.getWorkbenchTemplateMappingItems();
+        Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>();
+        items.addAll(mappings);
+        session.close();
+        
+        Collections.sort(items);
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
+                (Frame)UICacheManager.get(UICacheManager.FRAME),
+                "Select a Field:", 
+                "Choose which field to report on:", 
+                items, 
+                null, 
+                ToggleButtonChooserDlg.Type.RadioButton);
+        dlg.setModal(true);
+        dlg.setVisible(true);  
+        
+        if (!dlg.isCancelled())
+        {
+            WorkbenchTemplateMappingItem mapping = dlg.getSelectedObject();
+    
+            final Vector<Object> data = new Vector<Object>();
+            try
+            {
+                String sql = "select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on " +
+                    "di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId = " +
+                    workbench.getWorkbenchId() + " and ColumnNumber = "+mapping.getViewOrder()+"  group by CellData order by rw.RowNumber asc, di.ColumnNumber asc) t1 order by Cnt desc";
+                Connection conn = DBConnection.getInstance().createConnection();
+                Statement  stmt = conn.createStatement();
+                
+                
+                ResultSet rs = stmt.executeQuery(sql);
+                int count = 0;
+                while (rs.next() && (doBarChart || count < 10))
+                {
+                    data.add(rs.getString(1));
+                    data.add(rs.getInt(2));
+                    count++;
+                }
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+            
+            QueryResultsHandlerIFace qrhi = new QueryResultsHandlerIFace()
+            {
+                public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list) {}
+                public void init(final QueryResultsListener listener, final QueryResultsContainerIFace qrc){}
+                public void startUp(){ }
+                public void cleanUp() {}
+    
+                           
+    
+                public java.util.List<Object> getDataObjects()
+                {
+                    return data;
+                }
+    
+                public boolean isPairs()
+                {
+                    return true;
+                }
+            };
+            
+            String title = mapping.getCaption() + " Counts";
+            ChartPane chart = doBarChart ? new BarChartPane(title, this) : new PieChartPane(mapping.getCaption()+" Counts", this);
+            chart.setTitle(title);
+            chart.setHandler(qrhi);
+            chart.allResultsBack();
+            addSubPaneToMgr(chart);
+        }
         
     }
     
@@ -1012,6 +1059,14 @@ public class WorkbenchTask extends BaseTask
                 createNewWorkbench(workbenchTemplate, false);
             }
             
+        } else if (cmdAction.isAction(WB_BARCHART))
+        {
+            doGenusReport(cmdAction, true);
+                
+        } else if (cmdAction.isAction(WB_TOP10_REPORT))
+        {
+            doGenusReport(cmdAction, false);
+                
         } else if (cmdAction.isAction(PRINT_REPORT))
         {
             RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");

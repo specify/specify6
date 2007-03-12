@@ -37,7 +37,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.dbsupport.JTAQuery;
+import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
 import edu.ku.brc.stats.StatGroupTable;
@@ -246,7 +246,7 @@ public class StatsPane extends BaseSubPane
                                     {
                                         StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(boxElement.attributeValue("title"),
                                                                                         colNames,
-                                                                                        new JTAQuery(sqlElement.getText()),
+                                                                                        new JPAQuery(sqlElement.getText()),
                                                                                         useSeparatorTitles,
                                                                                         getAttr(boxElement, "noresults", null));
                                         group.setLinkInfo(linkStr, colId);
@@ -342,7 +342,7 @@ public class StatsPane extends BaseSubPane
                                     case JPA :
                                     {
                                         List<?> statements = itemElement.selectNodes("sql/statement");
-                                        statItem.addCustomQuery(new JTAQuery(((Element)statements.get(0)).getText()), StatDataItem.VALUE_TYPE.Value, formatStr);
+                                        statItem.addCustomQuery(new JPAQuery(((Element)statements.get(0)).getText()), StatDataItem.VALUE_TYPE.Value, formatStr);
 
                                     } break;
                                     

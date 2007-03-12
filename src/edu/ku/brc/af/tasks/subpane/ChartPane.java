@@ -16,6 +16,10 @@ package edu.ku.brc.af.tasks.subpane;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
+import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
+import edu.ku.brc.dbsupport.QueryResultsListener;
+import edu.ku.brc.dbsupport.QueryResultsProcessable;
 
 /**
  * This base class implements the Chartable interface 
@@ -27,7 +31,7 @@ import edu.ku.brc.af.core.Taskable;
  *
  */
 @SuppressWarnings("serial")
-public class ChartPane extends BaseSubPane implements Chartable
+public class ChartPane extends BaseSubPane implements Chartable, QueryResultsProcessable, QueryResultsListener
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(ChartPane.class);
@@ -88,5 +92,48 @@ public class ChartPane extends BaseSubPane implements Chartable
     public void setVertical(boolean isVertical)
     {
         this.isVertical = isVertical;
+    }
+    
+    //--------------------------------------
+    // QueryResultsProcessable
+    //--------------------------------------
+
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.af.dbsupport.QueryResultsProcessable#setHandler()
+     */
+    public void setHandler(final QueryResultsHandlerIFace handler)
+    {
+        throw new RuntimeException("Not Implemented.");
+    }
+
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.af.dbsupport.QueryResultsProcessable#getHandler()
+     */
+    public QueryResultsHandlerIFace getHandler()
+    {
+        throw new RuntimeException("Not Implemented.");
+    }
+    
+    //--------------------------------------
+    // QueryResultsListener
+    //--------------------------------------
+
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.af.dbsupport.QueryResultsListener#allResultsBack()
+     */
+    public synchronized void allResultsBack()
+    {
+        throw new RuntimeException("Not Implemented.");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.af.dbsupport.QueryResultsContainer)
+     */
+    public void resultsInError(final QueryResultsContainerIFace qrc)
+    {
+        // do nothing it ok if it isn't implemented
     }
 }

@@ -33,9 +33,9 @@ import edu.ku.brc.helpers.SwingWorker;
  * Created Date: Mar 5, 2007
  *
  */
-public class JTAQuery implements CustomQuery
+public class JPAQuery implements CustomQuery
 {
-    private static final Logger log = Logger.getLogger(JTAQuery.class);
+    private static final Logger log = Logger.getLogger(JPAQuery.class);
     
     protected String                    sqlStr;
     protected List<QueryResultsDataObj> qrdoResults = null;
@@ -46,7 +46,7 @@ public class JTAQuery implements CustomQuery
      * Constructor.
      * @param sqlStr the query string
      */
-    public JTAQuery(final String sqlStr)
+    public JPAQuery(final String sqlStr)
     {
         this.sqlStr = sqlStr;
     }
@@ -97,7 +97,7 @@ public class JTAQuery implements CustomQuery
      */
     public void execute(final CustomQueryListener cql)
     {
-        final JTAQuery thisItem = this;
+        final JPAQuery thisItem = this;
 
         final SwingWorker worker = new SwingWorker()
         {

@@ -67,7 +67,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
     /**
      * Constructor that describes where we get everything from.
      * @param name the name or title
-     * @param jtaQuery the JPA CustomQuery Processor
+     * @param jpaQuery the JPA CustomQuery Processor
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
      * @param useSeparator use non-border separator titles
@@ -75,7 +75,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
      */
     public StatGroupTableFromCustomQuery(final String      name,
                                          final String[]    columnNames,
-                                         final CustomQuery jtaQuery,
+                                         final CustomQuery jpaQuery,
                                          boolean           useSeparator,
                                          final String      noResultsMsg)
     {
@@ -86,7 +86,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
         StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
         model.addDataItem(statItem);
 
-        jtaQuery.execute(this);
+        jpaQuery.execute(this);
 
     }
 

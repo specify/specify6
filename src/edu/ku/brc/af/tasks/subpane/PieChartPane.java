@@ -37,8 +37,6 @@ import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsGetter;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
-import edu.ku.brc.dbsupport.QueryResultsListener;
-import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
 
 /**
@@ -50,7 +48,7 @@ import edu.ku.brc.ui.IconManager;
  *
  */
 @SuppressWarnings("serial")
-public class PieChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
+public class PieChartPane extends ChartPane
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(BarChartPane.class);

@@ -15,7 +15,7 @@
     <file level="3" mimetype="jrxml/subreport" name="LoanInvoice_subreport1.jrxml" description="LoanInvoice SubReport" file="LoanInvoice_subreport1.jrxml" 
         metadata=""/>
     
-    <file level="3" mimetype="jrxml/report" name="wb_items.jrxml" description="Workbench Items" file="wb_items.jrxml" 
+    <file level="3" mimetype="jrxml/report" name="wb_items.jrxml" description="DataSet Summary" file="wb_items.jrxml" 
         metadata="tableid=79;reqrs=true;type=Report;action=PrintWBItems;reporttype=Report;"/>
     
 </files>
