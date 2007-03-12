@@ -176,6 +176,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         }
 
         arrowBtn = new JButton(dropDownArrow);
+        arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
         //if(!overRideButtonBorder)arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);
