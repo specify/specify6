@@ -22,8 +22,6 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Vector;
 
@@ -80,7 +78,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         this.name = name;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
-        setBorder(BorderFactory.createEmptyBorder(20, 4, 4, 4));
+        setBorder(BorderFactory.createEmptyBorder(22, 4, 4, 4));
         //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
         setBackground(Color.WHITE);
         setOpaque(true);
@@ -293,22 +291,17 @@ public class NavBox extends JPanel implements NavBoxIFace
         int y = 2 + fm.getAscent();
         
         int lineW = dim.width - ins.left - ins.right;
-        //g.setColor(Color.BLUE.darker().darker());
-        //g.drawString(name, x+1, y+1);
-        //g.setColor(Color.BLUE.darker());
         x = ins.left;
         int txtY = y;
-        //g.drawString(name, x, y);
-        y++;
-        //y += fm.getDescent() + fm.getLeading();
+        y += 3;
 
-        g.setColor(Color.LIGHT_GRAY.brighter());
+        g.setColor(Color.LIGHT_GRAY);
         g.drawLine(x, y,   x+lineW, y);
         y++;
         minHeight = y;
         
         x++;
-        g.setColor(Color.LIGHT_GRAY);
+        g.setColor(Color.LIGHT_GRAY.darker());
         g.drawLine(x, y,   x+lineW, y);
         
         g.setColor(Color.BLUE.darker());

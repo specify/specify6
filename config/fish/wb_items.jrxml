@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="classic_landscape"
+		 name="items"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Portrait"
@@ -34,54 +34,17 @@
 	<variable name="TotalCnt" class="java.lang.Long" resetType="Report" calculation="Sum">
 		<variableExpression><![CDATA[$F{Cnt}]]></variableExpression>
 	</variable>
-	<variable name="SUM_Cnt_3" class="java.lang.Long" resetType="Page" calculation="Sum">
-		<variableExpression><![CDATA[$F{Cnt}]]></variableExpression>
-	</variable>
-
-		<group  name="Name" >
-			<groupExpression><![CDATA[$F{Name}]]></groupExpression>
-			<groupHeader>
-			<band height="0"  isSplitAllowed="true" >
-			</band>
-			</groupHeader>
-			<groupFooter>
-			<band height="0"  isSplitAllowed="true" >
-			</band>
-			</groupFooter>
-		</group>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
 		</background>
 		<title>
 			<band height="50"  isSplitAllowed="true" >
-				<line direction="TopDown">
-					<reportElement
-						x="0"
-						y="48"
-						width="549"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line"/>
-					<graphicElement stretchType="NoStretch"/>
-				</line>
-				<line direction="TopDown">
-					<reportElement
-						x="0"
-						y="3"
-						width="550"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line"/>
-					<graphicElement stretchType="NoStretch"/>
-				</line>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="0"
-						y="6"
-						width="551"
+						y="5"
+						width="550"
 						height="40"
 						key="textField-4"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
@@ -90,6 +53,27 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{title}]]></textFieldExpression>
 				</textField>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="47"
+						width="550"
+						height="1"
+						forecolor="#000000"
+						key="line"
+						positionType="FixRelativeToBottom"/>
+					<graphicElement stretchType="NoStretch" pen="2Point"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="3"
+						width="550"
+						height="0"
+						forecolor="#000000"
+						key="line"/>
+					<graphicElement stretchType="NoStretch" pen="2Point"/>
+				</line>
 			</band>
 		</title>
 		<pageHeader>
@@ -97,96 +81,74 @@
 			</band>
 		</pageHeader>
 		<columnHeader>
-			<band height="18"  isSplitAllowed="true" >
-				<rectangle>
+			<band height="20"  isSplitAllowed="true" >
+				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
-						x="0"
-						y="0"
-						width="550"
+						x="1"
+						y="1"
+						width="549"
 						height="17"
 						forecolor="#000000"
-						backcolor="#808080"
-						key="rectangle"/>
-					<graphicElement stretchType="NoStretch" pen="None"/>
+						backcolor="#999999"
+						key="element-22"/>
+					<graphicElement stretchType="NoStretch" pen="Thin"/>
 				</rectangle>
-				<line direction="BottomUp">
-					<reportElement
-						x="0"
-						y="0"
-						width="546"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line"/>
-					<graphicElement stretchType="NoStretch"/>
-				</line>
-				<line direction="BottomUp">
-					<reportElement
-						x="0"
-						y="15"
-						width="550"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line"/>
-					<graphicElement stretchType="NoStretch"/>
-				</line>
 				<staticText>
 					<reportElement
-						x="495"
-						y="0"
-						width="50"
-						height="15"
+						x="0"
+						y="1"
+						width="267"
+						height="16"
 						forecolor="#FFFFFF"
-						key="staticText"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="12"/>
+						key="element-90"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="2" rightBorder="None" rightBorderColor="#000000" rightPadding="2" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="" size="12"/>
 					</textElement>
-				<text><![CDATA[Count]]></text>
+				<text><![CDATA[Name]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
-						x="7"
-						y="0"
-						width="161"
-						height="17"
+						x="494"
+						y="1"
+						width="55"
+						height="16"
 						forecolor="#FFFFFF"
-						key="staticText-1"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement verticalAlignment="Middle">
-						<font/>
+						key="element-90"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="2" rightBorder="None" rightBorderColor="#000000" rightPadding="2" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right">
+						<font fontName="" size="12"/>
 					</textElement>
-				<text><![CDATA[Genus / Species]]></text>
+				<text><![CDATA[Count]]></text>
 				</staticText>
 			</band>
 		</columnHeader>
 		<detail>
-			<band height="15"  isSplitAllowed="true" >
+			<band height="16"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="2"
-						y="0"
-						width="450"
+						x="0"
+						y="1"
+						width="487"
 						height="15"
-						key="textField-1"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="2" rightBorder="None" rightBorderColor="#000000" rightPadding="2" bottomBorder="None" bottomBorderColor="#000000"/>
 					<textElement>
-						<font size="12"/>
+						<font fontName="Times-Roman" size="12"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{Name}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="454"
-						y="0"
-						width="82"
+						x="489"
+						y="1"
+						width="62"
 						height="15"
-						key="textField-2"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="2" rightBorder="None" rightBorderColor="#000000" rightPadding="2" bottomBorder="None" bottomBorderColor="#000000"/>
 					<textElement textAlignment="Right">
-						<font size="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+						<font fontName="Times-Roman" size="12"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{Cnt}]]></textFieldExpression>
 				</textField>
@@ -259,7 +221,7 @@
 			<band height="25"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="436"
+						x="447"
 						y="5"
 						width="100"
 						height="18"

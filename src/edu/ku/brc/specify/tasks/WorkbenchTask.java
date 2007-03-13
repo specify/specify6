@@ -67,6 +67,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchFormPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
@@ -918,11 +919,13 @@ public class WorkbenchTask extends BaseTask
                 }
             });
         }
-
     }
     
-    protected void doGenusReport(final CommandAction cmdAction, final boolean doBarChart)
+    @SuppressWarnings("unchecked")
+    protected Workbench selectWorkbench(final CommandAction cmdAction)
     {
+        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+        
         RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");
         if (recordSet == null)
         {
@@ -933,13 +936,50 @@ public class WorkbenchTask extends BaseTask
             }
         }
         
+        Workbench workbench = null;
         if (recordSet == null)
+        {
+            List<Workbench> list = (List<Workbench>)session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            if (list.size() == 1)
+            {
+                session.close();
+                return list.get(0);
+            }
+            ChooseFromListDlg<Workbench> dlg = new ChooseFromListDlg<Workbench>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                                                                                getResourceString("WB_CHOOSE_DATASET"), list);
+            dlg.setModal(true);
+            dlg.setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                workbench = dlg.getSelectedObject();
+            } else
+            {
+                session.close();
+                return null;
+            }
+        } else
+        {
+            workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
+        }
+        session.close();
+        return workbench;
+    }
+    
+    /**
+     * Creates a BarChart or PieChart.
+     * @param cmdAction the action that invoked it
+     * @param doBarChart show bar chart
+     */
+    protected void doChart(final CommandAction cmdAction, final boolean doBarChart)
+    {
+        Workbench workbench = selectWorkbench(cmdAction);
+        if (workbench == null)
         {
             return;
         }
         
         DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-        Workbench                workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
+        session.attach(workbench);
         WorkbenchTemplate        workbenchTemplate = workbench.getWorkbenchTemplate();
         Set<WorkbenchTemplateMappingItem> mappings = workbenchTemplate.getWorkbenchTemplateMappingItems();
         Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>();
@@ -949,8 +989,8 @@ public class WorkbenchTask extends BaseTask
         Collections.sort(items);
         ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
                 (Frame)UICacheManager.get(UICacheManager.FRAME),
-                "Select a Field:", 
-                "Choose which field to report on:", 
+                "WB_SELECT_FIELD_TITLE", 
+                "WB_SELECT_FIELD", 
                 items, 
                 null, 
                 ToggleButtonChooserDlg.Type.RadioButton);
@@ -1061,11 +1101,11 @@ public class WorkbenchTask extends BaseTask
             
         } else if (cmdAction.isAction(WB_BARCHART))
         {
-            doGenusReport(cmdAction, true);
+            doChart(cmdAction, true);
                 
         } else if (cmdAction.isAction(WB_TOP10_REPORT))
         {
-            doGenusReport(cmdAction, false);
+            doChart(cmdAction, false);
                 
         } else if (cmdAction.isAction(PRINT_REPORT))
         {

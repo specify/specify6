@@ -54,7 +54,7 @@ import org.hibernate.annotations.Cascade;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbench")
-public class Workbench extends DataModelObjBase implements java.io.Serializable 
+public class Workbench extends DataModelObjBase implements java.io.Serializable, Comparable<Workbench>
 {
 
     // Fields    
@@ -403,6 +403,23 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable
             Collections.sort(rows);
         }
         return rows;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Workbench obj)
+    {
+        return name.compareTo(obj.name);
     }
     
     //----------------------------------------------------
