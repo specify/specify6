@@ -232,9 +232,9 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
         boolean changeThisLevel = false;
         boolean changeAllDescendants = false;
         
-        boolean fromDBValue = (fromDB.getIsInFullName()!=null) ? fromDB.getIsInFullName() : false;
-        boolean currentValue = (defItem.getIsInFullName()!=null) ? defItem.getIsInFullName() : false;
-        if (fromDBValue != currentValue)
+        boolean fromDBIsInFullname = makeNotNull(fromDB.getIsInFullName());
+        boolean currentIsInFullname = makeNotNull(defItem.getIsInFullName());
+        if (fromDBIsInFullname != currentIsInFullname)
         {
             changeAllDescendants = true;
         }
@@ -249,24 +249,21 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
         String separator = makeNotNull(defItem.getFullNameSeparator());
         
         boolean textFieldChanged = false;
-        if ( !before.equals(fromDbBeforeText) ||
-             !after.equals(fromDbAfterText) ||
-             !separator.equals(fromDbSeparator) )
+        boolean beforeChanged = !before.equals(fromDbBeforeText);
+        boolean afterChanged = !after.equals(fromDbAfterText);
+        boolean sepChanged = !separator.equals(fromDbSeparator);
+        if (beforeChanged || afterChanged || sepChanged)
         {
             textFieldChanged = true;
         }
         
         if (textFieldChanged)
         {
-            if (defItem.getIsInFullName()!=null && defItem.getIsInFullName().booleanValue()==true)
-            {
-                changeThisLevel = true;
-                changeAllDescendants = true;
-            }
-            else
+            if (currentIsInFullname)
             {
                 changeAllDescendants = true;
             }
+            changeThisLevel = true;
         }
         
         if (changeThisLevel && !changeAllDescendants)
@@ -306,5 +303,10 @@ public class GeologicTimePeriodBusRules extends BaseBusRules
     private String makeNotNull(String s)
     {
         return (s == null) ? "" : s;
+    }
+    
+    private boolean makeNotNull(Boolean b)
+    {
+        return (b == null) ? false : b.booleanValue();
     }
 }

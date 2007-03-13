@@ -28,6 +28,8 @@ public class TreeHelper
                    I extends TreeDefItemIface<T,D,I>>
                         String generateFullname(T treeNode)
     {
+        log.debug("Generating fullname for " + treeNode.toString());
+        // get all the nodes from this node on up, only grabbing the ones included in the fullname
         Vector<T> parts = new Vector<T>();
         parts.add(treeNode);
         T node = treeNode.getParent();
@@ -41,10 +43,16 @@ public class TreeHelper
             
             node = node.getParent();
         }
+        // now we have all the nodes
+        
+        // which order should they go in, ascending or descending?
         int direction = treeNode.getDefinition().getFullNameDirection();
         
+        // assume about 10 characters per part (it's okay if we're off)
         StringBuilder fullNameBuilder = new StringBuilder(parts.size() * 10);
         
+        // these two cases are basically the same code, but with the order of 
+        // iteration reversed
         switch( direction )
         {
             case TreeDefIface.FORWARD:
@@ -54,19 +62,20 @@ public class TreeHelper
                     T part = parts.get(j);
                     String before = part.getDefinitionItem().getTextBefore();
                     String after = part.getDefinitionItem().getTextAfter();
+                    String separator = part.getDefinitionItem().getFullNameSeparator();
 
                     if (before!=null)
                     {
-                        fullNameBuilder.append(part.getDefinitionItem().getTextBefore());
+                        fullNameBuilder.append(before);
                     }
                     fullNameBuilder.append(part.getName());
                     if (after!=null)
                     {
-                        fullNameBuilder.append(part.getDefinitionItem().getTextAfter());
+                        fullNameBuilder.append(after);
                     }
-                    if(j!=parts.size()-1)
+                    if(j!=0 && separator!=null)
                     {
-                        fullNameBuilder.append(parts.get(j).getFullNameSeparator());
+                        fullNameBuilder.append(separator);
                     }
                 }
                 break;
@@ -78,19 +87,20 @@ public class TreeHelper
                     T part = parts.get(j);
                     String before = part.getDefinitionItem().getTextBefore();
                     String after = part.getDefinitionItem().getTextAfter();
-
+                    String separator = part.getDefinitionItem().getFullNameSeparator();
+                    
                     if (before!=null)
                     {
-                        fullNameBuilder.append(part.getDefinitionItem().getTextBefore());
+                        fullNameBuilder.append(before);
                     }
                     fullNameBuilder.append(part.getName());
                     if (after!=null)
                     {
-                        fullNameBuilder.append(part.getDefinitionItem().getTextAfter());
+                        fullNameBuilder.append(after);
                     }
-                    if(j!=parts.size()-1)
+                    if(j!=parts.size()-1 && separator!=null)
                     {
-                        fullNameBuilder.append(parts.get(j).getFullNameSeparator());
+                        fullNameBuilder.append(separator);
                     }
                 }
                 break;
