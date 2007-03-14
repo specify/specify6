@@ -121,6 +121,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JFrame cardImageFrame = null;
     protected JLabel cardImageLabel = null;
     protected ListSelectionListener workbenchRowChangeListener = null;
+    protected boolean cardFrameWasShowing = false;
 
     /**
      * Constructs the pane for the spreadsheet.
@@ -708,6 +709,31 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             //
         }
         return true;
+    }
+
+    @Override
+    public void showingPane(boolean show)
+    {
+        if (show)
+        {
+            if (cardFrameWasShowing)
+            {
+                toggleCardImageVisible();
+            }
+        }
+        else
+        {
+            if (cardImageFrame!=null && cardImageFrame.isVisible())
+            {
+                cardFrameWasShowing = true;
+                toggleCardImageVisible();
+            }
+            else
+            {
+                cardFrameWasShowing = false;
+            }
+        }
+        super.showingPane(show);
     }
 
     //------------------------------------------------------------
