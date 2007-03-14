@@ -27,9 +27,9 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  */
 public class CSVImport implements DataImport
 {
-    ConfigureCSVImport config;
+    private ConfigureCSVImport config;
     
-    public CSVImport(ConfigureDataImport config)
+    public CSVImport(final ConfigureDataImport config)
     {
         setConfig(config);
     }
@@ -45,7 +45,7 @@ public class CSVImport implements DataImport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataImport#getData(edu.ku.brc.specify.datamodel.Workbench)
      */
-    public void getData(Workbench workbench)
+    public void getData(final Workbench workbench)
     {
         try
         {
@@ -78,7 +78,7 @@ public class CSVImport implements DataImport
         }
     }
 
-    public void setConfig(ConfigureDataImport config)
+    public void setConfig(final ConfigureDataImport config)
     {
         this.config = (ConfigureCSVImport) config;
     }

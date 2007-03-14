@@ -43,6 +43,7 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
         getConfig(file);
     }
 
+    @Override
     protected void interactiveConfig()
     {
         firstRowHasHeaders = determineFirstRowHasHeaders();
@@ -53,6 +54,7 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
      * Sets up colInfo for inputFile.
      * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureDataImport#getConfig(java.lang.String)
      */
+    @Override
     protected void nonInteractiveConfig()
     {
         try

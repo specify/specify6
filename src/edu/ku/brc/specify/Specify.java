@@ -82,6 +82,7 @@ import edu.ku.brc.specify.datamodel.AppResource;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.CollectorActionListener;
@@ -279,7 +280,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
 
         log.info("Creating Database configuration ");
- 
+
         HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
         // SInce Update get called when deleting an object there is no need to register this class.
@@ -1015,6 +1016,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UICacheManager.register(UICacheManager.FRAME, topFrame);
+                
+                HelpMgr.initializeHelpUI();
             }
             
             initStartUpPanels(databaseNameArg, userNameArg);
@@ -1209,8 +1212,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
               }
               
               
+              HelpMgr.initializeHelp();
+              
               // Startup Specify
               Specify specify = new Specify();
+              
               
               boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
               if (startAsWorkBench)
