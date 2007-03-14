@@ -889,8 +889,8 @@ public class BuildSampleDatabase
         {
             WorkbenchRow wbRow = workBench.addRow();
             WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-10" + i, 1);
-            ImageIcon image = new ImageIcon("demo_files" + File.separator + "card" + i + ".jpg");
-            wbRow.setCardImage(image);
+//            ImageIcon image = new ImageIcon("demo_files" + File.separator + "card" + i + ".jpg");
+//            wbRow.setCardImage(image);
             dataObjects.add(wbtmi);
             dataObjects.add(wbdi);
         }
