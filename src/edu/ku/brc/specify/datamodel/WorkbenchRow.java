@@ -139,7 +139,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     }
 
     @Lob
-    @Column(name = "CardImageData", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "CardImageData", unique = false, nullable = true, insertable = true, updatable = true, length=16000000)
     public byte[] getCardImageData()
     {
         return cardImageData;

@@ -895,20 +895,20 @@ public class BuildSampleDatabase
         {
             WorkbenchRow wbRow = workBench.addRow();
             WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-10" + i, 1);
-//            File f = new File("demo_files" + File.separator + "card" + i + ".jpg");
-//            byte[] imageData = null;
-//            try
-//            {
-//                imageData = FileUtils.readFileToByteArray(f);
-//            }
-//            catch (IOException e)
-//            {
-//                e.printStackTrace();
-//            }
-//            if (imageData!=null)
-//            {
-//                wbRow.setCardImageData(imageData);
-//            }
+            File f = new File("demo_files" + File.separator + "card" + i + ".jpg");
+            byte[] imageData = null;
+            try
+            {
+                imageData = FileUtils.readFileToByteArray(f);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            if (imageData!=null)
+            {
+                wbRow.setCardImageData(imageData);
+            }
             dataObjects.add(wbtmi);
             dataObjects.add(wbdi);
         }

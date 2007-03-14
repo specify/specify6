@@ -68,8 +68,7 @@
     <icon name="DeterminationCitaton" alias="CollectionObjectCitation"/>
     <icon name="LocalityCitation"  alias="CollectionObjectCitation"/>
     <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
-    
-    <icon name="CardImage"		   alias="Form"/>
+    <icon name="CardImage"		   alias="image"/>
     
     <icon name="DiGIR"             file="DigirShovel.png"/>
     
