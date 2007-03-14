@@ -16,6 +16,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
@@ -30,11 +31,11 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -44,6 +45,7 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
@@ -64,8 +66,8 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
+import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchFormPane;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -78,7 +80,6 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * Placeholder for additional work.
@@ -96,7 +97,7 @@ public class WorkbenchTask extends BaseTask
     public static final String     WORKBENCH             = "Workbench";
     public static final String     NEW_WORKBENCH         = "New Workbench";
     public static final String     NEW_TEMPLATE          = "New Template";
-    public static final String     NEW_TEMPLATE_FILE     = "New Template From File";
+    public static final String     IMPORT_DATA_FILE      = "New Template From File";
     public static final String     EDIT_TEMPLATE         = "Edit Template";
     public static final String     EDIT_WORKBENCH        = "Edit Workbench";
     public static final String     IMPORT_FIELD_NOTEBOOK = "Import Field Note Book";
@@ -110,7 +111,8 @@ public class WorkbenchTask extends BaseTask
     protected Vector<ToolBarDropDownBtn>  tbList         = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>          menus          = new Vector<JComponent>();
     
-    protected Vector<NavBoxItemIFace>     reportsList    = new Vector<NavBoxItemIFace>();
+    protected Vector<NavBoxItemIFace>     reportsList      = new Vector<NavBoxItemIFace>();
+    protected Vector<NavBoxItemIFace>     enableNavBoxList = new Vector<NavBoxItemIFace>();
 
 	/**
 	 * Constructor. 
@@ -134,12 +136,42 @@ public class WorkbenchTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Workbench"),    name, new CommandAction(WORKBENCH, NEW_WORKBENCH),     null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("New_Template"),     name, new CommandAction(WORKBENCH, NEW_TEMPLATE),      null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("ImportData"),       name, new CommandAction(WORKBENCH, NEW_TEMPLATE_FILE), null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("Chart"),            name, new CommandAction(WORKBENCH, WB_BARCHART), null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("Top 10"),            name, new CommandAction(WORKBENCH, WB_TOP10_REPORT), null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_DATASET"),  name, new CommandAction(WORKBENCH, NEW_WORKBENCH),    null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_TEMPLATE"), name, new CommandAction(WORKBENCH, NEW_TEMPLATE),     null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_IMPORTDATA"),   name, new CommandAction(WORKBENCH, IMPORT_DATA_FILE), null, false);// true means make it draggable
+            
+            enableNavBoxList.add(makeDraggableAndDroppableNavBtn(navBox, getResourceString("CHART"),    name, new CommandAction(WORKBENCH, WB_BARCHART), null, false));// true means make it draggable
+            enableNavBoxList.add(makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_TOP10"), name, new CommandAction(WORKBENCH, WB_TOP10_REPORT), null, false));// true means make it draggable
             navBoxes.addElement(navBox);
+            
+            int dataSetCount = 0;
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                templateNavBox = new NavBox(getResourceString("Templates"), true);           
+                List list      = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+                for (Object obj : list)
+                {
+                    addTemplateToNavBox((WorkbenchTemplate)obj);
+                }
+                
+                workbenchNavBox = new NavBox(getResourceString("Workbenches"));
+                list            = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+                dataSetCount    = list.size();
+                for (Object obj : list)
+                {
+                    addWorkbenchToNavBox((Workbench)obj);
+                }
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                
+            } finally
+            {
+                session.close();    
+            }
+
             
             // Then add
             if (commands != null)
@@ -151,7 +183,7 @@ public class WorkbenchTask extends BaseTask
                     Map<String, String> params = ap.getMetaDataMap();
                     String tableid = params.get("tableid");
                     
-                    if (StringUtils.isNotEmpty(tableid) && Integer.parseInt(tableid) == 79)
+                    if (StringUtils.isNotEmpty(tableid) && Integer.parseInt(tableid) == Workbench.getClassTableId())
                     {
                         params.put("title", ap.getDescription());
                         params.put("file", ap.getName());
@@ -171,7 +203,10 @@ public class WorkbenchTask extends BaseTask
                         
                         CommandAction cmdAction = new CommandAction(WORKBENCH, PRINT_REPORT, Workbench.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
-                        reportsList.add(makeDraggableAndDroppableNavBtn(reportsNavBox, tcd.getName(), "Reports", cmdAction, null, true));// true means make it draggable
+                        
+                        NavBoxItemIFace nbi = makeDraggableAndDroppableNavBtn(reportsNavBox, tcd.getName(), "Reports", cmdAction, null, true);
+                        reportsList.add(nbi);// true means make it draggable
+                        enableNavBoxList.add(nbi);
 
                     } else
                     {
@@ -180,43 +215,16 @@ public class WorkbenchTask extends BaseTask
                 }
             }
             
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                templateNavBox = new NavBox(getResourceString("Templates"), true);           
-                List list      = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
-                for (Object obj : list)
-                {
-                    addTemplateToNavBox((WorkbenchTemplate)obj);
-                }
-                
-                //navBox.add(NavBox.createBtn(getResourceString("Field_Book_Entry"),  name, IconManager.IconSize.Std16, new NavBoxAction(WORKBENCH, IMPORT_FIELD_NOTEBOOK)));
-                //navBox.add(NavBox.createBtn(getResourceString("Label_Entry"), name, IconManager.IconSize.Std16));
-                navBoxes.addElement(templateNavBox);
-    
-                workbenchNavBox = new NavBox(getResourceString("Workbenches"));
-                list            = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
-                for (Object obj : list)
-                {
-                    addWorkbenchToNavBox((Workbench)obj);
-                }
-                
-                //navBox.add(NavBox.createBtn(getResourceString("Lawrence_River"), name,IconManager.IconSize.Std16));
-                //navBox.add(NavBox.createBtn(getResourceString("Smith_Collection"), name, IconManager.IconSize.Std16));
-                navBoxes.addElement(workbenchNavBox);
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                
-            } finally
-            {
-                session.close();    
-            }
+            // Add these last and in order
+            navBoxes.addElement(templateNavBox);
+            navBoxes.addElement(workbenchNavBox);
+            
+            updateNavBoxUI(dataSetCount);
         }
     }
     
     /**
-     * Adds a WorkbenchTemplate to the Left Pane NavBox
+     * Adds a WorkbenchTemplate to the Left Pane NavBox.
      * @param workbenchTemplate the template to be added
      */
     protected void addTemplateToNavBox(final WorkbenchTemplate workbenchTemplate)
@@ -258,10 +266,6 @@ public class WorkbenchTask extends BaseTask
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
-//        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-//        ToolBarDropDownBtn btn = createToolbarButton(name, "workbench.gif", "workbench_hint");
-//        list.add(new ToolBarItemDesc(btn));
-//        return list;
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         String label = getResourceString(name);
         String iconName = name;
@@ -270,7 +274,6 @@ public class WorkbenchTask extends BaseTask
 
         list.add(new ToolBarItemDesc(btn));
         return list;
-//      return null;
     }
 
     /* (non-Javadoc)
@@ -325,7 +328,203 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
-     * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file
+     * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
+     * @return the new WorkbenchTemplate
+     */
+    protected WorkbenchTemplate createTemplateFromScratch()
+    {
+        JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), "Column Mapper", true);
+        ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg);
+       
+        dlg.setContentPane(mapper);
+        dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dlg.pack();
+        UIHelper.centerAndShow(dlg);
+         
+        if (!mapper.isCancelled())
+        { 
+            WorkbenchTemplate workbenchTemplate = createTemplate(mapper, null, null);
+            if (workbenchTemplate != null)
+            {
+                createWorkbench(null, workbenchTemplate, true);
+            }
+
+        }
+        return null;
+    }
+    
+    /**
+     * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
+     * @return the new WorkbenchTemplate
+     */
+    protected WorkbenchTemplate createTemplate(final ColumnMapperPanel mapper, final String filePath, final String templateName)
+    {
+        WorkbenchTemplate workbenchTemplate = null;
+        try
+        {
+            workbenchTemplate = mapper.createWorkbenchTemplate();
+            workbenchTemplate.setSrcFilePath(filePath);
+            
+            String                   newTemplateName = templateName;
+            DataProviderSessionIFace session         = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                Object foundWBT = null;
+                do
+                {
+                    foundWBT = templateName != null ? session.getData(WorkbenchTemplate.class, "name", newTemplateName, DataProviderSessionIFace.CompareType.Equals) : false;
+                    if (foundWBT != null)
+                    {
+                        // We found the same name and it must be unique
+                        if (askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
+                        {
+                            newTemplateName = workbenchTemplate.getName();
+                        } else
+                        {
+                            return null;
+                        }
+                    } else
+                    {
+                        workbenchTemplate.setName(newTemplateName);
+                    }
+                } while (foundWBT != null);
+                
+                session.beginTransaction();
+                session.save(workbenchTemplate);
+                session.commit();
+                session.flush();
+                //session.close();
+                
+                addTemplateToNavBox(workbenchTemplate);
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                
+            } finally
+            {
+                session.close();    
+            }
+
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return workbenchTemplate;
+    }
+    
+    /**
+     * Displays a list of WorkbenchTemplates that match (exaxtly) the current file. Doesn't
+     * show a Dialog and returns null if there are not templates or none match.
+     * @return the existing WorkbenchTemplate to use or null
+     */
+    protected WorkbenchTemplate selectExistingTemplate(Vector<ImportColumnInfo> colInfo)
+    {
+        Collections.sort(colInfo);
+        
+        Vector<WorkbenchTemplate> matchingTemplates = new Vector<WorkbenchTemplate>();
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            List list      = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            for (Object obj : list)
+            {
+                WorkbenchTemplate template = (WorkbenchTemplate)obj;
+                if (template.getWorkbenchTemplateMappingItems().size() == colInfo.size())
+                {
+                    boolean match = true;
+                    Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(template.getWorkbenchTemplateMappingItems());
+                    Collections.sort(items);
+                    for (int i=0;i<items.size();i++)
+                    {
+                        WorkbenchTemplateMappingItem wbItem   = items.get(i);
+                        ImportColumnInfo             fileItem = colInfo.get(i);
+                        //System.out.println(wbItem.getViewOrder()+"  "+fileItem.getColInx()+" | "+ImportColumnInfo.getType(wbItem.getDataType())+" "+fileItem.getColType());
+                        if (wbItem.getViewOrder().intValue() == fileItem.getColInx().intValue())
+                        {
+                            if (ImportColumnInfo.getType(wbItem.getDataType()) == ImportColumnInfo.ColumnType.Date)
+                            {
+                                ImportColumnInfo.ColumnType colType = fileItem.getColType();
+                                if (colType != ImportColumnInfo.ColumnType.String && colType != ImportColumnInfo.ColumnType.Double)
+                                {
+                                    match = false;
+                                    break;
+                                }
+                            } else if (ImportColumnInfo.getType(wbItem.getDataType()) != fileItem.getColType())
+                            {
+                                match = false;
+                                break;
+                            }
+    
+                        } else
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    // All columns match with their order etc.
+                    if (match)
+                    {
+                        matchingTemplates.add(template);
+                    }
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            session.close();
+        }
+        
+        // Ask the user to choose an existing template.
+        if (matchingTemplates.size() > 0)
+        {
+            ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                    getResourceString("WB_CHOOSE_TEMPLATE_TITLE"), 
+                    getResourceString("WB_CHOOSE_TEMPLATE_REUSE"), 
+                    matchingTemplates,
+                    true);
+            dlg.setOkLabel("Reuse");
+            dlg.setCancelLabel("Create New Template");
+            dlg.setModal(true);
+            UIHelper.centerAndShow(dlg);
+            if (!dlg.isCancelled())
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    WorkbenchTemplate template = dlg.getSelectedObject();
+                    // load workbenches so they aren't lazy
+                    // this is needed later on when the new WB is added to the template 
+                    session.attach(template);
+                    for (Workbench wb : template.getWorkbenches())
+                    {
+                        wb.getName();
+                    }
+                    
+                    return template;
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally 
+                {
+                    session.close();
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
      * @return the new WorkbenchTemplate
      */
     protected WorkbenchTemplate createTemplateFromFile()
@@ -334,13 +533,21 @@ public class WorkbenchTask extends BaseTask
         File file = null;
         if (true)
         {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            if (chooser.showDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
-                                   getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE")) != JFileChooser.CANCEL_OPTION) // XXX LOCALIZE
+            FileDialog fileDialog = new FileDialog((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                                                   getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
+                                                   FileDialog.LOAD);
+            UIHelper.centerAndShow(fileDialog);
+            
+            String fileName = fileDialog.getFile();
+            String path     = fileDialog.getDirectory();
+            if (StringUtils.isNotEmpty(fileName))
             {
-                file = chooser.getSelectedFile();
-            }  
+                file = new File(path + File.separator + fileName);
+                
+            } else
+            {
+                return null;
+            }
         } else
         {
             file = new File("/home/rods/Documents/_GuyanaTripX.xls");
@@ -348,187 +555,35 @@ public class WorkbenchTask extends BaseTask
         
         WorkbenchTemplate workbenchTemplate = null;
         
-        if (file != null && file.exists())
+        if (file.exists())
         {
-           // DataFileInfo dataFileInfo = new DataFileInfo(file);
-            ImportDataFileInfo dataFileInfo = new ImportDataFileInfo(file);
+            ImportDataFileInfo       dataFileInfo = new ImportDataFileInfo(file);
             
-             JDialog           dlg    = new JDialog((Frame)null, "Column Mapper", true);
-            ColumnMapperPanel mapper = new ColumnMapperPanel(dlg, dataFileInfo);
-            dlg.setContentPane(mapper);
-            dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            dlg.pack();
-            UIHelper.centerAndShow(dlg);
-             
-            if (!mapper.isCancelled())
-            {                
-                try
-                {
-                    workbenchTemplate = mapper.createWorkbenchTemplate();
-                    workbenchTemplate.setSrcFilePath(file.getAbsolutePath());
-                    
-                    String                   newTemplateName = file.getName();
-                    DataProviderSessionIFace session         = DataProviderFactory.getInstance().createSession();
-                    try
-                    {
-                        Object foundWBT = null;
-                        do
-                        {
-                            foundWBT = session.getData(WorkbenchTemplate.class, "name", newTemplateName, DataProviderSessionIFace.CompareType.Equals);
-                            if (foundWBT != null)
-                            {
-                                // We found the same name and it must be unique
-                                if (askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
-                                {
-                                    newTemplateName = workbenchTemplate.getName();
-                                } else
-                                {
-                                    return null;
-                                }
-                            } else
-                            {
-                                workbenchTemplate.setName(newTemplateName);
-                            }
-                        } while (foundWBT != null);
-                        
-                        session.beginTransaction();
-                        session.save(workbenchTemplate);
-                        session.commit();
-                        session.flush();
-                        //session.close();
-                        
-                        addTemplateToNavBox(workbenchTemplate);
-                        
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
-                        
-                    } finally
-                    {
-                        session.close();    
-                    }
-                    createWorkbench(dataFileInfo, workbenchTemplate, true);
-
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
+            workbenchTemplate = selectExistingTemplate(dataFileInfo.getColInfo());
+            if (workbenchTemplate == null)
+            {
+                JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("WB_COL_MAPPER"), true);
+                ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg, dataFileInfo);
+                
+                dlg.setContentPane(mapper);
+                dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                dlg.pack();
+                UIHelper.centerAndShow(dlg);
+                 
+                if (!mapper.isCancelled())
+                {   
+                    workbenchTemplate = createTemplate(mapper, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
                 }
             }
-
+            
+            if (workbenchTemplate != null)
+            {
+                createWorkbench(dataFileInfo, workbenchTemplate, true);
+            }
         }
         
         return workbenchTemplate;
     }
-    
-    /**
-     * Creates a transient View and ViewDefs for the Workbench.
-     * @param wbt the WorkbenchTemplate that defines how the form should look
-     * @param viewName a unique view name for the dynamic (transient view)
-     * @return return the new View
-     */
-    protected View createTransientView(final WorkbenchTemplate wbt,
-                                       final String            viewName)
-    {
-        View view = null;
-        /*
-        View view = new View("Dynamic", viewName, getResourceString("Workbench"), Workbench.class.getName(), "", "", false, "");
-
-        Set<WorkbenchTemplateMappingItem>    wbtmiSet  = wbt.getWorkbenchTemplateMappingItems();
-        Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
-        wbtmiList.addAll(wbtmiSet);
-        Collections.sort(wbtmiList);
-
-        FormViewDef formViewDef = new FormViewDef(ViewDef.ViewType.form,  
-                                                  viewName + "Workbench Form", 
-                                                  Workbench.WorkbenchRow.class.getName(),
-                                                  "edu.ku.brc.specify.tasks.subpane.wb.DataGetterForGrid", 
-                                                  "edu.ku.brc.specify.tasks.subpane.wb.DataSetterForGrid", 
-                                                  "");
-        formViewDef.setColumnDef("p,2px,p");
-        formViewDef.setRowDef(UIHelper.createDuplicateJGoodiesDef("p", "2px", wbtmiList.size()));
-        
-        AltView formAltView = new AltView(view, 
-                                          viewName + "Workbench Form", 
-                                          getResourceString("Form"), 
-                                          AltView.CreationMode.Edit, 
-                                          true, 
-                                          true, 
-                                          formViewDef);
-        
-        int idCnt = 0;
-        for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
-        {
-            FormRow       formRow   = new FormRow();
-            String        idStr     = Integer.toString(idCnt);
-            FormCellLabel cellLabel = new FormCellLabel("", idStr, wbtmi.getCaption(), idStr, null, false, 1);
-            formRow.addCell(cellLabel);
-            
-            String fieldIdStr = Integer.toString(idCnt++);
-            
-            FormCellField cellField = new FormCellField(FormCell.CellType.field, 
-                                                        fieldIdStr,
-                                                        fieldIdStr,
-                                                        FieldType.text,
-                                                        FieldType.dsptextfield, 
-                                                        "", // format
-                                                        "", // formatName
-                                                        "", // uiFieldFormatter
-                                                        true, // isRequired
-                                                        25, // cols
-                                                        1, // rows
-                                                        1, // colpsan
-                                                        1, // rowspan
-                                                        "Changed", // validationType
-                                                        "",        // validationRule
-                                                        false);    // isEncrypted
-
-            formRow.addCell(cellField);
-            formViewDef.addRow(formRow);
-        }
-        
-        ViewDef gridViewDef = null;
-        try
-        {
-            gridViewDef = (ViewDef)formViewDef.clone();
-            gridViewDef.setType(ViewDef.ViewType.formtable);
-            gridViewDef.setName(viewName + "Workbench Grid");
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        
-        AltView gridAltView = new AltView(view, 
-                                          viewName + "Workbench Grid", 
-                                          getResourceString("Grid"), 
-                                          AltView.CreationMode.Edit, 
-                                          true, 
-                                          true, 
-                                          gridViewDef);
-
-        view.addAltView(gridAltView);
-        view.addAltView(formAltView);
-        
-        ViewSetMgr viewSetMgr = SpecifyAppContextMgr.getInstance().getBackstopViewSetMgr();
-        
-        ViewSet viewSet = viewSetMgr.getViewSet("Dynamic");
-        if (viewSet == null)
-        {
-            viewSet = new ViewSet();
-            viewSet.setName("Dynamic");
-            viewSetMgr.addViewSet(viewSet);
-        }
-        
-        viewSet.addTransientView(view);
-        viewSet.addTransientViewDef(formViewDef);
-        viewSet.addTransientViewDef(gridViewDef);
-        */
-        return view;
-        
-    }
-    
-    
     
     /**
      * Creates a new Workbench Data Object from a definition provided by the WorkbenchTemplate and asks for the Workbench fields via a dialog
@@ -560,7 +615,7 @@ public class WorkbenchTask extends BaseTask
                     if (foundWB != null)
                     {
                         // We found the same name and it must be unique
-                        if (askUserForInfo("Workbench", getResourceString("WB_WORKBENCH_INFO"), workbench))
+                        if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
                         {
                             newWorkbenchName = workbench.getName();
                         } else
@@ -572,16 +627,6 @@ public class WorkbenchTask extends BaseTask
                         workbench.setName(newWorkbenchName);
                     }
                 } while (foundWB != null);
-                
-                /*
-                session.beginTransaction();
-                session.save(workbenchTemplate);
-                session.commit();
-                session.flush();
-                session.close();
-                
-                addWorkbenchToNavBox(workbench);
-                */
                 
             } catch (Exception ex)
             {
@@ -597,18 +642,21 @@ public class WorkbenchTask extends BaseTask
     
     /**
      * Creates a new Workbench Data Object from a definition provided by the WorkbenchTemplate
-     * @param dataFileInfo the DataFileInfo Object that contains all the information about the file
+     * @param dataFileInfo the ImportDataFileInfo Object that contains all the information about the file
      * @param wbt the WorkbenchTemplate
      * @param wbTemplateIsNew the WorkbenchTemplate is brand new (not reusing an existing template)
      * @return the new Workbench data object
      */
-    protected Workbench createWorkbench(final ImportDataFileInfo      dataFileInfo, 
-                                        final WorkbenchTemplate wbt,
-                                        final boolean           wbTemplateIsNew)
+    protected Workbench createWorkbench(final ImportDataFileInfo dataFileInfo, 
+                                        final WorkbenchTemplate  wbt,
+                                        final boolean            wbTemplateIsNew)
     {
         Workbench workbench = createNewWorkbenchDataObj(wbt, wbTemplateIsNew);
         
-        dataFileInfo.loadData(workbench);
+        if (dataFileInfo != null)
+        {
+            dataFileInfo.loadData(workbench);
+        }
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
@@ -620,6 +668,8 @@ public class WorkbenchTask extends BaseTask
             session.flush();
             
             addWorkbenchToNavBox(workbench);
+            
+            updateNavBoxUI(null);
             
         } catch (Exception ex)
         {
@@ -674,33 +724,8 @@ public class WorkbenchTask extends BaseTask
                 tmpSession.attach(workbench);
             }
             
-            if (true)
-            {
-                WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(createWorkbenchName(workbench), this, workbench);
-                addSubPaneToMgr(workbenchPane);
-                
-            } else
-            {
-                View view = createTransientView(workbench.getWorkbenchTemplate(), workbench.getWorkbenchId().toString());
-        
-                WorkbenchFormPane formPane = new WorkbenchFormPane(createWorkbenchName(workbench), 
-                                                                   this, 
-                                                                   view, 
-                                                                   "edit", 
-                                                                   null, 
-                                                                   MultiView.VIEW_SWITCHER | MultiView.IS_EDITTING | MultiView.RESULTSET_CONTROLLER);
-                
-                formPane.getViewable().setSession(tmpSession);
-        
-                formPane.setIcon(getImageIcon());
-                
-                formPane.getMultiView().setSession(tmpSession);
-                formPane.getMultiView().setData(workbench.getWorkbenchRows());
-                
-                addSubPaneToMgr(formPane);
-                
-                formPane.getMultiView().setSession(null);
-            }
+            WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(createWorkbenchName(workbench), this, workbench);
+            addSubPaneToMgr(workbenchPane);
             
             if (session == null && tmpSession != null)
             {
@@ -728,17 +753,6 @@ public class WorkbenchTask extends BaseTask
             
             workbench = createNewWorkbenchDataObj(workbenchTemplate, wbTemplateIsNew);
             workbench.addRow();
-            
-            /*
-            for (WorkbenchTemplateMappingItem item : workbenchTemplate.getWorkbenchTemplateMappingItems())
-            {
-                WorkbenchDataItem wbdi = new WorkbenchDataItem();
-                wbdi.initialize();
-                wbdi.setCellData("");
-                wbdi.setColumnNumber(item.getViewOrder());
-                wbdi.setRowNumber(1);
-                workbench.addWorkbenchDataItem(wbdi);
-            }*/
 
             session.beginTransaction();
             session.save(workbench);
@@ -801,6 +815,10 @@ public class WorkbenchTask extends BaseTask
                 
                 workbenchNavBox.remove(nbi);
                 
+                NavBoxMgr.getInstance().validate();
+                
+                updateNavBoxUI(null);
+                
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -860,6 +878,11 @@ public class WorkbenchTask extends BaseTask
                         session.commit();
                         session.flush();
                         log.info("Deleted a Workbench ["+workbenchTemplate.getName()+"]");
+                        
+                        updateNavBoxUI(null);
+                        
+                        NavBoxMgr.getInstance().validate();
+
                     }
                 } else
                 {
@@ -881,36 +904,40 @@ public class WorkbenchTask extends BaseTask
 
     }
     
-    protected void doReport(final RecordSet rs)
+    /**
+     * Creates a report.
+     * @param cmdAction the command that initiated it
+     */
+    protected void doReport(final CommandAction cmdAction)
     {
-        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-        Workbench                workbench = session.get(Workbench.class, rs.getItems().iterator().next().getRecordId());
-        WorkbenchTemplate        workbenchTemplate = workbench.getWorkbenchTemplate();
-        Set<WorkbenchTemplateMappingItem> mappings = workbenchTemplate.getWorkbenchTemplateMappingItems();
-        Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>();
+        Workbench workbench = selectWorkbench(cmdAction);
+        if (workbench == null)
+        {
+            return;
+        }
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        session.attach(workbench);
+        WorkbenchTemplate                    workbenchTemplate = workbench.getWorkbenchTemplate();
+        Set<WorkbenchTemplateMappingItem>    mappings          = workbenchTemplate.getWorkbenchTemplateMappingItems();
+        Vector<WorkbenchTemplateMappingItem> items             = new Vector<WorkbenchTemplateMappingItem>();
         items.addAll(mappings);
         session.close();
         
-
-        Collections.sort(items);
-        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
-                (Frame)UICacheManager.get(UICacheManager.FRAME),
-                "Select a Field:", 
-                "Choose which field to report on:", 
-                items, 
-                null, 
-                ToggleButtonChooserDlg.Type.RadioButton);
-        dlg.setModal(true);
-        dlg.setVisible(true);  
+        WorkbenchTemplateMappingItem selectMappingItem = selectMappingItem(items);
         
-        if (!dlg.isCancelled())
+        if (selectMappingItem != null)
         {
-            WorkbenchTemplateMappingItem mapping = dlg.getSelectedObject();
+            RecordSet rs = new RecordSet();
+            rs.initialize();
+            rs.setDbTableId(Workbench.getClassTableId());
+            rs.addItem(workbench.getWorkbenchId());
+            
             final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
-            cmd.setProperty("file", "wb_items.jrxml");
-            cmd.setProperty("title", "OnRamp Summary");
+            cmd.setProperty("title",  selectMappingItem.getCaption());
+            cmd.setProperty("file",   "wb_items.jrxml");
+            cmd.setProperty("params", "colnum="+selectMappingItem.getViewOrder()+";"+"title="+selectMappingItem.getCaption());
             cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-            cmd.setProperty("params", "colnum="+mapping.getViewOrder()+";"+"title="+mapping.getCaption());
             
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
@@ -921,6 +948,11 @@ public class WorkbenchTask extends BaseTask
         }
     }
     
+    /**
+     * Returns the Workbench referenced in the CommandAction or asks for one instead.
+     * @param cmdAction the CommandAction being executed
+     * @return a workbench object or null
+     */
     @SuppressWarnings("unchecked")
     protected Workbench selectWorkbench(final CommandAction cmdAction)
     {
@@ -940,7 +972,12 @@ public class WorkbenchTask extends BaseTask
         if (recordSet == null)
         {
             List<Workbench> list = (List<Workbench>)session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
-            if (list.size() == 1)
+            if (list.size() == 0)
+            {
+                // XXX Probably should have a dialog here.
+                return null;
+                
+            } else if (list.size() == 1)
             {
                 session.close();
                 return list.get(0);
@@ -948,7 +985,7 @@ public class WorkbenchTask extends BaseTask
             ChooseFromListDlg<Workbench> dlg = new ChooseFromListDlg<Workbench>((Frame)UICacheManager.get(UICacheManager.FRAME),
                                                                                 getResourceString("WB_CHOOSE_DATASET"), list);
             dlg.setModal(true);
-            dlg.setVisible(true);
+            UIHelper.centerAndShow(dlg);
             if (!dlg.isCancelled())
             {
                 workbench = dlg.getSelectedObject();
@@ -966,6 +1003,29 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
+     * Asks the user to choose a mapping item (row column) to be used in a report or chart.
+     * @param items the list of columns (mappings)
+     * @return the selected mapping or null (null means cancelled)
+     */
+    protected WorkbenchTemplateMappingItem selectMappingItem(final Vector<WorkbenchTemplateMappingItem> items)
+    {
+        Collections.sort(items);
+        
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
+                (Frame)UICacheManager.get(UICacheManager.FRAME),
+                "WB_SELECT_FIELD_TITLE", 
+                "WB_SELECT_FIELD", 
+                items, 
+                null, 
+                ToggleButtonChooserDlg.Type.RadioButton);
+        
+        dlg.setModal(true);
+        dlg.setVisible(true);  
+        
+        return dlg.isCancelled() ? null : dlg.getSelectedObject();
+    }
+    
+    /**
      * Creates a BarChart or PieChart.
      * @param cmdAction the action that invoked it
      * @param doBarChart show bar chart
@@ -978,35 +1038,23 @@ public class WorkbenchTask extends BaseTask
             return;
         }
         
-        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         session.attach(workbench);
-        WorkbenchTemplate        workbenchTemplate = workbench.getWorkbenchTemplate();
-        Set<WorkbenchTemplateMappingItem> mappings = workbenchTemplate.getWorkbenchTemplateMappingItems();
-        Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>();
+        WorkbenchTemplate                    workbenchTemplate = workbench.getWorkbenchTemplate();
+        Set<WorkbenchTemplateMappingItem>    mappings          = workbenchTemplate.getWorkbenchTemplateMappingItems();
+        Vector<WorkbenchTemplateMappingItem> items             = new Vector<WorkbenchTemplateMappingItem>();
         items.addAll(mappings);
         session.close();
         
-        Collections.sort(items);
-        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
-                (Frame)UICacheManager.get(UICacheManager.FRAME),
-                "WB_SELECT_FIELD_TITLE", 
-                "WB_SELECT_FIELD", 
-                items, 
-                null, 
-                ToggleButtonChooserDlg.Type.RadioButton);
-        dlg.setModal(true);
-        dlg.setVisible(true);  
-        
-        if (!dlg.isCancelled())
+        WorkbenchTemplateMappingItem selectMappingItem = selectMappingItem(items);
+        if (selectMappingItem != null)
         {
-            WorkbenchTemplateMappingItem mapping = dlg.getSelectedObject();
-    
             final Vector<Object> data = new Vector<Object>();
             try
             {
                 String sql = "select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on " +
                     "di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId = " +
-                    workbench.getWorkbenchId() + " and ColumnNumber = "+mapping.getViewOrder()+"  group by CellData order by rw.RowNumber asc, di.ColumnNumber asc) t1 order by Cnt desc";
+                    workbench.getWorkbenchId() + " and ColumnNumber = "+selectMappingItem.getViewOrder()+"  group by CellData order by rw.RowNumber asc, di.ColumnNumber asc) t1 order by Cnt desc";
                 Connection conn = DBConnection.getInstance().createConnection();
                 Statement  stmt = conn.createStatement();
                 
@@ -1032,8 +1080,6 @@ public class WorkbenchTask extends BaseTask
                 public void startUp(){ }
                 public void cleanUp() {}
     
-                           
-    
                 public java.util.List<Object> getDataObjects()
                 {
                     return data;
@@ -1045,14 +1091,33 @@ public class WorkbenchTask extends BaseTask
                 }
             };
             
-            String title = mapping.getCaption() + " Counts";
-            ChartPane chart = doBarChart ? new BarChartPane(title, this) : new PieChartPane(mapping.getCaption()+" Counts", this);
-            chart.setTitle(title);
+            String    chartTitle = String.format(getResourceString("WB_CHART_TITLE"), new Object[] {selectMappingItem.getCaption()});
+            ChartPane chart      = doBarChart ? new BarChartPane(chartTitle, this) : new PieChartPane(chartTitle, this);
+            chart.setTitle(chartTitle);
             chart.setHandler(qrhi);
             chart.allResultsBack();
             addSubPaneToMgr(chart);
         }
+    }
+    
+    /**
+     * Updates the UI elements that depend on there being at least one Workbench (like report etc).
+     */
+    protected void updateNavBoxUI(final Integer wbCount)
+    {
+        Integer count = wbCount;
+        if (count == null)
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            count   = session.getDataCount(Workbench.class, "specifyUser", SpecifyUser.getCurrentUser(), DataProviderSessionIFace.CompareType.Equals);
+            session.close();            
+        }
         
+        boolean enabled = count != null && count.intValue() > 0;
+        for (NavBoxItemIFace nbi : enableNavBoxList)
+        {
+            nbi.setEnabled(enabled);
+        }
     }
     
     //-------------------------------------------------------
@@ -1080,9 +1145,9 @@ public class WorkbenchTask extends BaseTask
             
         } else if (cmdAction.isAction(NEW_TEMPLATE))
         {
-            log.info("Trying to create template ");
+            createTemplateFromScratch();
             
-        } else if (cmdAction.isAction(NEW_TEMPLATE_FILE))
+        } else if (cmdAction.isAction(IMPORT_DATA_FILE))
         {
             createTemplateFromFile();
             
@@ -1109,21 +1174,7 @@ public class WorkbenchTask extends BaseTask
                 
         } else if (cmdAction.isAction(PRINT_REPORT))
         {
-            RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");
-            if (recordSet == null)
-            {
-                Object data = cmdAction.getData();
-                if (data instanceof CommandAction)
-                {
-                    recordSet = (RecordSet)((CommandAction)data).getProperty("workbench");
-                }
-            }
-            if (recordSet != null)
-            {
-
-    
-                doReport(recordSet);
-            }
+            doReport(cmdAction);
             
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {

@@ -54,6 +54,9 @@ public interface DataProviderSessionIFace
     
     public boolean contains(final Object obj);
     
+    public <T> Integer getDataCount(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
+
+    
     //---------------------------
     // Update Methods
     //---------------------------

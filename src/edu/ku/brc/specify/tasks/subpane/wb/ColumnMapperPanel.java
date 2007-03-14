@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Color;
 import java.awt.Insets;
@@ -80,6 +81,8 @@ public class ColumnMapperPanel extends JPanel
     protected JList                          tableList;
     protected JButton                        mapToBtn;
     protected JButton                        unmapBtn;
+    protected JButton                        addMapItemBtn;
+    protected JButton                        removeMapItemBtn;
     
     protected JButton                        okBtn;
     protected JButton                        cancelBtn;
@@ -91,7 +94,7 @@ public class ColumnMapperPanel extends JPanel
     protected int                            currentInx = -1;
     protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>>();
     
-    protected ImportDataFileInfo                   dataFileInfo;
+    protected ImportDataFileInfo             dataFileInfo;
     
     protected ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
     protected ImageIcon blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
@@ -111,16 +114,27 @@ public class ColumnMapperPanel extends JPanel
     }
     
     /**
+     * Constructor.
+     * @param dlg the dialog this will be housed into
+     * @param dataFileInfo the information about the data file.
+     */
+    public ColumnMapperPanel(final JDialog dlg)
+    {
+        this(dlg, null);
+    }
+    
+    /**
      * Creates UI for the dialog.
      */
     public void createUI()
     {
         String[] skipItems = {"TimestampCreated", "LastEditedBy", "TimestampModified"};
-        Hashtable<String, String> skipHash = new Hashtable<String, String>();
+        Hashtable<String, Boolean> skipHash = new Hashtable<String, Boolean>();
         for (String name : skipItems)
         {
-            skipHash.put(name, "X");
+            skipHash.put(name, true);
         }
+        
         for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getList())
         {
             if (ti.isForWorkBench() && StringUtils.isNotEmpty(ti.toString()))
@@ -157,7 +171,8 @@ public class ColumnMapperPanel extends JPanel
         Collections.sort(tableInfoList);
         //UICacheManager.register(UICacheManager.MAINPANE, this);
         
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", "p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, f:p:g"), this);
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", 
+                                                                 "p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, p, 2px, f:p:g"), this);
         CellConstraints cc      = new CellConstraints();
 
         builder.add(new JLabel(getResourceString("WB_DATFILE_COLUMNS"), JLabel.CENTER), cc.xy(1, 1));
@@ -167,7 +182,28 @@ public class ColumnMapperPanel extends JPanel
         dataFileColPanel = new JPanel();
         dataFileColPanel.setLayout(new NavBoxLayoutManager(0,2));
         JScrollPane sp = new JScrollPane(dataFileColPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        builder.add(sp, cc.xywh(1, 3, 1, 5));
+        //leftSide.add(sp, cc.xywh(1, 1, 4, 1));
+        
+        PanelBuilder leftSide = new PanelBuilder(new FormLayout("f:p:g, p, 2px, p", "p"));        
+        addMapItemBtn = createIconBtn("PlusSign", "WB_ADD_MAPPING_ITEM", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                addMapItem();
+            }
+        });
+        removeMapItemBtn = createIconBtn("MinusSign", "WB_REMOVE_MAPPING_ITEM", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                removeMapItem();
+            }
+        });
+        leftSide.add(addMapItemBtn,    cc.xy(2, 1));
+        leftSide.add(removeMapItemBtn, cc.xy(4, 1));
+        
+        builder.add(sp,       cc.xywh(1, 3, 1, 5));
+        builder.add(leftSide.getPanel(), cc.xy(1, 9));
         
         tableList = new JList(tableInfoList);
         tableList.setCellRenderer(new TableNameRenderer(IconManager.IconSize.Std24));
@@ -240,17 +276,20 @@ public class ColumnMapperPanel extends JPanel
             }
         });
         
-        for (ImportColumnInfo colInfo : dataFileInfo.getColInfo())
+        if (dataFileInfo != null)
         {
-            addMappingItem(colInfo, null);
-        }
+            for (ImportColumnInfo colInfo : dataFileInfo.getColInfo())
+            {
+                addMappingItem(colInfo, null);
+            }
         
-        autoMap();
+            autoMap();
+        }
         
         okBtn     = new JButton(getResourceString("OK")); 
         cancelBtn = new JButton(getResourceString("Cancel"));
         
-        builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1, 9, 5, 1));
+        builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1, 11, 5, 1));
         
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -287,11 +326,12 @@ public class ColumnMapperPanel extends JPanel
      * @param colInfo the Column Info about the Data File column
      * @param icon the icon it should use to describe what it has been mapped to
      */
-    protected void addMappingItem(final ImportColumnInfo colInfo, final ImageIcon icon)
+    protected FieldMappingPanel addMappingItem(final ImportColumnInfo colInfo, final ImageIcon icon)
     {
         FieldMappingPanel fmp = new FieldMappingPanel(colInfo, icon);
         mappingItems.add(fmp);
         dataFileColPanel.add(fmp);
+        return fmp;
     }
     
     /**
@@ -300,9 +340,12 @@ public class ColumnMapperPanel extends JPanel
     protected void updateEnabledState()
     {
         TableFieldPair fieldItem = (TableFieldPair)fieldList.getSelectedValue();
-        mapToBtn.setEnabled(fieldItem != null && !fieldItem.isInUse() && currentInx > -1);
         
+        mapToBtn.setEnabled((fieldItem != null && !fieldItem.isInUse()) && currentInx > -1);
         unmapBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped());
+        
+        addMapItemBtn.setEnabled(fieldItem != null && !fieldItem.isInUse());
+        removeMapItemBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped());
         
         if (okBtn != null)
         {
@@ -335,9 +378,12 @@ public class ColumnMapperPanel extends JPanel
         {
             currentInx = newInx;
             mappingItems.get(currentInx).setHasFocus(true);
-            
-            updateEnabledState();
+        } else
+        {
+            currentInx = -1;
         }
+        
+        updateEnabledState();
 
     }
     
@@ -367,7 +413,7 @@ public class ColumnMapperPanel extends JPanel
     
     /**
      * Mapp the FieldMappingPanel to the TableFieldPair.
-     * @param tblField
+     * @param tblField the item in the list
      */
     protected void map(final TableFieldPair tblField)
     {
@@ -399,6 +445,46 @@ public class ColumnMapperPanel extends JPanel
     }
     
     /**
+     * Adds a new Column to the Template that is not represented by a row in a file (if there is a file). 
+     */
+    protected void addMapItem()
+    {
+        TableFieldPair    tblField  = (TableFieldPair)fieldList.getSelectedValue();
+        String            fieldType = tblField.getFieldInfo().getType();
+        ImportColumnInfo  colInfo   = new ImportColumnInfo(0, ImportColumnInfo.getType(fieldType), tblField.getFieldInfo().getColumn(), null);
+        
+        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
+        selectMappingPanel(fmp);
+
+        map(tblField);
+        
+        dataFileColPanel.validate();
+        fieldList.repaint();
+
+        updateEnabledState();
+    }
+    
+    /**
+     * Removes a Column from the Definition.
+     */
+    protected void removeMapItem()
+    {
+        FieldMappingPanel fmp = mappingItems.get(currentInx);
+        
+        unmap(fmp);
+        
+        mappingItems.remove(fmp);
+        dataFileColPanel.remove(fmp);
+        currentInx = -1;
+        
+        dataFileColPanel.validate();
+        fieldList.repaint();
+        dataFileColPanel.repaint();
+
+        updateEnabledState();
+    }
+    
+    /**
      * CReates "fake" TableFieldPair entries for mapping tree items.
      * XXX Here we need to go get the TreeDefItems.
      * @param tableinfo x
@@ -421,7 +507,12 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void addGeographyFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
     {
-        addFields(tableinfo, fields, new String[] {"Continent", "Country", "State", "County"});
+        //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        //session.getDataList(clsObject)
+        addFields(tableinfo, fields, new String[] {"Continent", 
+                                                   "Country", 
+                                                   "State", 
+                                                   "County"});
 
     }
     
@@ -432,7 +523,7 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void addTaxonFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
     {
-        addFields(tableinfo, fields, new String[] {"Species", "Genius"});
+        addFields(tableinfo, fields, new String[] {"Genus Species", "Species", "Genius"});
     }
     
     /**

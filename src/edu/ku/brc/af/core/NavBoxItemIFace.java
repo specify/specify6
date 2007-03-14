@@ -68,5 +68,11 @@ public interface NavBoxItemIFace
      * @return the title.
      */
     public String toString();
+    
+    /**
+     * Sets whether the item is enabled or not.
+     * @param enabled true- enabled, false not
+     */
+    public void setEnabled(boolean enabled);
 
 }

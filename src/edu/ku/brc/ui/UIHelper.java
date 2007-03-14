@@ -1154,4 +1154,38 @@ public final class UIHelper
         
         return null;
     }
+    
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param al the action listener
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final String               toolTipTextKey, 
+                                        final ActionListener       al)
+    {
+        return createIconBtn(iconName, null, toolTipTextKey, al);
+    }
+    
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param al the action listener
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final IconManager.IconSize size,
+                                        final String               toolTipTextKey, 
+                                        final ActionListener       al)
+    {
+        JButton btn = size != null ? new JButton(IconManager.getIcon(iconName, size)) : new JButton(IconManager.getIcon(iconName));
+        btn.setToolTipText(getResourceString(toolTipTextKey));
+        btn.setMargin(new Insets(0,0,0,0));
+        btn.addActionListener(al);
+        btn.setEnabled(false);
+        return btn;
+    }
 }

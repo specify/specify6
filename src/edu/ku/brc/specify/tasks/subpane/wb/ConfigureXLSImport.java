@@ -57,10 +57,10 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
     {
         try
         {
-            InputStream input = new FileInputStream(inputFile);
-            POIFSFileSystem fs = new POIFSFileSystem(input);
-            HSSFWorkbook workBook = new HSSFWorkbook(fs);
-            HSSFSheet sheet = workBook.getSheetAt(0);
+            InputStream     input    = new FileInputStream(inputFile);
+            POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            HSSFSheet       sheet    = workBook.getSheetAt(0);
 
             // Calculate the number of rows and columns
             colInfo = new Vector<ImportColumnInfo>(16);
@@ -68,7 +68,7 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
             Hashtable<Integer, Boolean> colTracker = new Hashtable<Integer, Boolean>();
 
             boolean firstRow = true;
-            int col = 0;
+            int     col      = 0;
             colTracker.clear();
 
             // Iterate over each row in the sheet
@@ -87,32 +87,33 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
                     {
                         HSSFCell cell = (HSSFCell) cells.next();
                         //System.out.println("Cell #" + cell.getCellNum());
-
-                        String value = null;
-                        boolean skip = false;
-                        int type = cell.getCellType();
-                        int cellNum = cell.getCellNum();
+                        ImportColumnInfo.ColumnType colType = ImportColumnInfo.ColumnType.Integer;
+                        String  value   = null;
+                        boolean skip    = false;
+                        int     cellNum = cell.getCellNum();
 
                         switch (cell.getCellType())
                         {
                             case HSSFCell.CELL_TYPE_NUMERIC:
                                 double numeric = cell.getNumericCellValue();
-                                value = Double.toString(numeric);
+                                value   = Double.toString(numeric);
+                                colType = ImportColumnInfo.ColumnType.Double;
                                 break;
 
                             case HSSFCell.CELL_TYPE_STRING:
-                                value = cell.getStringCellValue();
+                                value   = cell.getStringCellValue();
+                                colType = ImportColumnInfo.ColumnType.String;
                                 break;
 
                             case HSSFCell.CELL_TYPE_BLANK:
                                 value = "";
-                                type = HSSFCell.CELL_TYPE_STRING;
+                                colType = ImportColumnInfo.ColumnType.String;
                                 break;
 
                             case HSSFCell.CELL_TYPE_BOOLEAN:
                                 boolean bool = cell.getBooleanCellValue();
-                                value = Boolean.toString(bool);
-                                //type = HSSFCell.CELL_TYPE_STRING;
+                                value   = Boolean.toString(bool);
+                                colType = ImportColumnInfo.ColumnType.Boolean;
                                 break;
 
                             default:
@@ -131,13 +132,13 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
                             //System.out.println("Cell #" + cellNum + " " + type+"  "+value);
                             if (firstRowHasHeaders)
                             {
-                                colInfo.add(new ImportColumnInfo(cellNum, type, value, null));
+                                colInfo.add(new ImportColumnInfo(cellNum, colType, value, null));
                                 colTracker.put(cellNum, true);
 
                             } else
                             {
                                 //colInfo.add(new ImportColumnInfo(cellNum, type, null, value));
-                                colInfo.add(new ImportColumnInfo(cellNum, type, "column"
+                                colInfo.add(new ImportColumnInfo(cellNum, colType, "column"
                                         + String.valueOf(cellNum + 1), null));
                                 colTracker.put(cellNum, true);
 

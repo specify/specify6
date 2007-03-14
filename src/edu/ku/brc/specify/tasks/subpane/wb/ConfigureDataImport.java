@@ -22,7 +22,7 @@ import java.io.File;
 public interface ConfigureDataImport
 {
    //configures import settings for file
-    void getConfig(File  file);
+    void getConfig(File file);
    
    //does the first row of data contain column names?
    boolean getFirstRowHasHeaders();

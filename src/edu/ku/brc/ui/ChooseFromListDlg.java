@@ -41,6 +41,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
@@ -54,7 +55,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
  *
  */
 @SuppressWarnings("serial")
-public class ChooseFromListDlg<T> extends JDialog implements ActionListener
+public class ChooseFromListDlg<T> extends JDialog
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ChooseFromListDlg.class);
@@ -62,10 +63,17 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
     // Data Members
     protected JButton        cancelBtn;
     protected JButton        okBtn;
-    protected JList          list;
+    protected JList          list             = null;
     protected List<T>        items;
-    protected ImageIcon      icon        = null;
-    protected boolean        isCancelled = false;
+    protected ImageIcon      icon             = null;
+    protected boolean        isCancelled      = false;
+    
+    // Needed for delayed building of Dialog
+    protected String         title            = null;
+    protected String         desc             = null;
+    protected Boolean        includeCancelBtn = true;
+    protected String         okLabel          = null;
+    protected String         cancelLabel      = null;
 
     /**
      * Constructor.
@@ -128,8 +136,10 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
     {
         super(frame, true);
         
-        this.items = itemList;
-        createUI(title, desc, includeCancelBtn);
+        this.title            = title;
+        this.desc             = desc;
+        this.items            = itemList;
+        this.includeCancelBtn = includeCancelBtn;
         
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -149,23 +159,23 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
                              final ImageIcon icon) throws HeadlessException
     {
         super(frame, true);
+        this.title = title;
         this.items = itemList;
         this.icon  = icon;
 
-        createUI(title, null, true);
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
     /**
      * Create the UI for the dialog.
-     * @param title title for dialog
+     * @param titleArg title for dialog
      * @param desc the list to be selected from
      * @param includeCancelBtn indicates whether to create and displaty a cancel btn
      */
-    protected void createUI(final String title, final String desc, final boolean includeCancelBtn)
+    protected void createUI()
     {
-        this.setTitle(title);
+        setTitle(title);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
@@ -195,7 +205,7 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() == 2) {
-                        okBtn.doClick(); //emulate button click
+                        okBtn.doClick(); // emulate button click
                     }
                 }
             });
@@ -212,13 +222,19 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
             panel.add(listScroller, BorderLayout.CENTER);
 
             // Bottom Button UI
-            okBtn             = new JButton(getResourceString("OK"));
-            okBtn.addActionListener(this);
+            okBtn = new JButton(StringUtils.isNotEmpty(okLabel)? okLabel : getResourceString("OK"));
+            okBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae) 
+                { 
+                    setVisible(false); 
+                    isCancelled = false;
+                } 
+            });
             getRootPane().setDefaultButton(okBtn);
 
             if (includeCancelBtn)
             {
-                cancelBtn = new JButton(getResourceString("Cancel"));
+                cancelBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Cancel"));
                 ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
                 btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
     
@@ -258,14 +274,6 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
     protected void updateUIState()
     {
         okBtn.setEnabled(list.getSelectedIndex() != -1);
-    }
-
-    /* (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-     */
-    public void actionPerformed(ActionEvent e)
-    {
-        setVisible(false);
     }
 
     /**
@@ -324,6 +332,28 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
         return isCancelled;
     }
 
+    public void setCancelLabel(final String cancelLabel)
+    {
+        this.cancelLabel = cancelLabel;
+    }
 
+    public void setOkLabel(final String okLabel)
+    {
+        this.okLabel = okLabel;
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.Dialog#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(final boolean visible)
+    {
+        if (visible && list == null)
+        {
+            createUI();
+        }
+        
+        super.setVisible(visible);
+    }
 
 }

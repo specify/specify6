@@ -15,12 +15,13 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Frame;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -61,12 +62,11 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
@@ -236,7 +236,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         addRowsBtn.setEnabled(true);
 
-        carryForwardBtn = createIconBtn("PlusSign", "WB_ADD_ROW", new ActionListener()
+        carryForwardBtn = createIconBtn("SystemSetup", IconManager.IconSize.Std16, "WB_CARRYFORWARD", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -245,7 +245,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         carryForwardBtn.setEnabled(true);
 
-        toggleCardImageBtn = createIconBtn("CardImage", "WB_SHOW_CARD", new ActionListener()
+        toggleCardImageBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_CARD", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -264,8 +264,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn, toggleCardImageBtn};
-        PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+UIHelper.createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn};
+        PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
 
         int x = 3;
         for (JComponent c : comps)
@@ -293,35 +293,20 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         controllerPane.add(controlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(rsPanel.getPanel(), PanelType.Form.toString());
         
-        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
         PanelBuilder    builder    = new PanelBuilder(formLayout, this);
 
-        builder.add(mainPanel,        cc.xywh(1,1,7,1));
-        builder.add(controllerPane,   cc.xy(1,3));
-        builder.add(carryForwardBtn,  cc.xy(3,3));
-        builder.add(saveBtn,          cc.xy(5,3));
-        builder.add(createSwitcher(), cc.xy(7,3));
+        builder.add(mainPanel,          cc.xywh(1,1,9,1));
+        builder.add(controllerPane,     cc.xy(1,3));
+        builder.add(toggleCardImageBtn, cc.xy(3,3));
+        builder.add(carryForwardBtn,    cc.xy(5,3));
+        builder.add(saveBtn,            cc.xy(7,3));
+        builder.add(createSwitcher(),   cc.xy(9,3));
     }
-    
+
     /**
-     * Helper method for creating icon buttons (XXX this should be refactored so others can use it)
-     * @param iconName the name of the icon
-     * @param toolTipTextKey the the yet to be localized key for the tooltip string
-     * @param al the action listener
-     * @return the button
+     * Setup the row (or selection) listener for the the Image Window. 
      */
-    protected JButton createIconBtn(final String               iconName, 
-                                    final String               toolTipTextKey, 
-                                    final ActionListener       al)
-    {
-        JButton btn = new JButton(IconManager.getIcon(iconName));
-        btn.setToolTipText(getResourceString(toolTipTextKey));
-        btn.setMargin(new Insets(0,0,0,0));
-        btn.addActionListener(al);
-        btn.setEnabled(false);
-        return btn;
-    }
-    
     protected void setupWorkbenchRowChangeListener()
     {
         workbenchRowChangeListener = new ListSelectionListener()
@@ -425,6 +410,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
        }
     }
     
+    /**
+     * Shows / Hides the Image Window. 
+     */
     public void toggleCardImageVisible()
     {
         // we simply have to toggle the visibility

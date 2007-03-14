@@ -9,6 +9,8 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import java.io.File;
 import java.util.Vector;
 
+import org.apache.commons.io.FilenameUtils;
+
 import edu.ku.brc.specify.datamodel.Workbench;
 
 /**
@@ -20,9 +22,9 @@ import edu.ku.brc.specify.datamodel.Workbench;
  */
 public class ImportDataFileInfo
 {
-    DataImport importer;
+    protected DataImport importer;
 
-    public ImportDataFileInfo(File file)
+    public ImportDataFileInfo(final File file)
     {
         String mimeType = getMimeType(file);
         if (mimeType == "XLS")
@@ -35,10 +37,9 @@ public class ImportDataFileInfo
     }
 
     /**
-     * @param workbench -
-     *            the workbench to be loaded
+     * @param workbench the workbench to be loaded
      */
-    public void loadData(Workbench workbench)
+    public void loadData(final Workbench workbench)
     {
         importer.getData(workbench);
     }
@@ -48,19 +49,17 @@ public class ImportDataFileInfo
         return importer.getConfig().getColInfo();
     }
 
-    private String getMimeType(File file)
+    private String getMimeType(final File file)
     {
-        String path = file.getAbsolutePath().toLowerCase();
-        if (path.endsWith("xls"))
+        String extension = FilenameUtils.getExtension(file.getName()).toLowerCase();
+        if (extension.equals("xls"))
         {
             return "XLS";
-        } else if (path.endsWith("csv"))
+            
+        } else if (extension.equals("csv"))
         {
             return "CSV";
-        } else
-        {
-            return "";
         }
-        // return AttachmentUtils.getMimeType(file.getName());
+        return "";
     }
 }

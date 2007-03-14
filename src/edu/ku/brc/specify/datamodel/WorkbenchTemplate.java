@@ -52,7 +52,7 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbenchtemplate")
-public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable 
+public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplate>
 {
 
      // Fields    
@@ -238,7 +238,18 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     {
         this.workbenches.remove(workbench);
         workbench.setWorkbenchTemplate(null);
-    } 
+    }
+    
+    public boolean exactMatch(final WorkbenchTemplate template)
+    {
+        if (workbenchTemplateMappingItems != null && 
+            template.workbenchTemplateMappingItems != null &&
+            workbenchTemplateMappingItems.size() == template.workbenchTemplateMappingItems.size())
+        {
+            
+        }
+        return false;
+    }
     
     /**
      * @param workbench - 
@@ -248,6 +259,23 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     {
         this.workbenches.remove(workbench);
         workbench.setWorkbenchTemplate(null);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(WorkbenchTemplate obj)
+    {
+        return name.compareTo(obj.name);
     }
     
     /* (non-Javadoc)

@@ -16,6 +16,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -248,6 +249,40 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
 
         return null;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataCount(java.lang.Class, java.lang.String, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace.CompareType)
+     */
+    public <T> Integer getDataCount(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
+    {
+        if (session != null)
+        {
+            Criteria criteria = session.createCriteria(clsObject);
+            criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
+            criteria.setProjection(Projections.rowCount());
+            List countList = criteria.list();
+            
+            if (countList == null || countList.size() == 0)
+            {
+                return 0;
+                
+            } else
+            {
+                Object countObj = countList.get(0);
+                if (countObj instanceof Integer)
+                {
+                    return (Integer)countObj;
+                }
+            }
+            
+        }
+        
+        log.error("Session was null.");
+
+        return 0;
+    }
+    
+
     
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#load(java.lang.Class, java.lang.Long)

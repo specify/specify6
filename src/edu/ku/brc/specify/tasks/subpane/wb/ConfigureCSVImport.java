@@ -15,8 +15,6 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Vector;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-
 import com.csvreader.CsvReader;
 
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -221,9 +219,9 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
         return CsvReader.ESCAPE_MODE_DOUBLED;
     }
 
-    private int getCellType(int colIndex)
+    private ImportColumnInfo.ColumnType getCellType(int colIndex)
     {
-        return HSSFCell.CELL_TYPE_STRING; // hmmmm....
+        return ImportColumnInfo.ColumnType.String; // hmmmm....
     }
 
     /*
@@ -233,10 +231,11 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
      */
     protected void interactiveConfig()
     {
-        delimiter = determineDelimiter();
-        charset = determineCharset();
-        escapeMode = determineEscapeMode();
+        delimiter          = determineDelimiter();
+        charset            = determineCharset();
+        escapeMode         = determineEscapeMode();
         firstRowHasHeaders = determineFirstRowHasHeaders();
+        
         nonInteractiveConfig();
     }
 

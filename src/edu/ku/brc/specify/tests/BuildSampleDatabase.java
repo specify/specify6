@@ -877,6 +877,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Workbeanch
         ////////////////////////////////
+        
         WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, "BasicTemplate", "These are the remarks");
         Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
         WorkbenchTemplateMappingItem wbtmi = createWorkbenchMappingItem("CollectionObject", 
@@ -906,6 +907,7 @@ public class BuildSampleDatabase
             dataObjects.add(wbtmi);
             dataObjects.add(wbdi);
         }
+        
         
         frame.setProcess(++createStep);
                

@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 
+
 /**
  * @author timbo
  *
@@ -18,14 +19,17 @@ package edu.ku.brc.specify.tasks.subpane.wb;
  */
 public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
 {
-    protected Integer colInx;
-    protected int     colType;
-    protected String  colName;
-    protected String  data;
+    public enum ColumnType {Integer, Float, Double, Short, Boolean, Date, String}
     
-    public ImportColumnInfo(int colInx, int colType, String colName, String data)
+    protected Integer    colInx;
+    protected ColumnType colType;
+    protected String     colName;
+    protected String     data;
+    
+    public ImportColumnInfo(int colInx, ColumnType colType, String colName, String data)
     {
         super();
+        
         this.colInx  = colInx;
         this.colType = colType;
         this.colName = colName;
@@ -37,7 +41,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         return colName;
     }
 
-    public int getColType()
+    public ColumnType getColType()
     {
         return colType;
     }
@@ -52,9 +56,9 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         this.data = data;
     }
 
-    public void setColName(String colName)
+    public Integer getColInx()
     {
-        this.colName = colName;
+        return colInx;
     }
 
     /* (non-Javadoc)
@@ -63,6 +67,37 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     public int compareTo(ImportColumnInfo obj)
     {
         return colInx.compareTo(obj.colInx);
+    }
+    
+    
+    /**
+     * Converts data type string into an enum.
+     * @param type the string with the database type
+     * @return the enum
+     */
+    public static ColumnType getType(final String type)
+    {
+        if (type.equals("java.lang.Integer"))
+        {
+            return ImportColumnInfo.ColumnType.Integer;
+            
+        } else if (type.equals("java.lang.Float"))
+        {
+            return ImportColumnInfo.ColumnType.Float;
+            
+        } else if (type.equals("java.lang.Double"))
+        {
+            return ImportColumnInfo.ColumnType.Double;
+            
+        } else if (type.equals("java.lang.Short") || type.equals("short"))
+        {
+            return ImportColumnInfo.ColumnType.Short;
+            
+        } else if (type.equals("calendar_date"))
+        {
+            return ImportColumnInfo.ColumnType.Date;
+        }
+        return ImportColumnInfo.ColumnType.String;
     }
     
 }

@@ -17,9 +17,18 @@ import edu.ku.brc.specify.datamodel.Workbench;
  */
 public interface DataImport
 {
-    void setConfig(ConfigureDataImport config);
+    /**
+     * @param config
+     */
+    public void setConfig(ConfigureDataImport config);
 
-    ConfigureDataImport getConfig();
+    /**
+     * @return
+     */
+    public ConfigureDataImport getConfig();
 
-    void getData(Workbench workbench);
+    /**
+     * @param workbench
+     */
+    public void getData(Workbench workbench);
 }

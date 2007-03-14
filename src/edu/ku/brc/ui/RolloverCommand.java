@@ -22,7 +22,6 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
@@ -34,8 +33,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +72,8 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
 @SuppressWarnings("serial")
 public class RolloverCommand extends JPanel implements GhostActionable, DndDeletable
 {
+    static protected Color           transparentWhite = new Color(255, 255, 255, 180);
+    
     protected JTextField             txtFld     = null;
     protected JLabel                 iconLabel;
     protected boolean                isEditing  = false;
@@ -140,9 +139,12 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             @Override
             public void mouseEntered(MouseEvent e)
             {
-                isOver = true;
-                repaint();
-                UICacheManager.displayStatusBarText(itself.getToolTipText());
+                if (isEnabled())
+                {
+                    isOver = true;
+                    repaint();
+                    UICacheManager.displayStatusBarText(itself.getToolTipText());
+                }
             }
             @Override
             public void mouseExited(MouseEvent e)
@@ -409,23 +411,14 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     @Override
     public void paint(Graphics g)
     {
-        if (isEnabled())
+        paintComp(g);
+        
+        if (!isEnabled())
         {
-            paintComp(g);
-
-        } else
-        {
-            BufferedImage buf = new BufferedImage(getWidth(),getHeight(), BufferedImage.TYPE_INT_RGB);
-            paintComp(buf.getGraphics());
-
-            float[] my_kernel = {
-                    0.10f, 0.10f, 0.10f,
-                    0.10f, 0.20f, 0.10f,
-                    0.10f, 0.10f, 0.10f };
-
-                ConvolveOp op = new ConvolveOp(new Kernel(3,3, my_kernel));
-                Image img = op.filter(buf,null);
-                g.drawImage(img,0,0,null);
+            Graphics2D g2d = (Graphics2D)g;
+            Dimension size = getSize();
+            g2d.setPaint(transparentWhite);
+            g2d.fillRect(0, 0, size.width, size.height);
         }
     }
 

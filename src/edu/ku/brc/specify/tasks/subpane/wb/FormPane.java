@@ -119,7 +119,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType());
+        //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType());
         String type = wbtmi.getDataType();
         
         if (type.equals("calendar_date"))
