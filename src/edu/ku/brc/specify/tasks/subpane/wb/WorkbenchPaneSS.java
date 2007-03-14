@@ -28,8 +28,10 @@ import java.util.EventObject;
 import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -100,6 +102,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton     insertRowBtn    = null;
     protected JButton     addRowsBtn      = null;
     protected JButton     carryForwardBtn = null;
+    protected JButton     toggleCardImageBtn = null;
     
     protected int         currentRow      = 0;
     
@@ -114,9 +117,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     protected JPanel      controllerPane;
     protected CardLayout  cpCardLayout      = null;
+    
+    protected JFrame cardImageFrame = null;
+    protected JLabel cardImageLabel = null;
+    protected ListSelectionListener workbenchRowChangeListener = null;
 
     /**
      * Constructs the pane for the spreadsheet.
+     * 
      * @param name the name of the pane
      * @param task the owning task
      * @param workbench the workbench to be editted
@@ -236,10 +244,27 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         carryForwardBtn.setEnabled(true);
 
+        toggleCardImageBtn = createIconBtn("CardImage", "WB_SHOW_CARD", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                toggleCardImageVisible();
+            }
+        });
+        toggleCardImageBtn.setEnabled(true);
+        
+        // setup the JFrame to show images attached to WorkbenchRows
+        cardImageFrame = new JFrame();
+        cardImageLabel = new JLabel();
+        cardImageLabel.setSize(500,500);
+        cardImageFrame.add(cardImageLabel);
+        cardImageFrame.setSize(500,500);
+        setupWorkbenchRowChangeListener();
+        spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
         
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = { addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn};
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn, toggleCardImageBtn};
         PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+UIHelper.createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
 
         int x = 3;
@@ -276,7 +301,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         builder.add(carryForwardBtn,  cc.xy(3,3));
         builder.add(saveBtn,          cc.xy(5,3));
         builder.add(createSwitcher(), cc.xy(7,3));
-
     }
     
     /**
@@ -296,6 +320,40 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         btn.addActionListener(al);
         btn.setEnabled(false);
         return btn;
+    }
+    
+    protected void setupWorkbenchRowChangeListener()
+    {
+        workbenchRowChangeListener = new ListSelectionListener()
+        {
+            @SuppressWarnings("synthetic-access")
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (e.getValueIsAdjusting())
+                {
+                    // ignore this until the user quits changing the selection
+                    return;
+                }
+                
+                int firstRowSelected = spreadSheet.getSelectedRow();
+                if (firstRowSelected == -1)
+                {
+                    // no selection
+                    log.debug("No selection, so removing the card image");
+                    cardImageLabel.setIcon(null);
+                    cardImageLabel.repaint();
+                    return;
+                }
+                // else
+                
+                log.debug("Showing image for row " + firstRowSelected);
+                WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
+                ImageIcon cardImage = row.getCardImage();
+                log.debug("\tImage file: " + cardImage.toString());
+                cardImageLabel.setIcon(cardImage);
+                cardImageLabel.repaint();
+            }
+        };
     }
     
     /**
@@ -367,8 +425,26 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
        }
     }
     
+    public void toggleCardImageVisible()
+    {
+        // we simply have to toggle the visibility
+        // and add or remove the ListSelectionListener (to avoid loading images when not visible)
+        boolean visible = cardImageFrame.isVisible();
+        if (visible)
+        {
+            spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
+            cardImageFrame.setVisible(false);
+        }
+        else
+        {
+            spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
+            cardImageFrame.setVisible(true);
+        }
+    }
+    
     /**
      * Set that there has been a change.
+     * 
      * @param changed true or false
      */
     public void setChanged(final boolean changed)

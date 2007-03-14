@@ -75,6 +75,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -880,13 +881,19 @@ public class BuildSampleDatabase
         Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
         WorkbenchTemplateMappingItem wbtmi = createWorkbenchMappingItem("CollectionObject", 
                                                                         1, "fieldNumber", "Field Number", "string", 1, wbTemplate);
-        WorkbenchRow wbRow = workBench.addRow();
-        WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-100", 1);
 
         dataObjects.add(wbTemplate);
         dataObjects.add(workBench);
-        dataObjects.add(wbtmi);
-        dataObjects.add(wbdi);
+
+        for (int i = 1; i <= 4; ++i)
+        {
+            WorkbenchRow wbRow = workBench.addRow();
+            WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-10" + i, 1);
+            ImageIcon image = new ImageIcon("demo_files" + File.separator + "card" + i + ".jpg");
+            wbRow.setCardImage(image);
+            dataObjects.add(wbtmi);
+            dataObjects.add(wbdi);
+        }
         
         frame.setProcess(++createStep);
                
