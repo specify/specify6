@@ -69,6 +69,8 @@
     <icon name="LocalityCitation"  alias="CollectionObjectCitation"/>
     <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
     
+    <icon name="CardImage"		   alias="Form"/>
+    
     <icon name="DiGIR"             file="DigirShovel.png"/>
     
     <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
