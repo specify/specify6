@@ -39,6 +39,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -57,7 +58,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
 {
     protected Long                   workbenchRowId;
     protected Integer                rowNumber;
-    protected ImageIcon              cardImage;
+    protected byte[]                 cardImageData;
     protected Set<WorkbenchDataItem> workbenchDataItems;
     protected Workbench              workbench;
     
@@ -137,17 +138,29 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         this.rowNumber = rowNumber;
     }
 
-    // length=16000000 to allow for images up to 16 MB in size
-    // otherwise, it seems to be defaulting to 256 bytes
-    @Column(name = "CardImage", unique = false, nullable = true, insertable = true, updatable = true, length=16000000)
-    public ImageIcon getCardImage()
+    @Lob
+    @Column(name = "CardImageData", unique = false, nullable = true, insertable = true, updatable = true)
+    public byte[] getCardImageData()
     {
-        return cardImage;
+        return cardImageData;
     }
 
-    public void setCardImage(ImageIcon cardImage)
+    public void setCardImageData(byte[] cardImageData)
     {
-        this.cardImage = cardImage;
+        this.cardImageData = cardImageData;
+    }
+    
+    @Transient
+    public ImageIcon getCardImage()
+    {
+        if (cardImageData.length==0)
+        {
+            return null;
+        }
+        // otherwise
+        
+        ImageIcon imageIcon = new ImageIcon(cardImageData);
+        return imageIcon;
     }
 
     /**
