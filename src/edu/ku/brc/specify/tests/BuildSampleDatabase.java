@@ -60,6 +60,8 @@ import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchTemplate;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -75,6 +77,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -84,6 +88,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -95,6 +100,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -889,8 +895,20 @@ public class BuildSampleDatabase
         {
             WorkbenchRow wbRow = workBench.addRow();
             WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-10" + i, 1);
-//            ImageIcon image = new ImageIcon("demo_files" + File.separator + "card" + i + ".jpg");
-//            wbRow.setCardImage(image);
+//            File f = new File("demo_files" + File.separator + "card" + i + ".jpg");
+//            byte[] imageData = null;
+//            try
+//            {
+//                imageData = FileUtils.readFileToByteArray(f);
+//            }
+//            catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//            if (imageData!=null)
+//            {
+//                wbRow.setCardImageData(imageData);
+//            }
             dataObjects.add(wbtmi);
             dataObjects.add(wbdi);
         }
