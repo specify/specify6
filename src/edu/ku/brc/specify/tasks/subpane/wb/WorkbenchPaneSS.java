@@ -260,7 +260,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         cardImageFrame.add(cardImageLabel);
         cardImageFrame.setSize(500,500);
         setupWorkbenchRowChangeListener();
-        spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
         
         CellConstraints cc = new CellConstraints();
 
@@ -329,7 +328,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             @SuppressWarnings("synthetic-access")
             public void valueChanged(ListSelectionEvent e)
             {
-                if (e.getValueIsAdjusting())
+                if (e.getValueIsAdjusting() || !cardImageFrame.isVisible())
                 {
                     // ignore this until the user quits changing the selection
                     return;
@@ -439,6 +438,16 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(true);
+            int[] selectedRows = spreadSheet.getSelectedRows();
+            int first = -1;
+            int last = -1;
+            if (selectedRows.length!=0)
+            {
+                first = selectedRows[0];
+                last = selectedRows[selectedRows.length-1];
+            }
+            ListSelectionEvent lse = new ListSelectionEvent(spreadSheet,first,last,false);
+            workbenchRowChangeListener.valueChanged(lse);
         }
     }
     
@@ -689,13 +698,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
      */
+    @Override
     public boolean aboutToShutdown()
     {
         super.aboutToShutdown();
         
         if (hasChanged)
         {
-            
+            //
         }
         return true;
     }
@@ -744,7 +754,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
         public GridCellEditor()
         {
-
+            //
         }
 
         /* (non-Javadoc)
@@ -758,6 +768,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         /* (non-Javadoc)
          * @see javax.swing.AbstractCellEditor#isCellEditable(java.util.EventObject)
          */
+        @Override
         public boolean isCellEditable(EventObject anEvent) 
         { 
             return true; 
