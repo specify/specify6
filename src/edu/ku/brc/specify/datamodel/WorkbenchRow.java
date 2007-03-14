@@ -39,7 +39,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -71,7 +70,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
      */
     public WorkbenchRow()
     {
-        
+        //
     }
     
     /**
@@ -207,10 +206,9 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         if (wbdi != null)
         {
             return wbdi.getCellData();
-        } else
-        {
-            return "";
         }
+        // else
+        return "";
     }
     
     /**
