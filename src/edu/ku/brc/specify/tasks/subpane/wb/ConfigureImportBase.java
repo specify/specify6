@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 public abstract class ConfigureImportBase
 {
     protected File                     inputFile;
-    protected Vector<ImportColumnInfo> colInfo = null;
+    protected Vector<ImportColumnInfo> colInfo            = null;
     protected boolean                  firstRowHasHeaders;
     protected boolean                  interactive;
 

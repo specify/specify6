@@ -587,7 +587,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
         GridCellEditor cellEditor = new GridCellEditor();
-        UICacheManager.getInstance().hookUpUndoableEditListener(cellEditor);
+        //UICacheManager.getInstance().hookUpUndoableEditListener(cellEditor);
         
         for (int i = 0; i < tblModel.getColumnCount(); i++) 
         {
@@ -851,7 +851,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     //------------------------------------------------------------
 
 
-    class GridCellEditor extends AbstractCellEditor implements TableCellEditor, UndoableTextIFace
+    class GridCellEditor extends AbstractCellEditor implements TableCellEditor//, UndoableTextIFace
     {
         protected JTextField  textField   = new JTextField();
         protected UndoManager undoManager = new UndoManager();

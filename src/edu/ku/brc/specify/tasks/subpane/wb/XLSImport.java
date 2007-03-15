@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -35,9 +36,15 @@ import edu.ku.brc.ui.DateWrapper;
  */
 public class XLSImport implements DataImport
 {
-    ConfigureXLSImport config;
+    private static final Logger log = Logger.getLogger(XLSImport.class);
     
-    public XLSImport(ConfigureDataImport config)
+    protected ConfigureXLSImport config;
+    
+    /**
+     * Constrcutor.
+     * @param config the cvonfiguration
+     */
+    public XLSImport(final ConfigureDataImport config)
     {
         setConfig(config);
     }
@@ -47,22 +54,20 @@ public class XLSImport implements DataImport
      * @param workbench - the workbench to be loaded
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataImport#getData(edu.ku.brc.specify.datamodel.Workbench)
      */
-    public void getData(Workbench workbench)
+    public void getData(final Workbench workbench)
     {
-        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting",
-                "scrdateformat");
+        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
         try
         {
-            InputStream input = new FileInputStream(config.getFile());
-            POIFSFileSystem fs = new POIFSFileSystem(input);
-            HSSFWorkbook workBook = new HSSFWorkbook(fs);
-            HSSFSheet sheet = workBook.getSheetAt(0);
-            int numRows = 0;
+            InputStream     input    = new FileInputStream(config.getFile());
+            POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            HSSFSheet       sheet    = workBook.getSheetAt(0);
+            int             numRows  = 0;
 
             // Calculate the number of rows and columns
 
-            Set<WorkbenchTemplateMappingItem> wbtmiSet = workbench.getWorkbenchTemplate()
-                    .getWorkbenchTemplateMappingItems();
+            Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
             Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
             wbtmiList.addAll(wbtmiSet);
             Collections.sort(wbtmiList);
@@ -83,21 +88,13 @@ public class XLSImport implements DataImport
 
                 WorkbenchRow wbRow = workbench.addRow();
 
-                // Iterate over each cell in the row and print out the cell's content
-                Iterator cells = row.cellIterator();
-                while (cells.hasNext())
+                for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
                 {
-                    HSSFCell cell = (HSSFCell) cells.next();
-                    int type = cell.getCellType();
-                    String value = "";
-                    boolean skip = false;
-
-                    int cellNum = cell.getCellNum();
-
-                    WorkbenchTemplateMappingItem wbtmi = wbtmiList.get(cellNum);
-                    //String                       typeStr = wbtmi.getDataType();
-
-                    //System.out.println(wbtmiList.get(cellNum).getDataType());
+                    short    cellNum = wbtmi.getDataColumnIndex().shortValue(); 
+                    HSSFCell cell    = row.getCell(cellNum);
+                    int      type    = cell.getCellType();
+                    String   value   = "";
+                    boolean  skip    = false;
 
                     switch (type)
                     {
@@ -142,7 +139,7 @@ public class XLSImport implements DataImport
 
                     if (!skip)
                     {
-                        wbRow.setData(value, cellNum);
+                        wbRow.setData(value, wbtmi.getViewOrder());
                     }
                 }
                 numRows++;
@@ -150,11 +147,11 @@ public class XLSImport implements DataImport
 
         } catch (IOException ex)
         {
-            ex.printStackTrace();
+            log.error(ex);
         }
     }
 
-    public void setConfig(ConfigureDataImport config)
+    public void setConfig(final ConfigureDataImport config)
     {
         this.config = (ConfigureXLSImport) config;
     }

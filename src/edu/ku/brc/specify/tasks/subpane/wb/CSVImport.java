@@ -9,8 +9,11 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import com.csvreader.CsvReader;
 
@@ -27,7 +30,10 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  */
 public class CSVImport implements DataImport
 {
-    private ConfigureCSVImport config;
+    private static final Logger log = Logger.getLogger(CSVImport.class);
+    
+    protected ConfigureCSVImport config;
+    
     
     public CSVImport(final ConfigureDataImport config)
     {
@@ -42,19 +48,16 @@ public class CSVImport implements DataImport
     /*
      * (non-Javadoc) Loads data from the file configured by the config member into a workbench.
      * @param Workbench - the workbench to getData into
-     * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataImport#getData(edu.ku.brc.specify.datamodel.Workbench)
      */
     public void getData(final Workbench workbench)
     {
         try
         {
-            CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config
-                    .getDelimiter(), config.getCharset());
+            CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config.getDelimiter(), config.getCharset());
             csv.setEscapeMode(config.getEscapeMode());
 
-            Set<WorkbenchTemplateMappingItem> wbtmiSet = workbench.getWorkbenchTemplate()
-                    .getWorkbenchTemplateMappingItems();
+            Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
             Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
             wbtmiList.addAll(wbtmiSet);
             Collections.sort(wbtmiList);
@@ -63,18 +66,33 @@ public class CSVImport implements DataImport
             {
                 csv.readHeaders();
             }
+            
+            // Create hash of the column number so later we can easily 
+            // look up whether this column should be used.
+            Hashtable<Integer, WorkbenchTemplateMappingItem> colHash = new Hashtable<Integer, WorkbenchTemplateMappingItem>();
+            for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
+            {
+                System.out.println("Hashing ["+wbtmi.getDataColumnIndex()+"] ");
+                colHash.put(wbtmi.getDataColumnIndex(), wbtmi);
+            }
+            
             while (csv.readRecord())
             {
                 WorkbenchRow wbRow = workbench.addRow();
                 for (int col = 0; col < csv.getColumnCount(); col++)
                 {
-                    wbRow.setData(csv.get(col), col);
+                    // Skip the column if it isn't found in the hash
+                    WorkbenchTemplateMappingItem wbtmi = colHash.get(col);
+                    if (wbtmi != null)
+                    {
+                        wbRow.setData(csv.get(col), wbtmi.getViewOrder());
+                    }
                 }
             }
 
         } catch (IOException ex)
         {
-            ex.printStackTrace();
+           log.error(ex);
         }
     }
 

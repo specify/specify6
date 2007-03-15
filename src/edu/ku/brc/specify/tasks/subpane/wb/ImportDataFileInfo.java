@@ -22,15 +22,19 @@ import edu.ku.brc.specify.datamodel.Workbench;
  */
 public class ImportDataFileInfo
 {
+    protected static String XLS_MIME_TYPE = "bindary/xls";
+    protected static String CSV_MIME_TYPE = "text/csv";
+    
     protected DataImport importer;
 
     public ImportDataFileInfo(final File file)
     {
         String mimeType = getMimeType(file);
-        if (mimeType == "XLS")
+        if (mimeType == XLS_MIME_TYPE)
         {
             importer = new XLSImport(new ConfigureXLSImport(file));
-        } else if (mimeType == "CSV")
+            
+        } else if (mimeType == CSV_MIME_TYPE)
         {
             importer = new CSVImport(new ConfigureCSVImport(file));
         }
@@ -49,16 +53,21 @@ public class ImportDataFileInfo
         return importer.getConfig().getColInfo();
     }
 
+    /**
+     * Returns mime type for an extension.
+     * @param file the file to check 
+     * @return the mimeType;
+     */
     private String getMimeType(final File file)
     {
         String extension = FilenameUtils.getExtension(file.getName()).toLowerCase();
         if (extension.equals("xls"))
         {
-            return "XLS";
+            return XLS_MIME_TYPE;
             
         } else if (extension.equals("csv"))
         {
-            return "CSV";
+            return CSV_MIME_TYPE;
         }
         return "";
     }

@@ -308,6 +308,7 @@ public class ColumnMapperPanel extends JPanel
                 isCancelled = false;
             }
         });
+        okBtn.setEnabled(false);
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
     }
@@ -667,6 +668,7 @@ public class ColumnMapperPanel extends JPanel
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());
                 item.setViewOrder(order);
+                item.setDataColumnIndex(colInfo.getColInx());
                 item.setTabOrder(order);  // set initial tab order to the view order
                 order++;
                 item.setWorkbenchTemplate(wbTemplate);

@@ -853,7 +853,7 @@ public class SpecifyDBConverter
                     @Override
                     public void finished()
                     {
-                        if (list.getSelectedIndex() != -1)
+                        if (list.getSelectedIndex() > -1)
                         {
                             okBtn.doClick();
                         }

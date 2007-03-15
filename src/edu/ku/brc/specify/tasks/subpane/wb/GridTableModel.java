@@ -86,7 +86,7 @@ public class GridTableModel extends SpreadSheetModel
      */
     public Object getValueAt(int row, int column)
     {
-        if (getRowCount() >= 0)
+        if (getRowCount() > 0)
         {
             return workbench.getWorkbenchRowsAsList().get(row).getData(column);
         }
@@ -132,19 +132,22 @@ public class GridTableModel extends SpreadSheetModel
     @Override
     public void appendRow()
     {
-        if (getRowCount() > 0)
+        if (getRowCount() >= 0)
         {
-            WorkbenchRow wbRow  = workbench.getWorkbenchRowsAsList().get(getRowCount()-1);
+            WorkbenchRow wbRow  = getRowCount() > 0 ? workbench.getWorkbenchRowsAsList().get(getRowCount()-1) : null;
             WorkbenchRow newRow = workbench.addRow();
             
-            // Do Carry Forward
-            for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+            if (wbRow != null)
             {
-                if (wbdmi.getCarryForward())
+                // Do Carry Forward
+                for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
                 {
-                    newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
+                    if (wbdmi.getCarryForward())
+                    {
+                        newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
+                    }
                 }
-            }    
+            }
         }
         
         if (spreadSheet != null)

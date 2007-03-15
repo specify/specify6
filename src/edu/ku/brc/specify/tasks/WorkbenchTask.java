@@ -155,7 +155,7 @@ public class WorkbenchTask extends BaseTask
                     addTemplateToNavBox((WorkbenchTemplate)obj);
                 }
                 
-                workbenchNavBox = new NavBox(getResourceString("Workbenches"));
+                workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"));
                 list            = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
                 dataSetCount    = list.size();
                 for (Object obj : list)
@@ -369,25 +369,34 @@ public class WorkbenchTask extends BaseTask
             DataProviderSessionIFace session         = DataProviderFactory.getInstance().createSession();
             try
             {
-                Object foundWBT = null;
+                boolean foundWBT = false;
                 do
                 {
-                    foundWBT = templateName != null ? session.getData(WorkbenchTemplate.class, "name", newTemplateName, DataProviderSessionIFace.CompareType.Equals) : false;
-                    if (foundWBT != null)
+                    boolean askForInfo = StringUtils.isEmpty(newTemplateName);
+                    if (!askForInfo)
+                    {
+                        askForInfo = session.getData(WorkbenchTemplate.class, "name", newTemplateName, DataProviderSessionIFace.CompareType.Equals) != null;
+                    }
+                    
+                    if (askForInfo)
                     {
                         // We found the same name and it must be unique
                         if (askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
                         {
                             newTemplateName = workbenchTemplate.getName();
+                            
                         } else
                         {
                             return null;
                         }
+                        foundWBT = true;
+                        
                     } else
                     {
                         workbenchTemplate.setName(newTemplateName);
+                        foundWBT = false;
                     }
-                } while (foundWBT != null);
+                } while (foundWBT);
                 
                 session.beginTransaction();
                 session.save(workbenchTemplate);
@@ -656,6 +665,10 @@ public class WorkbenchTask extends BaseTask
         if (dataFileInfo != null)
         {
             dataFileInfo.loadData(workbench);
+            
+        } else
+        {
+            workbench.addRow();
         }
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -703,7 +716,7 @@ public class WorkbenchTask extends BaseTask
             return new File(srcPath).getName();
         }
         
-        return getResourceString("WORKBENCH");
+        return getResourceString("WB_DATASET");
     }
     
     /**

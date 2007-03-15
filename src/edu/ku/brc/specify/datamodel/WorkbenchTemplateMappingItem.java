@@ -40,13 +40,14 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected String            fieldName;
     protected String            caption;
     protected Integer           viewOrder;
+    protected Integer           dataColumnIndex;
     protected String            dataType;
     protected WorkbenchTemplate workbenchTemplate;
     
-    protected Integer            tabOrder;
-    protected Integer            xCoord;
-    protected Integer            yCoord;
-    protected Boolean            carryForward;
+    protected Integer           tabOrder;
+    protected Integer           xCoord;
+    protected Integer           yCoord;
+    protected Boolean           carryForward;
 
     // Constructors
 
@@ -74,11 +75,12 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         fieldName = null;
         caption = null;
         viewOrder = null;
+        dataColumnIndex = null;
         dataType = null;
         workbenchTemplate = null;
         tabOrder = null;
-        xCoord   = -1;
-        yCoord   = -1;
+        xCoord = -1;
+        yCoord = -1;
         carryForward = false;
     }
 
@@ -194,6 +196,20 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setViewOrder(Integer viewOrder)
     {
         this.viewOrder = viewOrder;
+    }
+
+    /**
+     * 
+     */
+    @Column(name = "DataColumnIndex", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getDataColumnIndex()
+    {
+        return this.dataColumnIndex;
+    }
+
+    public void setDataColumnIndex(Integer dataColumnIndex)
+    {
+        this.dataColumnIndex = dataColumnIndex;
     }
 
     /**
