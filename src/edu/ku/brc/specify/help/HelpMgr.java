@@ -23,6 +23,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.specify.Specify;
 
@@ -34,14 +36,16 @@ import edu.ku.brc.specify.Specify;
  */
 public class HelpMgr
 {
-    static protected HelpSet    hs;
-    static protected HelpBroker hb;
-    static protected String     helpSystemName = "SpecifyHelp";
+    private static final Logger log            = Logger.getLogger(HelpMgr.class);
+    
+    protected static HelpSet    hs;
+    protected static HelpBroker hb;
+    protected static String     helpSystemName = "SpecifyHelp";
 
     /**
-     * Creates a Helpset and HelpBroker
+     * Creates a Helpset and HelpBroker.
      */
-    static public void initializeHelp()
+    public static void initializeHelp()
     {
         // Find the HelpSet file and create the HelpSet object:
         ClassLoader cl = Specify.class.getClassLoader();
@@ -49,10 +53,11 @@ public class HelpMgr
         {
             URL hsURL = HelpSet.findHelpSet(cl, helpSystemName);
             hs = new HelpSet(cl, hsURL);
+            
         } catch (Exception ee)
         {
             // Say what the exception really is
-            System.out.println("HelpSet " + ee.getMessage());
+            log.error(ee);
             return;
         }
         // Create a HelpBroker object:
@@ -62,10 +67,10 @@ public class HelpMgr
     /**
      * Adds a help menu to the main menu
      */
-    static public void initializeHelpUI()
+    public static void initializeHelpUI()
     {
-        JMenu help = new JMenu(getResourceString("Help"));
-        JMenuItem menu_help = new JMenuItem(getResourceString("Specify"));
+        JMenu     help      = new JMenu(getResourceString("Help"));
+        JMenuItem menu_help = new JMenuItem("Specify");
         registerComponent(menu_help);
         help.add(menu_help);
         Specify.getSpecify().getMenuBar().add(help);
@@ -74,14 +79,13 @@ public class HelpMgr
     /**
      * @return true if HelpBroker is initialized
      */
-    static public boolean helpAvailable()
+    public static boolean helpAvailable()
     {
         return (hb != null);
     }
 
     /**
-     * @param id
-     *            a help context to validate
+     * @param id a help context to validate
      * @return true if there is a mapping for id in the help system
      */
     static private boolean isGoodID(final String id)
@@ -97,13 +101,10 @@ public class HelpMgr
     }
 
     /**
-     * @param component
-     *            a Button, MenuItem, etc that will access help
-     * @param idString
-     *            the help context for the component. if "" then context is determined 'on the fly'
-     *            by ContextMgr
+     * @param component a Button, MenuItem, etc that will access help
+     * @param idString the help context for the component. if "" then context is determined 'on the fly' by ContextMgr
      */
-    static public void registerComponent(final AbstractButton component, final String idString)
+    public static void registerComponent(final AbstractButton component, final String idString)
     {
         if (idString == "")
         {
@@ -136,11 +137,9 @@ public class HelpMgr
     }
 
     /**
-     * @param component
-     *            a Button, MenuItem, etc that will access help. The help context is determined 'on
-     *            the fly' by ContextMgr
+     * @param component  a Button, MenuItem, etc that will access help. The help context is determined 'on the fly' by ContextMgr
      */
-    static public void registerComponent(final AbstractButton component)
+    public static void registerComponent(final AbstractButton component)
     {
         if (HelpMgr.helpAvailable())
         {
@@ -181,8 +180,7 @@ public class HelpMgr
     }
 
     /**
-     * @param id
-     *            help context string id to get mapping for
+     * @param id help context string id to get mapping for
      * @return Map.ID for id, or map.id for getDefaultID() if no Map.ID for id, or null
      */
     static private Map.ID getMapID(final String id)
@@ -215,7 +213,7 @@ public class HelpMgr
     /**
      * Displays help for the current application context.
      */
-    static public void getHelpForContext()
+    public static void getHelpForContext()
     {
         Map.ID id = getMapID(getCurrentContext());
         if (id == null)
