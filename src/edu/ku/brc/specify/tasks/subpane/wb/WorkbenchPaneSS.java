@@ -146,7 +146,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     protected JFrame                mapFrame             = null;
     protected JLabel                mapImageLabel             = null;
-    protected boolean               mapFrameWasShowing        = false;
     // XXX PREF
     protected int                   mapSize                   = 500;
     
@@ -303,7 +302,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         // setup the JFrame to show images attached to WorkbenchRows
         cardImageFrame = new JFrame();
-        cardImageFrame.setTitle(getResourceString("WB_GEO_REF_DATA_MAP"));
         cardImageLabel = new JLabel();
         cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         cardImageLabel.setSize(mapSize,mapSize);
@@ -335,11 +333,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         // setup the mapping features
         mapFrame = new JFrame();
+        mapFrame.setTitle(getResourceString("WB_GEO_REF_DATA_MAP"));
         mapImageLabel = new JLabel();
         mapImageLabel.setSize(500,500);
         mapFrame.add(mapImageLabel);
         mapFrame.setSize(500,500);
-        mapFrameWasShowing = false;
         
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
@@ -526,12 +524,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
        }
     }
     
-    public void toggleMapFrameVisible()
-    {
-        boolean visible = mapFrame.isVisible();
-        mapFrame.setVisible(!visible);
-    }
-    
     /**
      * Shows / Hides the Image Window. 
      */
@@ -639,7 +631,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     protected void mapImageReceived(Icon map)
     {
-        mapFrameWasShowing = true;
         mapFrame.setVisible(true);
         mapImageLabel.setIcon(map);
         showMapBtn.setEnabled(true);
@@ -914,10 +905,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             {
                 toggleCardImageVisible();
             }
-            if (mapFrameWasShowing)
-            {
-                toggleMapFrameVisible();
-            }
         }
         else
         {
@@ -933,12 +920,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             
             if (mapFrame!=null && mapFrame.isVisible())
             {
-                mapFrameWasShowing = true;
-                toggleMapFrameVisible();
-            }
-            else
-            {
-                mapFrameWasShowing = false;
+                mapFrame.setVisible(false);
             }
         }
         super.showingPane(show);
