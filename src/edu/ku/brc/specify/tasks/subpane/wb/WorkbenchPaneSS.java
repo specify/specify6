@@ -25,21 +25,25 @@ import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -123,12 +127,13 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JPanel      controllerPane;
     protected CardLayout  cpCardLayout      = null;
     
-    protected JFrame      cardImageFrame    = null;
-    protected JLabel      cardImageLabel    = null;
-    
+    protected JFrame                cardImageFrame             = null;
+    protected JLabel                cardImageLabel             = null;
+    protected JPanel                noCardImageMessagePanel    = null;
     protected ListSelectionListener workbenchRowChangeListener = null;
-    protected boolean               cardFrameWasShowing = false;
-
+    protected boolean               cardFrameWasShowing        = false;
+    protected boolean               showingCardImageLabel      = true;
+    
     /**
      * Constructs the pane for the spreadsheet.
      * 
@@ -261,10 +266,33 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // setup the JFrame to show images attached to WorkbenchRows
         cardImageFrame = new JFrame();
         cardImageLabel = new JLabel();
+        cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         cardImageLabel.setSize(500,500);
         cardImageFrame.add(cardImageLabel);
         cardImageFrame.setSize(500,500);
         setupWorkbenchRowChangeListener();
+        
+        noCardImageMessagePanel = new JPanel();
+        noCardImageMessagePanel.setLayout(new BoxLayout(noCardImageMessagePanel,BoxLayout.LINE_AXIS));
+        JButton loadImgBtn = new JButton("Load New Image");
+        loadImgBtn.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                // figure out what row is selected
+                int firstRowSelected = spreadSheet.getSelectedRow();
+                WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
+                // then load a new image for it
+                boolean loaded = loadNewCardImage(row);
+                if (loaded)
+                {
+                    showCardImageForSelectedRow();
+                    setChanged(true);
+                }
+            }
+        });
+        noCardImageMessagePanel.add(new JLabel("No card image available for the selected row"));
+        noCardImageMessagePanel.add(loadImgBtn);
         
         CellConstraints cc = new CellConstraints();
 
@@ -323,28 +351,62 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                     // ignore this until the user quits changing the selection
                     return;
                 }
-                
-                int firstRowSelected = spreadSheet.getSelectedRow();
-                if (firstRowSelected == -1)
-                {
-                    // no selection
-                    log.debug("No selection, so removing the card image");
-                    cardImageLabel.setIcon(null);
-                    cardImageLabel.setText("No row selected");
-                    return;
-                }
-                // else
-                
-                log.debug("Showing image for row " + firstRowSelected);
-                WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
-                ImageIcon cardImage = row.getCardImage();
-                log.debug("\tImage file: " + cardImage.toString());
-                cardImageLabel.setIcon(cardImage);
-                WorkbenchDataItem firstColItem = row.getItems().get(0);
-                String firstColCellData = (firstColItem!=null) ? firstColItem.getCellData() : "";
-                cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
+                showCardImageForSelectedRow();
             }
         };
+    }
+    
+    protected void showCardImageForSelectedRow()
+    {
+        int firstRowSelected = spreadSheet.getSelectedRow();
+        if (firstRowSelected == -1)
+        {
+            // no selection
+            log.debug("No selection, so removing the card image");
+            
+            if (!showingCardImageLabel)
+            {
+                // swap out the noCardImageMessagePanel for the cardImageLabel
+                cardImageFrame.remove(noCardImageMessagePanel);
+                cardImageFrame.add(cardImageLabel);
+                showingCardImageLabel = true;
+            }
+            
+            cardImageLabel.setIcon(null);
+            cardImageLabel.setText("No row selected");
+            return;
+        }
+        // else
+
+        log.debug("Showing image for row " + firstRowSelected);
+        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
+        ImageIcon cardImage = row.getCardImage();
+        log.debug("\tImage file: " + cardImage);
+        cardImageLabel.setIcon(cardImage);
+        if (cardImage==null)
+        {
+            if (showingCardImageLabel)
+            {
+                // swap out the cardImageLabel for the noCardImageMessagePanel
+                cardImageFrame.remove(cardImageLabel);
+                cardImageFrame.add(noCardImageMessagePanel);
+                showingCardImageLabel = false;
+            }
+        }
+        else
+        {
+            if (!showingCardImageLabel)
+            {
+                // swap out the noCardImageMessagePanel for the cardImageLabel
+                cardImageFrame.remove(noCardImageMessagePanel);
+                cardImageFrame.add(cardImageLabel);
+                showingCardImageLabel = true;
+            }
+            cardImageLabel.setText(null);
+        }
+        WorkbenchDataItem firstColItem = row.getItems().get(0);
+        String firstColCellData = (firstColItem!=null) ? firstColItem.getCellData() : "";
+        cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
     }
     
     /**
@@ -444,6 +506,26 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             ListSelectionEvent lse = new ListSelectionEvent(spreadSheet,first,last,false);
             workbenchRowChangeListener.valueChanged(lse);
         }
+    }
+    
+    public boolean loadNewCardImage(WorkbenchRow row)
+    {
+        JFileChooser fileChooser = new JFileChooser();
+        int userAction = fileChooser.showOpenDialog(this);
+        if (userAction == JFileChooser.APPROVE_OPTION)
+        {
+            String chosenFile = fileChooser.getSelectedFile().getAbsolutePath();
+            try
+            {
+                row.setCardImage(chosenFile);
+                return true;
+            }
+            catch (IOException e)
+            {
+                log.error("Failed to set card image for workbench row", e);
+            }
+        }
+        return false;
     }
     
     /**

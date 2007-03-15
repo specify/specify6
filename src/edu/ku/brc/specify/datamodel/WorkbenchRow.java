@@ -28,10 +28,17 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,7 +53,12 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.swing.ImageIcon;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 /**
  * WorkbenchRow generated rods
@@ -59,8 +71,13 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     protected Long                   workbenchRowId;
     protected Integer                rowNumber;
     protected byte[]                 cardImageData;
+    protected String                 cardImageFullPath;
     protected Set<WorkbenchDataItem> workbenchDataItems;
     protected Workbench              workbench;
+    
+    // XXX PREF
+    protected int                    maxWidth  = 500;
+    protected int                    maxHeight = 500;
     
     // Transient Data Members
     protected Hashtable<Integer, WorkbenchDataItem> items = new Hashtable<Integer, WorkbenchDataItem>();
@@ -101,7 +118,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     
     @Id
     @GeneratedValue
-    @Column(name = "WorkbenchRowID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "WorkbenchRowID", nullable = false)
     public Long getWorkbenchRowId()
     {
         return workbenchRowId;
@@ -127,7 +144,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     /**
      * @return
      */
-    @Column(name = "RowNumber", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "RowNumber")
     public Integer getRowNumber()
     {
         return rowNumber;
@@ -139,7 +156,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     }
 
     @Lob
-    @Column(name = "CardImageData", unique = false, nullable = true, insertable = true, updatable = true, length=16000000)
+    @Column(name = "CardImageData", length=16000000)
     public byte[] getCardImageData()
     {
         return cardImageData;
@@ -153,7 +170,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     @Transient
     public ImageIcon getCardImage()
     {
-        if (cardImageData.length==0)
+        if (cardImageData==null || cardImageData.length==0)
         {
             return null;
         }
@@ -162,12 +179,91 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         ImageIcon imageIcon = new ImageIcon(cardImageData);
         return imageIcon;
     }
+    
+    /**
+     * Stores the image found at imgFilePath into the row as the card image data, scaling
+     * the image if necessary.  The path to the original image is also set via {@link #setCardImageFullPath(String)}.
+     * 
+     * This code is taken almost completely from ImageThumbnailGenerator.
+     * 
+     * @param imgFilePath the full path to the image file
+     * @throws IOException 
+     */
+    public void setCardImage(final String imgFilePath) throws IOException
+    {
+        // read the original
+        File imageFile = new File(imgFilePath);
+        BufferedImage img = ImageIO.read(imageFile);
+
+        // determine if we need to scale
+        int origWidth = img.getWidth();
+        int origHeight = img.getHeight();
+        boolean scale = false;
+        
+        if (origWidth > this.maxWidth || origHeight > maxHeight)
+        {
+            scale = true;
+        }
+
+        byte[] imgBytes = null;
+        
+        if (scale)
+        {
+            // calculate the new height and width while maintaining the aspect ratio
+            int thumbWidth;
+            int thumbHeight;
+            if( origWidth >= origHeight )
+            {
+                thumbWidth = maxWidth;
+                thumbHeight = (int)(origHeight * ((float)thumbWidth/(float)origWidth));
+            }
+            else
+            {
+                thumbHeight = maxHeight;
+                thumbWidth = (int)(origWidth * ((float)thumbHeight/(float)origHeight));
+            }
+            
+            // scale the image
+            BufferedImage thumbImage = new BufferedImage(thumbWidth,thumbHeight,BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics2D = thumbImage.createGraphics();
+            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
+
+            // save thumbnail image to the byte[] as a JPEG
+            ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(4096);
+            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outputByteStream);
+            JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(thumbImage);
+            param.setQuality(1, false);
+            encoder.setJPEGEncodeParam(param);
+            encoder.encode(thumbImage);
+            imgBytes = outputByteStream.toByteArray();
+        }
+        else
+        {
+            // since we don't need to scale the image, just grab its bytes
+            imgBytes = FileUtils.readFileToByteArray(imageFile);
+        }
+        
+        this.setCardImageData(imgBytes);
+        this.setCardImageFullPath(imgFilePath);
+    }
+    
+    @Column(name="CardImageFullPath", length=255)
+    public String getCardImageFullPath()
+    {
+        return cardImageFullPath;
+    }
+
+    public void setCardImageFullPath(String cardImageFullPath)
+    {
+        this.cardImageFullPath = cardImageFullPath;
+    }
 
     /**
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "WorkbenchID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "WorkbenchID", nullable = false)
     public Workbench getWorkbench()
     {
         return workbench;
