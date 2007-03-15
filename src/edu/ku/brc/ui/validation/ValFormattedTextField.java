@@ -36,12 +36,15 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
@@ -60,7 +63,8 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 @SuppressWarnings("serial")
 public class ValFormattedTextField extends JTextField implements UIValidatable,
                                                                  GetSetValueIFace,
-                                                                 DocumentListener
+                                                                 DocumentListener, 
+                                                                 UICacheManager.UndoableTextIFace
 {
     private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
@@ -83,6 +87,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected List<UIFieldFormatterField> fields         = null;
     
     protected Object                      origValue      = null;
+    protected UndoManager                 undoManager    = null;
 
     //---
     protected String bgStr     = null;
@@ -395,6 +400,31 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     //--------------------------------------------------------
+    // UICacheManager.UndoableTextIFace
+    //--------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
+     */
+    public UndoManager getUndoManager()
+    {
+        if (undoManager == null)
+        {
+            undoManager = new UndoManager();
+            UICacheManager.getInstance().hookUpUndoableEditListener(this);
+        }
+        return undoManager;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getTextComponent()
+     */
+    public JTextComponent getTextComponent()
+    {
+        return this;
+    }
+
+    //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
 
@@ -438,6 +468,11 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         }
         
         setText(data);
+        
+        if (undoManager != null)
+        {
+            undoManager.discardAllEdits();
+        }
 
         validateState();
 
@@ -472,7 +507,6 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         return getText();
 
     }
-
 
     //--------------------------------------------------------
     // DocumentListener

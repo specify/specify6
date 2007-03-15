@@ -81,11 +81,14 @@ public class StatsTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
             
-    
             try
             {
                 panelDOM = AppContextMgr.getInstance().getResourceAsDOM("StatisticsPanel");   // contains a description of the NavBoxes
-    
+                if (panelDOM == null)
+                {
+                    log.error("Couldn't load StatisticsPanel");
+                    return;
+                }
             } catch (Exception ex)
             {
                 log.error("Couldn't load `StatisticsPanel` " +ex);

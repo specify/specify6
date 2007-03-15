@@ -131,10 +131,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     protected  boolean          hasChanged         = false;
 
-    protected String            currentDatabaseName = null;
-    protected DatabaseLoginPanel dbLoginPanel       = null;
-    protected String             databaseName       = null;
-    protected String             userName           = null;
+    protected String             currentDatabaseName = null;
+    protected DatabaseLoginPanel dbLoginPanel        = null;
+    protected String             databaseName        = null;
+    protected String             userName            = null;
 
     protected GhostGlassPane    glassPane;
 
@@ -623,8 +623,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             doExit();
                         }
                     });
-    
-            menu = UIHelper.createMenu(mb, "EditMenu", "EditMneu");
+        }
+       
+        menu = UICacheManager.getInstance().createEditMenu();
+        mb.add(menu);
+        //menu = UIHelper.createMenu(mb, "EditMenu", "EditMneu");
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            menu.addSeparator();
             mi = UIHelper.createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
             mi.addActionListener(new ActionListener()
                     {
@@ -634,6 +640,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
         }
+                
 
 
         /*JMenuItem mi2;

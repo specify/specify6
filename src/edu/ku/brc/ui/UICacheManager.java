@@ -16,19 +16,40 @@ package edu.ku.brc.ui;
 
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -88,6 +109,50 @@ public class UICacheManager
     protected boolean        useCurrentLocation = false;
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
+    
+    //------------------------------------------------
+    // Undo / Redo Helpers
+    //------------------------------------------------
+    protected static UndoAction       undoAction;
+    protected static RedoAction       redoAction;
+    protected HashMap<Object, Action> actions = null;
+    
+    static 
+    {
+        final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
+        focusManager.addPropertyChangeListener( 
+            new PropertyChangeListener() { 
+                public void propertyChange(PropertyChangeEvent e) 
+                { 
+                    String prop = e.getPropertyName(); 
+                    //System.out.println(prop+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
+                    if (("focusOwner".equals(prop)) && undoAction != null && redoAction != null) 
+                    { 
+                        if (focusManager.getFocusOwner() instanceof UndoableTextIFace)
+                        {
+                            //System.out.println("Owner");
+
+                            UndoableTextIFace undoableText = (UndoableTextIFace)focusManager.getFocusOwner();
+                            if (undoableText != null)
+                            {
+                                //System.err.println("Hooking up undo manager for "+undoableText);
+                                undoAction.setUndoManager(undoableText.getUndoManager());
+                                redoAction.setUndoManager(undoableText.getUndoManager());
+                            }
+                        } else if (focusManager.getFocusOwner() instanceof JTextComponent)
+                        {
+                            undoAction.setUndoManager(null);
+                            redoAction.setUndoManager(null);
+                        }
+                        undoAction.updateUndoState();
+                        redoAction.updateRedoState();
+                    }
+                    
+
+                } 
+            } 
+        );
+    }
     
 
     /**
@@ -718,6 +783,402 @@ public class UICacheManager
     {
         instance.useCurrentLocation = useCurrentLocation;
     }
+    
+    //---------------------------------------------------------
+    //-- Undo and Redo
+    //---------------------------------------------------------
 
+    public void addBindings(JComponent comp) 
+    {
+        InputMap inputMap = comp.getInputMap();
+
+        //Ctrl-b to go backward one character
+        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        inputMap.put(key, DefaultEditorKit.backwardAction);
+
+        //Ctrl-f to go forward one character
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        inputMap.put(key, DefaultEditorKit.forwardAction);
+
+        //Ctrl-p to go up one line
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        inputMap.put(key, DefaultEditorKit.upAction);
+
+        //Ctrl-n to go down one line
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        inputMap.put(key, DefaultEditorKit.downAction);
+    }
+    
+    // Create the edit menu
+    public JMenu createEditMenu()
+    {
+       JMenu menu = new JMenu(getResourceString("Edit"));
+       menu.setMnemonic(KeyEvent.VK_E);
+       // Undo and redo are actions of our own creation.
+       undoAction = (UndoAction) makeAction(UndoAction.class,
+                                            this,
+                                            "Undo",
+                                            null,
+                                            null,
+                                            new Integer(KeyEvent.VK_U),
+                                            KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+       menu.add(undoAction);
+       redoAction = (RedoAction) makeAction(RedoAction.class,
+                                            this,
+                                            "Redo",
+                                            null,
+                                            null,
+                                            new Integer(KeyEvent.VK_R),
+                                            KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+       menu.add(redoAction);
+       menu.addSeparator();
+       // These actions come from the default editor kit.  Get the ones we want
+       // and stick them in the menu.
+       Action cutAction = makeAction(DefaultEditorKit.CutAction.class,
+                                     null,
+                                     "Cut",
+                                     null,
+                                     "Cut selection to clipboard",
+                                     new Integer(KeyEvent.VK_X),
+                                     KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+       menu.add(cutAction);
+       Action copyAction = makeAction(DefaultEditorKit.CopyAction.class,
+                                      null,
+                                      "Copy",
+                                      null,
+                                      "Copy selection to clipboard",
+                                      new Integer(KeyEvent.VK_C),
+                                      KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+       menu.add(copyAction);
+       Action pasteAction = makeAction(DefaultEditorKit.PasteAction.class,
+                                       null,
+                                       "Paste",
+                                       null,
+                                       "Paste contents of clipboard",
+                                       new Integer(KeyEvent.VK_P),
+                                       KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+       menu.add(pasteAction);
+       /*
+       menu.addSeparator();
+       Action selectAllAction = makeAction(SelectAllAction.class,
+                                           this,
+                                           "Select All",
+                                           null,
+                                           "Select all text",
+                                           new Integer(KeyEvent.VK_A),
+                                           KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+       menu.add(selectAllAction);
+       */
+       return menu;
+    }
+
+    protected Action makeAction(Class actionClass,
+                                Object owner,
+                                String name,
+                                ImageIcon icon,
+                                String toolTip,
+                                Integer mnemonicKeyCode,
+                                KeyStroke acceleratorKey)
+    {
+        Action a = null;
+        try
+        {
+            Constructor c;
+            if (owner != null)
+            {
+                // If the class is an inner class, its constuctor takes a hidden
+                // parameter, an objext of it enclosing class.
+                c = actionClass.getConstructor(new Class[] { owner.getClass() });
+                a = (Action) c.newInstance(new Object[] { owner });
+            } else
+            {
+                c = actionClass.getConstructor((Class[]) null);
+                a = (Action) c.newInstance((Object[])null);
+            }
+            
+            if (name != null)
+                a.putValue(Action.NAME, name);
+            
+            if (icon != null)
+                a.putValue(Action.SMALL_ICON, icon);
+            
+            if (toolTip != null)
+                a.putValue(Action.SHORT_DESCRIPTION, toolTip);
+            
+            if (mnemonicKeyCode != null)
+                a.putValue(Action.MNEMONIC_KEY, mnemonicKeyCode);
+            
+            if (acceleratorKey != null)
+                a.putValue(Action.ACCELERATOR_KEY, acceleratorKey);
+            
+        } catch (ClassCastException e)
+        {
+            System.err.println("actionClass argument " + actionClass + " does not implement Action");
+            //System.exit(-1);
+            
+        } catch (Exception e)
+        {
+            System.err.println(e + " -- while trying to make an instance of " + actionClass);
+            try
+            {
+                // Output a list of constructors available for this class.
+                Constructor[] cc = actionClass.getConstructors();
+                for (int i = 0; i < cc.length; i++)
+                {
+                    System.err.println(cc[i].toString());
+                }
+            } catch (Exception ee)
+            {
+                log.error(ee);
+            }
+        }
+        return a;
+    }
+
+    // This nested class is the child of desperation. If SelectAllAction was a
+    // public static nested class of DefaultEditorKit as CopyAction is, this
+    // hack wouldn't be needed.
+    public class SelectAllAction extends AbstractAction
+    {
+        private final Action realAction = getActionByName(DefaultEditorKit.selectAllAction);
+
+        public SelectAllAction()
+        {
+            super();
+        }
+
+        public SelectAllAction(final UICacheManager uic)
+        {
+            super();
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            realAction.actionPerformed(e);
+        }
+
+    }
+    
+    // The following two methods allow us to find an
+    // action provided by the editor kit by its name.
+    public HashMap<Object, Action> createActionTable(JTextComponent textComponent) 
+    {
+        actions = new HashMap<Object, Action>();
+        Action[] actionsArray = textComponent.getActions();
+        for (int i = 0; i < actionsArray.length; i++) 
+        {
+            Action a = actionsArray[i];
+            actions.put(a.getValue(Action.NAME), a);
+        }
+        return actions;
+    }
+
+
+    /**
+     * Returns an action name.
+     * @param name
+     * @return
+     */
+    private Action getActionByName(String name) 
+    {
+        return actions.get(name);
+    }
+    
+    //------------------------------------------------------
+    //-- An interface for all those wanting to play nice with
+    //-- the undo mechanism
+    //------------------------------------------------------
+    public interface UndoableTextIFace
+    {
+        /**
+         * @return the UndoManager
+         */
+        public UndoManager getUndoManager();
+        
+        /**
+         * @return the JTextComponent that does undo
+         */
+        public JTextComponent getTextComponent();
+    }
+
+    //------------------------------------------------------
+    //-- The UndoAction
+    //------------------------------------------------------
+    public class UndoAction extends AbstractAction
+    {
+        protected UndoManager undoManager = null;
+
+        public UndoAction()
+        {
+            super("Undo");
+            setEnabled(false);
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                if (undoManager.canUndo())
+                {
+                    undoManager.undo();
+                }
+                
+            } catch (CannotUndoException ex)
+            {
+                ex.printStackTrace();
+            }
+            updateUndoState();
+            undoAction.updateUndoState();
+        }
+
+        protected void updateUndoState()
+        {
+            if (undoManager != null && undoManager.canUndo())
+            {
+                setEnabled(true);
+                putValue(Action.NAME, undoManager.getUndoPresentationName());
+            } else
+            {
+                setEnabled(false);
+                putValue(Action.NAME, "Undo");
+            }
+        }
+
+        /**
+         * @return the undo
+         */
+        public UndoManager getUndoManager()
+        {
+            return undoManager;
+        }
+
+        /**
+         * @param undo the undo to set
+         */
+        public void setUndoManager(UndoManager undo)
+        {
+            this.undoManager = undo;
+            setEnabled(undo != null);
+        }
+    }
+
+    //------------------------------------------------------
+    //-- The RedoAction
+    //------------------------------------------------------
+    public class RedoAction extends AbstractAction
+    {
+        protected UndoManager undoManager = null;
+
+        public RedoAction()
+        {
+            super("Redo");
+            setEnabled(false);
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                if (undoManager.canRedo())
+                {
+                    undoManager.redo();
+                }
+            } catch (CannotRedoException ex)
+            {
+                System.out.println("Unable to redo: " + ex);
+                ex.printStackTrace();
+            }
+            updateRedoState();
+            undoAction.updateUndoState();
+        }
+
+        protected void updateRedoState()
+        {
+            if (undoManager != null && undoManager.canRedo())
+            {
+                setEnabled(true);
+                putValue(Action.NAME, undoManager.getRedoPresentationName());
+            } else
+            {
+                setEnabled(false);
+                putValue(Action.NAME, "Redo");
+            }
+        }
+
+        /**
+         * @return the undo
+         */
+        public UndoManager getUndoManager()
+        {
+            return undoManager;
+        }
+
+        /**
+         * @param undo
+         *            the undo to set
+         */
+        public void setUndoManager(UndoManager undo)
+        {
+            this.undoManager = undo;
+            setEnabled(undo != null);
+        }
+    }
+    
+    //------------------------------------------------------
+    //--  Listens for edits that can be undone.
+    //------------------------------------------------------
+    public class UICUndoableEditListener implements UndoableEditListener 
+    {
+        protected UndoManager undoManager;
+        
+        public UICUndoableEditListener(final UndoManager undoManager)
+        {
+            this.undoManager = undoManager;
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.event.UndoableEditListener#undoableEditHappened(javax.swing.event.UndoableEditEvent)
+         */
+        public void undoableEditHappened(UndoableEditEvent e) 
+        {
+            //Remember the edit and update the menus.
+            if (undoManager != null)
+            {
+                undoManager.addEdit(e.getEdit());
+            }
+            if (undoAction != null)
+            {
+                undoAction.updateUndoState();
+            }
+            if (redoAction != null)
+            {
+                redoAction.updateRedoState();
+            }
+        }
+    }
+    
+    /**
+     * @return the redoAction
+     */
+    public static RedoAction getRedoAction()
+    {
+        return redoAction;
+    }
+
+    /**
+     * @return the undoAction
+     */
+    public static UndoAction getUndoAction()
+    {
+        return undoAction;
+    }
+
+    /**
+     * @param undoableText
+     */
+    public void hookUpUndoableEditListener(final UndoableTextIFace undoableText)
+    {
+        undoableText.getTextComponent().getDocument().addUndoableEditListener(new UICUndoableEditListener(undoableText.getUndoManager()));
+    }
 }
 

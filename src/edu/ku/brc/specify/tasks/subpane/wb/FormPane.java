@@ -23,6 +23,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -35,6 +37,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.ui.validation.ValFormattedTextField;
+import edu.ku.brc.ui.validation.ValTextField;
 
 /**
  * @author rod
@@ -44,19 +47,21 @@ import edu.ku.brc.ui.validation.ValFormattedTextField;
  * Mar 8, 2007
  *
  */
-public class FormPane extends JPanel implements ResultSetControllerListener, GhostActionable
+public class FormPane extends JPanel implements ResultSetControllerListener, GhostActionable, DocumentListener
 {
     protected WorkbenchPaneSS    workbenchPane;
     protected Workbench          workbench;
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-    protected boolean            hasChanged   = false;
-    protected Vector<InputPanel> uiComps      = new Vector<InputPanel>();
+    protected boolean            hasChanged    = false;
+    protected Vector<InputPanel> uiComps       = new Vector<InputPanel>();
+    protected boolean            ignoreChanges = false;
     
     protected List<DataFlavor>   dropFlavors  = new ArrayList<DataFlavor>();
     
-    
     /**
-     * @param workbench
+     * Creates a Pane for editing a Workbench as a form.
+     * @param workbenchPane the workbench pane to be parented into
+     * @param workbench the workbench
      */
     public FormPane(final WorkbenchPaneSS workbenchPane, final Workbench workbench)
     {
@@ -111,12 +116,17 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             r.width += diff;
             p.setBounds(r);
             
-            //p.invalidate();
             p.validate();
             p.doLayout();
         }
     }
+
     
+    /**
+     * Returns a UI component for editing.
+     * @param wbtmi the mapping item
+     * @return a UI component for editing
+     */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
         //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType());
@@ -124,10 +134,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         
         if (type.equals("calendar_date"))
         {
-            return new ValFormattedTextField("Date");
+             return new ValFormattedTextField("Date"); 
         }
-        //if (wbtmi.getDataClass()
-        return new JTextField(15);
+        return new ValTextField(15);
     }
     
     /* (non-Javadoc)
@@ -143,6 +152,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     public void indexChanged(int newIndex)
     {
+        ignoreChanges = true; 
         WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(newIndex);
         for (InputPanel p : uiComps)
         {
@@ -157,7 +167,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                 ((JTextField)p.getComp()).setText(wbRow.getData(col));
             }
         }
-        
+        ignoreChanges = false;
     }
 
     /* (non-Javadoc)
@@ -166,7 +176,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     public void newRecordAdded()
     {
         // TODO Auto-generated method stub
-        
     }
     
     //-----------------------------------------------
@@ -257,5 +266,32 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     public List<DataFlavor> getDragDataFlavors()
     {
         return null; // this is not draggable
+    }
+    
+    //-----------------------------------------------
+    // DocumentListener Interface
+    //-----------------------------------------------
+    public void insertUpdate(DocumentEvent e) 
+    {
+        if (!ignoreChanges)
+        {
+            workbenchPane.setChanged(true);
+        }
+    }
+    
+    public void removeUpdate(DocumentEvent e) 
+    {
+        if (!ignoreChanges)
+        {
+            workbenchPane.setChanged(true);
+        }
+    }
+    
+    public void changedUpdate(DocumentEvent e) 
+    {
+        if (!ignoreChanges)
+        {
+            workbenchPane.setChanged(true);
+        }
     }
 }

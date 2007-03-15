@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Frame;
@@ -29,6 +30,7 @@ import java.util.EventObject;
 import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -46,6 +48,8 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
 
 import org.apache.log4j.Logger;
 
@@ -67,6 +71,7 @@ import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UICacheManager.UndoableTextIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
@@ -111,17 +116,18 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected ResultSetController resultsetController;
     
     
-    protected CardLayout  cardLayout      = null;
+    protected CardLayout  cardLayout        = null;
     protected JPanel      mainPanel;
-    protected PanelType   currentPanelType = PanelType.Spreadsheet;
+    protected PanelType   currentPanelType  = PanelType.Spreadsheet;
     
     protected JPanel      controllerPane;
     protected CardLayout  cpCardLayout      = null;
     
-    protected JFrame cardImageFrame = null;
-    protected JLabel cardImageLabel = null;
+    protected JFrame      cardImageFrame    = null;
+    protected JLabel      cardImageLabel    = null;
+    
     protected ListSelectionListener workbenchRowChangeListener = null;
-    protected boolean cardFrameWasShowing = false;
+    protected boolean               cardFrameWasShowing = false;
 
     /**
      * Constructs the pane for the spreadsheet.
@@ -143,8 +149,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             return;
         }
         this.workbench = workbench;
-        
-
         
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
@@ -498,6 +502,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
+        GridCellEditor cellEditor = new GridCellEditor();
+        UICacheManager.getInstance().hookUpUndoableEditListener(cellEditor);
+        
         for (int i = 0; i < tblModel.getColumnCount(); i++) 
         {
             column = tableArg.getColumnModel().getColumn(i);
@@ -527,7 +534,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             //XXX: Before Swing 1.1 Beta 2, use setMinWidth instead.
             column.setPreferredWidth(Math.max(maxWidth, cellWidth));
             
-            //column.setCellEditor(new GridCellEditor());
+            column.setCellEditor(cellEditor);
         }
         
         //tableArg.setCellEditor(new GridCellEditor());
@@ -550,7 +557,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         Collections.sort(items);
         ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
-                "Choose Fields to Carry Forward:", items);
+                "WB_CHOOSE_CARRYFORWARD", items);
         dlg.setSelectedObjects(selectedObjects);
         dlg.setModal(true);
         dlg.setVisible(true);  
@@ -575,8 +582,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     {
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
-        //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
         try
         {
             FormHelper.updateLastEdittedInfo(workbench);
@@ -762,13 +767,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     //------------------------------------------------------------
 
 
-    class GridCellEditor extends AbstractCellEditor implements TableCellEditor
+    class GridCellEditor extends AbstractCellEditor implements TableCellEditor, UndoableTextIFace
     {
-        protected JTextField textField = new JTextField();
+        protected JTextField  textField   = new JTextField();
+        protected UndoManager undoManager = new UndoManager();
 
         public GridCellEditor()
         {
-            //
+            textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         }
 
         /* (non-Javadoc)
@@ -799,8 +805,29 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                                                      int     column)
         {
             textField.setText(value != null ? value.toString() : "");
+            textField.selectAll();
+            undoManager.discardAllEdits();
+            UICacheManager.getUndoAction().setUndoManager(undoManager);
+            UICacheManager.getRedoAction().setUndoManager(undoManager);
             return textField;
         }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
+         */
+        public UndoManager getUndoManager()
+        {
+            return undoManager;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getText()
+         */
+        public JTextComponent getTextComponent()
+        {
+            return textField;
+        }
+        
      }
 
     

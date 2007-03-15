@@ -26,6 +26,8 @@ import java.awt.event.FocusEvent;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -35,6 +37,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 
@@ -50,7 +53,8 @@ import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 public class ValTextField extends JAutoCompTextField implements UIValidatable,
                                                                 GetSetValueIFace,
                                                                 DocumentListener,
-                                                                AppPrefsChangeListener
+                                                                AppPrefsChangeListener,
+                                                                UICacheManager.UndoableTextIFace
 {
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired = false;
@@ -62,7 +66,9 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected static ColorWrapper requiredfieldcolor = null;
 
     protected ValPlainTextDocument document;
-    protected String               defaultValue = null;
+    protected String               defaultValue      = null;
+    
+    protected UndoManager          undoManager       = null;
 
     /**
      * Constructor
@@ -296,7 +302,32 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         document           = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
+    
+    //--------------------------------------------------------
+    // UICacheManager.UndoableTextIFace
+    //--------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
+     */
+    public UndoManager getUndoManager()
+    {
+        if (undoManager == null)
+        {
+            undoManager = new UndoManager();
+            UICacheManager.getInstance().hookUpUndoableEditListener(this);
+        }
+        return undoManager;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getTextComponent()
+     */
+    public JTextComponent getTextComponent()
+    {
+        return this;
+    }
+    
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -320,6 +351,11 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             data      = isChanged ? defaultValue : "";
         }
         setText(data);
+        
+        if (undoManager != null)
+        {
+            undoManager.discardAllEdits();
+        }
 
         validateState();
 
