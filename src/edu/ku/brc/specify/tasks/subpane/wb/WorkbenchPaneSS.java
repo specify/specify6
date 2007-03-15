@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EventObject;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
@@ -106,11 +107,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     protected JButton     saveBtn         = null;
     protected JButton     deleteRowsBtn   = null;
-    protected JButton     cellCellsBtn    = null;
+    protected JButton     clearCellsBtn    = null;
     protected JButton     insertRowBtn    = null;
     protected JButton     addRowsBtn      = null;
     protected JButton     carryForwardBtn = null;
     protected JButton     toggleCardImageBtn = null;
+    protected JButton     showMapBtn      = null;
+    
+    protected List<JButton> selectionSensativeButtons = new Vector<JButton>();
     
     protected int         currentRow      = 0;
     
@@ -181,21 +185,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         });
         
-        spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    boolean enable = spreadSheet.getSelectedRow() > -1;
-                    cellCellsBtn.setEnabled(enable);
-                    insertRowBtn.setEnabled(enable);  
-                    deleteRowsBtn.setEnabled(enable); 
-
-                    setCurrentRow( spreadSheet.getSelectedRow());
-                }
-            }
-        });
-        
         saveBtn = new JButton(UICacheManager.getResourceString("Save"));
         saveBtn.setEnabled(false);
         saveBtn.addActionListener(new ActionListener()
@@ -214,14 +203,16 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         };
         deleteRowsBtn = createIconBtn("MinusSign", "WB_DELETE_ROW", deleteAction);
+        selectionSensativeButtons.add(deleteRowsBtn);
         
-        cellCellsBtn = createIconBtn("Eraser", "WB_CLEAR_CELLS", new ActionListener()
+        clearCellsBtn = createIconBtn("Eraser", "WB_CLEAR_CELLS", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 model.clearCells(spreadSheet.getSelectedRows(), spreadSheet.getSelectedColumns());
             }
         });
+        selectionSensativeButtons.add(clearCellsBtn);
         
         ActionListener insertAction = new ActionListener()
         {
@@ -233,6 +224,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         };
         
         insertRowBtn = createIconBtn("InsertSign", "WB_INSERT_ROW", insertAction);
+        selectionSensativeButtons.add(insertRowBtn);
 
         addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", new ActionListener()
         {
@@ -261,6 +253,40 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         });
         toggleCardImageBtn.setEnabled(true);
+        
+        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.Std16, "WB_SHOW_MAP", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showMapOfSelectedRecords();
+            }
+        });
+        // leave it off to start out
+        showMapBtn.setEnabled(false);
+        
+        // only add this to the list IF we actually have geo ref data
+        // otherwise we'll leave it permanently disabled
+        if (workbench.containsGeoRefData())
+        {
+            selectionSensativeButtons.add(showMapBtn);
+        }
+
+        // listen to selection changes to enable/disable certain buttons
+        spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    boolean enable = spreadSheet.getSelectedRow() > -1;
+                    for (JButton btn: selectionSensativeButtons)
+                    {
+                        btn.setEnabled(enable);
+                    }
+
+                    setCurrentRow( spreadSheet.getSelectedRow());
+                }
+            }
+        });
         
         // setup the JFrame to show images attached to WorkbenchRows
         cardImageFrame = new JFrame();
@@ -293,9 +319,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         noCardImageMessagePanel.add(new JLabel("No card image available for the selected row"));
         noCardImageMessagePanel.add(loadImgBtn);
         
+        // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn};
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn};
         PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
 
         int x = 3;
@@ -334,7 +361,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         builder.add(saveBtn,            cc.xy(7,3));
         builder.add(createSwitcher(),   cc.xy(9,3));
     }
-
+    
     /**
      * Setup the row (or selection) listener for the the Image Window. 
      */
@@ -470,7 +497,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
            }
        }
             
-       JComponent[] comps = { addRowsBtn, insertRowBtn, cellCellsBtn, deleteRowsBtn};
+       JComponent[] comps = { addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn};
        for (JComponent c : comps)
        {
            c.setVisible(isSpreadsheet);
@@ -525,6 +552,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         }
         return false;
+    }
+    
+    public void showMapOfSelectedRecords()
+    {
+        log.debug("Showing map of selected records");
     }
     
     /**

@@ -528,13 +528,13 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
                 String fieldName = item.getFieldName();
                 
                 // look for a Latitude1 field
-                if (fieldName.equals("Latitude1"))
+                if (fieldName.equals("latitude1"))
                 {
                     hasLat1 = true;
                 }
                 
                 // look for a Longitude1 field
-                if (fieldName.equals("Longitude1"))
+                if (fieldName.equals("longitude1"))
                 {
                     hasLon1 = true;
                 }
