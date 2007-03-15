@@ -544,5 +544,28 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         // returns true if both are present
         return (hasLat1 && hasLon1);
     }
+    
+    @Transient
+    public int getColumnIndex(int dataTableId, String fieldName)
+    {
+        // get the template mapping data
+        WorkbenchTemplate template = getWorkbenchTemplate();
+        Set<WorkbenchTemplateMappingItem> mappingItems = template.getWorkbenchTemplateMappingItems();
+        
+        for( WorkbenchTemplateMappingItem item: mappingItems )
+        {
+            int itemDataTableId = item.getSrcTableId();
+            if (itemDataTableId == dataTableId)
+            {
+                // look for a Latitude1 field
+                if (item.getFieldName().equals(fieldName))
+                {
+                    return item.getDataColumnIndex();
+                }
+            }
+        }
+        
+        return -1;
+    }
 
 }

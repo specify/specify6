@@ -701,14 +701,16 @@ public class LocalityMapper implements TimingTarget
 	private Pair<Double, Double> getLatLong(Locality loc)
 	{
         Double lat1 = loc.getLatitude1().doubleValue();
-        Double lat2 = loc.getLatitude2().doubleValue();
         Double long1 = loc.getLongitude1().doubleValue();
-        Double long2 = loc.getLongitude2().doubleValue();
-		if( lat2 != null && long2 != null )
+
+        if( loc.getLatitude2() != null && loc.getLongitude2() != null )
 		{
+            Double lat2 = loc.getLatitude2().doubleValue();
+            Double long2 = loc.getLongitude2().doubleValue();
 			return centerOfBBox(lat1,lat2,long1,long2);
 		}
-		return new Pair<Double, Double>(lat1,long1);
+		
+        return new Pair<Double, Double>(lat1,long1);
 	}
 
 	/**
@@ -796,14 +798,14 @@ public class LocalityMapper implements TimingTarget
 	{
 		// make sure we have a 5% buffer around the edge of the map
 		double latSpread = maxLat-minLat;
-		if( latSpread==0 )
+		if( latSpread<4 )
 		{
-			latSpread += 5;
+			latSpread = 5;
 		}
 		double longSpread = maxLong-minLong;
-		if( longSpread==0 )
+		if( longSpread<4 )
 		{
-			longSpread += 5;
+			longSpread = 5;
 		}
 
 		double bufferFactor = .05;
@@ -956,13 +958,13 @@ public class LocalityMapper implements TimingTarget
                     "global_mosaic",
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 
-            Image overlayImage = getMapFromService("129.237.201.104",
-                    "/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
-                    "states,rivers",
-                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
+//            Image overlayImage = getMapFromService("129.237.201.104",
+//                    "/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
+//                    "states,rivers",
+//                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 
 			mapIcon     = new ImageIcon(mapImage);
-            overlayIcon = new ImageIcon(overlayImage);
+//            overlayIcon = new ImageIcon(overlayImage);
 			cacheValid  = true;
 
 			mapWidth = mapIcon.getIconWidth();
@@ -997,7 +999,7 @@ public class LocalityMapper implements TimingTarget
 				}
 
 				mapIcon.paintIcon(c,g,x,y);
-                overlayIcon.paintIcon(c, g, x, y);
+//                overlayIcon.paintIcon(c, g, x, y);
 
 				Point lastLoc = null;
 				for( int i = 0; i<localities.size(); ++i )

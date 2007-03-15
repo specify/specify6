@@ -26,6 +26,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.Vector;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -64,16 +66,21 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.services.LocalityMapper;
+import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.FormHelper;
@@ -136,6 +143,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected ListSelectionListener workbenchRowChangeListener = null;
     protected boolean               cardFrameWasShowing        = false;
     protected boolean               showingCardImageLabel      = true;
+    
+    protected JFrame                mapFrame             = null;
+    protected JLabel                mapImageLabel             = null;
+    protected boolean               mapFrameWasShowing        = false;
+    // XXX PREF
+    protected int                   mapSize                   = 500;
     
     /**
      * Constructs the pane for the spreadsheet.
@@ -290,11 +303,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         // setup the JFrame to show images attached to WorkbenchRows
         cardImageFrame = new JFrame();
+        cardImageFrame.setTitle(getResourceString("WB_GEO_REF_DATA_MAP"));
         cardImageLabel = new JLabel();
         cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-        cardImageLabel.setSize(500,500);
+        cardImageLabel.setSize(mapSize,mapSize);
         cardImageFrame.add(cardImageLabel);
-        cardImageFrame.setSize(500,500);
+        cardImageFrame.setSize(mapSize+30,mapSize+30);
         setupWorkbenchRowChangeListener();
         
         noCardImageMessagePanel = new JPanel();
@@ -318,6 +332,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         noCardImageMessagePanel.add(new JLabel("No card image available for the selected row"));
         noCardImageMessagePanel.add(loadImgBtn);
+        
+        // setup the mapping features
+        mapFrame = new JFrame();
+        mapImageLabel = new JLabel();
+        mapImageLabel.setSize(500,500);
+        mapFrame.add(mapImageLabel);
+        mapFrame.setSize(500,500);
+        mapFrameWasShowing = false;
         
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
@@ -504,6 +526,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
        }
     }
     
+    public void toggleMapFrameVisible()
+    {
+        boolean visible = mapFrame.isVisible();
+        mapFrame.setVisible(!visible);
+    }
+    
     /**
      * Shows / Hides the Image Window. 
      */
@@ -521,16 +549,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(true);
-            int[] selectedRows = spreadSheet.getSelectedRows();
-            int first = -1;
-            int last = -1;
-            if (selectedRows.length!=0)
-            {
-                first = selectedRows[0];
-                last = selectedRows[selectedRows.length-1];
-            }
-            ListSelectionEvent lse = new ListSelectionEvent(spreadSheet,first,last,false);
-            workbenchRowChangeListener.valueChanged(lse);
+            showCardImageForSelectedRow();
         }
     }
     
@@ -557,6 +576,73 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     public void showMapOfSelectedRecords()
     {
         log.debug("Showing map of selected records");
+        showMapBtn.setEnabled(false);
+        int[] selection = spreadSheet.getSelectedRows();
+        if (selection.length==0)
+        {
+            return;
+        }
+        // otherwise
+        
+        // build up a list of temporary Locality records to feed to the LocalityMapper
+        List<Locality> fakeLocalityRecords = new Vector<Locality>(selection.length);
+        List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
+        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
+        int lat1Index = workbench.getColumnIndex(localityTableId, "latitude1");
+        int lon1Index = workbench.getColumnIndex(localityTableId, "longitude1");
+        int lat2Index = workbench.getColumnIndex(localityTableId, "latitude2");
+        int lon2Index = workbench.getColumnIndex(localityTableId, "longitude2");
+        for (int i = 0; i < selection.length; ++i )
+        {
+            int index = selection[i];
+            
+            Locality newLoc = new Locality();
+            newLoc.initialize();
+
+            WorkbenchRow row = rows.get(index);
+
+            String lat1 = row.getData(lat1Index);
+            String lon1 = row.getData(lon1Index);
+            newLoc.setLatitude1(new BigDecimal(lat1));
+            newLoc.setLongitude1(new BigDecimal(lon1));
+            
+            if (lat2Index != -1 && lon2Index != -1)
+            {
+                String lat2 = row.getData(lat2Index);
+                String lon2 = row.getData(lon2Index);
+                newLoc.setLatitude2(new BigDecimal(lat2));
+                newLoc.setLongitude2(new BigDecimal(lon2));
+            }
+            fakeLocalityRecords.add(newLoc);
+        }
+        
+        LocalityMapper mapper = new LocalityMapper(fakeLocalityRecords);
+        mapper.setMaxMapHeight(500);
+        mapper.setMaxMapWidth(500);
+        mapper.setShowArrows(false);
+        mapper.setDotColor(Color.RED);
+        MapperListener mapperListener = new MapperListener()
+        {
+            public void exceptionOccurred(Exception e)
+            {
+                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                statusBar.setText("Failed to get map from service");
+            }
+
+            public void mapReceived(Icon map)
+            {
+                mapImageReceived(map);
+            }
+        };
+        mapper.getMap(mapperListener);
+    }
+    
+    protected void mapImageReceived(Icon map)
+    {
+        mapFrameWasShowing = true;
+        mapFrame.setVisible(true);
+        mapImageLabel.setIcon(map);
+        showMapBtn.setEnabled(true);
     }
     
     /**
@@ -828,6 +914,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             {
                 toggleCardImageVisible();
             }
+            if (mapFrameWasShowing)
+            {
+                toggleMapFrameVisible();
+            }
         }
         else
         {
@@ -839,6 +929,16 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             else
             {
                 cardFrameWasShowing = false;
+            }
+            
+            if (mapFrame!=null && mapFrame.isVisible())
+            {
+                mapFrameWasShowing = true;
+                toggleMapFrameVisible();
+            }
+            else
+            {
+                mapFrameWasShowing = false;
             }
         }
         super.showingPane(show);

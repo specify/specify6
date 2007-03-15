@@ -54,7 +54,7 @@ public class MapGrabber
 	/** The map server host. */
 	protected String host = "mapus.jpl.nasa.gov";
 	/** URL path and parameters for the map service. */
-	protected String defaultPathAndParams = "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual";
+	protected String defaultPathAndParams = "/browse.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual";
 	/** Value of the map service layers parameter. */
 	protected String layers = "global_mosaic";
 
