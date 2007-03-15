@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
@@ -273,15 +274,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 showMapOfSelectedRecords();
             }
         });
-        // leave it off to start out
-        showMapBtn.setEnabled(false);
-        
-        // only add this to the list IF we actually have geo ref data
-        // otherwise we'll leave it permanently disabled
-        if (workbench.containsGeoRefData())
-        {
-            selectionSensativeButtons.add(showMapBtn);
-        }
+        // only enable it if the workbench has geo ref data
+        showMapBtn.setEnabled(workbench.containsGeoRefData());
 
         // listen to selection changes to enable/disable certain buttons
         spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -572,9 +566,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         int[] selection = spreadSheet.getSelectedRows();
         if (selection.length==0)
         {
-            return;
+            // if none are selected, map all of them
+            int rowCnt = spreadSheet.getRowCount();
+            selection = new int[rowCnt];
+            for (int i = 0; i < rowCnt; ++i)
+            {
+                selection[i]=i;
+            }
         }
-        // otherwise
         
         // build up a list of temporary Locality records to feed to the LocalityMapper
         List<Locality> fakeLocalityRecords = new Vector<Locality>(selection.length);
