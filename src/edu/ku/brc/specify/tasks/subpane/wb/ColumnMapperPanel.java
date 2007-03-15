@@ -182,7 +182,6 @@ public class ColumnMapperPanel extends JPanel
         dataFileColPanel = new JPanel();
         dataFileColPanel.setLayout(new NavBoxLayoutManager(0,2));
         JScrollPane sp = new JScrollPane(dataFileColPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //leftSide.add(sp, cc.xywh(1, 1, 4, 1));
         
         PanelBuilder leftSide = new PanelBuilder(new FormLayout("f:p:g, p, 2px, p", "p"));        
         addMapItemBtn = createIconBtn("PlusSign", "WB_ADD_MAPPING_ITEM", new ActionListener()
@@ -276,18 +275,9 @@ public class ColumnMapperPanel extends JPanel
             }
         });
         
-        if (dataFileInfo != null)
-        {
-            for (ImportColumnInfo colInfo : dataFileInfo.getColInfo())
-            {
-                addMappingItem(colInfo, null);
-            }
-        
-            autoMap();
-        }
-        
         okBtn     = new JButton(getResourceString("OK")); 
         cancelBtn = new JButton(getResourceString("Cancel"));
+        okBtn.setEnabled(false);
         
         builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1, 11, 5, 1));
         
@@ -308,7 +298,16 @@ public class ColumnMapperPanel extends JPanel
                 isCancelled = false;
             }
         });
-        okBtn.setEnabled(false);
+        
+        if (dataFileInfo != null)
+        {
+            for (ImportColumnInfo colInfo : dataFileInfo.getColInfo())
+            {
+                addMappingItem(colInfo, null);
+            }
+        
+            autoMap();
+        }
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
     }
@@ -346,7 +345,8 @@ public class ColumnMapperPanel extends JPanel
         unmapBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped());
         
         addMapItemBtn.setEnabled(fieldItem != null && !fieldItem.isInUse());
-        removeMapItemBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped());
+        
+        removeMapItemBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped() && mappingItems.get(currentInx).isNew());
         
         if (okBtn != null)
         {
@@ -450,11 +450,35 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void addMapItem()
     {
+        int maxDataColIndex = -1;
+
+        if (mappingItems.size() > 0)
+        {
+            for (FieldMappingPanel fmp : mappingItems)
+            {
+                ImportColumnInfo colInfo = fmp.getColInfo();
+                if (colInfo != null)
+                {
+                    maxDataColIndex = Math.max(maxDataColIndex, colInfo.getColInx());
+                }
+            }
+            maxDataColIndex++;
+            
+        } else
+        {
+            maxDataColIndex = 0;
+        }
+
+        System.err.println("New Col Index["+maxDataColIndex+"]");
+        
         TableFieldPair    tblField  = (TableFieldPair)fieldList.getSelectedValue();
         String            fieldType = tblField.getFieldInfo().getType();
-        ImportColumnInfo  colInfo   = new ImportColumnInfo(0, ImportColumnInfo.getType(fieldType), tblField.getFieldInfo().getColumn(), null);
+        ImportColumnInfo  colInfo   = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(fieldType), tblField.getFieldInfo().getColumn(), null);
         
         FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
+        
+        fmp.setNew(true); // new Items that was not in the data file.
+        
         selectMappingPanel(fmp);
 
         map(tblField);
@@ -583,6 +607,8 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void autoMap()
     {
+        boolean missedMapping = false;  // assume we can auto map everything
+        
         currentInx = 0;
         for (FieldMappingPanel fmp : mappingItems)
         {
@@ -625,13 +651,17 @@ public class ColumnMapperPanel extends JPanel
                 }
             }
             
-            //fmp.setField(tblField);
             if (tblField != null)
             {
                 map(tblField);
+            } else
+            {
+                missedMapping = true; // oops, couldn't find a mapping for something
             }
             currentInx++;
         }
+        
+        okBtn.setEnabled(missedMapping);
         
         currentInx = -1;
         updateEnabledState();
@@ -668,7 +698,7 @@ public class ColumnMapperPanel extends JPanel
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());
                 item.setViewOrder(order);
-                item.setDataColumnIndex(colInfo.getColInx());
+                item.setDataColumnIndex(fmp.isNew() ? -1 : colInfo.getColInx());
                 item.setTabOrder(order);  // set initial tab order to the view order
                 order++;
                 item.setWorkbenchTemplate(wbTemplate);
@@ -687,18 +717,19 @@ public class ColumnMapperPanel extends JPanel
     //------------------------------------------------------------
     class FieldMappingPanel extends JPanel
     {
-        protected String    noMappingStr = getResourceString("WB_NO_MAPPING");
+        protected String            noMappingStr = getResourceString("WB_NO_MAPPING");
 
-        protected boolean   hasFocus      = false;
-        protected Color     bgColor       = null;
-        protected JLabel    fieldLabel;
-        protected JLabel    mappingLabel;
-        protected JLabel    closeBtn;
-        protected JLabel    iconLabel;
-        protected ImageIcon icon;
+        protected boolean           hasFocus      = false;
+        protected Color             bgColor       = null;
+        protected JLabel            fieldLabel;
+        protected JLabel            mappingLabel;
+        protected JLabel            closeBtn;
+        protected JLabel            iconLabel;
+        protected ImageIcon         icon;
         
-        protected TableFieldPair              tblField = null;
-        protected ImportColumnInfo colInfo = null;
+        protected TableFieldPair    tblField      = null;
+        protected ImportColumnInfo  colInfo       = null;
+        protected boolean           isNew         = false;
         
         protected FieldMappingPanel thisItem;
         
@@ -809,6 +840,26 @@ public class ColumnMapperPanel extends JPanel
         {
             return fieldLabel.getText();
         }
+
+        /**
+         * Returns whether this is a new item, which means it was NOT in the data file.
+         * @return  whether this is a new item, which means it was NOT in the data file.
+         */
+        public boolean isNew()
+        {
+            return isNew;
+        }
+
+        /**
+         * Sets whether it is a new item, that wasn't in the data file.
+         * @param isNew true its new, false it was from the data file.
+         */
+        public void setNew(boolean isNew)
+        {
+            this.isNew = isNew;
+        }
+        
+        
     }
     
     //------------------------------------------------------------------

@@ -72,8 +72,10 @@ public class CSVImport implements DataImport
             Hashtable<Integer, WorkbenchTemplateMappingItem> colHash = new Hashtable<Integer, WorkbenchTemplateMappingItem>();
             for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
             {
-                System.out.println("Hashing ["+wbtmi.getDataColumnIndex()+"] ");
-                colHash.put(wbtmi.getDataColumnIndex(), wbtmi);
+                if (wbtmi.getDataColumnIndex() > -1)
+                {
+                    colHash.put(wbtmi.getDataColumnIndex(), wbtmi);
+                }
             }
             
             while (csv.readRecord())
