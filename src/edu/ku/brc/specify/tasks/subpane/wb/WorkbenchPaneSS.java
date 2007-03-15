@@ -1024,7 +1024,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             return textField;
         }
-        
      }
 
     

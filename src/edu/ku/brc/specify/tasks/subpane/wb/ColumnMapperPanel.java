@@ -94,7 +94,8 @@ public class ColumnMapperPanel extends JPanel
     protected int                            currentInx = -1;
     protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>>();
     
-    protected ImportDataFileInfo             dataFileInfo;
+    protected ImportDataFileInfo             dataFileInfo      = null;
+    protected WorkbenchTemplate              workbenchTemplate = null;
     
     protected ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
     protected ImageIcon blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
@@ -118,9 +119,22 @@ public class ColumnMapperPanel extends JPanel
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
+    public ColumnMapperPanel(final JDialog dlg, final WorkbenchTemplate wbTemplate)
+    {
+        this.dlg          = dlg;
+        this.workbenchTemplate   = wbTemplate;
+        
+        createUI();
+    }
+    
+    /**
+     * Constructor.
+     * @param dlg the dialog this will be housed into
+     * @param dataFileInfo the information about the data file.
+     */
     public ColumnMapperPanel(final JDialog dlg)
     {
-        this(dlg, null);
+        this(dlg, (ImportDataFileInfo)null);
     }
     
     /**
@@ -188,7 +202,7 @@ public class ColumnMapperPanel extends JPanel
         {
             public void actionPerformed(ActionEvent ae)
             {
-                addMapItem();
+                addMapItem(true);
             }
         });
         removeMapItemBtn = createIconBtn("MinusSign", "WB_REMOVE_MAPPING_ITEM", new ActionListener()
@@ -306,7 +320,12 @@ public class ColumnMapperPanel extends JPanel
                 addMappingItem(colInfo, null);
             }
         
-            autoMap();
+            autoMapFromDataFile();
+        }
+        
+        if (workbenchTemplate != null)
+        {
+            fillFromTemplate();
         }
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
@@ -448,7 +467,7 @@ public class ColumnMapperPanel extends JPanel
     /**
      * Adds a new Column to the Template that is not represented by a row in a file (if there is a file). 
      */
-    protected void addMapItem()
+    protected void addMapItem(final boolean isNew)
     {
         int maxDataColIndex = -1;
 
@@ -469,15 +488,13 @@ public class ColumnMapperPanel extends JPanel
             maxDataColIndex = 0;
         }
 
-        System.err.println("New Col Index["+maxDataColIndex+"]");
-        
         TableFieldPair    tblField  = (TableFieldPair)fieldList.getSelectedValue();
         String            fieldType = tblField.getFieldInfo().getType();
         ImportColumnInfo  colInfo   = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(fieldType), tblField.getFieldInfo().getColumn(), null);
         
         FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
         
-        fmp.setNew(true); // new Items that was not in the data file.
+        fmp.setNew(isNew); // new Items that was not in the data file.
         
         selectMappingPanel(fmp);
 
@@ -605,7 +622,7 @@ public class ColumnMapperPanel extends JPanel
     /**
      * Automap by column from the data's columns to the Data Model. 
      */
-    protected void autoMap()
+    protected void autoMapFromDataFile()
     {
         boolean missedMapping = false;  // assume we can auto map everything
         
@@ -665,6 +682,39 @@ public class ColumnMapperPanel extends JPanel
         
         currentInx = -1;
         updateEnabledState();
+    }
+    
+    /**
+     * Fill the UI from a WorkbenchTemplate. 
+     */
+    protected void fillFromTemplate()
+    {
+        // Map the TableInfo's Table ID to it's index in the Vector
+        Hashtable<Integer, Integer> tblIdToListIndex = new Hashtable<Integer, Integer>();
+        for (int i=0;i<tableInfoList.size();i++)
+        {
+            tblIdToListIndex.put(tableInfoList.get(i).getTableInfo().getTableId(), i);
+        }
+        
+        Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(workbenchTemplate.getWorkbenchTemplateMappingItems());
+        Collections.sort(items);
+        for (WorkbenchTemplateMappingItem  wbtmi : items)
+        {
+            int inx = tblIdToListIndex.get(wbtmi.getSrcTableId());
+            tableList.setSelectedIndex(inx);
+            
+            int fieldNum = 0;
+            for (TableFieldPair pair : tableFieldList.get(tableInfoList.get(inx).getTableInfo()))
+            {
+                if (wbtmi.getFieldName().equals(pair.getFieldInfo().getName()))
+                {
+                    fieldList.setSelectedIndex(fieldNum);
+                    break;
+                }
+                fieldNum++;
+            }
+            addMapItem(true);
+        }
     }
     
     /**

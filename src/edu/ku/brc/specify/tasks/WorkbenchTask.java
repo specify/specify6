@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +64,8 @@ import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
@@ -504,32 +507,45 @@ public class WorkbenchTask extends BaseTask
             UIHelper.centerAndShow(dlg);
             if (!dlg.isCancelled())
             {
-                session = DataProviderFactory.getInstance().createSession();
-                try
-                {
-                    WorkbenchTemplate template = dlg.getSelectedObject();
-                    // load workbenches so they aren't lazy
-                    // this is needed later on when the new WB is added to the template 
-                    session.attach(template);
-                    for (Workbench wb : template.getWorkbenches())
-                    {
-                        wb.getName();
-                    }
-                    
-                    return template;
-                    
-                } catch (Exception ex)
-                {
-                    log.error(ex);
-                    
-                } finally 
-                {
-                    session.close();
-                }
+                WorkbenchTemplate template = dlg.getSelectedObject();
+                loadTemplateFromData(template);
+                return template;
             }
         }
 
         return null;
+    }
+    
+    /**
+     * Loads Template completely from the database into memory.
+     * @param template the template to be loaded
+     * @return true if it was loaded, false if there was error.
+     */
+    protected boolean loadTemplateFromData(final WorkbenchTemplate template)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            // load workbenches so they aren't lazy
+            // this is needed later on when the new WB is added to the template 
+            session.attach(template);
+            for (Workbench wb : template.getWorkbenches())
+            {
+                wb.getName();
+                template.getWorkbenchTemplateMappingItems().size();
+            }
+            return true;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            session.close();
+        }
+        return false;
+        
     }
     
     /**
@@ -1133,6 +1149,136 @@ public class WorkbenchTask extends BaseTask
         }
     }
     
+    protected void editTemplate(final WorkbenchTemplate workbenchTemplate)
+    {
+        loadTemplateFromData(workbenchTemplate);
+        
+        JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), "Column Mapper", true);
+        ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg, workbenchTemplate);
+       
+        dlg.setContentPane(mapper);
+        dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dlg.pack();
+        UIHelper.centerAndShow(dlg);
+         
+        if (!mapper.isCancelled())
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+
+                WorkbenchTemplate newWorkbenchTemplate = mapper.createWorkbenchTemplate();
+                
+                session.attach(workbenchTemplate);
+                
+                Vector<WorkbenchTemplateMappingItem> newItems = new Vector<WorkbenchTemplateMappingItem>(newWorkbenchTemplate.getWorkbenchTemplateMappingItems());
+                Vector<WorkbenchTemplateMappingItem> oldItems = new Vector<WorkbenchTemplateMappingItem>(workbenchTemplate.getWorkbenchTemplateMappingItems());
+                
+                // Copying over the New Items
+                // Start by looking at each new item and see if it is in the old list
+                // if it is in the old list then ignore it
+                // if it isn't in the old list than add it into the old template
+                
+                for (WorkbenchTemplateMappingItem wbtmi : newItems)
+                {
+                    // find a match
+                    boolean foundMatch = false;
+                    for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
+                    {
+                        if (oldWbtmi.getTableId() == wbtmi.getTableId() &&
+                            oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
+                        {
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatch)
+                    {
+                        workbenchTemplate.getWorkbenchTemplateMappingItems().add(wbtmi);
+                        wbtmi.setWorkbenchTemplate(workbenchTemplate);
+                    }
+                }
+                
+                Vector<Integer> columnsToBeDeleted = new Vector<Integer>();
+                // Removing the Items
+                // For each old item (it has to have a non-null ID) see if it is in the new list
+                // if it is not in the new then delete it
+                // if it is then ignore it
+                for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
+                {
+                    if (oldWbtmi.getWorkbenchTemplateMappingItemId() == null)
+                    {
+                        continue; // item is a new one
+                    }
+                    
+                    // Search the list and if the items isn't there than delete it.
+                    boolean foundMatch = false;
+                    for (WorkbenchTemplateMappingItem wbtmi : newItems)
+                    {
+                        if (oldWbtmi.getTableId() == wbtmi.getTableId() &&
+                            oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
+                        {
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatch)
+                    {
+                        workbenchTemplate.getWorkbenchTemplateMappingItems().remove(oldWbtmi);
+                        oldWbtmi.setWorkbenchTemplate(null);
+                        columnsToBeDeleted.add(oldWbtmi.getViewOrder());
+                    }
+                }
+                
+                //System.out.println("Removing Columns:");
+                //for (Integer col : columnsToBeDeleted)
+                //{
+                //    System.out.println(col);
+                //}
+                
+                session.beginTransaction();
+
+                //Vector<WorkbenchDataItem> itemsToBeDeleted = new Vector<WorkbenchDataItem>();
+                for (Workbench workbench : workbenchTemplate.getWorkbenches())
+                {
+                    session.attach(workbench);
+                    
+                    for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
+                    {
+                        Vector<WorkbenchDataItem> items = new Vector<WorkbenchDataItem>(row.getWorkbenchDataItems());
+                        for (WorkbenchDataItem item : items)
+                        {
+                            for (Integer col : columnsToBeDeleted)
+                            {
+                                if (item.getColumnNumber().intValue() == col.intValue())
+                                {
+                                    row.getWorkbenchDataItems().remove(item);
+                                    item.setWorkbenchRow(null);
+                                    session.delete(item);
+                                }
+                            }
+                        }
+                    }
+                    session.saveOrUpdate(workbench);
+                    session.evict(workbench);
+                }
+                //StringBuffer strBuf = new StringBuilder("delete from workbenchdataitem where WorkbenchDataItem");
+            
+                session.saveOrUpdate(workbenchTemplate);
+                session.commit();
+                session.flush();
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                
+            } finally
+            {
+                session.close();    
+            }
+        }
+    }
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -1146,7 +1292,7 @@ public class WorkbenchTask extends BaseTask
         if (cmdAction.isAction(EDIT_TEMPLATE))
         {
             WorkbenchTemplate template = (WorkbenchTemplate)cmdAction.getProperty("template");
-            log.info("Trying to edit template "+template.getName());
+            editTemplate(template);
             
         } else if (cmdAction.isAction(EDIT_WORKBENCH))
         {
