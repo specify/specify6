@@ -6,11 +6,20 @@
   <tocitem text="Specify" target="specify">
     <tocitem text="Logging In" target="login"/>
     <tocitem text="Getting Started" target="Startup"/>
-    <tocitem text="Data Entry" target="Data_Entry"/>
-    <tocitem text="Workbench" target="Workbench">
-      <tocitem text="Importing Data" target="WorkbenchImportData">
-      	<tocitem text="CVS Import" target="WorkbenchImportCvs" />
-      	</tocitem>
-    </tocitem>
+    <tocitem text="Tasks">
+      <tocitem text="Data Entry" target="Data_Entry"/>
+      <tocitem text="Labels" target="Labels"/>
+      <tocitem text="Reports" target="Reports"/>
+      <tocitem text="Interactions" target="Interactions"/>
+      <tocitem text="Statistics" target="Statistics"/>
+      <tocitem text="Search" target="Search"/>
+      <tocitem text="Workbench" target="Workbench">
+        <tocitem text="Importing Data" target="WorkbenchImportData">
+      	  <tocitem text="CVS Import" target="WorkbenchImportCvs" />
+      	  </tocitem>
+      </tocitem>
+      <tocitem text="Export" target="Export"/>
+      <tocitem text="Express Search" target="Express_Search"/>
+    </tocitem>  
   </tocitem>
 </toc>

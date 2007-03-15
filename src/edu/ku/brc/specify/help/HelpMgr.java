@@ -22,6 +22,7 @@ import javax.swing.AbstractButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +32,7 @@ import edu.ku.brc.specify.Specify;
 /**
  * @author timbo
  * 
- * @code_status Alpha
+ * @code_status Beta
  * 
  */
 public class HelpMgr
@@ -71,6 +72,7 @@ public class HelpMgr
     {
         JMenu     help      = new JMenu(getResourceString("Help"));
         JMenuItem menu_help = new JMenuItem("Specify");
+        menu_help.setAccelerator(KeyStroke.getKeyStroke("F1"));
         registerComponent(menu_help);
         help.add(menu_help);
         Specify.getSpecify().getMenuBar().add(help);
@@ -168,6 +170,7 @@ public class HelpMgr
      */
     static private String getCurrentContext()
     {
+        System.out.println(ContextMgr.getCurrentContext().getName());
         return ContextMgr.getCurrentContext().getName();
     }
 
