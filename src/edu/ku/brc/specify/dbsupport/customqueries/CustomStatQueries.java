@@ -206,10 +206,10 @@ public class CustomStatQueries implements CustomQuery
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();
         
-        for (Object data : resultsList)
-        {
-            System.out.println("overdueLoans "+data);
-        }
+        //for (Object data : resultsList)
+        //{
+        //    System.out.println("overdueLoans "+data);
+        //}
         session.close();
         
         return true;

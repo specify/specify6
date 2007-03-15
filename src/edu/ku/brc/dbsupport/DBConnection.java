@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * A singleton that remembers all the information needed for creating a Database connection. 
@@ -34,13 +35,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DBConnection
 {
-    //private static final Logger log = Logger.getLogger(DBConnection.class);
+    private static final Logger log = Logger.getLogger(DBConnection.class);
     
     protected String dbUsername;
     protected String dbPassword;
-    protected String dbConnectionStr;
+    protected String dbConnectionStr;             // For Create or Open
+    protected String dbCloseConnectionStr = null; // for closing
     protected String dbDriver;
-    protected String dbDialect; // needed for Hibernate
+    protected String dbDialect;                   // needed for Hibernate
     protected String dbName;
     
     protected boolean argHaveBeenChecked = false;
@@ -122,7 +124,26 @@ public class DBConnection
         return con;
     }
     
-
+    /**
+     * This is primarily for Derby non-networked database. 
+     */
+    public void close()
+    {
+        if (dbCloseConnectionStr != null)
+        {
+            try
+            {
+                Connection con = DriverManager.getConnection(dbCloseConnectionStr, dbUsername, dbPassword);
+                if (con != null)
+                {
+                    con.close();
+                }
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+        }
+    }
     
     /**
      * Returns the instance to the singleton.
@@ -203,6 +224,24 @@ public class DBConnection
     public String getConnectionStr()
     {
         return dbConnectionStr;
+    }
+
+    /**
+     * Returns the Close Connection String.
+     * @return the Close Connection String.
+     */
+    public String getDbCloseConnectionStr()
+    {
+        return dbCloseConnectionStr;
+    }
+
+    /**
+     * Sets the Close Connection String.
+     * @param dbCloseConnectionStr the string (can be null to clear it)
+     */
+    public void setDbCloseConnectionStr(final String dbCloseConnectionStr)
+    {
+        this.dbCloseConnectionStr = dbCloseConnectionStr;
     }
 
     /**

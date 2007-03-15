@@ -224,7 +224,7 @@ public class SpecifyDBConverter
         if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                 driverInfo.getDialectClassName(), 
                 databaseName, 
-                driverInfo.getConnectionStr(databaseHost, databaseName), 
+                driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, databaseName), 
                 userName, 
                 password))
         {
@@ -240,8 +240,15 @@ public class SpecifyDBConverter
         
         System.out.println("Preparing new database: completed");
         
+        String hostName = "localhost";
+        
         // This will log us in and return true/false
-        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, "rods", "rods"))
+        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
+                "org.hibernate.dialect.MySQLDialect", 
+                databaseName, 
+                "jdbc:mysql://"+hostName+"/"+databaseName, 
+                "rods", 
+                "rods"))
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }

@@ -1584,7 +1584,7 @@ public class BuildSampleDatabase
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                     driverInfo.getDialectClassName(), 
                     dbName, 
-                    driverInfo.getConnectionStr(hostName, dbName), 
+                    driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName), 
                     username, 
                     password))
             {
@@ -1694,7 +1694,7 @@ public class BuildSampleDatabase
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
         if (driverInfo == null)
         {
-            throw new RuntimeException("COuldn't find driver by name ["+driverInfo+"] in driver list.");
+            throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
         }
         schemaGen.generateSchema(driverInfo, databaseHost, dbName, userName, password);
 
@@ -1715,7 +1715,7 @@ public class BuildSampleDatabase
         if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                               driverInfo.getDialectClassName(), 
                               dbName, 
-                              driverInfo.getConnectionStr(databaseHost, dbName), 
+                              driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName), 
                               userName, 
                               password))
         {
@@ -1908,7 +1908,7 @@ public class BuildSampleDatabase
             super();
             
             driverList = DatabaseDriverInfo.getDriversList();
-            int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null, null));
+            int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null));
             
             drivers     = new JComboBox(driverList);
             drivers.setSelectedIndex(inx);

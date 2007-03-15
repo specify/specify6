@@ -29,8 +29,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.File;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -52,8 +50,6 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -71,7 +67,7 @@ import edu.ku.brc.helpers.XMLHelper;
 @Table(name = "appresource")
 public class AppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {
-    private static final Logger  log       = Logger.getLogger(AppResource.class);
+    //private static final Logger  log       = Logger.getLogger(AppResource.class);
     
     // Fields    
 
@@ -429,12 +425,13 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
                 ard.initialize();
                 ard.setAppResource(this);
                 appResourceDatas.add(ard);
+                
             } else
             {
                 ard = appResourceDatas.iterator().next();
             }
 
-            ard.setData(Hibernate.createBlob(dataStr.getBytes()));
+            ard.setData(dataStr.getBytes());
 
 
         } else if (appResourceDatas.size() > 0)
@@ -453,42 +450,30 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     {
         getAppResourceDatas(); // Must call this before accessing it as a local data member
         
-        try
+        AppResourceData ard = null;
+        if (appResourceDatas.size() > 0)
         {
-            AppResourceData ard = null;
-            Blob blobData = null;
-            if (appResourceDatas.size() > 0)
+            ard = appResourceDatas.iterator().next();
+            if (ard != null)
             {
-                ard = appResourceDatas.iterator().next();
-                if (ard != null)
-                {
-                    blobData = ard.getData();
-                }
+                return new String(ard.getData());
             }
-            
-            String str = null;
-            if (blobData == null && StringUtils.isNotEmpty(fileName))
-            {
-                File file = new File(fileName);
-                str = XMLHelper.getContents(file);
-                timestampCreated  = new Date(file.lastModified());
-                timestampModified = timestampCreated;
-            }
-            
-            if (str == null && blobData != null && blobData.length() > 0)
-            {
-                str = new String(blobData.getBytes(1L, (int)blobData.length()));
-            }
-            
-            if (str != null && str.length() > 0)
-            {
-               return StringEscapeUtils.unescapeXml(str);
-            }
-
-        } catch (SQLException ex)
-        {
-            log.error(ex);
         }
+        
+        String str = null;
+        if (StringUtils.isNotEmpty(fileName))
+        {
+            File file = new File(fileName);
+            str = XMLHelper.getContents(file);
+            timestampCreated  = new Date(file.lastModified());
+            timestampModified = timestampCreated;
+        }
+
+        if (str != null && str.length() > 0)
+        {
+           return StringEscapeUtils.unescapeXml(str);
+        }
+
         return null;
     }
     

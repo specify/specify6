@@ -34,6 +34,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -53,10 +54,10 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
 
     // Fields    
 
-     protected Long appResourceDataId;
-     protected java.sql.Blob data;
-     private AppResource AppResource;
-     private ViewSetObj ViewSetObj;
+     protected Long        appResourceDataId;
+     protected byte[]      data;
+     protected AppResource AppResource;
+     protected ViewSetObj  ViewSetObj;
 
 
     // Constructors
@@ -131,6 +132,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     /**
      * 
      */
+    /*
     @Column(name = "data", unique = false, nullable = false, insertable = true, updatable = true, length = 1073741823)
     public java.sql.Blob getData() {
         return this.data;
@@ -138,8 +140,18 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     
     public void setData(java.sql.Blob data) {
         this.data = data;
+    }*/
+    
+    @Lob
+    @Column(name = "data", unique = false, nullable = true, insertable = true, updatable = true, length=16000000)
+    public byte[] getData() {
+        return this.data;
     }
-
+    
+    public void setData(final byte[] data) {
+        this.data = data;
+    }
+    
     /**
      * 
      */

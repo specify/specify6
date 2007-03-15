@@ -19,7 +19,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,9 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,7 +48,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -91,7 +87,6 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
-import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -100,32 +95,14 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
-import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
-import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
@@ -1285,7 +1262,14 @@ public class FormEditor implements DatabaseLoginListener
                 UICacheManager.getInstance(); // initializes it first thing
                 UICacheManager.setAppName("Specify");
                 
-                if (UIHelper.tryLogin( "com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", "testfish", "jdbc:mysql://localhost/testfish", "rods", "rods"))
+                String hostName = "localhost";
+                
+                if (UIHelper.tryLogin( "com.mysql.jdbc.Driver", 
+                                       "org.hibernate.dialect.MySQLDialect", 
+                                       "testfish", 
+                                       "jdbc:mysql://"+hostName+"/testfish", 
+                                       "rods", 
+                                       "rods"))
                 {
                     ImportDataFileInfo dataFileInfo = new ImportDataFileInfo(new File("/home/rods/Documents/_GuyanaTripX.xls"));
 

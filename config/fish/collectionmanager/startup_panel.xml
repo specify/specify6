@@ -18,17 +18,18 @@
                 <sql><statement><![CDATA[select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = 0 and quantityresolved < quantity and (IsClosed = 0 or IsClosed is null)]]></statement></sql>
                 <link>ListOnLoan</link>
             </item>
-            
+            <!--
             <item title="Items On Loan">
                 <sql type="jpa" name="ItemsOnLoan"><statement><![CDATA[select count(loanPhysicalObjectId) AS ItemsOnLoanCount from LoanPhysicalObject lpo Inner Join lpo.loan l where (l.isGift = false) and (quantityResolved < quantity and (isClosed = false or isClosed is null))]]></statement></sql>
                 <link>ListOnLoan</link>
             </item>
+            -->
             <item title="Overdue Loans">
                 <sql type="custom" name="OverdueLoans"/>
                 <link>OverdueLoansList</link>
             </item>
             <item title="Open Loans">
-                <sql type="jpa" name="OpenLoans"><statement><![CDATA[select count(loanId) as OpenLoanCount from Loan l where l.isGift = false and (isClosed = false or isClosed is null)]]></statement></sql>
+                <sql type="jpa" name="OpenLoans"><statement><![CDATA[select count(loanId) as OpenLoanCount from Loan l where l.isGift = 0 and (isClosed = 0 or isClosed is null)]]></statement></sql>
                 <link>ListOnLoan</link>
             </item>
         </box>

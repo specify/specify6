@@ -65,7 +65,7 @@ public class JPAQuery implements CustomQuery
         {
             session = HibernateUtil.getNewSession();
             
-            log.error(sqlStr);
+            log.debug(sqlStr);
             Query query = session.createQuery(sqlStr);
             
             resultsList = query.list();

@@ -14,17 +14,15 @@
  */
 package edu.ku.brc.specify.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
@@ -158,7 +156,8 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                         {
                             ard = appResource.getAppResourceDatas().iterator().next();
                         }
-                        properties.load(ard.getData().getBinaryStream());
+                         
+                        properties.load(new ByteArrayInputStream(ard.getData()));
                         
                         found = true;
                     }
@@ -204,29 +203,10 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 AppResourceData apData = appResource.getAppResourceDatas().iterator().next();
                 if (apData != null)
                 {
-                    Blob data = apData.getData();
-                    if (data == null)
-                    {
-                        data = Hibernate.createBlob(byteOut.toByteArray());
-                        apData.setData(data);
-                        
-                    } else
-                    {
-                        try
-                        {
-                            data.setBytes(1, byteOut.toByteArray());
-                            
-                            // Debuging
-                            String dataStr = new String(byteOut.toByteArray());
-                            log.info(dataStr);
-                            
-                        } catch (SQLException ex)
-                        {
-                            log.error("App Id["+apData.getId()+"] TableId["+apData.getTableId()+"]"+ex);
-                            throw new RuntimeException(ex);
-                        }
-                        
-                    }
+                    //String dataStr = new String(byteOut.toByteArray());
+                    //log.debug(dataStr);
+                    apData.setData(byteOut.toByteArray());
+                    
                 } else
                 {
                     log.error("AppResourceData shouldn't be null!");

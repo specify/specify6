@@ -86,7 +86,7 @@ public class CarryForwardInfo
     {
         //searchObject.setId(id);
         //System.out.println(id+" - "+(Collections.binarySearch(fieldList, searchObject)));
-        //return Collections.binarySearch(fieldList, searchObject) != -1;
+        //return Collections.binarySearch(fieldList, searchObject) > -1;
         
         
         for (FormCellField cellField : fieldList)

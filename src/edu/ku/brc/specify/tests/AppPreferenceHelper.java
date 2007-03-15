@@ -68,11 +68,13 @@ public class AppPreferenceHelper
             localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
             localPrefs.load();
             
+            String hostName = "localhost";
+            
             // This will log us in and return true/false
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
                                    "org.hibernate.dialect.MySQLDialect", 
                                    databaseName, 
-                                   "jdbc:mysql://localhost/"+databaseName, 
+                                   "jdbc:mysql://"+hostName+"/"+databaseName, 
                                    "rods", 
                                    "rods"))
             {

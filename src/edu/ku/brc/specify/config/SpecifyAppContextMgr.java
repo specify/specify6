@@ -182,11 +182,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (StringUtils.isNotEmpty(recentIds))
                 {
                     List list = sessionArg.getDataList("From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
-                    for (Object obj : list)
+                    if (list.size() > 0)
                     {
-                        catSeries.add((CatalogSeries)obj);
+                        for (Object obj : list)
+                        {
+                            catSeries.add((CatalogSeries)obj);
+                        }
+                        askToSelect = false;
                     }
-                    askToSelect = false;
                 }
             }
 

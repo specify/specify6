@@ -88,8 +88,7 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class DatabaseLoginPanel extends JPanel
 {
-    private static final Logger          log            = Logger
-                                                                .getLogger(DatabaseLoginPanel.class);
+    private static final Logger          log            = Logger.getLogger(DatabaseLoginPanel.class);
 
     // Form Stuff
 
@@ -257,10 +256,8 @@ public class DatabaseLoginPanel extends JPanel
         dbDriverCBX = new JComboBox(dbDrivers);
         if (dbDrivers.size() > 0)
         {
-            String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected",
-                    "MySQL");
-            int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null,
-                    null, null));
+            String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL");
+            int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
             dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
 
         } else
@@ -734,19 +731,28 @@ public class DatabaseLoginPanel extends JPanel
             {
                 eTime = System.currentTimeMillis();
 
-                isLoggedIn = UIHelper.tryLogin(getDriverClassName(), getDialectClassName(),
-                        getDatabaseName(), getConnectionStr(), getUserName(), getPassword());
+                isLoggedIn = UIHelper.tryLogin(getDriverClassName(), 
+                                               getDialectClassName(),
+                                               getDatabaseName(), 
+                                               getConnectionStr(), 
+                                               getUserName(), 
+                                               getPassword());
 
                 if (isLoggedIn)
                 {
+                    DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
+                    if (drvInfo != null)
+                    {
+                        DBConnection.getInstance().setDbCloseConnectionStr(drvInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Close, getServerName(), getDatabaseName()));
+                    }
+                    
                     // Note: this doesn't happen on the GUI thread
                     DataProviderFactory.getInstance().shutdown();
 
                     // This restarts the System
                     try
                     {
-                        DataProviderSessionIFace session = DataProviderFactory.getInstance()
-                                .createSession();
+                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                         session.close();
 
                     } catch (Exception ex)
@@ -865,10 +871,9 @@ public class DatabaseLoginPanel extends JPanel
      */
     public String getConnectionStr()
     {
-        if (dbDriverCBX.getSelectedIndex() > -1) { return dbDrivers.get(
-                dbDriverCBX.getSelectedIndex())
-                .getConnectionStr(getServerName(), getDatabaseName());
-
+        if (dbDriverCBX.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getServerName(), getDatabaseName());
         }
         // else
         return null; // we should never get here
@@ -879,9 +884,9 @@ public class DatabaseLoginPanel extends JPanel
      */
     public String getDialectClassName()
     {
-        if (dbDriverCBX.getSelectedIndex() > -1) { return dbDrivers.get(
-                dbDriverCBX.getSelectedIndex()).getDialectClassName();
-
+        if (dbDriverCBX.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get( dbDriverCBX.getSelectedIndex()).getDialectClassName();
         }
         // else
         return null; // we should never get here
@@ -892,9 +897,9 @@ public class DatabaseLoginPanel extends JPanel
      */
     public String getDriverClassName()
     {
-        if (dbDriverCBX.getSelectedIndex() > -1) { return dbDrivers.get(
-                dbDriverCBX.getSelectedIndex()).getDriverClassName();
-
+        if (dbDriverCBX.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get( dbDriverCBX.getSelectedIndex()).getDriverClassName();
         }
         // else
         return null; // we should never get here

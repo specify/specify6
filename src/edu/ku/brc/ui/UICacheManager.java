@@ -872,6 +872,7 @@ public class UICacheManager
        return menu;
     }
 
+    @SuppressWarnings("unchecked")
     protected Action makeAction(Class actionClass,
                                 Object owner,
                                 String name,

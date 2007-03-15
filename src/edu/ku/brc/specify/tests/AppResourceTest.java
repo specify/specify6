@@ -67,7 +67,9 @@ public class AppResourceTest extends TestCase
             localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
             localPrefs.load();
 
-            if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, userName, password))
+            String hostName = "localhost";
+            if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", 
+                    databaseName, "jdbc:mysql://"+hostName+"/"+databaseName, userName, password))
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
             }
