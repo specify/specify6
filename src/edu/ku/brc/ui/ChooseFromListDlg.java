@@ -79,16 +79,15 @@ public class ChooseFromListDlg<T> extends JDialog
     protected String            cancelLabel      = null;
     protected String            helpLabel        = null;
     protected String            helpContext      = "";
+    protected boolean           isMultiSelect    = false;
+    protected int[]             selectedIndices  = null;
 
     /**
      * Constructor.
      * 
-     * @param frame
-     *            parent frame
-     * @param title
-     *            the title of the dialog
-     * @param itemList
-     *            the list to be selected from
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param itemList the list to be selected from
      * @throws HeadlessException
      */
     public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList)
@@ -100,14 +99,10 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame
-     *            parent frame
-     * @param title
-     *            the title of the dialog
-     * @param desc
-     *            a description of what they are to do
-     * @param itemList
-     *            the list to be selected from
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param desc a description of what they are to do
+     * @param itemList the list to be selected from
      * @throws HeadlessException
      */
     public ChooseFromListDlg(final Frame frame, final String title, final String desc,
@@ -119,12 +114,9 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame
-     *            parent frame
-     * @param title
-     *            the title of the dialog
-     * @param itemList
-     *            the list to be selected from
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param itemList the list to be selected from
      * @throws HeadlessException
      */
     public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList,
@@ -136,12 +128,9 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame
-     *            parent frame
-     * @param title
-     *            the title of the dialog
-     * @param itemList
-     *            the list to be selected from
+     * @param frame  parent frame
+     * @param title the title of the dialog
+     * @param itemList the list to be selected from
      * @throws HeadlessException
      */
     public ChooseFromListDlg(final Frame frame, final String title, final String desc,
@@ -153,20 +142,13 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame
-     *            parent frame
-     * @param title
-     *            the title of the dialog
-     * @param desc
-     *            the list to be selected from
-     * @param itemList
-     *            the list to be selected from
-     * @param includeCancelBtn
-     *            indicates whether to create and displaty a cancel btn
-     * @param includeHelpBtn
-     *            indicates whether to create and displaty a help btn
-     * @param helpContext
-     *            help context identifier
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param desc the list to be selected from
+     * @param itemList the list to be selected from
+     * @param includeCancelBtn  indicates whether to create and displaty a cancel btn
+     * @param includeHelpBtn indicates whether to create and displaty a help btn
+     * @param helpContext  help context identifier
      * @throws HeadlessException
      */
     public ChooseFromListDlg(final Frame frame, final String title, final String desc,
@@ -189,14 +171,10 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame
-     *            parent frame
-     * @param title
-     *            the title of the dialog
-     * @param items
-     *            the list to be selected from
-     * @param icon
-     *            the icon to be displayed in front of each entry in the list
+     * @param frame  parent frame
+     * @param title the title of the dialog
+     * @param items the list to be selected from
+     * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
     public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList,
@@ -214,18 +192,12 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Constructor.
      * 
-     * @param frame
-     *            parent frame
-     * @param title
-     *            the title of the dialog
-     * @param items
-     *            the list to be selected from
-     * @param icon
-     *            the icon to be displayed in front of each entry in the list
-     * @param includeHelpBtn
-     *            indicates whether to create and displaty a help btn
-     * @param helpContext
-     *            help context identifier
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param items the list to be selected from
+     * @param icon the icon to be displayed in front of each entry in the list
+     * @param includeHelpBtn indicates whether to create and displaty a help btn
+     * @param helpContext help context identifier
      * @throws HeadlessException
      */
     public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList,
@@ -244,24 +216,16 @@ public class ChooseFromListDlg<T> extends JDialog
     }
 
     /**
-     * Create the UI for the dialog. <<<<<<< .mine
+     * Create the UI for the dialog.
      * 
-     * @param title
-     *            title for dialog
-     * @param desc
-     *            the list to be selected from
-     * @param includeCancelBtn
-     *            indicates whether to create and displaty a cancel btn
-     * @param includeHelpBtn
-     *            indicates whether to create and displaty a help btn
-     * @param helpContext
-     *            help context identifier =======
-     * @param titleArg
-     *            title for dialog
-     * @param desc
-     *            the list to be selected from
-     * @param includeCancelBtn
-     *            indicates whether to create and displaty a cancel btn >>>>>>> .r1515
+     * @param title title for dialog
+     * @param desc the list to be selected from
+     * @param includeCancelBtn  indicates whether to create and displaty a cancel btn
+     * @param includeHelpBtn indicates whether to create and displaty a help btn
+     * @param helpContext help context identifier
+     * @param titleArg title for dialog
+     * @param desc the list to be selected from
+     * @param includeCancelBtn indicates whether to create and displaty a cancel btn
      */
     protected void createUI()
     {
@@ -299,7 +263,14 @@ public class ChooseFromListDlg<T> extends JDialog
                 // class (it's probably size
                 // 16)
             }
+            list.setSelectionMode(isMultiSelect ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
             list.setVisibleRowCount(10);
+            
+            if (selectedIndices != null)
+            {
+                list.setSelectedIndices(selectedIndices);
+            }
+
             list.addMouseListener(new MouseAdapter()
             {
                 @Override
@@ -388,12 +359,11 @@ public class ChooseFromListDlg<T> extends JDialog
     }
 
     /**
-     * Allows the list to be configured for multi-item selection
+     * Allows the list to be configured for multi-item selection.
      */
-    public void setMultiSelect(boolean val)
+    public void setMultiSelect(boolean isMultiSelectArg)
     {
-        list.setSelectionMode(val ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
-                : ListSelectionModel.SINGLE_SELECTION);
+        this.isMultiSelect = isMultiSelectArg;
     }
 
     /**
@@ -406,19 +376,20 @@ public class ChooseFromListDlg<T> extends JDialog
 
     /**
      * Returns the selected Object or null if nothing was selected.
-     * 
      * @return the selected Object or null if nothing was selected
      */
     public T getSelectedObject()
     {
         int inx = list.getSelectedIndex();
-        if (inx != -1) { return items.get(inx); }
+        if (inx != -1)
+        { 
+            return items.get(inx); 
+        }
         return null;
     }
 
     /**
      * Returns the selected Object or null if nothing was selected.
-     * 
      * @return the selected Object or null if nothing was selected
      */
     @SuppressWarnings("unchecked")
@@ -434,28 +405,25 @@ public class ChooseFromListDlg<T> extends JDialog
 
     /**
      * Returns the indices that were selected.
-     * 
      * @return the indices that were selected
      */
     public int[] getSelectedIndices()
     {
-        return list.getSelectedIndices();
+        return list != null ? list.getSelectedIndices() : null;
     }
 
     /**
      * Set the selcted indices.
-     * 
      * @param indices
      *            the array of indices
      */
     public void setIndices(final int[] indices)
     {
-        list.setSelectedIndices(indices);
+        selectedIndices = indices;
     }
 
     /**
      * Returns whether it was cancelled.
-     * 
      * @return whether it was cancelled
      */
     public boolean isCancelled()
@@ -475,7 +443,6 @@ public class ChooseFromListDlg<T> extends JDialog
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.awt.Dialog#setVisible(boolean)
      */
     @Override
