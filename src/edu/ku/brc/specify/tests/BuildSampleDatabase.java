@@ -80,8 +80,10 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1513,7 +1515,14 @@ public class BuildSampleDatabase
             @Override
             public void finished()
             {
-
+                // do nothing
+                // for future reference:
+                // for that matter, there was no real reason to use SwingWorker for this since
+                // we're not doing anything on the Swing thread in this method
+                // we could have just used a regular Thread object
+                
+                // In fact, we're doing stuff in the construct method that should happen on the Swing
+                // thread.  The construct() method IS NOT run on the Swing thread.
             }
         };
         worker.start();
@@ -1533,7 +1542,7 @@ public class BuildSampleDatabase
                                       final String firstName, 
                                       final String lastName, 
                                       final String email,
-                                      final Discipline  discipline) throws SQLException, IOException
+                                      final Discipline  discipline)
     {
         frame = new ProgressFrame("Building OnRamp Database");
         frame.setSize(new Dimension(500,125));
@@ -1646,9 +1655,8 @@ public class BuildSampleDatabase
      * Drops, Creates and Builds the Database.
      * 
      * @throws SQLException
-     * @throws IOException
      */
-    protected void build(final String dbName, final String driverName) throws SQLException, IOException
+    protected void build(final String dbName, final String driverName) throws SQLException
     {
         
         frame = new ProgressFrame("Building sample DB");
@@ -1909,10 +1917,10 @@ public class BuildSampleDatabase
             
             PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,10px,p"));
             CellConstraints cc         = new CellConstraints();
-            builder.add(new JLabel("Database Name:", JLabel.RIGHT), cc.xy(1,1));
-            builder.add(databaseNameTxt,                            cc.xy(3,1));
-            builder.add(new JLabel("Driver:", JLabel.RIGHT),        cc.xy(1,3));
-            builder.add(drivers,                                    cc.xy(3,3));
+            builder.add(new JLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,1));
+            builder.add(databaseNameTxt,                                    cc.xy(3,1));
+            builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,3));
+            builder.add(drivers,                                            cc.xy(3,3));
             
             JButton okBtn     = new JButton("OK");
             JButton cancelBtn = new JButton("Cancel");
@@ -1933,7 +1941,7 @@ public class BuildSampleDatabase
              });
             
             builder.setDefaultDialogBorder();
-            setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             setContentPane(builder.getPanel());
             pack();
             Dimension dim = getPreferredSize();
@@ -1981,7 +1989,7 @@ public class BuildSampleDatabase
         }
     }
     
-    public static void main(String[] args) throws SQLException, IOException
+    public static void main(String[] args)
     {
         SwingUtilities.invokeLater(new Runnable()
         {
