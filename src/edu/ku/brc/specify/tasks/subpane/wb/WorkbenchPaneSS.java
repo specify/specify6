@@ -330,7 +330,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                     // no selection
                     log.debug("No selection, so removing the card image");
                     cardImageLabel.setIcon(null);
-                    cardImageLabel.repaint();
+                    cardImageLabel.setText("No row selected");
                     return;
                 }
                 // else
@@ -340,7 +340,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 ImageIcon cardImage = row.getCardImage();
                 log.debug("\tImage file: " + cardImage.toString());
                 cardImageLabel.setIcon(cardImage);
-                cardImageLabel.repaint();
+                WorkbenchDataItem firstColItem = row.getItems().get(0);
+                String firstColCellData = (firstColItem!=null) ? firstColItem.getCellData() : "";
+                cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
             }
         };
     }
