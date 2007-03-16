@@ -46,8 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -60,7 +58,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -144,7 +141,6 @@ public class TableViewObj implements Viewable,
     protected Vector<AltView>               altViewsList   = null;
     protected TableViewDef                  tableViewDef;
     protected DataObjectGettable            dataGetter      = null;
-    protected DataObjectSettable            dataSetter      = null;
     
     protected Stack<FormCellSubView>        subViewStack    = new Stack<FormCellSubView>();
     protected StringBuilder                 fullObjPath     = new StringBuilder();
@@ -193,7 +189,7 @@ public class TableViewObj implements Viewable,
     protected Object                        carryFwdDataObj = null;
 
     // UI
-    protected TableModel                 model;
+    protected ColTableModel                 model;
     protected JTable                        table;
     protected JScrollPane                   tableScroller;
 
@@ -221,7 +217,6 @@ public class TableViewObj implements Viewable,
         
         businessRules    = view.getBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
-        dataSetter       = altView.getViewDef().getDataSettable();
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
         MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
@@ -384,7 +379,7 @@ public class TableViewObj implements Viewable,
     
     /**
      * Sizes the table to number of rows using getRowHeight
-     * @param spreadSheet the table to be sized
+     * @param table the table to be sized
      * @param rows the number of rows
      */
     public void setVisibleRowCount(int rows)
@@ -399,7 +394,7 @@ public class TableViewObj implements Viewable,
     
     /**
      * Sizes the table to number of rows using the height of actual rows.
-     * @param spreadSheet the table to be sized
+     * @param table the table to be sized
      * @param rows the number of rows
      */
     public void setVisibleRowCountForHeight(int rows)
@@ -442,8 +437,7 @@ public class TableViewObj implements Viewable,
     protected void buildTable()
     {
         // Now Build the JTable
-        //model    = new ColTableModel();
-        model    = new GridTableModel();
+        model    = new ColTableModel();
         table    = new JTable(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
@@ -454,41 +448,26 @@ public class TableViewObj implements Viewable,
         
         //table.setCellSelectionEnabled(false);
         
-        if (true)
-        {
-            table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            table.setCellSelectionEnabled(true);
-            table.setCellEditor(new GridCellEditor());
-            
-            
-            GridCellEditor cellEditor = new GridCellEditor();
-            for (int i=0;i<model.getColumnCount();i++) 
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e)
             {
-                TableColumn column = table.getColumn(model.getColumnName(i));
-                column.setCellEditor(cellEditor);
-            }
-            
-        } else
-        {
-            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    ListSelectionModel lsm          = (ListSelectionModel)e.getSource();
-                    updateUI(!lsm.isSelectionEmpty());
-                    
-                }
-            });
                 
-            table.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent e) {
-                    if ( e.getClickCount() == 2 )
-                    {
-                        int index = table.getSelectedRow();
-                        editRow(index, isEditting, false);
-                    }
+                ListSelectionModel lsm          = (ListSelectionModel)e.getSource();
+                updateUI(!lsm.isSelectionEmpty());
+                
+            }
+        });
+            
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if ( e.getClickCount() == 2 )
+                {
+                    int index = table.getSelectedRow();
+                    editRow(index, isEditting, false);
                 }
-            });
-        }
+            }
+        });
+
         
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -529,8 +508,6 @@ public class TableViewObj implements Viewable,
         mainComp.add(tableScroller, BorderLayout.CENTER);
         
         initColumnSizes(table);
-        
-        table.setRowHeight(new JTextField().getPreferredSize().height);
 
     }
     
@@ -623,7 +600,7 @@ public class TableViewObj implements Viewable,
                                         origDataSet.add(daObj);
                                     }
                                 }
-                                ((ColTableModel)model).fireDataChanged();
+                                model.fireDataChanged();
                                 table.invalidate();
                                 
                                 JComponent comp = mvParent.getTopLevel();
@@ -658,7 +635,7 @@ public class TableViewObj implements Viewable,
         parentDataObj.removeReference(dObj, dataSetFieldName);
         dataObjList.remove(rowIndex);
         
-        ((ColTableModel)model).fireDataChanged();
+        model.fireDataChanged();
         table.invalidate();
         
         JComponent comp = mvParent.getTopLevel();
@@ -684,11 +661,11 @@ public class TableViewObj implements Viewable,
      */
     private void initColumnSizes(final JTable tableArg) 
     {
-        TableModel  tblModel    = tableArg.getModel();
-        TableColumn column      = null;
-        Component   comp        = null;
-        int         headerWidth = 0;
-        int         cellWidth   = 0;
+        ColTableModel     tblModel    = (ColTableModel)tableArg.getModel();
+        TableColumn       column      = null;
+        Component         comp        = null;
+        int               headerWidth = 0;
+        int               cellWidth   = 0;
         
         TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
@@ -1806,12 +1783,9 @@ public class TableViewObj implements Viewable,
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
-         */
         public boolean isCellEditable(int row, int column)
         {
-            return true;
+            return false;
         }
 
         public Class<?> getColumnClass(int columnIndex)
@@ -1829,7 +1803,7 @@ public class TableViewObj implements Viewable,
 
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
-            // no-op
+            return;
         }
 
         public void addTableModelListener(TableModelListener l)
@@ -1895,141 +1869,6 @@ public class TableViewObj implements Viewable,
         {
             compGetSet.setValue(value, null);
             return comp;
-        }
-    }
-    
-    
-    
-    //--------------------------------------------------------------------------
-    //-- For Grid Editing
-    //--------------------------------------------------------------------------
-    public class GridTableModel extends AbstractTableModel
-    {
-        public GridTableModel()
-        {
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.TableModel#getColumnCount()
-         */
-        public int getColumnCount()
-        {
-            return columnList.size();
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.AbstractTableModel#getColumnName(int)
-         */
-        public String getColumnName(int column)
-        {
-            if (columnList != null)
-            {
-                String label = columnList.get(column).getLabel();
-                return label != null ? label : "";
-            }
-            log.error("columnList should not be null!");
-            return "N/A";
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.TableModel#getRowCount()
-         */
-        public int getRowCount()
-        {
-            return dataObjList == null ? 0 : dataObjList.size();
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.TableModel#getValueAt(int, int)
-         */
-        public Object getValueAt(int row, int column)
-        {
-            if (dataObjList != null && dataObjList.size() > 0)
-            {
-                Object     rowObj  = dataObjList.get(row);
-                return dataGetter.getFieldValue(rowObj, Integer.toString(column));
-            }
-            return null;
-        }
-
-        public boolean isCellEditable(int row, int column)
-        {
-            return true;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
-         */
-        public Class<?> getColumnClass(int columnIndex)
-        {
-            Object obj = getValueAt(0, columnIndex);
-            if (obj != null)
-            {
-                return obj.getClass();
-                
-            } else
-            {
-                return String.class;
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
-         */
-        public void setValueAt(Object value, int rowIndex, int columnIndex)
-        {
-            if (dataObjList != null && dataObjList.size() > 0 && dataSetter != null)
-            {
-                Object rowObj  = dataObjList.get(rowIndex);
-                dataSetter.setFieldValue(rowObj, Integer.toString(columnIndex), value);
-            }
-        }
-        
-        public void fireDataChanged()
-        {
-            this.fireTableDataChanged();
-        }
-    }
-    
-    class GridCellEditor extends AbstractCellEditor implements TableCellEditor
-    {
-        protected JTextField textField = new JTextField();
-
-        public GridCellEditor()
-        {
-
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.CellEditor#getCellEditorValue()
-         */
-        public Object getCellEditorValue() 
-        {
-            return textField.getText();
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.AbstractCellEditor#isCellEditable(java.util.EventObject)
-         */
-        public boolean isCellEditable(EventObject anEvent) 
-        { 
-            return true; 
-        }
-        
-        //
-        //          Implementing the CellEditor Interface
-        //
-        /** Implements the <code>TableCellEditor</code> interface. */
-        public Component getTableCellEditorComponent(JTable  tbl, 
-                                                     Object  value,
-                                                     boolean isSelected,
-                                                     int     row, 
-                                                     int     column)
-        {
-            System.out.println(value != null ? value.getClass() : "null");
-            
-            textField.setText(value != null ? value.toString() : "");
-            return textField;
         }
      }
 }
