@@ -9,13 +9,21 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.awt.Component;
+import java.awt.Image;
 import java.util.Vector;
+
+import javax.swing.ImageIcon;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
 
 /**
@@ -30,15 +38,21 @@ public class GridTableModel extends SpreadSheetModel
 {
     private static final Logger log = Logger.getLogger(GridTableModel.class);
             
-
-    protected Workbench   workbench;
+    protected Workbench          workbench;
+    protected boolean            isInImageMode    = false;
+    //protected SpreadSheet        spreadsheet;
+    protected ImageIcon          blankIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std16);
+    protected ImageIcon          imageIcon = IconManager.getIcon("image", IconManager.IconSize.Std16);
+    
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
+    protected WorkbenchTemplateMappingItem imageMappingItem = null;
 
-    public GridTableModel(final Workbench  workbench, 
+    public GridTableModel(//final SpreadSheet spreadsheet,
+                          final Workbench    workbench, 
                           final Vector<WorkbenchTemplateMappingItem> headers)
     {
         super();
-        
+        //this.spreadsheet = spreadsheet;
         this.workbench   = workbench;
         this.headers     = headers;
     }
@@ -49,6 +63,33 @@ public class GridTableModel extends SpreadSheetModel
     public void fireDataChanged()
     {
         fireTableDataChanged();
+    }
+    
+    public boolean isInImageMode()
+    {
+        return isInImageMode;
+    }
+
+    public void setInImageMode(boolean isInImageMode)
+    {
+        if (!this.isInImageMode && isInImageMode)
+        {
+            if (imageMappingItem == null)
+            {
+                imageMappingItem = new WorkbenchTemplateMappingItem();
+                imageMappingItem.initialize();
+                imageMappingItem.setCaption("Card Image"); // XXX I18N"
+                imageMappingItem.setViewOrder(headers.size());
+                imageMappingItem.setDataType("java.lang.Image");
+            }
+            headers.add(imageMappingItem);
+            
+        } else if (this.isInImageMode && !isInImageMode)
+        {
+            headers.remove(imageMappingItem);
+        }
+        this.isInImageMode = isInImageMode;
+        fireTableStructureChanged();
     }
 
     /* (non-Javadoc)
@@ -86,6 +127,12 @@ public class GridTableModel extends SpreadSheetModel
      */
     public Object getValueAt(int row, int column)
     {
+        if (isInImageMode && column == headers.size() - 1)
+        {
+            WorkbenchRow rowObj = workbench.getRow(row);
+            return rowObj.getCardImage() != null ? imageIcon : blankIcon;
+        }
+        
         if (getRowCount() > 0)
         {
             return workbench.getWorkbenchRowsAsList().get(row).getData(column);
@@ -93,8 +140,15 @@ public class GridTableModel extends SpreadSheetModel
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
+     */
     public boolean isCellEditable(int row, int column)
     {
+        if (isInImageMode)
+        {
+            return column != headers.size() - 1;
+        }
         return true;
     }
 
@@ -103,6 +157,11 @@ public class GridTableModel extends SpreadSheetModel
      */
     public Class<?> getColumnClass(int columnIndex)
     {
+        if (isInImageMode && columnIndex == headers.size() - 1)
+        {
+            return ImageIcon.class;
+        }
+
         Object obj = getValueAt(0, columnIndex);
         if (obj != null)
         {
@@ -119,8 +178,14 @@ public class GridTableModel extends SpreadSheetModel
      */
     public void setValueAt(Object value, int row, int column)
     {
+        if (isInImageMode && column == headers.size() - 1)
+        {
+            return;
+        }
+        
         if (getRowCount() >= 0)
         {
+            
             workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), column);
             fireDataChanged();
         }
@@ -261,8 +326,5 @@ public class GridTableModel extends SpreadSheetModel
             spreadSheet.setRowSelectionInterval(rowInx, rowInx);
             spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
         }
-        //setChanged(true);
     }
-
-    
 }

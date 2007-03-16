@@ -43,7 +43,9 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Integer           dataColumnIndex;
     protected String            dataType;
     protected WorkbenchTemplate workbenchTemplate;
-    
+    protected Boolean           isExportableToContent;
+    protected Boolean           isIncludedInTitle;
+
     protected Integer           tabOrder;
     protected Integer           xCoord;
     protected Integer           yCoord;
@@ -81,7 +83,10 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         tabOrder = null;
         xCoord = -1;
         yCoord = -1;
-        carryForward = false;
+        carryForward          = false;
+        isExportableToContent = false;
+        isIncludedInTitle     = false;
+
     }
 
     // End Initializer
@@ -268,6 +273,28 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setCarryForward(Boolean carryForward)
     {
         this.carryForward = carryForward;
+    }
+
+    @Column(name="IsExportableToContent",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getIsExportableToContent()
+    {
+        return isExportableToContent;
+    }
+
+    public void setIsExportableToContent(Boolean isExportableToContent)
+    {
+        this.isExportableToContent = isExportableToContent;
+    }
+
+    @Column(name="IsIncludedInTitle",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getIsIncludedInTitle()
+    {
+        return isIncludedInTitle;
+    }
+
+    public void setIsIncludedInTitle(Boolean isIncludedInTitle)
+    {
+        this.isIncludedInTitle = isIncludedInTitle;
     }
 
     /**

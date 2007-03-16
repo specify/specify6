@@ -35,6 +35,7 @@ import java.util.Vector;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -48,6 +49,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -501,12 +503,19 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(false);
+            model.setInImageMode(false);
+            
         }
         else
         {
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(true);
+            model.setInImageMode(true);
             showCardImageForSelectedRow();
+            
+            TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
+            column.setCellRenderer(new ImageRenderer());
+            spreadSheet.repaint();
         }
     }
     
@@ -1062,10 +1071,27 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         public void actionPerformed(ActionEvent ae)
         {
-            //log.info("Index: "+switcherComp.getCurrentIndex());
-            
             showPanel(((DropDownButtonStateful)ae.getSource()).getCurrentIndex() == 0 ? PanelType.Spreadsheet : PanelType.Form);
         }
     }
+    
+    public class ImageRenderer extends DefaultTableCellRenderer 
+    {
+        public Component getTableCellRendererComponent(JTable table, 
+                                                       Object value,
+                                                       boolean isSelected, 
+                                                       boolean hasFocus, 
+                                                       int row, 
+                                                       int column) 
+        {
+          setText("");
+          if (value instanceof ImageIcon)
+          {
+              setIcon((ImageIcon)value);
+              this.setHorizontalAlignment(JLabel.CENTER);
+          }
+          return this;
+        }
+      }
 }
 

@@ -38,4 +38,9 @@ public interface GoogleEarthPlacemarkIFace
      * @return the lat and lon
      */
     public Pair<Double,Double> getLatLon();
+    
+    /**
+     * Provides an opportunity for the object to cleanup any internal data.
+     */
+    public void cleanup();
 }

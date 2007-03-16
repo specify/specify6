@@ -51,10 +51,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
 {
     protected WorkbenchPaneSS    workbenchPane;
     protected Workbench          workbench;
-    protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     protected boolean            hasChanged    = false;
     protected Vector<InputPanel> uiComps       = new Vector<InputPanel>();
     protected boolean            ignoreChanges = false;
+    protected boolean            isInImageMode = false;
+
+    protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     
     protected List<DataFlavor>   dropFlavors  = new ArrayList<DataFlavor>();
     

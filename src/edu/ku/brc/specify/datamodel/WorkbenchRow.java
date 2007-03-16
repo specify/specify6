@@ -35,9 +35,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.persistence.CascadeType;
@@ -61,13 +63,16 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
+import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
+import edu.ku.brc.util.Pair;
+
 /**
  * WorkbenchRow generated rods
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbenchrow")
-public class WorkbenchRow extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchRow>
+public class WorkbenchRow extends DataModelObjBase implements java.io.Serializable, GoogleEarthPlacemarkIFace, Comparable<WorkbenchRow>
 {
     protected Long                   workbenchRowId;
     protected Integer                rowNumber;
@@ -82,7 +87,9 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     protected WeakReference<ImageIcon> fullSizeImageWR = null;
     
     // Transient Data Members
-    protected Hashtable<Integer, WorkbenchDataItem> items = new Hashtable<Integer, WorkbenchDataItem>();
+    protected Hashtable<Integer, WorkbenchDataItem>            items    = new Hashtable<Integer, WorkbenchDataItem>();
+    protected Hashtable<Integer, WorkbenchTemplateMappingItem> mappings = null;
+    protected Vector<WorkbenchDataItem>                        dataList = null;
 
     
     /**
@@ -411,6 +418,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     
     //------------------------------------------------------------------------
     // Large Image Support
+    //------------------------------------------------------------------------
     
     /**
      * Reads in the disciplines file (is loaded when the class is loaded).
@@ -433,5 +441,126 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         
         return fullSizeImageWR.get();
     }
+    
+    //------------------------------------------------------------------------
+    // GoogleEarthPlacemarkIFace Interface
+    //------------------------------------------------------------------------
+    
+    protected void initExportData()
+    {
+        if (mappings == null)
+        {
+            mappings = new Hashtable<Integer, WorkbenchTemplateMappingItem>();
+            for (WorkbenchTemplateMappingItem wbtmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+            {
+                mappings.put(wbtmi.getViewOrder(), wbtmi);
+            }
+        }
+        
+        if (dataList == null)
+        {
+            dataList = new Vector<WorkbenchDataItem>(getWorkbenchDataItems());
+            Collections.sort(dataList);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getTitle()
+     */
+    public String getTitle()
+    {
+        initExportData();
+       
+        StringBuilder sb = new StringBuilder();
+        for (WorkbenchDataItem wbdi : dataList)
+        {
+            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getRowNumber());
+            if (wbtmi.getIsIncludedInTitle())
+            {
+                if (sb.length() > 0)
+                {
+                    sb.append(' ');
+                }
+                sb.append(wbdi.getCellData());
+            }
+        } 
+        return sb.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getHtmlContent()
+     */
+    public String getHtmlContent()
+    {
+        // XXX In the Future this should call a delegate
+        // so it isn't hard code in the class
+        
+        initExportData();
+        
+        StringBuilder sb = new StringBuilder("<table>");
+        for (WorkbenchDataItem wbdi : dataList)
+        {
+            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getRowNumber());
+            if (wbtmi.getIsExportableToContent())
+            {
+                sb.append("<td><td align=\"right\">");
+                sb.append(wbtmi.getCaption());
+                sb.append("</td><td align=\"left\">");
+                sb.append(wbdi.getCellData());
+                sb.append("</td></tr>\n");
+            }
+        } 
+        sb.append("</table>\n");
+        
+        return sb.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getLatLon()
+     */
+    public Pair<Double, Double> getLatLon()
+    {
+        initExportData();
+        
+        Double latitude  = null;
+        Double longitude = null;
+        
+        for (WorkbenchDataItem wbdi : dataList)
+        {
+            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getRowNumber());
+            if (wbtmi.getFieldName().equals("Latitude1"))
+            {
+                String valStr = wbdi.getCellData();
+                if (StringUtils.isNumeric(valStr))
+                {
+                    latitude = Double.parseDouble(valStr);
+                }
+            } else if (wbtmi.getFieldName().equals("Longitude1"))
+            {
+                String valStr = wbdi.getCellData();
+                if (StringUtils.isNumeric(valStr))
+                {
+                    longitude = Double.parseDouble(valStr);
+                }
+            }
+        } 
+        
+        if (latitude != null && longitude != null)
+        {
+            return new Pair<Double, Double>(latitude, longitude);
+        }
+        
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#cleanup()
+     */
+    public void cleanup()
+    {
+        mappings.clear();
+        mappings = null;
+    }
+    
 }
 
