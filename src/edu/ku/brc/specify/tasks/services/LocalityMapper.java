@@ -24,6 +24,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.SimpleCircleIcon;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.services.MapGrabber;
 
 /**
  * Maps a grouping of <code>Locality</code> objects.

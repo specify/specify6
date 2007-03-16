@@ -37,10 +37,10 @@ import org.jdesktop.animation.timing.Envelope;
 import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.TimingTarget;
 
-import edu.ku.brc.specify.tasks.services.MapGrabber;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.SimpleCircleIcon;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.services.MapGrabber;
 
 /**
  * This was for the SPNHC Demo. This class really needs to be derived from a generic class like LocalityMapper

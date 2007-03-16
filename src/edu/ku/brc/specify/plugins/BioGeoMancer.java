@@ -76,12 +76,12 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.extras.BGMRecordTableModel;
 import edu.ku.brc.specify.extras.BioGeoMancerMapper;
 import edu.ku.brc.specify.extras.BioGeoMancerMapper.MapperListener;
-import edu.ku.brc.specify.tasks.services.MapGrabber;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
+import edu.ku.brc.util.services.MapGrabber;
 
 /**
  * BioGeoMancer plugin For SPNHC Demo.

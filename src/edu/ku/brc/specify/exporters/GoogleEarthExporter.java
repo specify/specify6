@@ -19,6 +19,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.dbsupport.RecordSetLoader;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.ui.IconManager;
@@ -84,12 +85,21 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
     }
     
+    protected void exportWorkbenchRowRecordSet(RecordSet data)
+    {
+        List<Object> records = RecordSetLoader.loadRecordSet(data);
+        for (Object o: records)
+        {
+            WorkbenchRow row = (WorkbenchRow)o;
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.RecordSetExporter#getHandledClasses()
      */
     public Class<?>[] getHandledClasses()
     {
-        return new Class<?>[] {CollectionObject.class, CollectingEvent.class};
+        return new Class<?>[] {CollectionObject.class, CollectingEvent.class, WorkbenchRow.class};
     }
 
     /* (non-Javadoc)
