@@ -72,6 +72,7 @@ import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.ui.CommandAction;
@@ -840,12 +841,14 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
 
         searchBtn = new JButton(getResourceString("Search"));
         searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
-
+        HelpMgr.setHelpID(searchBtn, "Express_Search");
+        
         //searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
         //searchText  = new JTextField("beanii", 15);
                 
         searchText = new JAutoCompTextField(15, PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
         searchText.setAskBeforeSave(false);
+        HelpMgr.setHelpID(searchText, "Express_Search");
         
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         //searchText.setText("2004-IZ-121");

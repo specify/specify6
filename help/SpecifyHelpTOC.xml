@@ -13,7 +13,7 @@
       <tocitem text="Interactions" target="Interactions"/>
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
-      <tocitem text="Workbench" target="Workbench">
+      <tocitem text="OnRamp" target="Workbench">
         <tocitem text="Importing Data" target="WorkbenchImportData">
       	  <tocitem text="CVS Import" target="WorkbenchImportCvs" />
       	  </tocitem>

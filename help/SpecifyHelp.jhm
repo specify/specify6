@@ -18,4 +18,6 @@
 	<mapID target="Workbench" url="SpecifyHelp/Workbench/Workbench.html" />
 	<mapID target="WorkbenchImportData" url="SpecifyHelp/Workbench/WorkbenchImportData.html" />
 	<mapID target="WorkbenchImportCvs" url="SpecifyHelp/Workbench/WorkbenchImportCvs.html" />
+	<mapID target="GlossMouse" url="SpecifyHelp/Glossary/GlossMouse.html" />
+	<mapID target="GlossSpecimen" url="SpecifyHelp/Glossary/GlossSpecimen.html" />
 </map>

@@ -39,4 +39,19 @@
       SpecifyHelpSearchIndex
     </data>
   </view>
+  
+  <view>
+    <name>Glossary</name>
+    <label>Glossary</label>
+    <type>javax.help.GlossaryView</type>
+    <data>SpecifyHelpGlossary.xml</data>
+  </view>
+
+  <view>
+    <name>Favorites</name>
+    <label>Favorites</label>
+    <type>javax.help.FavoritesView</type>
+    <data></data>
+  </view>
+
 </helpset>

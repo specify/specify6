@@ -8,6 +8,7 @@ package edu.ku.brc.specify.help;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -38,10 +39,28 @@ import edu.ku.brc.specify.Specify;
 public class HelpMgr
 {
     private static final Logger log            = Logger.getLogger(HelpMgr.class);
-    
+
     protected static HelpSet    hs;
     protected static HelpBroker hb;
     protected static String     helpSystemName = "SpecifyHelp";
+    protected static JMenu      helpMenu;
+    protected static JMenuItem  mainHelpMenuItem;
+
+    /**
+     * @return the helpMenu
+     */
+    public static JMenu getHelpMenu()
+    {
+        return helpMenu;
+    }
+
+    /**
+     * @return the mainHelpMenuItem
+     */
+    public static JMenuItem getMainHelpMenuItem()
+    {
+        return mainHelpMenuItem;
+    }
 
     /**
      * Creates a Helpset and HelpBroker.
@@ -54,7 +73,7 @@ public class HelpMgr
         {
             URL hsURL = HelpSet.findHelpSet(cl, helpSystemName);
             hs = new HelpSet(cl, hsURL);
-            
+
         } catch (Exception ee)
         {
             // Say what the exception really is
@@ -70,12 +89,12 @@ public class HelpMgr
      */
     public static void initializeHelpUI()
     {
-        JMenu     help      = new JMenu(getResourceString("Help"));
-        JMenuItem menu_help = new JMenuItem("Specify");
-        menu_help.setAccelerator(KeyStroke.getKeyStroke("F1"));
-        registerComponent(menu_help);
-        help.add(menu_help);
-        Specify.getSpecify().getMenuBar().add(help);
+        helpMenu = new JMenu(getResourceString("Help"));
+        mainHelpMenuItem = new JMenuItem("Specify");
+        mainHelpMenuItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
+        helpMenu.add(mainHelpMenuItem);
+        Specify.getSpecify().getMenuBar().add(helpMenu);
+        registerComponent(mainHelpMenuItem, true);
     }
 
     /**
@@ -104,47 +123,53 @@ public class HelpMgr
 
     /**
      * @param component a Button, MenuItem, etc that will access help
-     * @param idString the help context for the component. if "" then context is determined 'on the fly' by ContextMgr
+     * @param idString the help context for the component. if "" then context is determined 'on the
+     *            fly' by ContextMgr
      */
     public static void registerComponent(final AbstractButton component, final String idString)
     {
-        if (idString == "")
+        if (HelpMgr.helpAvailable())
         {
-            registerComponent(component);
-        } else
-        {
-            if (HelpMgr.helpAvailable())
+            component.addActionListener(new CSH.DisplayHelpFromSource(hb));
+            if (isGoodID(idString))
             {
-                component.addActionListener(new CSH.DisplayHelpFromSource(hb));
-                if (isGoodID(idString))
-                {
-                    CSH.setHelpIDString(component, idString);
-                } else
-                {
-                    CSH.setHelpIDString(component, getDefaultID());
-                }
+                CSH.setHelpIDString(component, idString);
             } else
             {
-                component.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        JOptionPane.showConfirmDialog(null,
-                                getResourceString("HelpSystemNotLocated"),
-                                getResourceString("Help"), JOptionPane.CLOSED_OPTION);
-                    }
-                });
+                CSH.setHelpIDString(component, getDefaultID());
             }
+        } else
+        {
+            component.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    JOptionPane.showConfirmDialog(null, getResourceString("HelpSystemNotLocated"),
+                            getResourceString("Help"), JOptionPane.CLOSED_OPTION);
+                }
+            });
         }
     }
 
+    public static void setHelpID(final Component component, final String idString)
+    {
+        CSH.setHelpIDString(component, idString);
+    }
+
     /**
-     * @param component  a Button, MenuItem, etc that will access help. The help context is determined 'on the fly' by ContextMgr
+     * @param component a Button, MenuItem, etc that will access help. The help context is
+     *            determined 'on the fly' by ContextMgr
+     * @param focusListener true if the help accessor to try to determine help context from
+     *            component with focus
      */
-    public static void registerComponent(final AbstractButton component)
+    public static void registerComponent(final AbstractButton component, final boolean focusListener)
     {
         if (HelpMgr.helpAvailable())
         {
+            if (focusListener)
+            {
+                component.addActionListener(new CSH.DisplayHelpFromFocus(hb));
+            }
             component.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
