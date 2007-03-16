@@ -467,6 +467,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getTitle()
      */
+    @Transient
     public String getTitle()
     {
         initExportData();
@@ -474,8 +475,10 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         StringBuilder sb = new StringBuilder();
         for (WorkbenchDataItem wbdi : dataList)
         {
-            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getRowNumber());
-            if (wbtmi.getIsIncludedInTitle())
+            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getColumnNumber());
+            
+            // XXX temporary fix  DEMO
+            if (wbtmi.getIsIncludedInTitle() || wbtmi.getCaption().equals("LocalityName") )
             {
                 if (sb.length() > 0)
                 {
@@ -483,13 +486,15 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
                 }
                 sb.append(wbdi.getCellData());
             }
-        } 
+        }
+        
         return sb.toString();
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getHtmlContent()
      */
+    @Transient
     public String getHtmlContent()
     {
         // XXX In the Future this should call a delegate
@@ -500,10 +505,10 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         StringBuilder sb = new StringBuilder("<table>");
         for (WorkbenchDataItem wbdi : dataList)
         {
-            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getRowNumber());
+            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getColumnNumber());
             if (wbtmi.getIsExportableToContent())
             {
-                sb.append("<td><td align=\"right\">");
+                sb.append("<tr><td align=\"right\">");
                 sb.append(wbtmi.getCaption());
                 sb.append("</td><td align=\"left\">");
                 sb.append(wbdi.getCellData());
@@ -518,6 +523,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getLatLon()
      */
+    @Transient
     public Pair<Double, Double> getLatLon()
     {
         initExportData();
@@ -527,18 +533,18 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         
         for (WorkbenchDataItem wbdi : dataList)
         {
-            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getRowNumber());
-            if (wbtmi.getFieldName().equals("Latitude1"))
+            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getColumnNumber());
+            if (wbtmi.getFieldName().equals("latitude1"))
             {
                 String valStr = wbdi.getCellData();
-                if (StringUtils.isNumeric(valStr))
+                if (StringUtils.isNotEmpty(valStr))
                 {
                     latitude = Double.parseDouble(valStr);
                 }
-            } else if (wbtmi.getFieldName().equals("Longitude1"))
+            } else if (wbtmi.getFieldName().equals("longitude1"))
             {
                 String valStr = wbdi.getCellData();
-                if (StringUtils.isNumeric(valStr))
+                if (StringUtils.isNotEmpty(valStr))
                 {
                     longitude = Double.parseDouble(valStr);
                 }
@@ -563,4 +569,3 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     }
     
 }
-

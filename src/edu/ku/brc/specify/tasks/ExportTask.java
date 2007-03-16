@@ -279,7 +279,6 @@ public class ExportTask extends BaseTask
     protected RecordSetExporter getExporter(final CommandAction cmdAction)
     {
         Object propValue = cmdAction.getProperty("exporter");
-        RecordSetExporter exporter = null;
         
         if (propValue instanceof RecordSetExporter)
         {
@@ -292,7 +291,7 @@ public class ExportTask extends BaseTask
             {
                 if (exp.getClass().equals(propValue))
                 {
-                    return exporter;
+                    return exp;
                 }
             }
         }
@@ -303,7 +302,7 @@ public class ExportTask extends BaseTask
             {
                 if (exp.getClass().getName().equals(propValue))
                 {
-                    return exporter;
+                    return exp;
                 }
             }
         }

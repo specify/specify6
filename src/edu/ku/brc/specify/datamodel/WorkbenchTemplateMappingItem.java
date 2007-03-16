@@ -84,7 +84,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         xCoord = -1;
         yCoord = -1;
         carryForward          = false;
-        isExportableToContent = false;
+        isExportableToContent = true;
         isIncludedInTitle     = false;
 
     }
@@ -323,6 +323,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString()
     {
         return caption != null ? caption : fieldName;

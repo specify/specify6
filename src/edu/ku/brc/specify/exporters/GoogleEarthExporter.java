@@ -74,7 +74,7 @@ public class GoogleEarthExporter implements RecordSetExporter
             return;
         }
         
-        if (data.get(0).getClass().equals(GoogleEarthPlacemarkIFace.class))
+        if (data.get(0) instanceof GoogleEarthPlacemarkIFace)
         {
             exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data);
         }
