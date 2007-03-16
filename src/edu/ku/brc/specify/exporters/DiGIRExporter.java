@@ -2,6 +2,8 @@ package edu.ku.brc.specify.exporters;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.util.List;
+
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -40,5 +42,11 @@ public class DiGIRExporter implements RecordSetExporter
     public String getDescription()
     {
         return getResourceString(NAME+"_Description");
+    }
+
+    public void exportList(List<?> data)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

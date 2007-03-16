@@ -8,10 +8,8 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -32,12 +30,9 @@ import edu.ku.brc.specify.exporters.RecordSetExporter;
 import edu.ku.brc.specify.exporters.RecordSetExporterAdapter;
 import edu.ku.brc.specify.exporters.WebPageExporter;
 import edu.ku.brc.specify.tasks.subpane.HtmlDescPane;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable
@@ -58,6 +53,7 @@ public class ExportTask extends BaseTask
 
     //public static final String DOLABELS_ACTION     = "DoLabels";
     public static final String EXPORT_RS = "ExportRecordSet";
+    public static final String EXPORT_LIST = "ExportList";
     //public static final String PRINT_LABEL         = "PrintLabel";
 
     // Data Members
@@ -158,74 +154,23 @@ public class ExportTask extends BaseTask
     }
 
     /**
-     * Displays UI that asks the user to select a predefined label.
-     * @return the name of the label file or null if cancelled
-     */
-    protected String askForFormatOrTarget()
-    {
-        initialize();
-
-        // XXX Need to pass in or check table type for different types of lables.
-
-        NavBoxItemIFace nbi = null;
-        if (exportersList.size() == 1)
-        {
-            nbi = exportersList.get(0);
-
-        } else
-        {
-            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
-                                                                                            getResourceString("ChooseFormat"), 
-                                                                                            exportersList, 
-                                                                                            IconManager.getIcon(name, IconManager.IconSize.Std24));
-            dlg.setMultiSelect(false);
-            dlg.setModal(true);
-            dlg.setVisible(true);
-            if (!dlg.isCancelled())
-            {
-                nbi  = dlg.getSelectedObject();
-            }
-        }
-        
-        if (nbi != null && nbi.getData() != null)
-        {
-            Object data = nbi.getData();
-            if (data instanceof CommandAction)
-            {
-            	CommandAction caData = (CommandAction)data;
-            	log.info("Executing export for format/target " + caData.getAction());
-                //return ((CommandAction)data).getPropertyAsString("file");
-            	return null;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Single place to convert the data to a Map.
-     * @param data the data in a nbi
-     * @return a Map<String, String>
-     */
-    @SuppressWarnings("unchecked")
-    protected Map<String, String> convertDataToMap(final Object data)
-    {
-        if (data instanceof Map)
-        {
-            return (Map<String, String>)data; // ok to Cast
-        }
-        throw new RuntimeException("Why isn't the data a Map<String, String>!");
-    }
-
-    /**
-     * Checks to make sure we are the current SubPane and then creates the labels from the selected RecordSet
      * @param data the data that "should" be a RecordSet
      */
     protected void exportDataFromRecordSet(final Object data, final RecordSetExporter exporter)
     {
-        if (data instanceof RecordSet && ContextMgr.getCurrentContext() == this)
+        if (data instanceof RecordSet)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
             doExport(exporter, rs);
+        }
+    }
+    
+    protected void exportDataFromList(final Object data, final RecordSetExporter exporter)
+    {
+        if (data instanceof List)
+        {
+            List<?> dataList = (List<?>)data;
+            doExport(exporter, dataList);
         }
     }
     
@@ -233,6 +178,11 @@ public class ExportTask extends BaseTask
     {
         RecordSet rs = (RecordSet)data;
         exporter.exportRecordSet(rs);
+    }
+    
+    protected void doExport(RecordSetExporter exporter, List<?> data)
+    {
+        exporter.exportList(data);
     }
 
     //-------------------------------------------------------
@@ -301,30 +251,65 @@ public class ExportTask extends BaseTask
     //-------------------------------------------------------
 
     /**
-     * Processes all Commands of type LABELS.
      * @param cmdAction the command to be processed
      */
-    protected void processExportCommands(final CommandAction cmdAction)
+    protected void processExportRecordSet(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction(EXPORT_RS))
+        RecordSetExporter exporter = getExporter(cmdAction);
+
+        if (exporter != null)
         {
-            if (cmdAction.getData() instanceof RecordSetIFace)
-            {
-                Object propValue = cmdAction.getProperty("exporter");
-                RecordSetExporter exporter = null;
-                if (propValue instanceof RecordSetExporter)
-                {
-                    exporter = (RecordSetExporter)propValue;
-                }
-                
-                if (exporter!=null)
-                {
-                    exportDataFromRecordSet(cmdAction.getData(),exporter);
-                }
-            }
-        } 
+            exportDataFromRecordSet(cmdAction.getData(), exporter);
+        }
     }
     
+    /**
+     * @param cmdAction the command to be processed
+     */
+    protected void processExportList(final CommandAction cmdAction)
+    {
+        RecordSetExporter exporter = getExporter(cmdAction);
+        
+        if (exporter!=null)
+        {
+            exportDataFromList(cmdAction.getData(),exporter);
+        }
+    }
+    
+    protected RecordSetExporter getExporter(final CommandAction cmdAction)
+    {
+        Object propValue = cmdAction.getProperty("exporter");
+        RecordSetExporter exporter = null;
+        
+        if (propValue instanceof RecordSetExporter)
+        {
+            return (RecordSetExporter)propValue;
+        }
+        
+        if (propValue instanceof Class<?>)
+        {
+            for (RecordSetExporter exp: loadedExporters)
+            {
+                if (exp.getClass().equals(propValue))
+                {
+                    return exporter;
+                }
+            }
+        }
+        
+        if (propValue instanceof String)
+        {
+            for (RecordSetExporter exp: loadedExporters)
+            {
+                if (exp.getClass().getName().equals(propValue))
+                {
+                    return exporter;
+                }
+            }
+        }
+        
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
@@ -332,9 +317,13 @@ public class ExportTask extends BaseTask
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(EXPORT))
+        if (cmdAction.isType(EXPORT) && cmdAction.isAction(EXPORT_RS))
         {
-        	processExportCommands(cmdAction);
-        } 
+        	processExportRecordSet(cmdAction);
+        }
+        else if (cmdAction.isType(EXPORT) && cmdAction.isAction(EXPORT_LIST))
+        {
+            processExportList(cmdAction);
+        }
     }
 }

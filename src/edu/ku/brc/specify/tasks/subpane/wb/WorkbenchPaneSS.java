@@ -55,6 +55,8 @@ import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
+import net.sf.jasperreports.engine.export.JRGridLayout.ExporterElements;
+
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -65,15 +67,21 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.exporters.GoogleEarthExporter;
+import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
@@ -117,6 +125,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton     carryForwardBtn = null;
     protected JButton     toggleCardImageBtn = null;
     protected JButton     showMapBtn      = null;
+    protected JButton     exportKmlBtn    = null;
     
     protected List<JButton> selectionSensativeButtons          = new Vector<JButton>();
     
@@ -267,6 +276,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // only enable it if the workbench has geo ref data
         showMapBtn.setEnabled(workbench.containsGeoRefData());
 
+        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showRecordsInGoogleEarth();
+            }
+        });
+        exportKmlBtn.setEnabled(workbench.containsGeoRefData());
+        
         // listen to selection changes to enable/disable certain buttons
         spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
@@ -321,7 +339,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn};
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn};
         PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
 
         int x = 3;
@@ -615,6 +633,37 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
         statusBar.setIndeterminate(false);
         statusBar.setText("");
+    }
+    
+    protected void showRecordsInGoogleEarth()
+    {
+        log.debug("Showing map of selected records");
+        int[] selection = spreadSheet.getSelectedRows();
+        if (selection.length==0)
+        {
+            // if none are selected, map all of them
+            int rowCnt = spreadSheet.getRowCount();
+            selection = new int[rowCnt];
+            for (int i = 0; i < rowCnt; ++i)
+            {
+                selection[i]=i;
+            }
+        }
+        
+        // put all the selected rows in a List
+        List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
+        List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
+        for (int i = 0; i < selection.length; ++i )
+        {
+            int index = selection[i];
+            WorkbenchRow row = rows.get(index);
+            selectedRows.add(row);
+        }
+        
+        CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
+        command.setData(selectedRows);
+        command.setProperty("exporter", GoogleEarthExporter.class);
+        CommandDispatcher.dispatch(command);
     }
     
     /**

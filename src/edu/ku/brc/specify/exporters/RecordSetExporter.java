@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.exporters;
 
+import java.util.List;
+
 import edu.ku.brc.specify.datamodel.RecordSet;
 
 /**
@@ -19,4 +21,5 @@ public interface RecordSetExporter
     public String getDescription();
     public Class<?>[] getHandledClasses();
 	public void exportRecordSet(RecordSet data);
+    public void exportList(List<?> data);
 }

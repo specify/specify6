@@ -7,6 +7,8 @@
 
 package edu.ku.brc.specify.exporters;
 
+import java.util.List;
+
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -79,5 +81,11 @@ public class WebPageExporter implements RecordSetExporter
         JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
         Icon icon = IconManager.getIcon(getIconName());
         JOptionPane.showMessageDialog(topFrame, "Not yet implemented", getName() + " data export", JOptionPane.ERROR_MESSAGE, icon);
+    }
+
+    public void exportList(List<?> data)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }
