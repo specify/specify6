@@ -249,7 +249,12 @@ public class FileCache
     protected synchronized void loadCacheMappingFile()
 	{
 		log.info("Loading old cache mapping data from " + mappingFilename);
-		File mappingFile = new File(cacheDir,mappingFilename);
+		File mappingFile = new File(cacheDir, mappingFilename);
+        if (!mappingFile.exists())
+        {
+            mappingFile.mkdirs();
+        }
+        
 		if( mappingFile.exists() )
 		{
 			try

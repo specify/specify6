@@ -247,13 +247,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
         //localPrefs.load(); moved to end for not-null constraint
         
-        // Temp Code
-        File cacheDir = new File(UICacheManager.getDefaultWorkingPath()+ File.separator + "cache");
-        if (!cacheDir.exists())
-        {
-            cacheDir.mkdir();
-        }
-        // end temp code
         FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath()+ File.separator + "cache");
 
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
@@ -1072,7 +1065,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX LOCALIZE
+        if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX I18N
         {
             File destFile = chooser.getSelectedFile();
             

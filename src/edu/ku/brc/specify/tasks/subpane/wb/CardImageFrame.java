@@ -17,8 +17,6 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
