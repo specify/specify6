@@ -109,7 +109,7 @@ public class FileCache
 		cacheDir = new File(dir);
 		if( !cacheDir.exists() )
 		{
-			throw new IOException("Requested cache directory must already exist");
+            FileUtils.forceMkdir(cacheDir);
 		}
 		log.debug("Creating FileCache using " + dir + " directory");
 
@@ -129,6 +129,18 @@ public class FileCache
 		maxCacheKb = Integer.MAX_VALUE;
 	}
 
+    /**
+     * Purges all contents of the file cache.
+     */
+    public void clear()
+    {
+        // purge all of the files
+        while (purgeLruCacheFile())
+        {
+            // do nothing
+        }
+    }
+    
 	/**
 	 * Returns the prefix prepended to all cache files.
 	 * 
@@ -410,30 +422,48 @@ public class FileCache
 		}
 	}
 
+    /**
+     * Purges the file having the given handle from the cache.
+     * 
+     * @param key the cache file handle
+     * @return true if a file was purged, false otherwise
+     */
+    protected synchronized boolean purgeCacheFile(String key)
+    {
+        if (key==null)
+        {
+            return false;
+        }
+        String filename = handleToFilenameHash.getProperty(key);
+        if( filename == null )
+        {
+            return false;
+        }
+
+        log.info("Purging " + filename + " from cache");
+        File f = new File(filename);
+        long filesize = f.length();
+        if( !f.delete() )
+        {
+            log.warn("Failed to delete cache file: "+f.getAbsolutePath());
+        }
+        handleToFilenameHash.remove(key);
+        handleToAccessTimeHash.remove(key);
+        totalCacheSize -= filesize;
+        return true;
+    }
+    
 	/**
-	 * Determine which cache file is the least recently used and delete it.  This method
-	 * is called when the cache exceeds its maximum size.
+     * Determine which cache file is the least recently used and delete it.  This method
+     * is called when the cache exceeds its maximum size.
+     * 
+	 * @return true if a file was purged, false otherwise
 	 */
-	protected synchronized void purgeLruCacheFile()
+	protected synchronized boolean purgeLruCacheFile()
 	{
 		String oldKey = findKeyLRU();
-		String filename = handleToFilenameHash.getProperty(oldKey);
-		if( filename == null )
-		{
-			return;
-		}
-
-		log.info("Purging " + filename + " from cache");
-		File f = new File(filename);
-		long filesize = f.length();
-		if( !f.delete() )
-		{
-			log.warn("Failed to delete cache file: "+f.getAbsolutePath());
-		}
-		handleToFilenameHash.remove(oldKey);
-		handleToAccessTimeHash.remove(oldKey);
-		totalCacheSize -= filesize;
-	}
+        return purgeCacheFile(oldKey);
+ 	}
 
 	/**
 	 * Cache <code>item</code> using the given key for retrieval.
@@ -624,7 +654,7 @@ public class FileCache
 //		if( fileFile == null )
 //		{
 //			log.info("Cached file not found.");
-//			String fileKey = fc.cacheFile(new File("C:\\Documents and Settings\\jstewart\\Desktop\\kmloutput.kml"));
+//			String fileKey = fc.cacheFile(new File("/home/jstewart/Desktop/KML_Samples.kml"));
 //			log.info("Cached kmloutput.kml under key value " + fileKey);
 //		}
 //		else
@@ -670,6 +700,10 @@ public class FileCache
 //		}
 //
 //		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//        
+//        fc.clear();
+//        
+//        log.info("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		fc.saveCacheMapping();
 //	}
