@@ -250,9 +250,9 @@ public class FileCache
 	{
 		log.info("Loading old cache mapping data from " + mappingFilename);
 		File mappingFile = new File(cacheDir, mappingFilename);
-        if (!mappingFile.exists())
+        if (!cacheDir.exists())
         {
-            mappingFile.mkdirs();
+            cacheDir.mkdirs();
         }
         
 		if( mappingFile.exists() )
