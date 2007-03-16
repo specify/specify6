@@ -68,6 +68,12 @@ public class GenericKmlGenerator
     public void addPlacemark(Pair<Double,Double> point, String name, String htmlDescription)
     {
         log.debug("Adding point to KML generator: " + point + "   " + htmlDescription);
+
+        if (point==null)
+        {
+            return;
+        }
+        
         points.add(point);
         pointNameMap.put(point, name);
         pointDescMap.put(point, htmlDescription);
