@@ -20,10 +20,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.dbsupport.RecordSetLoader;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.ui.IconManager;
@@ -48,6 +45,7 @@ public class GoogleEarthExporter implements RecordSetExporter
 	 */
 	public void exportRecordSet(RecordSet data)
     {
+        log.info("Exporting RecordSet");
         int collObjTableId = DBTableIdMgr.getIdByClassName(CollectionObject.class.getName());
         int collEvtTableId = DBTableIdMgr.getIdByClassName(CollectingEvent.class.getName());
         int dataTableId = data.getDbTableId();
@@ -69,19 +67,22 @@ public class GoogleEarthExporter implements RecordSetExporter
     @SuppressWarnings("unchecked")
     public void exportList(List<?> data)
     {
+        log.info("Exporting data list");
         if (data==null || data.size()==0)
         {
+            log.warn("Empty or null data list given to GoogleEarthExporter");
             return;
         }
         
-        if (data.get(0).getClass().equals(WorkbenchRow.class))
+        if (data.get(0).getClass().equals(GoogleEarthPlacemarkIFace.class))
         {
-            exportWorkbenchRowList((List<WorkbenchRow>)data);
+            exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data);
         }
     }
     
     protected void exportCollectionObjectRecordSet(@SuppressWarnings("unused") RecordSet data)
     {
+        log.info("Exporting a RecordSet of CollectionObjects");
         JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
         Icon icon = IconManager.getIcon(getIconName());
         JOptionPane.showMessageDialog(topFrame, "Not yet implemented", getName() + " data export", JOptionPane.ERROR_MESSAGE, icon);
@@ -108,65 +109,29 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
     }
     
-    protected void exportWorkbenchRowList(List<WorkbenchRow> rows)
+    protected void exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks)
     {
-        boolean checkForGeoFields = true;
         GenericKmlGenerator kmlGenerator = new GenericKmlGenerator();
-        for (WorkbenchRow row: rows)
+        for (GoogleEarthPlacemarkIFace pm: placemarks)
         {
-            // check for geo refs the first time through
-            if (checkForGeoFields)
-            {
-                if (!row.getWorkbench().containsGeoRefData())
-                {
-                    log.error("Provided record set does not contain geo referenced data");
-                    return;
-                }
-                checkForGeoFields=false;
-            }
-            
-            String name = getNameOfWorkbenchRow(row);
-            Pair<Double,Double> geoRef = getGeoRefFromWorkbenchRow(row);
-            String htmlDesc = buildHtmlDescFromWorkbenchRow(row);
+            String name = pm.getTitle();
+            Pair<Double,Double> geoRef = pm.getLatLon();
+            String htmlDesc = pm.getHtmlContent();
             kmlGenerator.addPlacemark(geoRef, name, htmlDesc);
         }
         
-        File tmpFile;
+        File tmpFile = null;
         try
         {
             tmpFile = File.createTempFile("sp6export", ".kml");
+            log.info("Writing KML output to " + tmpFile.getAbsolutePath());
             kmlGenerator.generateKML(tmpFile);
             AttachmentUtils.openFile(tmpFile);
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error("Exception caught while writing KML output or opening Google Earth", e);
         }
-    }
-    
-    protected String getNameOfWorkbenchRow(WorkbenchRow row)
-    {
-        return row.getData(0);
-    }
-    
-    protected Pair<Double,Double> getGeoRefFromWorkbenchRow(WorkbenchRow row)
-    {
-        Workbench wb = row.getWorkbench();
-        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
-        int lat1Index = wb.getColumnIndex(localityTableId, "latitude1");
-        int lon1Index = wb.getColumnIndex(localityTableId, "longitude1");
-        //int lat2Index = wb.getColumnIndex(localityTableId, "latitude2");
-        //int lon2Index = wb.getColumnIndex(localityTableId, "longitude2");
-        String lat1 = row.getData(lat1Index);
-        String lon1 = row.getData(lon1Index);
-        double lat = Double.parseDouble(lat1);
-        double lon = Double.parseDouble(lon1);
-        return new Pair<Double,Double>(lat,lon);
-    }
-    
-    protected String buildHtmlDescFromWorkbenchRow(WorkbenchRow row)
-    {
-        return row.toString() + "<br><a href=\"http://www.google.com/\">Google</a>";
     }
     
     /* (non-Javadoc)
@@ -174,7 +139,7 @@ public class GoogleEarthExporter implements RecordSetExporter
      */
     public Class<?>[] getHandledClasses()
     {
-        return new Class<?>[] {CollectionObject.class, CollectingEvent.class, WorkbenchRow.class};
+        return new Class<?>[] {CollectionObject.class, CollectingEvent.class, GoogleEarthPlacemarkIFace.class};
     }
 
     /* (non-Javadoc)
