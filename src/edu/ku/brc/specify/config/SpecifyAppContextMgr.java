@@ -342,12 +342,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
 
-            // TODO Need to add a Help Btn to this Dialog
+            // TODO XXX Need to add a Help Btn to this Dialog
             ChooseFromListDlg<CatSeriesColObjDefItem> dlg = 
                 new ChooseFromListDlg<CatSeriesColObjDefItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
                                                               getResourceString("ChooseCatSeriesColObjDef"), 
-                                                              list, 
-                                                              false);
+                                                              ChooseFromListDlg.OK_BTN, // OK Only
+                                                              list); 
             dlg.setModal(true);
 
             UIHelper.centerAndShow(dlg);

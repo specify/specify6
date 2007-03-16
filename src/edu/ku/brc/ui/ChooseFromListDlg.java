@@ -43,7 +43,7 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.factories.ButtonBarFactory;
 
 import edu.ku.brc.specify.help.HelpMgr;
 
@@ -58,29 +58,60 @@ import edu.ku.brc.specify.help.HelpMgr;
 @SuppressWarnings("serial")
 public class ChooseFromListDlg<T> extends JDialog
 {
+    public static final int OK_BTN             = 1;
+    public static final int CANCEL_BTN         = 2;
+    public static final int HELP_BTN           = 4;
+    public static final int APPLY_BTN          = 8;
+    
+    public static final int OKCANCEL           = OK_BTN | CANCEL_BTN;
+    public static final int OKHELP             = OK_BTN | HELP_BTN;
+    public static final int OKCANCELHELP       = OK_BTN | CANCEL_BTN | HELP_BTN;
+    public static final int OKCANCELAPPLY      = OK_BTN | CANCEL_BTN | APPLY_BTN;
+    public static final int OKCANCELAPPLYHELP  = OK_BTN | CANCEL_BTN | APPLY_BTN | HELP_BTN;
+    
     // Static Data Members
     private static final Logger log              = Logger.getLogger(ChooseFromListDlg.class);
 
     // Data Members
-    protected JButton           cancelBtn;
-    protected JButton           okBtn;
-    protected JButton           helpBtn;
+    protected JButton           okBtn            = null;
+    protected JButton           cancelBtn        = null;
+    protected JButton           helpBtn          = null;
+    protected JButton           applyBtn         = null;
+    
+    // Button Labels
+    protected String            okLabel          = null;
+    protected String            cancelLabel      = null;
+    protected String            helpLabel        = null;
+    protected String            applyLabel       = null;
+
     protected JList             list             = null;
     protected List<T>           items;
     protected ImageIcon         icon             = null;
-    protected boolean           isCancelled      = false;
+    protected boolean           isCancelled      = true;
+    protected int               btnPressed       = CANCEL_BTN;
 
     // Needed for delayed building of Dialog
     protected String            title            = null;
     protected String            desc             = null;
-    protected Boolean           includeCancelBtn = true;
-    protected Boolean           includeHelpBtn   = false;
-    protected String            okLabel          = null;
-    protected String            cancelLabel      = null;
-    protected String            helpLabel        = null;
-    protected String            helpContext      = "";
+    protected int               whichBtns        = OK_BTN;
+    protected String            helpContext      = null;
     protected boolean           isMultiSelect    = false;
     protected int[]             selectedIndices  = null;
+    
+    /**
+     * Constructor.
+     * 
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param itemList the list to be selected from
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final Frame frame, 
+                             final String title, 
+                             final List<T> itemList) throws HeadlessException
+    {
+        this(frame, title, OK_BTN | CANCEL_BTN, itemList);
+    }
 
     /**
      * Constructor.
@@ -90,10 +121,12 @@ public class ChooseFromListDlg<T> extends JDialog
      * @param itemList the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList)
-            throws HeadlessException
+    public ChooseFromListDlg(final Frame   frame, 
+                             final String  title, 
+                             final int     whichBtns,
+                             final List<T> itemList) throws HeadlessException
     {
-        this(frame, title, null, itemList, true, false, "");
+        this(frame, title, null, whichBtns, itemList);
     }
 
     /**
@@ -102,41 +135,17 @@ public class ChooseFromListDlg<T> extends JDialog
      * @param frame parent frame
      * @param title the title of the dialog
      * @param desc a description of what they are to do
+     * @param whichBtns mask describing which buttons to create
      * @param itemList the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final Frame frame, final String title, final String desc,
-            final List<T> itemList) throws HeadlessException
+    public ChooseFromListDlg(final Frame   frame, 
+                             final String  title, 
+                             final String  desc,
+                             final int     whichBtns,
+                             final List<T> itemList) throws HeadlessException
     {
-        this(frame, title, desc, itemList, true, false, "");
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param frame parent frame
-     * @param title the title of the dialog
-     * @param itemList the list to be selected from
-     * @throws HeadlessException
-     */
-    public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList,
-            final boolean includeCancelBtn) throws HeadlessException
-    {
-        this(frame, title, null, itemList, includeCancelBtn, false, "");
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param frame  parent frame
-     * @param title the title of the dialog
-     * @param itemList the list to be selected from
-     * @throws HeadlessException
-     */
-    public ChooseFromListDlg(final Frame frame, final String title, final String desc,
-            final List<T> itemList, final boolean includeCancelBtn) throws HeadlessException
-    {
-        this(frame, title, desc, itemList, includeCancelBtn, false, "");
+        this(frame, title, desc, whichBtns, itemList, null);
     }
 
     /**
@@ -146,26 +155,27 @@ public class ChooseFromListDlg<T> extends JDialog
      * @param title the title of the dialog
      * @param desc the list to be selected from
      * @param itemList the list to be selected from
-     * @param includeCancelBtn  indicates whether to create and displaty a cancel btn
-     * @param includeHelpBtn indicates whether to create and displaty a help btn
+     * @param whichBtns mask describing which buttons to create
      * @param helpContext  help context identifier
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final Frame frame, final String title, final String desc,
-            final List<T> itemList, final boolean includeCancelBtn, final boolean includeHelpBtn,
-            final String helpContext) throws HeadlessException
+    public ChooseFromListDlg(final Frame   frame, 
+                             final String  title, 
+                             final String  desc,
+                             final int     whichBtns,
+                             final List<T> itemList,
+                             final String  helpContext) throws HeadlessException
     {
         super(frame, true);
 
-        this.title = title;
-        this.desc = desc;
-        this.items = itemList;
-        this.includeCancelBtn = includeCancelBtn;
-        this.includeHelpBtn = includeHelpBtn;
+        this.title       = title;
+        this.desc        = desc;
+        this.items       = itemList;
+        this.whichBtns   = whichBtns;
         this.helpContext = helpContext;
 
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -177,42 +187,60 @@ public class ChooseFromListDlg<T> extends JDialog
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList,
-            final ImageIcon icon) throws HeadlessException
+    public ChooseFromListDlg(final Frame     frame, 
+                             final String    title, 
+                             final List<T>   itemList,
+                             final ImageIcon icon) throws HeadlessException
     {
-        super(frame, true);
-        this.title = title;
-        this.items = itemList;
-        this.icon = icon;
-
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this(frame, title, OKCANCEL, itemList, icon, null);
     }
 
     /**
      * Constructor.
      * 
-     * @param frame parent frame
+     * @param frame  parent frame
      * @param title the title of the dialog
      * @param items the list to be selected from
+     * @param whichBtns mask describing which buttons to create
      * @param icon the icon to be displayed in front of each entry in the list
-     * @param includeHelpBtn indicates whether to create and displaty a help btn
-     * @param helpContext help context identifier
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final Frame frame, final String title, final List<T> itemList,
-            final ImageIcon icon, final boolean includeHelpBtn, final String helpContext)
-            throws HeadlessException
+    public ChooseFromListDlg(final Frame     frame, 
+                             final String    title, 
+                             final int       whichBtns,
+                             final List<T>   itemList,
+                             final ImageIcon icon) throws HeadlessException
+    {
+        this(frame, title, whichBtns, itemList, icon, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param frame  parent frame
+     * @param title the title of the dialog
+     * @param items the list to be selected from
+     * @param whichBtns mask describing which buttons to create
+     * @param icon the icon to be displayed in front of each entry in the list
+     * @param helpContext  help context identifier
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final Frame     frame, 
+                             final String    title, 
+                             final int       whichBtns,
+                             final List<T>   itemList,
+                             final ImageIcon icon,
+                             final String    helpContext) throws HeadlessException
     {
         super(frame, true);
-        this.title = title;
-        this.items = itemList;
-        this.icon = icon;
-        this.includeHelpBtn = includeHelpBtn;
+        
+        this.title       = title;
+        this.items       = itemList;
+        this.icon        = icon;
         this.helpContext = helpContext;
 
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -242,7 +270,6 @@ public class ChooseFromListDlg<T> extends JDialog
 
         try
         {
-
             ListModel listModel = new AbstractListModel()
             {
                 public int getSize()
@@ -301,49 +328,93 @@ public class ChooseFromListDlg<T> extends JDialog
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    setVisible(false);
                     isCancelled = false;
+                    btnPressed  = OK_BTN;
+                    setVisible(false);
                 }
             });
             getRootPane().setDefaultButton(okBtn);
-
-            if (includeCancelBtn || includeHelpBtn)
+            
+            
+            if ((whichBtns & CANCEL_BTN) == CANCEL_BTN)
             {
-                ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-                if (includeCancelBtn)
+                cancelBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Cancel"));
+                cancelBtn.addActionListener(new ActionListener()
                 {
-                    cancelBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel
-                            : getResourceString("Cancel"));
-                    cancelBtn.addActionListener(new ActionListener()
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        isCancelled = true;
+                        btnPressed  = CANCEL_BTN;
+                        setVisible(false);
+                    }
+                });
+            }
+            
+            if ((whichBtns & HELP_BTN) == HELP_BTN)
+            {
+                helpBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Help"));
+                if (StringUtils.isNotEmpty(helpContext))
+                {
+                    HelpMgr.registerComponent(helpBtn, helpContext);
+                } else
+                {
+                    helpBtn.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
+                            isCancelled = false;
+                            btnPressed  = HELP_BTN;
                             setVisible(false);
-                            isCancelled = true;
                         }
-                    });
+                    }); 
                 }
-                if (includeHelpBtn)
+            }
+            
+            if ((whichBtns & APPLY_BTN) == APPLY_BTN)
+            {
+                applyBtn = new JButton(StringUtils.isNotEmpty(applyLabel) ? applyLabel : getResourceString("Apply"));
+                applyBtn.addActionListener(new ActionListener()
                 {
-                    helpBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel
-                            : getResourceString("Help"));
-                    HelpMgr.registerComponent(helpBtn, helpContext);
-                }
-                if (includeCancelBtn && includeHelpBtn)
-                {
-                    btnBuilder.addGriddedButtons(new JButton[] { cancelBtn, okBtn, helpBtn });
-                } else if (includeCancelBtn)
-                {
-                    btnBuilder.addGriddedButtons(new JButton[] { cancelBtn, okBtn });
-                } else
-                {
-                    btnBuilder.addGriddedButtons(new JButton[] { okBtn, helpBtn });
-                }
-                panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        isCancelled = false;
+                        btnPressed  = APPLY_BTN;
+                        setVisible(false);
+                    }
+                });
+            }
+            
+            JPanel bb;
+            if (whichBtns == OK_BTN)
+            {
+                bb = ButtonBarFactory.buildOKBar(okBtn);
+                
+            } else if (whichBtns == OKCANCEL)
+            {
+                bb = ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn);
+                
+            } else if (whichBtns == OKCANCELAPPLY)
+            {
+                bb = ButtonBarFactory.buildOKCancelApplyBar(okBtn, cancelBtn, applyBtn);
+                
+            } else if (whichBtns == OKHELP)
+            {
+                bb = ButtonBarFactory.buildHelpOKBar(helpBtn, okBtn);
+                
+            } else if (whichBtns == OKCANCELHELP)
+            {
+                bb = ButtonBarFactory.buildHelpOKCancelBar(helpBtn, okBtn, cancelBtn);
+                
+            } else if (whichBtns == OKCANCELAPPLYHELP)
+            {
+                bb = ButtonBarFactory.buildHelpOKCancelApplyBar(helpBtn, okBtn, cancelBtn, applyBtn);
+                
             } else
             {
-                panel.add(okBtn, BorderLayout.SOUTH);
+                bb = ButtonBarFactory.buildOKBar(okBtn);
             }
+
+            panel.add(bb, BorderLayout.SOUTH);
 
             updateUIState();
 
@@ -439,6 +510,26 @@ public class ChooseFromListDlg<T> extends JDialog
     public void setCancelLabel(final String text)
     {
         this.cancelLabel = text;
+    }
+
+    public int getBtnPressed()
+    {
+        return btnPressed;
+    }
+
+    public void setApplyLabel(String applyLabel)
+    {
+        this.applyLabel = applyLabel;
+    }
+
+    public void setHelpContext(String helpContext)
+    {
+        this.helpContext = helpContext;
+    }
+
+    public void setHelpLabel(String helpLabel)
+    {
+        this.helpLabel = helpLabel;
     }
 
     /*

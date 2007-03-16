@@ -247,7 +247,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
         localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
         //localPrefs.load(); moved to end for not-null constraint
         
-        FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
+        // Temp Code
+        File cacheDir = new File(UICacheManager.getDefaultWorkingPath()+ File.separator + "cache");
+        if (!cacheDir.exists())
+        {
+            cacheDir.mkdir();
+        }
+        // end temp code
+        FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath()+ File.separator + "cache");
 
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
  

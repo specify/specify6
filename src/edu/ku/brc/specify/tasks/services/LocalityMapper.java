@@ -959,13 +959,13 @@ public class LocalityMapper implements TimingTarget
                     "global_mosaic",
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 
-//            Image overlayImage = getMapFromService("129.237.201.104",
-//                    "/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
-//                    "states,rivers",
-//                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
+            Image overlayImage = getMapFromService("129.237.201.132",
+                    "/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
+                    "states,rivers",
+                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 
 			mapIcon     = new ImageIcon(mapImage);
-//            overlayIcon = new ImageIcon(overlayImage);
+            overlayIcon = new ImageIcon(overlayImage);
 			cacheValid  = true;
 
 			mapWidth = mapIcon.getIconWidth();

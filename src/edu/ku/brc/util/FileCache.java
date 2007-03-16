@@ -27,7 +27,7 @@ public class FileCache
 	private static String accessTimeFileComment = "edu.ku.brc.util.FileCache Access Times File";
 	private static String defaultPrefix = "brc-";
 	private static String defaultSuffix = ".cache";
-    private static String defaultPath = System.getProperty("java.io.tmpdir");
+    private static String defaultPath   = System.getProperty("java.io.tmpdir");
 
 	/** HttpClient used for grabbing web resources. */
 	protected HttpClient httpClient;

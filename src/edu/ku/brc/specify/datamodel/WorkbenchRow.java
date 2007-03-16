@@ -34,6 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -76,8 +77,9 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     protected Workbench              workbench;
     
     // XXX PREF
-    protected int                    maxWidth  = 500;
-    protected int                    maxHeight = 500;
+    protected int                      maxWidth  = 500;
+    protected int                      maxHeight = 500;
+    protected WeakReference<ImageIcon> fullSizeImageWR = null;
     
     // Transient Data Members
     protected Hashtable<Integer, WorkbenchDataItem> items = new Hashtable<Integer, WorkbenchDataItem>();
@@ -191,8 +193,21 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
      */
     public void setCardImage(final String imgFilePath) throws IOException
     {
+        setCardImage(new File(imgFilePath));
+    }
+    
+    /**
+     * Stores the image found at imgFilePath into the row as the card image data, scaling
+     * the image if necessary.  The path to the original image is also set via {@link #setCardImageFullPath(String)}.
+     * 
+     * This code is taken almost completely from ImageThumbnailGenerator.
+     * 
+     * @param imageFile the full path to the image file
+     * @throws IOException 
+     */
+    public void setCardImage(final File imageFile) throws IOException
+    {
         // read the original
-        File imageFile = new File(imgFilePath);
         BufferedImage img = ImageIO.read(imageFile);
 
         // determine if we need to scale
@@ -245,7 +260,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         }
         
         this.setCardImageData(imgBytes);
-        this.setCardImageFullPath(imgFilePath);
+        this.setCardImageFullPath(imageFile.getAbsolutePath());
     }
     
     @Column(name="CardImageFullPath", length=255)
@@ -393,4 +408,30 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     {
         return rowNumber.compareTo(obj.rowNumber);
     }
+    
+    //------------------------------------------------------------------------
+    // Large Image Support
+    
+    /**
+     * Reads in the disciplines file (is loaded when the class is loaded).
+     * @return Reads in the disciplines file (is loaded when the class is loaded).
+     */
+    @Transient
+    public ImageIcon getFullSizeImage()
+    {
+        ImageIcon fullSizeImage = null;
+        
+        if (fullSizeImageWR != null)
+        {
+            fullSizeImage = fullSizeImageWR.get();
+        }
+        
+        if (fullSizeImage == null)
+        {
+            fullSizeImageWR = new WeakReference<ImageIcon>(new ImageIcon(cardImageFullPath));
+        }
+        
+        return fullSizeImageWR.get();
+    }
 }
+

@@ -34,9 +34,7 @@ import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -46,7 +44,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -121,33 +118,27 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton     toggleCardImageBtn = null;
     protected JButton     showMapBtn      = null;
     
-    protected List<JButton> selectionSensativeButtons = new Vector<JButton>();
+    protected List<JButton> selectionSensativeButtons          = new Vector<JButton>();
     
-    protected int         currentRow      = 0;
+    protected int                   currentRow                 = 0;
+    protected FormPane              formPane;
+    protected ResultSetController   resultsetController;
     
+    protected CardLayout            cardLayout                 = null;
+    protected JPanel                mainPanel;
+    protected PanelType             currentPanelType           = PanelType.Spreadsheet;
     
-    protected FormPane            formPane;
-    protected ResultSetController resultsetController;
+    protected JPanel                controllerPane;
+    protected CardLayout            cpCardLayout               = null;
     
-    
-    protected CardLayout  cardLayout        = null;
-    protected JPanel      mainPanel;
-    protected PanelType   currentPanelType  = PanelType.Spreadsheet;
-    
-    protected JPanel      controllerPane;
-    protected CardLayout  cpCardLayout      = null;
-    
-    protected JFrame                cardImageFrame             = null;
-    protected JLabel                cardImageLabel             = null;
-    protected JPanel                noCardImageMessagePanel    = null;
-    protected ListSelectionListener workbenchRowChangeListener = null;
+    protected CardImageFrame        cardImageFrame             = null;
     protected boolean               cardFrameWasShowing        = false;
-    protected boolean               showingCardImageLabel      = true;
+    protected ListSelectionListener workbenchRowChangeListener = null;
     
-    protected JFrame                mapFrame             = null;
-    protected JLabel                mapImageLabel             = null;
+    protected JFrame                mapFrame                   = null;
+    protected JLabel                mapImageLabel              = null;
     // XXX PREF
-    protected int                   mapSize                   = 500;
+    protected int                   mapSize                    = 500;
     
     /**
      * Constructs the pane for the spreadsheet.
@@ -294,18 +285,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         
         // setup the JFrame to show images attached to WorkbenchRows
-        cardImageFrame = new JFrame();
-        cardImageLabel = new JLabel();
-        cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-        cardImageLabel.setSize(mapSize,mapSize);
-        cardImageFrame.add(cardImageLabel);
-        cardImageFrame.setSize(mapSize+30,mapSize+30);
-        setupWorkbenchRowChangeListener();
-        
-        noCardImageMessagePanel = new JPanel();
-        noCardImageMessagePanel.setLayout(new BoxLayout(noCardImageMessagePanel,BoxLayout.LINE_AXIS));
-        JButton loadImgBtn = new JButton("Load New Image");
-        loadImgBtn.addActionListener(new ActionListener()
+        cardImageFrame = new CardImageFrame(mapSize);
+        cardImageFrame.installCloseActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                toggleCardImageVisible();
+            }
+        });
+        cardImageFrame.installLoadActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -321,9 +308,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 }
             }
         });
-        noCardImageMessagePanel.add(new JLabel("No card image available for the selected row"));
-        noCardImageMessagePanel.add(loadImgBtn);
-        
+        setupWorkbenchRowChangeListener();
+                
         // setup the mapping features
         mapFrame = new JFrame();
         mapFrame.setTitle(getResourceString("WB_GEO_REF_DATA_MAP"));
@@ -395,6 +381,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         };
     }
     
+    /**
+     * Show image for a selected row. 
+     */
     protected void showCardImageForSelectedRow()
     {
         int firstRowSelected = spreadSheet.getSelectedRow();
@@ -402,47 +391,16 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             // no selection
             log.debug("No selection, so removing the card image");
-            
-            if (!showingCardImageLabel)
-            {
-                // swap out the noCardImageMessagePanel for the cardImageLabel
-                cardImageFrame.remove(noCardImageMessagePanel);
-                cardImageFrame.add(cardImageLabel);
-                showingCardImageLabel = true;
-            }
-            
-            cardImageLabel.setIcon(null);
-            cardImageLabel.setText("No row selected");
+            cardImageFrame.setRow(null);
             return;
         }
         // else
 
         log.debug("Showing image for row " + firstRowSelected);
         WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
-        ImageIcon cardImage = row.getCardImage();
-        log.debug("\tImage file: " + cardImage);
-        cardImageLabel.setIcon(cardImage);
-        if (cardImage==null)
-        {
-            if (showingCardImageLabel)
-            {
-                // swap out the cardImageLabel for the noCardImageMessagePanel
-                cardImageFrame.remove(cardImageLabel);
-                cardImageFrame.add(noCardImageMessagePanel);
-                showingCardImageLabel = false;
-            }
-        }
-        else
-        {
-            if (!showingCardImageLabel)
-            {
-                // swap out the noCardImageMessagePanel for the cardImageLabel
-                cardImageFrame.remove(noCardImageMessagePanel);
-                cardImageFrame.add(cardImageLabel);
-                showingCardImageLabel = true;
-            }
-            cardImageLabel.setText(null);
-        }
+        cardImageFrame.setRow(row);
+
+        // XXX Change later - Assuming first Row
         WorkbenchDataItem firstColItem = row.getItems().get(0);
         String firstColCellData = (firstColItem!=null) ? firstColItem.getCellData() : "";
         cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
@@ -538,10 +496,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
     }
     
-    public boolean loadNewCardImage(WorkbenchRow row)
+    /**
+     * Loads a new Card Image into a WB Row
+     * @param row
+     * @return
+     */
+    protected boolean loadNewCardImage(final WorkbenchRow row)
     {
         JFileChooser fileChooser = new JFileChooser();
-        int userAction = fileChooser.showOpenDialog(this);
+        int          userAction  = fileChooser.showOpenDialog(this);
         if (userAction == JFileChooser.APPROVE_OPTION)
         {
             String chosenFile = fileChooser.getSelectedFile().getAbsolutePath();
@@ -558,7 +521,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         return false;
     }
     
-    public void showMapOfSelectedRecords()
+    /**
+     * Show a map for any number of selected records.
+     */
+    protected void showMapOfSelectedRecords()
     {
         log.debug("Showing map of selected records");
         showMapBtn.setEnabled(false);
@@ -610,7 +576,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         mapper.setMaxMapHeight(500);
         mapper.setMaxMapWidth(500);
         mapper.setShowArrows(false);
-        mapper.setDotColor(Color.RED);
+        mapper.setDotColor(new Color(64, 220, 64));
         MapperListener mapperListener = new MapperListener()
         {
             public void exceptionOccurred(Exception e)
@@ -624,14 +590,31 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 mapImageReceived(map);
             }
         };
+        
+        //FileCache imageCache = UICacheManager.getLongTermFileCache();
+        //imageCache.clear();
         mapper.getMap(mapperListener);
+        
+        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        statusBar.setIndeterminate(true);
+        statusBar.setText(getResourceString("WB_CREATINGMAP"));
     }
     
-    protected void mapImageReceived(Icon map)
+    /**
+     * Notification that the Map was received
+     * @param map
+     */
+    protected void mapImageReceived(final Icon map)
     {
-        mapFrame.setVisible(true);
-        mapImageLabel.setIcon(map);
-        showMapBtn.setEnabled(true);
+        if (map != null)
+        {
+            mapFrame.setVisible(true);
+            mapImageLabel.setIcon(map);
+            showMapBtn.setEnabled(true);
+        }
+        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        statusBar.setIndeterminate(false);
+        statusBar.setText("");
     }
     
     /**

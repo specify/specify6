@@ -24,7 +24,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +31,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -107,6 +107,7 @@ public class WorkbenchTask extends BaseTask
     public static final String     WB_BARCHART           = "WB_BARCHART";
     public static final String     PRINT_REPORT          = "PrintReport";
     public static final String     WB_TOP10_REPORT       = "WB_TOP10_REPORT";
+    public static final String     WB_IMPORTCARDS        = "WB_IMPORT_CARDS";
     
     
     protected NavBox                      templateNavBox;
@@ -116,6 +117,8 @@ public class WorkbenchTask extends BaseTask
     
     protected Vector<NavBoxItemIFace>     reportsList      = new Vector<NavBoxItemIFace>();
     protected Vector<NavBoxItemIFace>     enableNavBoxList = new Vector<NavBoxItemIFace>();
+    
+    protected WorkbenchTemplate           selectedTemplate = null; // Transient set by selectExistingTemplate
 
 	/**
 	 * Constructor. 
@@ -142,6 +145,7 @@ public class WorkbenchTask extends BaseTask
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_DATASET"),  name, new CommandAction(WORKBENCH, NEW_WORKBENCH),    null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_TEMPLATE"), name, new CommandAction(WORKBENCH, NEW_TEMPLATE),     null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_IMPORTDATA"),   name, new CommandAction(WORKBENCH, IMPORT_DATA_FILE), null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString(WB_IMPORTCARDS),    name, new CommandAction(WORKBENCH, WB_IMPORTCARDS),   null, false);// true means make it draggable
             
             enableNavBoxList.add(makeDraggableAndDroppableNavBtn(navBox, getResourceString("CHART"),    name, new CommandAction(WORKBENCH, WB_BARCHART), null, false));// true means make it draggable
             enableNavBoxList.add(makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_TOP10"), name, new CommandAction(WORKBENCH, WB_TOP10_REPORT), null, false));// true means make it draggable
@@ -349,7 +353,7 @@ public class WorkbenchTask extends BaseTask
             WorkbenchTemplate workbenchTemplate = createTemplate(mapper, null, null);
             if (workbenchTemplate != null)
             {
-                createWorkbench(null, workbenchTemplate, true);
+                createWorkbench(null, workbenchTemplate);
             }
 
         }
@@ -431,20 +435,29 @@ public class WorkbenchTask extends BaseTask
      * show a Dialog and returns null if there are not templates or none match.
      * @return the existing WorkbenchTemplate to use or null
      */
-    protected WorkbenchTemplate selectExistingTemplate(Vector<ImportColumnInfo> colInfo)
+    protected int selectExistingTemplate(final Vector<ImportColumnInfo> colInfo)
     {
-        Collections.sort(colInfo);
+        this.selectedTemplate = null;
+        
+        if (colInfo != null)
+        {
+            Collections.sort(colInfo);
+        }
         
         Vector<WorkbenchTemplate> matchingTemplates = new Vector<WorkbenchTemplate>();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            List list      = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            List list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
             for (Object obj : list)
             {
                 WorkbenchTemplate template = (WorkbenchTemplate)obj;
-                if (template.getWorkbenchTemplateMappingItems().size() == colInfo.size())
+                if (colInfo == null)
+                {
+                    matchingTemplates.add(template);
+                    
+                } else if (template.getWorkbenchTemplateMappingItems().size() == colInfo.size())
                 {
                     boolean match = true;
                     Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>(template.getWorkbenchTemplateMappingItems());
@@ -453,7 +466,6 @@ public class WorkbenchTask extends BaseTask
                     {
                         WorkbenchTemplateMappingItem wbItem   = items.get(i);
                         ImportColumnInfo             fileItem = colInfo.get(i);
-                        //System.out.println(wbItem.getViewOrder()+"  "+fileItem.getColInx()+" | "+ImportColumnInfo.getType(wbItem.getDataType())+" "+fileItem.getColType());
                         if (wbItem.getViewOrder().intValue() == fileItem.getColInx().intValue())
                         {
                             if (ImportColumnInfo.getType(wbItem.getDataType()) == ImportColumnInfo.ColumnType.Date)
@@ -493,27 +505,31 @@ public class WorkbenchTask extends BaseTask
             session.close();
         }
         
+        this.selectedTemplate = null;
+        
         // Ask the user to choose an existing template.
         if (matchingTemplates.size() > 0)
         {
             ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UICacheManager.get(UICacheManager.FRAME), 
                     getResourceString("WB_CHOOSE_TEMPLATE_TITLE"), 
                     getResourceString("WB_CHOOSE_TEMPLATE_REUSE"), 
-                    matchingTemplates,
-                    true);
-            dlg.setOkLabel("Reuse");
-            dlg.setCancelLabel("Create New Template");
+                    ChooseFromListDlg.OKCANCELAPPLY,
+                    matchingTemplates);
+            dlg.setOkLabel(getResourceString(colInfo != null ? "WB_REUSE" : "OK"));
+            dlg.setApplyLabel(getResourceString("WB_CREATE_NEW_TEMPLATE"));
             dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
-            if (!dlg.isCancelled())
+            
+            if (dlg.getBtnPressed() == ChooseFromListDlg.OK_BTN)
             {
-                WorkbenchTemplate template = dlg.getSelectedObject();
-                loadTemplateFromData(template);
-                return template;
+                selectedTemplate = dlg.getSelectedObject();
+                loadTemplateFromData(selectedTemplate);
             }
+            
+            return dlg.getBtnPressed();
         }
 
-        return null;
+        return ChooseFromListDlg.APPLY_BTN;
     }
     
     /**
@@ -582,11 +598,14 @@ public class WorkbenchTask extends BaseTask
         
         if (file.exists())
         {
-            ImportDataFileInfo       dataFileInfo = new ImportDataFileInfo(file);
+            ImportDataFileInfo dataFileInfo = new ImportDataFileInfo(file);
             
-            workbenchTemplate = selectExistingTemplate(dataFileInfo.getColInfo());
-            if (workbenchTemplate == null)
+            int btnPressed = selectExistingTemplate(dataFileInfo.getColInfo());
+            workbenchTemplate = selectedTemplate;
+            selectedTemplate  = null;
+            if (btnPressed == ChooseFromListDlg.APPLY_BTN)
             {
+                // Create a new Template 
                 JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("WB_COL_MAPPER"), true);
                 ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg, dataFileInfo);
                 
@@ -599,11 +618,15 @@ public class WorkbenchTask extends BaseTask
                 {   
                     workbenchTemplate = createTemplate(mapper, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
                 }
+                
+            } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
+            {
+                return null;
             }
             
             if (workbenchTemplate != null)
             {
-                createWorkbench(dataFileInfo, workbenchTemplate, true);
+                createWorkbench(dataFileInfo, workbenchTemplate);
             }
         }
         
@@ -669,14 +692,12 @@ public class WorkbenchTask extends BaseTask
      * Creates a new Workbench Data Object from a definition provided by the WorkbenchTemplate
      * @param dataFileInfo the ImportDataFileInfo Object that contains all the information about the file
      * @param wbt the WorkbenchTemplate
-     * @param wbTemplateIsNew the WorkbenchTemplate is brand new (not reusing an existing template)
      * @return the new Workbench data object
      */
     protected Workbench createWorkbench(final ImportDataFileInfo dataFileInfo, 
-                                        final WorkbenchTemplate  wbt,
-                                        final boolean            wbTemplateIsNew)
+                                        final WorkbenchTemplate  wbt)
     {
-        Workbench workbench = createNewWorkbenchDataObj(wbt, wbTemplateIsNew);
+        Workbench workbench = createNewWorkbenchDataObj(wbt, true);
         
         if (dataFileInfo != null)
         {
@@ -1279,6 +1300,78 @@ public class WorkbenchTask extends BaseTask
         }
     }
     
+    /**
+     * Imports a list if images.
+     */
+    protected void importCardImages()
+    {
+        boolean           templateIsNew     = false;
+        int               btnPressed        = selectExistingTemplate(null);
+        WorkbenchTemplate workbenchTemplate = selectedTemplate;
+        selectedTemplate  = null;
+        
+        if (btnPressed == ChooseFromListDlg.APPLY_BTN)
+        {
+            // Create a new Template 
+            JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("WB_COL_MAPPER"), true);
+            ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg);
+            
+            dlg.setContentPane(mapper);
+            dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            dlg.pack();
+            UIHelper.centerAndShow(dlg);
+             
+            if (!mapper.isCancelled())
+            {   
+                workbenchTemplate = createTemplate(mapper, null, null);
+                templateIsNew     = true;
+            }
+            
+        } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
+        {
+            return;
+        }
+        
+        if (workbenchTemplate != null)
+        {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            chooser.setMultiSelectionEnabled(true);
+            
+            if (chooser.showOpenDialog(UICacheManager.get(UICacheManager.FRAME)) == JFileChooser.APPROVE_OPTION)
+            {
+                Workbench workbench = createNewWorkbenchDataObj(workbenchTemplate, templateIsNew);
+                
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    session.beginTransaction();
+                    
+                    for (File file : chooser.getSelectedFiles())
+                    {
+                        WorkbenchRow row = workbench.addRow();
+                        row.setCardImage(file);
+                    }
+                    session.saveOrUpdate(workbench);
+                    session.commit();
+                    session.flush();
+                    
+                    createEditorForWorkbench(workbench, session);
+
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    session.close();    
+                }
+                
+            } 
+        }
+    }
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -1309,6 +1402,10 @@ public class WorkbenchTask extends BaseTask
         } else if (cmdAction.isAction(IMPORT_DATA_FILE))
         {
             createTemplateFromFile();
+            
+        } else if (cmdAction.isAction(WB_IMPORTCARDS))
+        {
+            importCardImages();
             
         } else if (cmdAction.isAction(NEW_WORKBENCH))
         {

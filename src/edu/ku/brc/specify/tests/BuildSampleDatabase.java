@@ -892,7 +892,7 @@ public class BuildSampleDatabase
         {
             WorkbenchRow wbRow = workBench.addRow();
             WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-10" + i, 1);
-            File f = new File("demo_files" + File.separator + "card" + i + ".jpg");
+            File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
 //            byte[] imageData = null;
 //            try
 //            {

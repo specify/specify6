@@ -246,7 +246,7 @@ public class LabelsTask extends BaseTask
         } else
         {
             ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
-                                                                                            getResourceString("ChooseLabel"), 
+                                                                                            getResourceString("ChooseLabel"),
                                                                                             labelsList, 
                                                                                             IconManager.getIcon(name, IconManager.IconSize.Std24));
             dlg.setMultiSelect(false);

@@ -46,6 +46,7 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -551,6 +552,42 @@ public final class UIHelper
         if (isNotEmpty(mnemonic))
         {
             mi.setMnemonic(mnemonic.charAt(0));
+        }
+        mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        mi.addActionListener(action);
+        if (action != null)
+        {
+            action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
+            action.setEnabled(enabled);
+        }
+
+        return mi;
+    }
+
+    /**
+     * @param menu xxxxx
+     * @param label xxxxx
+     * @param mnemonic xxxxx
+     * @param accessibleDescription xxxxx
+     * @param enabled xxxxx
+     * @param action xxxxx
+     * @return xxxxx
+     */
+    public static JCheckBoxMenuItem createCheckBoxMenuItem(final JMenu          menu,
+                                                           final String         label,
+                                                           final String         mnemonic,
+                                                           final String         accessibleDescription,
+                                                           final boolean        enabled,
+                                                           final AbstractAction action)
+    {
+        JCheckBoxMenuItem mi = new JCheckBoxMenuItem(getResourceString(label));
+        if (menu != null)
+        {
+            menu.add(mi);
+        }
+        if (isNotEmpty(mnemonic))
+        {
+            mi.setMnemonic(getResourceString(mnemonic).charAt(0));
         }
         mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
         mi.addActionListener(action);

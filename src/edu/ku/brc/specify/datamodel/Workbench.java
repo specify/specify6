@@ -76,7 +76,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     protected UserGroup              group;
     protected String                 srcFilePath;
 
-     // TRansient Data
+     // Transient Data
     protected Vector<WorkbenchRow> rows        = new Vector<WorkbenchRow>();
     protected Vector<WorkbenchRow> deletedRows = new Vector<WorkbenchRow>();
      
@@ -444,7 +444,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      */
     public WorkbenchRow addRow()
     {
-        WorkbenchRow wbRow = new WorkbenchRow(this, rows.size());
+        WorkbenchRow wbRow = new WorkbenchRow(this, rows.size()); // initializes
         rows.add(wbRow);
         workbenchRows.add(wbRow);
         return wbRow;

@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ import java.util.Vector;
 import com.csvreader.CsvReader;
 
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -38,14 +40,14 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
     private Charset charset;
 
     /**
-     * Constructor sets defaults (hard coded)
+     * Constructor sets defaults (hard coded).
      */
     public ConfigureCSVImport(final File file)
     {
         super();
         escapeMode = getDefaultEscapeMode();
-        delimiter = getDefaultDelimiter();
-        charset = getDefaultCharset();
+        delimiter  = getDefaultDelimiter();
+        charset    = getDefaultCharset();
         getConfig(file);
     }
 
@@ -65,12 +67,9 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
     }
 
     /**
-     * @param delimiterArg
-     *            -nthe column delimiter
-     * @param charsetArg -
-     *            the character set used in the file (e.g. ISO-8859-1)
-     * @param escapeModeArg -
-     *            method used to escape reserved characters (backslash or doubled)
+     * @param delimiterArg -nthe column delimiter
+     * @param charsetArg - the character set used in the file (e.g. ISO-8859-1)
+     * @param escapeModeArg - method used to escape reserved characters (backslash or doubled)
      * @return CsvReader for inputFile
      */
     private CsvReader makeReader(final char delimiterArg,
@@ -152,8 +151,12 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
         Vector<String> list = new Vector<String>();
         list.add(",");
         list.add("TAB");
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>(null, "Delimiter?", "", list,
-                true, true, "WorkbenchImportCvs");
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                                                                      "Delimiter?", 
+                                                                      null,
+                                                                      ChooseFromListDlg.OKCANCELHELP, 
+                                                                      list, 
+                                                                      "WorkbenchImportCvs"); //XXX I18N
         dlg.setModal(true);
         UIHelper.centerAndShow(dlg);
 
@@ -180,14 +183,21 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
         list.add("US-ASCII");
         list.add("ISO-8859-1");
         list.add("UTF-8");
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>(null, "Character Set", "",
-                list, true, true, "WorkbenchImportCvs");
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                                                                      "Character Set", 
+                                                                      null,
+                                                                      ChooseFromListDlg.OKCANCELHELP,
+                                                                      list, 
+                                                                      "WorkbenchImportCvs");//XXX I18N
         dlg.setModal(true);
         UIHelper.centerAndShow(dlg);
 
         String delim = dlg.getSelectedObject();
 
-        if (delim == "default") { return Charset.defaultCharset(); }
+        if (delim == "default") 
+        { 
+            return Charset.defaultCharset(); 
+        }
 
         return Charset.forName(delim);
 
@@ -208,14 +218,20 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
         Vector<String> list = new Vector<String>();
         list.add("backslash");
         list.add("doubled");
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>(null, "Escape Mode?", "",
-                list, true, true, "WorkbenchImportCvs");
+        
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                                                                      "Escape Mode?", null,
+                                                                      ChooseFromListDlg.OKCANCELHELP,
+                                                                      list, "WorkbenchImportCvs"); //XXX I18N
         dlg.setModal(true);
         UIHelper.centerAndShow(dlg);
 
         String delim = dlg.getSelectedObject();
 
-        if (delim == "backslash") { return CsvReader.ESCAPE_MODE_BACKSLASH; }
+        if (delim == "backslash") 
+        { 
+            return CsvReader.ESCAPE_MODE_BACKSLASH; 
+        }
         return CsvReader.ESCAPE_MODE_DOUBLED;
     }
 
