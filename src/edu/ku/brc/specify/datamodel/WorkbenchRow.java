@@ -472,23 +472,26 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     {
         initExportData();
        
-        StringBuilder sb = new StringBuilder();
-        for (WorkbenchDataItem wbdi : dataList)
-        {
-            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getColumnNumber());
-            
-            // XXX temporary fix  DEMO
-            if (wbtmi.getIsIncludedInTitle() || wbtmi.getCaption().equals("LocalityName") )
-            {
-                if (sb.length() > 0)
-                {
-                    sb.append(' ');
-                }
-                sb.append(wbdi.getCellData());
-            }
-        }
+        // XXX : Fix Me
+//        StringBuilder sb = new StringBuilder();
+//        for (WorkbenchDataItem wbdi : dataList)
+//        {
+//            WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getColumnNumber());
+//            
+//            // XXX temporary fix  DEMO
+//            if (wbtmi.getIsIncludedInTitle() || wbtmi.getCaption().equals("LocalityName") )
+//            {
+//                if (sb.length() > 0)
+//                {
+//                    sb.append(' ');
+//                }
+//                sb.append(wbdi.getCellData());
+//            }
+//        }
+//        
+//        return sb.toString();
         
-        return sb.toString();
+        return Integer.toString(getRowNumber()+1);
     }
 
     /* (non-Javadoc)
