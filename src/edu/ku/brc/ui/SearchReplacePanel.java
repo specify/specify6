@@ -18,6 +18,7 @@ package edu.ku.brc.ui;
 
 import java.awt.FlowLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
@@ -78,7 +79,7 @@ public class SearchReplacePanel extends JPanel
     private boolean               isFinishedSearchingDown = false;
     private boolean               isFinishedSearchingUp   = true;
     private JLabel                statusInfo;
-    private SearchableJXTable     table;
+    private static SearchableJXTable     table;
     private Pattern               pattern;
     private Searchable            searchable;
     private boolean               isStartOfSearch         = true;
@@ -174,17 +175,10 @@ public class SearchReplacePanel extends JPanel
 
         
         //override find dialog shiped with JXTable
-        table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK), "find");
-        table.getActionMap().put("find", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                log.debug("Ctrl-f hit");
-                //findPanel.createFindPanel();
-                createFindAndReplacePanel();
-                showFindAndReplacePanel(true);
-            }
-        });
+        table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Find");
+        
+        table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK), "Find");
+        table.getActionMap().put("Find", new LaunchFindAction());//
         
         // listen to selection changes to enable/disable certain buttons
 //        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -381,19 +375,19 @@ public class SearchReplacePanel extends JPanel
         JTable myJTable = makeJTable();
         log.debug("creating searchablejxtable");
         final SearchableJXTable mytable = new SearchableJXTable(myJTable.getModel());
-        mytable.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                int col = mytable.getSelectedColumn();
-                int row = mytable.getSelectedRow();
-//                if (row != -1 || col != -1)
-//                    isFinishedSearchingDown = false;
-                log.debug("addMouseListener: " + mytable.getValueAt(row, col));
-                super.mouseClicked(e);
-            }
-        });
+//        mytable.addMouseListener(new MouseAdapter()
+//        {
+//            @Override
+//            public void mouseClicked(MouseEvent e)
+//            {
+//                int col = mytable.getSelectedColumn();
+//                int row = mytable.getSelectedRow();
+////                if (row != -1 || col != -1)
+////                    isFinishedSearchingDown = false;
+//                log.debug("addMouseListener: " + mytable.getValueAt(row, col));
+//                super.mouseClicked(e);
+//            }
+//        });
         return mytable;
     }
     
@@ -415,6 +409,10 @@ public class SearchReplacePanel extends JPanel
         });
         log.debug("Creating testtable");
         SearchableJXTable t = createTestTableFromJTable();
+        
+        t.setColumnSelectionAllowed(true);
+        t.setRowSelectionAllowed(true);
+        t.setCellSelectionEnabled(true);
         dialog.getContentPane().add( new JScrollPane(t));
         dialog.getContentPane().add(t.getFindReplacePanel());//getMyPanel());
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -482,11 +480,11 @@ public class SearchReplacePanel extends JPanel
 		int row = table.getSelectedRow();
 		if(row == -1 || col ==-1)return;
 		Object o = table.getValueAt(row, col);
-		//if (!(o instanceof String))
-		//{
-		//	log.info("The value at row=[" + row + "] col=[" + col+ "] is not a String and cannot be replaced");
-		//	return;
-		//}
+		if (!(o instanceof String))
+		{
+			log.info("The value at row=[" + row + "] col=[" + col+ "] is not a String and cannot be replaced");
+			return;
+		}
 		String myStrToReplaceValueIn = o.toString();
 		String myFindValue = findField.getText();
 		String myReplaceValue = replaceField.getText();
@@ -717,6 +715,27 @@ public class SearchReplacePanel extends JPanel
         }
     }
 
+    //------------------------------------------------------
+    //-- The LaunchFindAction  Action
+    //------------------------------------------------------
+    public class LaunchFindAction extends AbstractAction
+    {
+
+        public LaunchFindAction()
+        {
+            super("Find");
+            setEnabled(true);
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            log.debug("Ctrl-f hit");
+            //findPanel.createFindPanel();
+            createFindAndReplacePanel();
+            showFindAndReplacePanel(true);
+        }
+
+    }
     /**
      * @author megkumin
      *
