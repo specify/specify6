@@ -35,6 +35,7 @@ import java.util.Vector;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -48,6 +49,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -72,11 +74,14 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.exporters.GoogleEarthExporter;
+import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
-import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -102,8 +107,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     private enum PanelType {Spreadsheet, Form}
 
-    protected SearchReplacePanel  findPanel=null;
-    
     protected SpreadSheet spreadSheet;
     protected Workbench   workbench;
     protected String[]    columns;
@@ -120,6 +123,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton     carryForwardBtn = null;
     protected JButton     toggleCardImageBtn = null;
     protected JButton     showMapBtn      = null;
+    protected JButton     exportKmlBtn    = null;
     
     protected List<JButton> selectionSensativeButtons          = new Vector<JButton>();
     
@@ -179,7 +183,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         model       = new GridTableModel(workbench, headers);
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
-        findPanel = spreadSheet.getFindReplacePanel();
+        
         //spreadsheet.setBackground(Color.WHITE);
         initColumnSizes(spreadSheet);
         spreadSheet.setShowGrid(true);
@@ -270,6 +274,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // only enable it if the workbench has geo ref data
         showMapBtn.setEnabled(workbench.containsGeoRefData());
 
+        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showRecordsInGoogleEarth();
+            }
+        });
+        exportKmlBtn.setEnabled(workbench.containsGeoRefData());
+        
         // listen to selection changes to enable/disable certain buttons
         spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
@@ -324,7 +337,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn};
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn};
         PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
 
         int x = 3;
@@ -352,18 +365,16 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(controlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(rsPanel.getPanel(), PanelType.Form.toString());
-    
-      
-	    FormLayout      formLayout = new FormLayout("l:p,4px,f:p:g,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
-	    PanelBuilder    builder    = new PanelBuilder(formLayout, this);
-	      
-	    builder.add(mainPanel,          cc.xywh(1,1,11,1));
-	    builder.add(findPanel,          cc.xy(1,3));
-	    builder.add(controllerPane,     cc.xy(3,3));
-	    builder.add(toggleCardImageBtn, cc.xy(5,3));
-	    builder.add(carryForwardBtn,    cc.xy(7,3));
-	    builder.add(saveBtn,            cc.xy(9,3));
-	    builder.add(createSwitcher(),   cc.xy(11,3));
+        
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
+        PanelBuilder    builder    = new PanelBuilder(formLayout, this);
+
+        builder.add(mainPanel,          cc.xywh(1,1,9,1));
+        builder.add(controllerPane,     cc.xy(1,3));
+        builder.add(toggleCardImageBtn, cc.xy(3,3));
+        builder.add(carryForwardBtn,    cc.xy(5,3));
+        builder.add(saveBtn,            cc.xy(7,3));
+        builder.add(createSwitcher(),   cc.xy(9,3));
     }
     
     /**
@@ -492,12 +503,19 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(false);
+            model.setInImageMode(false);
+            
         }
         else
         {
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(true);
+            model.setInImageMode(true);
             showCardImageForSelectedRow();
+            
+            TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
+            column.setCellRenderer(new ImageRenderer());
+            spreadSheet.repaint();
         }
     }
     
@@ -620,6 +638,37 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
         statusBar.setIndeterminate(false);
         statusBar.setText("");
+    }
+    
+    protected void showRecordsInGoogleEarth()
+    {
+        log.debug("Showing map of selected records");
+        int[] selection = spreadSheet.getSelectedRows();
+        if (selection.length==0)
+        {
+            // if none are selected, map all of them
+            int rowCnt = spreadSheet.getRowCount();
+            selection = new int[rowCnt];
+            for (int i = 0; i < rowCnt; ++i)
+            {
+                selection[i]=i;
+            }
+        }
+        
+        // put all the selected rows in a List
+        List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
+        List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
+        for (int i = 0; i < selection.length; ++i )
+        {
+            int index = selection[i];
+            WorkbenchRow row = rows.get(index);
+            selectedRows.add(row);
+        }
+        
+        CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
+        command.setData(selectedRows);
+        command.setProperty("exporter", GoogleEarthExporter.class);
+        CommandDispatcher.dispatch(command);
     }
     
     /**
@@ -1022,10 +1071,27 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         public void actionPerformed(ActionEvent ae)
         {
-            //log.info("Index: "+switcherComp.getCurrentIndex());
-            
             showPanel(((DropDownButtonStateful)ae.getSource()).getCurrentIndex() == 0 ? PanelType.Spreadsheet : PanelType.Form);
         }
     }
+    
+    public class ImageRenderer extends DefaultTableCellRenderer 
+    {
+        public Component getTableCellRendererComponent(JTable table, 
+                                                       Object value,
+                                                       boolean isSelected, 
+                                                       boolean hasFocus, 
+                                                       int row, 
+                                                       int column) 
+        {
+          setText("");
+          if (value instanceof ImageIcon)
+          {
+              setIcon((ImageIcon)value);
+              this.setHorizontalAlignment(JLabel.CENTER);
+          }
+          return this;
+        }
+      }
 }
 
