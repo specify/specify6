@@ -9,16 +9,24 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
+
 import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,6 +38,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -51,10 +60,13 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
 {
     protected WorkbenchPaneSS    workbenchPane;
     protected Workbench          workbench;
-    protected boolean            hasChanged    = false;
-    protected Vector<InputPanel> uiComps       = new Vector<InputPanel>();
-    protected boolean            ignoreChanges = false;
-    protected boolean            isInImageMode = false;
+    protected boolean            hasChanged        = false;
+    protected Vector<InputPanel> uiComps           = new Vector<InputPanel>();
+    protected boolean            ignoreChanges     = false;
+    protected boolean            isInImageMode     = false;
+    protected JButton            controlPropsBtn   = null;
+    
+    protected PropertyChangeListener focusListener = null;
 
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     
@@ -65,7 +77,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      * @param workbenchPane the workbench pane to be parented into
      * @param workbench the workbench
      */
-    public FormPane(final WorkbenchPaneSS workbenchPane, final Workbench workbench)
+    public FormPane(final WorkbenchPaneSS workbenchPane, 
+                    final Workbench workbench)
     {
         setLayout(null);
         
@@ -84,6 +97,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         {
             InputPanel p = new InputPanel(wbtmi, wbtmi.getCaption()+":", createUIComp(wbtmi));
             p.createMouseInputAdapter(); // this makes it draggable
+            p.getMouseInputAdapter().setDropCanvas(this);
 
             Dimension size = p.getPreferredSize();
             p.setSize(size);
@@ -121,6 +135,56 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             p.validate();
             p.doLayout();
         }
+        
+        
+        controlPropsBtn = createIconBtn("ControlEdit", IconManager.IconSize.Std16, "WB_EDIT_CONTROL", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showControlProps();
+            }
+        });
+        //controlPropsBtn.setEnabled(true);
+        
+        focusListener = new PropertyChangeListener() { 
+            public void propertyChange(PropertyChangeEvent e) 
+            { 
+                String prop = e.getPropertyName(); 
+                KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+                //System.out.println(prop+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
+                if (("focusOwner".equals(prop))) 
+                { 
+                    controlPropsBtn.setEnabled(focusManager.getFocusOwner() == controlPropsBtn);
+                    for (InputPanel ip : uiComps)
+                    {
+                        if (focusManager.getFocusOwner() == ip.getComp())
+                        {
+                            controlPropsBtn.setEnabled(true);
+                            break;
+                        }
+                    }
+                }
+            } 
+        };
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener(focusListener);
+    }
+    
+    /**
+     * @return the controlPropsBtn
+     */
+    public JButton getControlPropsBtn()
+    {
+        return controlPropsBtn;
+    }
+
+
+    /**
+     * Clean up and listeners etc.
+     */
+    public void cleanup()
+    {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(focusListener);
     }
 
     
@@ -139,6 +203,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
              return new ValFormattedTextField("Date"); 
         }
         return new ValTextField(15);
+    }
+    
+    protected void showControlProps()
+    {
+        
     }
     
     /* (non-Javadoc)
@@ -296,4 +365,5 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             workbenchPane.setChanged(true);
         }
     }
+    
 }

@@ -195,7 +195,7 @@ public class HelpMgr
      */
     static private String getCurrentContext()
     {
-        System.out.println(ContextMgr.getCurrentContext().getName());
+        log.debug(ContextMgr.getCurrentContext().getName());
         return ContextMgr.getCurrentContext().getName();
     }
 

@@ -3,13 +3,13 @@
   PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Index Version 1.0//EN"
          "http://java.sun.com/products/javahelp/index_1_0.dtd">
 <index version="1.0">
-    <indexitem text="Specify" target="specify"/>
-    <indexitem text="Data Entry" target="Data_Entry"/>
-    <indexitem text="Data Sucking" target="Workbench"/>
+    <indexitem text="Specify"        target="specify"/>
+    <indexitem text="Data Entry"     target="Data_Entry"/>
+    <indexitem text="Data Sucking"   target="Workbench"/>
     <indexitem text="Database Selection" target="login"/>
-    <indexitem text="delimiter" target="WorkbenchImportCvs"/>
-    <indexitem text="escape mode" target="WorkbenchImportCvs"/>
-    <indexitem text="character set" target="WorkbenchImportCvs"/>
+    <indexitem text="delimiter"      target="WorkbenchImportCvs"/>
+    <indexitem text="escape mode"    target="WorkbenchImportCvs"/>
+    <indexitem text="character set"  target="WorkbenchImportCvs"/>
     <indexitem text="column headers" target="WorkbenchImportCvs"/>
-    <indexitem text="Welcome" target="Startup"/>
+    <indexitem text="Welcome"        target="Startup"/>
 </index>

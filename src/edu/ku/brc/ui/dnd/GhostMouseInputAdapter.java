@@ -57,6 +57,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     
     protected Point                   offsetFromStartPnt = new Point();
     protected boolean                 doAnimationOnDrop  = true;
+    protected Component               dropCanvas         = null;
     
     static {
         if (System.getProperty("os.name").equals("Mac OS X"))
@@ -104,7 +105,16 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         this.doAnimationOnDrop = doAnimationOnDrop;
     }
 
+    /**
+     * @param dropCanvas the dropCanvas to set
+     */
+    public void setDropCanvas(Component dropCanvas)
+    {
+        this.dropCanvas = dropCanvas;
+    }
+    
     // From GhostMouseDropAdapter
+
 
     /**
      * Starts the Drag process
@@ -191,6 +201,18 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
         // find the component that under this point
         Component dropComponent = SwingUtilities.getDeepestComponentAt(rootPane, pp.x, pp.y);
+        if (dropCanvas != null)
+        {
+            Component parent = dropComponent;
+            while (parent != null && parent != dropCanvas)
+            {
+                parent = parent.getParent();
+            }
+            if (parent == dropCanvas)
+            {
+                dropComponent = dropCanvas;
+            }
+        }
 
         offsetFromStartPnt.setLocation(e.getPoint());
 

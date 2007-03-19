@@ -14,20 +14,21 @@
  */
 package edu.ku.brc.specify;
 
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -41,10 +42,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.Encryption;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.Discipline;
-import edu.ku.brc.specify.tests.BuildSampleDatabase;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -62,9 +60,11 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class SpecifyInitializer
 {
-
-    protected final String HOSTNAME = "localhost";
+    private static final boolean DO_DEBUG = true;
     
+    protected final String HOSTNAME = "localhost";
+    protected CellConstraints    cc         = new CellConstraints();
+
     /**
      * Constructor.
      */
@@ -116,18 +116,19 @@ public class SpecifyInitializer
         
         if (!setUseCurrentLocation() || StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
-            final NewUserSetupDialog dlg = new NewUserSetupDialog();
+            final SetupDialog dlg = new SetupDialog();
             dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
             dlg.dispose();
             
             if (!dlg.isCancelled())
             {
+                /*
                 // CLear and Reset Everything!
                 AppPreferences.shutdownLocalPrefs();
                 UICacheManager.setDefaultWorkingPath(null);
                 
-                UICacheManager.setUseCurrentLocation(dlg.getUseCurrentDrive());
+                //UICacheManager.setUseCurrentLocation(dlg.getUseCurrentDrive());
                 
                 // Now initialize
                 localPrefs = AppPreferences.getLocalPrefs();
@@ -209,7 +210,7 @@ public class SpecifyInitializer
                 {
                     ex.printStackTrace();
                 }
-
+*/
             } else
             {
                 return false;
@@ -223,43 +224,268 @@ public class SpecifyInitializer
         return true;
     }
     
+    /**
+     * Helper function for creating the UI.
+     * @param builder builder
+     * @param label the string label
+     * @param row the row to place it on
+     * @return the create JTextField (or JPasswordField)
+     */
+    protected JTextField createField(final PanelBuilder builder, final String label, final int row)
+    {
+        return createField(builder, label, row, false);
+    }
+    
+    /**
+     * Helper function for creating the UI.
+     * @param builder builder
+     * @param label the string label
+     * @param row the row to place it on
+     * @param isPassword whether to create a password or text field
+     * @return the create JTextField (or JPasswordField)
+     */
+    protected JTextField createField(final PanelBuilder builder, final String label, final int row, final boolean isPassword)
+    {
+        JTextField txt = isPassword ? new JPasswordField(15) : new JTextField(15);
+        builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(1, row));
+        builder.add(txt,                                 cc.xy(3, row));
+        //txt.addFocusListener(this);
+        //txt.addKeyListener(keyAdapter);
+        return txt;
+    }
+    
+    interface SetupPanelIFace
+    {
+        
+    }
+    
     
     /**
      * This is the configuration window for create a new user and new database.
      */
-    class NewUserSetupDialog extends JDialog implements FocusListener
+    abstract class BaseSetupPanel extends JPanel
     {
-        protected boolean            isCancelled = false;
         protected KeyAdapter         keyAdapter;
+        protected JButton            nextBtn;
         
-        protected JTextField         usernameTxt;
-        protected JTextField         passwordTxt;
-        protected JTextField         firstNameTxt;
-        protected JTextField         lastNameTxt;
-        protected JTextField         emailTxt;
-        protected JTextField         dbNameTxt;
-        protected JComboBox          drivers;
-        protected JComboBox          disciplines;
-        protected JCheckBox          useCurrentDrive;
-        protected JButton            okBtn;
-        
-        protected Vector<DatabaseDriverInfo> driverList;
-        protected boolean            wasClosed  = false;
-        protected CellConstraints    cc         = new CellConstraints();
-        
-        /**
-         * Creates a dialog for entering database name and selecting the appropriate driver.
-         */
-        public NewUserSetupDialog()
+        public BaseSetupPanel(final JButton nextBtn)
         {
-            setTitle("Configuration Information");
+            this.nextBtn = nextBtn;
             
             keyAdapter = new KeyAdapter() {
               public void keyPressed(KeyEvent e)
               {
-                  okBtn.setEnabled(checkUI());
+                  nextBtn.setEnabled(isUIValid());
               }
             };
+        }
+        
+        protected abstract boolean isUIValid();
+        
+    }
+    
+    
+    /**
+     * This is the configuration window for create a new user and new database.
+     */
+    class NewAgentPanel extends BaseSetupPanel
+    {
+        protected JTextField         firstNameTxt;
+        protected JTextField         lastNameTxt;
+        protected JTextField         emailTxt;
+        
+        /**
+         * Creates a dialog for entering database name and selecting the appropriate driver.
+         */
+        public NewAgentPanel(final JButton nextBtn)
+        {
+            super(nextBtn);
+
+            String header = "Fill in your information:";
+
+            PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,5px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 3)+",p:g"), this);
+            int row = 1;
+            
+            builder.add(new JLabel(header), cc.xywh(1,row,3,1));row += 2;
+            
+            firstNameTxt    = createField(builder, "First Name", row);row += 2;
+            lastNameTxt     = createField(builder, "Last Name",  row);row += 2;
+            emailTxt        = createField(builder, "EMail",      row);row += 2;
+            
+            if (DO_DEBUG) // XXX Debug
+            {
+                firstNameTxt.setText("Rod");
+                lastNameTxt.setText("Spears");
+                emailTxt.setText("rods@ku.edu");
+            }
+        }
+
+        
+        /**
+         * Checks all the textfeilds to see if they have text
+         * @return true of all fields have text
+         */
+        protected boolean isUIValid()
+        {
+            JTextField[] txtFields = {firstNameTxt, lastNameTxt, emailTxt};
+            for (JTextField tf : txtFields)
+            {
+                if (StringUtils.isEmpty(tf.getText()))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Getters 
+        public String getEmail()
+        {
+            return emailTxt.getText();
+        }
+
+        public String getFirstName()
+        {
+            return firstNameTxt.getText();
+        }
+
+        public String getLastName()
+        {
+            return lastNameTxt.getText();
+        }
+    }
+
+    
+    /**
+     * This is the configuration window for create a new user and new database.
+     */
+    class NewUserPanel extends BaseSetupPanel
+    {
+        protected JTextField         usernameTxt;
+        protected JTextField         passwordTxt;
+        protected JTextField         dbNameTxt;
+        protected JComboBox          drivers;
+        protected JComboBox          disciplines;
+        
+        protected Vector<DatabaseDriverInfo> driverList;
+        
+        /**
+         * Creates a dialog for entering database name and selecting the appropriate driver.
+         */
+        public NewUserPanel(final JButton nextBtn)
+        {
+            super(nextBtn);
+            
+            String header = "Fill in following information so an empty database can be created:";
+
+            Vector<Discipline> dispList = new Vector<Discipline>();
+            for (Discipline discipline : Discipline.getDisciplineList())
+            {
+                if (discipline.getType() == 0)
+                {
+                    dispList.add(discipline);
+                }
+            }
+            
+            driverList  = DatabaseDriverInfo.getDriversList();
+            drivers     = new JComboBox(driverList);
+            disciplines = new JComboBox(dispList);
+            
+            PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 5)+",p:g"), this);
+            int row = 1;
+            
+            builder.add(new JLabel(header), cc.xywh(1,row,3,1));row += 2;
+            
+            usernameTxt     = createField(builder, "Username",      row);row += 2;
+            passwordTxt     = createField(builder, "Password",      row, true);row += 2;
+            dbNameTxt       = createField(builder, "Database Name", row);row += 2;
+            
+            builder.add(new JLabel("Discipline:", JLabel.RIGHT), cc.xy(1, row));
+            builder.add(disciplines,                             cc.xy(3, row));
+            row += 2;
+            
+            builder.add(new JLabel("Driver:", JLabel.RIGHT), cc.xy(1, row));
+            builder.add(drivers,                             cc.xy(3, row));
+            row += 2;
+            
+            // Select Fish as the default
+            for (Discipline discipline : dispList)
+            {
+                if (discipline.getName().equals("fish"))
+                {
+                    disciplines.setSelectedItem(discipline);
+                }
+            }
+            
+            
+            if (DO_DEBUG) // XXX Debug
+            {
+                usernameTxt.setText("rods");
+                passwordTxt.setText("rods");
+                dbNameTxt.setText("mydata");
+                drivers.setSelectedIndex(0);
+            }
+        }
+        
+        /**
+         * Checks all the textfeilds to see if they have text
+         * @return true of all fields have text
+         */
+        protected boolean isUIValid()
+        {
+            JTextField[] txtFields = {usernameTxt, passwordTxt, dbNameTxt};
+            for (JTextField tf : txtFields)
+            {
+                if (StringUtils.isEmpty(tf.getText()))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // Getters 
+        
+        public DatabaseDriverInfo getDriver()
+        {
+            return (DatabaseDriverInfo)drivers.getSelectedItem();
+        }
+
+        public String getDbName()
+        {
+            return dbNameTxt.getText();
+        }
+
+        public String getPassword()
+        {
+            return passwordTxt.getText();
+        }
+
+        public String getUsername()
+        {
+            return usernameTxt.getText();
+        }
+
+        public Discipline getDiscipline()
+        {
+            return (Discipline)disciplines.getSelectedItem();
+        }
+    }
+
+    
+    /**
+     * This is the configuration window for create a new user and new database.
+     */
+    class DBLocationPanel extends BaseSetupPanel
+    {
+        protected JCheckBox                  useCurrentDrive;
+        
+        /**
+         * Creates a dialog for entering database name and selecting the appropriate driver.
+         */
+        public DBLocationPanel(final JButton nextBtn)
+        {
+            super(nextBtn);
             
             String header = "Fill in following information so an empty database can be created.";
 
@@ -275,47 +501,107 @@ public class SpecifyInitializer
                 }
             }
             
-            driverList  = DatabaseDriverInfo.getDriversList();
-            drivers     = new JComboBox(driverList);
-            disciplines = new JComboBox(dispList);
-            
             useCurrentDrive = new JCheckBox("Use Current Drive", true);
 
             PanelBuilder    cmtBldr    = new PanelBuilder(new FormLayout("f:max(300px;p):g", "f:p:g,10px"));
             cmtBldr.add(new JLabel(String.format(comments, new Object[] { UICacheManager.getUserDataDir(true), UICacheManager.getUserDataDir(false)})), cc.xy(1,1));
 
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 13)));
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 4)+",p:g"), this);
             int row = 1;
             
             builder.add(new JLabel(header), cc.xywh(1,row,3,1));row += 2;
-            
-            usernameTxt     = createField(builder, "Username",   row);row += 2;
-            passwordTxt     = createField(builder, "Password",   row, true);row += 2;
-            firstNameTxt    = createField(builder, "First Name", row);row += 2;
-            lastNameTxt     = createField(builder, "Last Name",  row);row += 2;
-            emailTxt        = createField(builder, "EMail",      row);row += 2;
-            dbNameTxt       = createField(builder, "Database Name", row);row += 2;
-            
-            builder.add(new JLabel("Discipline:", JLabel.RIGHT), cc.xy(1, row));
-            builder.add(disciplines,                             cc.xy(3, row));
-            row += 2;
-            
-            builder.add(new JLabel("Driver:", JLabel.RIGHT), cc.xy(1, row));
-            builder.add(drivers,                             cc.xy(3, row));
-            row += 2;
             
             builder.add(new JLabel(" ", JLabel.RIGHT), cc.xy(1, row));row += 2;
             builder.addSeparator("Data Location", cc.xywh(1,row,3,1));row += 2;
             builder.add(cmtBldr.getPanel(), cc.xywh(1,row,3,1));row += 2;
             
-            //builder.add(new JLabel(" ", JLabel.RIGHT), cc.xy(1, row));
             builder.add(useCurrentDrive,               cc.xy(1, row));
             row += 2;
+        }
+        
+        /**
+         * Checks all the textfeilds to see if they have text
+         * @return true of all fields have text
+         */
+        protected boolean isUIValid()
+        {
+            return true;
+        }
+
+
+        public boolean getUseCurrentDrive()
+        {
+            return useCurrentDrive.isSelected();
+        }
+    }
+
+    
+    /**
+     * Creates a dialog for entering database name and selecting the appropriate driver.
+     */
+    public class SetupDialog extends JDialog
+    {
+        protected JButton helpBtn;
+        protected JButton backBtn;
+        protected JButton nextBtn;
+        protected JButton cancelBtn;
+        protected JButton finishBtn;
+        
+        protected NewAgentPanel   agentPanel;
+        protected NewUserPanel    userPanel;
+        protected DBLocationPanel locationPanel;
+        
+        protected int             step = 0;
+        protected int             LAST_STEP = 3;
+        
+        protected boolean                isCancelled;
+        protected JPanel                 cardPanel;
+        protected CardLayout             cardLayout = new CardLayout();
+        protected Vector<BaseSetupPanel> panels     = new Vector<BaseSetupPanel>();
+        
+        public SetupDialog()
+        {
+            super();
             
+            cardPanel = new JPanel(cardLayout);
             
-            okBtn             = new JButton("OK");
-            JButton cancelBtn = new JButton("Cancel");
-            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,row,3,1));
+            helpBtn    = new JButton("Help");    // XXX I18N
+            backBtn    = new JButton("Back");
+            nextBtn    = new JButton("Next");
+            cancelBtn  = new JButton("Cancel");
+            finishBtn  = new JButton("Finish");
+            
+            JPanel btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, finishBtn, cancelBtn);
+            
+            helpBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                }
+             });
+             
+            backBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    if (step > 0)
+                    {
+                        step--;
+                        cardLayout.show(cardPanel, Integer.toString(step));
+                    }
+                    updateBtnBar();
+                }
+            });
+            
+            nextBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    if (step < LAST_STEP-1)
+                    {
+                        step++;
+                        cardLayout.show(cardPanel, Integer.toString(step));
+                    }
+                    updateBtnBar();
+                }
+            });
             
             cancelBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
@@ -325,7 +611,7 @@ public class SpecifyInitializer
                 }
              });
              
-            okBtn.addActionListener(new ActionListener() {
+            finishBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
                     isCancelled = false;
@@ -333,149 +619,52 @@ public class SpecifyInitializer
                 }
             });
             
-            okBtn.setEnabled(false);
+            finishBtn.setEnabled(false);
+            backBtn.setEnabled(false);
             
-            // Select Fish as the default
-            for (Discipline discipline : dispList)
+            panels.add(agentPanel    = new NewAgentPanel(nextBtn));
+            panels.add(userPanel     = new NewUserPanel(nextBtn));
+            panels.add(locationPanel = new DBLocationPanel(nextBtn));
+            
+            for (int i=0;i<panels.size();i++)
             {
-                if (discipline.getName().equals("fish"))
-                {
-                    disciplines.setSelectedItem(discipline);
-                }
+                cardPanel.add(Integer.toString(i), panels.get(i));
             }
+            agentPanel.setBorder(BorderFactory.createEtchedBorder());
+            cardLayout.show(cardPanel, "0");
+
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,10px,p"));
+            builder.add(cardPanel, cc.xy(1, 1));
+            builder.add(btnBar, cc.xy(1, 3));
             
             builder.setDefaultDialogBorder();
             setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             setContentPane(builder.getPanel());
             pack();
+
+        }
+        
+        protected void updateBtnBar()
+        {
+            if (step == LAST_STEP-1)
+            {
+                nextBtn.setEnabled(false);
+                finishBtn.setEnabled(panels.get(step).isUIValid());
+                
+            } else
+            {
+                nextBtn.setEnabled(panels.get(step).isUIValid());
+                finishBtn.setEnabled(false); 
+            }
             
-            if (false) // XXX Debug
-            {
-                usernameTxt.setText("rods");
-                passwordTxt.setText("rods");
-                firstNameTxt.setText("Rod");
-                lastNameTxt.setText("Spears");
-                emailTxt.setText("rods@ku.edu");
-                dbNameTxt.setText("mydata");
-                drivers.setSelectedIndex(0);
-            }
-        }
-        
-        /**
-         * Helper function for creating the UI.
-         * @param builder builder
-         * @param label the string label
-         * @param row the row to place it on
-         * @return the create JTextField (or JPasswordField)
-         */
-        protected JTextField createField(final PanelBuilder builder, final String label, final int row)
-        {
-            return createField(builder, label, row, false);
-        }
-        
-        /**
-         * Helper function for creating the UI.
-         * @param builder builder
-         * @param label the string label
-         * @param row the row to place it on
-         * @param isPassword whether to create a password or text field
-         * @return the create JTextField (or JPasswordField)
-         */
-        protected JTextField createField(final PanelBuilder builder, final String label, final int row, final boolean isPassword)
-        {
-            JTextField txt = isPassword ? new JPasswordField() : new JTextField();
-            builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(1, row));
-            builder.add(txt,                                 cc.xy(3, row));
-            txt.addFocusListener(this);
-            txt.addKeyListener(keyAdapter);
-            return txt;
-        }
-        
-        /**
-         * Checks all the textfeilds to see if they have text
-         * @return true of all fields have text
-         */
-        protected boolean checkUI()
-        {
-            JTextField[] txtFields = {usernameTxt, passwordTxt, firstNameTxt, lastNameTxt, emailTxt, dbNameTxt};
-            for (JTextField tf : txtFields)
-            {
-                if (StringUtils.isEmpty(tf.getText()))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /* (non-Javadoc)
-         * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
-         */
-        public void focusGained(FocusEvent e)
-        {
-            // no-op
-        }
-
-        /* (non-Javadoc)
-         * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
-         */
-        public void focusLost(FocusEvent e)
-        {
-            okBtn.setEnabled(checkUI());
+            backBtn.setEnabled(step > 0); 
         }
         
         // Getters 
-        
-        public DatabaseDriverInfo getDriver()
-        {
-            return (DatabaseDriverInfo)drivers.getSelectedItem();
-        }
-
-        public String getDbName()
-        {
-            return dbNameTxt.getText();
-        }
-
-        public String getEmail()
-        {
-            return emailTxt.getText();
-        }
-
-        public String getFirstName()
-        {
-            return firstNameTxt.getText();
-        }
-
         public boolean isCancelled()
         {
             return isCancelled;
         }
 
-        public String getLastName()
-        {
-            return lastNameTxt.getText();
-        }
-
-        public String getPassword()
-        {
-            return passwordTxt.getText();
-        }
-
-        public String getUsername()
-        {
-            return usernameTxt.getText();
-        }
-
-        public boolean getUseCurrentDrive()
-        {
-            return useCurrentDrive.isSelected();
-        }
-
-        public Discipline getDiscipline()
-        {
-            return (Discipline)disciplines.getSelectedItem();
-        }
-        
-        
     }
 }

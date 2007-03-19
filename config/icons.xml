@@ -137,6 +137,8 @@
     
     <icon name="Minimize"         file="minimize.gif" sizes="16"/>
     <icon name="Maximize"         file="maximize.gif" sizes="16"/>
+    <icon name="CarryForward"     file="briefcase.png" sizes="16"/>
+    <icon name="ControlEdit"      file="control_edit.png" sizes="16"/>
     
     <icon name="Checkmark" file="stock-apply.png" sizes="all"/>
     

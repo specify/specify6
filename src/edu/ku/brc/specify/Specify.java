@@ -1236,28 +1236,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                   specify.preStartUp();
                   specify.startUp();    
               }
-              
-              
-              /* This is needed for Debugging - rods
-              final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
-              focusManager.addPropertyChangeListener( 
-                  new PropertyChangeListener() { 
-                      public void propertyChange(PropertyChangeEvent e) { 
-                          String prop = e.getPropertyName(); 
-                          System.out.println(prop+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
-                          if (("focusOwner".equals(prop))) 
-                          { 
-   
-                          }
-                          if (focusManager.getFocusOwner() instanceof JButton)
-                          {
-                              System.err.println(((JButton)focusManager.getFocusOwner()).getLabel());
-                          }
-                      } 
-                  } 
-              ); */
-
-                              
           }
       });
 

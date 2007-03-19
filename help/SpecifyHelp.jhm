@@ -4,20 +4,20 @@
          "http://java.sun.com/products/javahelp/map_1_0.dtd">
 
 <map version="1.0">
-	<mapID target="specify" url="http://www.specifysoftware.org" />	
-	<mapID target="Data_Entry" url="SpecifyHelp/Data_Entry/Data_Entry.html" />
-	<mapID target="Export" url="SpecifyHelp/Export/Export.html" />
-	<mapID target="Express_Search" url="SpecifyHelp/Express_Search/Express_Search.html" />
-	<mapID target="Interactions" url="SpecifyHelp/Interactions/Interactions.html" />
-	<mapID target="Labels" url="SpecifyHelp/Labels/Labels.html" />
-	<mapID target="login" url="SpecifyHelp/login.html" />
-	<mapID target="Reports" url="SpecifyHelp/Reports/Reports.html" />
-	<mapID target="Search" url="SpecifyHelp/Search/Search.html" />
-	<mapID target="Startup" url="SpecifyHelp/Startup/Startup.html" />
-	<mapID target="Statistics" url="SpecifyHelp/Statistics/Statistics.html" />
-	<mapID target="Workbench" url="SpecifyHelp/Workbench/Workbench.html" />
+	<mapID target="specify"             url="http://www.specifysoftware.org" />	
+	<mapID target="Data_Entry"          url="SpecifyHelp/Data_Entry/Data_Entry.html" />
+	<mapID target="Export"              url="SpecifyHelp/Export/Export.html" />
+	<mapID target="Express_Search"      url="SpecifyHelp/Express_Search/Express_Search.html" />
+	<mapID target="Interactions"        url="SpecifyHelp/Interactions/Interactions.html" />
+	<mapID target="Labels"              url="SpecifyHelp/Labels/Labels.html" />
+	<mapID target="login"               url="SpecifyHelp/login.html" />
+	<mapID target="Reports"             url="SpecifyHelp/Reports/Reports.html" />
+	<mapID target="Search"              url="SpecifyHelp/Search/Search.html" />
+	<mapID target="Startup"             url="SpecifyHelp/Startup/Startup.html" />
+	<mapID target="Statistics"          url="SpecifyHelp/Statistics/Statistics.html" />
+	<mapID target="Workbench"           url="SpecifyHelp/Workbench/Workbench.html" />
 	<mapID target="WorkbenchImportData" url="SpecifyHelp/Workbench/WorkbenchImportData.html" />
-	<mapID target="WorkbenchImportCvs" url="SpecifyHelp/Workbench/WorkbenchImportCvs.html" />
+	<mapID target="WorkbenchImportCvs"  url="SpecifyHelp/Workbench/WorkbenchImportCvs.html" />
 	<mapID target="GlossMouse" url="SpecifyHelp/Glossary/GlossMouse.html" />
 	<mapID target="GlossSpecimen" url="SpecifyHelp/Glossary/GlossSpecimen.html" />
 </map>

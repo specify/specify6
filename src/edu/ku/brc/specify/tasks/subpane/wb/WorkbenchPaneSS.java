@@ -112,20 +112,22 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected Workbench   workbench;
     protected String[]    columns;
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-    protected boolean     hasChanged = false;
+    protected boolean     hasChanged      = false;
+    protected boolean     blockChanges    = false;
     
     protected GridTableModel model;
     
     protected JButton     saveBtn         = null;
     protected JButton     deleteRowsBtn   = null;
-    protected JButton     clearCellsBtn    = null;
+    protected JButton     clearCellsBtn   = null;
     protected JButton     insertRowBtn    = null;
     protected JButton     addRowsBtn      = null;
     protected JButton     carryForwardBtn = null;
     protected JButton     toggleCardImageBtn = null;
     protected JButton     showMapBtn      = null;
+    protected JButton     controlPropsBtn = null;
     protected JButton     exportKmlBtn    = null;
-    
+
     protected List<JButton> selectionSensativeButtons          = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
@@ -145,6 +147,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     protected JFrame                mapFrame                   = null;
     protected JLabel                mapImageLabel              = null;
+    
     // XXX PREF
     protected int                   mapSize                    = 500;
     
@@ -248,7 +251,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         addRowsBtn.setEnabled(true);
 
-        carryForwardBtn = createIconBtn("SystemSetup", IconManager.IconSize.Std16, "WB_CARRYFORWARD", new ActionListener()
+        carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -326,6 +329,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 }
             }
         });
+
+        
         setupWorkbenchRowChangeListener();
                 
         // setup the mapping features
@@ -353,6 +358,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         formPane = new FormPane(this, workbench);
         
+        PanelBuilder outerRSPanel = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p", "p"));
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "p"));
         resultsetController  = new ResultSetController(null, true, true, "XXXX", model.getRowCount());
         resultsetController.addListener(formPane);
@@ -360,13 +366,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         resultsetController.getNewRecBtn().addActionListener(insertAction);
         resultsetController.getDelRecBtn().addActionListener(deleteAction);
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
+        outerRSPanel.add(rsPanel.getPanel(), cc.xy(2,1));
+        outerRSPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
         
         mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
         mainPanel.add(formPane, PanelType.Form.toString());
         
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(controlBar.getPanel(), PanelType.Spreadsheet.toString());
-        controllerPane.add(rsPanel.getPanel(), PanelType.Form.toString());
+        controllerPane.add(outerRSPanel.getPanel(), PanelType.Form.toString());
         
         FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
         PanelBuilder    builder    = new PanelBuilder(formLayout, this);
@@ -506,14 +514,22 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(false);
+            blockChanges = true;
             model.setInImageMode(false);
-            
+            blockChanges = false;
+
         }
         else
         {
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(true);
+            blockChanges = true;
             model.setInImageMode(true);
+            
+            //TableColumn tableColumn = spreadSheet.getColumn(model.getColumnCount()-1);
+            //tableColumn.setCellEditor(new DefaultCellEditor(imageComboxbox));
+            
+            blockChanges = false;
             showCardImageForSelectedRow();
             
             TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
@@ -681,8 +697,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      */
     public void setChanged(final boolean changed)
     {
-        hasChanged = changed;
-        saveBtn.setEnabled(hasChanged);
+        if (!blockChanges)
+        {
+            hasChanged = changed;
+            saveBtn.setEnabled(hasChanged);
+        }
     }
     
     
@@ -927,9 +946,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     {
         super.aboutToShutdown();
         
+        formPane.cleanup();
+        
         if (hasChanged)
         {
-            //
+            // XXX show dialog for changes
         }
         return true;
     }

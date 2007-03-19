@@ -9,13 +9,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import java.awt.Component;
-import java.awt.Image;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
 
@@ -23,7 +19,6 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
 
 /**
@@ -40,19 +35,16 @@ public class GridTableModel extends SpreadSheetModel
             
     protected Workbench          workbench;
     protected boolean            isInImageMode    = false;
-    //protected SpreadSheet        spreadsheet;
     protected ImageIcon          blankIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std16);
     protected ImageIcon          imageIcon = IconManager.getIcon("image", IconManager.IconSize.Std16);
     
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     protected WorkbenchTemplateMappingItem imageMappingItem = null;
 
-    public GridTableModel(//final SpreadSheet spreadsheet,
-                          final Workbench    workbench, 
+    public GridTableModel(final Workbench    workbench, 
                           final Vector<WorkbenchTemplateMappingItem> headers)
     {
         super();
-        //this.spreadsheet = spreadsheet;
         this.workbench   = workbench;
         this.headers     = headers;
     }

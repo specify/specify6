@@ -1219,6 +1219,7 @@ public final class UIHelper
                                         final ActionListener       al)
     {
         JButton btn = size != null ? new JButton(IconManager.getIcon(iconName, size)) : new JButton(IconManager.getIcon(iconName));
+        //btn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btn.setToolTipText(getResourceString(toolTipTextKey));
         btn.setMargin(new Insets(0,0,0,0));
         btn.addActionListener(al);
