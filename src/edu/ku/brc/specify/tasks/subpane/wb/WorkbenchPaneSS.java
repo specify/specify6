@@ -82,6 +82,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
+import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -106,7 +107,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     private static final Logger log = Logger.getLogger(WorkbenchPaneSS.class);
     
     private enum PanelType {Spreadsheet, Form}
-
+    protected SearchReplacePanel  findPanel=null;
     protected SpreadSheet spreadSheet;
     protected Workbench   workbench;
     protected String[]    columns;
@@ -183,6 +184,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         model       = new GridTableModel(workbench, headers);
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
+        findPanel = spreadSheet.getFindReplacePanel();
         
         //spreadsheet.setBackground(Color.WHITE);
         initColumnSizes(spreadSheet);
@@ -366,15 +368,16 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         controllerPane.add(controlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(rsPanel.getPanel(), PanelType.Form.toString());
         
-        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
         PanelBuilder    builder    = new PanelBuilder(formLayout, this);
 
-        builder.add(mainPanel,          cc.xywh(1,1,9,1));
-        builder.add(controllerPane,     cc.xy(1,3));
-        builder.add(toggleCardImageBtn, cc.xy(3,3));
-        builder.add(carryForwardBtn,    cc.xy(5,3));
-        builder.add(saveBtn,            cc.xy(7,3));
-        builder.add(createSwitcher(),   cc.xy(9,3));
+        builder.add(mainPanel,          cc.xywh(1,1,11,1));
+        builder.add(findPanel,          cc.xy(3,3));
+        builder.add(controllerPane,     cc.xy(3,3));
+        builder.add(toggleCardImageBtn, cc.xy(5,3));
+        builder.add(carryForwardBtn,    cc.xy(7,3));
+        builder.add(saveBtn,            cc.xy(9,3));
+        builder.add(createSwitcher(),   cc.xy(11,3));
     }
     
     /**
