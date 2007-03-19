@@ -35,6 +35,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
 
 
@@ -47,7 +48,7 @@ import edu.ku.brc.ui.UIHelper;
  * @author Thierry Manf, Rod Spears
  * 
  **************************************************************************************************/
-public class SpreadSheet extends JTable
+public class SpreadSheet  extends SearchableJXTable
 {
 
     /**
