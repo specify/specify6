@@ -187,8 +187,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         model       = new GridTableModel(workbench, headers);
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
-        findPanel = spreadSheet.getFindReplacePanel();
         
+        findPanel = spreadSheet.getFindReplacePanel();
+        UICacheManager.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
+    
         //spreadsheet.setBackground(Color.WHITE);
         initColumnSizes(spreadSheet);
         spreadSheet.setShowGrid(true);
@@ -493,11 +495,17 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
            {
                resultsetController.setIndex(getCurrentRow());
            }
+           //hide the find/replace panel when you switch to form view
+           findPanel.getHideFindPanelAction().hide();
+           //disable the ctrl-F from the edit menu
+           UICacheManager.disableFindFromEditMenu();
        }
             
        JComponent[] comps = { addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn};
        for (JComponent c : comps)
        {
+           //enable the "Find" action in the Edit menu when a spreadsheet is shown
+           if(isSpreadsheet)UICacheManager.enableFindinEditMenu(findPanel);
            c.setVisible(isSpreadsheet);
        }
     }

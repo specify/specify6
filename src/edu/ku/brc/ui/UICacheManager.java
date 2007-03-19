@@ -115,6 +115,7 @@ public class UICacheManager
     //------------------------------------------------
     protected static UndoAction       undoAction;
     protected static RedoAction       redoAction;
+    protected static LaunchFindReplaceAction launchReplaceAction;
     protected HashMap<Object, Action> actions = null;
     
     static 
@@ -869,6 +870,15 @@ public class UICacheManager
                                            KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(selectAllAction);
        */
+       
+       launchReplaceAction = (LaunchFindReplaceAction) makeAction(LaunchFindReplaceAction.class,
+               this,
+               "Find",
+               null,
+               null,
+               new Integer(KeyEvent.VK_F),
+               KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        menu.add(launchReplaceAction);
        return menu;
     }
 
@@ -1126,6 +1136,52 @@ public class UICacheManager
     }
     
     //------------------------------------------------------
+    //-- The LaunchFindAction  Action
+    //------------------------------------------------------
+    public class LaunchFindReplaceAction extends AbstractAction
+    {
+        protected SearchReplacePanel searchReplacePanel = null;
+        //protected SearchableJXTable searchTable = null;
+        public LaunchFindReplaceAction()
+        {
+            super("Find");
+            setEnabled(false);
+        }       
+
+        public void actionPerformed(ActionEvent e)
+        {
+            log.debug("Ctrl-f hit from with UICacheManager - passing action onto the SearchReplacePanel");
+            if(this.isEnabled())
+            {
+                if(searchReplacePanel != null)searchReplacePanel.getLaunchFindAction().actionPerformed(e);
+                else log.error("search panel is null");
+            }
+        }
+
+        public void removeSearchPanel()
+        {
+            this.searchReplacePanel = null;
+            setEnabled(false);
+        }
+
+        /**
+         * @return the undo
+         */
+        public SearchReplacePanel getSearchReplacePanel()
+        {
+            return searchReplacePanel;
+        }
+
+        /**
+         */
+        public void setSearchReplacePanel(SearchReplacePanel panel)
+        {
+            if (panel==null)log.error("Search panel is null but shouldn't be");
+            this.searchReplacePanel = panel;
+            setEnabled(true);
+        }
+    }
+    //------------------------------------------------------
     //--  Listens for edits that can be undone.
     //------------------------------------------------------
     public class UICUndoableEditListener implements UndoableEditListener 
@@ -1174,6 +1230,23 @@ public class UICacheManager
         return undoAction;
     }
 
+    /**
+     * @return the launchReplaceAction
+     */
+    public static LaunchFindReplaceAction getLaunchFindReplaceAction()
+    {
+        return launchReplaceAction;
+    }
+    
+    public static void disableFindFromEditMenu()
+    {
+        getLaunchFindReplaceAction().setEnabled(false);
+    }
+    
+    public static void enableFindinEditMenu(SearchReplacePanel findPanel)
+    {
+        getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
+    }
     /**
      * @param undoableText
      */
