@@ -380,7 +380,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         PanelBuilder    builder    = new PanelBuilder(formLayout, this);
 
         builder.add(mainPanel,          cc.xywh(1,1,11,1));
-        builder.add(findPanel,          cc.xy(3,3));
+        builder.add(findPanel,          cc.xy(1,3));
         builder.add(controllerPane,     cc.xy(3,3));
         builder.add(toggleCardImageBtn, cc.xy(5,3));
         builder.add(carryForwardBtn,    cc.xy(7,3));
