@@ -20,18 +20,27 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -42,7 +51,11 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.tests.BuildSampleDatabase;
+import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -50,6 +63,8 @@ import edu.ku.brc.ui.UIHelper;
  * This class checks the local disk and the user's home directory to see if Specify has been used. 
  * If it could find the "Specify" or ".Specify" directory then is asks the user if they want to 
  * create a new empty database.
+ * 
+ * XXX I18N - This entire class needs to be Localized!
  * 
  * @author rods
  *
@@ -60,10 +75,10 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class SpecifyInitializer
 {
-    private static final boolean DO_DEBUG = true;
+    private static final boolean DO_DEBUG = false;
     
     protected final String HOSTNAME = "localhost";
-    protected CellConstraints    cc         = new CellConstraints();
+    protected CellConstraints    cc = new CellConstraints();
 
     /**
      * Constructor.
@@ -116,105 +131,10 @@ public class SpecifyInitializer
         
         if (!setUseCurrentLocation() || StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
-            final SetupDialog dlg = new SetupDialog();
-            dlg.setModal(true);
+            final SetupDialog dlg = new SetupDialog(specify);
+            //dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
-            dlg.dispose();
             
-            if (!dlg.isCancelled())
-            {
-                /*
-                // CLear and Reset Everything!
-                AppPreferences.shutdownLocalPrefs();
-                UICacheManager.setDefaultWorkingPath(null);
-                
-                //UICacheManager.setUseCurrentLocation(dlg.getUseCurrentDrive());
-                
-                // Now initialize
-                localPrefs = AppPreferences.getLocalPrefs();
-                localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
-                
-                System.setProperty("derby.system.home", UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
-                //System.err.println(UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
-   
-                try
-                {
-                    final SwingWorker worker = new SwingWorker()
-                    {
-                        protected boolean isOK = false;
-                        
-                        public Object construct()
-                        {
-                            try
-                            {
-                                DatabaseDriverInfo driverInfo = dlg.getDriver();
-                                if (driverInfo == null)
-                                {
-                                    throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
-                                }
-
-                                BuildSampleDatabase builder = new BuildSampleDatabase();
-                                isOK = builder.buildEmptyDatabase(driverInfo,
-                                                                          HOSTNAME,
-                                                                          dlg.getDbName(),
-                                                                          dlg.getUsername(), 
-                                                                          dlg.getPassword(), 
-                                                                          dlg.getFirstName(), 
-                                                                          dlg.getLastName(), 
-                                                                          dlg.getEmail(),
-                                                                          dlg.getDiscipline());
-                                
-                                
-                                
-                            } catch (Exception ex)
-                            {
-                                ex.printStackTrace();
-                            }
-                            return null;
-                        }
-
-                        //Runs on the event-dispatching thread.
-                        public void finished()
-                        {
-                            if (isOK)
-                            {
-                                AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", true);
-                                AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", true);
-                                AppPreferences.getLocalPrefs().putBoolean("login.autologin", false);
-                                
-                                AppPreferences.getLocalPrefs().put("login.username", dlg.getUsername());
-                                AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(dlg.getPassword())));
-                                
-                                AppPreferences.getLocalPrefs().put("login.databases", dlg.getDbName());
-                                AppPreferences.getLocalPrefs().put("login.servers",   HOSTNAME);
-                                
-                                AppPreferences.getLocalPrefs().put("login.servers_selected", HOSTNAME);
-                                AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dlg.getDriver().getName());
-                                AppPreferences.getLocalPrefs().put("login.databases_selected", dlg.getDbName());
-
-                                try{
-                                    AppPreferences.getLocalPrefs().flush();
-                                } catch (Exception e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                
-                                HibernateUtil.shutdown();
-                                specify.startUp();
-                            }
-                        }
-                    };
-                    worker.start();
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-*/
-            } else
-            {
-                return false;
-            }
         } else
         {
             HibernateUtil.shutdown();
@@ -391,6 +311,12 @@ public class SpecifyInitializer
             drivers     = new JComboBox(driverList);
             disciplines = new JComboBox(dispList);
             
+            drivers.getModel().addListDataListener(new ListDataListener() {
+                public void intervalAdded(ListDataEvent e)   { adjustLabel(); }
+                public void intervalRemoved(ListDataEvent e) { adjustLabel(); }
+                public void contentsChanged(ListDataEvent e) { adjustLabel(); }
+            });
+            
             PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 5)+",p:g"), this);
             int row = 1;
             
@@ -425,6 +351,17 @@ public class SpecifyInitializer
                 dbNameTxt.setText("mydata");
                 drivers.setSelectedIndex(0);
             }
+        }
+        
+        public void adjustLabel()
+        {
+            nextBtn.setText(isUsingDerby() ? "Next" : "Finished");
+        }
+        
+        public boolean isUsingDerby()
+        {
+            DatabaseDriverInfo database = (DatabaseDriverInfo)drivers.getSelectedItem();
+            return database.getDialectClassName().equals("org.hibernate.dialect.DerbyDialect");
         }
         
         /**
@@ -479,6 +416,12 @@ public class SpecifyInitializer
     class DBLocationPanel extends BaseSetupPanel
     {
         protected JCheckBox                  useCurrentDrive;
+        protected BrowseBtnPanel             browse;
+        
+        protected JRadioButton               useCurrentRB;
+        protected JRadioButton               useHomeRB;
+        protected JRadioButton               useUserDefinedRB;
+        protected JTextField                 filePath          = null;
         
         /**
          * Creates a dialog for entering database name and selecting the appropriate driver.
@@ -486,37 +429,97 @@ public class SpecifyInitializer
         public DBLocationPanel(final JButton nextBtn)
         {
             super(nextBtn);
+
             
-            String header = "Fill in following information so an empty database can be created.";
-
-            String comments = "<htmL>Specify creates a user data directory and this can be created on the current drive:<br>&nbsp;&nbsp;&nbsp;&nbsp;<b>%s</b><br>" + 
-            "<br>or in your user data directory<br>&nbsp;&nbsp;&nbsp;&nbsp;<b>%s</b><br></html>";
-
-            Vector<Discipline> dispList = new Vector<Discipline>();
-            for (Discipline discipline : Discipline.getDisciplineList())
+            boolean localDirOK = true;
+            File currentPath = new File(UICacheManager.getUserDataDir(true) + File.separator + "specify_tmp.tmp");
+            try
             {
-                if (discipline.getType() == 0)
-                {
-                    dispList.add(discipline);
-                }
+                FileUtils.touch(currentPath);
+                currentPath.delete();
+                
+            } catch (IOException ex)
+            {
+                localDirOK = false;
             }
             
-            useCurrentDrive = new JCheckBox("Use Current Drive", true);
+            ButtonGroup  grp       = new ButtonGroup();
+            useHomeRB = new JRadioButton("<html>Use your home directory: <b>"+UICacheManager.getUserDataDir(false)+"</b></html>");
+            grp.add(useHomeRB);
+            useHomeRB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (browse != null)
+                    {
+                        browse.setEnabled(false);
+                    }
+                    updateBtnUI();
+                }
+            });
 
-            PanelBuilder    cmtBldr    = new PanelBuilder(new FormLayout("f:max(300px;p):g", "f:p:g,10px"));
-            cmtBldr.add(new JLabel(String.format(comments, new Object[] { UICacheManager.getUserDataDir(true), UICacheManager.getUserDataDir(false)})), cc.xy(1,1));
+            int numRows = 3;
+            StringBuilder header = new StringBuilder("<html>This step requires you to select a location for the database.");
+            //localDirOK = false; // DEBUG
+            if (localDirOK)
+            {
+                header.append("There are three options:</html>");
 
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 4)+",p:g"), this);
+                useCurrentRB = new JRadioButton("<html>Use your current directory: <b>"+UICacheManager.getUserDataDir(true)+"</b></html>");
+                grp.add(useCurrentRB);
+                useCurrentRB.setSelected(true);
+                numRows++;
+                
+            } else
+            {
+                header.append("<br>The database cannot be stored on the media you are currently running OnRamp from, ");
+                header.append("so you can allow it to default to your '<i>home</i>' directory. Or choose a different location.</html>");
+                useHomeRB.setSelected(true);
+            }
+            
+            useUserDefinedRB  = new JRadioButton("Use other location:");
+            grp.add(useUserDefinedRB);
+            useUserDefinedRB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    browse.setEnabled(true);
+                    updateBtnUI();
+                }
+            });
+            
+            filePath = new JTextField(30);
+            filePath.getDocument().addDocumentListener(new DocumentListener() {
+                public void insertUpdate(DocumentEvent e) {updateBtnUI();}
+                public void removeUpdate(DocumentEvent e) {updateBtnUI();}
+                public void changedUpdate(DocumentEvent e) {updateBtnUI();}
+            });
+            browse = new BrowseBtnPanel(filePath, true);
+            browse.setEnabled(false);
+
+            JLabel       lbl     = new JLabel(header.toString());
+            PanelBuilder cmtBldr = new PanelBuilder(new FormLayout("f:min(300px;p):g", "f:p:g"));
+            cmtBldr.add(lbl, cc.xy(1,1));
+
+            PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)+",f:p:g"), this);
             int row = 1;
-            
-            builder.add(new JLabel(header), cc.xywh(1,row,3,1));row += 2;
-            
-            builder.add(new JLabel(" ", JLabel.RIGHT), cc.xy(1, row));row += 2;
-            builder.addSeparator("Data Location", cc.xywh(1,row,3,1));row += 2;
+
             builder.add(cmtBldr.getPanel(), cc.xywh(1,row,3,1));row += 2;
-            
-            builder.add(useCurrentDrive,               cc.xy(1, row));
-            row += 2;
+            builder.add(useHomeRB, cc.xy(1,row));row += 2;
+            if (useCurrentRB != null)
+            {
+                builder.add(useCurrentRB, cc.xy(1,row));row += 2;
+            }
+            builder.add(useUserDefinedRB, cc.xy(1,row));row += 2;
+            builder.add(browse, cc.xy(1,row));row += 2;
+
+        }
+        
+        /**
+         * Checks all the textfeilds to see if they have text
+         * @return true of all fields have text
+         */
+        protected void updateBtnUI()
+        {
+            nextBtn.setEnabled(isUIValid());
         }
         
         /**
@@ -525,13 +528,26 @@ public class SpecifyInitializer
          */
         protected boolean isUIValid()
         {
+            if (useUserDefinedRB.isSelected())
+            {
+                String path = filePath.getText();
+                if (StringUtils.isNotEmpty(path))
+                {
+                    return new File(path).exists();
+                }
+                return false;
+            }
             return true;
         }
-
-
-        public boolean getUseCurrentDrive()
+        
+        public boolean isUsingUserDefinedDirectory()
         {
-            return useCurrentDrive.isSelected();
+            return useUserDefinedRB.isSelected();
+        }
+        
+        public String getUserDefinedPath()
+        {
+            return filePath.getText();
         }
     }
 
@@ -539,29 +555,34 @@ public class SpecifyInitializer
     /**
      * Creates a dialog for entering database name and selecting the appropriate driver.
      */
-    public class SetupDialog extends JDialog
+    public class SetupDialog extends JFrame
     {
-        protected JButton helpBtn;
-        protected JButton backBtn;
-        protected JButton nextBtn;
-        protected JButton cancelBtn;
-        protected JButton finishBtn;
+        protected JButton                helpBtn;
+        protected JButton                backBtn;
+        protected JButton                nextBtn;
+        protected JButton                cancelBtn;
         
-        protected NewAgentPanel   agentPanel;
-        protected NewUserPanel    userPanel;
-        protected DBLocationPanel locationPanel;
+        protected NewAgentPanel          agentPanel;
+        protected NewUserPanel           userPanel;
+        protected DBLocationPanel        locationPanel;
         
-        protected int             step = 0;
-        protected int             LAST_STEP = 3;
+        protected int                    step = 0;
+        protected int                    LAST_STEP = 3;
         
         protected boolean                isCancelled;
         protected JPanel                 cardPanel;
         protected CardLayout             cardLayout = new CardLayout();
         protected Vector<BaseSetupPanel> panels     = new Vector<BaseSetupPanel>();
         
-        public SetupDialog()
+        protected Specify                specify;
+        
+        public SetupDialog(final Specify specify)
         {
             super();
+            
+            this.specify = specify;
+            
+            setTitle("Database Setup");
             
             cardPanel = new JPanel(cardLayout);
             
@@ -569,13 +590,13 @@ public class SpecifyInitializer
             backBtn    = new JButton("Back");
             nextBtn    = new JButton("Next");
             cancelBtn  = new JButton("Cancel");
-            finishBtn  = new JButton("Finish");
             
-            JPanel btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, finishBtn, cancelBtn);
+            JPanel btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, cancelBtn);
             
             helpBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
+                    
                 }
              });
              
@@ -594,12 +615,22 @@ public class SpecifyInitializer
             nextBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    if (step < LAST_STEP-1)
+                    if (step == 1 && !userPanel.isUsingDerby())
+                    {
+                        setVisible(false);
+                        configureDatabase();
+                        
+                    } else if (step < LAST_STEP-1)
                     {
                         step++;
                         cardLayout.show(cardPanel, Integer.toString(step));
+                        updateBtnBar();
+                        
+                    } else
+                    {
+                        setVisible(false);
+                        configureDatabase();
                     }
-                    updateBtnBar();
                 }
             });
             
@@ -610,16 +641,7 @@ public class SpecifyInitializer
                     setVisible(false);
                 }
              });
-             
-            finishBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    isCancelled = false;
-                    setVisible(false);
-                }
-            });
             
-            finishBtn.setEnabled(false);
             backBtn.setEnabled(false);
             
             panels.add(agentPanel    = new NewAgentPanel(nextBtn));
@@ -648,23 +670,109 @@ public class SpecifyInitializer
         {
             if (step == LAST_STEP-1)
             {
-                nextBtn.setEnabled(false);
-                finishBtn.setEnabled(panels.get(step).isUIValid());
+                nextBtn.setEnabled(panels.get(step).isUIValid());
+                nextBtn.setText("Finished");
                 
             } else
             {
                 nextBtn.setEnabled(panels.get(step).isUIValid());
-                finishBtn.setEnabled(false); 
+                nextBtn.setText("Next");
             }
             
             backBtn.setEnabled(step > 0); 
         }
-        
-        // Getters 
-        public boolean isCancelled()
-        {
-            return isCancelled;
-        }
 
+        public void configureDatabase()
+        {
+            // CLear and Reset Everything!
+            AppPreferences.shutdownLocalPrefs();
+            UICacheManager.setDefaultWorkingPath(null);
+            
+            //UICacheManager.setUseCurrentLocation(dlg.getUseCurrentDrive());
+            
+            // Now initialize
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+            
+            String databasePath = UICacheManager.getDefaultWorkingPath();
+            if (locationPanel.isUsingUserDefinedDirectory())
+            {
+                databasePath = locationPanel.getUserDefinedPath();
+            }
+            
+            System.setProperty("derby.system.home", databasePath + File.separator + "DerbyDatabases");
+            //System.err.println(UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+   
+            try
+            {
+                final SwingWorker worker = new SwingWorker()
+                {
+                    protected boolean isOK = false;
+                    
+                    public Object construct()
+                    {
+                        try
+                        {
+                            DatabaseDriverInfo driverInfo = userPanel.getDriver();
+                            if (driverInfo == null)
+                            {
+                                throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
+                            }
+
+                            BuildSampleDatabase builder = new BuildSampleDatabase();
+                           isOK = builder.buildEmptyDatabase(driverInfo,
+                                                              HOSTNAME,
+                                                              userPanel.getDbName(),
+                                                              userPanel.getUsername(), 
+                                                              userPanel.getPassword(), 
+                                                              agentPanel.getFirstName(), 
+                                                              agentPanel.getLastName(), 
+                                                              agentPanel.getEmail(),
+                                                              userPanel.getDiscipline());
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                        return null;
+                    }
+
+                    //Runs on the event-dispatching thread.
+                    public void finished()
+                    {
+                        if (isOK)
+                        {
+                            AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", true);
+                            AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", true);
+                            AppPreferences.getLocalPrefs().putBoolean("login.autologin", false);
+                            
+                            AppPreferences.getLocalPrefs().put("login.username", userPanel.getUsername());
+                            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(userPanel.getPassword())));
+                            
+                            AppPreferences.getLocalPrefs().put("login.databases", userPanel.getDbName());
+                            AppPreferences.getLocalPrefs().put("login.servers",   HOSTNAME);
+                            
+                            AppPreferences.getLocalPrefs().put("login.servers_selected", HOSTNAME);
+                            AppPreferences.getLocalPrefs().put("login.dbdriver_selected", userPanel.getDriver().getName());
+                            AppPreferences.getLocalPrefs().put("login.databases_selected", userPanel.getDbName());
+
+                            try{
+                                AppPreferences.getLocalPrefs().flush();
+                            } catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                            
+                            HibernateUtil.shutdown();
+                            specify.startUp();
+                        }
+                    }
+                };
+                worker.start();
+            
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
 }

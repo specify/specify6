@@ -193,9 +193,17 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     @Override
     public void setText(String text)
     {
-        document.setIgnoreNotify(true);
+        if (document != null)
+        {
+            document.setIgnoreNotify(true);
+        }
+        
         super.setText(text);
-        document.setIgnoreNotify(false);
+        
+        if (document != null)
+        {
+            document.setIgnoreNotify(false);
+        }
     }
 
     //--------------------------------------------------

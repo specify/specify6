@@ -85,7 +85,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -1555,6 +1554,7 @@ public class BuildSampleDatabase
                                       final Discipline  discipline)
     {
         frame = new ProgressFrame("Building OnRamp Database");
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(new Dimension(500,125));
         frame.setTitle("Building OnRamp Database");
         UIHelper.centerAndShow(frame);
@@ -1591,10 +1591,15 @@ public class BuildSampleDatabase
                 }
             });
             
+            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
+            if (connStr == null)
+            {
+                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
+            }
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                     driverInfo.getDialectClassName(), 
                     dbName, 
-                    driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName), 
+                    connStr, 
                     username, 
                     password))
             {
