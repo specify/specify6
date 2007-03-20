@@ -954,7 +954,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     {
         super.aboutToShutdown();
         
-        formPane.cleanup();
+        if (formPane != null)
+        {
+            formPane.cleanup();
+        }
         
         if (hasChanged)
         {

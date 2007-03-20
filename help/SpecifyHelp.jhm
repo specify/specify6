@@ -15,9 +15,19 @@
 	<mapID target="Search"              url="SpecifyHelp/Search/Search.html" />
 	<mapID target="Startup"             url="SpecifyHelp/Startup/Startup.html" />
 	<mapID target="Statistics"          url="SpecifyHelp/Statistics/Statistics.html" />
-	<mapID target="Workbench"           url="SpecifyHelp/Workbench/Workbench.html" />
-	<mapID target="WorkbenchImportData" url="SpecifyHelp/Workbench/WorkbenchImportData.html" />
-	<mapID target="WorkbenchImportCvs"  url="SpecifyHelp/Workbench/WorkbenchImportCvs.html" />
-	<mapID target="GlossMouse" url="SpecifyHelp/Glossary/GlossMouse.html" />
-	<mapID target="GlossSpecimen" url="SpecifyHelp/Glossary/GlossSpecimen.html" />
+	<mapID target="ConfiguringDatabase" url="SpecifyHelp/ConfiguringDatabase.html" />
+	<mapID target="Workbench"           url="SpecifyHelp/Workbench/Overview.html" />
+	<mapID target="WorkbenchImportData" url="SpecifyHelp/Workbench/ImportData.html" />
+	<mapID target="WorkbenchImportCvs"  url="SpecifyHelp/Workbench/ImportCvs.html" />
+	<mapID target="WorkbenchColMapping" url="SpecifyHelp/Workbench/ColumnMapping.html" />
+	<mapID target="WorkbenchImportXLS"  url="SpecifyHelp/Workbench/ImportXLS.html" />
+	<mapID target="WorkbenchDataSets"   url="SpecifyHelp/Workbench/DataSets.html" />
+	<mapID target="WorkbenchEditing"    url="SpecifyHelp/Workbench/Editing.html" />
+	<mapID target="WorkbenchReporting"  url="SpecifyHelp/Workbench/Reporting.html" />
+	<mapID target="WorkbenchSpecialTools" url="SpecifyHelp/Workbench/SpecialTools.html" />
+	<mapID target="WorkbenchExporting"  url="SpecifyHelp/Workbench/Exporting.html" />
+	<mapID target="WorkbenchTemplates"  url="SpecifyHelp/Workbench/Templates.html" />
+	<mapID target="ColumnMappingDlg"    url="SpecifyHelp/Workbench/ColumnMapping.html" />
+	<mapID target="GlossMouse"          url="SpecifyHelp/Glossary/GlossMouse.html" />
+	<mapID target="GlossSpecimen"       url="SpecifyHelp/Glossary/GlossSpecimen.html" />
 </map>

@@ -7,9 +7,11 @@
     <indexitem text="Data Entry"     target="Data_Entry"/>
     <indexitem text="Data Sucking"   target="Workbench"/>
     <indexitem text="Database Selection" target="login"/>
-    <indexitem text="delimiter"      target="WorkbenchImportCvs"/>
-    <indexitem text="escape mode"    target="WorkbenchImportCvs"/>
-    <indexitem text="character set"  target="WorkbenchImportCvs"/>
-    <indexitem text="column headers" target="WorkbenchImportCvs"/>
+    <indexitem text="OnRamp">
+        <indexitem text="delimiter"      target="WorkbenchImportCvs"/>
+        <indexitem text="escape mode"    target="WorkbenchImportCvs"/>
+        <indexitem text="character set"  target="WorkbenchImportCvs"/>
+        <indexitem text="column headers" target="ColumnMappingDlg"/>
+    </indexitem>
     <indexitem text="Welcome"        target="Startup"/>
 </index>

@@ -907,7 +907,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void doExit()
     {
-        AttachmentUtils.getAttachmentManager().cleanup();
+        if (AttachmentUtils.getAttachmentManager() != null)
+        {
+            AttachmentUtils.getAttachmentManager().cleanup();
+        }
         
         if (SubPaneMgr.getInstance().aboutToShutdown())
         {
@@ -924,7 +927,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
     			log.warn("Error while saving long term cache mapping.",e1);
     		}
     
-    		topFrame.setVisible(false);
+            if (topFrame != null)
+            {
+                topFrame.setVisible(false);
+            }
             System.exit(0);
         }
     }

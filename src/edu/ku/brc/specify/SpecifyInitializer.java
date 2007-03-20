@@ -28,13 +28,13 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
@@ -54,6 +54,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tests.BuildSampleDatabase;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.UICacheManager;
@@ -131,9 +132,8 @@ public class SpecifyInitializer
         
         if (!setUseCurrentLocation() || StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
-            final SetupDialog dlg = new SetupDialog(specify);
-            //dlg.setModal(true);
-            UIHelper.centerAndShow(dlg);
+            final SetupDialog specifyInitFrame = new SetupDialog(specify);
+            UIHelper.centerAndShow(specifyInitFrame);
             
         } else
         {
@@ -143,42 +143,6 @@ public class SpecifyInitializer
 
         return true;
     }
-    
-    /**
-     * Helper function for creating the UI.
-     * @param builder builder
-     * @param label the string label
-     * @param row the row to place it on
-     * @return the create JTextField (or JPasswordField)
-     */
-    protected JTextField createField(final PanelBuilder builder, final String label, final int row)
-    {
-        return createField(builder, label, row, false);
-    }
-    
-    /**
-     * Helper function for creating the UI.
-     * @param builder builder
-     * @param label the string label
-     * @param row the row to place it on
-     * @param isPassword whether to create a password or text field
-     * @return the create JTextField (or JPasswordField)
-     */
-    protected JTextField createField(final PanelBuilder builder, final String label, final int row, final boolean isPassword)
-    {
-        JTextField txt = isPassword ? new JPasswordField(15) : new JTextField(15);
-        builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(1, row));
-        builder.add(txt,                                 cc.xy(3, row));
-        //txt.addFocusListener(this);
-        //txt.addKeyListener(keyAdapter);
-        return txt;
-    }
-    
-    interface SetupPanelIFace
-    {
-        
-    }
-    
     
     /**
      * This is the configuration window for create a new user and new database.
@@ -202,6 +166,43 @@ public class SpecifyInitializer
         
         protected abstract boolean isUIValid();
         
+        protected abstract void updateBtnUI();
+        
+        /**
+         * Helper function for creating the UI.
+         * @param builder builder
+         * @param label the string label
+         * @param row the row to place it on
+         * @return the create JTextField (or JPasswordField)
+         */
+        protected JTextField createField(final PanelBuilder builder, final String label, final int row)
+        {
+            return createField(builder, label, row, false);
+        }
+        
+        /**
+         * Helper function for creating the UI.
+         * @param builder builder
+         * @param label the string label
+         * @param row the row to place it on
+         * @param isPassword whether to create a password or text field
+         * @return the create JTextField (or JPasswordField)
+         */
+        protected JTextField createField(final PanelBuilder builder, final String label, final int row, final boolean isPassword)
+        {
+            JTextField txt = isPassword ? new JPasswordField(15) : new JTextField(15);
+            builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(1, row));
+            builder.add(txt,                                 cc.xy(3, row));
+            //txt.addFocusListener(this);
+            //txt.addKeyListener(keyAdapter);
+            
+            txt.getDocument().addDocumentListener(new DocumentListener() {
+                public void insertUpdate(DocumentEvent e) {updateBtnUI();}
+                public void removeUpdate(DocumentEvent e) {updateBtnUI();}
+                public void changedUpdate(DocumentEvent e) {updateBtnUI();}
+            });
+            return txt;
+        }
     }
     
     
@@ -210,9 +211,9 @@ public class SpecifyInitializer
      */
     class NewAgentPanel extends BaseSetupPanel
     {
-        protected JTextField         firstNameTxt;
-        protected JTextField         lastNameTxt;
-        protected JTextField         emailTxt;
+        protected JTextField firstNameTxt;
+        protected JTextField lastNameTxt;
+        protected JTextField emailTxt;
         
         /**
          * Creates a dialog for entering database name and selecting the appropriate driver.
@@ -238,6 +239,16 @@ public class SpecifyInitializer
                 lastNameTxt.setText("Spears");
                 emailTxt.setText("rods@ku.edu");
             }
+            updateBtnUI();
+        }
+        
+        /**
+         * Checks all the textfeilds to see if they have text
+         * @return true of all fields have text
+         */
+        protected void updateBtnUI()
+        {
+            nextBtn.setEnabled(isUIValid());
         }
 
         
@@ -279,7 +290,7 @@ public class SpecifyInitializer
     /**
      * This is the configuration window for create a new user and new database.
      */
-    class NewUserPanel extends BaseSetupPanel
+    class DatabasePanel extends BaseSetupPanel
     {
         protected JTextField         usernameTxt;
         protected JTextField         passwordTxt;
@@ -292,11 +303,11 @@ public class SpecifyInitializer
         /**
          * Creates a dialog for entering database name and selecting the appropriate driver.
          */
-        public NewUserPanel(final JButton nextBtn)
+        public DatabasePanel(final JButton nextBtn)
         {
             super(nextBtn);
             
-            String header = "Fill in following information so an empty database can be created:";
+            String header = "Fill in following information for the database:";
 
             Vector<Discipline> dispList = new Vector<Discipline>();
             for (Discipline discipline : Discipline.getDisciplineList())
@@ -343,7 +354,6 @@ public class SpecifyInitializer
                 }
             }
             
-            
             if (DO_DEBUG) // XXX Debug
             {
                 usernameTxt.setText("rods");
@@ -351,6 +361,16 @@ public class SpecifyInitializer
                 dbNameTxt.setText("mydata");
                 drivers.setSelectedIndex(0);
             }
+            updateBtnUI();
+        }
+        
+        /**
+         * Checks all the textfeilds to see if they have text
+         * @return true of all fields have text
+         */
+        protected void updateBtnUI()
+        {
+            nextBtn.setEnabled(isUIValid());
         }
         
         public void adjustLabel()
@@ -563,7 +583,7 @@ public class SpecifyInitializer
         protected JButton                cancelBtn;
         
         protected NewAgentPanel          agentPanel;
-        protected NewUserPanel           userPanel;
+        protected DatabasePanel           userPanel;
         protected DBLocationPanel        locationPanel;
         
         protected int                    step = 0;
@@ -582,8 +602,7 @@ public class SpecifyInitializer
             
             this.specify = specify;
             
-            setTitle("Database Setup");
-            
+            setTitle("Configuring a Database");
             cardPanel = new JPanel(cardLayout);
             
             helpBtn    = new JButton("Help");    // XXX I18N
@@ -591,14 +610,9 @@ public class SpecifyInitializer
             nextBtn    = new JButton("Next");
             cancelBtn  = new JButton("Cancel");
             
-            JPanel btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, cancelBtn);
+            HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
             
-            helpBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    
-                }
-             });
+            JPanel btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, cancelBtn);
              
             backBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
@@ -619,6 +633,7 @@ public class SpecifyInitializer
                     {
                         setVisible(false);
                         configureDatabase();
+                        dispose();
                         
                     } else if (step < LAST_STEP-1)
                     {
@@ -630,6 +645,7 @@ public class SpecifyInitializer
                     {
                         setVisible(false);
                         configureDatabase();
+                        dispose();
                     }
                 }
             });
@@ -639,13 +655,14 @@ public class SpecifyInitializer
                 {
                     isCancelled = true;
                     setVisible(false);
+                    dispose();
                 }
              });
             
             backBtn.setEnabled(false);
             
             panels.add(agentPanel    = new NewAgentPanel(nextBtn));
-            panels.add(userPanel     = new NewUserPanel(nextBtn));
+            panels.add(userPanel     = new DatabasePanel(nextBtn));
             panels.add(locationPanel = new DBLocationPanel(nextBtn));
             
             for (int i=0;i<panels.size();i++)
@@ -660,7 +677,7 @@ public class SpecifyInitializer
             builder.add(btnBar, cc.xy(1, 3));
             
             builder.setDefaultDialogBorder();
-            setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             setContentPane(builder.getPanel());
             pack();
 

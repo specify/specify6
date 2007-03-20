@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+  <head>
+  <title>Column Mapping</title>
+  <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+  </head>
+  <body>
+  <H1>Column Mapping</H1>
+  <p>Column mapping is creating an association from a column in the input file to a data member in the database. An association ensures that each column of each row of data in the input file has a place in the database. The proper database destination is a combination of a Data Object and a field. </p>
+  <p align="center"><img src="../images/ColumnMappingDialog.png" alt="Column Mapping Dialog" width="493" height="522"></p>
+  <p align="center">Column Mapping Dialog </p>
+  <p>There are two ways these association are created: automatically and manually. </p>
+  <h2>Manual Mapping </h2>
+  <p>OnRamp will make an attempt at discovering a mapping for a column, but depending on what names you used as column headers the auto mapper may not be able to detmerine the desired mapping (See <a href="#Auto_Mapping">Auto Mapping</a>). At this point you will need to manually choose a mapping. </p>
+  <p>In order for there to be a mapping the you must select three items. </p>
+  <h2><a name="Auto_Mapping">Auto Mapping</a></h2>
+  <p>Auto Mapping is done during the import process to see if the mapping from the data files to the database fields can be automatically determined. During the initial steps of importing a file you indicated whether the first row of data is the column headers. Data files with column headers are require less work to import. (See Importing Data Files) The data file is inspected during the import to determine what the each column's header might be. The names in the headers are checked against the names in the database schema to determ </p>
+  </body>
+</html>

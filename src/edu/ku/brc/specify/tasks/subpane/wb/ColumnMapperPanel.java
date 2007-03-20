@@ -57,6 +57,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tasks.subpane.FieldNameRenderer;
 import edu.ku.brc.specify.tasks.subpane.TableFieldPair;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer;
@@ -188,8 +189,13 @@ public class ColumnMapperPanel extends JPanel
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", 
                                                                  "p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, p, 2px, f:p:g"), this);
         CellConstraints cc      = new CellConstraints();
+        
+        PanelBuilder header = new PanelBuilder(new FormLayout("p,f:p:g,p", "p,2px,p"));
+        header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), JLabel.CENTER), cc.xywh(1, 1, 3, 1));
+        header.add(new JLabel("Database", JLabel.LEFT), cc.xy(1,3));
+        header.add(new JLabel("Import", JLabel.RIGHT), cc.xy(3,3));
 
-        builder.add(new JLabel(getResourceString("WB_DATFILE_COLUMNS"), JLabel.CENTER), cc.xy(1, 1));
+        builder.add(header.getPanel(), cc.xy(1, 1));
         builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     JLabel.CENTER), cc.xy(5, 1));
         builder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  JLabel.CENTER), cc.xy(5, 5));
         
@@ -289,11 +295,12 @@ public class ColumnMapperPanel extends JPanel
             }
         });
         
+        JButton helpBtn = new JButton(getResourceString("Help")); 
         okBtn     = new JButton(getResourceString("OK")); 
         cancelBtn = new JButton(getResourceString("Cancel"));
         okBtn.setEnabled(false);
         
-        builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1, 11, 5, 1));
+        builder.add(ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn), cc.xywh(1, 11, 5, 1));
         
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -312,6 +319,8 @@ public class ColumnMapperPanel extends JPanel
                 isCancelled = false;
             }
         });
+        
+        HelpMgr.registerComponent(helpBtn, "WorkbenchColMapping");
         
         if (dataFileInfo != null)
         {

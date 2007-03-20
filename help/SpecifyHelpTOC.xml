@@ -3,23 +3,33 @@
   PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
          "http://java.sun.com/products/javahelp/toc_1_0.dtd">
 <toc version="1.0">
-  <tocitem text="Specify" target="specify">
-    <tocitem text="Logging In" target="login"/>
-    <tocitem text="Getting Started" target="Startup"/>
-    <tocitem text="Tasks">
-      <tocitem text="Data Entry" target="Data_Entry"/>
-      <tocitem text="Labels" target="Labels"/>
-      <tocitem text="Reports" target="Reports"/>
-      <tocitem text="Interactions" target="Interactions"/>
-      <tocitem text="Statistics" target="Statistics"/>
-      <tocitem text="Search" target="Search"/>
-      <tocitem text="OnRamp" target="Workbench">
-        <tocitem text="Importing Data" target="WorkbenchImportData">
-      	  <tocitem text="CVS Import" target="WorkbenchImportCvs" />
-      	  </tocitem>
-      </tocitem>
-      <tocitem text="Export" target="Export"/>
-      <tocitem text="Express Search" target="Express_Search"/>
-    </tocitem>  
-  </tocitem>
+    <tocitem text="Specify" target="specify">
+      <tocitem text="Configuring a Database" target="ConfiguringDatabase"/>
+      <tocitem text="Logging In" target="login"/>
+      <tocitem text="Getting Started" target="Startup"/>
+        <tocitem text="Tasks">
+            <tocitem text="Data Entry" target="Data_Entry"/>
+            <tocitem text="Labels" target="Labels"/>
+            <tocitem text="Reports" target="Reports"/>
+            <tocitem text="Interactions" target="Interactions"/>
+            <tocitem text="Statistics" target="Statistics"/>
+            <tocitem text="Search" target="Search"/>
+            <tocitem text="OnRamp" target="Workbench">
+                <tocitem text="Overview" target="Workbench"/>
+                <tocitem text="Importing Data" target="WorkbenchImportData">
+                    <tocitem text="CVS Import" target="WorkbenchImportCvs"/>
+                    <tocitem text="Excel Import" target="WorkbenchImportXLS"/>
+                    <tocitem text="Column Mapping" target="WorkbenchColMapping"/>
+                </tocitem>
+              <tocitem text="Templates" target="WorkbenchTemplates"/>
+              <tocitem text="DataSets" target="WorkbenchDataSets"/>
+              <tocitem text="Editing" target="WorkbenchEditing"/>
+              <tocitem text="Reporting" target="WorkbenchReporting"/>
+              <tocitem text="Special Tools" target="WorkbenchSpecialTools"/>
+              <tocitem text="Exporting" target="WorkbenchExporting"/>
+            </tocitem>
+            <tocitem text="Export" target="Export"/>
+            <tocitem text="Express Search" target="Express_Search"/>
+      </tocitem>  
+    </tocitem>
 </toc>
