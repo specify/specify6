@@ -9,6 +9,7 @@ package edu.ku.brc.specify.exporters;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -38,8 +39,6 @@ public class GoogleEarthExporter implements RecordSetExporter
     /** Logger for all log messages emitted from this class. */
     private static final Logger log = Logger.getLogger(GoogleEarthExporter.class);
             
-    protected KeyholeMarkupGenerator kmlGen = new KeyholeMarkupGenerator();
-    
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
 	 */
@@ -76,7 +75,15 @@ public class GoogleEarthExporter implements RecordSetExporter
         
         if (data.get(0) instanceof GoogleEarthPlacemarkIFace)
         {
-            exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data);
+            try
+            {
+                File output = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data);
+                openExternalViewer(output);
+            }
+            catch (Exception e)
+            {
+                log.error("Exception caught while creating KML output or opening Google Earth", e);
+            }
         }
     }
     
@@ -90,6 +97,7 @@ public class GoogleEarthExporter implements RecordSetExporter
     
     protected void exportCollectingEventRecordSet(RecordSet data)
     {
+        KeyholeMarkupGenerator kmlGen = new KeyholeMarkupGenerator();
         List<Object> records = RecordSetLoader.loadRecordSet(data);
         for (Object o: records)
         {
@@ -109,7 +117,7 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
     }
     
-    protected void exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks)
+    protected File exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks) throws IOException
     {
         GenericKmlGenerator kmlGenerator = new GenericKmlGenerator();
         for (GoogleEarthPlacemarkIFace pm: placemarks)
@@ -119,19 +127,17 @@ public class GoogleEarthExporter implements RecordSetExporter
             String htmlDesc = pm.getHtmlContent();
             kmlGenerator.addPlacemark(geoRef, name, htmlDesc);
         }
-        
-        File tmpFile = null;
-        try
-        {
-            tmpFile = File.createTempFile("sp6export", ".kml");
-            log.info("Writing KML output to " + tmpFile.getAbsolutePath());
-            kmlGenerator.generateKML(tmpFile);
-            AttachmentUtils.openFile(tmpFile);
-        }
-        catch (Exception e)
-        {
-            log.error("Exception caught while writing KML output or opening Google Earth", e);
-        }
+
+        File tmpFile = File.createTempFile("sp6export", ".kml");
+        log.info("Writing KML output to " + tmpFile.getAbsolutePath());
+        kmlGenerator.generateKML(tmpFile);
+        tmpFile.deleteOnExit();
+        return tmpFile;
+    }
+    
+    protected void openExternalViewer(File f) throws Exception
+    {
+        AttachmentUtils.openFile(f);
     }
     
     /* (non-Javadoc)
