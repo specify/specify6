@@ -1160,7 +1160,7 @@ public class LocalityMapper implements TimingTarget
 				}
 
 				mapIcon.paintIcon(c,g,x,y);
-//                overlayIcon.paintIcon(c, g, x, y);
+                overlayIcon.paintIcon(c, g, x, y);
 
 				Point lastLoc = null;
 				for( int i = 0; i<localities.size(); ++i )
