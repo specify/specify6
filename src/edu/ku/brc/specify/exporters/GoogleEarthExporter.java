@@ -11,6 +11,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -42,7 +43,7 @@ public class GoogleEarthExporter implements RecordSetExporter
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
 	 */
-	public void exportRecordSet(RecordSet data)
+	public void exportRecordSet(RecordSet data, Properties reqParams)
     {
         log.info("Exporting RecordSet");
         int collObjTableId = DBTableIdMgr.getIdByClassName(CollectionObject.class.getName());
@@ -64,7 +65,7 @@ public class GoogleEarthExporter implements RecordSetExporter
 	}
     
     @SuppressWarnings("unchecked")
-    public void exportList(List<?> data)
+    public void exportList(List<?> data, Properties reqParams)
     {
         log.info("Exporting data list");
         if (data==null || data.size()==0)

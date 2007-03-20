@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.exporters;
 
 import java.util.List;
+import java.util.Properties;
 
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -22,7 +23,7 @@ public class RecordSetExporterAdapter implements RecordSetExporter
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
 	 */
-	public void exportRecordSet(RecordSet data)
+	public void exportRecordSet(RecordSet data, Properties reqParams)
     {
 	    System.out.println("Exporting " + data.getIdentityTitle());
         System.out.println("Records are from table " + data.getDbTableId());
@@ -59,7 +60,7 @@ public class RecordSetExporterAdapter implements RecordSetExporter
         return "A simple exporter that shows a basic implementation of the RecordSetExporter interface.  This export format is not intended for production use.";
     }
 
-    public void exportList(List<?> data)
+    public void exportList(List<?> data, Properties reqParams)
     {
         // TODO Auto-generated method stub
         

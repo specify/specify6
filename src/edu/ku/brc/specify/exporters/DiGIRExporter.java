@@ -3,6 +3,7 @@ package edu.ku.brc.specify.exporters;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -17,7 +18,7 @@ public class DiGIRExporter implements RecordSetExporter
 {
     public static final String NAME = "DiGIR";
     
-    public void exportRecordSet(RecordSet data)
+    public void exportRecordSet(RecordSet data, Properties reqParams)
     {
         JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
         Icon icon = IconManager.getIcon(NAME);
@@ -44,7 +45,7 @@ public class DiGIRExporter implements RecordSetExporter
         return getResourceString(NAME+"_Description");
     }
 
-    public void exportList(List<?> data)
+    public void exportList(List<?> data, Properties reqParams)
     {
         // TODO Auto-generated method stub
         

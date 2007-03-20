@@ -16,6 +16,7 @@ package edu.ku.brc.ui;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Represents a single command action typically between the UI and a task, sometimes between tasks
@@ -39,7 +40,8 @@ public class CommandAction
     
     protected boolean      isConsumed = false;
     
-    protected Hashtable<String, Object> properties = null;
+//    protected Hashtable<String, Object> properties = null;
+    protected Properties properties = null;
     
     /**
      * Constructs a command.
@@ -245,7 +247,7 @@ public class CommandAction
     {
         if (properties == null)
         {
-            properties = new Hashtable<String, Object>();
+            properties = new Properties();
         }
         properties.put(name, value);
     }
@@ -256,7 +258,7 @@ public class CommandAction
         {
             if (properties == null)
             {
-                properties = new Hashtable<String, Object>();
+                properties = new Properties();
             }
             properties.putAll(props);
         }
@@ -268,10 +270,14 @@ public class CommandAction
         {
             if (properties == null)
             {
-                properties = new Hashtable<String, Object>();
+                properties = new Properties();
             }
             properties.putAll(props);
         }
     }
     
+    public Properties getProperties()
+    {
+        return this.properties;
+    }
 }

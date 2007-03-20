@@ -10,6 +10,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -156,33 +157,33 @@ public class ExportTask extends BaseTask
     /**
      * @param data the data that "should" be a RecordSet
      */
-    protected void exportDataFromRecordSet(final Object data, final RecordSetExporter exporter)
+    protected void exportDataFromRecordSet(final Object data, final Properties requestParams, final RecordSetExporter exporter)
     {
         if (data instanceof RecordSet)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
-            doExport(exporter, rs);
+            doExport(exporter, rs, requestParams);
         }
     }
     
-    protected void exportDataFromList(final Object data, final RecordSetExporter exporter)
+    protected void exportDataFromList(final Object data, final Properties requestParams, final RecordSetExporter exporter)
     {
         if (data instanceof List)
         {
             List<?> dataList = (List<?>)data;
-            doExport(exporter, dataList);
+            doExport(exporter, dataList, requestParams);
         }
     }
     
-    protected void doExport(RecordSetExporter exporter, RecordSetIFace data)
+    protected void doExport(RecordSetExporter exporter, RecordSetIFace data, Properties requestParams)
     {
         RecordSet rs = (RecordSet)data;
-        exporter.exportRecordSet(rs);
+        exporter.exportRecordSet(rs,requestParams);
     }
     
-    protected void doExport(RecordSetExporter exporter, List<?> data)
+    protected void doExport(RecordSetExporter exporter, List<?> data, Properties requestParams)
     {
-        exporter.exportList(data);
+        exporter.exportList(data,requestParams);
     }
 
     //-------------------------------------------------------
@@ -259,7 +260,7 @@ public class ExportTask extends BaseTask
 
         if (exporter != null)
         {
-            exportDataFromRecordSet(cmdAction.getData(), exporter);
+            exportDataFromRecordSet(cmdAction.getData(), cmdAction.getProperties(), exporter);
         }
     }
     
@@ -272,7 +273,7 @@ public class ExportTask extends BaseTask
         
         if (exporter!=null)
         {
-            exportDataFromList(cmdAction.getData(),exporter);
+            exportDataFromList(cmdAction.getData(),cmdAction.getProperties(),exporter);
         }
     }
     

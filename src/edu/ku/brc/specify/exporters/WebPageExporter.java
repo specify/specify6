@@ -8,6 +8,7 @@
 package edu.ku.brc.specify.exporters;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -29,7 +30,7 @@ public class WebPageExporter implements RecordSetExporter
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
      */
-    public void exportRecordSet(RecordSet data)
+    public void exportRecordSet(RecordSet data, Properties reqParams)
     {
         int taxonTableId = DBTableIdMgr.getIdByClassName(Taxon.class.getName());
         int dataTableId = data.getDbTableId();
@@ -83,7 +84,7 @@ public class WebPageExporter implements RecordSetExporter
         JOptionPane.showMessageDialog(topFrame, "Not yet implemented", getName() + " data export", JOptionPane.ERROR_MESSAGE, icon);
     }
 
-    public void exportList(List<?> data)
+    public void exportList(List<?> data, Properties reqParams)
     {
         // TODO Auto-generated method stub
         
