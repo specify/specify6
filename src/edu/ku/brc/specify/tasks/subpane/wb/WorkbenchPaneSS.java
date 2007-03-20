@@ -627,12 +627,18 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         mapper.setMaxMapWidth(500);
         mapper.setShowArrows(false);
         mapper.setDotColor(new Color(64, 220, 64));
+//        mapper.setMinAspectRatio(0.5);
+//        mapper.setMaxAspectRatio(2.0);
+//        mapper.setEnforceAspectRatios(true);
         MapperListener mapperListener = new MapperListener()
         {
             public void exceptionOccurred(Exception e)
             {
                 JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
                 statusBar.setText("Failed to get map from service");
+                statusBar.setIndeterminate(false);
+                showMapBtn.setEnabled(true);
+                log.error("Exception while grabbing map from service", e);
             }
 
             public void mapReceived(Icon map)
