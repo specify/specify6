@@ -78,6 +78,12 @@ public class LocalityMapper implements TimingTarget
 	protected int				mapWidth;
 	/** Actual height of a retrieved map. */
 	protected int				mapHeight;
+    /** The minimum aspect ratio of the returned map (as a float length/width) */
+    protected double             minAspectRatio;
+    /** The maximum aspect ratio of the returned map (as a float length/width) */
+    protected double             maxAspectRatio;
+    /** Indicator as to whether the minimum and maximum aspect ratios are enforced. */
+    protected boolean enforceAspectRatios;
 	/** The most recent screen coordinate used for painting the map. */
 	protected int				mostRecentPaintedX;
 	/** The most recent screen coordinate used for painting the map. */
@@ -95,7 +101,7 @@ public class LocalityMapper implements TimingTarget
 	protected boolean			showLabels;
 	/** Color of the arrows. */
 	protected Color				arrowColor;
-	/** Color of the lables. */
+	/** Color of the labels. */
 	protected Color				labelColor;
 	/** Indicates if an animation is currently in progress. */
 	protected boolean			animationInProgress	= false;
@@ -120,21 +126,27 @@ public class LocalityMapper implements TimingTarget
 	 */
 	public LocalityMapper()
 	{
-		minLat = -90;
-		minLong = -180;
-		maxLat = 90;
-		maxLong = 180;
-		this.localities = new Vector<Locality>();
-		this.labels = new Vector<String>();
-		this.markerLocations = new Vector<Point>();
-		this.mapGrabber = new MapGrabber();
-		showArrows = true;
-		showLabels = true;
-		labelColor = Color.BLACK;
-		arrowColor = Color.BLACK;
-		cacheValid = false;
-		marker = new SimpleCircleIcon(8,Color.BLACK);
-		currentLocMarker = new SimpleCircleIcon(8,Color.BLACK);
+		minLat              =   -90;
+        minLong             =  -180;
+        maxLat              =    90;
+        maxLong             =   180;
+        minAspectRatio      =     1;
+        maxAspectRatio      =     1;
+        enforceAspectRatios = false;
+        
+        this.localities = new Vector<Locality>();
+        this.labels = new Vector<String>();
+        this.markerLocations = new Vector<Point>();
+        this.mapGrabber = new MapGrabber();
+        
+        showArrows = true;
+        showLabels = true;
+        labelColor = Color.BLACK;
+        arrowColor = Color.BLACK;
+        cacheValid = false;
+        
+        marker = new SimpleCircleIcon(8, Color.BLACK);
+        currentLocMarker = new SimpleCircleIcon(8, Color.BLACK);
 
 		// setup the animation Cycle
 		int resolution = 0;
@@ -448,6 +460,76 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
+     * Returns the maximum allowed aspect ratio of the returned maps.
+     * 
+     * @see #setMaxAspectRatio(float)
+	 * @return the maximum allowed aspect ratio
+	 */
+	public double getMaxAspectRatio()
+    {
+        return maxAspectRatio;
+    }
+
+    /**
+     * Sets the maximum allowed aspect ratio of the returned maps.  This limit is enforced
+     * as much as possible, but under no circumstances will the returned map be too small to
+     * contain the provided Localities, nor will the map have a longitude range greater than
+     * 180 to -180 or a latitude range greater than 90 to -90.
+     * 
+     * @see #getMaxAspectRatio()
+     * @param maxAspectRatio the maximum allowed aspect ratio
+     */
+    public void setMaxAspectRatio(double maxAspectRatio)
+    {
+        this.maxAspectRatio = maxAspectRatio;
+    }
+
+    /**
+     * Returns the minimum allowed aspect ratio of the returned maps.
+     * 
+     * @see #setMinAspectRatio(float)
+     * @return the minimum allowed aspect ratio
+     */
+    public double getMinAspectRatio()
+    {
+        return minAspectRatio;
+    }
+
+    /**
+     * Sets the minimum allowed aspect ratio of the returned maps.  This limit is enforced
+     * as much as possible, but under no circumstances will the returned map be too small to
+     * contain the provided Localities, nor will the map have a longitude range greater than
+     * 180 to -180 or a latitude range greater than 90 to -90.
+     * 
+     * @see #getMinAspectRatio()
+     * @param maxAspectRatio the minimum allowed aspect ratio
+     */
+    public void setMinAspectRatio(double minAspectRatio)
+    {
+        this.minAspectRatio = minAspectRatio;
+    }
+
+    /**
+     * Returns true if the aspect ratio limits are enforced.
+     * 
+     * @return true if the aspect ratio limits are enforced
+     */
+    public boolean isEnforceAspectRatios()
+    {
+        return enforceAspectRatios;
+    }
+
+    /**
+     * Sets the value of {@link #enforceAspectRatios}.
+     * 
+     * @param enforceAspectRatios whether or not to enforce the aspect ratio limits
+     */
+    public void setEnforceAspectRatios(boolean enforceAspectRatios)
+    {
+        this.enforceAspectRatios = enforceAspectRatios;
+    }
+
+    /**
 	 * Returns the showArrowAnimations.
 	 *
 	 * @see #setShowArrowAnimations(boolean)
@@ -789,6 +871,10 @@ public class LocalityMapper implements TimingTarget
 			}
 		}
 		createBoundingBoxBufferRegion();
+        if (enforceAspectRatios)
+        {
+            ensureMinMaxAspectRatio();
+        }
 	}
 
 	/**
@@ -797,7 +883,7 @@ public class LocalityMapper implements TimingTarget
 	 */
 	protected void createBoundingBoxBufferRegion()
 	{
-		// make sure we have a 5% buffer around the edge of the map
+        // ensure at least a 5 degree range
 		double latSpread = maxLat-minLat;
 		if( latSpread<4 )
 		{
@@ -809,12 +895,86 @@ public class LocalityMapper implements TimingTarget
 			longSpread = 5;
 		}
 
+        // make sure we have a 5% buffer around the edge of the map
 		double bufferFactor = .05;
 		mapMinLat = Math.max(-90,minLat-latSpread*bufferFactor);
 		mapMinLong = Math.max(-180,minLong-longSpread*bufferFactor);
 		mapMaxLat = Math.min(90,maxLat+latSpread*bufferFactor);
 		mapMaxLong = Math.min(180,maxLong+longSpread*bufferFactor);
 	}
+    
+    /**
+     * Modifies the bounding box to ensure that the minimum and maximum
+     * aspect ratio limits are met.
+     */
+    protected void ensureMinMaxAspectRatio()
+    {
+        double currentWidth = mapMaxLong - mapMinLong;
+        double currentHeight = mapMaxLat - mapMinLat;
+        double currentAspectRatio = currentWidth/currentHeight;
+        
+        if (currentAspectRatio < minAspectRatio)
+        {
+            // increase aspect ratio to the minimum
+            // we do this by increasing the current width (if possible)
+            double newWidth = minAspectRatio * currentHeight;
+            double amtOfIncr = newWidth - currentWidth;
+            mapMinLong = mapMinLong - .5*amtOfIncr;
+            mapMaxLong = mapMaxLong + .5*amtOfIncr;
+        }
+        else if (currentAspectRatio > maxAspectRatio)
+        {
+            // decrease aspect ratio to the maximum
+            // we do this by increasing the current height (if possible)
+            double newHeight = currentWidth / maxAspectRatio;
+            double amtOfIncr = newHeight - currentHeight;
+            mapMinLat = mapMinLat - .5*amtOfIncr;
+            mapMaxLat = mapMaxLat + .5*amtOfIncr;
+        }
+        
+        // At this point we have an expanded map that meets the aspect ratio requirements.
+        // However, the map might not fit inside the [-180,180] / [-90,90] max bounding box.
+        // So, we'll do some panning around, then cropping
+        
+        // pan right if needed, then left if needed, then crop the width
+        if (mapMinLong < -180)
+        {
+            double panRightAmt = -180 - mapMinLong;
+            mapMinLong += panRightAmt;
+            mapMaxLong += panRightAmt;
+        }
+        
+        if (mapMaxLong > 180)
+        {
+            double panLeftAmt = mapMaxLong - 180;
+            mapMinLong -= panLeftAmt;
+            mapMaxLong -= panLeftAmt;
+        }
+        
+        mapMinLong = Math.max(mapMinLong, -180);
+        mapMaxLong = Math.min(mapMaxLong, 180);
+        
+        // pan up if needed, then down if needed, then crop the height
+        if (mapMinLat < -90)
+        {
+            double panUpAmt = -90 - mapMinLat;
+            mapMinLat += panUpAmt;
+            mapMaxLat += panUpAmt;
+        }
+        
+        if (mapMaxLat > 90)
+        {
+            double panDownAmt = mapMaxLat - 90;
+            mapMinLat -= panDownAmt;
+            mapMaxLat -= panDownAmt;
+        }
+        
+        mapMinLat = Math.max(mapMinLat, -90);
+        mapMaxLat = Math.min(mapMaxLat, 90);
+        
+        // Now we have a bounding box that fits within the maximum bounding box, contains
+        // all the provided georeferences, and is as close to the ratio limits as possible
+    }
 
 	/**
 	 * Configures the {@link MapGrabber} with the given parameters and requests
@@ -955,7 +1115,7 @@ public class LocalityMapper implements TimingTarget
 		if( !cacheValid )
 		{
             Image mapImage = getMapFromService("mapus.jpl.nasa.gov",
-                    "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
+                    "/browse.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
                     "global_mosaic",
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 
