@@ -145,7 +145,7 @@ public class GenericKmlGenerator
         sb.append(generateXmlElement("name", name));
         if (placemarkIconURL!=null)
         {
-            sb.append(generateXmlElement("styleURL", "#customPlacemark"));
+            sb.append(generateXmlElement("styleUrl", "#customPlacemark"));
         }
         sb.append(generateXmlElement("description", "<![CDATA[" + htmlDesc + "]]>"));
         sb.append(buildPointAndLookAt(point));
