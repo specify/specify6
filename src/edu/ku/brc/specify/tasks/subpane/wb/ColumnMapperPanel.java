@@ -98,6 +98,8 @@ public class ColumnMapperPanel extends JPanel
     protected ImportDataFileInfo             dataFileInfo      = null;
     protected WorkbenchTemplate              workbenchTemplate = null;
     
+    protected boolean                        isMapedToAFile;
+    
     protected ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
     protected ImageIcon blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
     protected ImageIcon blankIcon16 = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std16);
@@ -109,8 +111,9 @@ public class ColumnMapperPanel extends JPanel
      */
     public ColumnMapperPanel(final JDialog dlg, final ImportDataFileInfo dataFileInfo)
     {
-        this.dlg          = dlg;
-        this.dataFileInfo = dataFileInfo;
+        this.dlg            = dlg;
+        this.dataFileInfo   = dataFileInfo;
+        this.isMapedToAFile = dataFileInfo != null;
         
         createUI();
     }
@@ -122,8 +125,9 @@ public class ColumnMapperPanel extends JPanel
      */
     public ColumnMapperPanel(final JDialog dlg, final WorkbenchTemplate wbTemplate)
     {
-        this.dlg          = dlg;
-        this.workbenchTemplate   = wbTemplate;
+        this.dlg               = dlg;
+        this.workbenchTemplate = wbTemplate;
+        this.isMapedToAFile = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         
         createUI();
     }
@@ -192,8 +196,8 @@ public class ColumnMapperPanel extends JPanel
         
         PanelBuilder header = new PanelBuilder(new FormLayout("p,f:p:g,p", "p,2px,p"));
         header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), JLabel.CENTER), cc.xywh(1, 1, 3, 1));
-        header.add(new JLabel("Database", JLabel.LEFT), cc.xy(1,3));
-        header.add(new JLabel("Import", JLabel.RIGHT), cc.xy(3,3));
+        header.add(new JLabel("Database", JLabel.LEFT), cc.xy(1,3)); // XXX I18N
+        header.add(new JLabel(dataFileInfo != null ? "Import" : "", JLabel.RIGHT), cc.xy(3,3));  // XXX I18N
 
         builder.add(header.getPanel(), cc.xy(1, 1));
         builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     JLabel.CENTER), cc.xy(5, 1));
@@ -215,7 +219,7 @@ public class ColumnMapperPanel extends JPanel
         {
             public void actionPerformed(ActionEvent ae)
             {
-                removeMapItem();
+                removeMapItem(null);
             }
         });
         leftSide.add(addMapItemBtn,    cc.xy(2, 1));
@@ -233,8 +237,11 @@ public class ColumnMapperPanel extends JPanel
         tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             public void valueChanged(ListSelectionEvent e)
             {
-                fieldList.setSelectedIndex(-1);
-                fillFieldList(((TableInfo)tableList.getSelectedValue()).getTableInfo());
+                if (!e.getValueIsAdjusting())
+                {
+                    //fieldList.setSelectedIndex(-1);
+                    fillFieldList(((TableInfo)tableList.getSelectedValue()).getTableInfo());
+                }
             }
         });
         
@@ -357,6 +364,8 @@ public class ColumnMapperPanel extends JPanel
     protected FieldMappingPanel addMappingItem(final ImportColumnInfo colInfo, final ImageIcon icon)
     {
         FieldMappingPanel fmp = new FieldMappingPanel(colInfo, icon);
+        fmp.setMappingLabelVisible(isMapedToAFile);
+        
         mappingItems.add(fmp);
         dataFileColPanel.add(fmp);
         return fmp;
@@ -412,6 +421,18 @@ public class ColumnMapperPanel extends JPanel
             currentInx = -1;
         }
         
+        if (fmp.isMapped())
+        {
+            for (TableInfo ti : tableInfoList)
+            {
+                if (ti.getTableInfo() == fmp.getTableField().getTableinfo())
+                {
+                    tableList.setSelectedValue(ti, true);
+                    fieldList.setSelectedValue(fmp.getTableField(), true);
+                }
+            }
+        }
+        
         updateEnabledState();
 
     }
@@ -456,10 +477,10 @@ public class ColumnMapperPanel extends JPanel
     }
     
     /**
-     * Unmap the Field.
+     * Unmap the Field or remove the item if there is no file.
      * @param fmp the field to be unmapped
      */
-    protected void unmap(FieldMappingPanel fmp)
+    protected void unmap(final FieldMappingPanel fmp)
     {
         TableFieldPair fieldInfo = fmp.getTableField();
          if (fieldInfo != null)
@@ -469,8 +490,9 @@ public class ColumnMapperPanel extends JPanel
              fmp.setIcon(null);
          }
          fieldList.repaint();
-         // Need to Sort Here
-         updateEnabledState();
+
+        // Need to Sort Here
+        updateEnabledState();
     }
     
     /**
@@ -518,9 +540,9 @@ public class ColumnMapperPanel extends JPanel
     /**
      * Removes a Column from the Definition.
      */
-    protected void removeMapItem()
+    protected void removeMapItem(final FieldMappingPanel fmpToRemove)
     {
-        FieldMappingPanel fmp = mappingItems.get(currentInx);
+        FieldMappingPanel fmp = fmpToRemove == null ? mappingItems.get(currentInx) : fmpToRemove;
         
         unmap(fmp);
         
@@ -834,8 +856,13 @@ public class ColumnMapperPanel extends JPanel
             
             closeBtn.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    unmap(thisItem);
-                    //setField(null);
+                    if (mappingLabel.isVisible())
+                    {
+                        unmap(thisItem);
+                    } else
+                    {
+                        removeMapItem(thisItem);
+                    }
                 }
             });
         }
@@ -845,6 +872,11 @@ public class ColumnMapperPanel extends JPanel
             tblField = fieldInfoArg;
             mappingLabel.setText(fieldInfoArg != null ? fieldInfoArg.getFieldInfo().getColumn() : noMappingStr);
             closeBtn.setVisible(fieldInfoArg != null);
+        }
+        
+        public void setMappingLabelVisible(final boolean isVis)
+        {
+            mappingLabel.setVisible(isVis);
         }
         
         protected boolean isMapped()

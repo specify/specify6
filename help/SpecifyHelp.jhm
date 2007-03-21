@@ -18,7 +18,7 @@
 	<mapID target="ConfiguringDatabase" url="SpecifyHelp/ConfiguringDatabase.html" />
 	<mapID target="Workbench"           url="SpecifyHelp/Workbench/Overview.html" />
 	<mapID target="WorkbenchImportData" url="SpecifyHelp/Workbench/ImportData.html" />
-	<mapID target="WorkbenchImportCvs"  url="SpecifyHelp/Workbench/ImportCvs.html" />
+	<mapID target="WorkbenchImportCvs"  url="SpecifyHelp/Workbench/ImportCSV.html" />
 	<mapID target="WorkbenchColMapping" url="SpecifyHelp/Workbench/ColumnMapping.html" />
 	<mapID target="WorkbenchImportXLS"  url="SpecifyHelp/Workbench/ImportXLS.html" />
 	<mapID target="WorkbenchDataSets"   url="SpecifyHelp/Workbench/DataSets.html" />
