@@ -21,16 +21,19 @@ import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FileDialog;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
@@ -59,8 +62,10 @@ import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.csvreader.CsvReader;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -79,20 +84,24 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
-import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
@@ -135,7 +144,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton               showMapBtn      = null;
     protected JButton               controlPropsBtn = null;
     protected JButton               exportKmlBtn    = null;
-
+    protected JButton     exportExcelCsvBtn = null;
+    
     protected List<JButton>         selectionSensativeButtons          = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
@@ -298,6 +308,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         exportKmlBtn.setEnabled(workbench.containsGeoRefData());
         
+        exportExcelCsvBtn = createIconBtn("Save", IconManager.IconSize.Std16, "WB_EXPORT_DATA", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                doExcelCsvExport();
+            }
+        });
+        exportExcelCsvBtn.setEnabled(true);
+        
         // listen to selection changes to enable/disable certain buttons
         spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
@@ -353,7 +372,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn};
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, exportExcelCsvBtn};
         PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
 
         int x = 3;
@@ -699,6 +718,99 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
         statusBar.setIndeterminate(false);
         statusBar.setText("");
+    }
+    
+    protected void doExcelCsvExport()
+    {
+        log.debug("Exporting workbench data");
+        int[] selection = spreadSheet.getSelectedRows();
+        if (selection.length==0)
+        {
+            // if none are selected, select all of them
+            int rowCnt = spreadSheet.getRowCount();
+            selection = new int[rowCnt];
+            for (int i = 0; i < rowCnt; ++i)
+            {
+                selection[i]=i;
+            }
+        }
+        
+        // put all the selected rows in a List
+        List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
+        List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
+        for (int i = 0; i < selection.length; ++i )
+        {
+            int index = selection[i];
+            WorkbenchRow row = rows.get(index);
+            selectedRows.add(row);
+        }
+        
+        CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
+        command.setData(selectedRows);
+        command.setProperty("exporter", ExportToFile.class);
+        
+        
+        Properties props = new Properties();
+        
+        Vector<String> list = new Vector<String>();
+        list.add("Excel");
+        list.add("CSV");
+        
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                                                                      "File Format?", null,
+                                                                      ChooseFromListDlg.OKCANCELHELP,
+                                                                      list, "WorkbenchImportCvs"); //XXX I18N
+        dlg.setModal(true);
+        UIHelper.centerAndShow(dlg);
+
+        String format = dlg.getSelectedObject();
+
+        if (format == "Excel") 
+        { 
+            props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
+        }
+        else if (format == "CSV")
+        {
+            props.setProperty("mimetype", ExportFileConfigurationFactory.CSV_MIME_TYPE);   
+        }
+        else
+        {
+            return;
+        }
+
+        FileDialog fileDialog = new FileDialog((Frame) UICacheManager.get(UICacheManager.FRAME),
+                getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
+        UIHelper.centerAndShow(fileDialog);
+
+        String fileName = fileDialog.getFile();
+        String path = fileDialog.getDirectory();
+        if (StringUtils.isEmpty(fileName)) { return; }
+        props.setProperty("fileName", path + File.separator + fileName);
+
+        ConfigureExternalData config = ExportFileConfigurationFactory.getConfiguration(props);
+
+        // Could get config to interactively get props or to look them up from prefs or ???
+        // for now hard coding stuff...
+        
+        // add headers. all the time for now.
+        config.setFirstRowHasHeaders(true);
+        Vector<WorkbenchTemplateMappingItem> colHeads = new Vector<WorkbenchTemplateMappingItem>();
+        colHeads.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(colHeads);
+        String[] heads = new String[colHeads.size()];
+        for (int h = 0; h < colHeads.size(); h++)
+        {
+          heads[h] = colHeads.get(h).getCaption();
+        }
+        config.setHeaders(heads);
+        
+        Properties ConfiggedProps = config.getProperties();
+        for (String k : ConfiggedProps.stringPropertyNames())
+        {
+            command.setProperty(k, ConfiggedProps.getProperty(k));
+        }
+        
+        CommandDispatcher.dispatch(command);
     }
     
     protected void showRecordsInGoogleEarth()

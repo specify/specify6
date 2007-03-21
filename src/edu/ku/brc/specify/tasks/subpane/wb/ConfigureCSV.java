@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.Vector;
 
 import com.csvreader.CsvReader;
 
+import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -33,7 +35,7 @@ import edu.ku.brc.ui.UIHelper;
  * 
  * Error handling is not handled.
  */
-public class ConfigureCSVImport extends ConfigureImportBase implements ConfigureDataImport
+public class ConfigureCSV extends ConfigureExternalDataBase implements ConfigureExternalData
 {
     private int     escapeMode;
     private char    delimiter;
@@ -42,7 +44,7 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
     /**
      * Constructor sets defaults (hard coded).
      */
-    public ConfigureCSVImport(final File file)
+    public ConfigureCSV(final File file)
     {
         super();
         escapeMode = getDefaultEscapeMode();
@@ -51,6 +53,49 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
         getConfig(file);
     }
 
+    public ConfigureCSV(Properties props)
+    {
+        super(props);
+        String prop;
+        prop = props.getProperty("escapeMode");
+        if (prop == "backslash")
+        {
+            escapeMode = CsvReader.ESCAPE_MODE_BACKSLASH;
+        }
+        else if (prop == "doubled")
+        {
+            escapeMode = CsvReader.ESCAPE_MODE_DOUBLED;
+        }
+        else 
+        {
+            escapeMode = getDefaultEscapeMode();
+        }
+        
+        prop = props.getProperty("delimiter");
+        if (prop == "comma")
+        {
+            delimiter = ',';
+        }
+        else if (prop == "tab")
+        {
+            delimiter = '\t';
+        }
+        else
+        {
+            delimiter = getDefaultDelimiter();
+        }
+        
+        prop = props.getProperty("charset");
+        if (prop == null || prop == "US-ASCII")
+        {
+           charset = Charset.defaultCharset();     
+        }
+        else
+        {
+           charset = Charset.forName(prop);    
+        }
+    }
+    
     public char getDelimiter()
     {
         return delimiter;
@@ -70,31 +115,33 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
      * @param delimiterArg -nthe column delimiter
      * @param charsetArg - the character set used in the file (e.g. ISO-8859-1)
      * @param escapeModeArg - method used to escape reserved characters (backslash or doubled)
-     * @return CsvReader for inputFile
+     * @return CsvReader for externalFile
      */
     private CsvReader makeReader(final char delimiterArg,
                                  final Charset charsetArg,
                                  final int escapeModeArg)
     {
-        try
+        if (externalFile != null)
         {
-            InputStream input = new FileInputStream(inputFile);
-            CsvReader result = new CsvReader(input, delimiterArg, charsetArg);
-            result.setEscapeMode(escapeModeArg);
-            return result;
+            try
+            {
+                InputStream input = new FileInputStream(externalFile);
+                CsvReader result = new CsvReader(input, delimiterArg, charsetArg);
+                result.setEscapeMode(escapeModeArg);
+                return result;
 
-        } catch (FileNotFoundException ex)
-        {
-            ex.printStackTrace();
+            } catch (FileNotFoundException ex)
+            {
+                ex.printStackTrace();
+            }
         }
-
         return null;
     }
 
     /**
      * creates reader using current configuration
      * 
-     * @return CsvReader for inputFile
+     * @return CsvReader for externalFile
      */
     private CsvReader makeReader()
     {
@@ -248,7 +295,7 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
     /*
      * (non-Javadoc) Gets configuration properties from user.
      * 
-     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureImportBase#interactiveConfig()
+     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#interactiveConfig()
      */
     @Override
     protected void interactiveConfig()
@@ -264,9 +311,9 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
     /*
      * (non-Javadoc)
      * 
-     * Sets up colInfo for inputFile.
+     * Sets up colInfo for externalFile.
      * 
-     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureImportBase#nonInteractiveConfig()
+     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#nonInteractiveConfig()
      */
     @Override
     protected void nonInteractiveConfig()
@@ -296,5 +343,36 @@ public class ConfigureCSVImport extends ConfigureImportBase implements Configure
             }
             Collections.sort(colInfo);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#getProperties()
+     */
+    @Override
+    public Properties getProperties()
+    {
+        Properties result = super.getProperties();
+        result.setProperty("mimetype", ExportFileConfigurationFactory.CSV_MIME_TYPE);
+        if (escapeMode == CsvReader.ESCAPE_MODE_BACKSLASH)
+        {
+            result.setProperty("escapeMode", "backslash");
+        }
+        else if (escapeMode == CsvReader.ESCAPE_MODE_DOUBLED)
+        {
+            result.setProperty("escapeMode", "doubled");
+        }
+        
+        if (delimiter == ',')
+        {
+            result.setProperty("delimiter", "comma");
+        }
+        else if (delimiter == '\t')
+        {
+            result.setProperty("delimiter", "tab");
+        }
+        
+        result.setProperty("charset", charset.name());
+       
+        return result;
     }
 }

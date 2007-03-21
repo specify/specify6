@@ -20,6 +20,7 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -109,7 +110,6 @@ public class WorkbenchTask extends BaseTask
     public static final String     PRINT_REPORT          = "PrintReport";
     public static final String     WB_TOP10_REPORT       = "WB_TOP10_REPORT";
     public static final String     WB_IMPORTCARDS        = "WB_IMPORT_CARDS";
-    
     
     protected NavBox                      templateNavBox;
     protected NavBox                      workbenchNavBox;
@@ -1079,6 +1079,63 @@ public class WorkbenchTask extends BaseTask
                 }
             }
 
+    }
+    
+    /**
+     * Prompts for export options and exports workbench data to excel or csv
+     * Currently, dropping is ignored. The selected rows (or headers) or all rows, and ALL columns 
+     * in the currently displayed workbench are exported.
+     * 
+     * @param cmdAction the command to export
+     */
+    protected void doExport(final CommandAction cmdAction)
+    {
+       String rowsToExport;
+       String format;
+       
+        //NOT final UI
+        Vector<String> list = new Vector<String>();
+        list.add("Excel - Headers");
+        list.add("Excel - All");
+        list.add("Excel - Selected");
+        list.add("CSV - Headers");
+        list.add("CSV - All");
+        list.add("CSV - Selected");
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                                                                      "Export Format", 
+                                                                      null,
+                                                                      ChooseFromListDlg.OKCANCELHELP,
+                                                                      list, 
+                                                                      "WorkbenchExporting");//XXX I18N
+        dlg.setModal(true);
+        UIHelper.centerAndShow(dlg);
+
+        String choice = dlg.getSelectedObject();
+
+        if (choice != null)
+        { 
+          if (choice.contains("Excel"))
+          {
+              format = "Excel";
+          }
+          else
+          {
+              format = "CSV";
+          }
+          if (choice.contains("All"))
+          {
+              rowsToExport = "All";
+          }
+          else if (choice.contains("Selected"))
+          {
+              rowsToExport = "Selected";
+          }
+          else
+          {
+              rowsToExport = "Headers";
+          }
+          System.out.println(format + ", " + rowsToExport);
+        }
     }
     
     /**

@@ -38,13 +38,13 @@ public class XLSImport implements DataImport
 {
     private static final Logger log = Logger.getLogger(XLSImport.class);
     
-    protected ConfigureXLSImport config;
+    protected ConfigureXLS config;
     
     /**
      * Constrcutor.
      * @param config the cvonfiguration
      */
-    public XLSImport(final ConfigureDataImport config)
+    public XLSImport(final ConfigureExternalData config)
     {
         setConfig(config);
     }
@@ -155,12 +155,12 @@ public class XLSImport implements DataImport
         }
     }
 
-    public void setConfig(final ConfigureDataImport config)
+    public void setConfig(final ConfigureExternalData config)
     {
-        this.config = (ConfigureXLSImport) config;
+        this.config = (ConfigureXLS) config;
     }
 
-    public ConfigureDataImport getConfig()
+    public ConfigureExternalData getConfig()
     {
         return this.config;
     }

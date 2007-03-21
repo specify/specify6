@@ -32,11 +32,11 @@ public class ImportDataFileInfo
         String mimeType = getMimeType(file);
         if (mimeType == XLS_MIME_TYPE)
         {
-            importer = new XLSImport(new ConfigureXLSImport(file));
+            importer = new XLSImport(new ConfigureXLS(file));
             
         } else if (mimeType == CSV_MIME_TYPE)
         {
-            importer = new CSVImport(new ConfigureCSVImport(file));
+            importer = new CSVImport(new ConfigureCSV(file));
         }
     }
 

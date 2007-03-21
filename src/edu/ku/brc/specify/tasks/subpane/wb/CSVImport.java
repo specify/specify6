@@ -32,15 +32,15 @@ public class CSVImport implements DataImport
 {
     private static final Logger log = Logger.getLogger(CSVImport.class);
     
-    protected ConfigureCSVImport config;
+    protected ConfigureCSV config;
     
     
-    public CSVImport(final ConfigureDataImport config)
+    public CSVImport(final ConfigureExternalData config)
     {
         setConfig(config);
     }
 
-    public ConfigureDataImport getConfig()
+    public ConfigureExternalData getConfig()
     {
         return config;
     }
@@ -98,9 +98,9 @@ public class CSVImport implements DataImport
         }
     }
 
-    public void setConfig(final ConfigureDataImport config)
+    public void setConfig(final ConfigureExternalData config)
     {
-        this.config = (ConfigureCSVImport) config;
+        this.config = (ConfigureCSV) config;
     }
 
 }

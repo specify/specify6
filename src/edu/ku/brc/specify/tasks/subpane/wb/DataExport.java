@@ -1,21 +1,23 @@
 /*
- * Copyright (C) 2007  The University of Kansas
- *
- * [INSERT KU-APPROVED LICENSE TEXT HERE]
- *
+     * Copyright (C) 2007  The University of Kansas
+     *
+     * [INSERT KU-APPROVED LICENSE TEXT HERE]
+     *
+     */
+/**
+ * 
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import edu.ku.brc.specify.datamodel.Workbench;
+import java.util.List;
 
 /**
  * @author timbo
  *
  * @code_status Alpha
  *
- *interface for workbench data import
  */
-public interface DataImport
+public interface DataExport
 {
     /**
      * @param config
@@ -26,9 +28,9 @@ public interface DataImport
      * @return
      */
     public ConfigureExternalData getConfig();
-
+    
     /**
-     * @param workbench
+     * @param data list of workbench rows to export
      */
-    public void getData(Workbench workbench);
+    public void writeData(List<?> data) throws Exception;
 }

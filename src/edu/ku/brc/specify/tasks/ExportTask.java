@@ -26,6 +26,7 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.exporters.DiGIRExporter;
+import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.exporters.RecordSetExporter;
 import edu.ku.brc.specify.exporters.RecordSetExporterAdapter;
@@ -135,6 +136,7 @@ public class ExportTask extends BaseTask
         exportersRegistry.add(GoogleEarthExporter.class);
         exportersRegistry.add(DiGIRExporter.class);
         exportersRegistry.add(WebPageExporter.class);
+        exportersRegistry.add(ExportToFile.class);
         
         // TODO: implement this to read an XML file and instantiate one copy of each exporter
     }

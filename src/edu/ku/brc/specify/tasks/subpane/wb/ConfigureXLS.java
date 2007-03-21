@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -23,6 +24,10 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+
+import com.csvreader.CsvReader;
+
+import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 
 /**
  * @author timbo
@@ -32,17 +37,22 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
  *Configures xls file for import to a workbench. Currently only property that is configured is the header list.
  *If first row does not contain headers, they are simply assigned "Column1", "Column2" etc.
  */
-public class ConfigureXLSImport extends ConfigureImportBase implements ConfigureDataImport
+public class ConfigureXLS extends ConfigureExternalDataBase implements ConfigureExternalData
 {
     protected int numRows = 0;
     protected int numCols = 0;
 
-    public ConfigureXLSImport(File file)
+    public ConfigureXLS(File file)
     {
         super();
         getConfig(file);
     }
 
+    public ConfigureXLS(Properties props)
+    {
+        super(props);
+    }
+    
     @Override
     protected void interactiveConfig()
     {
@@ -51,15 +61,15 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
     }
 
     /* (non-Javadoc)
-     * Sets up colInfo for inputFile.
-     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureDataImport#getConfig(java.lang.String)
+     * Sets up colInfo for externalFile.
+     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData#getConfig(java.lang.String)
      */
     @Override
     protected void nonInteractiveConfig()
     {
         try
         {
-            InputStream     input    = new FileInputStream(inputFile);
+            InputStream     input    = new FileInputStream(externalFile);
             POIFSFileSystem fs       = new POIFSFileSystem(input);
             HSSFWorkbook    workBook = new HSSFWorkbook(fs);
             HSSFSheet       sheet    = workBook.getSheetAt(0);
@@ -161,5 +171,16 @@ public class ConfigureXLSImport extends ConfigureImportBase implements Configure
         }
 
         Collections.sort(colInfo);
+    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#getProperties()
+     */
+    @Override
+    public Properties getProperties()
+    {
+        Properties result = super.getProperties();
+        result.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
+       
+        return result;
     }
 }
