@@ -68,14 +68,17 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.tasks.ExportTask;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.CommandAction;
@@ -107,28 +110,30 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     private static final Logger log = Logger.getLogger(WorkbenchPaneSS.class);
     
     private enum PanelType {Spreadsheet, Form}
-    protected SearchReplacePanel  findPanel=null;
-    protected SpreadSheet spreadSheet;
-    protected Workbench   workbench;
-    protected String[]    columns;
+    
+    protected SearchReplacePanel    findPanel=null;
+    protected SpreadSheet           spreadSheet;
+    protected Workbench             workbench;
+    protected String[]              columns;
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-    protected boolean     hasChanged      = false;
-    protected boolean     blockChanges    = false;
+    protected boolean               hasChanged      = false;
+    protected boolean               blockChanges    = false;
+    protected RecordSet             recordSet       = null;
     
-    protected GridTableModel model;
+    protected GridTableModel        model;
     
-    protected JButton     saveBtn         = null;
-    protected JButton     deleteRowsBtn   = null;
-    protected JButton     clearCellsBtn   = null;
-    protected JButton     insertRowBtn    = null;
-    protected JButton     addRowsBtn      = null;
-    protected JButton     carryForwardBtn = null;
-    protected JButton     toggleCardImageBtn = null;
-    protected JButton     showMapBtn      = null;
-    protected JButton     controlPropsBtn = null;
-    protected JButton     exportKmlBtn    = null;
+    protected JButton               saveBtn         = null;
+    protected JButton               deleteRowsBtn   = null;
+    protected JButton               clearCellsBtn   = null;
+    protected JButton               insertRowBtn    = null;
+    protected JButton               addRowsBtn      = null;
+    protected JButton               carryForwardBtn = null;
+    protected JButton               toggleCardImageBtn = null;
+    protected JButton               showMapBtn      = null;
+    protected JButton               controlPropsBtn = null;
+    protected JButton               exportKmlBtn    = null;
 
-    protected List<JButton> selectionSensativeButtons          = new Vector<JButton>();
+    protected List<JButton>         selectionSensativeButtons          = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
     protected FormPane              formPane;
@@ -331,7 +336,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 }
             }
         });
-
         
         setupWorkbenchRowChangeListener();
                 
@@ -435,6 +439,17 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
     }
     
+    
+    
+    /**
+     * Returns the Workbench for the Pane.
+     * @return the current workbench
+     */
+    public Workbench getWorkbench()
+    {
+        return workbench;
+    }
+
     /**
      * The grid to form switcher.
      * @return The grid to form switcher.
@@ -969,9 +984,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             // XXX show dialog for changes
         }
+        WorkbenchTask workbenchTask = (WorkbenchTask)task;
+        workbenchTask.closing(this);
+        
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
+     */
     @Override
     public void showingPane(boolean show)
     {
@@ -1002,10 +1023,24 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         super.showingPane(show);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getRecordSet()
+     */
+    @Override
+    public RecordSetIFace getRecordSet()
+    {
+        if (recordSet == null)
+        {
+            recordSet = new RecordSet(workbench.getName(), Workbench.getClassTableId());
+            recordSet.addItem(workbench.getWorkbenchId());
+        }
+        return recordSet;
+    }
+    
     //------------------------------------------------------------
     // ResultSetControllerListener
     //------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
      */
@@ -1032,8 +1067,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // TODO Auto-generated method stub
         
     }
-
-
 
     //------------------------------------------------------------
     // Inner Classes
@@ -1103,6 +1136,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      }
 
     
+    //------------------------------------------------------------
+    // Switches between the Grid View and the Form View
+    //------------------------------------------------------------
     class SwitcherAL implements ActionListener
     {
         protected DropDownButtonStateful switcherComp;
@@ -1116,6 +1152,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
     }
     
+    //------------------------------------------------------------
+    // TableCellRenderer for showing the proper Icon when there 
+    // is an image column (CardImage)
+    //------------------------------------------------------------
     public class ImageRenderer extends DefaultTableCellRenderer 
     {
         public Component getTableCellRendererComponent(JTable table, 
