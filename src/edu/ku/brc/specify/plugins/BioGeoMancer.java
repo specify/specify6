@@ -46,6 +46,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -81,7 +83,6 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
-import edu.ku.brc.util.services.MapGrabber;
 
 /**
  * BioGeoMancer plugin For SPNHC Demo.
@@ -110,8 +111,6 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     protected JFrame              frame      = null;
     protected JButton             okBtn      = null;
 
-    protected MapGrabber         mapGrabber = new MapGrabber();
-
     protected JLabel             label      = new JLabel();
 
     protected BioGeoMancerMapper bioGeoMancerMapper = new BioGeoMancerMapper();
@@ -121,15 +120,17 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      */
     public BioGeoMancer()
     {
+        // nothing
     }
 
 
     /**
      * Creates a Dialog (non-modl) that will display detail information.
      * for the object in the text field.
+     * 
      * @param domStr DOM String to be parsed
      */
-    protected void createInfoFrame(final String domStr)
+    protected void createInfoFrame(@SuppressWarnings("unused") final String domStr)
     {
  
         try
@@ -162,6 +163,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     /* (non-Javadoc)
      * @see java.awt.Component#requestFocus()
      */
+    @Override
     public void requestFocus()
     {
         longitude.requestFocus();
@@ -171,7 +173,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * Called when data retrieval is complete.
      * @param dom null when in error, not null when data was returned
      */
-    protected void setDataIntoframe(final Element dom)
+    protected void setDataIntoframe(@SuppressWarnings("unused") final Element dom)
     {
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
@@ -273,10 +275,9 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             }
             return data;
             
-        } else
-        {
-            System.out.println("****** ["+name+"] was not found.");
         }
+        // else
+        System.out.println("****** ["+name+"] was not found.");
         return "";
     }
 
@@ -299,7 +300,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         {
             log.warn("Couldn't find value for["+name+"]");
         }
-        return new JLabel("", JLabel.LEFT);
+        return new JLabel("", SwingConstants.LEFT);
     }
 
     /**
@@ -319,7 +320,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                           final int column,
                           final int row)
     {
-        builder.add(new JLabel(labelArg+":", JLabel.RIGHT), cc.xy(column,row));
+        builder.add(new JLabel(labelArg+":", SwingConstants.RIGHT), cc.xy(column,row));
         builder.add(createDataLabel(element, name), cc.xy(column+2,row));
     }
 
@@ -342,7 +343,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             final int row,
             int colSpan)
     {
-        builder.add(new JLabel(labelArg+":", JLabel.RIGHT), cc.xy(column,row));
+        builder.add(new JLabel(labelArg+":", SwingConstants.RIGHT), cc.xy(column,row));
         builder.add(createDataLabel(element, name), cc.xywh(column+2,row, colSpan,1));
     }
 
@@ -384,7 +385,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            }
 
            List<String[]> rowData = new ArrayList<String[]>();
-           List records = root.selectNodes("//record");
+           List<?> records = root.selectNodes("//record");
            if (records != null && records.size() > 0)
            {
                String[] elementNames = {"country", "adm1", "adm2", "featureName", "featureType", "gazetteerSource", "InterpretedCoordinates", "offsetVector", "boundingBox", "InterpretedString"};
@@ -452,7 +453,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            });
            */
 
-           JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+           JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
            builder.add(scrollPane, cc.xywh(1,rowInx, 7, 1));
            rowInx += 2;
 
@@ -562,9 +563,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             }
 
             if (width >= 0)
+            {
                 column.setPreferredWidth(width + margin); // <1.3: without margin
+            }
             else
-                ; // ???
+            {
+                // ???
+            }
 
             totalWidth += column.getPreferredWidth();
         }
@@ -599,7 +604,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         
         builder.add(longitude, cc.xy(1,1));
 
-        builder.add(new JLabel("/", JLabel.CENTER), cc.xy(3,1));
+        builder.add(new JLabel("/", SwingConstants.CENTER), cc.xy(3,1));
 
         //builder.add(new JLabel("Latitude:", JLabel.RIGHT), cc.xy(1,3));
         latitude = new JTextField(10);
@@ -665,6 +670,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         {
             String domStr = "";
 
+            @Override
             public Object construct()
             {
                 Geography geo = locality.getGeography();
@@ -684,13 +690,17 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                         }
                         in.close();
                         domStr = strBuf.toString();
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e)
+                    {
+                        // ignore?
                     }
                 }
                 return null;
             }
 
             //Runs on the event-dispatching thread.
+            @Override
             public void finished()
             {
                 createInfoFrame(domStr);
