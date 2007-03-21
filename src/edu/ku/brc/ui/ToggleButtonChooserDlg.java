@@ -121,7 +121,7 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
         this.items  = listItems;
         this.icon   = icon;
 
-        createUI(getResourceString(title), getResourceString(desc), uiType);
+        createUI(title, desc, uiType);
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
@@ -133,24 +133,23 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      */
     protected void createUI(final String title, final String desc, final Type uiType)
     {
-        setTitle(title);
+        setTitle(getResourceString(title));
         
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
         if (desc != null)
         {
-            JLabel lbl = new JLabel(desc, SwingConstants.CENTER);
+            JLabel lbl = new JLabel(getResourceString(desc), SwingConstants.CENTER);
             panel.add(lbl, BorderLayout.NORTH);
-            panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            //panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
         }
-
+        
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "1px", items.size())));
         CellConstraints cc         = new CellConstraints();
-        builder.setDefaultDialogBorder();
         
         JPanel listPanel = builder.getPanel();
-        //listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBackground(Color.WHITE);
-        listPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        listPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         listPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), listPanel.getBorder()));
 
         group = uiType == Type.Checkbox ? null : new ButtonGroup();
@@ -205,7 +204,8 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
         getRootPane().setDefaultButton(okBtn);
 
         JPanel btnBar = ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn);
-
+        btnBar.setBorder(BorderFactory.createEmptyBorder(2,0,0,0));
+        
         cancelBtn.addActionListener(new ActionListener()
                     {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
 

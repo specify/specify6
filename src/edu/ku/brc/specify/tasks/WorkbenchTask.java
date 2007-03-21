@@ -1511,16 +1511,16 @@ public class WorkbenchTask extends BaseTask
         }
         session.close();
         
-        String[] options = {"Edit Mappings", 
-                            "Edit Template Information",
-                            "Create Empty Spreadsheet from Template"}; // XXX I18N
+        String[] options = {getResourceString("WB_EDIT_MAPPINGS"), 
+                            getResourceString("WB_EDIT_TEMPLATE_INFO"), 
+                            getResourceString("WB_CREATE_EMPTY_DATASET")};
         Vector<String> items = new Vector<String>();
         Collections.addAll(items, options);
         
         ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(
                 (Frame)UICacheManager.get(UICacheManager.FRAME),
-                "WB_SELECT_FIELD_TITLE", 
-                "WB_SELECT_FIELD", 
+                "WB_SELECT_ACTION_TITLE", 
+                null, 
                 items, 
                 null, 
                 ToggleButtonChooserDlg.Type.RadioButton);
