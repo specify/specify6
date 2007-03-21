@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.ConnectException;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
@@ -647,10 +648,20 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 //        mapper.setEnforceAspectRatios(true);
         MapperListener mapperListener = new MapperListener()
         {
+            @SuppressWarnings("synthetic-access")
             public void exceptionOccurred(Exception e)
             {
+                String errorMsg = null;
+                if (e instanceof ConnectException)
+                {
+                    errorMsg = "Error connecting to mapping service";
+                }
+                else
+                {
+                    errorMsg = "Failed to get map from service";
+                }
                 JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
-                statusBar.setText("Failed to get map from service");
+                statusBar.setErrorMessage(errorMsg,e);
                 statusBar.setIndeterminate(false);
                 showMapBtn.setEnabled(true);
                 log.error("Exception while grabbing map from service", e);
@@ -717,6 +728,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         command.setData(selectedRows);
         command.setProperty("exporter", GoogleEarthExporter.class);
         CommandDispatcher.dispatch(command);
+        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        statusBar.setText("Opening Google Earth");
+        
     }
     
     /**

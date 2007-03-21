@@ -20,8 +20,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
@@ -55,6 +58,8 @@ public class JStatusBar extends JPanel
     protected JLabel       statusLabel = null;
     protected JLabel[]     labels      = null;
     protected JProgressBar progressBar = null;
+    
+    protected Exception lastException = null;
 
     /**
      * Default Constructor.
@@ -113,15 +118,29 @@ public class JStatusBar extends JPanel
 
         statusLabel.setForeground(NORMAL_COLOR);
 
+        statusLabel.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getClickCount()==2 && lastException!=null)
+                {
+                    String message = lastException.getLocalizedMessage();
+                    JOptionPane.showMessageDialog(getParent(), message, statusLabel.getText(), JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 
     /**
      * Sets text into the statusbar and clear the foreground color (sets it to "normal").
+     * 
      * @param text the text of the status bar
      */
     public void setText(final String text)
     {
         statusLabel.setForeground(NORMAL_COLOR);
+        this.lastException = null;
         statusLabel.setText(text);
         statusLabel.repaint();
     }
@@ -140,12 +159,16 @@ public class JStatusBar extends JPanel
     }
 
     /**
-     * Sets the text's forground color to be in the "error" color
+     * This is just a helper method that combines the work of the {@link #setText(String)}
+     * and {@link #setAsError()} methods.
+     * 
+     * @param message the the text of the error message
      */
-    public void setAsError()
+    public void setErrorMessage(String message, Exception e)
     {
+        setText(message);
         statusLabel.setForeground(ERROR_COLOR);
-
+        this.lastException = e;
     }
 
     /**

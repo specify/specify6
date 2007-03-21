@@ -587,10 +587,13 @@ public class DatabaseLoginPanel extends JPanel
     {
         if (statusBar != null)
         {
-            statusBar.setText(msg);
             if (isError)
             {
-                statusBar.setAsError();
+                statusBar.setErrorMessage(msg,null);
+            }
+            else
+            {
+                statusBar.setText(msg);
             }
         }
     }
@@ -726,6 +729,7 @@ public class DatabaseLoginPanel extends JPanel
             long    eTime;
             boolean timeOK     = false;
 
+            @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
             {
@@ -960,13 +964,15 @@ public class DatabaseLoginPanel extends JPanel
             {
                 if (count < totalCount && progressBar.getValue() < totalCount)
                 {
-
-                } else
+                    // nothing
+                }
+                else
                 {
                     progressBar.setIndeterminate(true);
                 }
 
-            } else
+            }
+            else
             {
                 ((Timer) e.getSource()).stop();
             }

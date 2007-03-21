@@ -317,8 +317,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	
 	public void showError(String error)
 	{
-		statusBar.setText(error);
-		statusBar.setAsError();
+		statusBar.setErrorMessage(error, null);
 	}
 	
 	public void showMessage(String message)
