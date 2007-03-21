@@ -78,7 +78,7 @@ public class GoogleEarthExporter implements RecordSetExporter
         {
             try
             {
-                File output = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data);
+                File output = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data, reqParams);
                 openExternalViewer(output);
             }
             catch (Exception e)
@@ -118,9 +118,17 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
     }
     
-    protected File exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks) throws IOException
+    protected File exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks, Properties reqParams) throws IOException
     {
         GenericKmlGenerator kmlGenerator = new GenericKmlGenerator();
+
+        // see if an icon URL was specified
+        Object iconURL = reqParams.getProperty("iconURL");
+        if (iconURL!=null && iconURL instanceof String)
+        {
+            kmlGenerator.setPlacemarkIconURL((String)iconURL);
+        }
+        
         for (GoogleEarthPlacemarkIFace pm: placemarks)
         {
             String name = pm.getTitle();

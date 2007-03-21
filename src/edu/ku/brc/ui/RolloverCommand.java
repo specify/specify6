@@ -136,23 +136,23 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         itself       = this;
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e)
-            {
-                if (isEnabled())
-                {
-                    isOver = true;
-                    repaint();
-                    UICacheManager.displayStatusBarText(itself.getToolTipText());
-                }
-            }
-            @Override
-            public void mouseExited(MouseEvent e)
-            {
-                isOver = false;
-                repaint();
-                UICacheManager.displayStatusBarText("");
-            }
+//            @Override
+//            public void mouseEntered(MouseEvent e)
+//            {
+//                if (isEnabled())
+//                {
+//                    isOver = true;
+//                    repaint();
+//                    UICacheManager.displayStatusBarText(itself.getToolTipText());
+//                }
+//            }
+//            @Override
+//            public void mouseExited(MouseEvent e)
+//            {
+//                isOver = false;
+//                repaint();
+//                UICacheManager.displayStatusBarText("");
+//            }
             @Override
             public void mouseClicked(MouseEvent e)
             {

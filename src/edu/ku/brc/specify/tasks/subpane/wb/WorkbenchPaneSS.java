@@ -46,6 +46,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -71,6 +72,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -724,13 +726,45 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             selectedRows.add(row);
         }
         
+        // get an icon URL that is specific to the current context
+        String discipline = CollectionObjDef.getCurrentCollectionObjDef().getDiscipline();
+        String iconUrl = null;
+        discipline = discipline.toLowerCase();
+        if (discipline.startsWith("fish"))
+        {
+            iconUrl = getResourceString("WB_GOOGLE_FISH_ICON_URL");
+        }
+        if (discipline.startsWith("bird"))
+        {
+            iconUrl = getResourceString("WB_GOOGLE_BIRD_ICON_URL");
+        }
+        if (discipline.startsWith("insect") || discipline.startsWith("ento"))
+        {
+            iconUrl = getResourceString("WB_GOOGLE_ENTO_ICON_URL");
+        }
+        if (discipline.startsWith("plant") || discipline.equals("botany"))
+        {
+            iconUrl = getResourceString("WB_GOOGLE_PLANT_ICON_URL");
+        }
+        if (discipline.startsWith("mammal"))
+        {
+            iconUrl = getResourceString("WB_GOOGLE_MAMMAL_ICON_URL");
+        }
+        if (discipline.startsWith("herp"))
+        {
+            iconUrl = getResourceString("WB_GOOGLE_HERP_ICON_URL");
+        }
+        
         CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("exporter", GoogleEarthExporter.class);
+        if (iconUrl != null)
+        {
+            command.setProperty("iconURL", iconUrl);
+        }
         CommandDispatcher.dispatch(command);
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
         statusBar.setText("Opening Google Earth");
-        
     }
     
     /**
@@ -1172,6 +1206,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     //------------------------------------------------------------
     public class ImageRenderer extends DefaultTableCellRenderer 
     {
+        @Override
         public Component getTableCellRendererComponent(JTable table, 
                                                        Object value,
                                                        boolean isSelected, 
@@ -1183,7 +1218,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
           if (value instanceof ImageIcon)
           {
               setIcon((ImageIcon)value);
-              this.setHorizontalAlignment(JLabel.CENTER);
+              this.setHorizontalAlignment(SwingConstants.CENTER);
           }
           return this;
         }
