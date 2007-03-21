@@ -1028,14 +1028,33 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             formPane.cleanup();
         }
         
+        boolean retStatus = true;
         if (hasChanged)
         {
-            // XXX show dialog for changes
+            int rv = JOptionPane.showConfirmDialog(null,
+                                                   getResourceString("SaveChanges"),
+                                                   getResourceString("SaveChangesTitle"),
+                                                   JOptionPane.YES_NO_CANCEL_OPTION);
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                saveObject();
+    
+            } else if (rv == JOptionPane.CANCEL_OPTION)
+            {
+                retStatus = false;
+                
+            } else if (rv == JOptionPane.NO_OPTION)
+            {
+    
+            }
         }
-        WorkbenchTask workbenchTask = (WorkbenchTask)task;
-        workbenchTask.closing(this);
         
-        return true;
+        if (retStatus)
+        {
+            ((WorkbenchTask)task).closing(this);
+        }
+        
+        return retStatus;
     }
 
     /* (non-Javadoc)

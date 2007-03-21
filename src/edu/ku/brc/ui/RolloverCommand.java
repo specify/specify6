@@ -157,7 +157,10 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             public void mouseClicked(MouseEvent e)
             {
                 repaint();
-                doAction(itself);
+                if (isEnabled() && !e.isPopupTrigger())
+                {
+                    doAction(itself);
+                }
             }
           };
         addMouseListener(mouseInputAdapter);
@@ -176,10 +179,13 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             renameMenuItem.addActionListener(actionListener);
             popupMenu.add(renameMenuItem);
             
+            final RolloverCommand thisROC = this;
             MouseListener mouseListener = new MouseAdapter() 
             {
                   private boolean showIfPopupTrigger(MouseEvent mouseEvent) {
-                      if (mouseEvent.isPopupTrigger() && popupMenu.getComponentCount() > 0) 
+                      if (thisROC.isEnabled() && 
+                          mouseEvent.isPopupTrigger() && 
+                          popupMenu.getComponentCount() > 0) 
                       {
                           popupMenu.show(mouseEvent.getComponent(),
                           mouseEvent.getX(),
@@ -191,12 +197,18 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                   @Override
                   public void mousePressed(MouseEvent mouseEvent) 
                   {
-                    showIfPopupTrigger(mouseEvent);
+                      if (thisROC.isEnabled())
+                      {
+                          showIfPopupTrigger(mouseEvent);
+                      }
                   }
                   @Override
                   public void mouseReleased(MouseEvent mouseEvent) 
                   {
-                      showIfPopupTrigger(mouseEvent);
+                      if (thisROC.isEnabled())
+                      {
+                          showIfPopupTrigger(mouseEvent);
+                      }
                   }
             };
             addMouseListener(mouseListener);
@@ -335,9 +347,23 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         repaint();
 
     }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+        
+        for (int i=0;i<getComponentCount();i++)
+        {
+            getComponent(i).setEnabled(enabled);
+        }
+    }
 
     /**
-     * Helper function that paint the component
+     * Helper function that paint the component.
      * @param g graphics
      */
     protected void paintComp(Graphics g)

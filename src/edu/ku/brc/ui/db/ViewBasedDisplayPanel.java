@@ -245,8 +245,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     {
         // Handle clicks on the OK and Cancel buttons.
         parentWin.setVisible(false);
-        if (propertyChangeListener != null)
-        {
             boolean isOkButton = (e.getSource() == okBtn);
             if (isOkButton)
             {
@@ -257,8 +255,10 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             {
                 isCancelled = true;
             }
-            propertyChangeListener.propertyChange(new PropertyChangeEvent(this, isOkButton ? "OK" : "Cancel", null, null));
-        }
+            if (propertyChangeListener != null)
+            {
+                propertyChangeListener.propertyChange(new PropertyChangeEvent(this, isOkButton ? "OK" : "Cancel", null, null));
+            }
         propertyChangeListener = null;
     }
 
