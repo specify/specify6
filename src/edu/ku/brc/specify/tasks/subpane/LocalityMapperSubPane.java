@@ -146,6 +146,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         final SwingWorker worker = new SwingWorker()
         {
+            @Override
             public Object construct()
             {
                 createUI();
@@ -153,6 +154,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             }
 
             //Runs on the event-dispatching thread.
+            @Override
             public void finished()
             {
                 thisPane.removeAll();
@@ -397,7 +399,9 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         addMouseMotionListener(new MouseMotionListener()
                 {
                     public void mouseDragged(MouseEvent e)
-                    {}
+                    {
+                        // nothing
+                    }
                     public void mouseMoved(MouseEvent e)
                     {
                         checkMouseLocation(e.getPoint(), false);
@@ -406,6 +410,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         addMouseListener(new MouseAdapter()
                 {
+                    @Override
                     public void mouseClicked(MouseEvent e)
                     {
                         checkMouseLocation(e.getPoint(), true);
@@ -488,10 +493,9 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                     setCursor(handCursor);
                 }
     			return;
-    		} else
-            {
-                setCursor(defCursor);
-            }
+    		}
+            // else
+            setCursor(defCursor);
     		inx++;
         }
     	//multiView.setData(null);
@@ -526,7 +530,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
      */
     public void newRecordAdded()
     {
-        
+        // nothing
     }
 
 
@@ -743,9 +747,11 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
 	public void begin()
 	{
+        // ignore
 	}
 
 	public void end()
 	{
+        // ignore
 	}
 }
