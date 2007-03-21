@@ -23,6 +23,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
  * @author rods
  *
@@ -33,6 +35,11 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @Table(name = "workbenchdataitem")
+@org.hibernate.annotations.Table(appliesTo="taxon", indexes =
+    {   
+        @Index (name="RowNumberIDX", columnNames={"rowNumber"}),
+        @Index (name="ColumnNumberIDX", columnNames={"ColumnNumber"})
+    })
 public class WorkbenchDataItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
     // Fields

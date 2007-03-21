@@ -29,6 +29,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -38,6 +39,13 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "taxon")
 @org.hibernate.annotations.Proxy(lazy = false)
+@org.hibernate.annotations.Table(appliesTo="taxon", indexes =
+    {   @Index (name="GuidIDX", columnNames={"Guid"}),
+        @Index (name="TaxonomicSerialNumberIDX", columnNames={"TaxonomicSerialNumber"}),
+        @Index (name="CommonNameIDX", columnNames={"CommonName"}),
+        @Index (name="NameIDX", columnNames={"Name"}),
+        @Index (name="FullNameIDX", columnNames={"FullName"})
+    })
 public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
     /**

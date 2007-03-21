@@ -52,6 +52,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -63,6 +64,11 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "collectionobject")
+@org.hibernate.annotations.Table(appliesTo="collectionobject", indexes =
+    {   @Index (name="FieldNumberIDX", columnNames={"fieldNumber"}),
+        @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
+        @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"})
+    })
 public class CollectionObject extends DataModelObjBase implements java.io.Serializable, Comparable<CollectionObject>
 {
 

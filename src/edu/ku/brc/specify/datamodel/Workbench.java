@@ -47,6 +47,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 
@@ -56,6 +57,10 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbench")
+@org.hibernate.annotations.Table(appliesTo="taxon", indexes =
+    {   
+        @Index (name="NameIDX", columnNames={"name"})
+    })
 public class Workbench extends DataModelObjBase implements java.io.Serializable, Comparable<Workbench>
 {
 

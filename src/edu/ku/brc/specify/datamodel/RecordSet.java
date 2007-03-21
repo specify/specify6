@@ -67,10 +67,10 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      protected String                  remarks;
      protected Set<RecordSetItemIFace> items;
      protected SpecifyUser             specifyUser;
-     protected Integer ownerPermissionLevel;
-     protected Integer groupPermissionLevel;
-     protected Integer allPermissionLevel;
-     protected UserGroup group;
+     protected Integer                 ownerPermissionLevel;
+     protected Integer                 groupPermissionLevel;
+     protected Integer                 allPermissionLevel;
+     protected UserGroup               group;
 
 
      // Non-Database Memebers
@@ -350,6 +350,20 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     //--------------------------------------------------------------
     //-- Non-Database Methods
     //--------------------------------------------------------------
+    
+    /**
+     * Returns the only item in the RecordSet and return null if there is more than one.
+     * @return returns the only item
+     */
+    @Transient
+    public RecordSetItemIFace getOnlyItem()
+    {
+        if (items != null && items.size() == 1)
+        {
+            return items.iterator().next();
+        }
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getDataSpecificIcon()

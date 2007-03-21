@@ -58,6 +58,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Index;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
@@ -72,6 +73,10 @@ import edu.ku.brc.util.Pair;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbenchrow")
+@org.hibernate.annotations.Table(appliesTo="taxon", indexes =
+    {   
+        @Index (name="RowNumberIDX", columnNames={"RowNumber"})
+    })
 public class WorkbenchRow extends DataModelObjBase implements java.io.Serializable, GoogleEarthPlacemarkIFace, Comparable<WorkbenchRow>
 {
     protected Long                   workbenchRowId;
