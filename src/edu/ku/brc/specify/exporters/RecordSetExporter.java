@@ -21,6 +21,6 @@ public interface RecordSetExporter
     public String getIconName();
     public String getDescription();
     public Class<?>[] getHandledClasses();
-	public void exportRecordSet(RecordSet data, Properties requestParams);
-    public void exportList(List<?> data, Properties requestParams);
+	public void exportRecordSet(RecordSet data, Properties requestParams) throws Exception;
+    public void exportList(List<?> data, Properties requestParams) throws Exception;
 }

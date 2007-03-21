@@ -33,7 +33,9 @@ import edu.ku.brc.specify.exporters.WebPageExporter;
 import edu.ku.brc.specify.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable
@@ -178,12 +180,30 @@ public class ExportTask extends BaseTask
     protected void doExport(RecordSetExporter exporter, RecordSetIFace data, Properties requestParams)
     {
         RecordSet rs = (RecordSet)data;
-        exporter.exportRecordSet(rs,requestParams);
+        try
+        {
+            exporter.exportRecordSet(rs,requestParams);
+        }
+        catch (Exception e)
+        {
+            log.error("Exception while exporting a RecordSet", e);
+            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+            statusBar.setErrorMessage(e.getMessage(), e);
+        }
     }
     
     protected void doExport(RecordSetExporter exporter, List<?> data, Properties requestParams)
     {
-        exporter.exportList(data,requestParams);
+        try
+        {
+            exporter.exportList(data,requestParams);
+        }
+        catch (Exception e)
+        {
+            log.error("Exception while exporting a data list", e);
+            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+            statusBar.setErrorMessage(e.getLocalizedMessage(), e);
+        }
     }
 
     //-------------------------------------------------------
