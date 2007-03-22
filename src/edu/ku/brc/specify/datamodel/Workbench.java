@@ -449,7 +449,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      */
     public WorkbenchRow addRow()
     {
-        WorkbenchRow wbRow = new WorkbenchRow(this, rows.size()); // initializes
+        WorkbenchRow wbRow = new WorkbenchRow(this, (short)rows.size()); // initializes
         rows.add(wbRow);
         workbenchRows.add(wbRow);
         return wbRow;
@@ -460,7 +460,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      * @param rowIndex the index where the row is to be inserted
      * @return the new row
      */
-    public WorkbenchRow insertRow(final int rowIndex)
+    public WorkbenchRow insertRow(final short rowIndex)
     {
         if (rowIndex < 0)
         {
@@ -475,7 +475,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         WorkbenchRow workbenchRow = new WorkbenchRow(this, rowIndex);
         for (int i=rowIndex;i<rows.size();i++)
         {
-            rows.get(i).setRowNumber(i+1);
+            rows.get(i).setRowNumber((short)(i+1));
         }
         rows.insertElementAt(workbenchRow, rowIndex);
         workbenchRows.add(workbenchRow);
@@ -503,7 +503,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         rows.remove(rowIndex);
         for (int i=rowIndex+1;i<rows.size();i++)
         {
-            rows.get(i).setRowNumber(i-1);
+            rows.get(i).setRowNumber((short)(i-1));
         }
         deletedRows.add(wbRow);
         workbenchRows.remove(wbRow);

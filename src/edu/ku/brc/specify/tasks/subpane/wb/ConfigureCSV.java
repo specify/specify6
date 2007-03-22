@@ -335,7 +335,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
 
                 for (int h = 0; h < csv.getHeaderCount(); h++)
                 {
-                    colInfo.add(new ImportColumnInfo(h, getCellType(h), csv.getHeader(h), null));
+                    colInfo.add(new ImportColumnInfo((short)h, getCellType(h), csv.getHeader(h), null));
                 }
             } catch (IOException ex)
             {

@@ -71,7 +71,7 @@ public class GridTableModel extends SpreadSheetModel
                 imageMappingItem = new WorkbenchTemplateMappingItem();
                 imageMappingItem.initialize();
                 imageMappingItem.setCaption("Card Image"); // XXX I18N"
-                imageMappingItem.setViewOrder(headers.size());
+                imageMappingItem.setViewOrder((short)headers.size());
                 imageMappingItem.setDataType("java.lang.Image");
             }
             headers.add(imageMappingItem);
@@ -178,7 +178,7 @@ public class GridTableModel extends SpreadSheetModel
         if (getRowCount() >= 0)
         {
             
-            workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), column);
+            workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column);
             fireDataChanged();
         }
     }
@@ -235,7 +235,7 @@ public class GridTableModel extends SpreadSheetModel
             WorkbenchRow wbRow = workbench.getRow(rowInx);
             for (int col : cols)
             {
-                wbRow.setData("", col);
+                wbRow.setData("", (short)col);
             }
         }
         fireDataChanged();
@@ -294,7 +294,7 @@ public class GridTableModel extends SpreadSheetModel
     public void insertRow(int rowInx)
     {
         WorkbenchRow wbRow  = workbench.getWorkbenchRowsAsList().get(rowInx);
-        WorkbenchRow newRow = workbench.insertRow(rowInx);
+        WorkbenchRow newRow = workbench.insertRow((short)rowInx);
         
         // Do Carry Forward
         for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())

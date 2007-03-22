@@ -77,10 +77,10 @@ import edu.ku.brc.util.Pair;
     {   
         @Index (name="RowNumberIDX", columnNames={"RowNumber"})
     })
-public class WorkbenchRow extends DataModelObjBase implements java.io.Serializable, GoogleEarthPlacemarkIFace, Comparable<WorkbenchRow>
+public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkIFace, Comparable<WorkbenchRow>
 {
     protected Long                   workbenchRowId;
-    protected Integer                rowNumber;
+    protected Short                  rowNumber;
     protected byte[]                 cardImageData;
     protected String                 cardImageFullPath;
     protected Set<WorkbenchDataItem> workbenchDataItems;
@@ -92,9 +92,9 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     protected WeakReference<ImageIcon> fullSizeImageWR = null;
     
     // Transient Data Members
-    protected Hashtable<Integer, WorkbenchDataItem>            items    = new Hashtable<Integer, WorkbenchDataItem>();
-    protected Hashtable<Integer, WorkbenchTemplateMappingItem> mappings = null;
-    protected Vector<WorkbenchDataItem>                        dataList = null;
+    protected Hashtable<Short, WorkbenchDataItem>            items    = new Hashtable<Short, WorkbenchDataItem>();
+    protected Hashtable<Short, WorkbenchTemplateMappingItem> mappings = null;
+    protected Vector<WorkbenchDataItem>                      dataList = null;
 
     
     /**
@@ -109,7 +109,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
      * Constrcutor for the code that knows the row number.
      * @param rowNum the row number or index
      */
-    public WorkbenchRow(final Workbench workbench, final int rowNum)
+    public WorkbenchRow(final Workbench workbench, final short rowNum)
     {
         initialize();
         
@@ -118,11 +118,8 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     }
     
     // Initializer
-    @Override
     public void initialize()
     {
-        super.init();
-        
         workbenchRowId     = null;
         workbench          = null;
         rowNumber          = null;
@@ -143,7 +140,6 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
      * @returns ID Property.
      */
     @Transient
-    @Override
     public Long getId()
     {
         return this.workbenchRowId;
@@ -159,12 +155,12 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
      * @return
      */
     @Column(name = "RowNumber")
-    public Integer getRowNumber()
+    public Short getRowNumber()
     {
         return rowNumber;
     }
 
-    public void setRowNumber(Integer rowNumber)
+    public void setRowNumber(Short rowNumber)
     {
         this.rowNumber = rowNumber;
     }
@@ -318,7 +314,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
      * @return a hashtable of items where the key is the column index of the item.
      */
     @Transient
-    public Hashtable<Integer, WorkbenchDataItem> getItems()
+    public Hashtable<Short, WorkbenchDataItem> getItems()
     {
         return items;
     }
@@ -338,7 +334,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
                 items.put(wbdi.getColumnNumber(), wbdi);
             }
         }
-        WorkbenchDataItem wbdi = items.get(col);
+        WorkbenchDataItem wbdi = items.get((short)col);
         if (wbdi != null)
         {
             return wbdi.getCellData();
@@ -352,7 +348,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
      * @param dataStr the string data
      * @param col the column index to be set
      */
-    public WorkbenchDataItem setData(final String dataStr, final int col)
+    public WorkbenchDataItem setData(final String dataStr, final short col)
     {
         WorkbenchDataItem wbdi = items.get(col);
         if (wbdi != null)
@@ -373,23 +369,10 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
         return wbdi;
     }
     
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
-     */
-    @Override
-    @Transient
-    public String getIdentityTitle()
-    { 
-        if (rowNumber != null) return rowNumber.toString();
-        return super.getIdentityTitle();
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
     @Transient
-    @Override
     public Class<?> getDataClass()
     {
         return WorkbenchRow.class;
@@ -398,7 +381,6 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
-    @Override
     @Transient
     public int getTableId()
     {
@@ -455,7 +437,7 @@ public class WorkbenchRow extends DataModelObjBase implements java.io.Serializab
     {
         if (mappings == null)
         {
-            mappings = new Hashtable<Integer, WorkbenchTemplateMappingItem>();
+            mappings = new Hashtable<Short, WorkbenchTemplateMappingItem>();
             for (WorkbenchTemplateMappingItem wbtmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
             {
                 mappings.put(wbtmi.getViewOrder(), wbtmi);

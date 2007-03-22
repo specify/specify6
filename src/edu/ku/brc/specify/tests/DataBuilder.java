@@ -2124,7 +2124,7 @@ public class DataBuilder
     }
 
     public static WorkbenchRow createWorkbenchRow(final Workbench workbench,
-                                                  final int rowNumber)
+                                                  final short rowNumber)
     {
         WorkbenchRow workbenchRow = new WorkbenchRow(workbench, rowNumber);
         // workbench.initialize(); // not needed with this constructor
@@ -2139,7 +2139,7 @@ public class DataBuilder
                                                             final Integer      columnNumber)
     {
         
-        WorkbenchDataItem wbdi = workbenchRow.setData(cellData, columnNumber);
+        WorkbenchDataItem wbdi = workbenchRow.setData(cellData, columnNumber.shortValue());
         wbdi.setRowNumber(workbenchRow.getRowNumber());
         
         persist(wbdi);
@@ -2181,9 +2181,9 @@ public class DataBuilder
         wtmi.setDataType(dataType);
         wtmi.setFieldName(fieldName);
         wtmi.setTableName(tableName);
-        wtmi.setViewOrder(viewOrder);
-        wtmi.setTabOrder(viewOrder);  // set initial tab order to the view order
-        wtmi.setOrigImportColumnIndex(dataColumnIndex);
+        wtmi.setViewOrder(viewOrder.shortValue());
+        wtmi.setTabOrder(viewOrder.shortValue());  // set initial tab order to the view order
+        wtmi.setOrigImportColumnIndex(dataColumnIndex.shortValue());
         wtmi.setWorkbenchTemplate(template);
         wtmi.setSrcTableId(tableId);
         

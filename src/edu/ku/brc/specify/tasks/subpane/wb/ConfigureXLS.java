@@ -75,10 +75,10 @@ public class ConfigureXLS extends ConfigureExternalDataBase implements Configure
             // Calculate the number of rows and columns
             colInfo = new Vector<ImportColumnInfo>(16);
 
-            Hashtable<Integer, Boolean> colTracker = new Hashtable<Integer, Boolean>();
+            Hashtable<Short, Boolean> colTracker = new Hashtable<Short, Boolean>();
 
             boolean firstRow = true;
-            int     col      = 0;
+            short   col      = 0;
             colTracker.clear();
 
             // Iterate over each row in the sheet
@@ -100,7 +100,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase implements Configure
                         ImportColumnInfo.ColumnType colType = ImportColumnInfo.ColumnType.Integer;
                         String  value   = null;
                         boolean skip    = false;
-                        int     cellNum = cell.getCellNum();
+                        short   cellNum = cell.getCellNum();
 
                         switch (cell.getCellType())
                         {

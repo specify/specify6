@@ -40,13 +40,13 @@ import org.hibernate.annotations.Index;
         @Index (name="RowNumberIDX", columnNames={"rowNumber"}),
         @Index (name="ColumnNumberIDX", columnNames={"ColumnNumber"})
     })
-public class WorkbenchDataItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchDataItem>
+public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
     // Fields
     protected Long         workbenchDataItemId;
     protected String       cellData;
-    protected Integer      rowNumber;
-    protected Integer      columnNumber;
+    protected Short        rowNumber;
+    protected Short        columnNumber;
     protected WorkbenchRow workbenchRow;
 
     // Constructors
@@ -57,7 +57,7 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
         //
     }
 
-    public WorkbenchDataItem(final WorkbenchRow workbenchRow, final String cellData, final Integer rowNumber, final Integer columnNumber)
+    public WorkbenchDataItem(final WorkbenchRow workbenchRow, final String cellData, final Short rowNumber, final Short columnNumber)
     {
        initialize();
        this.cellData     = cellData;
@@ -75,10 +75,8 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     }
 
     // Initializer
-    @Override
     public void initialize()
     {
-        super.init();
         workbenchDataItemId = null;
         cellData            = null;
         rowNumber           = null;
@@ -107,7 +105,6 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
      * @returns ID Property.
      */
     @Transient
-    @Override
     public Long getId()
     {
         return this.workbenchDataItemId;
@@ -119,7 +116,6 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
     @Transient
-    @Override
     public Class<?> getDataClass()
     {
         return WorkbenchDataItem.class;
@@ -148,12 +144,12 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
      * 
      */
     @Column(name = "RowNumber", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getRowNumber()
+    public Short getRowNumber()
     {
         return this.rowNumber;
     }
 
-    public void setRowNumber(Integer rowNumber)
+    public void setRowNumber(Short rowNumber)
     {
         this.rowNumber = rowNumber;
     }
@@ -162,12 +158,12 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
      * 
      */
     @Column(name = "ColumnNumber", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getColumnNumber()
+    public Short getColumnNumber()
     {
         return this.columnNumber;
     }
 
-    public void setColumnNumber(Integer columnNumber)
+    public void setColumnNumber(Short columnNumber)
     {
         this.columnNumber = columnNumber;
     }
@@ -194,35 +190,4 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     {
         return columnNumber.compareTo(obj.columnNumber);
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
-     */
-    @Transient
-    @Override
-    public boolean isIndexable()
-    {
-        return false;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
-     */
-    @Override
-    @Transient
-    public int getTableId()
-    {
-        return getClassTableId();
-    }
-
-    /**
-     * @return the Table ID for the class.
-     */
-    public static int getClassTableId()
-    {
-        return 80;
-    }
-
 }

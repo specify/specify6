@@ -500,7 +500,7 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void addMapItem(final boolean isNew)
     {
-        int maxDataColIndex = -1;
+        short maxDataColIndex = -1;
 
         if (mappingItems.size() > 0)
         {
@@ -509,7 +509,7 @@ public class ColumnMapperPanel extends JPanel
                 ImportColumnInfo colInfo = fmp.getColInfo();
                 if (colInfo != null)
                 {
-                    maxDataColIndex = Math.max(maxDataColIndex, colInfo.getColInx());
+                    maxDataColIndex = (short)Math.max((int)maxDataColIndex, (int)colInfo.getColInx());
                 }
             }
             maxDataColIndex++;
@@ -761,7 +761,7 @@ public class ColumnMapperPanel extends JPanel
         
         Set<WorkbenchTemplateMappingItem> items = wbTemplate.getWorkbenchTemplateMappingItems();
         
-        int order = 0;
+        short order = 0;
         for (FieldMappingPanel fmp : mappingItems)
         {
             ImportColumnInfo colInfo  = fmp.getColInfo();

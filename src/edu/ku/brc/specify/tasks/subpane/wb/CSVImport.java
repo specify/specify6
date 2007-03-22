@@ -69,7 +69,7 @@ public class CSVImport implements DataImport
             
             // Create hash of the column number so later we can easily 
             // look up whether this column should be used.
-            Hashtable<Integer, WorkbenchTemplateMappingItem> colHash = new Hashtable<Integer, WorkbenchTemplateMappingItem>();
+            Hashtable<Short, WorkbenchTemplateMappingItem> colHash = new Hashtable<Short, WorkbenchTemplateMappingItem>();
             for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
             {
                 if (wbtmi.getOrigImportColumnIndex() > -1)

@@ -153,8 +153,8 @@ public class InputPanel extends JPanel implements GhostActionable
     @Override
     public void setLocation(int x, int y)
     {
-        wbtmi.setXCoord(x);
-        wbtmi.setYCoord(y);
+        wbtmi.setXCoord((short)x);
+        wbtmi.setYCoord((short)y);
         super.setLocation(x, y);
     }
 

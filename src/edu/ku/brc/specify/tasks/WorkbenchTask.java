@@ -555,7 +555,7 @@ public class WorkbenchTask extends BaseTask
                     {
                         WorkbenchTemplateMappingItem wbItem   = items.get(i);
                         ImportColumnInfo             fileItem = colInfo.get(i);
-                        if (wbItem.getViewOrder().intValue() == fileItem.getColInx().intValue())
+                        if (wbItem.getViewOrder().shortValue() == fileItem.getColInx().shortValue())
                         {
                             if (ImportColumnInfo.getType(wbItem.getDataType()) == ImportColumnInfo.ColumnType.Date)
                             {
@@ -1164,7 +1164,7 @@ public class WorkbenchTask extends BaseTask
           {
               rowsToExport = "Headers";
           }
-          System.out.println(format + ", " + rowsToExport);
+          //System.out.println(format + ", " + rowsToExport);
         }
     }
     
@@ -1417,12 +1417,11 @@ public class WorkbenchTask extends BaseTask
                 // if it is in the old list then ignore it
                 // if it isn't in the old list than add it into the old template
                 
-                Hashtable<Integer, Integer> oldToNewIndex = new Hashtable<Integer, Integer>();
-                int newViewOrder = 0;
-                System.out.print("----------------------");
+                Hashtable<Short, Short> oldToNewIndex = new Hashtable<Short, Short>();
+                short newViewOrder = 0;
                 for (WorkbenchTemplateMappingItem wbtmi : newItems)
                 {
-                    System.out.print("For ["+wbtmi.getFieldName()+"] ");
+                    //System.out.print("For ["+wbtmi.getFieldName()+"] ");
                     // find a match
                     boolean foundMatch = false;
                     for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
@@ -1431,7 +1430,6 @@ public class WorkbenchTask extends BaseTask
                             oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
                         {
                             foundMatch = true;
-                            System.out.println("Found newViewOrder["+newViewOrder+"]");
                             oldToNewIndex.put(oldWbtmi.getViewOrder(), newViewOrder);
                             oldWbtmi.setViewOrder(newViewOrder++);
                             break;
@@ -1439,15 +1437,12 @@ public class WorkbenchTask extends BaseTask
                     }
                     if (!foundMatch)
                     {
-                        System.out.println("Not Found (New)["+newViewOrder+"]");
-                        //oldToNewIndex.put(newViewOrder, newViewOrder);
                         workbenchTemplate.getWorkbenchTemplateMappingItems().add(wbtmi);
                         wbtmi.setViewOrder(newViewOrder++);
                         wbtmi.setWorkbenchTemplate(workbenchTemplate);
                     }
                 }
-                System.out.print("----------------------");
-                Hashtable<Integer, Integer> colDeletedHash     = new Hashtable<Integer, Integer>();
+                Hashtable<Short, Short> colDeletedHash = new Hashtable<Short, Short>();
                 
                 // Removing the Items
                 // For each old item (it has to have a non-null ID) see if it is in the new list
@@ -1514,9 +1509,7 @@ public class WorkbenchTask extends BaseTask
                             
                             if (!wasDeleted)
                             {
-                                System.out.print("Before: "+item.getColumnNumber());
                                 item.setColumnNumber(oldToNewIndex.get(item.getColumnNumber()));
-                                System.out.println(" After: "+item.getColumnNumber());
                                 session.saveOrUpdate(item);
                             }
                         }

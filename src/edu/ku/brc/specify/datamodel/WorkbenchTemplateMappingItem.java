@@ -39,17 +39,17 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Integer           srcTableId;
     protected String            fieldName;
     protected String            caption;
-    protected Integer           viewOrder;             // The Current View Order
-    protected Integer           cellDataColumn;        // The Column number that the DataItems use
-    protected Integer           origImportColumnIndex; // The index from the imported data file
+    protected Short             viewOrder;             // The Current View Order
+    protected Short             cellDataColumn;        // The Column number that the DataItems use
+    protected Short             origImportColumnIndex; // The index from the imported data file
     protected String            dataType;
     protected WorkbenchTemplate workbenchTemplate;
     protected Boolean           isExportableToContent;
     protected Boolean           isIncludedInTitle;
 
-    protected Integer           tabOrder;
-    protected Integer           xCoord;
-    protected Integer           yCoord;
+    protected Short             tabOrder;
+    protected Short             xCoord;
+    protected Short             yCoord;
     protected Boolean           carryForward;
 
     // Constructors
@@ -195,12 +195,12 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      * 
      */
     @Column(name = "ViewOrder", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getViewOrder()
+    public Short getViewOrder()
     {
         return this.viewOrder;
     }
 
-    public void setViewOrder(Integer viewOrder)
+    public void setViewOrder(Short viewOrder)
     {
         this.viewOrder = viewOrder;
     }
@@ -209,12 +209,12 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      * 
      */
     @Column(name = "DataColumnIndex", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getOrigImportColumnIndex()
+    public Short getOrigImportColumnIndex()
     {
         return this.origImportColumnIndex;
     }
 
-    public void setOrigImportColumnIndex(Integer dataColumnIndex)
+    public void setOrigImportColumnIndex(Short dataColumnIndex)
     {
         this.origImportColumnIndex = dataColumnIndex;
     }
@@ -234,34 +234,34 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
 
     @Column(name = "TabOrder", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getTabOrder()
+    public Short getTabOrder()
     {
         return tabOrder;
     }
 
-    public void setTabOrder(Integer tabOrder)
+    public void setTabOrder(Short tabOrder)
     {
         this.tabOrder = tabOrder;
     }
 
     @Column(name = "XCoord", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getXCoord()
+    public Short getXCoord()
     {
         return xCoord;
     }
 
-    public void setXCoord(Integer coord)
+    public void setXCoord(Short coord)
     {
         xCoord = coord;
     }
 
     @Column(name = "YCoord", unique = false, nullable = true, insertable = true, updatable = true)
-   public Integer getYCoord()
+   public Short getYCoord()
     {
         return yCoord;
     }
 
-    public void setYCoord(Integer coord)
+    public void setYCoord(Short coord)
     {
         yCoord = coord;
     }

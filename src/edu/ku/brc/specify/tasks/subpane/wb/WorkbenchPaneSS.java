@@ -65,7 +65,6 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.csvreader.CsvReader;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -804,11 +803,13 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         config.setHeaders(heads);
         
+        /* XXX Doesn't compile on Mac
         Properties ConfiggedProps = config.getProperties();
         for (String k : ConfiggedProps.stringPropertyNames())
         {
             command.setProperty(k, ConfiggedProps.getProperty(k));
         }
+        */
         
         CommandDispatcher.dispatch(command);
     }

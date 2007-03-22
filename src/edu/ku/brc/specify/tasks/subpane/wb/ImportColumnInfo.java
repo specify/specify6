@@ -21,12 +21,12 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
 {
     public enum ColumnType {Integer, Float, Double, Short, Boolean, Date, String}
     
-    protected Integer    colInx;
+    protected Short      colInx;
     protected ColumnType colType;
     protected String     colName;
     protected String     data;
     
-    public ImportColumnInfo(int colInx, ColumnType colType, String colName, String data)
+    public ImportColumnInfo(short colInx, ColumnType colType, String colName, String data)
     {
         super();
         
@@ -56,7 +56,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         this.data = data;
     }
 
-    public Integer getColInx()
+    public Short getColInx()
     {
         return colInx;
     }
