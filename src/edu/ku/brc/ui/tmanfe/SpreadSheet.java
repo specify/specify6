@@ -101,8 +101,8 @@ public class SpreadSheet  extends SearchableJXTable
 
         int numRows = model.getRowCount();
         
-        scrollPane = new JScrollPane(this);
-
+        scrollPane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         
         // Allows row and collumn selections to exit at the same time
         setCellSelectionEnabled(true);

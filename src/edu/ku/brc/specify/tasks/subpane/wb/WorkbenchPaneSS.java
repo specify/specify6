@@ -236,7 +236,13 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             public void actionPerformed(ActionEvent ae)
             {
+                int[] rows = spreadSheet.getSelectedRows();
                 model.deleteRows(spreadSheet.getSelectedRows());
+                resultsetController.setLength(model.getRowCount());
+                
+                int newInx = rows[0];
+                resultsetController.setIndex(newInx);
+                spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
             }
         };
         deleteRowsBtn = createIconBtn("MinusSign", "WB_DELETE_ROW", deleteAction);
@@ -255,8 +261,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             public void actionPerformed(ActionEvent ae)
             {
-                model.insertRow(spreadSheet.getSelectedRow());
-                resultsetController.setIndex(getCurrentRow());
+                int curSelInx = spreadSheet.getSelectedRow();
+                model.insertRow(curSelInx);
+                resultsetController.setLength(model.getRowCount());
+                int newInx = curSelInx == -1 ? model.getRowCount()-1 : curSelInx;
+                resultsetController.setIndex(newInx);
+                spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
             }
         };
         
@@ -268,7 +278,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             public void actionPerformed(ActionEvent ae)
             {
                 model.appendRow();
-                resultsetController.setIndex(getCurrentRow());
+                resultsetController.setLength(model.getRowCount());
+                int selInx = model.getRowCount()-1;
+                resultsetController.setIndex(selInx);
+                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
+
             }
         });
         addRowsBtn.setEnabled(true);
@@ -1055,7 +1069,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         Collections.sort(items);
         ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
-                "WB_CHOOSE_CARRYFORWARD", items);
+                                                                        "WB_CARRYFORWARD",
+                                                                        "WB_CHOOSE_CARRYFORWARD", items);
+        dlg.setAddSelectAll(true);
         dlg.setSelectedObjects(selectedObjects);
         dlg.setModal(true);
         dlg.setVisible(true);  
@@ -1070,6 +1086,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             {
                 item.setCarryForward(true);
             }
+            setChanged(true);
         }
     }
     

@@ -16,13 +16,13 @@ package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,15 +31,12 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -55,28 +52,27 @@ import com.jgoodies.forms.layout.FormLayout;
  *
  */
 @SuppressWarnings("serial")
-public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener, ActionListener
+public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionListener
 {
     public enum Type {Checkbox, RadioButton}
     
     // Data Members
-    protected JButton               cancelBtn;
-    protected JButton               okBtn       =  null;
     protected List<T>               items;
-    protected Vector<JToggleButton> buttons     = new Vector<JToggleButton>(10);
-    protected ImageIcon             icon        = null;
-    protected boolean               isCancelled = false;
-    
-    protected ButtonGroup           group       = null;
+    protected Vector<JToggleButton> buttons              = new Vector<JToggleButton>();
+    protected JButton               selectAll;
+    protected JButton               delSelectAll;
+    protected ButtonGroup           group                = null;
     
     // Needed for Delayed Creation
-    protected String                title       = null;
-    protected String                desc        = null;
-    protected Type                  uiType      = null;
+    protected String                title                = null;
+    protected String                desc                 = null;
+    protected Type                  uiType               = null;
     protected int                   initialSelectedIndex = -1;
+    protected boolean               addSelectAll         = false;
+    protected List<T>               selectedItems        = null;
     
     // This means it should build it as a vertical list with no scrollpane
-    protected boolean               useScrollPane = false;
+    protected boolean               useScrollPane        = false;
 
     /**
      * Constructor.
@@ -87,8 +83,8 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      * @throws HeadlessException
      */
     public ToggleButtonChooserDlg(final Frame   parentFrame, 
-                              final String  title, 
-                              final List<T> listItems) throws HeadlessException
+                                  final String  title, 
+                                  final List<T> listItems) throws HeadlessException
     {
         this(parentFrame, title, null, listItems);
     }
@@ -118,13 +114,13 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      * @throws HeadlessException
      */
     public ToggleButtonChooserDlg(final Frame     parentFrame, 
-                              final String    title, 
-                              final String    desc, 
-                              final List<T>   listItems, 
-                              final ImageIcon icon, 
-                              final Type      uiType) throws HeadlessException
+                                  final String    title, 
+                                  final String    desc, 
+                                  final List<T>   listItems, 
+                                  final ImageIcon icon, 
+                                  final Type      uiType) throws HeadlessException
     {
-        super(parentFrame, true);
+        super(parentFrame, getResourceString(title), true, OK_BTN | CANCEL_BTN, null);
         
         this.items  = listItems;
         this.icon   = icon;
@@ -143,9 +139,11 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      */
     protected void createUI()
     {
-        setTitle(getResourceString(title));
+        super.createUI();
         
         int rows = desc != null ? 3 : 2;
+        rows += addSelectAll ? 2 : 0;
+        
         int y    = 1;
         CellConstraints cc         = new CellConstraints();
         PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", rows)));
@@ -182,7 +180,6 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
             }
             
             togBtn.setOpaque(false);
-            togBtn.addChangeListener(this);
             buttons.add(togBtn);
             listPanel.add(togBtn, cc.xy(1, yy));
             yy += 2;
@@ -212,44 +209,38 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
         {
             panelBlder.add(listPanel, cc.xy(1, y)); y += 2;
         }
-
-        // Bottom Button UI
-        cancelBtn         = new JButton(getResourceString("Cancel"));
-        okBtn             = new JButton(getResourceString("OK"));
-
-        okBtn.addActionListener(this);
-        getRootPane().setDefaultButton(okBtn);
-
-        JPanel btnBar = ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn);
-        btnBar.setBorder(BorderFactory.createEmptyBorder(2,0,0,0));
         
-        cancelBtn.addActionListener(new ActionListener()
-                    {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
+        if (addSelectAll && uiType == Type.Checkbox)
+        {
+            selectAll    = new JButton(getResourceString("SelectAll"));
+            delSelectAll = new JButton(getResourceString("DeselectAll"));
 
-        panelBlder.add(btnBar, cc.xy(1, y)); y += 2;
+            selectAll.addActionListener(this);
+            delSelectAll.addActionListener(this);
 
-        setContentPane(panel);
+            JPanel btnBar = ButtonBarFactory.buildOKCancelBar(selectAll, delSelectAll);
+            btnBar.setBorder(BorderFactory.createEmptyBorder(2,0,0,2));
+            panelBlder.add(btnBar, cc.xy(1, y)); y += 2;
+            //panelBlder.addSeparator("", cc.xy(1, y)); y += 2;
+        }
+        
+        mainPanel.add(panel, BorderLayout.CENTER);
+        
         pack();
+        
         
         if (initialSelectedIndex != -1)
         {
             setSelectedIndex(initialSelectedIndex);
         }
+        
+        setSelectedObjects(selectedItems);
 
     }
 
-    /* (non-Javadoc)
-     * @see java.awt.Component#setVisible(boolean)
-     */
-    @Override
-    public void setVisible(final boolean visible)
+    public void setAddSelectAll(boolean addSelectAll)
     {
-        if (okBtn == null && visible)
-        {
-            createUI();
-        }
-        UIHelper.centerWindow(this);
-        super.setVisible(visible);
+        this.addSelectAll = addSelectAll;
     }
 
     /* (non-Javadoc)
@@ -257,7 +248,11 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      */
     public void actionPerformed(ActionEvent e)
     {
-        setVisible(false);
+        boolean doSelect = e.getSource() == selectAll;
+        for (JToggleButton tb : buttons)
+        {
+            tb.setSelected(doSelect);
+        }
     }
 
     /**
@@ -328,17 +323,24 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      */
     public void setSelectedObjects(final List<T> selectedItems)
     {
-        for (T obj : selectedItems)
+        if (okBtn == null)
         {
-            int inx = 0;
-            for (JToggleButton tb : buttons)
+            this.selectedItems = selectedItems;
+            
+        } else if (selectedItems != null)
+        {
+            for (T obj : selectedItems)
             {
-                if (obj == items.get(inx))
+                int inx = 0;
+                for (JToggleButton tb : buttons)
                 {
-                    tb.setSelected(true);
-                    break;
+                    if (obj == items.get(inx))
+                    {
+                        tb.setSelected(true);
+                        break;
+                    }
+                    inx++;
                 }
-                inx++;
             }
         }
     }
@@ -349,7 +351,7 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      */
     public List<T> getSelectedObjects()
     {
-        List<T> list = new ArrayList<T>(5);
+        List<T> list = new Vector<T>();
         int inx = 0;
         for (JToggleButton tb : buttons)
         {
@@ -370,15 +372,4 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
     {
         return isCancelled;
     }
-
-    //----------------------------------------------------------------
-    //-- ChangeListener Interface
-    //----------------------------------------------------------------
-
-    public void stateChanged(ChangeEvent e)
-    {
-        // do nothing
-    }
-
-
 }

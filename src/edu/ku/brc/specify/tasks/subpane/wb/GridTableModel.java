@@ -293,15 +293,39 @@ public class GridTableModel extends SpreadSheetModel
     @Override
     public void insertRow(int rowInx)
     {
-        WorkbenchRow wbRow  = workbench.getWorkbenchRowsAsList().get(rowInx);
-        WorkbenchRow newRow = workbench.insertRow((short)rowInx);
+        int oldRowIndex = rowInx;
+        int rowIndex    = rowInx;
+        if (this.getRowCount() == -1)
+        {
+            if (this.getRowCount() > 0)
+            {
+                oldRowIndex = this.getRowCount()-1;
+                rowIndex    = this.getRowCount();
+            }
+        }
+        
+        WorkbenchRow wbRow;
+        WorkbenchRow newRow;
+        if (rowIndex == -1)
+        {
+            wbRow  = null;
+            newRow = workbench.insertRow((short)0);
+            
+        } else
+        {
+            wbRow  = workbench.getWorkbenchRowsAsList().get(oldRowIndex);
+            newRow = workbench.insertRow((short)rowIndex);
+        }
         
         // Do Carry Forward
-        for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+        if (wbRow != null)
         {
-            if (wbdmi.getCarryForward())
+            for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
             {
-                newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
+                if (wbdmi.getCarryForward())
+                {
+                    newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
+                }
             }
         }
 
@@ -315,7 +339,7 @@ public class GridTableModel extends SpreadSheetModel
         if (spreadSheet != null)
         {
             spreadSheet.scrollToRow(rowInx);
-            spreadSheet.setRowSelectionInterval(rowInx, rowInx);
+            spreadSheet.setRowSelectionInterval(oldRowIndex, oldRowIndex);
             spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
         }
     }

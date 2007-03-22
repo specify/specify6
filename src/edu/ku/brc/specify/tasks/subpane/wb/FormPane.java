@@ -217,7 +217,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
+        //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
         String type = wbtmi.getDataType();
         
         JComponent comp;
