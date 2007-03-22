@@ -246,6 +246,7 @@ public class WorkbenchTask extends BaseTask
         RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(templateNavBox, workbenchTemplate.getName(), name, cmd, 
                                                                                new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbenchTemplate), 
                                                                                true);// true means make it draggable
+        cmd.setProperty("roc", roc);
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
     }
     
@@ -1657,6 +1658,35 @@ public class WorkbenchTask extends BaseTask
                 {
                     if (askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
                     {
+                        session = DataProviderFactory.getInstance().createSession();
+                        try
+                        {
+
+                            session.beginTransaction();
+                            session.attach(workbenchTemplate);
+                            session.save(workbenchTemplate);
+                            session.commit();
+                            session.flush();
+                            
+                            for (NavBoxItemIFace nbi : templateNavBox.getItems())
+                            {
+                                RolloverCommand roc = (RolloverCommand)cmdAction.getProperty("roc");
+                                if (roc != null)
+                                {
+                                    roc.setLabelText(workbenchTemplate.getName());
+                                }
+                                
+                            }
+                            
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                            
+                        } finally
+                        {
+                            session.close();    
+                        }
+
                     }
                 } break;
                 

@@ -186,7 +186,7 @@ public class BuildSampleDatabase
      */
     public BuildSampleDatabase()
     {
-        // nothing here
+        frame = new ProgressFrame("Building OnRamp Database");
     }
     
     public Session getSession()
@@ -199,6 +199,11 @@ public class BuildSampleDatabase
         session = s;
     }
     
+    public ProgressFrame getFrame()
+    {
+        return frame;
+    }
+
     /**
      * Creates a single discipline collection.
      * @param colObjDefName the name of the Collection Obj Def to use
@@ -1551,7 +1556,6 @@ public class BuildSampleDatabase
                                       final String email,
                                       final Discipline  discipline)
     {
-        frame = new ProgressFrame("Building OnRamp Database");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(new Dimension(500,125));
         frame.setTitle("Building OnRamp Database");

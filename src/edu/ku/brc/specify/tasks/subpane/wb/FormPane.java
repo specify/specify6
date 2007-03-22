@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -74,6 +75,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     protected boolean            ignoreChanges     = false;
     
     protected PropertyChangeListener focusListener = null;
+    protected InputPanel         selectedInputPanel = null;   
 
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     
@@ -166,6 +168,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                     {
                         if (focusManager.getFocusOwner() == ip.getComp())
                         {
+                            selectedInputPanel = ip;
                             controlPropsBtn.setEnabled(true);
                             break;
                         }
@@ -256,7 +259,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     protected void showControlProps()
     {
-        
+        EditFormControl dlg = new EditFormControl((Frame)UICacheManager.get(UICacheManager.FRAME), "Edit", selectedInputPanel, this);
+        dlg.setVisible(true);
     }
     
     /* (non-Javadoc)

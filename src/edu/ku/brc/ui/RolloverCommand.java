@@ -223,6 +223,12 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     {
         return label;
     }
+    
+    public void setLabelText(String label)
+    {
+        this.label = label;
+        validate();
+    }
 
     /**
      * @return the popup menu (right click)

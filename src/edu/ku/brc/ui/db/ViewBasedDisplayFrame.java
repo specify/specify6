@@ -14,13 +14,14 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.JFrame;
+import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -33,9 +34,9 @@ import edu.ku.brc.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial")
-public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFace
+public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDisplayIFace
 {
-    protected ViewBasedDisplayPanel mainPanel;
+    protected ViewBasedDisplayPanel viewBasedPanel;
 
     /**
      * Constructs a search dialog from form infor and from search info
@@ -58,53 +59,60 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
                                  final boolean isEdit,
                                  final int     options)
     {
-        this.setTitle(title);
-
-        mainPanel = new ViewBasedDisplayPanel(this, 
-                                              viewSetName, 
-                                              viewName, 
-                                              displayName, 
-                                              closeBtnTitle, 
-                                              className, 
-                                              idFieldName, 
-                                              isEdit, 
-                                              options);
-
-        setContentPane(mainPanel);
-        pack();
-
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        super(title, isEdit ? OKCANCEL : OK_BTN, null);
         
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            
-        if (mainPanel.getCancelBtn() != null)
+        viewBasedPanel = new ViewBasedDisplayPanel(this, 
+                viewSetName, 
+                viewName, 
+                displayName, 
+                className, 
+                idFieldName, 
+                isEdit, 
+                options);
+        
+        if (StringUtils.isNotEmpty(closeBtnTitle))
+        {
+            this.setOkLabel(closeBtnTitle);
+        }
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
+     */
+    @Override
+    protected void createUI()
+    {
+        super.createUI();
+        
+        mainPanel.add(viewBasedPanel, BorderLayout.CENTER);
+        
+        if (cancelBtn != null)
         {
             addWindowListener(new WindowAdapter()
                     {
                         @Override
                         public void windowClosing(WindowEvent e)
                         {
-                            mainPanel.getCancelBtn().doClick();
+                            cancelBtn.doClick();
                         }
                     });
-        } else if (mainPanel.getOkBtn() != null)
+        } else if (okBtn != null)
         {
-            mainPanel.getOkBtn().setEnabled(true);
+            okBtn.setEnabled(true);
             addWindowListener(new WindowAdapter()
             {
                 @Override
                 public void windowClosing(WindowEvent e)
                 {
-                    mainPanel.getOkBtn().doClick();
+                    okBtn.doClick();
                 }
             });
         }
         
-        /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)
-        {
-            mainPanel.getMultiView().getCurrentView().getValidator().validateForm();
-        }*/
-
+        viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn);
+        
+        pack();
     }
 
     //------------------------------------------------------------
@@ -124,7 +132,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
      */
     public MultiView getMultiView()
     {
-        return mainPanel.getMultiView();
+        return viewBasedPanel.getMultiView();
     }
 
     /* (non-Javadoc)
@@ -132,7 +140,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
      */
     public void setCloseListener(final PropertyChangeListener propertyChangeListener)
     {
-        mainPanel.setCloseListener(propertyChangeListener);
+        viewBasedPanel.setCloseListener(propertyChangeListener);
     }
 
     /* (non-Javadoc)
@@ -140,9 +148,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
      */
     public void setData(final Object dataObj)
     {
-        mainPanel.setData(dataObj);
-        
-        pack(); // this is because the data may be a selector to change the form
+        viewBasedPanel.setData(dataObj);
     }
 
     /* (non-Javadoc)
@@ -150,7 +156,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
      */
     public boolean isEditMode()
     {
-        return mainPanel.isEditMode();
+        return viewBasedPanel.isEditMode();
     }
 
     /* (non-Javadoc)
@@ -159,7 +165,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
     public void shutdown()
     {
         setVisible(true);
-        mainPanel.shutdown();
+        viewBasedPanel.shutdown();
     }
 
 }

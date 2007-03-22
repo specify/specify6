@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -33,6 +32,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.RolloverCommand;
@@ -81,14 +84,15 @@ public class InputPanel extends JPanel implements GhostActionable
     
     public InputPanel(WorkbenchTemplateMappingItem wbtmi, String label, JComponent comp)
     {
-        super(new BorderLayout());
+        CellConstraints cc         = new CellConstraints();
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g,2px,f:p:g", "p"), this);
         
         this.wbtmi = wbtmi;
         this.label = new JLabel(label, JLabel.RIGHT);
         this.comp  = comp;
         
-        add(this.label, BorderLayout.WEST);
-        add(comp, BorderLayout.EAST);
+        builder.add(this.label, cc.xy(1, 1));
+        builder.add(comp, cc.xy(3, 1));
         
         if (wbtmi.getXCoord() != null && wbtmi.getYCoord() != null)
         {

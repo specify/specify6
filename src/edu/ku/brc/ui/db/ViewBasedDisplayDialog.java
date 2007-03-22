@@ -14,15 +14,14 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.JDialog;
+import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -35,10 +34,10 @@ import edu.ku.brc.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial")
-public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayIFace
+public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDisplayIFace
 {
-    protected ViewBasedDisplayPanel mainPanel;
-
+    protected ViewBasedDisplayPanel viewBasedPanel = null;
+    
     /**
      * Constructs a search dialog from form infor and from search info.
      * @param frame the parent frame
@@ -62,18 +61,23 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
                                   final boolean isEdit,
                                   final int     options)
     {
-        super(frame, title);
+        super(frame, title, true, isEdit ? OKCANCEL : OK_BTN, null);
         
-        init(viewSetName,
-                viewName,
-                displayName,
-                title,
-                closeBtnTitle,
-                className,
-                idFieldName,
-                isEdit,
+        viewBasedPanel = new ViewBasedDisplayPanel(this, 
+                viewSetName, 
+                viewName, 
+                displayName, 
+                className, 
+                idFieldName, 
+                isEdit, 
                 options);
+        
+        if (StringUtils.isNotEmpty(closeBtnTitle))
+        {
+            this.setOkLabel(closeBtnTitle);
+        }
     }
+    
     /**
      * Constructs a search dialog from form infor and from search info.
      * @param dlg the parent frame
@@ -86,90 +90,47 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @param options the options needed for creating the form
      */
-    public ViewBasedDisplayDialog(final Dialog dlg,
-                                  final String viewSetName,
-                                  final String viewName,
-                                  final String displayName,
-                                  final String title,
-                                  final String closeBtnTitle,
-                                  final String className,
-                                  final String idFieldName,
+    public ViewBasedDisplayDialog(final Dialog  dlg,
+                                  final String  viewSetName,
+                                  final String  viewName,
+                                  final String  displayName,
+                                  final String  title,
+                                  final String  closeBtnTitle,
+                                  final String  className,
+                                  final String  idFieldName,
                                   final boolean isEdit,
                                   final int     options)
     {
-        super(dlg, title);
+        super(dlg, title, true, isEdit ? OKCANCEL : OK_BTN, null);
         
-        init(viewSetName,
-                viewName,
-                displayName,
-                title,
-                closeBtnTitle,
-                className,
-                idFieldName,
-                isEdit,
+        viewBasedPanel = new ViewBasedDisplayPanel(this, 
+                viewSetName, 
+                viewName, 
+                displayName, 
+                className, 
+                idFieldName, 
+                isEdit, 
                 options);
-    }
-    
-    /**
-     * Creates a search dialog from form infor and from search info.
-     * @param frame the parent frame
-     * @param viewSetName the viewset name
-     * @param viewName the form name from the viewset
-     * @param displayName the search name, this is looked up by name in the "search_config.xml" file
-     * @param title the title (should be already localized before passing in)
-     * @param closeBtnTitle the title of close btn
-     * @param className the name of the class to be created from the selected results
-     * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
-     * @param options the options needed for creating the form
-     */
-    protected void init(final String viewSetName,
-                        final String viewName,
-                        final String displayName,
-                        final String title,
-                        final String closeBtnTitle,
-                        final String className,
-                        final String idFieldName,
-                        final boolean isEdit,
-                        final int     options)
-    {
-        mainPanel = new ViewBasedDisplayPanel(this, 
-                                              viewSetName, 
-                                              viewName, 
-                                              displayName, 
-                                              closeBtnTitle, 
-                                              className, 
-                                              idFieldName, 
-                                              isEdit, 
-                                              options);
 
-        setContentPane(mainPanel);
-        pack();
-        this.setModal(true);
-
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-        if (mainPanel.getCancelBtn() != null)
+        if (StringUtils.isNotEmpty(closeBtnTitle))
         {
-            addWindowListener(new WindowAdapter()
-                    {
-                        @Override
-                        public void windowClosing(WindowEvent e)
-                        {
-                            mainPanel.getCancelBtn().doClick();
-                        }
-                    });
+            this.setOkLabel(closeBtnTitle);
         }
     }
-
-    /**
-     * Returns true if cancelled.
-     * @return true if cancelled.
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
-    public boolean isCancelled()
+    @Override
+    protected void createUI()
     {
-        return mainPanel.isCancelled();
+        super.createUI();
+
+        viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn);
+        
+        mainPanel.add(viewBasedPanel, BorderLayout.CENTER);
+        
+        pack();
     }
 
     //------------------------------------------------------------
@@ -189,7 +150,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
      */
     public MultiView getMultiView()
     {
-        return mainPanel.getMultiView();
+        return viewBasedPanel.getMultiView();
     }
 
     /* (non-Javadoc)
@@ -197,7 +158,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
      */
     public void setCloseListener(final PropertyChangeListener propertyChangeListener)
     {
-        mainPanel.setCloseListener(propertyChangeListener);
+        viewBasedPanel.setCloseListener(propertyChangeListener);
     }
 
     /* (non-Javadoc)
@@ -205,12 +166,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
      */
     public void setData(final Object dataObj)
     {
-        mainPanel.setData(dataObj);
-        /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)
-        {
-            mainPanel.getMultiView().getCurrentView().getValidator().validateForm();
-        }*/
-        pack(); // this is because the data may be a selector to change the form
+        viewBasedPanel.setData(dataObj);
     }
 
     /* (non-Javadoc)
@@ -218,7 +174,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
      */
     public boolean isEditMode()
     {
-        return mainPanel.isEditMode();
+        return viewBasedPanel.isEditMode();
     }
 
     /* (non-Javadoc)
@@ -227,7 +183,7 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
     public void shutdown()
     {
         setVisible(true);
-        mainPanel.shutdown();
+        viewBasedPanel.shutdown();
     }
 
 }

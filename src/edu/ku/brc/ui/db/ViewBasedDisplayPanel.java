@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.ui.db;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -30,8 +28,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
@@ -75,7 +71,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     protected JButton        cancelBtn    = null;
     protected JPanel         contentPanel;
     protected Window         parentWin;
-    protected boolean        isCancelled = false;
+    protected boolean        isCancelled  = false;
 
     /**
      * Constructor.
@@ -103,18 +99,17 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                                  final String  viewSetName,
                                  final String  viewName,
                                  final String  displayName,
-                                 final String  closeBtnTitle,
                                  final String  className,
                                  final String  idFieldName,
                                  final boolean isEdit,
                                  final int     options)
     {
-        this.parentWin      = parent;
+        this.parentWin   = parent;
         this.className   = className;
         this.idFieldName = idFieldName;
         this.displayName = displayName;
 
-        createUI(viewSetName, viewName, closeBtnTitle, isEdit, options);
+        createUI(viewSetName, viewName, isEdit, options);
     }
 
     /**
@@ -125,9 +120,8 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      * @param isEdit true is in edit mode, false is in view mode
      * @param options the options needed for creating the form
      */
-    protected void createUI(final String viewSetName,
-                            final String viewName,
-                            final String  closeBtnTitle,
+    protected void createUI(final String  viewSetName,
+                            final String  viewName,
                             final boolean isEdit,
                             final int     options)
     {
@@ -152,35 +146,27 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
         add(multiView, BorderLayout.NORTH);
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
-
-
-        okBtn = new JButton(closeBtnTitle);
-        okBtn.addActionListener(this);
+        
         if (parentWin instanceof JDialog)
         {
             ((JDialog)parentWin).getRootPane().setDefaultButton(okBtn);
         }
-
-        ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-        btnBuilder.addGlue();
-
-        if (!isEdit)
-        {
-            btnBuilder.addGriddedButtons(new JButton[] { okBtn });
-
-        } else
-        {
-            cancelBtn = new JButton(getResourceString("Cancel"));
-            cancelBtn.addActionListener(this);
-            btnBuilder.addGriddedButtons(new JButton[] { okBtn, cancelBtn });
-        }
+    }
+    
+    /**
+     * Sest the OK and Cancel; buttons into the panel
+     * @param okBtn ok btn (cannot be null)
+     * @param cancelBtn the cancel btn (can be null
+     */
+    public void setOkCancelBtns(final JButton okBtn, final JButton cancelBtn)
+    {
+        this.okBtn     = okBtn;
+        this.cancelBtn = cancelBtn;
         
-
         for (Viewable v : multiView.getViewables())
         {
             v.registerSaveBtn(okBtn);
         }
-        
         
         for (Viewable viewable : multiView.getViewables())
         {
@@ -190,16 +176,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                 fv.registerOKButton(okBtn);
             }
         }
-        
-        /*
-        for (FormValidator fv : multiView.getFormValidators())
-        {
-            fv.registerOKButton(okBtn);
-        }*/
-        
-        
-        add(btnBuilder.getPanel(), BorderLayout.SOUTH);
-
     }
 
     /**
@@ -245,20 +221,20 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     {
         // Handle clicks on the OK and Cancel buttons.
         parentWin.setVisible(false);
-            boolean isOkButton = (e.getSource() == okBtn);
-            if (isOkButton)
-            {
-                multiView.getDataFromUI();
-                isCancelled = false;
-                
-            } else
-            {
-                isCancelled = true;
-            }
-            if (propertyChangeListener != null)
-            {
-                propertyChangeListener.propertyChange(new PropertyChangeEvent(this, isOkButton ? "OK" : "Cancel", null, null));
-            }
+        boolean isOkButton = (e.getSource() == okBtn);
+        if (isOkButton)
+        {
+            multiView.getDataFromUI();
+            isCancelled = false;
+            
+        } else
+        {
+            isCancelled = true;
+        }
+        if (propertyChangeListener != null)
+        {
+            propertyChangeListener.propertyChange(new PropertyChangeEvent(this, isOkButton ? "OK" : "Cancel", null, null));
+        }
         propertyChangeListener = null;
     }
 

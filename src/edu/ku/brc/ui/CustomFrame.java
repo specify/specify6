@@ -17,8 +17,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,7 +24,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +42,7 @@ import edu.ku.brc.specify.help.HelpMgr;
  * 
  */
 @SuppressWarnings("serial")
-public class CustomDialog extends JDialog
+public class CustomFrame extends JFrame
 {
     // Static Data Members
     public static final int OK_BTN             = 1;
@@ -90,12 +88,11 @@ public class CustomDialog extends JDialog
      * @param contentPanel the contentpane
      * @throws HeadlessException
      */
-    public CustomDialog(final Frame     frame, 
-                        final String    title, 
-                        final boolean   isModal,
-                        final Component contentPanel) throws HeadlessException
+    public CustomFrame(final String    title, 
+                       final boolean   isModal,
+                       final Component contentPanel) throws HeadlessException
     {
-        this(frame, title, isModal, OK_BTN | CANCEL_BTN, contentPanel);
+        this(title, OK_BTN | CANCEL_BTN, contentPanel);
     }
 
     /**
@@ -106,33 +103,11 @@ public class CustomDialog extends JDialog
      * @param contentPanel the contentpane
      * @throws HeadlessException
      */
-    public CustomDialog(final Frame     frame, 
-                        final String    title, 
-                        final boolean   isModal,
-                        final int       whichBtns,
-                        final Component contentPanel) throws HeadlessException
+    public CustomFrame(final String    title, 
+                       final int       whichBtns,
+                       final Component contentPanel) throws HeadlessException
     {
-        super(frame, title, isModal);
-        
-        this.whichBtns    = whichBtns;
-        this.contentPanel = contentPanel;
-    }
-
-    /**
-     * @param frame parent frame
-     * @param title the title of the dialog
-     * @param isModal whether or not it is model
-     * @param whichBtns which button to use for the dialog
-     * @param contentPanel the contentpane
-     * @throws HeadlessException
-     */
-    public CustomDialog(final Dialog    dialog, 
-                        final String    title, 
-                        final boolean   isModal,
-                        final int       whichBtns,
-                        final Component contentPanel) throws HeadlessException
-    {
-        super(dialog, title, isModal);
+        super(title);
         
         this.whichBtns = OK_BTN | CANCEL_BTN;
         this.contentPanel = contentPanel;

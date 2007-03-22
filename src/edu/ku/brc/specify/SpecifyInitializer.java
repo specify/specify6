@@ -57,6 +57,7 @@ import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tests.BuildSampleDatabase;
 import edu.ku.brc.ui.BrowseBtnPanel;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -737,7 +738,8 @@ public class SpecifyInitializer
                             }
 
                             BuildSampleDatabase builder = new BuildSampleDatabase();
-                           isOK = builder.buildEmptyDatabase(driverInfo,
+                            builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
+                            isOK = builder.buildEmptyDatabase(driverInfo,
                                                               HOSTNAME,
                                                               userPanel.getDbName(),
                                                               userPanel.getUsername(), 
