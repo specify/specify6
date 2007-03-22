@@ -16,6 +16,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
+import java.util.Hashtable;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -32,6 +33,8 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
@@ -105,7 +108,7 @@ public class SpreadSheet  extends SearchableJXTable
         setCellSelectionEnabled(true);
 
         setRowSelectionAllowed(true);
-        setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         // Create a row-header to display row numbers.
         // This row-header is made of labels whose Borders,
@@ -139,7 +142,20 @@ public class SpreadSheet  extends SearchableJXTable
         Dimension dim  = new Dimension(rowLabelWidth, rowHeight * numRows);
         rowHeaderPanel.setPreferredSize(dim); // need to call this when no layout manager is used.
 
-
+        //final JTable table = this;
+        getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                /*
+                ListSelectionModel selModel = table.getSelectionModel();
+                int anchor = selModel.getAnchorSelectionIndex();
+                int lead   = selModel.getLeadSelectionIndex();
+                
+                System.out.println("anchor: "+anchor);
+                System.out.println("lead:   "+lead);
+                 */
+            }
+        });
         rhCellMouseAdapter = new RHCellMouseAdapter(this);
         
         // Adding the row header labels
@@ -287,7 +303,6 @@ public class SpreadSheet  extends SearchableJXTable
         if (getSelectedColumnCount() == 1)
         {
             final int[] rows = getSelectedRows();
-            //for (int i : colsrows) System.out.println()
             if (row == rows[0])
             {
                 JMenuItem mi = pMenu.add(new JMenuItem("Fill Down"));
@@ -562,6 +577,9 @@ public class SpreadSheet  extends SearchableJXTable
     class RHCellMouseAdapter extends MouseAdapter
     {
         protected JTable table;
+        protected Hashtable<Integer, Boolean> selectionHash = new Hashtable<Integer, Boolean>();
+        protected int selAnchor = -1;
+        protected int selLead   = -1;
         
         public RHCellMouseAdapter(final JTable table)
         {
@@ -575,12 +593,89 @@ public class SpreadSheet  extends SearchableJXTable
         public void mousePressed(MouseEvent e) 
         { 
             RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-            int row    = lbl.getRowNum()-1;
+            int            row = lbl.getRowNum()-1;
+            
+            // ZZZ System.out.println("\nPressed: ["+row+"] A["+selAnchor+"]  L["+selLead+"]");
+            
+            if (e.isControlDown())
+            {
+                ListSelectionModel selModel = table.getSelectionModel();
+                boolean wasSelected = false;
+                for (int inx : table.getSelectedRows())
+                {
+                    if (row == inx)
+                    {
+                        wasSelected = true;
+                        break;
+                    }
+                }
+                 // ZZZ System.out.printlnm.out.println("wasSelected: "+wasSelected);
+                if (wasSelected)
+                {
+                    selModel.removeSelectionInterval(row, row);
+                } else
+                {
+                    selModel.addSelectionInterval(row, row);
+                }
+                
+                
+                
+            } else if (e.isShiftDown())
+            {
+                ListSelectionModel selModel = table.getSelectionModel();
+                int anchor = selModel.getAnchorSelectionIndex();
+                int lead   = selModel.getLeadSelectionIndex();
+                
+                // ZZZ System.out.println("anchor: "+anchor);
+                // ZZZ System.out.println("lead:   "+lead);
+
+                if (lead == anchor || (row < lead && lead < anchor) || (row > lead && lead > anchor))
+                {
+                    selModel.addSelectionInterval(lead, row);
+                    // ZZZ System.out.println("*Adding  ["+lead+"]["+row+"]");
+                    
+                } else
+                {
+                    int[] selectedRows = table.getSelectedRows();
+                    selectionHash.clear();
+                    for (int inx : selectedRows)
+                    {
+                        selectionHash.put(inx, true);
+                        //System.out.println("Selected["+inx+"]");
+                    }
+
+                    for (int inx=anchor;inx<=lead;inx++)
+                    {
+                        if (selectionHash.get(inx) != null)
+                        {
+                            selModel.removeSelectionInterval(inx, inx);
+                            //System.out.println("Removing["+inx+"]");
+                        } else
+                        {
+                            selModel.addSelectionInterval(inx, inx);
+                            //System.out.println("Adding  ["+inx+"]");
+                        }
+                    }
+                    // ZZZ System.out.println("Adding  ["+row+"]["+(anchor-1)+"]");
+                    selModel.addSelectionInterval(row, anchor-1);
+                }
+                
+                //selModel.getAnchorSelectionIndex();
+                //selModel.getLeadSelectionIndex();
+                //System.out.println("isShiftDown Anchor: "+selModel.getAnchorSelectionIndex());
+                //System.out.println("isShiftDown Lead  : "+selModel.getLeadSelectionIndex());
+
+                
+            } else
+            {
+                table.setRowSelectionInterval(row, row);
+                table.setColumnSelectionInterval(0, model.getColumnCount()-1);
+            }
+            
             rowSelectionStarted = true;
-            table.setRowSelectionInterval(row, row);
-            table.setColumnSelectionInterval(0, model.getColumnCount()-1);
             table.getSelectionModel().setValueIsAdjusting(true);
             rowAnchor = row;
+            selAnchor = row;
         }
 
         /* (non-Javadoc)
@@ -602,10 +697,13 @@ public class SpreadSheet  extends SearchableJXTable
             if (rowSelectionStarted)
             {
                 RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-                int row    = lbl.getRowNum();
+                int row    = lbl.getRowNum()-1;
                 rowSelectionStarted = true;
                 table.setRowSelectionInterval(rowAnchor, row);
                 table.setColumnSelectionInterval(0, model.getColumnCount()-1);
+                
+                selLead = row;
+
             }
         }
 
