@@ -83,6 +83,7 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
     protected Short                  rowNumber;
     protected byte[]                 cardImageData;
     protected String                 cardImageFullPath;
+    protected String                 bioGeomancerResults;
     protected Set<WorkbenchDataItem> workbenchDataItems;
     protected Workbench              workbench;
     
@@ -280,6 +281,30 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
     public void setCardImageFullPath(String cardImageFullPath)
     {
         this.cardImageFullPath = cardImageFullPath;
+    }
+
+    /**
+     * Gets the XML text of the BioGeomancer response from a lookup
+     * using the data in this row.
+     * 
+     * @return the XML string
+     */
+    @Lob
+    @Column(name="BioGeomancerResults")
+    public String getBioGeomancerResults()
+    {
+        return bioGeomancerResults;
+    }
+
+    /**
+     * Stores the given string as the text of the BioGeomancer response
+     * from a lookup using the data in this row.
+     * 
+     * @param bioGeomancerResults the response text to store
+     */
+    public void setBioGeomancerResults(String bioGeomancerResults)
+    {
+        this.bioGeomancerResults = bioGeomancerResults;
     }
 
     /**
