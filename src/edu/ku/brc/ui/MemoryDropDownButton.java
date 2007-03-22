@@ -61,7 +61,7 @@ public class MemoryDropDownButton extends DropDownButton
     			fixMainButtonState();
     		}
         };
-         if(overRideButtonBorder)mainBtn.setBorder(raisedBorder);
+         if(overRideButtonBorder)mainBtn.setBorder(hoverBorder);
         lastChosen.addPropertyChangeListener(changeListener);
     }
 
@@ -72,7 +72,7 @@ public class MemoryDropDownButton extends DropDownButton
 	@Override
 	public void actionPerformed(ActionEvent ae)
 	{
-        //if(overRideButtonBorder)mainBtn.setBorder(raisedBorder);
+        //if(overRideButtonBorder)mainBtn.setBorder(hoverBorder);
 		Object source = ae.getSource();
         if(source == arrowBtn)
         {
@@ -100,6 +100,6 @@ public class MemoryDropDownButton extends DropDownButton
 		System.out.println("Fixing button state");
 		mainBtn.setEnabled(lastChosen.isEnabled());
         mainBtn.setText(lastChosen.getText());
-        //if(overRideButtonBorder)mainBtn.setBorder(raisedBorder);
+        //if(overRideButtonBorder)mainBtn.setBorder(hoverBorder);
 	}
 }

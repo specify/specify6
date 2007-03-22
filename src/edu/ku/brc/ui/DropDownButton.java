@@ -65,15 +65,15 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
 {
     
     protected EmptyBorder          emptyBorder;
-    protected SoftBevelBorder      raisedBorder;
+    protected Border               hoverBorder;
 
     protected JButton              mainBtn;
-    protected JButton              arrowBtn          = null;
-    protected boolean              popupVisible      = false;
-    protected String               statusBarHintText = null;
-    protected boolean overRideButtonBorder = false;
-    protected List<JComponent>     menus    = null;
-    protected List<ActionListener> listeners = new ArrayList<ActionListener>();
+    protected JButton              arrowBtn             = null;
+    protected boolean              popupVisible         = false;
+    protected String               statusBarHintText    = null;
+    protected boolean              overRideButtonBorder = false;
+    protected List<JComponent>     menus                = null;
+    protected List<ActionListener> listeners            = new ArrayList<ActionListener>();
     
     protected static ImageIcon dropDownArrow;
     
@@ -163,7 +163,10 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     {
         mainBtn   = new JButton(label, icon);
         
-        if(!overRideButtonBorder)mainBtn.setBorder(new EmptyBorder(1,4,1,4));
+        if (!overRideButtonBorder)
+        {
+            mainBtn.setBorder(new EmptyBorder(1,4,1,4));
+        }
         mainBtn.setIconTextGap(1); 
         mainBtn.setMargin(new Insets(0,0,0,0));
         mainBtn.getModel().addChangeListener(this);
@@ -177,7 +180,6 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
 
         arrowBtn = new JButton(dropDownArrow);
         arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
-        //if(!overRideButtonBorder)arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);
         arrowBtn.setMargin(new Insets(3, 3, 3, 3));
@@ -191,18 +193,23 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         this.add(arrowBtn);
 
         
-        raisedBorder = new SoftBevelBorder(BevelBorder.RAISED);
-        emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
-        if(!overRideButtonBorder)setBorder(emptyBorder);
+        hoverBorder = new SoftBevelBorder(BevelBorder.RAISED);
+        emptyBorder = new EmptyBorder(hoverBorder.getBorderInsets(this));
+        if (!overRideButtonBorder)
+        {
+            setBorder(emptyBorder);
+        }
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
         {
             @Override
             public void mouseEntered(MouseEvent e) 
             {
-                setBorder(raisedBorder);
+                setBorder(hoverBorder);
                 if (statusBarHintText != null)
+                {
                     UICacheManager.displayStatusBarText(statusBarHintText);
+                }
                 
                 arrowBtn.setEnabled(getPopMenuSize() > 0);
                 repaint();
@@ -210,7 +217,10 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             @Override
             public void mouseExited(MouseEvent e) 
             {
-               if(!overRideButtonBorder) setBorder(emptyBorder);
+               if (!overRideButtonBorder)
+               {
+                   setBorder(emptyBorder);
+               }
                 UICacheManager.displayStatusBarText(null);
                 repaint();
                 
@@ -235,10 +245,25 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
 
           mainBtn.addActionListener(this);
     }
-    public void setOverrideBorder(boolean val, Border border){
-        overRideButtonBorder = val;
-        if(val)setBorder(border);
+    
+    /**
+     * Sets a new hover border
+     * @param hoverBorder the hover border
+     */
+    public void setHoverBorder(final Border raisedBorder)
+    {
+        this.hoverBorder = raisedBorder;
     }
+
+    public void setOverrideBorder(boolean val, Border border)
+    {
+        overRideButtonBorder = val;
+        if (val)
+        {
+            setBorder(border);
+        }
+    }
+    
     /**
      * Adds listener.
      * @param al the action listener
@@ -275,7 +300,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     public void propertyChange(PropertyChangeEvent evt)
     {
     	Object source = evt.getSource();
-    	if(source == mainBtn.getModel() || source == arrowBtn.getModel())
+    	if (source == mainBtn.getModel() || source == arrowBtn.getModel())
     	{
     		arrowBtn.setEnabled(mainBtn.isEnabled());
 	        if (!arrowBtn.isVisible())
@@ -419,11 +444,12 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         
         super.paintComponent(g);
         
-        if (getBorder() == raisedBorder && arrowBtn.isVisible())
+        if (getBorder() == hoverBorder && arrowBtn.isVisible())
         {
 
-            Color highlight = raisedBorder.getHighlightInnerColor(mainBtn);
-            Color shadow    = raisedBorder.getShadowInnerColor(mainBtn);
+            boolean isSoftBevel = hoverBorder instanceof SoftBevelBorder;
+            Color highlight = isSoftBevel ? ((SoftBevelBorder)hoverBorder).getHighlightInnerColor(mainBtn) : Color.LIGHT_GRAY;
+            Color shadow    = isSoftBevel ? ((SoftBevelBorder)hoverBorder).getShadowInnerColor(mainBtn) : Color.DARK_GRAY;
             
             g.setColor(shadow);
             Rectangle r = mainBtn.getBounds();
