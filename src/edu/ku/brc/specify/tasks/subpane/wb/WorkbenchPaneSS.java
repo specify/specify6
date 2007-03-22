@@ -372,12 +372,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         CellConstraints cc = new CellConstraints();
 
         JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, exportExcelCsvBtn};
-        PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
-        controlBar.add(findPanel, cc.xy(1, 1));
+        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
+        spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
         int x = 3;
         for (JComponent c : comps)
         {
-            controlBar.add(c, cc.xy(x,1));
+            spreadSheetControlBar.add(c, cc.xy(x,1));
             x += 2;
         }
         
@@ -400,7 +400,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         mainPanel.add(formPane, PanelType.Form.toString());
         
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
-        controllerPane.add(controlBar.getPanel(), PanelType.Spreadsheet.toString());
+        controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(outerRSPanel.getPanel(), PanelType.Form.toString());
         
         FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
