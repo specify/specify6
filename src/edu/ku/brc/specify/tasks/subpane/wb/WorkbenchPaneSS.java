@@ -77,6 +77,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -86,6 +87,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
+import edu.ku.brc.specify.plugins.BioGeoMancer;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
@@ -95,9 +97,9 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
+import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -143,9 +145,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton               showMapBtn      = null;
     protected JButton               controlPropsBtn = null;
     protected JButton               exportKmlBtn    = null;
+    protected JButton               biogeomancerBtn = null;
     protected JButton               exportExcelCsvBtn = null;
-    
-    protected List<JButton>         selectionSensativeButtons  = new Vector<JButton>();
+
+    protected List<JButton>         selectionSensativeButtons          = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
     protected FormPane              formPane;
@@ -307,6 +310,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         exportKmlBtn.setEnabled(workbench.containsGeoRefData());
         
+        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.Std16, "WB_DO_BIOGEOMANCER_LOOKUP", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                doBioGeomancerLookup();
+            }
+        });
+        selectionSensativeButtons.add(biogeomancerBtn);
+        
         exportExcelCsvBtn = createIconBtn("Save", IconManager.IconSize.Std16, "WB_EXPORT_DATA", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -371,7 +383,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, exportExcelCsvBtn};
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, exportExcelCsvBtn};
         PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
         
         spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
@@ -422,6 +434,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     {
         workbenchRowChangeListener = new ListSelectionListener()
         {
+            private int previouslySelectedRowIndex = -1;
+            
             @SuppressWarnings("synthetic-access")
             public void valueChanged(ListSelectionEvent e)
             {
@@ -430,7 +444,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                     // ignore this until the user quits changing the selection
                     return;
                 }
-                showCardImageForSelectedRow();
+                
+                // check to make sure the selection actually changed
+                int newSelectionIndex = spreadSheet.getSelectedRow();
+                if (newSelectionIndex != previouslySelectedRowIndex)
+                {
+                    previouslySelectedRowIndex = newSelectionIndex;
+                    showCardImageForSelectedRow();
+                }
             }
         };
     }
@@ -459,6 +480,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         String firstColCellData = (firstColItem!=null) ? firstColItem.getCellData() : "";
         cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
     }
+    
+    
     
     /**
      * Returns the Workbench for the Pane.
@@ -885,6 +908,34 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         statusBar.setText("Opening Google Earth");
     }
     
+    protected void doBioGeomancerLookup()
+    {
+        int selection = spreadSheet.getSelectedRow();
+        if (selection == -1)
+        {
+            // we must have a row selected
+            return;
+        }
+        
+        WorkbenchRow selectedRow = workbench.getWorkbenchRowsAsList().get(selection);
+        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
+        int localityNameColIndex = workbench.getColumnIndex(localityTableId, "localityName");
+        String localityNameStr = selectedRow.getData(localityNameColIndex);
+                
+        int geographyTableId = DBTableIdMgr.getIdByClassName(Geography.class.getName());
+        int countryColIndex = workbench.getColumnIndex(geographyTableId, "Country");
+        int stateColIndex = workbench.getColumnIndex(geographyTableId, "State");
+        int countyColIndex = workbench.getColumnIndex(geographyTableId, "County");
+
+        String country = (countryColIndex!=-1) ? selectedRow.getData(countryColIndex) : "";
+        String state = (stateColIndex!=-1) ? selectedRow.getData(stateColIndex) : "";
+        String county = (countyColIndex!=-1) ? selectedRow.getData(countyColIndex) : "";
+        
+        
+        String response = BioGeoMancer.getBioGeoMancerResponse("tmpId",country,state,county,localityNameStr);
+        System.out.println(response.replaceAll(">", ">\n"));
+    }
+    
     /**
      * Set that there has been a change.
      * 
@@ -898,6 +949,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             saveBtn.setEnabled(hasChanged);
         }
     }
+    
     
     /**
      * Returns the currently selected row in the Spreasdsheet or form.
@@ -1165,7 +1217,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 
             } else if (rv == JOptionPane.NO_OPTION)
             {
-    
+                // nothing
             }
         }
         

@@ -197,7 +197,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param adm1 country
      * @param adm2 adm2
      * @param localityArg locality
-     * @return always returns null
+     * @return returns the response body content
      */
     public static String getBioGeoMancerResponse(final String id,
                                                  final String country,
@@ -205,13 +205,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                                                  final String adm2,
                                                  final String localityArg)
     {
-/*
-        System.out.println("["+id+"]");
-        System.out.println("["+country+"]");
-        System.out.println("["+adm1+"]");
-        System.out.println("["+adm2+"]");
-        System.out.println("["+locality+"]");
-        */
+        String retVal = null;
+        
         try
         {
             HttpClient httpClient = new HttpClient();
@@ -242,16 +237,17 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             output.write(responseBody);
             output.flush();
             output.close();
+
+            //release the connection used by the method
             postMethod.releaseConnection();
 
-            System.out.println(responseBody);
-            //release the connection used by the method
+            retVal = responseBody;
 
         } catch (Exception ex)
         {
             ex.printStackTrace();
         }
-        return null;
+        return retVal;
     }
 
     /**

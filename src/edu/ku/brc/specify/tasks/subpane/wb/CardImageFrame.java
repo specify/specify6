@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,6 +34,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -53,7 +55,7 @@ import edu.ku.brc.ui.UIHelper;
 public class CardImageFrame extends JFrame
 {
     //protected JPanel       panel                      = new JPanel(new BorderLayout());
-    protected JLabel       cardImageLabel             = new JLabel("", JLabel.CENTER);
+    protected JLabel       cardImageLabel             = new JLabel("", SwingConstants.CENTER);
     protected JProgressBar progress                   = new JProgressBar();
     protected WorkbenchRow row                        = null;
     
@@ -67,6 +69,12 @@ public class CardImageFrame extends JFrame
     
     protected JCheckBoxMenuItem origMenuItem;
     protected JCheckBoxMenuItem reduceMenuItem;
+    
+    /** This hash keeps track of the size that a given image was last displayed as.  If an image is displayed as full size, we add an entry
+     * to this hash where the key is row.hashCode() and the value is 1.  If the image is displayed as reduced size, the value is -1.  (We
+     * don't hash from WorkbenchRows to the size in order to not hold a handle to the WorkbenchRow objects.)
+     */
+    protected Hashtable<Integer,Integer> rowToImageSizeHash = new Hashtable<Integer, Integer>();
     
     /**
      * Constrcutor. 
@@ -89,7 +97,7 @@ public class CardImageFrame extends JFrame
         
         loadImgBtn = new JButton("Load New Image"); // XXX I18N
         
-        builder.add(new JLabel("No card image available for the selected row", JLabel.CENTER), cc.xy(2, 2));
+        builder.add(new JLabel("No card image available for the selected row", SwingConstants.CENTER), cc.xy(2, 2));
         builder.add(loadImgBtn, cc.xy(2, 4));
         
         noCardImageMessagePanel = builder.getPanel();
@@ -99,7 +107,7 @@ public class CardImageFrame extends JFrame
         mainPane.setPreferredSize(minSize);
         mainPane.setMinimumSize(minSize);
         mainPane.add(cardImageLabel, BorderLayout.CENTER);
-        scrollPane = new JScrollPane(mainPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane = new JScrollPane(mainPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setContentPane(scrollPane);
         
         JMenuBar  menuBar   = new JMenuBar();
@@ -112,13 +120,7 @@ public class CardImageFrame extends JFrame
         reduceMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                cardImageLabel.setIcon(cardImage = row.getCardImage());
-                reduceMenuItem.setSelected(true);
-                origMenuItem.setSelected(false);
-                cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-                mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-                mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
-                mainPane.repaint();
+                showReducedImage();
             }
         });
         
@@ -126,17 +128,55 @@ public class CardImageFrame extends JFrame
         origMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                cardImageLabel.setIcon(cardImage = row.getFullSizeImage());
-                reduceMenuItem.setSelected(false);
-                origMenuItem.setSelected(true);
-                mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-                mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
-                mainPane.repaint();
+                showOriginalSizeImage();
             }
         });
         setJMenuBar(menuBar);
         
         pack();
+    }
+    
+    /**
+     * Displays the card image in a reduced size.
+     */
+    public void showReducedImage()
+    {
+        if (row==null)
+        {
+            return;
+        }
+        
+        rowToImageSizeHash.put(row.hashCode(), -1);
+        
+        cardImage = row.getCardImage();
+        cardImageLabel.setIcon(cardImage);
+        reduceMenuItem.setSelected(true);
+        origMenuItem.setSelected(false);
+        cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+        mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+        mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+        mainPane.repaint();
+    }
+    
+    /**
+     * Displays the full size card image.
+     */
+    public void showOriginalSizeImage()
+    {
+        if (row==null)
+        {
+            return;
+        }
+        
+        rowToImageSizeHash.put(row.hashCode(), 1);
+        
+        cardImage = row.getFullSizeImage();
+        cardImageLabel.setIcon(cardImage);
+        reduceMenuItem.setSelected(false);
+        origMenuItem.setSelected(true);
+        mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+        mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+        mainPane.repaint();
     }
     
     /**
@@ -166,10 +206,17 @@ public class CardImageFrame extends JFrame
         this.row = row;
         if (row != null)
         {
-            reduceMenuItem.setSelected(true);
-            origMenuItem.setSelected(false);
-            cardImageLabel.setIcon(cardImage = row.getCardImage());
+            Integer lastDisplayedSize = rowToImageSizeHash.get(row.hashCode());
+            if (lastDisplayedSize == null || lastDisplayedSize == -1)
+            {
+                showReducedImage();
+            }
+            else
+            {
+                showOriginalSizeImage();
+            }
             
+            // card image should have been set by now by either showReducedImage() or showOriginalSizeImage()
             if (cardImage == null)
             {
                 if (showingCardImageLabel)

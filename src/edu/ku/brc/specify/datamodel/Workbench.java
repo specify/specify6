@@ -551,7 +551,32 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     }
     
     @Transient
-    public int getColumnIndex(int dataTableId, String fieldName)
+    public boolean containsLocalityStringData()
+    {
+        // get the template mapping data
+        WorkbenchTemplate template = getWorkbenchTemplate();
+        Set<WorkbenchTemplateMappingItem> mappingItems = template.getWorkbenchTemplateMappingItems();
+
+        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
+        for( WorkbenchTemplateMappingItem item: mappingItems )
+        {
+            int dataTableId = item.getSrcTableId();
+            if (dataTableId == localityTableId)
+            {
+                String fieldName = item.getFieldName();
+                
+                // look for a Latitude1 field
+                if (fieldName.equals("localityName"))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    @Transient
+    public int getColumnIndex(int dataTableId, String fieldNameOrCaption)
     {
         // get the template mapping data
         WorkbenchTemplate template = getWorkbenchTemplate();
@@ -562,10 +587,11 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
             int itemDataTableId = item.getSrcTableId();
             if (itemDataTableId == dataTableId)
             {
-                // look for a Latitude1 field
-                if (item.getFieldName().equals(fieldName))
+                String fieldName = item.getFieldName();
+                String caption = item.getCaption();
+                if (fieldName.equalsIgnoreCase(fieldNameOrCaption) || caption.equalsIgnoreCase(fieldNameOrCaption))
                 {
-                    return item.getOrigImportColumnIndex();
+                    return item.getViewOrder();
                 }
             }
         }
