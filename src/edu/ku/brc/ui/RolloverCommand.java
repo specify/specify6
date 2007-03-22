@@ -32,6 +32,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -136,23 +137,23 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         itself       = this;
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
-//            @Override
-//            public void mouseEntered(MouseEvent e)
-//            {
-//                if (isEnabled())
-//                {
-//                    isOver = true;
-//                    repaint();
-//                    UICacheManager.displayStatusBarText(itself.getToolTipText());
-//                }
-//            }
-//            @Override
-//            public void mouseExited(MouseEvent e)
-//            {
-//                isOver = false;
-//                repaint();
-//                UICacheManager.displayStatusBarText("");
-//            }
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                if (isEnabled())
+                {
+                    isOver = true;
+                    repaint();
+                    //UICacheManager.displayStatusBarText(itself.getToolTipText());
+                }
+            }
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                isOver = false;
+                repaint();
+                //UICacheManager.displayStatusBarText("");
+            }
             @Override
             public void mouseClicked(MouseEvent e)
             {
@@ -425,8 +426,11 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             if (isOver && !this.hasFocus())
             {
                  g.setColor(UIManager.getLookAndFeel() instanceof PlasticLookAndFeel ? PlasticLookAndFeel.getFocusColor() : Color.BLUE);
-                 g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
-
+                 //g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
+                 Graphics2D g2d = (Graphics2D)g;
+                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                 RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
+                 g2d.draw(rr);
             }
         }
     }
