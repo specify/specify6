@@ -130,7 +130,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * 
      * @param domStr DOM String to be parsed
      */
-    protected void createInfoFrame(@SuppressWarnings("unused") final String domStr)
+    public void createInfoFrame(@SuppressWarnings("unused") final String domStr)
     {
  
         try
@@ -457,7 +457,10 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            okBtn.setEnabled(false);
            JButton closeBtn = new JButton(getResourceString("Close"));
            //okBtn.addActionListener(this);
-           getRootPane().setDefaultButton(okBtn);
+           if (getRootPane() != null)
+           {
+               getRootPane().setDefaultButton(okBtn);
+           }
 
            ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
            btnBuilder.addGlue();

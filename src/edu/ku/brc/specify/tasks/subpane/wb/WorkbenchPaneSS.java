@@ -691,15 +691,43 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
             String lat1 = row.getData(lat1Index);
             String lon1 = row.getData(lon1Index);
-            newLoc.setLatitude1(new BigDecimal(lat1));
-            newLoc.setLongitude1(new BigDecimal(lon1));
+            BigDecimal latitude = null;
+            BigDecimal longitude = null;
+            try
+            {
+                latitude = new BigDecimal(lat1);
+                longitude = new BigDecimal(lon1);
+            }
+            catch (Exception e)
+            {
+                // this could be a number format exception
+                // or a null pointer exception if the field was empty
+                // either way, we skip this record
+                continue;
+            }
+            
+            newLoc.setLatitude1(latitude);
+            newLoc.setLongitude1(longitude);
             
             if (lat2Index != -1 && lon2Index != -1)
             {
                 String lat2 = row.getData(lat2Index);
                 String lon2 = row.getData(lon2Index);
-                newLoc.setLatitude2(new BigDecimal(lat2));
-                newLoc.setLongitude2(new BigDecimal(lon2));
+                BigDecimal latitude2 = null;
+                BigDecimal longitude2 = null;
+                try
+                {
+                    latitude2 = new BigDecimal(lat2);
+                    longitude2 = new BigDecimal(lon2);
+                    newLoc.setLatitude2(latitude2);
+                    newLoc.setLongitude2(longitude2);
+                }
+                catch (Exception e)
+                {
+                    // this could be a number format exception
+                    // or a null pointer exception if the field was empty
+                    // either way, we'll just treat this record as though it only has lat1 and lon1
+                }
             }
             fakeLocalityRecords.add(newLoc);
         }
@@ -709,9 +737,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         mapper.setMaxMapWidth(500);
         mapper.setShowArrows(false);
         mapper.setDotColor(new Color(64, 220, 64));
-//        mapper.setMinAspectRatio(0.5);
-//        mapper.setMaxAspectRatio(2.0);
-//        mapper.setEnforceAspectRatios(true);
+        mapper.setMinAspectRatio(0.5);
+        mapper.setMaxAspectRatio(2.0);
+        mapper.setEnforceAspectRatios(true);
         MapperListener mapperListener = new MapperListener()
         {
             @SuppressWarnings("synthetic-access")
@@ -956,7 +984,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         String county = (countyColIndex!=-1) ? selectedRow.getData(countyColIndex) : "";
         
         
-        String response = BioGeoMancer.getBioGeoMancerResponse("tmpId",country,state,county,localityNameStr);
+        BioGeoMancer bgmService = new BioGeoMancer();
+        bgmService.initialize(null, false);
+        String response = BioGeoMancer.getBioGeoMancerResponse(selectedRow.getWorkbenchRowId().toString(),country,state,county,localityNameStr);
+        bgmService.createInfoFrame(response);
         System.out.println(response.replaceAll(">", ">\n"));
     }
     
