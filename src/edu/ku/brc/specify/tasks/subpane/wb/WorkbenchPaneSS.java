@@ -464,6 +464,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 if (newSelectionIndex != previouslySelectedRowIndex)
                 {
                     previouslySelectedRowIndex = newSelectionIndex;
+                    
                     showCardImageForSelectedRow();
                 }
             }
@@ -601,20 +602,28 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         else
         {
+//            // when a user hits the "show image" button, for some reason the selection gets nullified
+//            // so we'll grab it here, then set it at the end of this method
+//            int originalSelectionRow = spreadSheet.getSelectedRow();
+
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(true);
+            
+            // tell the table model to show the image column
             blockChanges = true;
             model.setInImageMode(true);
-            
             //TableColumn tableColumn = spreadSheet.getColumn(model.getColumnCount()-1);
             //tableColumn.setCellEditor(new DefaultCellEditor(imageComboxbox));
-            
             blockChanges = false;
+
             showCardImageForSelectedRow();
             
             TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
             column.setCellRenderer(new ImageRenderer());
             spreadSheet.repaint();
+            
+//            spreadSheet.getSelectionModel().setSelectionInterval(originalSelectionRow, originalSelectionRow);
+//            spreadSheet.repaint();
         }
     }
     
