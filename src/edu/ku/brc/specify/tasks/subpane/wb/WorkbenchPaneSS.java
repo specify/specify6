@@ -373,6 +373,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
         JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, exportExcelCsvBtn};
         PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
+        
         spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
         int x = 3;
         for (JComponent c : comps)
