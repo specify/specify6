@@ -143,9 +143,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton               showMapBtn      = null;
     protected JButton               controlPropsBtn = null;
     protected JButton               exportKmlBtn    = null;
-    protected JButton     exportExcelCsvBtn = null;
+    protected JButton               exportExcelCsvBtn = null;
     
-    protected List<JButton>         selectionSensativeButtons          = new Vector<JButton>();
+    protected List<JButton>         selectionSensativeButtons  = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
     protected FormPane              formPane;
@@ -460,8 +460,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
     }
     
-    
-    
     /**
      * Returns the Workbench for the Pane.
      * @return the current workbench
@@ -485,11 +483,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                                             IconManager.getImage("Spreadsheet", IconManager.IconSize.Std16), 
                                             getResourceString("ShowSpreadsheetTT")));
         final DropDownButtonStateful switcher = new DropDownButtonStateful(menuItems);
+        switcher.setCurrentIndex(1);
         switcher.setToolTipText(getResourceString("SwitchViewsTT"));
         switcher.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                showPanel(switcher.getCurrentIndex() == 0 ? PanelType.Spreadsheet : PanelType.Form);
+                showPanel(switcher.getCurrentIndex() == 1 ? PanelType.Spreadsheet : PanelType.Form);
             }
         });
         switcher.validate();
@@ -584,8 +583,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     /**
      * Loads a new Card Image into a WB Row
-     * @param row
-     * @return
+     * @param row the row of the new card image
+     * @return true if the row was set
      */
     protected boolean loadNewCardImage(final WorkbenchRow row)
     {
@@ -703,8 +702,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     }
     
     /**
-     * Notification that the Map was received
-     * @param map
+     * Notification that the Map was received.
+     * @param map icon of the map that was generated
      */
     protected void mapImageReceived(final Icon map)
     {
@@ -719,6 +718,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         statusBar.setText("");
     }
     
+    /**
+     * Export to CSV.
+     */
     protected void doExcelCsvExport()
     {
         log.debug("Exporting workbench data");
@@ -814,6 +816,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         CommandDispatcher.dispatch(command);
     }
     
+    /**
+     * Create command to send to Exported to output and call GoogleEarth
+     */
     protected void showRecordsInGoogleEarth()
     {
         log.debug("Showing map of selected records");
@@ -893,7 +898,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             saveBtn.setEnabled(hasChanged);
         }
     }
-    
     
     /**
      * Returns the currently selected row in the Spreasdsheet or form.
@@ -980,6 +984,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
     }
     
+    /**
+     * Carry forward configuration.
+     */
     public void configCarryFoward()
     {
         Vector<WorkbenchTemplateMappingItem> items           = new Vector<WorkbenchTemplateMappingItem>();

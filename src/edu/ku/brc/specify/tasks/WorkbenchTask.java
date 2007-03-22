@@ -1164,7 +1164,7 @@ public class WorkbenchTask extends BaseTask
           {
               rowsToExport = "Headers";
           }
-          //System.out.println(format + ", " + rowsToExport);
+          System.out.println(format + ", " + rowsToExport);
         }
     }
     
@@ -1384,6 +1384,10 @@ public class WorkbenchTask extends BaseTask
         }
     }
     
+    /**
+     * Show the dialog to allow the user to edit a template and then updates the data rows and columns..
+     * @param workbenchTemplate the template to be edited
+     */
     protected void editTemplate(final WorkbenchTemplate workbenchTemplate)
     {
         loadTemplateFromData(workbenchTemplate);
@@ -1604,7 +1608,11 @@ public class WorkbenchTask extends BaseTask
         }
     }
     
-    protected void editTemplate(final CommandAction cmdAction)
+    /**
+     * Asks the user choose among three options when clicking on a template icon.
+     * @param cmdAction the command that issued the action
+     */
+    protected void selectTemplateEditAction(final CommandAction cmdAction)
     {
         
         RecordSet                recordSet = (RecordSet)cmdAction.getProperty("template");
@@ -1671,7 +1679,7 @@ public class WorkbenchTask extends BaseTask
     {
         if (cmdAction.isAction(EDIT_TEMPLATE))
         {
-            editTemplate(cmdAction);
+            selectTemplateEditAction(cmdAction);
             
         } else if (cmdAction.isAction(EDIT_WORKBENCH))
         {
