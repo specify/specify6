@@ -373,7 +373,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
         JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, exportExcelCsvBtn};
         PanelBuilder controlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
-
+        controlBar.add(findPanel, cc.xy(1, 1));
         int x = 3;
         for (JComponent c : comps)
         {
@@ -403,16 +403,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         controllerPane.add(controlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(outerRSPanel.getPanel(), PanelType.Form.toString());
         
-        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
         PanelBuilder    builder    = new PanelBuilder(formLayout, this);
 
-        builder.add(mainPanel,          cc.xywh(1,1,11,1));
-        builder.add(findPanel,          cc.xy(1,3));
-        builder.add(controllerPane,     cc.xy(3,3));
-        builder.add(toggleCardImageBtn, cc.xy(5,3));
-        builder.add(carryForwardBtn,    cc.xy(7,3));
-        builder.add(saveBtn,            cc.xy(9,3));
-        builder.add(createSwitcher(),   cc.xy(11,3));
+        builder.add(mainPanel,          cc.xywh(1,1,9,1));
+        builder.add(controllerPane,     cc.xy(1,3));
+        builder.add(toggleCardImageBtn, cc.xy(3,3));
+        builder.add(carryForwardBtn,    cc.xy(5,3));
+        builder.add(saveBtn,            cc.xy(7,3));
+        builder.add(createSwitcher(),   cc.xy(9,3));
     }
     
     /**
