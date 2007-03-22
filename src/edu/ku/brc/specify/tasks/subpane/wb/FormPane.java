@@ -68,9 +68,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     protected Workbench          workbench;
     protected boolean            hasChanged        = false;
     protected Vector<InputPanel> uiComps           = new Vector<InputPanel>();
-    protected boolean            ignoreChanges     = false;
     protected boolean            isInImageMode     = false;
     protected JButton            controlPropsBtn   = null;
+    
+    protected boolean            ignoreChanges     = false;
     
     protected PropertyChangeListener focusListener = null;
 
@@ -202,6 +203,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         JTextArea textArea = new JTextArea("", 5, 45);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        textArea.getDocument().addDocumentListener(this);
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -221,8 +223,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         JComponent comp;
         if (type.equals("calendar_date"))
         {
-            comp = new ValFormattedTextField("Date"); 
-             
+            ValFormattedTextField txt = new ValFormattedTextField("Date"); 
+            txt.getDocument().addDocumentListener(this);
+            comp = txt;
+            
         } else if (type.equals("text"))
         {
             comp = createTextArea();
@@ -234,11 +238,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                 comp = createTextArea();
             } else
             {
-                comp = new ValTextField(15);
+                ValTextField txt = new ValTextField(15);
+                txt.getDocument().addDocumentListener(this);
+                comp = txt;
             }
         } else
         {
-            comp = new ValTextField(15);
+            ValTextField txt = new ValTextField(15);
+            txt.getDocument().addDocumentListener(this);
+            comp = txt;
         }
         return comp;
     }
@@ -256,14 +264,25 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
-        if (oldIndex != newIndex)
+        if (oldIndex != newIndex && isVisible())
         {
+            ignoreChanges = true;
+            
             WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(oldIndex);
             for (InputPanel p : uiComps)
             {
                 short col = p.getWbtmi().getViewOrder();
                 
-                if (p.getComp() instanceof GetSetValueIFace)
+                if (p.getComp() instanceof JTextField)
+                {
+                    String data     = ((JTextField)p.getComp()).getText();
+                    String cellData = wbRow.getData(col);
+                    if (StringUtils.isNotEmpty(cellData) || data != null)
+                    {
+                        wbRow.setData(data == null ? "" : data, col);
+                    }
+                    
+                } else if (p.getComp() instanceof GetSetValueIFace)
                 {
                     Object data     = ((GetSetValueIFace)p.getComp()).getValue();
                     String cellData = wbRow.getData(col);
@@ -286,6 +305,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                     wbRow.setData(((JTextField)p.getComp()).getText(), col);
                 }
             }
+            ignoreChanges = false;
         }
         return true;
     }
@@ -295,30 +315,33 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     public void indexChanged(int newIndex)
     {
-        ignoreChanges = true; 
-        WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(newIndex);
-        for (InputPanel p : uiComps)
+        if (isVisible())
         {
-            int col = p.getWbtmi().getViewOrder();
-            
-            if (p.getComp() instanceof GetSetValueIFace)
+            ignoreChanges = true; 
+            WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(newIndex);
+            for (InputPanel p : uiComps)
             {
-                ((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
+                int col = p.getWbtmi().getViewOrder();
                 
-            } else if (p.getComp() instanceof JScrollPane)
-            {
-                JScrollPane sc = (JScrollPane)p.getComp();
-                Component comp = sc.getViewport().getView();
-                if (comp instanceof JTextArea)
+                if (p.getComp() instanceof GetSetValueIFace)
                 {
-                    ((JTextArea)comp).setText(wbRow.getData(col));
+                    ((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
+                    
+                } else if (p.getComp() instanceof JScrollPane)
+                {
+                    JScrollPane sc = (JScrollPane)p.getComp();
+                    Component comp = sc.getViewport().getView();
+                    if (comp instanceof JTextArea)
+                    {
+                        ((JTextArea)comp).setText(wbRow.getData(col));
+                    }
+                } else
+                {
+                    ((JTextField)p.getComp()).setText(wbRow.getData(col));
                 }
-            } else
-            {
-                ((JTextField)p.getComp()).setText(wbRow.getData(col));
             }
+            ignoreChanges = false;
         }
-        ignoreChanges = false;
     }
 
     /* (non-Javadoc)
