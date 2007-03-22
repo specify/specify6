@@ -96,6 +96,10 @@ public class XLSImport implements DataImport
                         continue;
                     }
                     HSSFCell cell    = row.getCell(cellNum);
+                    if (cell == null)
+                    {
+                        continue;
+                    }
                     int      type    = cell.getCellType();
                     String   value   = "";
                     boolean  skip    = false;

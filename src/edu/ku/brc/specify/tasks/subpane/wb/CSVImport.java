@@ -84,7 +84,7 @@ public class CSVImport implements DataImport
                 for (int col = 0; col < csv.getColumnCount(); col++)
                 {
                     // Skip the column if it isn't found in the hash
-                    WorkbenchTemplateMappingItem wbtmi = colHash.get(col);
+                    WorkbenchTemplateMappingItem wbtmi = colHash.get((short) col);
                     if (wbtmi != null)
                     {
                         wbRow.setData(csv.get(col), wbtmi.getViewOrder());

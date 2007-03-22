@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Properties;
@@ -97,9 +98,9 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
-import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -851,14 +852,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         config.setHeaders(heads);
         
-        /* XXX Doesn't compile on Mac
-        Properties ConfiggedProps = config.getProperties();
-        for (String k : ConfiggedProps.stringPropertyNames())
+        props = config.getProperties();
+        Enumeration<?> keys = props.propertyNames();
+        while (keys.hasMoreElements())
         {
-            command.setProperty(k, ConfiggedProps.getProperty(k));
+            String key = (String) keys.nextElement();
+            command.setProperty(key, props.getProperty(key));
         }
-        */
-        
+
         CommandDispatcher.dispatch(command);
     }
     
