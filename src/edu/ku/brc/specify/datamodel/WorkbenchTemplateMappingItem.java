@@ -24,7 +24,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * 
+ * Items are sorted by ViewOrder
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
@@ -39,8 +39,9 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Integer           srcTableId;
     protected String            fieldName;
     protected String            caption;
-    protected Integer           viewOrder;
-    protected Integer           dataColumnIndex;
+    protected Integer           viewOrder;             // The Current View Order
+    protected Integer           cellDataColumn;        // The Column number that the DataItems use
+    protected Integer           origImportColumnIndex; // The index from the imported data file
     protected String            dataType;
     protected WorkbenchTemplate workbenchTemplate;
     protected Boolean           isExportableToContent;
@@ -77,7 +78,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         fieldName = null;
         caption = null;
         viewOrder = null;
-        dataColumnIndex = null;
+        cellDataColumn = null;
+        origImportColumnIndex = null;
         dataType = null;
         workbenchTemplate = null;
         tabOrder = null;
@@ -207,14 +209,14 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      * 
      */
     @Column(name = "DataColumnIndex", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getDataColumnIndex()
+    public Integer getOrigImportColumnIndex()
     {
-        return this.dataColumnIndex;
+        return this.origImportColumnIndex;
     }
 
-    public void setDataColumnIndex(Integer dataColumnIndex)
+    public void setOrigImportColumnIndex(Integer dataColumnIndex)
     {
-        this.dataColumnIndex = dataColumnIndex;
+        this.origImportColumnIndex = dataColumnIndex;
     }
 
     /**

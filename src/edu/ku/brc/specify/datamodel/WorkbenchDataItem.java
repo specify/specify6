@@ -147,7 +147,7 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @Column(name = "RowNumber", length = 32, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "RowNumber", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getRowNumber()
     {
         return this.rowNumber;
@@ -161,7 +161,7 @@ public class WorkbenchDataItem extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @Column(name = "ColumnNumber", length = 32, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "ColumnNumber", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getColumnNumber()
     {
         return this.columnNumber;

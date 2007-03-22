@@ -95,7 +95,7 @@ public class GridTableModel extends SpreadSheetModel
     /* (non-Javadoc)
      * @see javax.swing.table.AbstractTableModel#getColumnName(int)
      */
-    public String getColumnName(int column)
+    public String getColumnName(final int column)
     {
         if (headers != null)
         {

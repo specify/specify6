@@ -20,11 +20,11 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -310,6 +310,36 @@ public class WorkbenchTask extends BaseTask
             if (sbi.getTask() == this && sbi instanceof WorkbenchPaneSS)
             {
                 WorkbenchPaneSS wbp = (WorkbenchPaneSS)sbi;
+                
+                // XXX Ran into a Bug I can't duplicate so this 
+                // should help me track it down the follow should never be NULL
+                // but one of them was null
+                if (templateId == null)
+                {
+                    log.error("templateId is null");
+                    return count;
+                }
+                if (wbp == null)
+                {
+                    log.error("wbp is null");
+                    return count;
+                }
+                if (wbp.getWorkbench() == null)
+                {
+                    log.error("wbp.getWorkbench() is null");
+                    return count;
+                }
+                if (wbp.getWorkbench().getWorkbenchTemplate() == null)
+                {
+                    log.error("wbp.getWorkbench().getWorkbenchTemplate() is null");
+                    return count;
+                }
+                if (wbp.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateId() == null)
+                {
+                    log.error("wbp.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateId() is null");
+                    return count;
+                }
+                // END DEBUG
                 if (wbp.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateId().longValue() == templateId.longValue())
                 {
                     count++;
@@ -1379,13 +1409,20 @@ public class WorkbenchTask extends BaseTask
                 Vector<WorkbenchTemplateMappingItem> newItems = new Vector<WorkbenchTemplateMappingItem>(newWorkbenchTemplate.getWorkbenchTemplateMappingItems());
                 Vector<WorkbenchTemplateMappingItem> oldItems = new Vector<WorkbenchTemplateMappingItem>(workbenchTemplate.getWorkbenchTemplateMappingItems());
                 
+                Collections.sort(newItems);
+                Collections.sort(oldItems);
+                
                 // Copying over the New Items
                 // Start by looking at each new item and see if it is in the old list
                 // if it is in the old list then ignore it
                 // if it isn't in the old list than add it into the old template
                 
+                Hashtable<Integer, Integer> oldToNewIndex = new Hashtable<Integer, Integer>();
+                int newViewOrder = 0;
+                System.out.print("----------------------");
                 for (WorkbenchTemplateMappingItem wbtmi : newItems)
                 {
+                    System.out.print("For ["+wbtmi.getFieldName()+"] ");
                     // find a match
                     boolean foundMatch = false;
                     for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
@@ -1394,17 +1431,24 @@ public class WorkbenchTask extends BaseTask
                             oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
                         {
                             foundMatch = true;
+                            System.out.println("Found newViewOrder["+newViewOrder+"]");
+                            oldToNewIndex.put(oldWbtmi.getViewOrder(), newViewOrder);
+                            oldWbtmi.setViewOrder(newViewOrder++);
                             break;
                         }
                     }
                     if (!foundMatch)
                     {
+                        System.out.println("Not Found (New)["+newViewOrder+"]");
+                        //oldToNewIndex.put(newViewOrder, newViewOrder);
                         workbenchTemplate.getWorkbenchTemplateMappingItems().add(wbtmi);
+                        wbtmi.setViewOrder(newViewOrder++);
                         wbtmi.setWorkbenchTemplate(workbenchTemplate);
                     }
                 }
+                System.out.print("----------------------");
+                Hashtable<Integer, Integer> colDeletedHash     = new Hashtable<Integer, Integer>();
                 
-                Vector<Integer> columnsToBeDeleted = new Vector<Integer>();
                 // Removing the Items
                 // For each old item (it has to have a non-null ID) see if it is in the new list
                 // if it is not in the new then delete it
@@ -1431,47 +1475,58 @@ public class WorkbenchTask extends BaseTask
                     {
                         workbenchTemplate.getWorkbenchTemplateMappingItems().remove(oldWbtmi);
                         oldWbtmi.setWorkbenchTemplate(null);
-                        columnsToBeDeleted.add(oldWbtmi.getViewOrder());
+                        colDeletedHash.put(oldWbtmi.getViewOrder(), oldWbtmi.getViewOrder());
                     }
                 }
-                
-                //System.out.println("Removing Columns:");
-                //for (Integer col : columnsToBeDeleted)
-                //{
-                //    System.out.println(col);
-                //}
+
+                /*
+                System.out.println("Mapping Columns:");
+                for (Integer oldInx : oldToNewIndex.keySet())
+                {
+                    System.out.println("["+oldInx+"]["+oldToNewIndex.get(oldInx)+"]");
+                }
+                System.out.println("");
+                */
                 
                 session.beginTransaction();
-
-                //Vector<WorkbenchDataItem> itemsToBeDeleted = new Vector<WorkbenchDataItem>();
+                session.saveOrUpdate(workbenchTemplate);
+                session.commit();
+                session.flush();
+                
                 for (Workbench workbench : workbenchTemplate.getWorkbenches())
                 {
                     session.attach(workbench);
-                    
+                    session.beginTransaction();
+   
                     for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
                     {
                         Vector<WorkbenchDataItem> items = new Vector<WorkbenchDataItem>(row.getWorkbenchDataItems());
                         for (WorkbenchDataItem item : items)
                         {
-                            for (Integer col : columnsToBeDeleted)
+                            boolean wasDeleted = false;
+                            if (colDeletedHash.get(item.getColumnNumber()) != null)
                             {
-                                if (item.getColumnNumber().intValue() == col.intValue())
-                                {
-                                    row.getWorkbenchDataItems().remove(item);
-                                    item.setWorkbenchRow(null);
-                                    session.delete(item);
-                                }
+                                row.getWorkbenchDataItems().remove(item);
+                                item.setWorkbenchRow(null);
+                                session.delete(item);
+                                wasDeleted = true;
+                            }
+                            
+                            if (!wasDeleted)
+                            {
+                                System.out.print("Before: "+item.getColumnNumber());
+                                item.setColumnNumber(oldToNewIndex.get(item.getColumnNumber()));
+                                System.out.println(" After: "+item.getColumnNumber());
+                                session.saveOrUpdate(item);
                             }
                         }
+                        session.saveOrUpdate(row);
                     }
                     session.saveOrUpdate(workbench);
+                    session.commit();
+                    session.flush();
                     session.evict(workbench);
                 }
-                //StringBuffer strBuf = new StringBuilder("delete from workbenchdataitem where WorkbenchDataItem");
-            
-                session.saveOrUpdate(workbenchTemplate);
-                session.commit();
-                session.flush();
                 
             } catch (Exception ex)
             {
@@ -1562,6 +1617,7 @@ public class WorkbenchTask extends BaseTask
         RecordSet                recordSet = (RecordSet)cmdAction.getProperty("template");
         DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
         WorkbenchTemplate        workbenchTemplate  = session.get(WorkbenchTemplate.class, recordSet.getOnlyItem().getRecordId());
+        // Load the Template's workbench's into memory
         for (Workbench wb : workbenchTemplate.getWorkbenches())
         {
             wb.getWorkbenchId();
@@ -1570,7 +1626,7 @@ public class WorkbenchTask extends BaseTask
         
         String[] options = {getResourceString("WB_EDIT_MAPPINGS"), 
                             getResourceString("WB_EDIT_TEMPLATE_INFO"), 
-                            getResourceString("WB_CREATE_EMPTY_DATASET")};
+                            String.format(getResourceString("WB_CREATE_EMPTY_DATASET"), new Object[] {workbenchTemplate.getName()})};
         Vector<String> items = new Vector<String>();
         Collections.addAll(items, options);
         
@@ -1582,8 +1638,10 @@ public class WorkbenchTask extends BaseTask
                 null, 
                 ToggleButtonChooserDlg.Type.RadioButton);
         
+        dlg.setUseScrollPane(false);
         dlg.setSelectedIndex(0);
         dlg.setModal(true);
+        //UIHelper.centerAndShow(dlg);
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())

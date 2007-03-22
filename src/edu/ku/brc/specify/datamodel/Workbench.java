@@ -404,7 +404,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     @Transient
     public Vector<WorkbenchRow> getWorkbenchRowsAsList()
     { 
-        if (rows.size() == 0)
+        if (rows.size() == 0 && workbenchRows.size() > 0)
         {
             rows.addAll(workbenchRows);
             Collections.sort(rows);
@@ -565,7 +565,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
                 // look for a Latitude1 field
                 if (item.getFieldName().equals(fieldName))
                 {
-                    return item.getDataColumnIndex();
+                    return item.getOrigImportColumnIndex();
                 }
             }
         }

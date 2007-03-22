@@ -543,7 +543,7 @@ public class ChooseFromListDlg<T> extends JDialog
         {
             createUI();
         }
-
+        UIHelper.centerWindow(this);
         super.setVisible(visible);
     }
 

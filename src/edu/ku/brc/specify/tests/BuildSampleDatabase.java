@@ -882,7 +882,11 @@ public class BuildSampleDatabase
         WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, "BasicTemplate", "These are the remarks");
         Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
         WorkbenchTemplateMappingItem wbtmi = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "fieldNumber", "Field Number", "string", 1, wbTemplate);
+                                                                        1, "fieldNumber", "Field Number", "string", 0, 0, wbTemplate);
+        WorkbenchTemplateMappingItem wbtmi1 = createWorkbenchMappingItem("CollectionObject", 
+                                                                        1, "catalogedDate", "Cataloged Date", "Date", 1, 1, wbTemplate);
+        WorkbenchTemplateMappingItem wbtmi2 = createWorkbenchMappingItem("CollectionObject", 
+                                                                        1, "catalogNumber", "Catalog Number", "string", 2, 2, wbTemplate);
 
         dataObjects.add(wbTemplate);
         dataObjects.add(workBench);
@@ -890,7 +894,9 @@ public class BuildSampleDatabase
         for (int i = 1; i <= 4; ++i)
         {
             WorkbenchRow wbRow = workBench.addRow();
-            WorkbenchDataItem wbdi = createWorkbenchDataItem(wbRow, "RS-10" + i, 1);
+            WorkbenchDataItem wbdi  = createWorkbenchDataItem(wbRow, "RS-10" + i, 0);
+            WorkbenchDataItem wbdi1 = createWorkbenchDataItem(wbRow, "03/04/2007" + i, 1);
+            WorkbenchDataItem wbdi2 = createWorkbenchDataItem(wbRow, "CN-10" + i, 2);
             File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
 //            byte[] imageData = null;
 //            try
@@ -916,7 +922,12 @@ public class BuildSampleDatabase
             }
             
             dataObjects.add(wbtmi);
+            dataObjects.add(wbtmi1);
+            dataObjects.add(wbtmi2);
+            
             dataObjects.add(wbdi);
+            dataObjects.add(wbdi1);
+            dataObjects.add(wbdi2);
         }
         
         

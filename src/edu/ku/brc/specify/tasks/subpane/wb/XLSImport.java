@@ -90,7 +90,7 @@ public class XLSImport implements DataImport
 
                 for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
                 {
-                    short cellNum = wbtmi.getDataColumnIndex().shortValue();
+                    short cellNum = wbtmi.getOrigImportColumnIndex().shortValue();
                     if (cellNum == -1)
                     {
                         continue;

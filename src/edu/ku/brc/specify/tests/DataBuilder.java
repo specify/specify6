@@ -2171,6 +2171,7 @@ public class DataBuilder
                                                                           final String caption,
                                                                           final String dataType,
                                                                           final Integer viewOrder,
+                                                                          final Integer dataColumnIndex,
                                                                           final WorkbenchTemplate template)
     {
         WorkbenchTemplateMappingItem wtmi = new WorkbenchTemplateMappingItem();
@@ -2182,6 +2183,7 @@ public class DataBuilder
         wtmi.setTableName(tableName);
         wtmi.setViewOrder(viewOrder);
         wtmi.setTabOrder(viewOrder);  // set initial tab order to the view order
+        wtmi.setOrigImportColumnIndex(dataColumnIndex);
         wtmi.setWorkbenchTemplate(template);
         wtmi.setSrcTableId(tableId);
         

@@ -779,7 +779,7 @@ public class ColumnMapperPanel extends JPanel
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());
                 item.setViewOrder(order);
-                item.setDataColumnIndex(fmp.isNew() ? -1 : colInfo.getColInx());
+                item.setOrigImportColumnIndex(fmp.isNew() ? -1 : colInfo.getColInx());
                 item.setTabOrder(order);  // set initial tab order to the view order
                 order++;
                 item.setWorkbenchTemplate(wbTemplate);

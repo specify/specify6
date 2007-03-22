@@ -16,7 +16,6 @@ package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -62,13 +61,22 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
     
     // Data Members
     protected JButton               cancelBtn;
-    protected JButton               okBtn;
+    protected JButton               okBtn       =  null;
     protected List<T>               items;
-    protected Vector<JToggleButton> buttons      = new Vector<JToggleButton>(10);
+    protected Vector<JToggleButton> buttons     = new Vector<JToggleButton>(10);
     protected ImageIcon             icon        = null;
     protected boolean               isCancelled = false;
     
     protected ButtonGroup           group       = null;
+    
+    // Needed for Delayed Creation
+    protected String                title       = null;
+    protected String                desc        = null;
+    protected Type                  uiType      = null;
+    protected int                   initialSelectedIndex = -1;
+    
+    // This means it should build it as a vertical list with no scrollpane
+    protected boolean               useScrollPane = false;
 
     /**
      * Constructor.
@@ -120,9 +128,11 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
         
         this.items  = listItems;
         this.icon   = icon;
+        this.title  = title;
+        this.desc   = desc;
+        this.uiType = uiType;
 
-        createUI(title, desc, uiType);
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
@@ -131,30 +141,34 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      * @param title dialog title
      * @param desc description label above list (optional)
      */
-    protected void createUI(final String title, final String desc, final Type uiType)
+    protected void createUI()
     {
         setTitle(getResourceString(title));
         
-        JPanel panel = new JPanel(new BorderLayout());
+        int rows = desc != null ? 3 : 2;
+        int y    = 1;
+        CellConstraints cc         = new CellConstraints();
+        PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", rows)));
+        JPanel          panel      = panelBlder.getPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
         if (desc != null)
         {
             JLabel lbl = new JLabel(getResourceString(desc), SwingConstants.CENTER);
-            panel.add(lbl, BorderLayout.NORTH);
-            //panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
+            panelBlder.add(lbl, cc.xy(1, y)); y += 2;
         }
         
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "1px", items.size())));
-        CellConstraints cc         = new CellConstraints();
-        
-        JPanel listPanel = builder.getPanel();
-        listPanel.setBackground(Color.WHITE);
+        PanelBuilder listBldr  = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", items.size())));
+        JPanel       listPanel = listBldr.getPanel();
         listPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-        listPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), listPanel.getBorder()));
-
+        if (useScrollPane)
+        {
+            listPanel.setBackground(Color.WHITE);
+            listPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), listPanel.getBorder()));
+        }
+        
         group = uiType == Type.Checkbox ? null : new ButtonGroup();
 
-        int y = 1;
+        int yy = 1;
         for (Object obj : items)
         {
             JToggleButton togBtn;
@@ -166,22 +180,18 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
                 togBtn = new JRadioButton(obj.toString());
                 group.add(togBtn);
             }
-            //Dimension size = togBtn.getPreferredSize();
-            //SYstem.out.println()
-            //togBtn.setSize(size);
-            //togBtn.setPreferredSize(size);
             
             togBtn.setOpaque(false);
             togBtn.addChangeListener(this);
             buttons.add(togBtn);
-            listPanel.add(togBtn, cc.xy(1, y));
-            y += 2;
+            listPanel.add(togBtn, cc.xy(1, yy));
+            yy += 2;
         }
         Dimension size = listPanel.getPreferredSize();
         listPanel.setSize(size);
         listPanel.setPreferredSize(size);
 
-        if (buttons.size() > 0)
+        if (buttons.size() > 0 && useScrollPane)
         {
             JToggleButton togBtn = buttons.get(0);
             Dimension     dim    = getPreferredSize();
@@ -189,12 +199,19 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
             listPanel.setPreferredSize(dim);
         }
 
-        JScrollPane listScroller = new JScrollPane(listPanel);
-        Dimension psize = listScroller.getViewport().getPreferredSize();
-        psize.width = size.width + 15; // add 15 for scrollbar
-        listScroller.getViewport().setSize(psize);
-        listScroller.getViewport().setPreferredSize(psize);
-        panel.add(listScroller, BorderLayout.CENTER);
+        if (useScrollPane)
+        {
+            JScrollPane listScroller = new JScrollPane(listPanel);
+            Dimension   psize        = listScroller.getViewport().getPreferredSize();
+            psize.width = size.width + 15; // add 15 for scrollbar
+            listScroller.getViewport().setSize(psize);
+            listScroller.getViewport().setPreferredSize(psize);
+            panelBlder.add(listScroller, cc.xy(1, y)); y += 2;
+            
+        } else
+        {
+            panelBlder.add(listPanel, cc.xy(1, y)); y += 2;
+        }
 
         // Bottom Button UI
         cancelBtn         = new JButton(getResourceString("Cancel"));
@@ -209,13 +226,31 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
         cancelBtn.addActionListener(new ActionListener()
                     {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
 
-        panel.add(btnBar, BorderLayout.SOUTH);
+        panelBlder.add(btnBar, cc.xy(1, y)); y += 2;
 
         setContentPane(panel);
         pack();
+        
+        if (initialSelectedIndex != -1)
+        {
+            setSelectedIndex(initialSelectedIndex);
+        }
 
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.Component#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(final boolean visible)
+    {
+        if (okBtn == null && visible)
+        {
+            createUI();
+        }
+        UIHelper.centerWindow(this);
+        super.setVisible(visible);
+    }
 
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -223,6 +258,14 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
     public void actionPerformed(ActionEvent e)
     {
         setVisible(false);
+    }
+
+    /**
+     * @param suppressScrollPane the suppressScrollPane to set
+     */
+    public void setUseScrollPane(boolean useScrollPane)
+    {
+        this.useScrollPane = useScrollPane;
     }
 
     /**
@@ -249,9 +292,15 @@ public class ToggleButtonChooserDlg<T> extends JDialog implements ChangeListener
      */
     public void setSelectedIndex(final int index)
     {
-        if (index > -1 && index < buttons.size())
+        if (okBtn != null)
         {
-            buttons.get(index).setSelected(true);
+            if (index > -1 && index < buttons.size())
+            {
+                buttons.get(index).setSelected(true);
+            }
+        } else
+        {
+            initialSelectedIndex = index;
         }
     }
     

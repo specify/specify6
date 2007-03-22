@@ -138,6 +138,17 @@ public final class UIHelper
      */
     public static void centerAndShow(java.awt.Window window)
     {
+        centerWindow(window);
+
+        window.setVisible(true);
+    }
+
+    /**
+     * Center and make the window visible
+     * @param window the window to center
+     */
+    public static void centerWindow(java.awt.Window window)
+    {
         Rectangle screenRect = window.getGraphicsConfiguration().getBounds();
         Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
 
@@ -150,8 +161,6 @@ public final class UIHelper
         centerHeight = centerHeight < screenInsets.top ? screenInsets.top : centerHeight;
 
         window.setLocation(centerWidth, centerHeight);
-
-        window.setVisible(true);
     }
 
     /**
