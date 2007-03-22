@@ -40,9 +40,9 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected String            fieldName;
     protected String            caption;
     protected Short             viewOrder;             // The Current View Order
-    protected Short             cellDataColumn;        // The Column number that the DataItems use
     protected Short             origImportColumnIndex; // The index from the imported data file
     protected String            dataType;
+    protected Short             fieldLength;            // the length of the data from the specify Schema, usuall for strings.
     protected WorkbenchTemplate workbenchTemplate;
     protected Boolean           isExportableToContent;
     protected Boolean           isIncludedInTitle;
@@ -78,9 +78,9 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         fieldName = null;
         caption = null;
         viewOrder = null;
-        cellDataColumn = null;
         origImportColumnIndex = null;
         dataType = null;
+        fieldLength = -1;
         workbenchTemplate = null;
         tabOrder = null;
         xCoord = -1;
@@ -231,6 +231,23 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setDataType(String dataType)
     {
         this.dataType = dataType;
+    }
+
+    /**
+     * @return the fieldLength
+     */
+    @Column(name = "FieldLength", unique = false, nullable = true, insertable = true, updatable = true)
+    public Short getFieldLength()
+    {
+        return fieldLength;
+    }
+
+    /**
+     * @param fieldLength the fieldLength to set
+     */
+    public void setFieldLength(Short dataLength)
+    {
+        this.fieldLength = dataLength;
     }
 
     @Column(name = "TabOrder", unique = false, nullable = true, insertable = true, updatable = true)

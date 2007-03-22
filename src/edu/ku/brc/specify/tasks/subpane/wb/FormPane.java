@@ -11,6 +11,7 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
@@ -30,9 +31,14 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -187,6 +193,20 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(focusListener);
     }
 
+    /**
+     * Creates a JTextArea in a ScrollPane.
+     * @return the scollpane
+     */
+    protected JComponent createTextArea()
+    {
+        JTextArea textArea = new JTextArea("", 5, 45);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        return scrollPane;
+    }
     
     /**
      * Returns a UI component for editing.
@@ -195,16 +215,37 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType());
+        System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
         String type = wbtmi.getDataType();
         
+        JComponent comp;
         if (type.equals("calendar_date"))
         {
-             return new ValFormattedTextField("Date"); 
+            comp = new ValFormattedTextField("Date"); 
+             
+        } else if (type.equals("text"))
+        {
+            comp = createTextArea();
+            
+        } else if (type.equals("java.lang.String"))
+        {
+            if (wbtmi.getFieldLength() > 64)
+            {
+                comp = createTextArea();
+            } else
+            {
+                comp = new ValTextField(15);
+            }
+        } else
+        {
+            comp = new ValTextField(15);
         }
-        return new ValTextField(15);
+        return comp;
     }
     
+    /**
+     *  Show a properties dialog for the control.
+     */
     protected void showControlProps()
     {
         
@@ -215,6 +256,37 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
+        if (oldIndex != newIndex)
+        {
+            WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(oldIndex);
+            for (InputPanel p : uiComps)
+            {
+                short col = p.getWbtmi().getViewOrder();
+                
+                if (p.getComp() instanceof GetSetValueIFace)
+                {
+                    Object data     = ((GetSetValueIFace)p.getComp()).getValue();
+                    String cellData = wbRow.getData(col);
+                    if (StringUtils.isNotEmpty(cellData) || data != null)
+                    {
+                        wbRow.setData(data == null ? "" : data.toString(), col);
+                    }
+                    
+                } else if (p.getComp() instanceof JScrollPane)
+                {
+                    JScrollPane sc   = (JScrollPane)p.getComp();
+                    Component   comp = sc.getViewport().getView();
+                    if (comp instanceof JTextArea)
+                    {
+                        wbRow.setData(((JTextArea)comp).getText(), col);
+                    }
+                } else
+                {
+                    ((JTextField)p.getComp()).setText(wbRow.getData(col));
+                    wbRow.setData(((JTextField)p.getComp()).getText(), col);
+                }
+            }
+        }
         return true;
     }
 
@@ -233,6 +305,14 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             {
                 ((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
                 
+            } else if (p.getComp() instanceof JScrollPane)
+            {
+                JScrollPane sc = (JScrollPane)p.getComp();
+                Component comp = sc.getViewport().getView();
+                if (comp instanceof JTextArea)
+                {
+                    ((JTextArea)comp).setText(wbRow.getData(col));
+                }
             } else
             {
                 ((JTextField)p.getComp()).setText(wbRow.getData(col));
