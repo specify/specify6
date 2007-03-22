@@ -259,7 +259,6 @@ public class SpreadSheet  extends SearchableJXTable
      */
     public boolean editCellAt(int row, int column, EventObject ev)
     {
-        log.debug("editCellAt: row["+row+"] col[" + column+ "]" );
         return mouseDown ? false : super.editCellAt(row, column, ev);
     }
 
@@ -351,7 +350,6 @@ public class SpreadSheet  extends SearchableJXTable
      */
     public void processMouseEvent(MouseEvent ev)
     {
-        log.debug("processMouseEvent");
         int type = ev.getID();
         int modifiers = ev.getModifiers();
         
