@@ -152,9 +152,12 @@ public class CardImageFrame extends JFrame
         cardImageLabel.setIcon(cardImage);
         reduceMenuItem.setSelected(true);
         origMenuItem.setSelected(false);
-        cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-        mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-        mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+        if (cardImage != null)
+        {
+            cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+            mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+            mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+        }
         mainPane.repaint();
     }
     
@@ -174,8 +177,11 @@ public class CardImageFrame extends JFrame
         cardImageLabel.setIcon(cardImage);
         reduceMenuItem.setSelected(false);
         origMenuItem.setSelected(true);
-        mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-        mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+        if (cardImage != null)
+        {
+            mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+            mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+        }
         mainPane.repaint();
     }
     
