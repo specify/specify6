@@ -644,7 +644,7 @@ public class BioGeoMancerMapper implements TimingTarget
         if( !cacheValid )
         {
             Image mapImage = getMapFromService("mapus.jpl.nasa.gov",
-                    "/browse.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
+                    "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
                     "global_mosaic",
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 
