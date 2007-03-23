@@ -1030,10 +1030,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         dialog.setLocation(0,0);
         dialog.pack();
         ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
-        if (icon != null)
-        {
-            dialog.setIconImage(icon.getImage());
-        }
+//        if (icon != null)
+//        {
+//            dialog.setIconImage(icon.getImage());
+//        }
         dialog.setVisible(true);
     }
     
