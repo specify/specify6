@@ -15,8 +15,7 @@
 package edu.ku.brc.ui.forms.persist;
 
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -66,7 +65,7 @@ public final class FormCellField extends FormCell
     protected boolean  isTextField    = false;
     protected boolean  isDSPTextField = false;
 
-    protected Hashtable<String, String> properties = null;
+    protected Properties properties = null;
 
     /**
      * Constructor
@@ -139,7 +138,7 @@ public final class FormCellField extends FormCell
         setDspUIType(dspUIType);
     }
 
-    public void setProperties(final Hashtable<String, String> properties)
+    public void setProperties(final Properties properties)
     {
         this.properties = properties;
     }
@@ -148,7 +147,7 @@ public final class FormCellField extends FormCell
     {
         if (properties == null)
         {
-            properties = new Hashtable<String, String>();
+            properties = new Properties();
         }
         properties.put(nameStr, value);
     }
@@ -157,7 +156,7 @@ public final class FormCellField extends FormCell
     {
         if (properties != null)
         {
-            return properties.get(nameStr);
+            return properties.getProperty(nameStr);
         }
         return null;
     }
@@ -166,7 +165,7 @@ public final class FormCellField extends FormCell
     {
         if (properties != null)
         {
-            String str = properties.get(nameStr);
+            String str = properties.getProperty(nameStr);
             if (StringUtils.isNotEmpty(str))
             {
                 return Integer.parseInt(str);
@@ -182,7 +181,7 @@ public final class FormCellField extends FormCell
     {
         if (properties != null)
         {
-            String str = properties.get(nameStr);
+            String str = properties.getProperty(nameStr);
             if (StringUtils.isNotEmpty(str))
             {
                 return str.equalsIgnoreCase("true");
@@ -381,7 +380,7 @@ public final class FormCellField extends FormCell
         this.validationType = validationType;
     }
 
-    public Map<String, String> getProperties()
+    public Properties getProperties()
     {
         return properties;
     }
@@ -411,7 +410,7 @@ public final class FormCellField extends FormCell
         fcf.validationRule = validationRule;
         fcf.isTextField = isTextField;
         fcf.isDSPTextField = isDSPTextField;
-        fcf.properties = properties != null ? (Hashtable<String, String>)properties.clone() : null;
+        fcf.properties = properties != null ? (Properties)properties.clone() : null;
         return fcf;      
     }
 

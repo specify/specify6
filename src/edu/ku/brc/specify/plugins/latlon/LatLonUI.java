@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.Hashtable;
-import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -414,13 +414,12 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Map, boolean)
+     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(final Map<String, String> properties, final boolean isViewMode)
+    public void initialize(final Properties properties, final boolean isViewMode)
     {
         this.isDisplayOnly = isViewMode;
         createEditUI();
-
     }
     
     /* (non-Javadoc)

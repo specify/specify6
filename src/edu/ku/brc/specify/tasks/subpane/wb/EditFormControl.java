@@ -19,18 +19,21 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -50,15 +53,21 @@ import edu.ku.brc.ui.validation.ValSpinner;
  * Created Date: Mar 22, 2007
  *
  */
-public class EditFormControl extends CustomDialog
+public class EditFormControl extends CustomDialog implements ChangeListener, DocumentListener
 {
     protected InputPanel inputPanel;
-    protected JPanel     canvasPanel;
+    protected FormPane   formPane;
     
     protected ValSpinner xCoord;
     protected ValSpinner yCoord;
     protected ValSpinner fieldWidth;
-    protected JTextField label;
+    protected JTextField labelTF;
+    
+    protected String     origLabel;
+    protected Point      origLocation;
+    protected int        origFieldLen;
+    
+    protected Hashtable<Object, Boolean> changeTracker = new Hashtable<Object, Boolean>();
     
     /**
      * Constructor.
@@ -69,15 +78,15 @@ public class EditFormControl extends CustomDialog
      * @param contentPanel the contentpane
      * @throws HeadlessException
      */
-    public EditFormControl(final Frame     frame, 
-                           final String    title, 
+    public EditFormControl(final Frame      frame, 
+                           final String     title, 
                            final InputPanel inputPanel,
-                           final JPanel     canvasPanel) throws HeadlessException
+                           final FormPane   canvasPanel) throws HeadlessException
     {
-        super(frame, title, true, OKCANCELAPPLYHELP, null);
+        super(frame, title, false, OKCANCELAPPLYHELP, null);
         
         this.inputPanel  = inputPanel;
-        this.canvasPanel = canvasPanel;
+        this.formPane = canvasPanel;
     }
 
     /* (non-Javadoc)
@@ -93,7 +102,7 @@ public class EditFormControl extends CustomDialog
         PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", 10)));
         JPanel          panel      = panelBlder.getPanel();
         
-        Dimension canvasSize  = canvasPanel.getSize();
+        Dimension canvasSize  = formPane.getSize();
         Dimension controlSize = inputPanel.getSize();
         
         panelBlder.add(new JLabel("X:", JLabel.RIGHT), cc.xy(1, y));
@@ -105,7 +114,7 @@ public class EditFormControl extends CustomDialog
         y += 2;
         
         panelBlder.add(new JLabel("Label:", JLabel.RIGHT), cc.xy(1, y));
-        panelBlder.add(label = new JTextField(25), cc.xywh(3, y, 2, 1));
+        panelBlder.add(labelTF = new JTextField(25), cc.xywh(3, y, 2, 1));
         y += 2;
         
         if (inputPanel.getComp() instanceof JTextField)
@@ -115,78 +124,188 @@ public class EditFormControl extends CustomDialog
             y += 2;
         }
         
-        Point location = inputPanel.getLocation();
-        xCoord.setValue(((Double)location.getX()).intValue());
-        yCoord.setValue(((Double)location.getY()).intValue());
-        fieldWidth.setValue(((JTextField)inputPanel.getComp()).getColumns());
-        label.setText(inputPanel.getLabel().getText());
-        
-        applyBtn.addActionListener(new ActionListener() {
-           public void actionPerformed(ActionEvent e)
-           {
-               //Point location = inputPanel.getLocation();
-               //location
-               inputPanel.setLocation(((Integer)xCoord.getValue()).intValue(), ((Integer)yCoord.getValue()).intValue());
-               inputPanel.getWbtmi().setCaption(label.getText());
-               
-               JLabel      lbl      = inputPanel.getLabel();
-               FontMetrics fm       = lbl.getFontMetrics(lbl.getFont());
-               int         oldWidth = fm.stringWidth(lbl.getText());
-               
-               //System.out.println(lbl.getPreferredSize());
-               
-               lbl.setText(label.getText());
-               int newWidth = fm.stringWidth(lbl.getText());
-               int diff = newWidth - oldWidth;
-               
-               //lbl.validate();
-               //inputPanel.doLayout();
-               
-               Dimension newSize = lbl.getPreferredSize();
-               newSize.width += diff;
-               newSize.width = newWidth;
-               
-               System.out.println(newSize+" diff "+diff);
-               lbl.setSize(newSize);
-               lbl.setPreferredSize(newSize);
-
-               System.out.println("OLD:      "+inputPanel.getPreferredSize());
-               System.out.println("OLD Comp: "+inputPanel.getComp().getPreferredSize());
-
-               if (inputPanel.getComp() instanceof JTextField)
-               {
-                   ((JTextField)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
-               }
-               /*
-               inputPanel.validate();
-               inputPanel.invalidate();
-               inputPanel.doLayout();
-               inputPanel.repaint();
-               */
-               newSize = inputPanel.getSize();
-               System.out.println("New: "+newSize);
-               System.out.println("New: "+inputPanel.getComp().getPreferredSize());
-                             //newSize.width += diff;
-               
-               Rectangle bounds = inputPanel.getBounds();
-               //inputPanel.setSize(newSize);
-               //inputPanel.setPreferredSize(newSize);
-               bounds.width = newSize.width;
-               inputPanel.setBounds(bounds);
-               
-               inputPanel.validate();
-               inputPanel.invalidate();
-               inputPanel.doLayout();
-               inputPanel.repaint();
-           }
-        });
-        
+        fill();
+         
+        xCoord.addChangeListener(this);
+        yCoord.addChangeListener(this);
+        fieldWidth.addChangeListener(this);
+        labelTF.getDocument().addDocumentListener(this);
 
         mainPanel.add(panel, BorderLayout.CENTER);
         
         pack();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#applyButtonPressed()
+     */
+    @Override
+    protected void applyButtonPressed()
+    {
+        adjustControl();
+        super.applyButtonPressed();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
+     */
+    @Override
+    protected void cancelButtonPressed()
+    {
+        reset();
+        super.cancelButtonPressed();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#helpButtonPressed()
+     */
+    @Override
+    protected void helpButtonPressed()
+    {
+        super.helpButtonPressed();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+     */
+    @Override
+    protected void okButtonPressed()
+    {
+        adjustControl();
+        
+        inputPanel.getWbtmi().setXCoord((short)((Integer)xCoord.getValue()).intValue());
+        inputPanel.getWbtmi().setYCoord((short)((Integer)yCoord.getValue()).intValue());
+        inputPanel.getWbtmi().setCaption(labelTF.getText());
+        inputPanel.getWbtmi().setMetaData("columns="+((Integer)xCoord.getValue()).intValue());
+
+        formPane.getWorkbenchPane().setChanged(true);
+        
+        super.okButtonPressed();
+    }
     
+    /**
+     * Sets in a new component to edit.
+     * @param inputPanel the input panel component.
+     */
+    public void setControl(final InputPanel inputPanel)
+    {
+        if (changeTracker.size() != 0)
+        {
+            // ask to save changes
+        }
+        this.inputPanel = inputPanel;
+        fill();
+    }
+
+    /**
+     * Fills in the initial values.
+     */
+    protected void fill()
+    {
+        Point location = inputPanel.getLocation();
+        xCoord.setValue(((Double)location.getX()).intValue());
+        yCoord.setValue(((Double)location.getY()).intValue());
+        labelTF.setText(inputPanel.getLabel().getText());
+        
+        origLabel    = inputPanel.getLabel().getText();
+        origLocation = new Point(location.x, location.y);
+        
+        if (inputPanel.getComp() instanceof JTextField)
+        {
+            int cols = ((JTextField)inputPanel.getComp()).getColumns();
+            String metaData = inputPanel.getWbtmi().getMetaData();
+            if (StringUtils.isNotEmpty(metaData))
+            {
+                Properties props = UIHelper.parseProperties(metaData);
+                if (props != null)
+                {
+                    String columnsStr = props.getProperty("columns");
+                    if (StringUtils.isNotEmpty(columnsStr))
+                    {
+                        int val = Integer.parseInt(columnsStr);
+                        if (val > 0 && val < 65)
+                        {
+                            cols = val;
+                        }
+                    }
+                }
+            }
+            
+            fieldWidth.setValue(cols);
+            origFieldLen = cols;
+        }
+        changeTracker.clear();
+    }
     
+    /**
+     * Resets all values back to original. 
+     */
+    protected void reset()
+    {
+        xCoord.setValue(origLocation.x);
+        yCoord.setValue(origLocation.y);
+        labelTF.setText(origLabel);
+
+        if (inputPanel.getComp() instanceof JTextField)
+        {
+            fieldWidth.setValue(origFieldLen);
+        }
+        adjustControl();
+    }
+    
+    /**
+     * Adjust the controls per the changes. 
+     */
+    protected void adjustControl()
+    {
+
+        if (changeTracker.get(xCoord) != null || changeTracker.get(yCoord) != null)
+        {
+            inputPanel.setLocation(((Integer)xCoord.getValue()).intValue(), ((Integer)yCoord.getValue()).intValue());
+        }
+        
+        boolean doResize = false;
+        
+        if (changeTracker.get(labelTF.getDocument()) != null)
+        {
+            inputPanel.getLabel().setText(labelTF.getText());
+            doResize = true;
+        }
+        
+        if (changeTracker.get(fieldWidth) != null)
+        {
+            if (inputPanel.getComp() instanceof JTextField)
+            {
+                ((JTextField)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
+            }
+            doResize = true;
+        }
+        
+        if (doResize)
+        {
+            inputPanel.doLayout();
+            inputPanel.repaint();
+        }
+        changeTracker.clear();
+    }
+    
+    public void stateChanged(ChangeEvent e)
+    {
+        changeTracker.put(e.getSource(), true);
+    }
+    
+    public void insertUpdate(DocumentEvent e)
+    {
+        changeTracker.put(e.getDocument(), true);
+    }
+    
+    public void removeUpdate(DocumentEvent e)
+    {
+        changeTracker.put(e.getDocument(), true);
+    }
+    
+    public void changedUpdate(DocumentEvent e)
+    {
+        changeTracker.put(e.getDocument(), true);
+    }
 }

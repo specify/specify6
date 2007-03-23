@@ -13,7 +13,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
-import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -222,17 +222,16 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Map, boolean)
+     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(final Map<String, String> properties, final boolean isViewMode)
+    public void initialize(final Properties properties, final boolean isViewMode)
     {
         this.isDisplayOnly = isViewMode;
         
-        dateFieldName = properties.get("dateField");
-        dateTypeName  = properties.get("dateTypeField");
+        dateFieldName = properties.getProperty("dateField");
+        dateTypeName  = properties.getProperty("dateTypeField");
         
         createUI();
-
     }
 
     /* (non-Javadoc)

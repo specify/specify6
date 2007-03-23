@@ -157,9 +157,7 @@ public class CustomDialog extends JDialog
         {
             public void actionPerformed(ActionEvent ae)
             {
-                isCancelled = false;
-                btnPressed  = OK_BTN;
-                setVisible(false);
+                okButtonPressed();
             }
         });
         getRootPane().setDefaultButton(okBtn);
@@ -172,9 +170,7 @@ public class CustomDialog extends JDialog
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    isCancelled = true;
-                    btnPressed  = CANCEL_BTN;
-                    setVisible(false);
+                    cancelButtonPressed();
                 }
             });
         }
@@ -191,8 +187,7 @@ public class CustomDialog extends JDialog
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        isCancelled = false;
-                        btnPressed  = HELP_BTN;
+                        helpButtonPressed();
                     }
                 }); 
             }
@@ -205,8 +200,7 @@ public class CustomDialog extends JDialog
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    isCancelled = false;
-                    btnPressed  = APPLY_BTN;
+                    applyButtonPressed();
                 }
             });
         }
@@ -250,6 +244,44 @@ public class CustomDialog extends JDialog
         
         setLocationRelativeTo(this.getOwner());
 
+    }
+    
+    /**
+     * Performs cancel action.
+     */
+    protected void cancelButtonPressed()
+    {
+        isCancelled = true;
+        btnPressed  = CANCEL_BTN;
+        setVisible(false);
+    }
+
+    /**
+     * Performs ok action.
+     */
+    protected void okButtonPressed()
+    {
+        isCancelled = false;
+        btnPressed  = OK_BTN;
+        setVisible(false);
+    }
+
+    /**
+     * Performs help action.
+     */
+    protected void helpButtonPressed()
+    {
+        isCancelled = false;
+        btnPressed  = HELP_BTN;
+    }
+
+    /**
+     * Performs apply action.
+     */
+    protected void applyButtonPressed()
+    {
+        isCancelled = false;
+        btnPressed  = HELP_BTN;
     }
 
     /**
@@ -301,8 +333,10 @@ public class CustomDialog extends JDialog
         if (okBtn == null && visible)
         {
             createUI();
+            UIHelper.centerWindow(this);
+            
         }
-        UIHelper.centerWindow(this);
+        
         super.setVisible(visible);
     }
 

@@ -14,15 +14,13 @@ import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.KeyboardFocusManager;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +28,6 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -74,12 +71,13 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     
     protected boolean            ignoreChanges     = false;
     
-    protected PropertyChangeListener focusListener = null;
     protected InputPanel         selectedInputPanel = null;   
 
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     
     protected List<DataFlavor>   dropFlavors  = new ArrayList<DataFlavor>();
+    
+    protected EditFormControl    controlProperties = null;
     
     /**
      * Creates a Pane for editing a Workbench as a form.
@@ -99,7 +97,35 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
         
-        int maxWidth =0;
+        MouseAdapter clickable = new MouseAdapter()
+        {
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
+                {
+                    showControlProps();
+                }
+                
+                selectedInputPanel = (InputPanel)((Component)e.getSource()).getParent();
+                controlPropsBtn.setEnabled(true);
+                
+                if (controlProperties != null)
+                {
+                    controlProperties.setControl(selectedInputPanel);
+                }
+            }
+        };
+        
+        addMouseListener(new MouseAdapter()
+        {
+            public void mouseClicked(MouseEvent e)
+            {
+                selectedInputPanel = null;
+                controlPropsBtn.setEnabled(false);
+            }
+        });
+        
+        int maxWidthOffset = 0;
         int x = 5;
         int y = 5;
         for (WorkbenchTemplateMappingItem wbtmi : headers)
@@ -107,12 +133,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             InputPanel p = new InputPanel(wbtmi, wbtmi.getCaption()+":", createUIComp(wbtmi));
             p.createMouseInputAdapter(); // this makes it draggable
             p.getMouseInputAdapter().setDropCanvas(this);
+            
+            p.getLabel().addMouseListener(clickable);
+            p.getComp().addMouseListener(clickable);
 
             Dimension size = p.getPreferredSize();
             p.setSize(size);
             p.setPreferredSize(size);
             
-            maxWidth = Math.max(p.getLabel().getPreferredSize().width, maxWidth);
+            maxWidthOffset = Math.max(p.getTextFieldOffset(), maxWidthOffset);
             uiComps.add(p);
             add(p);
             
@@ -125,24 +154,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             
         }
         
+        // Now align the control by their text fields
         for (InputPanel p : uiComps)
         {
-            JLabel    lbl  = p.getLabel();
-            Dimension size = lbl.getPreferredSize();
-            int       diff = maxWidth - size.width;
-            size.width = maxWidth;
-            lbl.setSize(size);
-            lbl.setPreferredSize(size);
-            Rectangle r = lbl.getBounds();
-            r.width = maxWidth;
-            lbl.setBounds(r);
-            
-            r = p.getBounds();
-            r.width += diff;
-            p.setBounds(r);
-            
-            p.validate();
-            p.doLayout();
+            Point pLoc = p.getLocation();
+            p.setLocation(maxWidthOffset-p.getTextFieldOffset(), pLoc.y);
         }
         
         
@@ -153,33 +169,16 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                 showControlProps();
             }
         });
-        //controlPropsBtn.setEnabled(true);
-        
-        focusListener = new PropertyChangeListener() { 
-            public void propertyChange(PropertyChangeEvent e) 
-            { 
-                String prop = e.getPropertyName(); 
-                KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-                //System.out.println(prop+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
-                if (("focusOwner".equals(prop))) 
-                { 
-                    controlPropsBtn.setEnabled(focusManager.getFocusOwner() == controlPropsBtn);
-                    for (InputPanel ip : uiComps)
-                    {
-                        if (focusManager.getFocusOwner() == ip.getComp())
-                        {
-                            selectedInputPanel = ip;
-                            controlPropsBtn.setEnabled(true);
-                            break;
-                        }
-                    }
-                }
-            } 
-        };
-
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener(focusListener);
     }
     
+    /**
+     * @return WorkbenchPaneSS
+     */
+    public WorkbenchPaneSS getWorkbenchPane()
+    {
+        return workbenchPane;
+    }
+
     /**
      * @return the controlPropsBtn
      */
@@ -194,7 +193,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     public void cleanup()
     {
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().removePropertyChangeListener(focusListener);
+        if (controlProperties != null)
+        {
+            controlProperties.setVisible(false);
+            controlProperties.dispose();
+            controlProperties = null;
+        }
     }
 
     /**
@@ -259,10 +263,25 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     protected void showControlProps()
     {
-        EditFormControl dlg = new EditFormControl((Frame)UICacheManager.get(UICacheManager.FRAME), "Edit", selectedInputPanel, this);
-        dlg.setVisible(true);
+        if (controlProperties == null)
+        {
+            controlProperties = new EditFormControl((Frame)UICacheManager.get(UICacheManager.FRAME), "Edit", selectedInputPanel, this); // I18N
+        }
+        controlProperties.setVisible(true);
     }
     
+    
+    
+    @Override
+    public void setVisible(boolean aFlag)
+    {
+        if (!aFlag && controlProperties != null)
+        {
+            controlProperties.setVisible(false);
+        }
+        super.setVisible(aFlag);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
      */
@@ -378,7 +397,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             repaint();
             validate();
             doLayout();
-            workbenchPane.setChanged(true);
         }
     }
     

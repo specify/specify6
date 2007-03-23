@@ -33,10 +33,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UICacheManager;
@@ -47,9 +43,11 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
 
 /**
+ * Simple panel that doies it's own layout of a JLabel (Caption) and a JComponent. It is draggable on a panel (canvas).
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Mar 9, 2007
  *
@@ -82,24 +80,68 @@ public class InputPanel extends JPanel implements GhostActionable
     protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
     protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
     
-    public InputPanel(WorkbenchTemplateMappingItem wbtmi, String label, JComponent comp)
+    protected int                    textFieldOffset = 0;
+    
+    /**
+     * Constructs a panel with label and control.
+     * @param wbtmi the mapping template info
+     * @param label the label text
+     * @param comp the control
+     */
+    public InputPanel(final WorkbenchTemplateMappingItem wbtmi, 
+                      final String label, 
+                      final JComponent comp)
     {
-        CellConstraints cc         = new CellConstraints();
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g,2px,f:p:g", "p"), this);
+        setLayout(null);
         
         this.wbtmi = wbtmi;
         this.label = new JLabel(label, JLabel.RIGHT);
         this.comp  = comp;
         
-        builder.add(this.label, cc.xy(1, 1));
-        builder.add(comp, cc.xy(3, 1));
+        add(this.label);
+        add(this.comp);
         
         if (wbtmi.getXCoord() != null && wbtmi.getYCoord() != null)
         {
             setLocation(wbtmi.getXCoord(), wbtmi.getYCoord());
         }
+        doLayout();
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Container#doLayout()
+     */
+    @Override
+    public void doLayout()
+    {
+        Dimension labelSize = label.getPreferredSize();
+        Dimension compSize  = comp.getPreferredSize();
+        
+        Rectangle r = new Rectangle(0, (compSize.height - labelSize.height) / 2, labelSize.width, labelSize.height);
+        label.setBounds(r);
+        
+        r.y      = 0;
+        r.x      = r.width + 2;
+        r.width  = compSize.width;
+        r.height = compSize.height;
+        
+        comp.setBounds(r);
+        
+        textFieldOffset = r.x;
+        
+        setSize(r.x + r.width, r.height);
+        setPreferredSize(new Dimension(r.x + r.width, r.height));
+    }
+
+    /**
+     * Returns the number of pixels that the text field is positioned at horizontally.
+     * @return the number of pixels that the text field is positioned at horizontally.
+     */
+    public int getTextFieldOffset()
+    {
+        return textFieldOffset;
+    }
+
     /**
      * @return the comp
      */
@@ -123,33 +165,6 @@ public class InputPanel extends JPanel implements GhostActionable
     {
         return wbtmi;
     }
-    
-    
-    /* (non-Javadoc)
-     * @see java.awt.Component#paint(java.awt.Graphics)
-     */
-    /*@Override
-    public void paint(Graphics g)
-    {
-        if (isEnabled())
-        {
-            paintComp(g);
-
-        } else
-        {
-            BufferedImage buf = new BufferedImage(getWidth(),getHeight(), BufferedImage.TYPE_INT_RGB);
-            paintComp(buf.getGraphics());
-
-            float[] my_kernel = {
-                    0.10f, 0.10f, 0.10f,
-                    0.10f, 0.20f, 0.10f,
-                    0.10f, 0.10f, 0.10f };
-
-                ConvolveOp op = new ConvolveOp(new Kernel(3,3, my_kernel));
-                Image img = op.filter(buf,null);
-                g.drawImage(img,0,0,null);
-        }
-    }*/
 
     /* (non-Javadoc)
      * @see java.awt.Component#setLocation(int, int)
@@ -157,13 +172,11 @@ public class InputPanel extends JPanel implements GhostActionable
     @Override
     public void setLocation(int x, int y)
     {
-        wbtmi.setXCoord((short)x);
-        wbtmi.setYCoord((short)y);
         super.setLocation(x, y);
     }
 
     /**
-     * Adds an ActionListener
+     * Adds an ActionListener.
      * @param al the listener to be added
      */
     public void addActionListener(ActionListener al)
@@ -172,7 +185,7 @@ public class InputPanel extends JPanel implements GhostActionable
     }
 
     /**
-     * Removes an ActionListener
+     * Removes an ActionListener.
      * @param al the listener to be removed
      */
     public void removeActionListener(ActionListener al)
@@ -181,7 +194,7 @@ public class InputPanel extends JPanel implements GhostActionable
     }
 
     /**
-     * Adds a new "drag" data flavor it's list of data flavors that it supports
+     * Adds a new "drag" data flavor it's list of data flavors that it supports.
      * @param dataFlavor the new data flavor
      */
     public void addDragDataFlavor(final DataFlavor dataFlavor)
@@ -198,22 +211,62 @@ public class InputPanel extends JPanel implements GhostActionable
         dropFlavors.add(dataFlavor);
     }
 
+
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setPreferredSize(java.awt.Dimension)
+     */
+    @Override
+    public void setPreferredSize(Dimension preferredSize)
+    {
+        buffer       = null;
+        shadowBuffer = null;
+        super.setPreferredSize(preferredSize);
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#setBounds(int, int, int, int)
+     */
+    @Override
+    public void setBounds(int x, int y, int width, int height)
+    {
+        buffer       = null;
+        shadowBuffer = null;
+        super.setBounds(x, y, width, height);
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#setBounds(java.awt.Rectangle)
+     */
+    @Override
+    public void setBounds(Rectangle r)
+    {
+        buffer       = null;
+        shadowBuffer = null;
+        super.setBounds(r);
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#setSize(java.awt.Dimension)
+     */
+    @Override
+    public void setSize(Dimension d)
+    {
+        buffer       = null;
+        shadowBuffer = null;
+        super.setSize(d);
+    }
     //-----------------------------------------------
     // GhostActionable Interface
     // Note: Both GhostActionable and NavBoxItemIFace both have a get/set Data
     //-----------------------------------------------
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
      */
     public void doAction(GhostActionable src)
     {
-        // The drop has occurred and now we dispatch the event
-        //DataActionEvent ae = new DataActionEvent(src, this, src != null ? src.getData() : null);
-        //for (ActionListener al : listeners)
-        //{
-        //    al.actionPerformed(ae);
-        //}
+        // no op
     }
 
     /* (non-Javadoc)
@@ -271,7 +324,7 @@ public class InputPanel extends JPanel implements GhostActionable
     }
 
     /**
-     * Returns the width
+     * Returns the width.
      * @return Returns the width
      */
     public int getItemWidth()
@@ -280,7 +333,7 @@ public class InputPanel extends JPanel implements GhostActionable
     }
 
     /**
-     * Returns the height
+     * Returns the height.
      * @return Returns the height
      */
     public int getItemHeight()

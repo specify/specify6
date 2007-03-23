@@ -22,7 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -171,9 +171,9 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Map, boolean)
+     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(final Map<String, String> properties, final boolean isViewMode)
+    public void initialize(final Properties properties, final boolean isViewMode)
     {
         textField = new JTextField();
         Insets insets = textField.getBorder().getBorderInsets(textField);

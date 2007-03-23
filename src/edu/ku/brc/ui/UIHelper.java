@@ -40,6 +40,7 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -1234,5 +1235,57 @@ public final class UIHelper
         btn.addActionListener(al);
         btn.setEnabled(false);
         return btn;
+    }
+    
+    /**
+     * Parses a string for ";" colon separated name/value pairs.
+     * @param namedValuePairs a string of named/value pairs
+     * @return a properties object with the named value pairs or null if the string it null or empty
+     */
+    public static Properties parseProperties(final String namedValuePairs)
+    {
+        if (isNotEmpty(namedValuePairs))
+        {
+            Properties props = new Properties();
+            
+            for (String pair : StringUtils.split(namedValuePairs, ";"))
+            {
+                String[] args = StringUtils.split(pair, "=");
+                if (args.length % 2 != 0)
+                {
+                    log.error("Initialize string["+namedValuePairs+"] is an a set of named value pairs separated by `;`");
+                } else
+                {
+                    for (int i=0;i<args.length;i++)
+                    {
+                        props.put(args[i], args[i+1]);
+                        i++;
+                    }
+                }
+            }
+            return props.size() > 0 ? props : null;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns a Properties object as ";" separated string of named/value pairs.
+     * @param props the properties object
+     * @return the string representing it
+     */
+    public String createNamedValuePairs(final Properties props)
+    {
+        StringBuilder str = new StringBuilder();
+        for (Object key : props.keySet())
+        {
+            if (str.length() > 0)
+            {
+                str.append(';');
+            }
+            str.append(key.toString());
+            str.append('=');
+            str.append(props.get(key).toString());
+        }
+        return str.toString();
     }
 }

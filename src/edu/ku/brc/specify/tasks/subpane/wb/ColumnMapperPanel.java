@@ -498,6 +498,7 @@ public class ColumnMapperPanel extends JPanel
     /**
      * Adds a new Column to the Template that is not represented by a row in a file (if there is a file). 
      */
+    @SuppressWarnings("cast")
     protected void addMapItem(final boolean isNew)
     {
         short maxDataColIndex = -1;
@@ -509,6 +510,7 @@ public class ColumnMapperPanel extends JPanel
                 ImportColumnInfo colInfo = fmp.getColInfo();
                 if (colInfo != null)
                 {
+                    // casts needed for Java 5 @SuppressWarnings("cast")
                     maxDataColIndex = (short)Math.max((int)maxDataColIndex, (int)colInfo.getColInx());
                 }
             }
@@ -781,7 +783,6 @@ public class ColumnMapperPanel extends JPanel
                 item.setFieldLength((short)tblField.getFieldInfo().getLength());
                 item.setViewOrder(order);
                 item.setOrigImportColumnIndex(fmp.isNew() ? -1 : colInfo.getColInx());
-                item.setTabOrder(order);  // set initial tab order to the view order
                 order++;
                 item.setWorkbenchTemplate(wbTemplate);
                 

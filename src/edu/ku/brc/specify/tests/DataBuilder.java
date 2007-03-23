@@ -2182,7 +2182,6 @@ public class DataBuilder
         wtmi.setFieldName(fieldName);
         wtmi.setTableName(tableName);
         wtmi.setViewOrder(viewOrder.shortValue());
-        wtmi.setTabOrder(viewOrder.shortValue());  // set initial tab order to the view order
         wtmi.setOrigImportColumnIndex(dataColumnIndex.shortValue());
         wtmi.setWorkbenchTemplate(template);
         wtmi.setSrcTableId(tableId);

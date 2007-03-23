@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui;
 
-import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
@@ -32,7 +32,7 @@ public interface UIPluginable
      * @param properties the map of properties
      * @param isViewMode indicates whether the plugin is being created to be vewed or is in edit mode.
      */
-    public void initialize(Map<String, String> properties, boolean isViewMode);
+    public void initialize(Properties properties, boolean isViewMode);
     
     /**
      * Sets the name of the cell that this represents.

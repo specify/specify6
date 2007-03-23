@@ -42,12 +42,13 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Short             viewOrder;             // The Current View Order
     protected Short             origImportColumnIndex; // The index from the imported data file
     protected String            dataType;
-    protected Short             fieldLength;            // the length of the data from the specify Schema, usuall for strings.
+    protected Short             fieldLength;            // the length of the data from the specify Schema, usually for strings.
     protected WorkbenchTemplate workbenchTemplate;
     protected Boolean           isExportableToContent;
     protected Boolean           isIncludedInTitle;
 
-    protected Short             tabOrder;
+    // UI Layout extras
+    protected String            metaData;
     protected Short             xCoord;
     protected Short             yCoord;
     protected Boolean           carryForward;
@@ -82,7 +83,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         dataType = null;
         fieldLength = -1;
         workbenchTemplate = null;
-        tabOrder = null;
+        metaData = null;
         xCoord = -1;
         yCoord = -1;
         carryForward          = false;
@@ -250,15 +251,16 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.fieldLength = dataLength;
     }
 
-    @Column(name = "TabOrder", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getTabOrder()
+
+    @Column(name = "MetaData", length=128, unique = false, nullable = true, insertable = true, updatable = true)
+    public String getMetaData()
     {
-        return tabOrder;
+        return metaData;
     }
 
-    public void setTabOrder(Short tabOrder)
+    public void setMetaData(String metaData)
     {
-        this.tabOrder = tabOrder;
+        this.metaData = metaData;
     }
 
     @Column(name = "XCoord", unique = false, nullable = true, insertable = true, updatable = true)

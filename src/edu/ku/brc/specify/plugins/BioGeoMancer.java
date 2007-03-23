@@ -34,7 +34,7 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -608,9 +608,9 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Map, boolean)
+     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(final Map<String, String> properties, final boolean isViewMode)
+    public void initialize(final Properties properties, final boolean isViewMode)
     {
 
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,1px,p,1px,p,1px,p", "p"), this);

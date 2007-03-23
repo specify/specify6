@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.betwixt.XMLIntrospector;
@@ -36,6 +37,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
@@ -449,38 +451,6 @@ public class ViewLoader
     {
         return getResourceLabel(getAttr(cellElement, LABEL, ""));
     }
-    
-    
-    /**
-     * Processes the initilize string as a set of named value pairs where each pair is separated by `;`
-     * @param initStr the initialize string to be processed
-     * @return the hash of values
-     */
-    protected static Hashtable<String, String> processInitializeString(final String initStr)
-    {
-        if (isNotEmpty(initStr))
-        {
-            Hashtable<String, String> hash = new Hashtable<String, String>();
-            
-            for (String pair : StringUtils.split(initStr, ";"))
-            {
-                String[] args = StringUtils.split(pair, "=");
-                if (args.length % 2 != 0)
-                {
-                    log.error("Initialize string["+initStr+"] is an a set of named value pairs separated by `;`");
-                } else
-                {
-                    for (int i=0;i<args.length;i++)
-                    {
-                        hash.put(args[i], args[i+1]);
-                        i++;
-                    }
-                }
-            }
-            return hash.size() > 0 ? hash : null;
-        }
-        return null;
-    }
 
     /**
      * Processes all the rows
@@ -552,7 +522,7 @@ public class ViewLoader
                                 format = "";
                             }
                             
-                            Hashtable<String, String> properties = processInitializeString(initialize);
+                            Properties properties = UIHelper.parseProperties(initialize);
                             
                             // XXX DEBUG ONLY PLease REMOVE LATER
                             if (StringUtils.isEmpty(uitypeStr))
@@ -578,7 +548,7 @@ public class ViewLoader
                                 {
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");
                                     
-                                    String fmtName = TypeSearchForQueryFactory.getFormatName(properties.get("name"));
+                                    String fmtName = TypeSearchForQueryFactory.getFormatName(properties.getProperty("name"));
                                     if (isNotEmpty(fmtName))
                                     {
                                         formatName = fmtName;
@@ -605,7 +575,7 @@ public class ViewLoader
 
                                 case url:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
-                                    properties = processInitializeString(initialize);
+                                    properties = UIHelper.parseProperties(initialize);
                                     break;
                                     
                                 case list:
@@ -618,12 +588,12 @@ public class ViewLoader
                                 case plugin:
                                 case button:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
-                                    properties   = processInitializeString(initialize);
+                                    properties   = UIHelper.parseProperties(initialize);
                                     break;
                                     
                                 case spinner:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
-                                    properties   = processInitializeString(initialize);
+                                    properties   = UIHelper.parseProperties(initialize);
                                     break;
                                     
                                 case combobox:
