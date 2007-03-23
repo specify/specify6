@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -43,6 +44,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -77,6 +79,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -711,8 +714,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             
             if (lat2Index != -1 && lon2Index != -1)
             {
-                String lat2 = row.getData(lat2Index);
-                String lon2 = row.getData(lon2Index);
+                String lat2 = row.getData((short)lat2Index);
+                String lon2 = row.getData((short)lon2Index);
                 BigDecimal latitude2 = null;
                 BigDecimal longitude2 = null;
                 try
@@ -891,7 +894,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     }
     
     /**
-     * Create command to send to Exported to output and call GoogleEarth
+     * Make a request to the ExportTask to display the selected records in GoogleEarth.
      */
     protected void showRecordsInGoogleEarth()
     {
@@ -959,6 +962,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         statusBar.setText("Opening Google Earth");
     }
     
+    /**
+     * Use the BioGeomancer web service to lookup georeferences for the selected records.
+     */
     protected void doBioGeomancerLookup()
     {
         int selection = spreadSheet.getSelectedRow();
@@ -973,21 +979,62 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         int localityNameColIndex = workbench.getColumnIndex(localityTableId, "localityName");
         String localityNameStr = selectedRow.getData(localityNameColIndex);
                 
+        // get the geography data
         int geographyTableId = DBTableIdMgr.getIdByClassName(Geography.class.getName());
         int countryColIndex = workbench.getColumnIndex(geographyTableId, "Country");
         int stateColIndex = workbench.getColumnIndex(geographyTableId, "State");
         int countyColIndex = workbench.getColumnIndex(geographyTableId, "County");
-
         String country = (countryColIndex!=-1) ? selectedRow.getData(countryColIndex) : "";
         String state = (stateColIndex!=-1) ? selectedRow.getData(stateColIndex) : "";
         String county = (countyColIndex!=-1) ? selectedRow.getData(countyColIndex) : "";
         
-        
+        // get the latitude1 and longitude1 column indices
+        int latIndex = workbench.getColumnIndex(localityTableId, "latitude1");
+        int lonIndex = workbench.getColumnIndex(localityTableId, "longitude1");
+
+        // get an instance of the biogeo service
         BioGeoMancer bgmService = new BioGeoMancer();
         bgmService.initialize(null, false);
-        String response = BioGeoMancer.getBioGeoMancerResponse(selectedRow.getWorkbenchRowId().toString(),country,state,county,localityNameStr);
-        bgmService.createInfoFrame(response);
-        System.out.println(response.replaceAll(">", ">\n"));
+        Locality loc = new Locality();
+        loc.initialize();
+        bgmService.setValue(loc,null);
+        
+        // the response is written to the file "biogeomancer.xml"
+        BioGeoMancer.getBioGeoMancerResponse(selectedRow.getWorkbenchRowId().toString(),country,state,county,localityNameStr);
+        
+        // show the BGM frame to allow the user to select from the results
+        try
+        {
+            showBioGeomancerDialog(bgmService);
+            loc = (Locality)bgmService.getValue();
+            log.debug("Lat:"+loc.getLatitude1().toString() + " Long:" + loc.getLongitude1().toString());
+            selectedRow.setData(loc.getLatitude1().toString(), (short)latIndex);
+            selectedRow.setData(loc.getLongitude1().toString(), (short)lonIndex);
+            spreadSheet.repaint();
+            setChanged(true);
+        }
+        catch (Exception e)
+        {
+            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+            statusBar.setErrorMessage("BioGeomancer service failure", e);
+        }
+    }
+    
+    protected void showBioGeomancerDialog(BioGeoMancer bgService) throws Exception
+    {
+        JDialog dialog = new JDialog();
+        dialog.setModal(true);
+        JPanel p = new JPanel(new BorderLayout());
+        p.add(bgService.processBGMDOM(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), dialog), BorderLayout.CENTER);
+        dialog.setContentPane(p);
+        dialog.setLocation(0,0);
+        dialog.setSize(dialog.getPreferredSize());
+        ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
+        if (icon != null)
+        {
+            dialog.setIconImage(icon.getImage());
+        }
+        dialog.setVisible(true);
     }
     
     /**

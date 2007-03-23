@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -30,6 +31,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +139,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         {
             frame = new JFrame();
             JPanel p = new JPanel(new BorderLayout());
-            p.add(processBGMDOM(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml"))), BorderLayout.CENTER);
+            p.add(processBGMDOM(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), null), BorderLayout.CENTER);
 
             frame.setContentPane(p);
             frame.setVisible(true);
@@ -349,7 +351,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param root the root DOM node of the document
      * @return a panel with the results
      */
-    public JPanel processBGMDOM(Element root)
+    public JPanel processBGMDOM(Element root, final Window window)
     {
         String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 19);
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,10px,p,2px,p:g", rowDef));
@@ -404,8 +406,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                    if (true)
                    {
                        String[] coords = StringUtils.split(getData(rec, "InterpretedCoordinates"));
-                       double lat = Double.parseDouble(coords[1]);
                        double lon = Double.parseDouble(coords[0]);
+                       double lat = Double.parseDouble(coords[1]);
 
                        String s = getData(rec, "boundingBox");
                        if (StringUtils.isNotEmpty(s))
@@ -475,9 +477,17 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            closeBtn.addActionListener( new ActionListener() {
                public void actionPerformed(ActionEvent e)
                {
-                   frame.setVisible(false);
-                   frame.dispose();
-                   frame = null;
+                   if (window!=null)
+                   {
+                       window.setVisible(false);
+                       window.dispose();
+                   }
+                   else
+                   {
+                       frame.setVisible(false);
+                       frame.dispose();
+                       frame = null;
+                   }
                }
            });
 
@@ -485,16 +495,24 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                public void actionPerformed(ActionEvent e)
                {
 
-                   String latLonStr = (String)table.getModel().getValueAt(table.getSelectedRow(), 7);
-                   if (StringUtils.isNotEmpty(latLonStr))
+                   String lonLatStr = (String)table.getModel().getValueAt(table.getSelectedRow(), 7);
+                   if (StringUtils.isNotEmpty(lonLatStr))
                    {
-                       String[] coords = StringUtils.split(latLonStr);
-                       latitude.setText(coords[0]);
-                       longitude.setText(coords[1]);
+                       String[] coords = StringUtils.split(lonLatStr);
+                       longitude.setText(coords[0]);
+                       latitude.setText(coords[1]);
                    }
-                   frame.setVisible(false);
-                   frame.dispose();
-                   frame = null;
+                   if (window!=null)
+                   {
+                       window.setVisible(false);
+                       window.dispose();
+                   }
+                   else
+                   {
+                       frame.setVisible(false);
+                       frame.dispose();
+                       frame = null;
+                   }
                }
            });
 
@@ -721,10 +739,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         if (value != null && value instanceof Locality)
         {
             locality = (Locality)value;
-            //infoBtn.setEnabled(taxon.getRankId() == 220);
             latitude.setText(locality.getLatitude1() != null ? locality.getLatitude1().toString() : "");
-            longitude.setText(locality.getLatitude1() != null ? locality.getLatitude1().toString() : "");
-            System.out.println(locality.getGeography());
+            longitude.setText(locality.getLongitude1() != null ? locality.getLongitude1().toString() : "");
         } else
         {
             latitude.setText("");
@@ -738,6 +754,21 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      */
     public Object getValue()
     {
+        BigDecimal newLat = null;
+        BigDecimal newLon = null;
+        
+        newLat = (latitude.getText() != null) ? new BigDecimal(latitude.getText()) : null;
+        newLon = (longitude.getText() != null) ? new BigDecimal(longitude.getText()) : null;
+        
+        System.out.println("latitude:  " + newLat);
+        System.out.println("longitude: " + newLon);
+        
+        if (newLat != null && newLon != null)
+        {
+            locality.setLatitude1(newLat);
+            locality.setLongitude1(newLon);
+        }
+        
         return locality;
     }
 
