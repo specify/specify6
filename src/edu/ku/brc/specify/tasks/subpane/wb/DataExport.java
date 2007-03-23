@@ -11,6 +11,8 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 
 import java.util.List;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+
 /**
  * @author timbo
  *
@@ -31,6 +33,8 @@ public interface DataExport
     
     /**
      * @param data list of workbench rows to export
+     * @param session - a session for the workbench
+     * @param closeSession - if true session is closed after writing
      */
-    public void writeData(List<?> data) throws Exception;
+    public void writeData(final List<?> data, final DataProviderSessionIFace session, final boolean closeSession) throws Exception;
 }

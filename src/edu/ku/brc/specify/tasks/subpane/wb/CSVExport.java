@@ -14,6 +14,8 @@ import java.util.List;
 
 import com.csvreader.CsvWriter;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 
 /**
@@ -63,7 +65,7 @@ public class CSVExport implements DataExport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
-    public void writeData(List<?> data) throws Exception
+    public void writeData(final List<?> data, final DataProviderSessionIFace session, final boolean closeSession) throws Exception
     {
         String[] record;
         CsvWriter writer = new CsvWriter(config.getFileName());
@@ -74,8 +76,8 @@ public class CSVExport implements DataExport
         for (int r = 0; r < data.size(); r++)
         {
             WorkbenchRow row = (WorkbenchRow) data.get(r);
-            record = new String[row.getItems().size()];
-            for (int c = 0; c < row.getItems().size(); c++)
+            record = new String[row.getWorkbenchDataItems().size()];
+            for (int c = 0; c < row.getWorkbenchDataItems().size(); c++)
             {
                 record[c] = row.getData(c);
             }
@@ -84,8 +86,12 @@ public class CSVExport implements DataExport
                 writer.writeRecord(record);
             } catch (IOException e)
             {
-                throw(e);
+                throw (e);
             }
+        }
+        if (session != null && closeSession)
+        {
+            session.close();
         }
         writer.flush();
     }

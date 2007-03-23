@@ -798,7 +798,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      */
     protected void doExcelCsvExport()
     {
-        log.debug("Exporting workbench data");
         int[] selection = spreadSheet.getSelectedRows();
         if (selection.length==0)
         {

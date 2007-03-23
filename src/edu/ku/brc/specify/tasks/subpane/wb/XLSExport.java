@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 
 /**
@@ -70,7 +71,7 @@ public class XLSExport implements DataExport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
-    public void writeData(List<?> data) throws Exception
+    public void writeData(List<?> data, final DataProviderSessionIFace session, final boolean closeSession) throws Exception
     {
         HSSFWorkbook workBook = new HSSFWorkbook();
         HSSFSheet workSheet = workBook.createSheet();
@@ -83,13 +84,12 @@ public class XLSExport implements DataExport
         for (Object row : data)
         {
             HSSFRow hssfRow = workSheet.createRow(rowNum++);
-            for (short colNum = 0; colNum < ((WorkbenchRow) row).getItems().size(); colNum++)
+            for (short colNum = 0; colNum < ((WorkbenchRow) row).getWorkbenchDataItems().size(); colNum++)
             {
                 HSSFCell cell = hssfRow.createCell(colNum);
                 cell.setCellValue(((WorkbenchRow) row).getData(colNum));
             }
         }
-
         try
         {
             FileOutputStream fos = new FileOutputStream(getConfig().getFileName());
@@ -97,6 +97,10 @@ public class XLSExport implements DataExport
         } catch (Exception e)
         {
             throw(e);
+        }
+        if (session != null && closeSession)
+        {
+            session.close();
         }
     }
 

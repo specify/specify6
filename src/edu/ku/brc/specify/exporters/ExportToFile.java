@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.wb.CSVExport;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureCSV;
@@ -55,7 +56,7 @@ public class ExportToFile implements RecordSetExporter
         {
           try
           {
-            exporter.writeData(data);
+            exporter.writeData(data, (DataProviderSessionIFace) reqParams.get("session"), true);
           }
           catch (IOException e)
           {

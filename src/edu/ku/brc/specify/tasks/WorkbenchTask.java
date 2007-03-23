@@ -24,9 +24,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -70,7 +72,10 @@ import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
+import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -110,6 +115,8 @@ public class WorkbenchTask extends BaseTask
     public static final String     PRINT_REPORT          = "PrintReport";
     public static final String     WB_TOP10_REPORT       = "WB_TOP10_REPORT";
     public static final String     WB_IMPORTCARDS        = "WB_IMPORT_CARDS";
+    public static final String     EXPORT_DATA_FILE      = "Export Data";
+    
     
     protected NavBox                      templateNavBox;
     protected NavBox                      workbenchNavBox;
@@ -147,6 +154,7 @@ public class WorkbenchTask extends BaseTask
             makeDraggableAndDroppableNavBtn(navBox, getResourceString(WB_IMPORTCARDS),    name, new CommandAction(WORKBENCH, WB_IMPORTCARDS),   null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_TEMPLATE"), name, new CommandAction(WORKBENCH, NEW_TEMPLATE),     null, false);// true means make it draggable
             makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_DATASET"),  name, new CommandAction(WORKBENCH, NEW_WORKBENCH),    null, false);// true means make it draggable
+            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_EXPORTDATA"),   name, new CommandAction(WORKBENCH, EXPORT_DATA_FILE), null, true);// true means make it draggable
             
             navBoxes.addElement(navBox);
             
@@ -654,8 +662,106 @@ public class WorkbenchTask extends BaseTask
         
     }
     
+     /**
+     * exports template or workbench to xls or csv format.
+     * 
+     * @param cmdAction
+     */
+    protected void processExportCmd(final CommandAction cmdAction)
+    {
+        if (cmdAction.getData() == null)
+        {
+            System.out.println("processExportCmd: no data");
+        } else if (cmdAction.getData().getClass() == CommandAction.class)
+        {
+            System.out.println("processExportCmd: workbench");
+            CommandAction act = (CommandAction) cmdAction.getData();
+            if (act.getAction() == EDIT_WORKBENCH)
+            {
+                RecordSet recordSet = (RecordSet) act.getProperty("workbench");
+                DataProviderSessionIFace session = DataProviderFactory.getInstance()
+                        .createSession();
+                Workbench workbench = session.get(Workbench.class, recordSet.getOnlyItem()
+                        .getRecordId());
+
+
+                CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
+                command.setData(workbench.getWorkbenchRowsAsList());
+                command.setProperty("exporter", ExportToFile.class);
+
+                // rest of this method is copied from WorkbenchPaneSS.doExcelCsvExport()
+                // eventually most of the work will probably be done by Meg's Fancy Configurer UI
+                
+                Properties props = new Properties();
+
+                Vector<String> list = new Vector<String>();
+                list.add("Excel");
+                list.add("CSV");
+
+                ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>(
+                        (Frame) UICacheManager.get(UICacheManager.FRAME), "File Format?", null,
+                        ChooseFromListDlg.OKCANCELHELP, list, "WorkbenchImportCvs"); // XXX I18N
+                dlg.setModal(true);
+                UIHelper.centerAndShow(dlg);
+
+                String format = dlg.getSelectedObject();
+
+                if (format == "Excel")
+                {
+                    props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
+                } else if (format == "CSV")
+                {
+                    props.setProperty("mimetype", ExportFileConfigurationFactory.CSV_MIME_TYPE);
+                } else
+                {
+                    return;
+                }
+
+                FileDialog fileDialog = new FileDialog((Frame) UICacheManager
+                        .get(UICacheManager.FRAME),
+                        getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
+                UIHelper.centerAndShow(fileDialog);
+
+                String fileName = fileDialog.getFile();
+                String path = fileDialog.getDirectory();
+                if (StringUtils.isEmpty(fileName)) { return; }
+                props.setProperty("fileName", path + File.separator + fileName);
+
+                ConfigureExternalData config = ExportFileConfigurationFactory
+                        .getConfiguration(props);
+
+                // Could get config to interactively get props or to look them up from prefs or ???
+                // for now hard coding stuff...
+
+                // add headers. all the time for now.
+                config.setFirstRowHasHeaders(true);
+                Vector<WorkbenchTemplateMappingItem> colHeads = new Vector<WorkbenchTemplateMappingItem>();
+                colHeads
+                        .addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+                Collections.sort(colHeads);
+                String[] heads = new String[colHeads.size()];
+                for (int h = 0; h < colHeads.size(); h++)
+                {
+                    heads[h] = colHeads.get(h).getCaption();
+                }
+                config.setHeaders(heads);
+
+                props = config.getProperties();
+                Enumeration<?> keys = props.propertyNames();
+                while (keys.hasMoreElements())
+                {
+                    String key = (String) keys.nextElement();
+                    command.setProperty(key, props.getProperty(key));
+                }
+                command.setProperty("session", session); //the session is closed by the exporter.
+                CommandDispatcher.dispatch(command);
+            }
+        }
+    }
+    
     /**
      * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
+     * 
      * @return the new WorkbenchTemplate
      */
     protected WorkbenchTemplate createTemplateFromFile()
@@ -1112,62 +1218,6 @@ public class WorkbenchTask extends BaseTask
 
     }
     
-    /**
-     * Prompts for export options and exports workbench data to excel or csv
-     * Currently, dropping is ignored. The selected rows (or headers) or all rows, and ALL columns 
-     * in the currently displayed workbench are exported.
-     * 
-     * @param cmdAction the command to export
-     */
-    protected void doExport(final CommandAction cmdAction)
-    {
-       String rowsToExport;
-       String format;
-       
-        //NOT final UI
-        Vector<String> list = new Vector<String>();
-        list.add("Excel - Headers");
-        list.add("Excel - All");
-        list.add("Excel - Selected");
-        list.add("CSV - Headers");
-        list.add("CSV - All");
-        list.add("CSV - Selected");
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
-                                                                      "Export Format", 
-                                                                      null,
-                                                                      ChooseFromListDlg.OKCANCELHELP,
-                                                                      list, 
-                                                                      "WorkbenchExporting");//XXX I18N
-        dlg.setModal(true);
-        UIHelper.centerAndShow(dlg);
-
-        String choice = dlg.getSelectedObject();
-
-        if (choice != null)
-        { 
-          if (choice.contains("Excel"))
-          {
-              format = "Excel";
-          }
-          else
-          {
-              format = "CSV";
-          }
-          if (choice.contains("All"))
-          {
-              rowsToExport = "All";
-          }
-          else if (choice.contains("Selected"))
-          {
-              rowsToExport = "Selected";
-          }
-          else
-          {
-              rowsToExport = "Headers";
-          }
-          System.out.println(format + ", " + rowsToExport);
-        }
-    }
     
     /**
      * Creates a report.
@@ -1726,6 +1776,10 @@ public class WorkbenchTask extends BaseTask
         } else if (cmdAction.isAction(IMPORT_DATA_FILE))
         {
             createTemplateFromFile();
+            
+        } else if (cmdAction.isAction(EXPORT_DATA_FILE))
+        {
+            processExportCmd(cmdAction);
             
         } else if (cmdAction.isAction(WB_IMPORTCARDS))
         {
