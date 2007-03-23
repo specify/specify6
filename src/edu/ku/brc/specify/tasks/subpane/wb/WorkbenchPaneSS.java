@@ -1028,7 +1028,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         p.add(bgService.processBGMDOM(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), dialog), BorderLayout.CENTER);
         dialog.setContentPane(p);
         dialog.setLocation(0,0);
-        dialog.setSize(dialog.getPreferredSize());
+        dialog.pack();
         ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
         if (icon != null)
         {
