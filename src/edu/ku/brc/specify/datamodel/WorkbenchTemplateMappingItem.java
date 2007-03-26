@@ -23,6 +23,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.beanutils.PropertyUtils;
+
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+
 /**
  * Items are sorted by ViewOrder
  */
@@ -42,7 +47,6 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected String            caption;
     protected Short             viewOrder;             // The Current View Order
     protected Short             origImportColumnIndex; // The index from the imported data file
-    protected String            dataType;
     protected Short             fieldLength;            // the length of the data from the specify Schema, usually for strings.
     protected WorkbenchTemplate workbenchTemplate;
     protected Boolean           isExportableToContent;
@@ -81,7 +85,6 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         caption = null;
         viewOrder = null;
         origImportColumnIndex = null;
-        dataType = null;
         fieldLength = -1;
         workbenchTemplate = null;
         metaData = null;
@@ -222,17 +225,36 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
 
     /**
+     * Returns the class of the DB field target of this mapping.
      * 
+     * @return a {@link Class} object representing the DB target field of this mapping.
      */
-    @Column(name = "DataType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getDataType()
+    @Transient
+    public Class<?> getDataType()
     {
-        return this.dataType;
-    }
-
-    public void setDataType(String dataType)
-    {
-        this.dataType = dataType;
+        // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
+        if (this.srcTableId == null)
+        {
+            return String.class;
+        }
+        
+        TableInfo tableInfo = DBTableIdMgr.getInfoById(this.srcTableId);
+        if (tableInfo == null)
+        {
+            throw new RuntimeException("Cannot find TableInfo in DBTableIdMgr for ID=" + this.srcTableId);
+        }
+        
+        Class<?> dbClass = tableInfo.getClassObj();
+        try
+        {
+            Object newDbObject = dbClass.newInstance();
+            Class<?> fieldType = PropertyUtils.getPropertyType(newDbObject, this.getFieldName());
+            return fieldType;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Could not instantiate a DB object of class " + dbClass.getCanonicalName());
+        }
     }
 
     /**
