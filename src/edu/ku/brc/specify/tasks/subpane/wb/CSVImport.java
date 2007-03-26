@@ -56,6 +56,7 @@ public class CSVImport implements DataImport
         {
             CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config.getDelimiter(), config.getCharset());
             csv.setEscapeMode(config.getEscapeMode());
+            csv.setTextQualifier(config.getTextQualifier());
 
             Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
             Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();

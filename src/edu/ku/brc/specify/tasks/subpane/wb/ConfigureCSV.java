@@ -39,6 +39,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
 {
     private int     escapeMode;
     private char    delimiter;
+    private char    textQualifier;
     private Charset charset;
 
     /**
@@ -50,6 +51,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
         escapeMode = getDefaultEscapeMode();
         delimiter  = getDefaultDelimiter();
         charset    = getDefaultCharset();
+        textQualifier = getDefaultTextQualifier();
         getConfig(file);
     }
 
@@ -93,6 +95,19 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
         else
         {
            charset = Charset.forName(prop);    
+        }
+        prop = props.getProperty("textQualifier");
+        if(prop == "doublequote")
+        {
+            textQualifier = '\"';
+        }
+        else if(prop == "singlequote")
+        {
+            textQualifier = '\'';
+        }
+        else
+        {
+            textQualifier = getDefaultTextQualifier();
         }
     }
     
@@ -213,11 +228,40 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
         return ',';
     }
 
+    /**
+     * Lame prompt for text qualifier.
+     * 
+     * @return selected delimiter
+     */
+    private char determineTextQualifier()
+    {
+        Vector<String> list = new Vector<String>();
+        list.add("\"");
+        list.add("\'");
+        list.add("{none}");
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+                                                                      "Text Qualifier?", 
+                                                                      null,
+                                                                      ChooseFromListDlg.OKCANCELHELP, 
+                                                                      list, 
+                                                                      "WorkbenchImportCvs"); //XXX I18N
+        dlg.setModal(true);
+        UIHelper.centerAndShow(dlg);
+
+        String delim = dlg.getSelectedObject();
+
+        if (delim == "\"") { return '\"'; }
+        if (delim == "\'"){ return '\"'; }
+        return ' ';
+    }
     private char getDefaultDelimiter()
     {
         return ',';
     }
-
+    private char getDefaultTextQualifier()
+    {
+        return '"';
+    }
     /**
      * Lame prompt for Character set.
      * 
@@ -304,7 +348,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
         charset = determineCharset();
         escapeMode = determineEscapeMode();
         firstRowHasHeaders = determineFirstRowHasHeaders();
-
+        textQualifier = determineTextQualifier();
         nonInteractiveConfig();
     }
 
@@ -371,8 +415,32 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
             result.setProperty("delimiter", "tab");
         }
         
+        if(textQualifier == '\"')
+        {
+            result.setProperty("textQualifer", "doublequote");
+        }
+        else if(textQualifier == '\'')
+        {
+            result.setProperty("textQualifer", "singlequote");
+        }        
         result.setProperty("charset", charset.name());
        
         return result;
+    }
+
+    /**
+     * @return the textQualifier
+     */
+    public char getTextQualifier()
+    {
+        return textQualifier;
+    }
+
+    /**
+     * @param textQualifier the textQualifier to set
+     */
+    public void setTextQualifier(char textQualifier)
+    {
+        this.textQualifier = textQualifier;
     }
 }
