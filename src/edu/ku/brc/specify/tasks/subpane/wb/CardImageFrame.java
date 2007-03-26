@@ -195,8 +195,8 @@ public class CardImageFrame extends JFrame
     }
     
     /**
-     * When there is no image the user can press "load" and load a new image.
-     * @param al the action listener for the load button
+     * Registers the given ActionListener as action to perform when the window is closed.
+     * @param al the action listener for the close button
      */
     public void installCloseActionListener(final ActionListener al)
     {
