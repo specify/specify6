@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.awt.Image;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -68,11 +69,17 @@ public class GridTableModel extends SpreadSheetModel
         {
             if (imageMappingItem == null)
             {
-                imageMappingItem = new WorkbenchTemplateMappingItem();
+                imageMappingItem = new WorkbenchTemplateMappingItem()
+                {
+                    @Override
+                    public Class<?> getDataType()
+                    {
+                        return Image.class;
+                    }
+                };
                 imageMappingItem.initialize();
                 imageMappingItem.setCaption("Card Image"); // XXX I18N"
                 imageMappingItem.setViewOrder((short)headers.size());
-                imageMappingItem.setDataType("java.awt.Image");
             }
             headers.add(imageMappingItem);
             

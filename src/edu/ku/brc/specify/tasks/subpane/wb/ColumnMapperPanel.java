@@ -42,7 +42,9 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -79,6 +81,8 @@ import edu.ku.brc.ui.IconManager;
  */
 public class ColumnMapperPanel extends JPanel
 {
+    private static final Logger log = Logger.getLogger(ColumnMapperPanel.class);
+            
     protected Vector<TableInfo>              tableInfoList = new Vector<TableInfo>();
     protected JList                          fieldList;
     protected JList                          tableList;
@@ -525,8 +529,19 @@ public class ColumnMapperPanel extends JPanel
         }
 
         TableFieldPair    tblField  = (TableFieldPair)fieldList.getSelectedValue();
-        String            fieldType = tblField.getFieldInfo().getType();
-        ImportColumnInfo  colInfo   = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(fieldType), tblField.getFieldInfo().getColumn(), null);
+        Class<?> tableClass = null;
+        try
+        {
+            Object newDbObj = tblField.getTableinfo().getClassObj().newInstance();
+            tableClass = PropertyUtils.getPropertyType(newDbObj, tblField.getFieldInfo().getName());
+        }
+        catch (Exception e)
+        {
+            // we can't determine the class of the DB mapping, so assume String
+            log.warn("Exception while looking up field type.  Assuming java.lang.String.",e);
+            tableClass = String.class;
+        }
+        ImportColumnInfo  colInfo   = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(tableClass), tblField.getFieldInfo().getColumn(), null);
         
         FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
         
@@ -779,7 +794,6 @@ public class ColumnMapperPanel extends JPanel
                 
                 item.setCaption(colInfo.getColName());
 
-                item.setDataType(tblField.getFieldInfo().getType());
                 item.setFieldName(tblField.getFieldInfo().getName());
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());

@@ -9,7 +9,9 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
@@ -73,7 +75,7 @@ public class XLSImport implements DataImport
             Collections.sort(wbtmiList);
 
             // Iterate over each row in the sheet
-            Iterator rows = sheet.rowIterator();
+            Iterator<?> rows = sheet.rowIterator();
             while (rows.hasNext())
             {
                 HSSFRow row = (HSSFRow) rows.next();
@@ -107,12 +109,12 @@ public class XLSImport implements DataImport
                     switch (type)
                     {
                         case HSSFCell.CELL_TYPE_NUMERIC:
-                            if (wbtmi.getDataType().indexOf("date") > -1)
+                            if (wbtmi.getDataType().equals(Calendar.class) || wbtmi.getDataType().equals(Date.class))
                             {
                                 value = scrDateFormat.getSimpleDateFormat().format(
                                         cell.getDateCellValue());
 
-                            } else if (wbtmi.getDataType().indexOf("int") > -1)
+                            } else if (wbtmi.getDataType().equals(Integer.class))
                             {
                                 double numeric = cell.getNumericCellValue();
                                 value = Integer.toString((int) numeric);

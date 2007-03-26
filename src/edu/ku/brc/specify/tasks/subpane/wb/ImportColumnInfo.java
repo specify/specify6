@@ -9,6 +9,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.util.Calendar;
+import java.util.Date;
+
 
 
 /**
@@ -75,25 +78,25 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
      * @param type the string with the database type
      * @return the enum
      */
-    public static ColumnType getType(final String type)
+    public static ColumnType getType(final Class<?> type)
     {
-        if (type.equals("java.lang.Integer"))
+        if (type.equals(Integer.class))
         {
             return ImportColumnInfo.ColumnType.Integer;
             
-        } else if (type.equals("java.lang.Float"))
+        } else if (type.equals(Float.class))
         {
             return ImportColumnInfo.ColumnType.Float;
             
-        } else if (type.equals("java.lang.Double"))
+        } else if (type.equals(Double.class))
         {
             return ImportColumnInfo.ColumnType.Double;
             
-        } else if (type.equals("java.lang.Short") || type.equals("short"))
+        } else if (type.equals(Short.class))
         {
             return ImportColumnInfo.ColumnType.Short;
             
-        } else if (type.equals("calendar_date"))
+        } else if (type.equals(Calendar.class) || type.equals(Date.class))
         {
             return ImportColumnInfo.ColumnType.Date;
         }

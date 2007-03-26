@@ -2178,7 +2178,6 @@ public class DataBuilder
         wtmi.initialize();
 
         wtmi.setCaption(caption);
-        wtmi.setDataType(dataType);
         wtmi.setFieldName(fieldName);
         wtmi.setTableName(tableName);
         wtmi.setViewOrder(viewOrder.shortValue());

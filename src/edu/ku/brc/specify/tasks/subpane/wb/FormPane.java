@@ -22,7 +22,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -227,31 +229,43 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
         //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
-        String type = wbtmi.getDataType();
+        Class<?> dbFieldType = wbtmi.getDataType();
+        if (dbFieldType == null)
+        {
+            // if we can't find a class for the field (i.e. Genus Species, or other 'fake' fields), we say it's a string
+            dbFieldType = String.class;
+        }
+        String type = dbFieldType.getName();
         
         JComponent comp;
-        if (type.equals("calendar_date"))
+        
+        // handle dates
+        if (dbFieldType.equals(Calendar.class) || dbFieldType.equals(Date.class))
         {
             ValFormattedTextField txt = new ValFormattedTextField("Date"); 
             txt.getDocument().addDocumentListener(this);
             comp = txt;
             
-        } else if (type.equals("text"))
+        }
+        else if (dbFieldType.equals(String.class)) // strings
         {
-            comp = createTextArea();
-            
-        } else if (type.equals("java.lang.String"))
-        {
-            if (wbtmi.getFieldLength() > 64)
+            Short length = wbtmi.getFieldLength();
+            if (length > 255)
             {
                 comp = createTextArea();
-            } else
+            }
+            else if (length > 64)
+            {
+                comp = createTextArea();
+            }
+            else
             {
                 ValTextField txt = new ValTextField(15);
                 txt.getDocument().addDocumentListener(this);
                 comp = txt;
             }
-        } else
+        }
+        else // all others
         {
             ValTextField txt = new ValTextField(15);
             txt.getDocument().addDocumentListener(this);
