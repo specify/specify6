@@ -29,6 +29,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -424,12 +426,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         // setup the JFrame to show images attached to WorkbenchRows
         cardImageFrame = new CardImageFrame(mapSize);
-        cardImageFrame.installCloseActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                toggleCardImageVisible();
-            }
-        });
         cardImageFrame.installLoadActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -444,6 +440,21 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                     showCardImageForSelectedRow();
                     setChanged(true);
                 }
+            }
+        });
+        cardImageFrame.installCloseActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                toggleCardImageVisible();
+            }
+        });
+        cardImageFrame.addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                toggleCardImageVisible();
             }
         });
         
@@ -515,15 +526,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
     }
     
-    protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String name, final Action action)
+    protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action)
     {
         InputMap  inputMap  = comp.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = comp.getActionMap();
         
-        inputMap.put(KeyStroke.getKeyStroke(keyCode, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), name);
-        actionMap.put(name, action);
+        inputMap.put(KeyStroke.getKeyStroke(keyCode, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), actionName);
+        actionMap.put(actionName, action);
         
-        UICacheManager.registerAction(name, action);
+        UICacheManager.registerAction(actionName, action);
         return action;
     }
     
@@ -1473,6 +1484,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getHelpTarget()
      */
+    @Override
     public String getHelpTarget()
     {
         return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
