@@ -692,7 +692,20 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(false);
             blockChanges = true;
+            // get the selection before the changes
+            int[] selRows = spreadSheet.getSelectedRows();
+            int[] selCols = spreadSheet.getSelectedColumns();
             model.setInImageMode(false);
+            // then restore the selection
+            for (int selRow: selRows)
+            {
+                spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
+            }
+            for (int selCol: selCols)
+            {
+                spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
+            }
+
             blockChanges = false;
 
         }
@@ -707,7 +720,22 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             
             // tell the table model to show the image column
             blockChanges = true;
+            
+            // get the selection before the changes
+            int[] selRows = spreadSheet.getSelectedRows();
+            int[] selCols = spreadSheet.getSelectedColumns();
+            
             model.setInImageMode(true);
+            
+            // then restore the selection
+            for (int selRow: selRows)
+            {
+                spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
+            }
+            for (int selCol: selCols)
+            {
+                spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
+            }
             //TableColumn tableColumn = spreadSheet.getColumn(model.getColumnCount()-1);
             //tableColumn.setCellEditor(new DefaultCellEditor(imageComboxbox));
             blockChanges = false;
