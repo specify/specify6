@@ -1592,10 +1592,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                                                      int     column)
         {
             textField.setText(value != null ? value.toString() : "");
-            textField.selectAll();
-            undoManager.discardAllEdits();
-            UICacheManager.getUndoAction().setUndoManager(undoManager);
-            UICacheManager.getRedoAction().setUndoManager(undoManager);
+            //textField.selectAll();
+            //undoManager.discardAllEdits();
+            //UICacheManager.getUndoAction().setUndoManager(undoManager);
+            //UICacheManager.getRedoAction().setUndoManager(undoManager);
             return textField;
         }
 
