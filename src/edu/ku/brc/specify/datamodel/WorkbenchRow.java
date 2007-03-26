@@ -77,6 +77,7 @@ import edu.ku.brc.util.Pair;
     {   
         @Index (name="RowNumberIDX", columnNames={"RowNumber"})
     })
+@org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkIFace, Comparable<WorkbenchRow>
 {
     protected Long                   workbenchRowId;

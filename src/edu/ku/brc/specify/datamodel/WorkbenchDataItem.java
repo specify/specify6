@@ -40,6 +40,7 @@ import org.hibernate.annotations.Index;
         @Index (name="RowNumberIDX", columnNames={"rowNumber"}),
         @Index (name="ColumnNumberIDX", columnNames={"ColumnNumber"})
     })
+@org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
     // Fields
