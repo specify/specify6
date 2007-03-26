@@ -78,7 +78,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return true;
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return false;
     }
@@ -96,7 +96,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return true;
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return false;
     }
@@ -118,7 +118,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         {
             return session.merge(dataObj);
         }
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
         return null;
     }
 
@@ -134,7 +134,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return query.list();
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
 
@@ -157,7 +157,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             // return criteria.list();
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
     }
@@ -186,7 +186,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return criteria.list();           
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
     }
@@ -205,7 +205,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return list == null || list.size() == 0 ? null : list.get(0);
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
     }
@@ -221,7 +221,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return getDataList(clsObject, fieldName, value, DataProviderSessionIFace.CompareType.Equals);
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
     }
@@ -245,7 +245,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return (T)session.get(clsObj, id);
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
     }
@@ -277,7 +277,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return 0;
     }
@@ -295,7 +295,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return (T)session.load(clsObj, id);
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
     }
@@ -311,7 +311,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return list != null && list.size() > 0 ? list.get(0) : null;
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
 
         return null;
     }
@@ -336,7 +336,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             
         } else
         {
-            log.error("Session was null.");
+            log.error("Session was null.", new NullPointerException("Session was null"));
         }
     }
     
@@ -350,7 +350,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             session.evict(dataObj);
         } else
         {
-            log.error("Session was null.");
+            log.error("Session was null.", new NullPointerException("Session was null"));
         }
     }
     
@@ -365,7 +365,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             
         } else
         {
-            log.error("Session was null.");
+            log.error("Session was null.", new NullPointerException("Session was null"));
         }
     }
     
@@ -381,7 +381,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return true;
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
         
         return false;
     }
@@ -398,7 +398,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return true;
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
         
         return false;
     }
@@ -415,7 +415,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             return true;
         }
         
-        log.error("Session was null.");
+        log.error("Session was null.", new NullPointerException("Session was null"));
         
         return false;
     }
@@ -434,7 +434,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             }
         } else
         {
-            log.error("Session was null.");
+            log.error("Session was null.", new NullPointerException("Session was null"));
         }
     }
     
@@ -487,7 +487,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             
         } else
         {
-            log.error("Session was null.");
+            log.error("Session was null.", new NullPointerException("Session was null"));
         }
     }
     
@@ -512,7 +512,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             session = null;
         } else
         {
-            log.error("Session was null.");
+            log.error("Session was null.", new NullPointerException("Session was null"));
         }
      }
     
