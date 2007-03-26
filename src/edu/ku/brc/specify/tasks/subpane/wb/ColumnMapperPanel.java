@@ -37,6 +37,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -195,17 +197,17 @@ public class ColumnMapperPanel extends JPanel
         CellConstraints cc      = new CellConstraints();
         
         PanelBuilder header = new PanelBuilder(new FormLayout("p,f:p:g,p", "p,2px,p"));
-        header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), JLabel.CENTER), cc.xywh(1, 1, 3, 1));
-        header.add(new JLabel("Database", JLabel.LEFT), cc.xy(1,3)); // XXX I18N
-        header.add(new JLabel(dataFileInfo != null ? "Import" : "", JLabel.RIGHT), cc.xy(3,3));  // XXX I18N
+        header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), SwingConstants.CENTER), cc.xywh(1, 1, 3, 1));
+        header.add(new JLabel("Database", SwingConstants.LEFT), cc.xy(1,3)); // XXX I18N
+        header.add(new JLabel(dataFileInfo != null ? "Import" : "", SwingConstants.RIGHT), cc.xy(3,3));  // XXX I18N
 
         builder.add(header.getPanel(), cc.xy(1, 1));
-        builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     JLabel.CENTER), cc.xy(5, 1));
-        builder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  JLabel.CENTER), cc.xy(5, 5));
+        builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     SwingConstants.CENTER), cc.xy(5, 1));
+        builder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  SwingConstants.CENTER), cc.xy(5, 5));
         
         dataFileColPanel = new JPanel();
         dataFileColPanel.setLayout(new NavBoxLayoutManager(0,2));
-        JScrollPane sp = new JScrollPane(dataFileColPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane sp = new JScrollPane(dataFileColPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         PanelBuilder leftSide = new PanelBuilder(new FormLayout("f:p:g, p, 2px, p", "p"));        
         addMapItemBtn = createIconBtn("PlusSign", "WB_ADD_MAPPING_ITEM", new ActionListener()
@@ -231,7 +233,7 @@ public class ColumnMapperPanel extends JPanel
         tableList = new JList(tableInfoList);
         tableList.setCellRenderer(new TableNameRenderer(IconManager.IconSize.Std24));
         
-        sp = new JScrollPane(tableList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        sp = new JScrollPane(tableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         builder.add(sp, cc.xy(5, 3));
         
         tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -260,7 +262,7 @@ public class ColumnMapperPanel extends JPanel
         fieldList = new JList(new DefaultListModel());
         fieldList.setCellRenderer(new FieldNameRenderer(IconManager.IconSize.Std16));
         
-        sp = new JScrollPane(fieldList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        sp = new JScrollPane(fieldList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         builder.add(sp, cc.xy(5, 7));
         
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -271,6 +273,7 @@ public class ColumnMapperPanel extends JPanel
         });
         
         fieldList.addMouseListener(new MouseAdapter(){
+            @Override
             public void mouseClicked(MouseEvent e) {
                 TableFieldPair fieldItem = (TableFieldPair)fieldList.getSelectedValue();
                 if (fieldItem != null && !fieldItem.isInUse() && currentInx != -1 && e.getClickCount() == 2)
@@ -616,7 +619,7 @@ public class ColumnMapperPanel extends JPanel
      * @param classObj the class object
      * @return the table info
      */
-    protected DBTableIdMgr.TableInfo getTableInfo(Class classObj)
+    protected DBTableIdMgr.TableInfo getTableInfo(Class<?> classObj)
     {
         for (DBTableIdMgr.TableInfo ti : tableFieldList.keySet())
         {
@@ -841,22 +844,26 @@ public class ColumnMapperPanel extends JPanel
             
             thisItem = this;
             addMouseListener(new MouseAdapter() {
+                @Override
                 public void mousePressed(MouseEvent e) {
                     selectMappingPanel(thisItem);
                 }
             });
             fieldLabel.addMouseListener(new MouseAdapter() {
+                @Override
                 public void mousePressed(MouseEvent e) {
                     selectMappingPanel(thisItem);
                 }
             });
             mappingLabel.addMouseListener(new MouseAdapter() {
+                @Override
                 public void mousePressed(MouseEvent e) {
                     selectMappingPanel(thisItem);
                 }
             });
             
             closeBtn.addMouseListener(new MouseAdapter() {
+                @Override
                 public void mousePressed(MouseEvent e) {
                     if (mappingLabel.isVisible())
                     {
