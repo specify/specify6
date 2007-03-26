@@ -17,8 +17,10 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 
 /**
  * @author timbo
@@ -66,12 +68,85 @@ public class XLSExport implements DataExport
         }
     }
     
+    /**
+     * @param row 
+     * @return HSSFCellTypes for each column in workbench.
+     */
+    protected int[] bldColTypes(final WorkbenchRow row)
+    {
+        int[] result = new int[row.getWorkbenchDataItems().size()];
+        for (WorkbenchTemplateMappingItem mapItem : row.getWorkbench().getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+        {
+            result[mapItem.getViewOrder()] = getColType(mapItem); 
+        }
+        return result;
+    }
+    /**
+     * @param colNum - index of a workbench column.
+     * @return the excel cell type appropriate for the database field the workbench column maps to.
+     */
+    protected int getColType(final WorkbenchTemplateMappingItem mapItem)
+    {
+        Class<?> dataType = mapItem.getDataType();
+        // These are the classes currently returned by getDataType():
+        // java.lang.Long
+        // java.lang.String
+        // java.util.Calendar
+        // java.lang.Float
+        // java.lang.Boolean
+        // java.lang.Byte
+        // java.lang.Integer
+        // java.lang.Short
+        // java.lang.Double
+        // java.util.Date
+        // java.lang.BigDecimal
+
+        if (dataType == java.lang.Long.class
+                || dataType == java.lang.Float.class
+                || dataType == java.lang.Byte.class
+                || dataType == java.lang.Integer.class
+                || dataType == java.lang.Short.class
+                || dataType == java.lang.Double.class
+                || dataType == java.math.BigDecimal.class)
+        {
+            return HSSFCell.CELL_TYPE_NUMERIC;
+        }
+        else if (dataType == java.lang.Boolean.class)
+        {
+            //XXX still need to test if this type allows "don't know"
+            return HSSFCell.CELL_TYPE_BOOLEAN;
+        }
+        else
+        {
+            return HSSFCell.CELL_TYPE_STRING;
+        }
+    }
+    
+    /**
+     * calls HSSFCell.setCellValue with the java type appropriate for the cell type. 
+     * @param cell 
+     * @param value
+     * @param colTypes
+     */
+    protected void setCellValue(final HSSFCell cell, final String value)
+    {
+        switch (cell.getCellType())
+        {
+            case HSSFCell.CELL_TYPE_NUMERIC:
+                cell.setCellValue(Double.parseDouble(value));
+                return;
+            case HSSFCell.CELL_TYPE_BOOLEAN:
+                cell.setCellValue(Boolean.parseBoolean(value));
+                return;
+        }
+        cell.setCellValue(value);
+    }
     /*
      * (non-Javadoc)
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
-    public void writeData(List<?> data, final DataProviderSessionIFace session, final boolean closeSession) throws Exception
+    public void writeData(List<?> data) throws Exception
     {
         HSSFWorkbook workBook = new HSSFWorkbook();
         HSSFSheet workSheet = workBook.createSheet();
@@ -81,13 +156,27 @@ public class XLSExport implements DataExport
             writeHeaders(workSheet);
             rowNum++;
         }
-        for (Object row : data)
+        if (data.size() > 0)
         {
-            HSSFRow hssfRow = workSheet.createRow(rowNum++);
-            for (short colNum = 0; colNum < ((WorkbenchRow) row).getWorkbenchDataItems().size(); colNum++)
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
             {
-                HSSFCell cell = hssfRow.createCell(colNum);
-                cell.setCellValue(((WorkbenchRow) row).getData(colNum));
+                session.attach(((WorkbenchRow) data.get(0)).getWorkbench());
+                int[] colTypes = bldColTypes((WorkbenchRow) data.get(0));
+                for (Object row : data)
+                {
+                    HSSFRow hssfRow = workSheet.createRow(rowNum++);
+                    for (short colNum = 0; colNum < ((WorkbenchRow) row).getWorkbenchDataItems().size(); colNum++)
+                    {
+                        HSSFCell cell = hssfRow.createCell(colNum);
+                        cell.setCellType(colTypes[colNum]);
+                        setCellValue(cell, ((WorkbenchRow) row).getData(colNum));
+                    }
+                }
+            }
+            finally
+            {
+                session.close();
             }
         }
         try
@@ -98,10 +187,6 @@ public class XLSExport implements DataExport
         {
             throw(e);
         }
-        if (session != null && closeSession)
-        {
-            session.close();
-        }
     }
-
+    
 }

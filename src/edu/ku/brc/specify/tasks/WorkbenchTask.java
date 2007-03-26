@@ -686,11 +686,11 @@ public class WorkbenchTask extends BaseTask
         if (workbench != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
             try
             {
                 session.attach(workbench);
     
-                CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
                 command.setData(workbench.getWorkbenchRowsAsList());
                 command.setProperty("exporter", ExportToFile.class);
     
@@ -756,19 +756,12 @@ public class WorkbenchTask extends BaseTask
                     String key = (String) keys.nextElement();
                     command.setProperty(key, props.getProperty(key));
                 }
-                // XXX FIX ME! We should be passing a session through a command
-                // We should close it here and do an "attach" on the other side.
-                command.setProperty("session", session); //the session is closed by the exporter.
-                CommandDispatcher.dispatch(command); // This assumes it is a Synchronous Call
-                
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                
-            } finally
+            }
+            finally
             {
                 session.close();
             }
+            CommandDispatcher.dispatch(command); 
         }
     }
     

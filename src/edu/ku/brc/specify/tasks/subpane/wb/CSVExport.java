@@ -65,7 +65,7 @@ public class CSVExport implements DataExport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
-    public void writeData(final List<?> data, final DataProviderSessionIFace session, final boolean closeSession) throws Exception
+    public void writeData(final List<?> data/*, final DataProviderSessionIFace session, final boolean closeSession*/) throws Exception
     {
         String[] record;
         CsvWriter writer = new CsvWriter(config.getFileName());
@@ -73,27 +73,32 @@ public class CSVExport implements DataExport
         {
             writeHeaders(writer);
         }
-        for (int r = 0; r < data.size(); r++)
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
         {
-            WorkbenchRow row = (WorkbenchRow) data.get(r);
-            record = new String[row.getWorkbenchDataItems().size()];
-            for (int c = 0; c < row.getWorkbenchDataItems().size(); c++)
+            session.attach(((WorkbenchRow) data.get(0)).getWorkbench());
+            for (int r = 0; r < data.size(); r++)
             {
-                record[c] = row.getData(c);
+                WorkbenchRow row = (WorkbenchRow) data.get(r);
+                record = new String[row.getWorkbenchDataItems().size()];
+                for (int c = 0; c < row.getWorkbenchDataItems().size(); c++)
+                {
+                    record[c] = row.getData(c);
+                }
+                try
+                {
+                    writer.writeRecord(record);
+                } catch (IOException e)
+                {
+                    throw (e);
+                }
             }
-            try
-            {
-                writer.writeRecord(record);
-            } catch (IOException e)
-            {
-                throw (e);
-            }
+            writer.flush();
         }
-        if (session != null && closeSession)
+        finally
         {
             session.close();
         }
-        writer.flush();
     }
 
 }

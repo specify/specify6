@@ -56,7 +56,7 @@ public class ExportToFile implements RecordSetExporter
         {
           try
           {
-            exporter.writeData(data, (DataProviderSessionIFace) reqParams.get("session"), true);
+            exporter.writeData(data);
           }
           catch (IOException e)
           {
