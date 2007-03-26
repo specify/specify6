@@ -72,7 +72,7 @@ public class GridTableModel extends SpreadSheetModel
                 imageMappingItem.initialize();
                 imageMappingItem.setCaption("Card Image"); // XXX I18N"
                 imageMappingItem.setViewOrder((short)headers.size());
-                imageMappingItem.setDataType("java.lang.Image");
+                imageMappingItem.setDataType("java.awt.Image");
             }
             headers.add(imageMappingItem);
             
@@ -95,6 +95,7 @@ public class GridTableModel extends SpreadSheetModel
     /* (non-Javadoc)
      * @see javax.swing.table.AbstractTableModel#getColumnName(int)
      */
+    @Override
     public String getColumnName(final int column)
     {
         if (headers != null)
@@ -135,6 +136,7 @@ public class GridTableModel extends SpreadSheetModel
     /* (non-Javadoc)
      * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
      */
+    @Override
     public boolean isCellEditable(int row, int column)
     {
         if (isInImageMode)
@@ -147,6 +149,7 @@ public class GridTableModel extends SpreadSheetModel
     /* (non-Javadoc)
      * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
      */
+    @Override
     public Class<?> getColumnClass(int columnIndex)
     {
         if (isInImageMode && columnIndex == headers.size() - 1)
@@ -159,15 +162,15 @@ public class GridTableModel extends SpreadSheetModel
         {
             return obj.getClass();
             
-        } else
-        {
-            return String.class;
         }
+        //else
+        return String.class;
     }
 
     /* (non-Javadoc)
      * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
      */
+    @Override
     public void setValueAt(Object value, int row, int column)
     {
         if (isInImageMode && column == headers.size() - 1)
