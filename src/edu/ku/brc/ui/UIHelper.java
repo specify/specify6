@@ -1213,7 +1213,7 @@ public final class UIHelper
                                         final String               toolTipTextKey, 
                                         final ActionListener       al)
     {
-        return createIconBtn(iconName, null, toolTipTextKey, al);
+        return createIconBtn(iconName, null, toolTipTextKey, false, al);
     }
     
     /**
@@ -1228,14 +1228,39 @@ public final class UIHelper
                                         final String               toolTipTextKey, 
                                         final ActionListener       al)
     {
+        return createIconBtn(iconName, size, toolTipTextKey, false, al);
+    }
+    
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param al the action listener
+     * @param withEmptyBorder set an empyt border
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final IconManager.IconSize size,
+                                        final String               toolTipTextKey, 
+                                        final boolean              withEmptyBorder,
+                                        final ActionListener       al)
+    {
         JButton btn = size != null ? new JButton(IconManager.getIcon(iconName, size)) : new JButton(IconManager.getIcon(iconName));
         //btn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btn.setToolTipText(getResourceString(toolTipTextKey));
         btn.setMargin(new Insets(0,0,0,0));
-        btn.addActionListener(al);
+        if (al != null)
+        {
+            btn.addActionListener(al);
+        }
         btn.setEnabled(false);
+        if (withEmptyBorder)
+        {
+            btn.setBorder(BorderFactory.createEmptyBorder());
+        }
         return btn;
     }
+
     
     /**
      * Parses a string for ";" colon separated name/value pairs.

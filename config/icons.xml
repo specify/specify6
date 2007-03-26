@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <icons>
     <icon name="Save"       file="filesave.png" sizes="all"/>
-
+    <icon name="Import"     file="upload_data.gif" sizes="all"/>
+    <icon name="Export"     file="import.png" sizes="all"/>
+    
     <icon name="Configure"  file="configure.gif" sizes="all"/>
     <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
     <icon name="AppIcon"    file="specify_icon.gif" sizes="32"/>
@@ -17,7 +19,6 @@
     <icon name="Pie_Chart"  file="piechart.gif" sizes="all"/>
     <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
     <icon name="Record_Set" file="bundle.png" sizes="all"/>
-    <icon name="Export"     file="recordset.gif" sizes="all"/>
     <icon name="Agent"            file="agent.gif" sizes="all"/>
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
     <icon name="People"           file="emblem-people.png" sizes="all"/>
@@ -52,7 +53,8 @@
     <icon name="Address"       file="address.png" sizes="all"/>
     <icon name="ReferenceWork" file="referencework.png" sizes="all"/>
     <icon name="Author"        file="author.png" sizes="all"/>
-
+    <icon name="Template"      file="template.png" sizes="all"/>
+    
     <!-- Aliases -->
     <icon name="Accession Agent"   alias="AccessionAgent"/>
     <icon name="Attachment"        alias="unknown"/>

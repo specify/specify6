@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JLabel;
@@ -79,7 +80,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected RecordSetIFace         recordSet        = null;
     protected File                   cachePath        = null;
     
-    protected Map<String, Object>    params           = null;
+    protected Properties             params           = null;
 
     /**
      * Constructor.
@@ -87,9 +88,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * @param task the owning task
      * @param params parameters for the report
      */
-    public LabelsPane(final String name,
-                      final Taskable task, 
-                      final Map<String, Object> params)
+    public LabelsPane(final String     name,
+                      final Taskable   task, 
+                      final Properties params)
     {
         super(name, task);
         
@@ -124,7 +125,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 repaint();
             }
           });
-
     }
     
     /**
@@ -223,12 +223,12 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * @param recrdSet the recordset to use to fill the labels
      * @param params parameters for the report
     */
-    public void createReport(final String mainReportName, 
+    public void createReport(final String         mainReportName, 
                              final RecordSetIFace recrdSet, 
-                             final Map<String, Object> params)
+                             final Properties     params)
     {
         this.recordSet = recrdSet;
-        this.params = params;
+        this.params    = params;
      
         refreshCacheFromDatabase("jrxml/label");
         refreshCacheFromDatabase("jrxml/report");
@@ -292,8 +292,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             }
         }
 
-       
-
         // Check to see if it needs to be recompiled, if it doesn't need compiling then
         // call "compileComplete" directly to have it start filling the labels
         // otherswise create the compiler runnable and have it be compiled 
@@ -351,7 +349,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     // Add external parameters
                     if (params != null)
                     {
-                        for (String key : params.keySet())
+                        for (Object key : params.keySet())
                         {
                             parameters.put(key, params.get(key));
                         }

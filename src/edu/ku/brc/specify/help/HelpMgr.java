@@ -28,6 +28,8 @@ import javax.swing.KeyStroke;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.specify.Specify;
 
 /**
@@ -243,25 +245,48 @@ public class HelpMgr
      */
     public static void getHelpForContext()
     {
-        Map.ID id = getMapID(getCurrentContext());
-        if (id == null)
+        String       helpTarget = null;
+        SubPaneIFace subPane    = SubPaneMgr.getInstance().getCurrentSubPane();
+        if (subPane != null)
         {
-            helpless();
+            helpTarget = subPane.getHelpTarget();
+            
         } else
         {
-            try
-            {
-                hb.setCurrentID(id);
-                if (!hb.isDisplayed())
-                {
-                    hb.setDisplayed(true);
-                }
-            } catch (InvalidHelpSetContextException e)
+            helpTarget = getCurrentContext();
+        }
+        
+        if (helpTarget == null)
+        {
+            helpTarget = getDefaultID();
+        }
+        
+        if (helpTarget != null)
+        {
+            Map.ID id = getMapID(helpTarget);
+            if (id == null)
             {
                 helpless();
+            } else
+            {
+                try
+                {
+                    hb.setCurrentID(id);
+                    if (!hb.isDisplayed())
+                    {
+                        hb.setDisplayed(true);
+                    }
+                } catch (InvalidHelpSetContextException e)
+                {
+                    helpless();
+                }
             }
+        } else
+        {
+            helpless();
         }
     }
+
 
     /**
      * @return the hb

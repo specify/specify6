@@ -86,6 +86,12 @@ public interface SubPaneIFace
      * @param show true = show, false hide
      */
     public void showingPane(boolean show);
+    
+    /**
+     * Returns the string of the Jaba Help target that should be displayed.
+     * @return the string of the Jaba Help target that should be displayed.
+     */
+    public String getHelpTarget();
 
     /**
      * Tells the panel it is about to be closed and destroyed and it can return "false" if it wats the processed stopped.

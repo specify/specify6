@@ -124,7 +124,7 @@ public class SearchReplacePanel extends JPanel
         {
             public void valueChanged(ListSelectionEvent e)
             {
-                System.out.println("valueChanged");
+                //System.out.println("valueChanged");
                 /*
                 ListSelectionModel selModel = table.getSelectionModel();
                 int anchor = selModel.getAnchorSelectionIndex();

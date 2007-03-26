@@ -78,6 +78,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     protected List<DataFlavor>   dropFlavors  = new ArrayList<DataFlavor>();
     
     protected EditFormControl    controlProperties = null;
+    protected boolean            wasShowing        = false;
     
     /**
      * Creates a Pane for editing a Workbench as a form.
@@ -101,11 +102,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         {
             public void mouseClicked(MouseEvent e)
             {
-                if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
-                {
-                    showControlProps();
-                }
-                
                 selectedInputPanel = (InputPanel)((Component)e.getSource()).getParent();
                 controlPropsBtn.setEnabled(true);
                 
@@ -113,6 +109,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                 {
                     controlProperties.setControl(selectedInputPanel);
                 }
+                
+                if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
+                {
+                    showControlProps();
+                }
+                
             }
         };
         
@@ -162,7 +164,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         }
         
         
-        controlPropsBtn = createIconBtn("ControlEdit", IconManager.IconSize.Std16, "WB_EDIT_CONTROL", new ActionListener()
+        controlPropsBtn = createIconBtn("ControlEdit", IconManager.IconSize.Std16, "WB_EDIT_CONTROL", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -265,11 +267,29 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     {
         if (controlProperties == null)
         {
-            controlProperties = new EditFormControl((Frame)UICacheManager.get(UICacheManager.FRAME), "Edit", selectedInputPanel, this); // I18N
+            controlProperties = new EditFormControl((Frame)UICacheManager.get(UICacheManager.FRAME), "Properties", selectedInputPanel, this); // I18N
         }
         controlProperties.setVisible(true);
     }
     
+    public void showingPane(final boolean show)
+    {
+        if (show)
+        {
+           if (wasShowing)
+           {
+               controlProperties.setVisible(true);
+           }
+        } else if (controlProperties != null)
+        {
+            controlProperties.setVisible(false);
+            wasShowing = true;
+            
+        } else
+        {
+            wasShowing = false;
+        }
+    }
     
     
     @Override

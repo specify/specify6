@@ -26,7 +26,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -189,7 +192,7 @@ public class XMLHelper
        BufferedReader input    = null;
        try 
        {
-           
+           // XXX TODO Replace with FileUtils
            input = new BufferedReader(new FileReader(file));
            
            String line = null;
@@ -292,4 +295,54 @@ public class XMLHelper
        sb.append(value);
        addNode(sb, 0, name, true);
    }
+   
+   /**
+    * Reads in a file of HTML, primarily from the Help directory and fixes up the images
+    * to have an absolute path. Plus it strip everything before and including the 'body' tag and
+    * strips the '</body>' to the end.
+    * @param file the html file to be read.
+    * @return the file as a string
+    */
+   public static String fixUpHTML(final File file)
+   {
+       String path = FilenameUtils.getFullPath(file.getAbsolutePath());
+       
+       StringBuilder sb = new StringBuilder();
+       try
+       {
+           List    lines    = FileUtils.readLines(file);
+           boolean fndBegin = false;
+           
+           for (Object lineObj : lines)
+           {
+               String line = (String)lineObj;
+               if (!fndBegin)
+               {
+                   if (line.indexOf("<body>") > -1)
+                   {
+                       fndBegin = true;
+                   }
+                   continue;
+               }
+               int inx = line.indexOf("<img");
+               if (inx > -1)
+               {
+                   inx = line.indexOf("src=\"", inx);
+                   
+                   sb.append(line.substring(0, inx+5));
+                   File f = new File(path);
+                   sb.append(f.toURL());
+                   sb.append(line.substring(inx+5, line.length()));
+               } else
+               {
+                   sb.append(line+"\n");
+               }
+           }
+       } catch (IOException ex)
+       {
+           log.error(ex);
+       }
+       return sb.toString();
+   }
+
 }

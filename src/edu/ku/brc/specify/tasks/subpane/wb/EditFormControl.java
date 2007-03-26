@@ -58,7 +58,7 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
     protected InputPanel inputPanel;
     protected FormPane   formPane;
     
-    protected ValSpinner xCoord;
+    protected ValSpinner xCoord      = null;
     protected ValSpinner yCoord;
     protected ValSpinner fieldWidth;
     protected JTextField labelTF;
@@ -83,10 +83,10 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
                            final InputPanel inputPanel,
                            final FormPane   canvasPanel) throws HeadlessException
     {
-        super(frame, title, false, OKCANCELAPPLYHELP, null);
+        super(frame, title, true, OKCANCELAPPLYHELP, null);
         
-        this.inputPanel  = inputPanel;
-        this.formPane = canvasPanel;
+        this.inputPanel = inputPanel;
+        this.formPane   = canvasPanel;
     }
 
     /* (non-Javadoc)
@@ -95,45 +95,48 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
     @Override
     protected void createUI()
     {
-        super.createUI();
-        
-        int y    = 1;
-        CellConstraints cc         = new CellConstraints();
-        PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", 10)));
-        JPanel          panel      = panelBlder.getPanel();
-        
-        Dimension canvasSize  = formPane.getSize();
-        Dimension controlSize = inputPanel.getSize();
-        
-        panelBlder.add(new JLabel("X:", JLabel.RIGHT), cc.xy(1, y));
-        panelBlder.add(xCoord = new ValSpinner(0, canvasSize.width-controlSize.width, false, false), cc.xy(3, y));
-        y += 2;
-        
-        panelBlder.add(new JLabel("Y:", JLabel.RIGHT), cc.xy(1, y));
-        panelBlder.add(yCoord = new ValSpinner(0, canvasSize.height-controlSize.height, false, false), cc.xy(3, y));
-        y += 2;
-        
-        panelBlder.add(new JLabel("Label:", JLabel.RIGHT), cc.xy(1, y));
-        panelBlder.add(labelTF = new JTextField(25), cc.xywh(3, y, 2, 1));
-        y += 2;
-        
-        if (inputPanel.getComp() instanceof JTextField)
+        if (xCoord == null)
         {
-            panelBlder.add(new JLabel("Field Columns:", JLabel.RIGHT), cc.xy(1, y));
-            panelBlder.add(fieldWidth = new ValSpinner(0, 100, false, false), cc.xy(3, y));
+            super.createUI();
+            
+            int y    = 1;
+            CellConstraints cc         = new CellConstraints();
+            PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", 10)));
+            JPanel          panel      = panelBlder.getPanel();
+            
+            Dimension canvasSize  = formPane.getSize();
+            Dimension controlSize = inputPanel.getSize();
+            
+            panelBlder.add(new JLabel("X:", JLabel.RIGHT), cc.xy(1, y));
+            panelBlder.add(xCoord = new ValSpinner(0, canvasSize.width-controlSize.width, false, false), cc.xy(3, y));
             y += 2;
+            
+            panelBlder.add(new JLabel("Y:", JLabel.RIGHT), cc.xy(1, y));
+            panelBlder.add(yCoord = new ValSpinner(0, canvasSize.height-controlSize.height, false, false), cc.xy(3, y));
+            y += 2;
+            
+            panelBlder.add(new JLabel("Label:", JLabel.RIGHT), cc.xy(1, y));
+            panelBlder.add(labelTF = new JTextField(25), cc.xywh(3, y, 2, 1));
+            y += 2;
+            
+            if (inputPanel.getComp() instanceof JTextField)
+            {
+                panelBlder.add(new JLabel("Field Columns:", JLabel.RIGHT), cc.xy(1, y));
+                panelBlder.add(fieldWidth = new ValSpinner(0, 100, false, false), cc.xy(3, y));
+                y += 2;
+            }
+            
+            fill();
+             
+            xCoord.addChangeListener(this);
+            yCoord.addChangeListener(this);
+            fieldWidth.addChangeListener(this);
+            labelTF.getDocument().addDocumentListener(this);
+    
+            mainPanel.add(panel, BorderLayout.CENTER);
+            
+            pack();
         }
-        
-        fill();
-         
-        xCoord.addChangeListener(this);
-        yCoord.addChangeListener(this);
-        fieldWidth.addChangeListener(this);
-        labelTF.getDocument().addDocumentListener(this);
-
-        mainPanel.add(panel, BorderLayout.CENTER);
-        
-        pack();
     }
     
     /* (non-Javadoc)
@@ -202,6 +205,11 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
      */
     protected void fill()
     {
+        if (xCoord == null)
+        {
+            createUI();
+        }
+        
         Point location = inputPanel.getLocation();
         xCoord.setValue(((Double)location.getX()).intValue());
         yCoord.setValue(((Double)location.getY()).intValue());

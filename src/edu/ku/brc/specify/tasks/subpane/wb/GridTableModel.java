@@ -36,7 +36,7 @@ public class GridTableModel extends SpreadSheetModel
     protected Workbench          workbench;
     protected boolean            isInImageMode    = false;
     protected ImageIcon          blankIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std16);
-    protected ImageIcon          imageIcon = IconManager.getIcon("image", IconManager.IconSize.Std16);
+    protected ImageIcon          imageIcon = IconManager.getIcon("CardImage", IconManager.IconSize.Std16);
     
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     protected WorkbenchTemplateMappingItem imageMappingItem = null;

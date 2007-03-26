@@ -19,9 +19,9 @@ import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -54,6 +54,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostActionableDropManager;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -169,7 +170,7 @@ public class LabelsTask extends BaseTask
     public void doLabels(final String              labelName, 
                          final String              labelTitle, 
                          final RecordSetIFace      recordSet, 
-                         final Map<String, Object> params,
+                         final Properties          params,
                          final Taskable            originatingTask)
     {
         int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent((LabelsPane)starterPane) : -1;
@@ -435,6 +436,71 @@ public class LabelsTask extends BaseTask
     }
     
     /**
+     * Prints a Label / Reports from a command
+     * @param cmdAction the command
+     */
+    protected void printLabel(final CommandAction cmdAction)
+    {
+        String     paramList = cmdAction.getPropertyAsString("params");
+        Properties params    = null;
+        if (StringUtils.isNotEmpty(paramList))
+        {
+            params = UIHelper.parseProperties(paramList);
+        }
+        
+        if (cmdAction.getData() instanceof RecordSet)
+        {
+            RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
+            
+            // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
+            // to To things. One way to get here with a null title is to click on the Labels btn from the search results
+            if (recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
+            {
+                cmdAction.setProperty("file", "fish_label.jrxml");
+                cmdAction.setProperty("title", "Fish Labels");
+                
+            } else if (recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
+            {
+                // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
+                // to To things. One way to get here with a null title is to click on the Labels btn from the search results
+                cmdAction.setProperty("file",  "LoanInvoice.jrxml");
+                cmdAction.setProperty("title", "Loan Invoice");
+            }
+
+
+            if (checkForALotOfLabels(recordSet))
+            {
+                String labelFileName = cmdAction.getPropertyAsString("file");
+                
+                if (StringUtils.isEmpty(labelFileName))
+                {
+                    labelFileName = askForLabelName();
+                }
+                
+                if (StringUtils.isNotEmpty(labelFileName))
+                {
+                    Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
+                    doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask);
+                }
+            }
+            
+        } else
+        {
+            String tableIDStr = cmdAction.getPropertyAsString("tableid");
+            if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
+            {
+                RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
+                if (recordSet != null)
+                {
+                    doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this);
+                }
+            }
+            
+        }
+
+    }
+    
+    /**
      * Processes all Commands of type LABELS.
      * @param cmdAction the command to be processed
      */
@@ -471,73 +537,8 @@ public class LabelsTask extends BaseTask
             }
         } else if (cmdAction.isAction(PRINT_LABEL))
         {
-            String              paramList = cmdAction.getPropertyAsString("params");
-            Map<String, Object> params    = null;
-            if (StringUtils.isNotEmpty(paramList))
-            {
-                params = new Hashtable<String, Object>();
-                for (String nameValuePair : StringUtils.split(paramList, ";"))
-                {
-                    String[] pair = StringUtils.split(nameValuePair, "=");
-                    if (pair.length == 2)
-                    {
-                        params.put(pair[0], pair[1]);
-                    } else
-                    {
-                        log.error("Unevent sets of named/value pairs for labels/reports params.");
-                    }
-                }
-            }
+            printLabel(cmdAction);
             
-            if (cmdAction.getData() instanceof RecordSet)
-            {
-                RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-                
-                // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
-                // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-                if (recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
-                {
-                    cmdAction.setProperty("file", "fish_label.jrxml");
-                    cmdAction.setProperty("title", "Fish Labels");
-                    
-                } else if (recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
-                {
-                    // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
-                    // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-                    cmdAction.setProperty("file",  "LoanInvoice.jrxml");
-                    cmdAction.setProperty("title", "Loan Invoice");
-                }
-
-
-                if (checkForALotOfLabels(recordSet))
-                {
-                    String labelFileName = cmdAction.getPropertyAsString("file");
-                    
-                    if (StringUtils.isEmpty(labelFileName))
-                    {
-                        labelFileName = askForLabelName();
-                    }
-                    
-                    if (StringUtils.isNotEmpty(labelFileName))
-                    {
-                        Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                        doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask);
-                    }
-                }
-                
-            } else
-            {
-                String tableIDStr = cmdAction.getPropertyAsString("tableid");
-                if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
-                {
-                    RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
-                    if (recordSet != null)
-                    {
-                        doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this);
-                    }
-                }
-                
-            }
         } else if (cmdAction.isAction(OPEN_EDITOR))
         {
             if (cmdAction.getData() == null) //no dropping yet.

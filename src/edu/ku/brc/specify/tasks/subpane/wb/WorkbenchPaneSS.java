@@ -25,8 +25,10 @@ import java.awt.Component;
 import java.awt.FileDialog;
 import java.awt.FontMetrics;
 import java.awt.Frame;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -38,10 +40,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -52,7 +58,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -181,10 +189,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      * @param name the name of the pane
      * @param task the owning task
      * @param workbench the workbench to be editted
+     * @param showImageView shows image window when first showing the window
      */
     public WorkbenchPaneSS(final String name,
                            final Taskable task,
-                           final Workbench workbench)
+                           final Workbench workbench,
+                           final boolean showImageView)
     {
         super(name, task);
         
@@ -277,7 +287,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         insertRowBtn = createIconBtn("InsertSign", "WB_INSERT_ROW", insertAction);
         selectionSensativeButtons.add(insertRowBtn);
 
-        addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", new ActionListener()
+        /*addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -290,8 +300,57 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         });
         addRowsBtn.setEnabled(true);
+        */
+        Action addAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_N, "AddRow", new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                model.appendRow();
+                resultsetController.setLength(model.getRowCount());
+                int selInx = model.getRowCount()-1;
+                resultsetController.setIndex(selInx);
+                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
 
-        carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", new ActionListener()
+            }
+        });
+        addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", null);
+        addRowsBtn.setEnabled(true);
+        addAction.setEnabled(true);
+        /*
+        InputMap inputMap = spreadSheet.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = spreadSheet.getActionMap();
+        
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "r_action");
+        actionMap.put("r_action", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Added row");
+                model.appendRow();
+                resultsetController.setLength(model.getRowCount());
+                int selInx = model.getRowCount()-1;
+                resultsetController.setIndex(selInx);
+                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
+            }
+        });*/
+        /*InputMap inputMap = spreadSheet.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        inputMap.put(key, new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                model.appendRow();
+                resultsetController.setLength(model.getRowCount());
+                int selInx = model.getRowCount()-1;
+                resultsetController.setIndex(selInx);
+                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
+
+            }
+        });*/
+
+        //inputMap = getInputMap();
+        //key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+       //inputMap.put(key, addAction);
+
+        carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -300,7 +359,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         carryForwardBtn.setEnabled(true);
 
-        toggleCardImageBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_CARD", new ActionListener()
+        toggleCardImageBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_CARD", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -309,7 +368,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         toggleCardImageBtn.setEnabled(true);
         
-        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.Std16, "WB_SHOW_MAP", new ActionListener()
+        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.Std16, "WB_SHOW_MAP", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -319,7 +378,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // only enable it if the workbench has geo ref data
         showMapBtn.setEnabled(workbench.containsGeoRefData());
 
-        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", new ActionListener()
+        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -328,7 +387,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         exportKmlBtn.setEnabled(workbench.containsGeoRefData());
         
-        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.Std16, "WB_DO_BIOGEOMANCER_LOOKUP", new ActionListener()
+        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.Std16, "WB_DO_BIOGEOMANCER_LOOKUP", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -337,7 +396,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         selectionSensativeButtons.add(biogeomancerBtn);
         
-        exportExcelCsvBtn = createIconBtn("Save", IconManager.IconSize.Std16, "WB_EXPORT_DATA", new ActionListener()
+        exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -402,7 +461,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         CellConstraints cc = new CellConstraints();
 
         JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, exportExcelCsvBtn};
-        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,2px,"+createDuplicateJGoodiesDef("p", "2px", comps.length)+",2px,", "p:g"));
+        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "p:g"));
         
         spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
         int x = 3;
@@ -443,6 +502,29 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         builder.add(carryForwardBtn,    cc.xy(5,3));
         builder.add(saveBtn,            cc.xy(7,3));
         builder.add(createSwitcher(),   cc.xy(9,3));
+        
+        if (showImageView)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    toggleCardImageVisible();
+                }
+            });
+        }
+    }
+    
+    protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String name, final Action action)
+    {
+        InputMap  inputMap  = comp.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = comp.getActionMap();
+        
+        inputMap.put(KeyStroke.getKeyStroke(keyCode, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), name);
+        actionMap.put(name, action);
+        
+        UICacheManager.registerAction(name, action);
+        return action;
     }
     
     /**
@@ -550,41 +632,40 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         cardLayout.show(mainPanel, currentPanelType.toString());
         cpCardLayout.show(controllerPane, currentPanelType.toString());
         
+        boolean isSpreadsheet = currentPanelType == PanelType.Spreadsheet;
+        if (isSpreadsheet)
+        {
+            // Showing Spreadsheet and hiding form
+            setCurrentRow(resultsetController.getCurrentIndex());
+            if (model.getRowCount() > 0)
+            {
+                spreadSheet.setRowSelectionInterval(getCurrentRow(), getCurrentRow());
+                spreadSheet.setColumnSelectionInterval(0, model.getColumnCount()-1);
+                spreadSheet.scrollToRow(Math.min(getCurrentRow()+4, model.getRowCount()));
+            }
+
+        } else
+        {
+            // Showing Form and hiding Spreadsheet
+            setCurrentRow(spreadSheet.getSelectedRow());
+            if (model.getRowCount() > 0)
+            {
+                resultsetController.setIndex(getCurrentRow());
+            }
+            //hide the find/replace panel when you switch to form view
+            findPanel.getHideFindPanelAction().hide();
+            //disable the ctrl-F from the edit menu
+            UICacheManager.disableFindFromEditMenu();
+        }
         
-        
-       boolean isSpreadsheet = currentPanelType == PanelType.Spreadsheet;
-       if (isSpreadsheet)
-       {
-           // Showing Spreadsheet and hiding form
-           setCurrentRow(resultsetController.getCurrentIndex());
-           if (model.getRowCount() > 0)
-           {
-               spreadSheet.setRowSelectionInterval(getCurrentRow(), getCurrentRow());
-               spreadSheet.setColumnSelectionInterval(0, model.getColumnCount()-1);
-               spreadSheet.scrollToRow(Math.min(getCurrentRow()+4, model.getRowCount()));
-           }
-           
-       } else
-       {
-           // Showing Form and hiding Spreadsheet
-           setCurrentRow(spreadSheet.getSelectedRow());
-           if (model.getRowCount() > 0)
-           {
-               resultsetController.setIndex(getCurrentRow());
-           }
-           //hide the find/replace panel when you switch to form view
-           findPanel.getHideFindPanelAction().hide();
-           //disable the ctrl-F from the edit menu
-           UICacheManager.disableFindFromEditMenu();
-       }
-            
-       JComponent[] comps = { addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn};
-       for (JComponent c : comps)
-       {
-           //enable the "Find" action in the Edit menu when a spreadsheet is shown
-           if(isSpreadsheet)UICacheManager.enableFindinEditMenu(findPanel);
-           c.setVisible(isSpreadsheet);
-       }
+             
+        JComponent[] comps = { addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn};
+        for (JComponent c : comps)
+        {
+            //enable the "Find" action in the Edit menu when a spreadsheet is shown
+            if(isSpreadsheet)UICacheManager.enableFindinEditMenu(findPanel);
+            c.setVisible(isSpreadsheet);
+        }
     }
     
     /**
@@ -1020,6 +1101,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
     }
     
+    /**
+     * @param bgService
+     * @throws Exception
+     */
     protected void showBioGeomancerDialog(BioGeoMancer bgService) throws Exception
     {
         JDialog dialog = new JDialog();
@@ -1029,7 +1114,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         dialog.setContentPane(p);
         dialog.setLocation(0,0);
         dialog.pack();
-        ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
+        //ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
 //        if (icon != null)
 //        {
 //            dialog.setIconImage(icon.getImage());
@@ -1339,6 +1424,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     @Override
     public void showingPane(boolean show)
     {
+        if (formPane != null)
+        {
+            formPane.showingPane(show);
+        }
+        
         if (show)
         {
             if (cardFrameWasShowing)
@@ -1378,6 +1468,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             recordSet.addItem(workbench.getWorkbenchId());
         }
         return recordSet;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getHelpTarget()
+     */
+    public String getHelpTarget()
+    {
+        return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
     }
     
     //------------------------------------------------------------
@@ -1509,14 +1607,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                                                        int row, 
                                                        int column) 
         {
-          setText("");
-          if (value instanceof ImageIcon)
-          {
-              setIcon((ImageIcon)value);
-              this.setHorizontalAlignment(SwingConstants.CENTER);
-          }
-          return this;
+            setText("");
+            if (value instanceof ImageIcon)
+            {
+                setIcon((ImageIcon)value);
+                this.setHorizontalAlignment(SwingConstants.CENTER);
+            }
+            return this;
         }
-      }
+    }
 }
 

@@ -10,6 +10,7 @@ package edu.ku.brc.specify.tasks.subpane;
 import java.awt.BorderLayout;
 
 import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -39,12 +40,12 @@ public class HtmlDescPane extends SimpleDescPane implements HyperlinkListener
                         final Taskable task,
                         final String htmlDesc)
     {
-        super(name,task,htmlDesc);
+        super(name,task,"");
         this.removeAll();
-        
-        JEditorPane htmlPane=null;
-        htmlPane = new JEditorPane("text/html",htmlDesc);
-        this.add(htmlPane,BorderLayout.CENTER);
+        JEditorPane htmlPane   = new JEditorPane("text/html", htmlDesc);
+        JScrollPane scrollPane = new JScrollPane(htmlPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        System.out.println(htmlDesc);
+        this.add(scrollPane, BorderLayout.CENTER);
         htmlPane.setEditable(false);
         htmlPane.addHyperlinkListener(this);
     }

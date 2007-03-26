@@ -216,60 +216,67 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
      */
     public void setCardImage(final File imageFile) throws IOException
     {
-        // read the original
-        BufferedImage img = ImageIO.read(imageFile);
-
-        // determine if we need to scale
-        int origWidth = img.getWidth();
-        int origHeight = img.getHeight();
-        boolean scale = false;
-        
-        if (origWidth > this.maxWidth || origHeight > maxHeight)
+        try
         {
-            scale = true;
-        }
-
-        byte[] imgBytes = null;
-        
-        if (scale)
-        {
-            // calculate the new height and width while maintaining the aspect ratio
-            int thumbWidth;
-            int thumbHeight;
-            if( origWidth >= origHeight )
+            // read the original
+            BufferedImage img = ImageIO.read(imageFile);
+    
+            // determine if we need to scale
+            int origWidth = img.getWidth();
+            int origHeight = img.getHeight();
+            boolean scale = false;
+            
+            if (origWidth > this.maxWidth || origHeight > maxHeight)
             {
-                thumbWidth = maxWidth;
-                thumbHeight = (int)(origHeight * ((float)thumbWidth/(float)origWidth));
+                scale = true;
+            }
+    
+            byte[] imgBytes = null;
+            
+            if (scale)
+            {
+                // calculate the new height and width while maintaining the aspect ratio
+                int thumbWidth;
+                int thumbHeight;
+                if( origWidth >= origHeight )
+                {
+                    thumbWidth = maxWidth;
+                    thumbHeight = (int)(origHeight * ((float)thumbWidth/(float)origWidth));
+                }
+                else
+                {
+                    thumbHeight = maxHeight;
+                    thumbWidth = (int)(origWidth * ((float)thumbHeight/(float)origHeight));
+                }
+                
+                // scale the image
+                BufferedImage thumbImage = new BufferedImage(thumbWidth,thumbHeight,BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics2D = thumbImage.createGraphics();
+                graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
+    
+                // save thumbnail image to the byte[] as a JPEG
+                ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(4096);
+                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outputByteStream);
+                JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(thumbImage);
+                param.setQuality(1, false);
+                encoder.setJPEGEncodeParam(param);
+                encoder.encode(thumbImage);
+                imgBytes = outputByteStream.toByteArray();
             }
             else
             {
-                thumbHeight = maxHeight;
-                thumbWidth = (int)(origWidth * ((float)thumbHeight/(float)origHeight));
+                // since we don't need to scale the image, just grab its bytes
+                imgBytes = FileUtils.readFileToByteArray(imageFile);
             }
             
-            // scale the image
-            BufferedImage thumbImage = new BufferedImage(thumbWidth,thumbHeight,BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics2D = thumbImage.createGraphics();
-            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
-
-            // save thumbnail image to the byte[] as a JPEG
-            ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(4096);
-            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outputByteStream);
-            JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(thumbImage);
-            param.setQuality(1, false);
-            encoder.setJPEGEncodeParam(param);
-            encoder.encode(thumbImage);
-            imgBytes = outputByteStream.toByteArray();
-        }
-        else
+            this.setCardImageData(imgBytes);
+            this.setCardImageFullPath(imageFile.getAbsolutePath());
+            
+        } catch (Exception ex)
         {
-            // since we don't need to scale the image, just grab its bytes
-            imgBytes = FileUtils.readFileToByteArray(imageFile);
+            System.err.println(ex);
         }
-        
-        this.setCardImageData(imgBytes);
-        this.setCardImageFullPath(imageFile.getAbsolutePath());
     }
     
     @Column(name="CardImageFullPath", length=255)

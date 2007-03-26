@@ -77,14 +77,28 @@ public class UICacheManager
     // Static Data Members
     protected static final String MISSING_FACTORY_MSG = "The object has not been set for the ViewBasedDialogFactoryIFace. This class can be used without first setting a factory implementing this interface.";
 
-    public static final String FRAME     = "frame";
-    public static final String MENUBAR   = "menubar";
-    public static final String TOOLBAR   = "toolbar";
-    public static final String STATUSBAR = "statusbar";
-    public static final String TOPFRAME  = "topframe";
-    public static final String GLASSPANE = "glasspane";
-    public static final String MAINPANE  = "mainpane";
+    public static final String FRAME        = "frame";
+    public static final String MENUBAR      = "menubar";
+    public static final String TOOLBAR      = "toolbar";
+    public static final String STATUSBAR    = "statusbar";
+    public static final String TOPFRAME     = "topframe";
+    public static final String GLASSPANE    = "glasspane";
+    public static final String MAINPANE     = "mainpane";
     public static final String RECENTFRAME  = "recentframe";
+    
+    // Standard Actions
+    public static final String UNDO         = "Undo";
+    public static final String REDO         = "Redo";
+    public static final String CUT          = "Cut";
+    public static final String COPY         = "Copy";
+    public static final String PASTE        = "Paste";
+    public static final String FIND         = "Find";
+    public static final String FINDREPLACE  = "FindReplace";
+    public static final String INSERT       = "Insert";
+    public static final String ADD          = "Add";
+    public static final String DELETE       = "Delete";
+    public static final String Clear        = "Clear";
+    
 
     public static final String LONGTERM_CACHE_MAP = "longterm-cache-map.xml";
 
@@ -110,12 +124,15 @@ public class UICacheManager
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
     
+    protected Hashtable<String, Action> actionMap = new Hashtable<String, Action>();
+    
     //------------------------------------------------
     // Undo / Redo Helpers
     //------------------------------------------------
-    protected static UndoAction       undoAction;
+    protected static UndoAction       undoAction; // these three are special
     protected static RedoAction       redoAction;
     protected static LaunchFindReplaceAction launchReplaceAction;
+    
     protected HashMap<Object, Action> actions = null;
     
     static 
@@ -124,7 +141,7 @@ public class UICacheManager
         focusManager.addPropertyChangeListener( 
             new PropertyChangeListener() { 
                 public void propertyChange(PropertyChangeEvent e) 
-                { 
+                {
                     String prop = e.getPropertyName(); 
                     //System.out.println(prop+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
                     if (("focusOwner".equals(prop)) && undoAction != null && redoAction != null) 
@@ -786,10 +803,42 @@ public class UICacheManager
     }
     
     //---------------------------------------------------------
-    //-- Undo and Redo
+    //-- Undo / Redo and Other Action Stuff
     //---------------------------------------------------------
 
-    public void addBindings(JComponent comp) 
+    /**
+     * Returns an Action by name.
+     * @param name the name of the action
+     */
+    public static Action getAction(final String name)
+    {
+        return instance.actionMap.get(name);
+    }
+    
+    /**
+     * Register's an action.
+     * @param name thee name of the action
+     * @param action the action 
+     * @return the action passed in
+     */
+    public static Action registerAction(final String name, final Action action)
+    {
+        if (instance.actionMap.get(name) == null)
+        {
+            instance.actionMap.put(name, action);
+            
+        } else
+        {
+            log.error("Action with name["+name+"] is already registered.");
+        }
+        return action;
+    }
+    
+    /**
+     * Adds Key navigation bindings to a component. (Is this needed?)
+     * @param comp the component
+     */
+    public void addNavBindings(JComponent comp) 
     {
         InputMap inputMap = comp.getInputMap();
 
@@ -824,6 +873,7 @@ public class UICacheManager
                                             new Integer(KeyEvent.VK_U),
                                             KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(undoAction);
+       actionMap.put(UNDO, undoAction);
        redoAction = (RedoAction) makeAction(RedoAction.class,
                                             this,
                                             "Redo",
@@ -832,6 +882,8 @@ public class UICacheManager
                                             new Integer(KeyEvent.VK_R),
                                             KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(redoAction);
+       actionMap.put(REDO, redoAction);
+       
        menu.addSeparator();
        // These actions come from the default editor kit.  Get the ones we want
        // and stick them in the menu.
@@ -843,6 +895,8 @@ public class UICacheManager
                                      new Integer(KeyEvent.VK_X),
                                      KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(cutAction);
+       actionMap.put(CUT, cutAction);
+       
        Action copyAction = makeAction(DefaultEditorKit.CopyAction.class,
                                       null,
                                       "Copy",
@@ -851,6 +905,8 @@ public class UICacheManager
                                       new Integer(KeyEvent.VK_C),
                                       KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(copyAction);
+       actionMap.put(COPY, copyAction);
+       
        Action pasteAction = makeAction(DefaultEditorKit.PasteAction.class,
                                        null,
                                        "Paste",
@@ -859,6 +915,7 @@ public class UICacheManager
                                        new Integer(KeyEvent.VK_P),
                                        KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(pasteAction);
+       actionMap.put(PASTE, pasteAction);
        /*
        menu.addSeparator();
        Action selectAllAction = makeAction(SelectAllAction.class,
@@ -879,6 +936,8 @@ public class UICacheManager
                new Integer(KeyEvent.VK_F),
                KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         menu.add(launchReplaceAction);
+        actionMap.put(FINDREPLACE, launchReplaceAction);
+
        return menu;
     }
 
@@ -949,7 +1008,7 @@ public class UICacheManager
     // This nested class is the child of desperation. If SelectAllAction was a
     // public static nested class of DefaultEditorKit as CopyAction is, this
     // hack wouldn't be needed.
-    public class SelectAllAction extends AbstractAction
+    /*public class SelectAllAction extends AbstractAction
     {
         private final Action realAction = getActionByName(DefaultEditorKit.selectAllAction);
 
@@ -968,11 +1027,11 @@ public class UICacheManager
             realAction.actionPerformed(e);
         }
 
-    }
+    }*/
     
     // The following two methods allow us to find an
     // action provided by the editor kit by its name.
-    public HashMap<Object, Action> createActionTable(JTextComponent textComponent) 
+    /*public HashMap<Object, Action> createActionTable(JTextComponent textComponent) 
     {
         actions = new HashMap<Object, Action>();
         Action[] actionsArray = textComponent.getActions();
@@ -982,7 +1041,7 @@ public class UICacheManager
             actions.put(a.getValue(Action.NAME), a);
         }
         return actions;
-    }
+    }*/
 
 
     /**
@@ -990,10 +1049,10 @@ public class UICacheManager
      * @param name
      * @return
      */
-    private Action getActionByName(String name) 
+    /*private Action getActionByName(String name) 
     {
         return actions.get(name);
-    }
+    }*/
     
     //------------------------------------------------------
     //-- An interface for all those wanting to play nice with

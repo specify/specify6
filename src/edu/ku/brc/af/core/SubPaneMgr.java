@@ -24,6 +24,8 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
@@ -39,6 +41,8 @@ import edu.ku.brc.ui.ExtendedTabbedPane;
 @SuppressWarnings("serial")
 public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 {
+    private static final Logger log = Logger.getLogger(SubPaneMgr.class);
+    
     private static final SubPaneMgr instance = new SubPaneMgr();
 
     protected enum NotificationType {Added, Removed, Shown}
@@ -107,20 +111,12 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             showPane(pane);
             return pane;
         }
-        /*
-        for (Enumeration<SubPaneIFace> e=instance.panes.elements();e.hasMoreElements();)
-        {
-            if (e.nextElement() == pane)
-            {
-                showPane(pane);
-                return pane;
-            }
-        }*/
 
         // Add this pane to the tabs
         String title = buildUniqueName(pane.getName());
         pane.setName(title);
 
+        //log.error("Add SubPane ["+pane.hashCode()+"]");
         panes.put(title, pane); // this must be done before adding it
         addTab(title, pane.getIcon(), pane.getUIComponent());
         
@@ -128,16 +124,6 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
         this.setSelectedIndex(getTabCount()-1);
 
-        // XXX Are these needed??
-        /*SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                pane.getUIComponent().invalidate();
-                invalidate();
-                doLayout();
-            }
-        });*/
         return pane;
     }
     
@@ -362,11 +348,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
         {
             SubPaneIFace sp = e.nextElement();
+            //log.error("Checking sp["+sp.getUIComponent().hashCode()+"]["+comp.hashCode()+"]");
             if (sp.getUIComponent() == comp)
             {
                 return sp;
             }
         }
+        log.error("Couldn't find SubPane for Component ["+comp.hashCode()+"]["+comp+"]");
         return null;
     }
 
