@@ -25,8 +25,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.regex.Pattern;
@@ -46,7 +44,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -58,7 +55,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.Specify;
-
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 /**
  * @author megkumin
  * 
@@ -109,11 +106,11 @@ public class SearchReplacePanel extends JPanel
      * 
      * @param table - a SearchableJXTable table
      */
-    public SearchReplacePanel(SearchableJXTable table)
+    public SearchReplacePanel(SearchableJXTable mytable)
     {
-    	this.table = table;
+    	this.table = mytable;
         this.setVisible(false);
-        this.searchable = table.getSearchable();
+        this.searchable = mytable.getSearchable();
         createFindAndReplacePanel();
         handleTableSelections();
     }
@@ -195,13 +192,13 @@ public class SearchReplacePanel extends JPanel
         replaceField.setColumns(textFieldLength);
         replaceField.addKeyListener(new FindReplaceTextFieldKeyAdapter());
         
-        replaceButton = new JButton("Replace");
+        replaceButton = new JButton(getResourceString("REPLACE"));
         replaceButton.setEnabled(false);
         replaceButton.setMargin(new Insets(0, 0, 0, 0));
         replaceButton.addActionListener(replaceAction);
         
   
-        replaceAllButton = new JButton("Replace All");
+        replaceAllButton = new JButton(getResourceString("REPLACEALL"));
         replaceAllButton.setEnabled(false);
         replaceAllButton.setMargin(new Insets(0, 0, 0, 0));
         replaceAllButton.addActionListener(replaceAction);
@@ -243,15 +240,15 @@ public class SearchReplacePanel extends JPanel
         cancelButton.setIcon(new ImageIcon(Specify.class.getResource("images/close.gif")));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
 
-        JLabel findLabel = new JLabel("Find: ");
+        JLabel findLabel = new JLabel(getResourceString("FIND") + ": ");
 
-        nextButton = new JButton("Next");//, new ImageIcon(Specify.class.getResource("images/down.png")));
+        nextButton = new JButton(getResourceString("NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
         nextButton.setEnabled(false);
         nextButton.setMargin(new Insets(0, 0, 0, 0));
         nextButton.setMnemonic(KeyEvent.VK_N);
         nextButton.addActionListener(searchAction);
 
-        previousButton = new JButton("Previous");//, new ImageIcon(Specify.class.getResource("images/up.png")));
+        previousButton = new JButton(getResourceString("PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
         previousButton.setEnabled(false);
         previousButton.setMargin(new Insets(0, 0, 0, 0));
         previousButton.setMnemonic(KeyEvent.VK_P);
@@ -270,7 +267,7 @@ public class SearchReplacePanel extends JPanel
         //replaceField.setColumns(textFieldLength);
         //replaceField.addKeyListener(new InputFieldKeyAdapter());
 
-        matchCaseButton = new JCheckBox("Match case");
+        matchCaseButton = new JCheckBox(getResourceString("MATCHCASE"));
         matchCaseButton.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
@@ -279,7 +276,7 @@ public class SearchReplacePanel extends JPanel
             }
         });
 
-        wrapSearchButton = new JCheckBox("Wrap search");
+        wrapSearchButton = new JCheckBox(getResourceString("WRAP"));
         wrapSearchButton.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
@@ -385,7 +382,7 @@ public class SearchReplacePanel extends JPanel
         log.info("displaying statusInfo to the user");
     	statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
         statusInfo.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
-        statusInfo.setText("Phrase not found");
+        statusInfo.setText(getResourceString("PHRASENOTFOUND"));
     }
 
     /**
