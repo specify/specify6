@@ -34,7 +34,7 @@ import edu.ku.brc.specify.tasks.ExportTask;
  */
 public abstract class ConfigureExternalDataBase
 {
-    private static final Logger log = Logger.getLogger(ExportTask.class);
+    private static final Logger log = Logger.getLogger(ConfigureExternalDataBase.class);
     
     protected File                     externalFile;
     protected String                   fileName;
