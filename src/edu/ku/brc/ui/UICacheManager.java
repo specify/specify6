@@ -459,7 +459,7 @@ public class UICacheManager
     {
         try 
         {
-            log.error("["+key+"]["+resourceBundle.getString(key)+"]");
+            //log.error("["+key+"]["+resourceBundle.getString(key)+"]");
             return resourceBundle.getString(key);
             
         } catch (MissingResourceException ex) 

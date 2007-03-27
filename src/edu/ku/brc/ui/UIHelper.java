@@ -45,6 +45,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -1262,6 +1263,61 @@ public final class UIHelper
     }
 
     
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param al the action listener
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final String               toolTipTextKey,
+                                        final Action               action)
+    {
+        return createIconBtn(iconName, null, toolTipTextKey, false, action);
+    }
+    
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param al the action listener
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final IconManager.IconSize size,
+                                        final String               toolTipTextKey,
+                                        final Action               action)
+    {
+        return createIconBtn(iconName, size, toolTipTextKey, false, action);
+    }
+    
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param al the action listener
+     * @param withEmptyBorder set an empyt border
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final IconManager.IconSize size,
+                                        final String               toolTipTextKey, 
+                                        final boolean              withEmptyBorder,
+                                        final Action               action)
+    {
+        JButton btn = new JButton(action);
+        btn.setIcon(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName));
+        btn.setText(null);
+        btn.setToolTipText(getResourceString(toolTipTextKey));
+        btn.setMargin(new Insets(0,0,0,0));
+        btn.setEnabled(false);
+        if (withEmptyBorder)
+        {
+            btn.setBorder(BorderFactory.createEmptyBorder());
+        }
+        return btn;
+    }
     /**
      * Parses a string for ";" colon separated name/value pairs.
      * @param namedValuePairs a string of named/value pairs

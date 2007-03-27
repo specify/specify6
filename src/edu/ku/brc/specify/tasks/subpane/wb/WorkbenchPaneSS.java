@@ -316,42 +316,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
             }
         });
-        addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", null);
+        addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", addAction);
         addRowsBtn.setEnabled(true);
         addAction.setEnabled(true);
-        /*
-        InputMap inputMap = spreadSheet.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        ActionMap actionMap = spreadSheet.getActionMap();
-        
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "r_action");
-        actionMap.put("r_action", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Added row");
-                model.appendRow();
-                resultsetController.setLength(model.getRowCount());
-                int selInx = model.getRowCount()-1;
-                resultsetController.setIndex(selInx);
-                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
-            }
-        });*/
-        /*InputMap inputMap = spreadSheet.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
-        inputMap.put(key, new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                model.appendRow();
-                resultsetController.setLength(model.getRowCount());
-                int selInx = model.getRowCount()-1;
-                resultsetController.setIndex(selInx);
-                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
 
-            }
-        });*/
-
-        //inputMap = getInputMap();
-        //key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
-       //inputMap.put(key, addAction);
 
         carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", true, new ActionListener()
         {
