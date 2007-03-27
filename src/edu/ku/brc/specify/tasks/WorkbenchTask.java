@@ -16,7 +16,6 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.Event;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
@@ -39,7 +38,6 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -257,9 +255,12 @@ public class WorkbenchTask extends BaseTask
     {
         RecordSet     rs  = new RecordSet(workbenchTemplate.getName(), WorkbenchTemplate.getClassTableId());
         rs.addItem(workbenchTemplate.getWorkbenchTemplateId());
-        RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(templateNavBox, workbenchTemplate.getName(), "Template", 
-                                                                               true, -1,
-                                                                               null);// true means make it draggable
+        RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(templateNavBox, 
+                                                                               workbenchTemplate.getName(),
+                                                                               "Template", 
+                                                                               (CommandAction)null, 
+                                                                               new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbenchTemplate), 
+                                                                               true);// true means make it draggable
         roc.setData(rs);
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         
@@ -307,10 +308,23 @@ public class WorkbenchTask extends BaseTask
             RolloverCommand roc = (RolloverCommand)nbi;
             if (roc != null)
             {
-                CommandAction cmd = (CommandAction)roc.getData();
-                if (cmd != null)
+                Object data  = roc.getData();
+                if (data != null)
                 {
-                    RecordSet rs  = (RecordSet)cmd.getProperty(cmdAttrName);
+                    RecordSet rs = null;
+                    if (data instanceof CommandAction)
+                    {
+                        CommandAction cmd  = (CommandAction)data;
+                        Object prop = cmd.getProperty(cmdAttrName);
+                        if (prop instanceof RecordSet)
+                        {
+                            rs  = (RecordSet)prop;
+                        }
+                    } else if (data instanceof RecordSet)
+                    {
+                        rs  = (RecordSet)data;
+                    }
+                    
                     if (rs != null)
                     {
                         RecordSetItemIFace rsi = rs.getOnlyItem();

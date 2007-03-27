@@ -289,7 +289,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             NavBoxButton nbb = (NavBoxButton)nb;
             nbb.addActionListener(new CommandActionWrapper(cmdAction));
             nbb.setData(cmdAction);
-            nbb.setDeleteCommandAction(delCmdAction);
+        }
+        
+        if (delCmdAction != null)
+        {
+            ((NavBoxButton)nb).setDeleteCommandAction(delCmdAction);
         }
         
         if (position == -1)
