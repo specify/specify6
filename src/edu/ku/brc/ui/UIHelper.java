@@ -57,6 +57,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
@@ -490,12 +491,13 @@ public final class UIHelper
     //-----------------------------------------------------------------------------------------
 
     /**
-     * @param resKey
-     * @param virtualKeyCode
-     * @param mneu
-     * @return
+     * Creates a JMenu.
+     * @param resKey the resource key for localization
+     * @param virtualKeyCode the virtual key code i.e. KeyEvent.VK_N
+     * @param mneu thee mneumonic
+     * @return the JMenuItem
      */
-    protected static JMenuItem createMenu(final String resKey, int virtualKeyCode, String mneu)
+    protected static JMenuItem createMenu(final String resKey, final int virtualKeyCode, final String mneu)
     {
         JMenuItem jmi = new JMenuItem(getResourceString(resKey));
         if (oSType != OSTYPE.MacOSX)
@@ -540,13 +542,92 @@ public final class UIHelper
     }
 
     /**
-     * @param menu xxxxx
-     * @param label xxxxx
-     * @param mnemonic xxxxx
-     * @param accessibleDescription xxxxx
-     * @param enabled xxxxx
-     * @param action xxxxx
-     * @return xxxxx
+     * Creates a JMenuItem.
+     * @param label the label of the menu item
+     * @param mnemonic the mnemonic
+     * @param accessibleDescription the accessible Description
+     * @param enabled enabled
+     * @param action the aciton
+     * @return menu item
+     */
+    public static JMenuItem createMenuItem(final String         label,
+                                           final String         mnemonic,
+                                           final String         accessibleDescription,
+                                           final boolean        enabled,
+                                           final ActionListener al)
+    {
+        JMenuItem mi = new JMenuItem(label);
+        if (isNotEmpty(mnemonic))
+        {
+            mi.setMnemonic(mnemonic.charAt(0));
+        }
+        if (isNotEmpty(accessibleDescription))
+        {
+            mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        }
+        mi.addActionListener(al);
+        return mi;
+    }
+    
+    /**
+     * Creates a JMenuItem.
+     * @param menu parent menu
+     * @param label the label of the menu item
+     * @param mnemonic the mnemonic
+     * @param accessibleDescription the accessible Description
+     * @param enabled enabled
+     * @param action the aciton
+     * @return menu item
+     */
+    public static JMenuItem createMenuItem(final JMenu          menu,
+                                           final String         label,
+                                           final String         mnemonic,
+                                           final String         accessibleDescription,
+                                           final boolean        enabled,
+                                           final ActionListener al)
+    {
+        JMenuItem mi = createMenuItem(label, mnemonic, accessibleDescription, enabled, al);
+        if (menu != null)
+        {
+            menu.add(mi);
+        }
+        return mi;
+    }
+    
+    /**
+     * Creates a JMenuItem.
+     * @param menu parent menu
+     * @param label the label of the menu item
+     * @param mnemonic the mnemonic
+     * @param accessibleDescription the accessible Description
+     * @param enabled enabled
+     * @param action the aciton
+     * @return menu item
+     */
+    public static JMenuItem createMenuItem(final JPopupMenu     popupMenu,
+                                           final String         label,
+                                           final String         mnemonic,
+                                           final String         accessibleDescription,
+                                           final boolean        enabled,
+                                           final ActionListener al)
+    {
+        JMenuItem mi = createMenuItem(label, mnemonic, accessibleDescription, enabled, al);
+        if (popupMenu != null)
+        {
+            popupMenu.add(mi);
+        }
+        return mi;
+    }
+    
+    /**
+     * Creates a JMenuItem.
+     * @param menu parent menu
+     * @param label the label of the menu item
+     * @param mnemonic the mnemonic
+     * @param accessibleDescription the accessible Description
+     * @param enabled enabled
+     * @param action the aciton
+     * @return menu item
      */
     public static JMenuItem createMenuItem(final JMenu          menu,
                                            final String         label,
@@ -564,10 +645,13 @@ public final class UIHelper
         {
             mi.setMnemonic(mnemonic.charAt(0));
         }
-        mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
-        mi.addActionListener(action);
+        if (isNotEmpty(accessibleDescription))
+        {
+            mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        }
         if (action != null)
         {
+            mi.addActionListener(action);
             action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
             action.setEnabled(enabled);
         }
@@ -576,13 +660,14 @@ public final class UIHelper
     }
 
     /**
-     * @param menu xxxxx
-     * @param label xxxxx
-     * @param mnemonic xxxxx
-     * @param accessibleDescription xxxxx
-     * @param enabled xxxxx
-     * @param action xxxxx
-     * @return xxxxx
+     * Creates a JCheckBoxMenuItem.
+     * @param menu parent menu
+     * @param label the label of the menu item
+     * @param mnemonic the mnemonic
+     * @param accessibleDescription the accessible Description
+     * @param enabled enabled
+     * @param action the aciton
+     * @return menu item
      */
     public static JCheckBoxMenuItem createCheckBoxMenuItem(final JMenu          menu,
                                                            final String         label,
@@ -600,10 +685,13 @@ public final class UIHelper
         {
             mi.setMnemonic(getResourceString(mnemonic).charAt(0));
         }
-        mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
-        mi.addActionListener(action);
+        if (isNotEmpty(accessibleDescription))
+        {
+            mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        }
         if (action != null)
         {
+            mi.addActionListener(action);
             action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
             action.setEnabled(enabled);
         }
@@ -612,7 +700,7 @@ public final class UIHelper
     }
 
     /**
-     * Create a menu
+     * Create a menu.
      * @param menuBar the menubar
      * @param labelKey the label key to be localized
      * @param mneuKey the mneu key to be localized

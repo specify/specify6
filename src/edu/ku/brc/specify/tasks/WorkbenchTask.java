@@ -16,9 +16,13 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Event;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,9 +39,12 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -248,16 +255,28 @@ public class WorkbenchTask extends BaseTask
      */
     protected void addTemplateToNavBox(final WorkbenchTemplate workbenchTemplate)
     {
-        CommandAction cmd = new CommandAction(WORKBENCH, EDIT_TEMPLATE);
         RecordSet     rs  = new RecordSet(workbenchTemplate.getName(), WorkbenchTemplate.getClassTableId());
         rs.addItem(workbenchTemplate.getWorkbenchTemplateId());
-        cmd.setProperty("template", rs);
-        RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(templateNavBox, workbenchTemplate.getName(), "Template", cmd, 
-                                                                               new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbenchTemplate), 
-                                                                               true);// true means make it draggable
-        cmd.setProperty("roc", roc);
+        RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(templateNavBox, workbenchTemplate.getName(), "Template", 
+                                                                               true, -1,
+                                                                               null);// true means make it draggable
+        roc.setData(rs);
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-    }
+        
+        MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                RolloverCommand roc = (RolloverCommand)e.getSource();
+                if (roc.isEnabled())
+                {
+                    selectTemplateEditAction(e);
+                }
+            }
+          };
+        roc.addMouseListener(mouseInputAdapter);
+     }
     
     /**
      * Adds a WorkbenchTemplate to the Left Pane NavBox
@@ -1726,10 +1745,11 @@ public class WorkbenchTask extends BaseTask
      * Asks the user choose among three options when clicking on a template icon.
      * @param cmdAction the command that issued the action
      */
-    protected void selectTemplateEditAction(final CommandAction cmdAction)
+    protected void selectTemplateEditAction(final MouseEvent mouseEvent)
     {
+        RolloverCommand roc = (RolloverCommand)mouseEvent.getSource();
         
-        RecordSet                recordSet = (RecordSet)cmdAction.getProperty("template");
+        RecordSet                recordSet = (RecordSet)roc.getData();
         DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
         WorkbenchTemplate        workbenchTemplate  = session.get(WorkbenchTemplate.class, recordSet.getOnlyItem().getRecordId());
         // Load the Template's workbench's into memory
@@ -1738,75 +1758,87 @@ public class WorkbenchTask extends BaseTask
             wb.getWorkbenchId();
         }
         session.close();
-        
+            
         String[] options = {getResourceString("WB_EDIT_MAPPINGS"), 
                             getResourceString("WB_EDIT_TEMPLATE_INFO"), 
                             String.format(getResourceString("WB_CREATE_EMPTY_DATASET"), new Object[] {workbenchTemplate.getName()})};
-        Vector<String> items = new Vector<String>();
-        Collections.addAll(items, options);
-        
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(
-                (Frame)UICacheManager.get(UICacheManager.FRAME),
-                "WB_SELECT_ACTION_TITLE", 
-                null, 
-                items, 
-                null, 
-                ToggleButtonChooserDlg.Type.RadioButton);
-        
-        dlg.setUseScrollPane(false);
-        dlg.setSelectedIndex(0);
-        dlg.setModal(true);
-        //UIHelper.centerAndShow(dlg);
-        dlg.setVisible(true);
-        
-        if (!dlg.isCancelled())
+
+        class MenuAction implements ActionListener
         {
-            switch (dlg.getSelectedIndex())
+            protected WorkbenchTemplate workbenchTemplate;
+            protected int               action;
+            protected RolloverCommand   roc;
+            
+            public MenuAction(final WorkbenchTemplate workbenchTemplate, final RolloverCommand roc, final int action)
             {
-                case 0 : 
-                    editTemplate(workbenchTemplate);
-                    break;
-                    
-                case 1 : 
-                {
-                    if (askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
-                    {
-                        session = DataProviderFactory.getInstance().createSession();
-                        try
-                        {
-
-                            session.beginTransaction();
-                            session.attach(workbenchTemplate);
-                            session.save(workbenchTemplate);
-                            session.commit();
-                            session.flush();
-                            
-                            //for (NavBoxItemIFace nbi : templateNavBox.getItems())
-                            //{
-                                RolloverCommand roc = (RolloverCommand)cmdAction.getProperty("roc");
-                                if (roc != null)
-                                {
-                                    roc.setLabelText(workbenchTemplate.getName());
-                                }
-                            //}
-                            
-                        } catch (Exception ex)
-                        {
-                            log.error(ex);
-                            
-                        } finally
-                        {
-                            session.close();    
-                        }
-
-                    }
-                } break;
+                this.workbenchTemplate = workbenchTemplate;
+                this.roc               = roc;
+                this.action            = action;
+            }
+            public void actionPerformed(ActionEvent arg0)
+            {
+                doTemplateAction(workbenchTemplate, roc, action);
                 
-                case 2 : 
-                    createWorkbench(null, workbenchTemplate, true);
-                    break;
             }
         }
+        JPopupMenu popupMenu = new JPopupMenu();
+        for (int i=0;i<options.length;i++)
+        {
+            UIHelper.createMenuItem(popupMenu, options[i], null, null, true, new MenuAction(workbenchTemplate, roc, i));
+        }
+        popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+    }
+    
+    /**
+     * Performs the selected action from the Template popup menu.
+     * @param workbenchTemplate the template being selected
+     * @param roc the rollover btn that was selected
+     * @param action the integer action to perform
+     */
+    protected void doTemplateAction(final WorkbenchTemplate workbenchTemplate, final RolloverCommand roc, final int action)
+    {
+        switch (action)
+        {
+            case 0 : 
+                editTemplate(workbenchTemplate);
+                break;
+                
+            case 1 : 
+            {
+                if (askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
+                {
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+
+                        session.beginTransaction();
+                        session.attach(workbenchTemplate);
+                        session.save(workbenchTemplate);
+                        session.commit();
+                        session.flush();
+                        
+                        if (roc != null)
+                        {
+                            roc.setLabelText(workbenchTemplate.getName());
+                        }
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        
+                    } finally
+                    {
+                        session.close();    
+                    }
+
+                }
+            } break;
+            
+            case 2 : 
+                createWorkbench(null, workbenchTemplate, true);
+                break;
+        }
+
     }
     
     //-------------------------------------------------------
@@ -1819,11 +1851,7 @@ public class WorkbenchTask extends BaseTask
      */
     protected void processWorkbenchCommands(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction(EDIT_TEMPLATE))
-        {
-            selectTemplateEditAction(cmdAction);
-            
-        } else if (cmdAction.isAction(EDIT_WORKBENCH))
+        if (cmdAction.isAction(EDIT_WORKBENCH))
         {
             RecordSet                recordSet = (RecordSet)cmdAction.getProperty("workbench");
             DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();

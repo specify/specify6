@@ -251,7 +251,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             // if we can't find a class for the field (i.e. Genus Species, or other 'fake' fields), we say it's a string
             dbFieldType = String.class;
         }
-        String type = dbFieldType.getName();
         
         JComponent comp;
         

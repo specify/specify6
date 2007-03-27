@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -104,7 +105,7 @@ public class ColumnMapperPanel extends JPanel
     protected ImportDataFileInfo             dataFileInfo      = null;
     protected WorkbenchTemplate              workbenchTemplate = null;
     
-    protected boolean                        isMapedToAFile;
+    protected boolean                        isMappedToAFile;
     
     protected ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
     protected ImageIcon blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
@@ -117,9 +118,9 @@ public class ColumnMapperPanel extends JPanel
      */
     public ColumnMapperPanel(final JDialog dlg, final ImportDataFileInfo dataFileInfo)
     {
-        this.dlg            = dlg;
-        this.dataFileInfo   = dataFileInfo;
-        this.isMapedToAFile = dataFileInfo != null;
+        this.dlg             = dlg;
+        this.dataFileInfo    = dataFileInfo;
+        this.isMappedToAFile = dataFileInfo != null;
         
         createUI();
     }
@@ -133,7 +134,7 @@ public class ColumnMapperPanel extends JPanel
     {
         this.dlg               = dlg;
         this.workbenchTemplate = wbTemplate;
-        this.isMapedToAFile = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
+        this.isMappedToAFile = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         
         createUI();
     }
@@ -194,7 +195,6 @@ public class ColumnMapperPanel extends JPanel
             }
         }
         Collections.sort(tableInfoList);
-        //UICacheManager.register(UICacheManager.MAINPANE, this);
         
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", 
                                                                  "p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, p, 2px, f:p:g"), this);
@@ -202,8 +202,8 @@ public class ColumnMapperPanel extends JPanel
         
         PanelBuilder header = new PanelBuilder(new FormLayout("p,f:p:g,p", "p,2px,p"));
         header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), SwingConstants.CENTER), cc.xywh(1, 1, 3, 1));
-        header.add(new JLabel("Database", SwingConstants.LEFT), cc.xy(1,3)); // XXX I18N
-        header.add(new JLabel(dataFileInfo != null ? "Import" : "", SwingConstants.RIGHT), cc.xy(3,3));  // XXX I18N
+        header.add(new JLabel(workbenchTemplate != null ? "Import" : "Schema", SwingConstants.LEFT), cc.xy(1,3)); // XXX I18N
+        header.add(new JLabel(workbenchTemplate != null ? "Schema" : "", SwingConstants.RIGHT), cc.xy(3,3));  // XXX I18N
 
         builder.add(header.getPanel(), cc.xy(1, 1));
         builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     SwingConstants.CENTER), cc.xy(5, 1));
@@ -245,7 +245,6 @@ public class ColumnMapperPanel extends JPanel
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    //fieldList.setSelectedIndex(-1);
                     fillFieldList(((TableInfo)tableList.getSelectedValue()).getTableInfo());
                 }
             }
@@ -371,7 +370,7 @@ public class ColumnMapperPanel extends JPanel
     protected FieldMappingPanel addMappingItem(final ImportColumnInfo colInfo, final ImageIcon icon)
     {
         FieldMappingPanel fmp = new FieldMappingPanel(colInfo, icon);
-        fmp.setMappingLabelVisible(isMapedToAFile);
+        fmp.setMappingLabelVisible(isMappedToAFile);
         
         mappingItems.add(fmp);
         dataFileColPanel.add(fmp);
@@ -843,14 +842,20 @@ public class ColumnMapperPanel extends JPanel
             this.colInfo = colInfo;
             
              
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("p, 4px, p:g,5px,r:p,5px,p,2px", "p:g"), this);
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("150px, p:g, p, p:g, 150px, 5px, p, 2px", "p:g"), this);
             CellConstraints cc      = new CellConstraints();
 
             closeBtn     = new JLabel(IconManager.getIcon("Close"));
             fieldLabel   = new JLabel(colInfo.getColName());
-            mappingLabel = new JLabel(noMappingStr);
-            builder.add(iconLabel = new JLabel(icon), cc.xy(1,1));
-            builder.add(fieldLabel, cc.xy(3,1));
+            mappingLabel = new JLabel(noMappingStr, JLabel.RIGHT);
+            
+            Font font = fieldLabel.getFont();
+            font = new Font(font.getName(), font.getStyle(), font.getSize()-2);
+            fieldLabel.setFont(font);
+            mappingLabel.setFont(font);
+            
+            builder.add(fieldLabel, cc.xy(1,1));
+            builder.add(iconLabel = new JLabel(icon), cc.xy(3,1));
             builder.add(mappingLabel, cc.xy(5,1));
             builder.add(closeBtn, cc.xy(7,1));
             closeBtn.setVisible(false);
@@ -890,6 +895,10 @@ public class ColumnMapperPanel extends JPanel
             });
         }
         
+        /**
+         * Sests a TableFieldPair into the item.
+         * @param fieldInfoArg the new TableFieldPair
+         */
         public void setTableField(final TableFieldPair fieldInfoArg) // make this FieldInfo
         {
             tblField = fieldInfoArg;

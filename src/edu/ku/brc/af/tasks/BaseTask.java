@@ -309,6 +309,32 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return nb;
     }
 
+    protected NavBoxItemIFace makeDraggableAndDroppableNavBtn(final NavBox        navBox,
+                                                              final String        labelText,
+                                                              final String        iconName,
+                                                              final boolean       makeDraggable,
+                                                              final int           position,
+                                                              final ActionListener al)
+    {
+        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16, al);
+        if (position == -1)
+        {
+            navBox.add(nb);
+
+        } else
+        {
+            navBox.insert(nb, false, position);
+        }
+
+        // Make the Btn Draggable
+        if (makeDraggable && nb instanceof GhostActionable)
+        {
+            ((GhostActionable)nb).createMouseInputAdapter(); // this makes it draggable
+        }
+        return nb;
+    }
+
+
     /**
      * Helper method to add an item to the navbox.
      * @param navBox navBox

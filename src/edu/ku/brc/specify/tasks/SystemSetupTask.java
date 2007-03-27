@@ -496,11 +496,11 @@ public class SystemSetupTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
 
-        JMenuItem mi = UIHelper.createMenuItem(null, getResourceString("PickListsMenu"), getResourceString("PickListsMenu"), "", true, null);
+        JMenuItem mi = UIHelper.createMenuItem(getResourceString("PickListsMenu"), getResourceString("PickListsMenu"), "", true, null);
         list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
         
         final Taskable thisTask = this;
-        mi = UIHelper.createMenuItem(null, "System Tools", "S", "", true, null);
+        mi = UIHelper.createMenuItem("System Tools", "S", "", true, null);
         mi.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)

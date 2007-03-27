@@ -318,7 +318,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", addAction);
         addRowsBtn.setEnabled(true);
-        addAction.setEnabled(true);
+        addAction.setEnabled(true); 
 
 
         carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", true, new ActionListener()
