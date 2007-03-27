@@ -758,9 +758,19 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         BigDecimal newLon = null;
         
         String latText = latitude.getText();
-        String longText = longitude.getText();
-        newLat = (latText != null && StringUtils.isNotBlank(latText) && StringUtils.isNumeric(latText)) ? new BigDecimal(latitude.getText()) : null;
-        newLon = (longText != null && StringUtils.isNotBlank(longText) && StringUtils.isNumeric(longText)) ? new BigDecimal(longitude.getText()) : null;
+        String lonText = longitude.getText();
+        
+        try
+        {
+            newLat = new BigDecimal(latText);
+            newLon = new BigDecimal(lonText);
+        }
+        catch (NumberFormatException nfe)
+        {
+            log.error("Could not parse georeference string as a decimal number", nfe);
+            newLat = null;
+            newLon = null;
+        }
         
         System.out.println("latitude:  " + newLat);
         System.out.println("longitude: " + newLon);
