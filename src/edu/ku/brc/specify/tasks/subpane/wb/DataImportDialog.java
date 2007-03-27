@@ -103,10 +103,8 @@ public class DataImportDialog extends JDialog // implements ChangeListener
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,3dlu", // columns
                 "p,3dlu, p,3dlu, p,3dlu"), configPanel);// rows
-        JLabel directions = new JLabel(
-                "This screen let you set the delimiters your data contains.  "
-                        + "You can see how your text is affected in teh preview below");
-        builder.add(directions, cc.xy(1, 1));
+        JLabel directions = new JLabel(getResourceString("DELIM_EXPLAIN"));
+                builder.add(directions, cc.xy(1, 1));
         
         builder.add(createDelimiterPanel(), cc.xy(1, 3));
         builder.add(buildButtons(),          cc.xy(1,5)); 
@@ -167,7 +165,7 @@ public class DataImportDialog extends JDialog // implements ChangeListener
         FormLayout formLayout = new FormLayout("p,3dlu, p,3dlu, p,3dlu, p,3dlu, p,3dlu", "p,3dlu, p,3dlu,p,3dlu, p,3dlu, p,3dlu ");
         PanelBuilder builder = new PanelBuilder(formLayout, p);
 
-        builder.addSeparator(getResourceString("SELECT DELIMITERS"), cc.xywh(1, 1, 6, 1));
+        builder.addSeparator(getResourceString("SELECT_DELIMS"), cc.xywh(1, 1, 6, 1));
 
         tab = new JCheckBox(getResourceString("TAB"));
         tab.addItemListener(new ItemListener()
