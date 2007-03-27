@@ -17,13 +17,8 @@
  */
 package edu.ku.brc.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.util.Vector;
 
-import javax.swing.AbstractAction;
-import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -43,7 +38,7 @@ import org.jdesktop.swingx.JXTable;
  */
 public class SearchableJXTable  extends JXTable
 {
-    protected static final Logger log                     = Logger.getLogger(SearchableJXTable.class);
+    private static final Logger log                     = Logger.getLogger(SearchableJXTable.class);
 
     SearchReplacePanel findPanel = new SearchReplacePanel(this);
 
@@ -83,7 +78,7 @@ public class SearchableJXTable  extends JXTable
         //setSearchableJXTableProperties();
     }
 
-    public SearchableJXTable(Vector arg0, Vector arg1)
+    public SearchableJXTable(Vector<?> arg0, Vector<?> arg1)
     {
         super(arg0, arg1);
         //setSearchableJXTableProperties();

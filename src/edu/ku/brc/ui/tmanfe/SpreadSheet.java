@@ -39,6 +39,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
 
@@ -54,7 +56,8 @@ import edu.ku.brc.ui.UIHelper;
  **************************************************************************************************/
 public class SpreadSheet  extends SearchableJXTable
 {
-
+    private static final Logger log = Logger.getLogger(SpreadSheet.class);
+    
     /**
      * Set this field to true and recompile to get debug traces
      */
@@ -76,8 +79,6 @@ public class SpreadSheet  extends SearchableJXTable
     // Cell Selection
     protected boolean            mouseDown           = false;
     private boolean              rowSelectionStarted = false;
-    private int                  rowAnchor           = 0;
-    
 
     /**
      * Constructor for Spreadsheet from model
@@ -579,14 +580,19 @@ public class SpreadSheet  extends SearchableJXTable
     }
     
     /**
-     * MouseAdaptter for selecting rows by clicking and dragging on the Row Headers.
+     * MouseAdapter for selecting rows by clicking and dragging on the Row Headers.
      */
     class RHCellMouseAdapter extends MouseAdapter
     {
         protected JTable table;
         protected Hashtable<Integer, Boolean> selectionHash = new Hashtable<Integer, Boolean>();
+        protected Hashtable<Integer, Boolean> doubleSelected = new Hashtable<Integer, Boolean>();
         protected int selAnchor = -1;
         protected int selLead   = -1;
+        
+        // these fields are important when a user ctrl-clicks a row and then drags
+        protected boolean ctrlWasDown = false;
+        protected boolean dragIsDeselecting = false;
         
         public RHCellMouseAdapter(final JTable table)
         {
@@ -599,91 +605,63 @@ public class SpreadSheet  extends SearchableJXTable
         @SuppressWarnings("synthetic-access")
         @Override
         public void mousePressed(MouseEvent e) 
-        { 
+        {
+            log.debug("mousePressed entered");
+            log.debug("anchor: " + selAnchor);
+            log.debug("lead   :" + selLead);
+            
             RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
             int            row = lbl.getRowNum()-1;
             
-            // ZZZ System.out.println("\nPressed: ["+row+"] A["+selAnchor+"]  L["+selLead+"]");
-            
+            // toggle the selection state of the clicked row
+            // and set the current row as the new anchor
             if (e.isControlDown())
             {
                 ListSelectionModel selModel = table.getSelectionModel();
-                boolean wasSelected = false;
-                for (int inx : table.getSelectedRows())
-                {
-                    if (row == inx)
-                    {
-                        wasSelected = true;
-                        break;
-                    }
-                }
-                 // ZZZ System.out.printlnm.out.println("wasSelected: "+wasSelected);
+                
+                // figure out the selection state of this row
+                boolean wasSelected = table.getSelectionModel().isSelectedIndex(row);
+                
+                // toggle the selection state of this row
                 if (wasSelected)
                 {
+                    // deselect it
                     selModel.removeSelectionInterval(row, row);
-                } else
-                {
-                    selModel.addSelectionInterval(row, row);
+                    dragIsDeselecting = true;
                 }
-                
-                
-                
-            } else if (e.isShiftDown())
+                else
+                {
+                    // select it and make it the new anchor
+                    selModel.addSelectionInterval(row, row);
+                    dragIsDeselecting = false;
+                }
+                selAnchor = row;
+                selLead   = row;
+                ctrlWasDown = true;
+            }
+            else if (e.isShiftDown())
             {
                 ListSelectionModel selModel = table.getSelectionModel();
-                int anchor = selModel.getAnchorSelectionIndex();
-                int lead   = selModel.getLeadSelectionIndex();
-                
-                // ZZZ System.out.println("anchor: "+anchor);
-                // ZZZ System.out.println("lead:   "+lead);
 
-                if (lead == anchor || (row < lead && lead < anchor) || (row > lead && lead > anchor))
-                {
-                    selModel.addSelectionInterval(lead, row);
-                    // ZZZ System.out.println("*Adding  ["+lead+"]["+row+"]");
-                    
-                } else
-                {
-                    int[] selectedRows = table.getSelectedRows();
-                    selectionHash.clear();
-                    for (int inx : selectedRows)
-                    {
-                        selectionHash.put(inx, true);
-                        //System.out.println("Selected["+inx+"]");
-                    }
-
-                    for (int inx=anchor;inx<=lead;inx++)
-                    {
-                        if (selectionHash.get(inx) != null)
-                        {
-                            selModel.removeSelectionInterval(inx, inx);
-                            //System.out.println("Removing["+inx+"]");
-                        } else
-                        {
-                            selModel.addSelectionInterval(inx, inx);
-                            //System.out.println("Adding  ["+inx+"]");
-                        }
-                    }
-                    // ZZZ System.out.println("Adding  ["+row+"]["+(anchor-1)+"]");
-                    selModel.addSelectionInterval(row, anchor-1);
-                }
-                
-                //selModel.getAnchorSelectionIndex();
-                //selModel.getLeadSelectionIndex();
-                //System.out.println("isShiftDown Anchor: "+selModel.getAnchorSelectionIndex());
-                //System.out.println("isShiftDown Lead  : "+selModel.getLeadSelectionIndex());
-
-                
-            } else
+                selModel.removeSelectionInterval(selAnchor, selLead);
+                selModel.addSelectionInterval(selAnchor, row);
+                selLead = row;
+            }
+            else // no modifier keys are down
             {
+                // just select the current row
+                // and set it as the new anchor
                 table.setRowSelectionInterval(row, row);
                 table.setColumnSelectionInterval(0, model.getColumnCount()-1);
+                selAnchor = selLead = row;
             }
             
             rowSelectionStarted = true;
             table.getSelectionModel().setValueIsAdjusting(true);
-            rowAnchor = row;
-            selAnchor = row;
+            
+            log.debug("anchor: " + selAnchor);
+            log.debug("lead   :" + selLead);
+            log.debug("mousePressed exited");
         }
 
         /* (non-Javadoc)
@@ -693,8 +671,22 @@ public class SpreadSheet  extends SearchableJXTable
         @Override
         public void mouseReleased(MouseEvent e) 
         {
+            log.debug("mouseReleased entered");
+            log.debug("anchor: " + selAnchor);
+            log.debug("lead   :" + selLead);
+            
+            // the user has released the mouse button, so we're done selecting rows
+            RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
+            int            row = lbl.getRowNum()-1;
+
             rowSelectionStarted = false;
             table.getSelectionModel().setValueIsAdjusting(false);
+            ctrlWasDown = false;
+            dragIsDeselecting = false;
+            
+            log.debug("anchor: " + selAnchor);
+            log.debug("lead   :" + selLead);
+            log.debug("mouseReleased exited");
         }
 
         /* (non-Javadoc)
@@ -704,18 +696,36 @@ public class SpreadSheet  extends SearchableJXTable
         @Override
         public void mouseEntered(MouseEvent e) 
         {
+            // the user has clicked and is dragging, we are (de)selecting multiple rows...
             if (rowSelectionStarted)
             {
+                log.debug("mouseEntered entered");
+                log.debug("anchor: " + selAnchor);
+                log.debug("lead   :" + selLead);
+                
                 RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
                 int row    = lbl.getRowNum()-1;
-                rowSelectionStarted = true;
-                table.setRowSelectionInterval(rowAnchor, row);
-                table.setColumnSelectionInterval(0, model.getColumnCount()-1);
-                
                 selLead = row;
-
+                if (ctrlWasDown)
+                {
+                    if (dragIsDeselecting)
+                    {
+                        table.removeRowSelectionInterval(selAnchor, row);
+                    }
+                    else
+                    {
+                        table.addRowSelectionInterval(selAnchor, row);
+                    }
+                }
+                else
+                {
+                    table.setRowSelectionInterval(selAnchor, row);
+                }
+                table.setColumnSelectionInterval(0, model.getColumnCount()-1);
+                log.debug("anchor: " + selAnchor);
+                log.debug("lead   :" + selLead);
+                log.debug("mouseEntered exited");
             }
         }
-
     }
 }
