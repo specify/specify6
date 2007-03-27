@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import com.csvreader.CsvReader;
 
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
@@ -41,13 +43,14 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
     private char    delimiter;
     private char    textQualifier;
     private Charset charset;
-
+    private static final Logger log = Logger.getLogger(ConfigureCSV.class);
     /**
      * Constructor sets defaults (hard coded).
      */
     public ConfigureCSV(final File file)
     {
         super();
+        log.info("ConfigureCSV");
         escapeMode = getDefaultEscapeMode();
         delimiter  = getDefaultDelimiter();
         charset    = getDefaultCharset();

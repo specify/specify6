@@ -46,13 +46,15 @@ public abstract class ConfigureExternalDataBase
     
     public ConfigureExternalDataBase()
     {
+        log.debug("ConfigureExternalDataBase()");
         interactive = true;
         firstRowHasHeaders = false;
-        appendData = false;
+        appendData = false;     
     }
 
     public ConfigureExternalDataBase(Properties props)
     {
+        log.debug("ConfigureExternalDataBase(Properties props)");
         interactive = (props.getProperty("interactive", "true") == "true");
         firstRowHasHeaders = (props.getProperty("firstRowHasHeaders", "false") == "true");
         appendData = (props.getProperty("appendData", "false") == "false");
@@ -158,6 +160,7 @@ public abstract class ConfigureExternalDataBase
      */
     public void getConfig(final File file)
     {
+        log.debug("ConfigureExternalDataBase getConfig(File)" + file.toString());
         externalFile = file;
         if (interactive)
         {
@@ -170,6 +173,7 @@ public abstract class ConfigureExternalDataBase
     
     public Properties getProperties()
     {
+        log.debug("ConfigureExternalDataBase getProperties()" );
         Properties result = new Properties();
         addBoolProperty(result, "interactive", interactive);
         addBoolProperty(result, "firstRowHasHeaders", firstRowHasHeaders);
