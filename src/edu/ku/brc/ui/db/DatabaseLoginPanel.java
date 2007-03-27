@@ -242,6 +242,7 @@ public class DatabaseLoginPanel extends JPanel
         rememberPasswordCBX = new JCheckBox(getResourceString("rememberpassword"));
 
         statusBar = new JStatusBar();
+        statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
 
         cancelBtn = new JButton(getResourceString("Cancel"));
         loginBtn = new JButton(getResourceString("Login"));

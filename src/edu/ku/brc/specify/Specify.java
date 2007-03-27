@@ -501,6 +501,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         int[] sections = {30, 50};
         statusField = new JStatusBar(sections);
+        statusField.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
         UICacheManager.register(UICacheManager.STATUSBAR, statusField);
 
         add(statusField, BorderLayout.SOUTH);

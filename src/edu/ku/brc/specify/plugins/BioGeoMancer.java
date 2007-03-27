@@ -757,8 +757,10 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         BigDecimal newLat = null;
         BigDecimal newLon = null;
         
-        newLat = (latitude.getText() != null) ? new BigDecimal(latitude.getText()) : null;
-        newLon = (longitude.getText() != null) ? new BigDecimal(longitude.getText()) : null;
+        String latText = latitude.getText();
+        String longText = longitude.getText();
+        newLat = (latText != null && StringUtils.isNotBlank(latText) && StringUtils.isNumeric(latText)) ? new BigDecimal(latitude.getText()) : null;
+        newLon = (longText != null && StringUtils.isNotBlank(longText) && StringUtils.isNumeric(longText)) ? new BigDecimal(longitude.getText()) : null;
         
         System.out.println("latitude:  " + newLat);
         System.out.println("longitude: " + newLon);

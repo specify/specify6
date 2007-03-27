@@ -1092,10 +1092,18 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         BioGeoMancer.getBioGeoMancerResponse(selectedRow.getWorkbenchRowId().toString(),country,state,county,localityNameStr);
         
         // show the BGM frame to allow the user to select from the results
+        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
         try
         {
+            statusBar.setText("");
             showBioGeomancerDialog(bgmService);
             loc = (Locality)bgmService.getValue();
+            if (loc == null || loc.getLatitude1() == null || loc.getLongitude1() == null)
+            {
+                // no value was chosen
+                // the user probably pressed the "close" button instead of "OK"
+                return;
+            }
             log.debug("Lat:"+loc.getLatitude1().toString() + " Long:" + loc.getLongitude1().toString());
             selectedRow.setData(loc.getLatitude1().toString(), (short)latIndex);
             selectedRow.setData(loc.getLongitude1().toString(), (short)lonIndex);
@@ -1104,7 +1112,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         catch (Exception e)
         {
-            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
             statusBar.setErrorMessage("BioGeomancer service failure", e);
         }
     }

@@ -23,6 +23,8 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -58,6 +60,8 @@ public class JStatusBar extends JPanel
     protected JLabel       statusLabel = null;
     protected JLabel[]     labels      = null;
     protected JProgressBar progressBar = null;
+    
+    protected Icon         errorIcon   = null;
     
     protected Exception lastException = null;
 
@@ -131,6 +135,11 @@ public class JStatusBar extends JPanel
             }
         });
     }
+    
+    public void setErrorIcon(Icon icon)
+    {
+        this.errorIcon = icon;
+    }
 
     /**
      * Sets text into the statusbar and clear the foreground color (sets it to "normal").
@@ -142,6 +151,7 @@ public class JStatusBar extends JPanel
         statusLabel.setForeground(NORMAL_COLOR);
         this.lastException = null;
         statusLabel.setText(text);
+        statusLabel.setIcon(null);
         statusLabel.repaint();
     }
 
@@ -168,6 +178,7 @@ public class JStatusBar extends JPanel
     {
         setText(message);
         statusLabel.setForeground(ERROR_COLOR);
+        statusLabel.setIcon(errorIcon);
         this.lastException = e;
     }
 
