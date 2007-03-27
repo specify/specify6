@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <prefs>
+    
     <section title="ui">
+        <!--
         <pref title="ui" icon="Data_Entry" panelClass="edu.ku.brc.af.prefs.UIPrefsPanel"/>
+        -->
         <pref title="formatting" icon="Data_Entry" panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
     </section>
     
+    <!--
     <section title="settings">
     	<pref title="email" icon="Browse" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
     </section>
@@ -12,4 +16,5 @@
     <section title="misc">
         <pref title="Misc." icon="Search" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
     </section>
+    -->
 </prefs>

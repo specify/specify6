@@ -63,6 +63,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -1639,6 +1640,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     //------------------------------------------------------------
     public class ImageRenderer extends DefaultTableCellRenderer 
     {
+        protected Border selectedBorder = BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(99, 130, 191));// Blue-Border
+        
         @Override
         public Component getTableCellRendererComponent(JTable table, 
                                                        Object value,
@@ -1652,6 +1655,23 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             {
                 setIcon((ImageIcon)value);
                 this.setHorizontalAlignment(SwingConstants.CENTER);
+            } else
+            {
+                setIcon(null);
+            }
+            if (isSelected)
+            {
+                setBackground(table.getSelectionBackground());
+            } else
+            {
+                setBackground(table.getBackground());
+            }
+            if (hasFocus)
+            {
+                setBorder(selectedBorder);
+            } else
+            {
+                setBorder(null);
             }
             return this;
         }

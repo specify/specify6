@@ -121,6 +121,8 @@ public class UICacheManager
     protected String         defaultWorkingPath = null;
     protected String         appName            = null;
     protected boolean        useCurrentLocation = false;
+    
+    protected boolean        isRelease          = false;
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
     
@@ -209,6 +211,24 @@ public class UICacheManager
         return instance.getResourceBundle();
     }
 
+
+    /**
+     * Returns whether this is a release.
+     * @return whether this is a release.
+     */
+    public static boolean isRelease()
+    {
+        return instance.isRelease;
+    }
+
+    /**
+     * Sets whether this is a release.
+     * @param isRelease the isRelease to set
+     */
+    public static void setRelease(boolean isRelease)
+    {
+        instance.isRelease = isRelease;
+    }
 
     /**
      * Returns the "working" directory which is platform specific. It will create one if one is not created
@@ -439,6 +459,7 @@ public class UICacheManager
     {
         try 
         {
+            log.error("["+key+"]["+resourceBundle.getString(key)+"]");
             return resourceBundle.getString(key);
             
         } catch (MissingResourceException ex) 

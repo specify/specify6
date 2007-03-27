@@ -93,5 +93,11 @@ public interface Taskable
      * @return the implementing Class type
      */
     public abstract Class<?> getTaskClass();
+    
+    /**
+     * Returns a the start pane for the task.
+     * @return a the start pane for the task.
+     */
+    public abstract SubPaneIFace getStarterPane();
 
 }

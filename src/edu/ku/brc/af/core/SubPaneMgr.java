@@ -164,13 +164,14 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             return newPane;
         }
         
+        int index = this.indexOfComponent(oldPane.getUIComponent());
+        panes.remove(oldPane.getName());
+        this.remove(index);
+
         // Add this pane to the tabs
         String title = buildUniqueName(newPane.getName());
         newPane.setName(title);
         
-        int index = this.indexOfComponent(oldPane.getUIComponent());
-        panes.remove(oldPane.getName());
-        this.remove(index);
         panes.put(newPane.getName(), newPane);
         
         this.insertTab(newPane.getName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
@@ -397,16 +398,28 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         this.removeAll();
     }
 
-    /**
-     * Removes the current tab.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.ExtendedTabbedPane#closeCurrent()
      */
     @Override
     public void closeCurrent()
     {
         SubPaneIFace subPane = this.getCurrentSubPane();
-        if(subPane != null && subPane.aboutToShutdown())
+        if(subPane != null)
         {
-        	this.removePane(subPane);
+            // If there is only one pane left and there is only one tasks that provides UI
+            // then we cannot let it close.
+            boolean  wasLastPane = panes.size() == 1  && TaskMgr.getVisibleTaskCount() == 1;
+            Taskable task        = subPane.getTask();
+            if (subPane.aboutToShutdown())
+            {
+                this.removePane(subPane);
+            }
+            if (wasLastPane)
+            {
+                subPane = task.getStarterPane();
+                addPane(subPane);
+            }
         }
     }
 

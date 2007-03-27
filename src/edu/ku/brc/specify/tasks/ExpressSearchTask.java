@@ -140,6 +140,15 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             super.initialize(); // sets isInitialized to false
         }
     }
+    
+    /**
+     * Returns true if the talk has been started and false if it hasn't.
+     * @return true if the talk has been started and false if it hasn't.
+     */
+    public static boolean isStarted()
+    {
+        return instance != null;
+    }
 
     /**
      * Helper function to return the path to the express search directory.
@@ -194,16 +203,19 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     public static TableInfoWeakRef getTableInfoHashMaps()
     {
         TableInfoWeakRef tableInfoWR = null;
-        
-        if (tableInfo != null)
+     
+        if (instance != null)
         {
-            tableInfoWR = tableInfo.get();
-        }
-        
-        if (tableInfoWR == null)
-        {
-            tableInfoWR = intializeTableInfo();
-            tableInfo = new WeakReference<TableInfoWeakRef>(tableInfoWR);
+            if (tableInfo != null)
+            {
+                tableInfoWR = tableInfo.get();
+            }
+            
+            if (tableInfoWR == null)
+            {
+                tableInfoWR = intializeTableInfo();
+                tableInfo = new WeakReference<TableInfoWeakRef>(tableInfoWR);
+            }
         }
         return tableInfoWR;
     }
@@ -223,7 +235,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      */
     public static Hashtable<String, ExpressResultsTableInfo> getTableInfoHash()
     {
-        return getTableInfoHashMaps().getTables();
+        return instance != null ? getTableInfoHashMaps().getTables() : null;
     }
     
     /**
@@ -304,28 +316,33 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      */
     protected static TableInfoWeakRef intializeTableInfo()
     {
-        Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
-        
-        Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
-        Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
-        
-        try
+        if (instance != null)
         {
-            Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
+            Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
             
-            intializeTableInfo(esDOM.selectNodes("/searches/express/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, true);
+            Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
+            Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
             
-            intializeTableInfo(esDOM.selectNodes("/searches/generic/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, false);
-
+            try
+            {
+                Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
                 
-        } catch (Exception ex)
-        {
-            log.error(ex);
+                intializeTableInfo(esDOM.selectNodes("/searches/express/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, true);
+                
+                intializeTableInfo(esDOM.selectNodes("/searches/generic/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, false);
+    
+                    
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+            
+            // This is sort of bad because it assumes the Task has already been created
+            // It really shoud be in nearly all cases, but I can't absolutely guareentee it
+            return instance.new TableInfoWeakRef(tables, idToTableInfoHash, joinIdToTableInfoHash);
         }
-        
-        // This is sort of bad because it assumes the Task has already been created
-        // It really shoud be in nearly all cases, but I can't absolutely guareentee it
-        return instance.new TableInfoWeakRef(tables, idToTableInfoHash, joinIdToTableInfoHash);
+        // else
+        return null;
     }
 
     /**
@@ -880,10 +897,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                     searchText.setBackground(textBGColor);
                 }
             }
-
-
         });
-
 
         c.weightx = 1.0;
         gridbag.setConstraints(spacer, c);
@@ -898,7 +912,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         gridbag.setConstraints(searchBtn, c);
         searchPanel.add(searchBtn);
 
-        list.add(new ToolBarItemDesc(searchPanel));
+        list.add(new ToolBarItemDesc(searchPanel, ToolBarItemDesc.Position.AdjustRightLastComp));
 
         checkForIndexer();
 

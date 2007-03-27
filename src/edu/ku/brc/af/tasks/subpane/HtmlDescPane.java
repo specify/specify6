@@ -5,17 +5,17 @@
  *
  */
 
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.tasks.subpane;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -43,11 +43,19 @@ public class HtmlDescPane extends SimpleDescPane implements HyperlinkListener
         super(name,task,"");
         this.removeAll();
         JEditorPane htmlPane   = new JEditorPane("text/html", htmlDesc);
-        JScrollPane scrollPane = new JScrollPane(htmlPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        System.out.println(htmlDesc);
+        final JScrollPane scrollPane = new JScrollPane(htmlPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.add(scrollPane, BorderLayout.CENTER);
         htmlPane.setEditable(false);
         htmlPane.addHyperlinkListener(this);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                scrollPane.getVerticalScrollBar().setValue(0); 
+                scrollPane.getHorizontalScrollBar().setValue(0); 
+            }
+        });
+        
     }
 
     /* (non-Javadoc)

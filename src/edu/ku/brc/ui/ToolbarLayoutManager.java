@@ -34,11 +34,12 @@ import java.util.Vector;
 public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
 {
     
-    private Vector<Component> comps         = new Vector<Component>();
-    private Dimension         preferredSize = new Dimension();
-    private int               borderPadding = 2;
-    private int               separation    = 5;
-    private int               maxCompHeight = 0;
+    private Vector<Component> comps               = new Vector<Component>();
+    private Dimension         preferredSize       = new Dimension();
+    private int               borderPadding       = 2;
+    private int               separation          = 5;
+    private int               maxCompHeight       = 0;
+    private boolean           adjustRightLastComp = false;
 
     /**
      * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically 
@@ -47,16 +48,39 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
      * @param borderPadding the margin around the boxes
      * @param separation the vertical separation inbetween the boxes.
      */
-    public ToolbarLayoutManager(int borderPadding, int separation)
+    public ToolbarLayoutManager(final int borderPadding, final int separation)
     {
-        this.borderPadding = borderPadding;
-        this.separation   = separation;
+        this(borderPadding, separation, false);
     }
     
+    /**
+     * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically 
+     * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
+     * aroound all the boxes
+     * @param borderPadding the margin around the boxes
+     * @param separation the vertical separation inbetween the boxes.
+     * @param adjustRightLastComp indicates whether the last component should be right justified
+     */
+    public ToolbarLayoutManager(final int borderPadding, final int separation, final boolean adjustRightLastComp)
+    {
+        this.borderPadding       = borderPadding;
+        this.separation          = separation;
+        this.adjustRightLastComp = adjustRightLastComp;
+    }
+    
+    /**
+     * Tells the layout manager to adjust the last item to the right.
+     * @param adjustRightLastComp true - adjust, false all are aligned left in a first come first serve order.
+     */
+    public void setAdjustRightLastComp(boolean adjustRightLastComp)
+    {
+        this.adjustRightLastComp = adjustRightLastComp;
+    }
+
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String, java.awt.Component)
      */
-    public void addLayoutComponent(String arg0, Component arg1)
+    public void addLayoutComponent(final String arg0, final Component arg1)
     {
         if (arg1 == null)
         {
@@ -69,7 +93,7 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
      */
-    public void removeLayoutComponent(Component arg0)
+    public void removeLayoutComponent(final Component arg0)
     {
         if (arg0 == null)
         {
@@ -82,7 +106,7 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
      */
-    public Dimension preferredLayoutSize(Container arg0)
+    public Dimension preferredLayoutSize(final Container arg0)
     {
         return new Dimension(preferredSize);
     }
@@ -90,7 +114,7 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
      */
-    public Dimension minimumLayoutSize(Container arg0)
+    public Dimension minimumLayoutSize(final Container arg0)
     {
          return new Dimension(preferredSize);
     }
@@ -98,18 +122,18 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(Container arg0)
+    public void layoutContainer(final Container arg0)
     {        
         calcPreferredSize();
 
         int x = borderPadding;
         int y = borderPadding;
         
-        Component lastComp = comps.size() > 0 ? comps.lastElement() : null;
+        Component lastComp = adjustRightLastComp ? (comps.size() > 0 ? comps.lastElement() : null) : null;
         for (Component comp : comps)
         {
             Dimension size = comp.getPreferredSize();
-            if (comp == lastComp)
+            if (lastComp != null && comp == lastComp)
             {
                 int lastCompX = arg0.getSize().width - (borderPadding + size.width);
                 if (lastCompX > x)
@@ -171,7 +195,7 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     }
     
     // LayoutManager2
-    public void  addLayoutComponent(Component comp, Object constraints)
+    public void  addLayoutComponent(final Component comp, final Object constraints)
     {
         if (comp == null)
         {
@@ -179,21 +203,21 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
         }
         comps.addElement(comp);
     }
-    public float   getLayoutAlignmentX(Container target)
+    public float   getLayoutAlignmentX(final Container target)
     {
         return (float)0.0;
     }
-    public float   getLayoutAlignmentY(Container target)
+    public float   getLayoutAlignmentY(final Container target)
     {
         return (float)0.0;
     }
-    public void invalidateLayout(Container target)
+    public void invalidateLayout(final Container target)
     {
         maxCompHeight = 0;
         preferredSize.setSize(0, 0);
         calcPreferredSize();
     }
-    public Dimension maximumLayoutSize(Container target) 
+    public Dimension maximumLayoutSize(final Container target) 
     {
         calcPreferredSize();        
         return new Dimension(preferredSize); 

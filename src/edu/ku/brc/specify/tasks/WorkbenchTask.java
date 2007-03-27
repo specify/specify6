@@ -57,6 +57,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.BarChartPane;
 import edu.ku.brc.af.tasks.subpane.ChartPane;
+import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.af.tasks.subpane.PieChartPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -75,7 +76,6 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
-import edu.ku.brc.specify.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
@@ -370,13 +370,13 @@ public class WorkbenchTask extends BaseTask
             String s = XMLHelper.fixUpHTML(htmlFile);
             if (StringUtils.isNotEmpty(s))
             {
-                return new HtmlDescPane(name, this, s);    
+                return new HtmlDescPane(title, this, s);    
             }
         } catch (Exception ex)
         {
             // no op
         }
-        return starterPane = new WorkbenchPaneSS(name, this, null, false);
+        return starterPane = new WorkbenchPaneSS(title, this, null, false);
     }
     
     /* (non-Javadoc)

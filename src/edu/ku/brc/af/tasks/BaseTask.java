@@ -106,6 +106,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected boolean             taskCentricPanesOnly = true;
     protected boolean             closeOnLastPane      = false;
     protected SubPaneIFace        starterPane          = null;
+    protected boolean             isVisible;
 
     // Data Members needed for support "recent form pane" management
     protected FormPane  recentFormPane = null;
@@ -577,6 +578,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         }
         return formViewObj;
     }
+    
+    
 
     //-------------------------------------------------------
     // Taskable
@@ -665,6 +668,13 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         initialize(); // initializes the Taskable
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isVisible()
+     */
+    public boolean isVisible()
+    {
+        return isVisible;
+    }
 
     /**
      * Displays UI that asks the user to select a predefined label.
@@ -723,13 +733,13 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.af.ui.SubPaneIFace)
      */
-    public void subPaneRemoved(SubPaneIFace subPane)
+    public void subPaneRemoved(final SubPaneIFace subPane)
     {
-        if (starterPane == null && subPane.getTask() == this && !closeOnLastPane && subPanes.size() == 1)
-        {
-            SubPaneMgr.getInstance().replacePane(subPane, starterPane = getStarterPane());
-            return;
-        }
+        //if (starterPane == null && subPane.getTask() == this && !closeOnLastPane && subPanes.size() == 1)
+        //{
+        //    SubPaneMgr.getInstance().replacePane(subPane, starterPane = getStarterPane());
+        //    return;
+        //}
         // else
         subPanes.remove(subPane);
     }

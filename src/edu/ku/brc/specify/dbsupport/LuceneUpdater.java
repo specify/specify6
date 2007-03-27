@@ -117,88 +117,91 @@ public class LuceneUpdater
      */
     protected boolean updateIndex(final FormDataObjIFace formObj, final IndexAction action)
     {
-        // Short Circut the Indexer by asking the object if it is indexable.
-        if (!formObj.isIndexable())
+        if (ExpressSearchTask.isStarted())
         {
-            return true;
-        }
-       
-        try
-        {
-           
-            if (ExpressSearchTask.doesIndexExist())
+            // Short Circut the Indexer by asking the object if it is indexable.
+            if (!formObj.isIndexable())
             {
-                File          lucenePath = ExpressSearchTask.getIndexDirPath();
-                IndexReader   reader     = IndexReader.open(FSDirectory.getDirectory(lucenePath, false));
-                IndexSearcher searcher   = new IndexSearcher(reader);
-                
-                Hashtable<String, ExpressResultsTableInfo> tableInfoHash = ExpressSearchTask.getTableInfoHash();
-                for (Enumeration<ExpressResultsTableInfo> e=tableInfoHash.elements();e.hasMoreElements();)
+                return true;
+            }
+           
+            try
+            {
+               
+                if (ExpressSearchTask.doesIndexExist())
                 {
-                    ExpressResultsTableInfo tblInfo = e.nextElement();
+                    File          lucenePath = ExpressSearchTask.getIndexDirPath();
+                    IndexReader   reader     = IndexReader.open(FSDirectory.getDirectory(lucenePath, false));
+                    IndexSearcher searcher   = new IndexSearcher(reader);
                     
-                    if (tblInfo.isExpressSearch() && tblInfo.isIndexed())
+                    Hashtable<String, ExpressResultsTableInfo> tableInfoHash = ExpressSearchTask.getTableInfoHash();
+                    for (Enumeration<ExpressResultsTableInfo> e=tableInfoHash.elements();e.hasMoreElements();)
                     {
-                        //log.debug("["+formObj.getTableId()+"] ["+Integer.parseInt(tblInfo.getTableId())+"]"); 
-                        if (formObj.getTableId() == Integer.parseInt(tblInfo.getTableId()))
+                        ExpressResultsTableInfo tblInfo = e.nextElement();
+                        
+                        if (tblInfo.isExpressSearch() && tblInfo.isIndexed())
                         {
-                            //log.debug("TABLE ID: ["+formObj.getTableId()+"] "+action); 
-                            if (action == IndexAction.New)
+                            //log.debug("["+formObj.getTableId()+"] ["+Integer.parseInt(tblInfo.getTableId())+"]"); 
+                            if (formObj.getTableId() == Integer.parseInt(tblInfo.getTableId()))
                             {
-                                reader.close();
-                                searcher.close();
-                                
-                                update(formObj, tblInfo);
-                                
-                                reader   = IndexReader.open(FSDirectory.getDirectory(ExpressSearchTask.getIndexDirPath(), false));
-                                searcher = new IndexSearcher(reader);
-                                
-                            } else if (action == IndexAction.Update || action == IndexAction.Delete)
-                            {
-                                
-                                Query query = new TermQuery(new Term("id", Long.toString(formObj.getId())));
-                                Hits  hits  = searcher.search(query);
-                                //log.debug("Hits: "+hits.length()+"  Query["+query.toString("contents")+"]");
-                                int updates = 0;
-                                for (int i=0;i<hits.length();i++)
-                                {
-                                    Document doc = hits.doc(i);
-                                    String   sid = doc.get("sid");
-                                    //log.debug("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
-                                    if (sid != null && sid.equals(tblInfo.getId()))
-                                    {
-                                        //log.debug("TBL ID["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
-                                        //log.debug("Removing HitsID["+hits.id(i)+"] SID["+sid+"]");
-                                        
-                                        reader.deleteDocument(hits.id(i));
-                                        
-                                        updates++;
-                                    }
-                                }
-    
-                                if (updates > 0 && action == IndexAction.Update)
+                                //log.debug("TABLE ID: ["+formObj.getTableId()+"] "+action); 
+                                if (action == IndexAction.New)
                                 {
                                     reader.close();
                                     searcher.close();
                                     
                                     update(formObj, tblInfo);
+                                    
                                     reader   = IndexReader.open(FSDirectory.getDirectory(ExpressSearchTask.getIndexDirPath(), false));
                                     searcher = new IndexSearcher(reader);
+                                    
+                                } else if (action == IndexAction.Update || action == IndexAction.Delete)
+                                {
+                                    
+                                    Query query = new TermQuery(new Term("id", Long.toString(formObj.getId())));
+                                    Hits  hits  = searcher.search(query);
+                                    //log.debug("Hits: "+hits.length()+"  Query["+query.toString("contents")+"]");
+                                    int updates = 0;
+                                    for (int i=0;i<hits.length();i++)
+                                    {
+                                        Document doc = hits.doc(i);
+                                        String   sid = doc.get("sid");
+                                        //log.debug("sid: ["+sid+"]["+tblInfo.getId()+"] id["+doc.get("id")+"]"); 
+                                        if (sid != null && sid.equals(tblInfo.getId()))
+                                        {
+                                            //log.debug("TBL ID["+tblInfo.getTableId()+"] id["+tblInfo.getId()+"]");
+                                            //log.debug("Removing HitsID["+hits.id(i)+"] SID["+sid+"]");
+                                            
+                                            reader.deleteDocument(hits.id(i));
+                                            
+                                            updates++;
+                                        }
+                                    }
+        
+                                    if (updates > 0 && action == IndexAction.Update)
+                                    {
+                                        reader.close();
+                                        searcher.close();
+                                        
+                                        update(formObj, tblInfo);
+                                        reader   = IndexReader.open(FSDirectory.getDirectory(ExpressSearchTask.getIndexDirPath(), false));
+                                        searcher = new IndexSearcher(reader);
+                                    }
                                 }
                             }
                         }
                     }
-                }
+                    
+                    searcher.close();
+                    reader.close();
+                }  
                 
-                searcher.close();
-                reader.close();
-            }  
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
         }
-
+        // else
         return false;
     }
     

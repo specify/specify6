@@ -27,7 +27,7 @@ import java.awt.Component;
  */
 public class ToolBarItemDesc
 {
-    public enum Position {Insert, Append, AppendNextToLast}
+    public enum Position {Insert, Append, AppendNextToLast, AdjustRightLastComp}
     
     protected Component comp;
     protected Position  pos;
@@ -37,11 +37,18 @@ public class ToolBarItemDesc
      * Constructs a toolbar item desc with the component that will be placed in the toolbar.
      * @param comp the component
      */
-    public ToolBarItemDesc(Component comp)
+    public ToolBarItemDesc(final Component comp)
     {
-        this.comp = comp;
-        this.pos = Position.Append;
-        this.index = -1;
+        this(comp, Position.Append, -1);
+    }
+
+    /**
+     * Constructs a toolbar item desc with the component that will be placed in the toolbar.
+     * @param comp the component
+     */
+    public ToolBarItemDesc(final Component comp, final Position pos)
+    {
+        this(comp, pos, -1);
     }
 
     /**
@@ -50,10 +57,10 @@ public class ToolBarItemDesc
      * @param pos the position in the toolbar or related to the other items
      * @param index the index of where to place the item
      */
-    public ToolBarItemDesc(Component comp, Position pos, int index)
+    public ToolBarItemDesc(final Component comp, final Position pos, final int index)
     {
-        this.comp = comp;
-        this.pos = pos;
+        this.comp  = comp;
+        this.pos   = pos;
         this.index = index;
     }
 

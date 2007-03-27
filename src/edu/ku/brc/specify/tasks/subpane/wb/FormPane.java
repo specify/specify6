@@ -102,6 +102,22 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         
         MouseAdapter clickable = new MouseAdapter()
         {
+            public void mousePressed(MouseEvent e)
+            {
+                if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
+                {
+                    showControlProps();
+                }
+                
+                selectedInputPanel = (InputPanel)((Component)e.getSource()).getParent();
+                controlPropsBtn.setEnabled(true);
+                
+                if (controlProperties != null)
+                {
+                    controlProperties.setControl(selectedInputPanel);
+                }
+            }
+            
             public void mouseClicked(MouseEvent e)
             {
                 selectedInputPanel = (InputPanel)((Component)e.getSource()).getParent();

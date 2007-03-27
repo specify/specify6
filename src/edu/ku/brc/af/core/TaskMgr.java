@@ -15,16 +15,20 @@
 
 package edu.ku.brc.af.core;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.helpers.XMLHelper.readDOMFromConfigDir;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Component;
+import java.awt.LayoutManager;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.JMenu;
@@ -38,8 +42,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -54,14 +58,15 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class TaskMgr
 {
-
     // Static Data Members
     private static final Logger  log      = Logger.getLogger(TaskMgr.class);
     private static final TaskMgr instance = new TaskMgr();
 
     // Data Members
-    protected Hashtable<String, Taskable> plugins        = new Hashtable<String, Taskable>();
+    protected Hashtable<String, Taskable> tasks          = new Hashtable<String, Taskable>();
+    protected Vector<Taskable>            visibleTasks   = new Vector<Taskable>();
     protected Element                     commandDOMRoot = null;
+    protected Taskable                    defaultTask    = null;
 
     /**
      * Protected Default Constructor for Singleton
@@ -80,20 +85,69 @@ public class TaskMgr
     {
         return instance;
     }
+    
+    /**
+     * Returns the default taskable.
+     * @return the default taskable.
+     */
+    public static Taskable getDefaultTaskable()
+    {
+        return instance.defaultTask;
+    }
+    
+    /**
+     * Returns the number of tasks that provide UI.
+     * @return Returns the number of tasks that provide UI.
+     */
+    public static int getVisibleTaskCount()
+    {
+        return instance.visibleTasks.size();
+    }
+    
+    /**
+     * Requests an initial context. First it chooses the default, then the Startup, and then some arbitrary task.
+     */
+    public static void requestInitalContext()
+    {
+        if (instance.defaultTask != null)
+        {
+            instance.defaultTask.requestContext();
+        } else
+        {
+            Taskable startUpTask = ContextMgr.getTaskByName(getResourceString("Startup"));
+            if (startUpTask != null)
+            {
+                startUpTask.requestContext();
+                
+            } else
+            {
+                Taskable arbitraryTaskable = instance.tasks.values().iterator().next();
+                if (arbitraryTaskable != null)
+                {
+                    arbitraryTaskable.requestContext();
+                }
+            }
+            
+        }
+    }
 
     /**
-     * Registers a plugin into the applications
+     * Registers a plugin into the applications.
      * @param plugin the plugin to be registered
+     * @param isVisible true if plugin should add UI components, false if it should be "hidden"
      */
-    public static void register(final Taskable plugin)
+    public static void register(final Taskable plugin, final boolean isVisible)
     {
         if (plugin != null)
         {
-            if (instance.plugins.get(plugin.getName()) == null)
+            if (instance.tasks.get(plugin.getName()) == null)
             {
-                instance.plugins.put(plugin.getName(), plugin);
+                instance.tasks.put(plugin.getName(), plugin);
 
-                registerWithUI(plugin);
+                if (isVisible)
+                {
+                    registerWithUI(plugin);
+                }
 
             } else
             {
@@ -106,19 +160,28 @@ public class TaskMgr
     }
 
     /**
-     * Unregisters a plugin from the application
-     * @param plugin the plugin to be installed
+     * Unregisters a plugin from the application.
+     * @param taskable the plugin to be installed
      */
-    public static void unregister(final Taskable plugin)
+    public static void unregister(final Taskable taskable)
     {
-        if (plugin != null)
+        if (taskable != null)
         {
-            if (instance.plugins.get(plugin.getName()) != null)
+            Taskable tp = instance.tasks.get(taskable.getName());
+            if (tp != null)
             {
-                instance.plugins.remove(plugin.getName());
+                instance.tasks.remove(taskable.getName());
+                if (instance.visibleTasks.indexOf(tp) > -1)
+                {
+                    instance.visibleTasks.remove(tp);
+                }
+                if (taskable == instance.defaultTask)
+                {
+                    instance.defaultTask = null;
+                }
             } else
             {
-                throw new RuntimeException("Unregistering a plugin that has been registered ["+plugin.getName()+"]");
+                throw new RuntimeException("Unregistering a plugin that has been registered ["+taskable.getName()+"]");
             }
         } else
         {
@@ -133,11 +196,14 @@ public class TaskMgr
      */
     public static Taskable getTask(final String name)
     {
-        return instance.plugins.get(name);
+        return instance.tasks.get(name);
     }
 
     /**
-     * Registers the plugin's UI compontents with the various parts of the UI
+     * Registers the plugin's UI compontents with the various parts of the UI. If the requested poxition
+     * is 'Position.AppendNextToLast' then it is appended and the ToolBar is set to adjust the last item to
+     * the right. Note: If two items request Position.AppendNextToLast then the last one to do so is 
+     * is adjusted right sincer they are appended.
      * @param plugin the plugin that will register it's UI
      */
     protected static void registerWithUI(final Taskable plugin)
@@ -156,6 +222,15 @@ public class TaskMgr
                 {
                     toolBar.add(toolBarComp);
 
+                } else if (tbItem.getPos() == ToolBarItemDesc.Position.AdjustRightLastComp)
+                {
+                    toolBar.add(toolBarComp);
+                    LayoutManager layout = toolBar.getLayout();
+                    if (layout instanceof ToolbarLayoutManager)
+                    {
+                        ((ToolbarLayoutManager)layout).setAdjustRightLastComp(true);
+                    }
+
                 } else if (tbItem.getPos() == ToolBarItemDesc.Position.AppendNextToLast)
                 {
                     int inx = toolBar.getComponentCount();
@@ -170,7 +245,8 @@ public class TaskMgr
         {
             throw new NullPointerException("The Toolbar component cannot be null!");
         }
-
+        
+        // Load all the menu Items
         JMenuBar menuBar = (JMenuBar)UICacheManager.get(UICacheManager.MENUBAR);
         if (menuBar != null)
         {
@@ -267,7 +343,7 @@ public class TaskMgr
      */
     public static void initializePlugins()
     {
-        for (Enumeration<Taskable> e=instance.plugins.elements();e.hasMoreElements();)
+        for (Enumeration<Taskable> e=instance.tasks.elements();e.hasMoreElements();)
         {
             Taskable taskablePlugin = e.nextElement();
             taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()));
@@ -292,12 +368,12 @@ public class TaskMgr
      */
     public static void readRegistry()
     {
-        // Only read in the XML if there are no plugins
-        if (instance.plugins.size() == 0)
+        // Only read in the XML if there are no tasks
+        if (instance.tasks.size() == 0)
         {
             try
             {
-                Element root  = XMLHelper.readDOMFromConfigDir("plugin_registry.xml");
+                Element root  = readDOMFromConfigDir("plugin_registry.xml");
     
                 List<?> boxes = root.selectNodes("/plugins/core/plugin");
                 for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
@@ -324,25 +400,27 @@ public class TaskMgr
                     if (newObj instanceof Taskable)
                     {
                         Taskable tp = (Taskable)newObj;
-                        register(tp);
-    
-                        /*
-                        List<?> servicesList = pluginElement.selectNodes("service");
-                        for ( Iterator<?> iterServices = servicesList.iterator(); iterServices.hasNext(); )
+                        
+                        boolean isTaskDefault = getAttr(pluginElement, "default", false);
+                        if (isTaskDefault)
                         {
-                            Element       serviceElement = (Element)iterServices.next();
-                            int           tableId        = Integer.parseInt(serviceElement.attributeValue("tableid"));
-                            if (ContextMgr.checkForService(tp.getName(), tableId) == null)
+                            if (instance.defaultTask == null)
                             {
-                                CommandAction cmd            = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
-                                ServiceInfo   serviceInfo    = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
-                                loadServiceIcons(tp.getName(), serviceInfo);
-                                
+                                instance.defaultTask = tp;
                             } else
                             {
-                                log.error("Duplicate Service ["+tp.getName()+"]["+tableId+"]");
+                                log.error("More than one plaugin thinks it is the default["+tp.getName()+"]");
                             }
-                        }*/
+                        }
+                        
+                        boolean isVisible = getAttr(pluginElement, "visible", true);
+                        if (isVisible)
+                        {
+                            instance.visibleTasks.add(tp);
+                        }
+                        
+                        register(tp, isVisible);
+
                     } else
                     {
                         log.error("Oops, the plugin is not instance of Taskable ["+newObj+"]");
@@ -369,7 +447,7 @@ public class TaskMgr
         {
             if (instance.commandDOMRoot == null)
             {
-                instance.commandDOMRoot = XMLHelper.readDOMFromConfigDir("command_registry.xml");
+                instance.commandDOMRoot = readDOMFromConfigDir("command_registry.xml");
             }
 
             List<?> cmds = instance.commandDOMRoot.selectNodes("/commands/command[@class='"+classObj.getName()+"']");
@@ -378,8 +456,8 @@ public class TaskMgr
             {
                 Element cmdElement = (Element)iter.next();
 
-                String cmdName     = XMLHelper.getAttr(cmdElement, "name", null);
-                String cmdIconName = XMLHelper.getAttr(cmdElement, "icon", null);
+                String cmdName     = getAttr(cmdElement, "name", null);
+                String cmdIconName = getAttr(cmdElement, "icon", null);
                 if (StringUtils.isNotEmpty(cmdName) && StringUtils.isNotEmpty(cmdIconName))
                 {
                     Map<String, String> params = null;
@@ -387,7 +465,7 @@ public class TaskMgr
                     for ( Iterator<?> iterServices = paramsList.iterator(); iterServices.hasNext(); )
                     {
                         Element paramElement = (Element)iterServices.next();
-                        String name  = XMLHelper.getAttr(paramElement, "name", null);
+                        String name  = getAttr(paramElement, "name", null);
                         String value = paramElement.getTextTrim();
                         if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(value))
                         {

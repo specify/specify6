@@ -3,35 +3,30 @@
      that ID -->
 <plugins>
 	<core>
-	    <plugin class="edu.ku.brc.af.tasks.StartUpTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.DataEntryTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.LocationTreeTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.GtpTreeTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.LabelsTask">
-	    	<service command="DoLabels" tableid="1" tooltip="CreateLabelTT"/>
-	    	<service command="DoLabels" tableid="7" tooltip="CreateLabelTT"/>
-	    	<service command="PrintLabel" tableid="52" tooltip="CreateLabelTT"/>
-	    </plugin>
-	    <plugin class="edu.ku.brc.specify.tasks.ReportsTask"/>
-	    <!--
-	    <plugin class="edu.ku.brc.specify.tasks.LocalityMapperTask">
-	        <service command="DoLocalityMap" tableid="10" tooltip="CreateLocalityMapTT"/>
-	        <service command="DoLocalityMap" tableid="11" tooltip="CreateLocalityMapTT"/>
-	    </plugin> -->
-	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask">
-			<service command="CreateLoan" tableid="1" tooltip="CreateLoanFromRecordSetTT"/>
-	    	<!-- <service command="CreateInfoRequest" tableid="1" tooltip="CreateInfoRequestTT"/> -->
-	    </plugin>
-		<plugin class="edu.ku.brc.af.tasks.StatsTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.QueryTask"/>
-        <plugin class="edu.ku.brc.specify.tasks.RecordSetTask"/>
-        <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.SystemSetupTask"/>
-		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.ExportTask"/>
-	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>
+		<!--
+		<plugin class="edu.ku.brc.af.tasks.StartUpTask" visible="true" default="true"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.DataEntryTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.LocationTreeTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.GtpTreeTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.LabelsTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.ReportsTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.InteractionsTask" visible="false"/>
+		<plugin class="edu.ku.brc.af.tasks.StatsTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.QueryTask" visible="false"/>
+		-->
+		<plugin class="edu.ku.brc.specify.tasks.RecordSetTask" visible="false"/>
+		<!--
+		<plugin class="edu.ku.brc.specify.tasks.InfoRequestTask" visible="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.SystemSetupTask" visible="false"/>
+		-->
+		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" visible="true" default="true"/>
+	    <plugin class="edu.ku.brc.specify.tasks.ExportTask" visible="false"/>
+		<!--
+		<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" visible="false"/>
+		-->
 
 	</core>
 	

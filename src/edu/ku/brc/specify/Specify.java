@@ -33,7 +33,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.ImageIcon;
@@ -62,23 +61,17 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
-import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.AppResource;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -86,7 +79,6 @@ import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.CollectorActionListener;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -115,7 +107,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private static final Logger log                = Logger.getLogger(Specify.class);
     public static final boolean IS_DEVELOPMENT     = true;
     
-
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 900;
     private static final int    PREFERRED_HEIGHT   = 800;
@@ -136,22 +127,24 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected String             databaseName        = null;
     protected String             userName            = null;
 
-    protected GhostGlassPane    glassPane;
+    protected GhostGlassPane     glassPane;
 
-    private JLabel splashLabel = null;
+    private JLabel               splashLabel = null;
 
     // Used only if swingset is an application
-    //private JFrame    frame               = null;
-    private JWindow   splashWindow        = null;
-    private ImageIcon specifyImageIcon    = null;
-    //private ImageIcon userSplashImageIcon = null;
+    private JWindow              splashWindow        = null;
+    private ImageIcon            specifyImageIcon    = null;
+    
+    
+    private boolean              isWorkbenchOnly     = true;
+    private boolean              isRelease           = true;
 
     /**
      * Constructor.
      */
     public Specify()
     {
-        
+        UICacheManager.setRelease(isRelease);
     }
     
     /**
@@ -278,16 +271,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // Setup base font AFTER setting Look and Feel
         UICacheManager.setBaseFont((new JLabel()).getFont());
 
-
         log.info("Creating Database configuration ");
 
-        HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
-        HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
-        // SInce Update get called when deleting an object there is no need to register this class.
-        // The update deletes becuase first it removes the Lucene document and then goes to add it back in, but since the
-        // the record is deleted it doesn't get added.
-        HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
-        //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
+        if (!isWorkbenchOnly)
+        {
+            HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
+            HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
+            // SInce Update get called when deleting an object there is no need to register this class.
+            // The update deletes becuase first it removes the Lucene document and then goes to add it back in, but since the
+            // the record is deleted it doesn't get added.
+            HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
+            //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
+        }
         dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
@@ -342,18 +337,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
         mainPanel.setBackground(Color.WHITE);
 
         SubPaneMgr.getInstance().removeAllPanes();
-
-        Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
-        if (startUpTask != null)
+        
+        JToolBar toolBar = (JToolBar)UICacheManager.get(UICacheManager.TOOLBAR);
+        if (toolBar != null && toolBar.getComponentCount() < 2)
         {
-            startUpTask.requestContext();
+            toolBar.setVisible(false);
         }
+        
+        TaskMgr.requestInitalContext();
 
         showApp();
-        
-
-
-        
     }
 
     /**
@@ -521,7 +514,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     public JToolBar createToolBar()
     {
         JToolBar toolBar = new JToolBar();
-        toolBar.setLayout(new ToolbarLayoutManager(2,2));
+        toolBar.setLayout(new ToolbarLayoutManager(2, 2));
 
         return toolBar;
     }
@@ -592,25 +585,27 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     }
                 });
 
-        // Add Menu for switching CatalogSeries
-        changeCatSeriesBtn = UIHelper.createMenuItem(menu, "Change Catalog Series", "C", "Change Catalog Series", false, null);
-        changeCatSeriesBtn.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
+        if (!isWorkbenchOnly)
+        {
+            // Add Menu for switching CatalogSeries
+            changeCatSeriesBtn = UIHelper.createMenuItem(menu, "Change Catalog Series", "C", "Change Catalog Series", false, null);
+            changeCatSeriesBtn.addActionListener(new ActionListener()
                     {
-                        if (SubPaneMgr.getInstance().aboutToShutdown())
+                        public void actionPerformed(ActionEvent ae)
                         {
-                           
-                            // Actually we really need to start over
-                            // "true" means that it should NOT use any cached values it can find to automatically initialize itself
-                            // instead it should ask the user any questions as if it were starting over
-                            restartApp(databaseName, userName, true, false);
+                            if (SubPaneMgr.getInstance().aboutToShutdown())
+                            {
+                               
+                                // Actually we really need to start over
+                                // "true" means that it should NOT use any cached values it can find to automatically initialize itself
+                                // instead it should ask the user any questions as if it were starting over
+                                restartApp(databaseName, userName, true, false);
+                            }
                         }
-                    }
-                });
-
-        changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
-
+                    });
+    
+            changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
+        }
 
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
@@ -677,18 +672,23 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     }
                 });
         */
-        menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
-        mi = UIHelper.createMenuItem(menu, getResourceString("ESConfig"), getResourceString("ESConfig_Mn"), getResourceString("ESConfig"), false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
+        
+        if (!isWorkbenchOnly)
+        {
+            menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
+            mi = UIHelper.createMenuItem(menu, getResourceString("ESConfig"), getResourceString("ESConfig_Mn"), getResourceString("ESConfig"), false, null);
+            mi.addActionListener(new ActionListener()
                     {
-                        ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
-                        expressSearchTask.showIndexerPane();
-                    }
-                });
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
+                            expressSearchTask.showIndexerPane();
+                        }
+                    });
+            
+            menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
+        }
 
-        menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
 
         menu = UIHelper.createMenu(mb, "TabsMenu", "TabsMneu");
         /*mi = UIHelper.createMenuItem(menu, "Close Current", "C", "Close C", false, null);
@@ -710,172 +710,88 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 });
         
 
-        menu = UIHelper.createMenu(mb, "DebugMenu", "DebugMneu");
-        mi = UIHelper.createMenuItem(menu, "Show Local Prefs", "L", "Show Local Prefs", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    @SuppressWarnings("synthetic-access")
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        final JDialog dialog = new JDialog(topFrame, "Local Prefs", true);
-                        dialog.setContentPane(new AppPrefsEditor(false));
-                        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                        dialog.pack();
-                        UIHelper.centerAndShow(dialog);
-                    }
-                });
-
-        mi = UIHelper.createMenuItem(menu, "Show Remote Prefs", "R", "Show Remote Prefs", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    @SuppressWarnings("synthetic-access")
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        final JDialog dialog = new JDialog(topFrame, "Remote Prefs", true);
-                        dialog.setContentPane(new AppPrefsEditor(true));
-                        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                        dialog.pack();
-                        UIHelper.centerAndShow(dialog);
-                    }
-                });
-
-        menu.addSeparator();
-        JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Reload Views");
-        menu.add(cbMenuItem);
-        //mi = UIHelper.createMenuItem(menu, "Reload Views", "V", "Reload Views", false, null);
-        cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean("reload_views", false));
-        cbMenuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        boolean isReload = !AppPreferences.getLocalPrefs().getBoolean("reload_views", false);                       
-                        AppPreferences.getLocalPrefs().putBoolean("reload_views", isReload);
-                        ((JMenuItem)ae.getSource()).setSelected(isReload);
-                    }});
-
-        mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    @SuppressWarnings("synthetic-access")
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        final LoggerDialog dialog = new LoggerDialog(topFrame);
-                        UIHelper.centerAndShow(dialog);
-                    }
-                });
-        
-        mi = UIHelper.createMenuItem(menu, "Test App Res", "T", "Test App Res", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    @SuppressWarnings("synthetic-access")
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        testAppRes();
-                    }
-                });
-
-        JMenu prefsMenu = new JMenu("Prefs Import/Export");
-        menu.add(prefsMenu);
-        mi = UIHelper.createMenuItem(prefsMenu, "Import", "I", "Import Prefs", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    @SuppressWarnings("synthetic-access")
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        importPrefs();
-                    }
-                });
-
-        mi = UIHelper.createMenuItem(prefsMenu, "Export", "E", "Export Prefs", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    @SuppressWarnings("synthetic-access")
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        exportPrefs();
-                    }
-                });
-
-         return mb;
-    }
-
-    /**
-     * 
-     *
-     */
-    protected void testAppRes()
-    {
-        Vector<AppResourceIFace> list = new Vector<AppResourceIFace>();
-        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
+        if (!isRelease)
         {
-            list.add(ap);
-        } 
-        ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>(null, "Choose Me", list);
-        dlg.setVisible(true);
-        
-        AppResourceIFace appRes = dlg.getSelectedObject();
-        //System.out.println(appRes.getDataAsString());
-        
-        //AppResource ap = new AppResource();
-        //ap.initialize();
-        
-        AppResource oldAP = (AppResource)appRes;
-        
-        oldAP.setDataAsString(oldAP.getDataAsString());
-        
-        // Add it to be persisted
-        oldAP.getAppResourceDefaults().iterator().next().getPersistedAppResources().add(oldAP);
-        
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-
-            /*ap.setName(oldAP.getName());
-            ap.setFileName(oldAP.getFileName());
-            ap.setDescription(oldAP.getDescription());
-            ap.setDataAsString(oldAP.getDataAsString());
-            ap.setLevel((short)0);
-            
-            ap.setSpecifyUser(oldAP.getSpecifyUser());*/
-            
-            
-            session.beginTransaction();
-            session.saveOrUpdate(oldAP);
-            session.commit();
-            
-            session.flush();
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            
-        } finally 
-        {
-            session.close();
+            menu = UIHelper.createMenu(mb, "DebugMenu", "DebugMneu");
+            mi = UIHelper.createMenuItem(menu, "Show Local Prefs", "L", "Show Local Prefs", false, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access")
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            final JDialog dialog = new JDialog(topFrame, "Local Prefs", true);
+                            dialog.setContentPane(new AppPrefsEditor(false));
+                            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                            dialog.pack();
+                            UIHelper.centerAndShow(dialog);
+                        }
+                    });
+    
+            mi = UIHelper.createMenuItem(menu, "Show Remote Prefs", "R", "Show Remote Prefs", false, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access")
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            final JDialog dialog = new JDialog(topFrame, "Remote Prefs", true);
+                            dialog.setContentPane(new AppPrefsEditor(true));
+                            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                            dialog.pack();
+                            UIHelper.centerAndShow(dialog);
+                        }
+                    });
+    
+            menu.addSeparator();
+            JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Reload Views");
+            menu.add(cbMenuItem);
+            //mi = UIHelper.createMenuItem(menu, "Reload Views", "V", "Reload Views", false, null);
+            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean("reload_views", false));
+            cbMenuItem.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            boolean isReload = !AppPreferences.getLocalPrefs().getBoolean("reload_views", false);                       
+                            AppPreferences.getLocalPrefs().putBoolean("reload_views", isReload);
+                            ((JMenuItem)ae.getSource()).setSelected(isReload);
+                        }});
+    
+            mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", false, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access")
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            final LoggerDialog dialog = new LoggerDialog(topFrame);
+                            UIHelper.centerAndShow(dialog);
+                        }
+                    });
+    
+            JMenu prefsMenu = new JMenu("Prefs Import/Export");
+            menu.add(prefsMenu);
+            mi = UIHelper.createMenuItem(prefsMenu, "Import", "I", "Import Prefs", false, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access")
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            importPrefs();
+                        }
+                    });
+    
+            mi = UIHelper.createMenuItem(prefsMenu, "Export", "E", "Export Prefs", false, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access")
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            exportPrefs();
+                        }
+                    });
         }
-        
-        /*
-        session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            AppResource apNew = (AppResource)session.get(AppResource.class, ((AppResource)oldAP).getAppResourceId());
-            System.out.println(apNew.getDataAsString());
-            System.out.println(apNew.getId());
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            
-        } finally 
-        {
-            session.close();
-        }*/
-        
-        
+        return mb;
     }
 
     /**
-     * Checks to see if cache has changed before exiting
-     *
+     * Checks to see if cache has changed before exiting.
      */
     protected void doAbout()
     {
@@ -902,7 +818,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     }
 
     /**
-     * Checks to see if cache has changed before exiting
+     * Checks to see if cache has changed before exiting.
      *
      */
     protected void doExit()
@@ -1035,7 +951,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
             initStartUpPanels(databaseNameArg, userNameArg);
             
-            changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
+            if (changeCatSeriesBtn != null)
+            {
+                changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
+            }
             
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {

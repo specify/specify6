@@ -71,7 +71,7 @@ public class ContextMgr
      * Request for a change in context.
      * @param task the task requesting the context
      */
-    public static void requestContext(Taskable task)
+    public static void requestContext(final Taskable task)
     {
         if (task != instance.currentContext)
         {
@@ -94,7 +94,7 @@ public class ContextMgr
      * Registers a task.
      * @param task the task to be register
      */
-    public static void register(Taskable task)
+    public static void register(final Taskable task)
     {
         instance.tasks.addElement(task);
     }
@@ -103,7 +103,7 @@ public class ContextMgr
      *  Unregisters a task. Checks to see if it is the current task, if so then it unregisters the NavBoxes
      * @param task the task to be unregistered
      */
-    public static void unregister(Taskable task)
+    public static void unregister(final Taskable task)
     {
         /*if (currentContext == task)
         {
