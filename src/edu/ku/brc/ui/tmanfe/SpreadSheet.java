@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -101,7 +102,7 @@ public class SpreadSheet  extends SearchableJXTable
 
         int numRows = model.getRowCount();
         
-        scrollPane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane = new JScrollPane(this, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         
         // Allows row and collumn selections to exit at the same time
@@ -257,6 +258,7 @@ public class SpreadSheet  extends SearchableJXTable
      * @param EventObject The firing event
      * @return boolean false if for any reason the cell cannot be edited.
      */
+    @Override
     public boolean editCellAt(int row, int column, EventObject ev)
     {
         return mouseDown ? false : super.editCellAt(row, column, ev);
@@ -267,6 +269,7 @@ public class SpreadSheet  extends SearchableJXTable
      * its super class.
      * 
      */
+    @Override
     public void editingStopped(ChangeEvent ev)
     {
         //_model.setDisplayMode(_editedModelRow, _editedModelCol);
@@ -278,6 +281,7 @@ public class SpreadSheet  extends SearchableJXTable
      * that of its super class.
      * 
      */
+    @Override
     public void editingCanceled(ChangeEvent ev)
     {
         //_model.setDisplayMode(_editedModelRow, _editedModelCol);
@@ -348,6 +352,7 @@ public class SpreadSheet  extends SearchableJXTable
     /* (non-Javadoc)
      * @see javax.swing.JComponent#processMouseEvent(java.awt.event.MouseEvent)
      */
+    @Override
     public void processMouseEvent(MouseEvent ev)
     {
         int type = ev.getID();
@@ -384,6 +389,7 @@ public class SpreadSheet  extends SearchableJXTable
     }
 
 
+    @Override
     public void setVisible(boolean flag)
     {
         scrollPane.setVisible(flag);
@@ -410,6 +416,7 @@ public class SpreadSheet  extends SearchableJXTable
     /* (non-Javadoc)
      * @see javax.swing.JTable#getScrollableBlockIncrement(java.awt.Rectangle, int, int)
      */
+    @Override
     public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction)
     {
         if (useRowScrolling)
@@ -428,6 +435,7 @@ public class SpreadSheet  extends SearchableJXTable
     /* (non-Javadoc)
      * @see javax.swing.JTable#getScrollableTracksViewportHeight()
      */
+    @Override
     public boolean getScrollableTracksViewportHeight()
     {
         return useRowScrolling ? false : super.getScrollableTracksViewportHeight();
@@ -436,6 +444,7 @@ public class SpreadSheet  extends SearchableJXTable
     /* (non-Javadoc)
      * @see javax.swing.JTable#getScrollableTracksViewportWidth()
      */
+    @Override
     public boolean getScrollableTracksViewportWidth()
     {
         return useRowScrolling ? false : super.getScrollableTracksViewportWidth();
@@ -444,6 +453,7 @@ public class SpreadSheet  extends SearchableJXTable
     /* (non-Javadoc)
      * @see javax.swing.JTable#getScrollableUnitIncrement(java.awt.Rectangle, int, int)
      */
+    @Override
     public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction)
     {
         if (useRowScrolling)
@@ -465,10 +475,9 @@ public class SpreadSheet  extends SearchableJXTable
             {
                 int newPosition = currentPosition - (currentPosition / getMaxUnitIncrement()) * getMaxUnitIncrement();
                 return (newPosition == 0) ? getMaxUnitIncrement() : newPosition;
-            } else
-            {
-                return ((currentPosition / getMaxUnitIncrement()) + 1) * getMaxUnitIncrement() - currentPosition;
             }
+            // else
+            return ((currentPosition / getMaxUnitIncrement()) + 1) * getMaxUnitIncrement() - currentPosition;
         }
         return super.getScrollableUnitIncrement(visibleRect, orientation, direction);
     }
@@ -495,7 +504,7 @@ public class SpreadSheet  extends SearchableJXTable
             //_dim.height = 22;
             //_dim.width = 100;
             //setSize(_dim);
-        };
+        }
 
         /**
          *
@@ -587,6 +596,7 @@ public class SpreadSheet  extends SearchableJXTable
         /* (non-Javadoc)
          * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
          */
+        @SuppressWarnings("synthetic-access")
         @Override
         public void mousePressed(MouseEvent e) 
         { 
@@ -679,6 +689,7 @@ public class SpreadSheet  extends SearchableJXTable
         /* (non-Javadoc)
          * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
          */
+        @SuppressWarnings("synthetic-access")
         @Override
         public void mouseReleased(MouseEvent e) 
         {
@@ -689,6 +700,7 @@ public class SpreadSheet  extends SearchableJXTable
         /* (non-Javadoc)
          * @see java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
          */
+        @SuppressWarnings("synthetic-access")
         @Override
         public void mouseEntered(MouseEvent e) 
         {
