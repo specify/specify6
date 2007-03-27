@@ -80,25 +80,28 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
      */
     public static ColumnType getType(final Class<?> type)
     {
-        if (type.equals(Integer.class))
+        if (type != null)
         {
-            return ImportColumnInfo.ColumnType.Integer;
-            
-        } else if (type.equals(Float.class))
-        {
-            return ImportColumnInfo.ColumnType.Float;
-            
-        } else if (type.equals(Double.class))
-        {
-            return ImportColumnInfo.ColumnType.Double;
-            
-        } else if (type.equals(Short.class))
-        {
-            return ImportColumnInfo.ColumnType.Short;
-            
-        } else if (type.equals(Calendar.class) || type.equals(Date.class))
-        {
-            return ImportColumnInfo.ColumnType.Date;
+            if (type.equals(Integer.class))
+            {
+                return ImportColumnInfo.ColumnType.Integer;
+                
+            } else if (type.equals(Float.class))
+            {
+                return ImportColumnInfo.ColumnType.Float;
+                
+            } else if (type.equals(Double.class))
+            {
+                return ImportColumnInfo.ColumnType.Double;
+                
+            } else if (type.equals(Short.class))
+            {
+                return ImportColumnInfo.ColumnType.Short;
+                
+            } else if (type.equals(Calendar.class) || type.equals(Date.class))
+            {
+                return ImportColumnInfo.ColumnType.Date;
+            }
         }
         return ImportColumnInfo.ColumnType.String;
     }
