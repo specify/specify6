@@ -37,7 +37,7 @@ import edu.ku.brc.ui.IconManager;
  */
 public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
-    private static final Logger log = Logger.getLogger(TaxonTreeTask.class);
+    //private static final Logger log = Logger.getLogger(TaxonTreeTask.class);
 	public static final String TAXON = "TaxonTree";
 	
 	public TaxonTreeTask()

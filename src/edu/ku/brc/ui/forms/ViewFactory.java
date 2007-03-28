@@ -777,8 +777,6 @@ public class ViewFactory
                     } else
                     {
                         JLabel lbl = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", SwingConstants.RIGHT);
-                        
-                        //lbl.setFont(boldLabelFont);
                         labelsForHash.put(cellLabel.getLabelFor(), lbl);
                         compToAdd      =  lbl;
                         viewBldObj.addLabel(cellLabel, lbl);

@@ -35,6 +35,8 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
@@ -336,8 +338,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         mainPanel.setBackground(Color.WHITE);
 
-        SubPaneMgr.getInstance().removeAllPanes();
-        
         JToolBar toolBar = (JToolBar)UICacheManager.get(UICacheManager.TOOLBAR);
         if (toolBar != null && toolBar.getComponentCount() < 2)
         {
@@ -701,15 +701,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     }
                 });*/
 
-        mi = UIHelper.createMenuItem(menu, "Close All", "A", "Close All", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        SubPaneMgr.getInstance().closeAll();
-                    }
-                });
-        
+        Action closeAll = new AbstractAction() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SubPaneMgr.getInstance().closeAll();
+            }
+        };
+        mi = UIHelper.createMenuItemWithAction(menu, "Close All", "A", "Close All", false, closeAll);
+        UICacheManager.registerAction("CloseAll", closeAll);
 
         if (!isRelease)
         {

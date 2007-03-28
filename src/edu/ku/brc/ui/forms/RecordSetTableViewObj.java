@@ -172,7 +172,7 @@ public class RecordSetTableViewObj extends TableViewObj
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
             
             DBTableIdMgr.getInClause(recordSet);
-            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
+            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
@@ -181,7 +181,7 @@ public class RecordSetTableViewObj extends TableViewObj
                 tempSession = DataProviderFactory.getInstance().createSession();
             }
             
-            String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+            String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
                 dataObjList.addAll(tempSession.getDataList(sqlStr));
@@ -219,7 +219,7 @@ public class RecordSetTableViewObj extends TableViewObj
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
             
             DBTableIdMgr.getInClause(recordSet);
-            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
+            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
@@ -228,7 +228,7 @@ public class RecordSetTableViewObj extends TableViewObj
                 tempSession = DataProviderFactory.getInstance().createSession();
             }
             
-            String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+            String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
                 dataObjList.addAll(tempSession.getDataList(sqlStr));

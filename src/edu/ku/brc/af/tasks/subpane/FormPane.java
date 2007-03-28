@@ -208,7 +208,7 @@ public class FormPane extends DroppableTaskPane
                 DroppableFormObject dfo = (DroppableFormObject)srcData;
                 
                 createForm(dfo.getViewSetName(), 
-                           DBTableIdMgr.getDefaultFormNameById(dfo.getFormId()), 
+                           DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), 
                            AltView.CreationMode.View, 
                            dfo.getData(), 
                            MultiView.VIEW_SWITCHER);

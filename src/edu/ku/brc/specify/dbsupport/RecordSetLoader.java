@@ -15,7 +15,7 @@ public class RecordSetLoader
 {
 	public static List<Object> loadRecordSet(RecordSetIFace recordSet)
 	{
-		TableInfo tableInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
+		TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
 		Class<?> recordClass = tableInfo.getClassObj();
 		DataProviderIFace dataProvider = DataProviderFactory.getInstance();
 		DataProviderSessionIFace session = dataProvider.createSession();

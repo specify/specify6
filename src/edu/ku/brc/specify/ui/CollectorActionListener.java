@@ -70,7 +70,7 @@ public class CollectorActionListener implements ActionListener
 
         // if we use agent.getClass().getName() it might fail if the agent object is a Hibernate-generated proxy, which is common
         String classname = Agent.class.getName();
-        TableInfo setTI = DBTableIdMgr.getByClassName(classname);
+        TableInfo setTI = DBTableIdMgr.getInstance().getByClassName(classname);
         String defFormName = setTI.getEditObjDialog();
         if (defFormName==null)
         {

@@ -23,11 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.beanutils.PropertyUtils;
-
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
-
 /**
  * Items are sorted by ViewOrder
  */
@@ -222,39 +217,6 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setOrigImportColumnIndex(Short dataColumnIndex)
     {
         this.origImportColumnIndex = dataColumnIndex;
-    }
-
-    /**
-     * Returns the class of the DB field target of this mapping.
-     * 
-     * @return a {@link Class} object representing the DB target field of this mapping.
-     */
-    @Transient
-    public Class<?> getDataType()
-    {
-        // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
-        if (this.srcTableId == null)
-        {
-            return String.class;
-        }
-        
-        TableInfo tableInfo = DBTableIdMgr.getInfoById(this.srcTableId);
-        if (tableInfo == null)
-        {
-            throw new RuntimeException("Cannot find TableInfo in DBTableIdMgr for ID=" + this.srcTableId);
-        }
-        
-        Class<?> dbClass = tableInfo.getClassObj();
-        try
-        {
-            Object newDbObject = dbClass.newInstance();
-            Class<?> fieldType = PropertyUtils.getPropertyType(newDbObject, this.getFieldName());
-            return fieldType;
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Could not instantiate a DB object of class " + dbClass.getCanonicalName());
-        }
     }
 
     /**

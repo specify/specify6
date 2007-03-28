@@ -142,13 +142,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected SearchReplacePanel    findPanel=null;
     protected SpreadSheet           spreadSheet;
     protected Workbench             workbench;
+    protected GridTableModel        model;
     protected String[]              columns;
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     protected boolean               hasChanged      = false;
     protected boolean               blockChanges    = false;
     protected RecordSet             recordSet       = null;
-    
-    protected GridTableModel        model;
     
     protected JButton               saveBtn         = null;
     protected JButton               deleteRowsBtn   = null;
@@ -764,10 +763,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         }
         
+        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
         // build up a list of temporary Locality records to feed to the LocalityMapper
         List<Locality> fakeLocalityRecords = new Vector<Locality>(selection.length);
         List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
-        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
+        int localityTableId = databaseSchema.getIdByClassName(Locality.class.getName());
         int lat1Index = workbench.getColumnIndex(localityTableId, "latitude1");
         int lon1Index = workbench.getColumnIndex(localityTableId, "longitude1");
         int lat2Index = workbench.getColumnIndex(localityTableId, "latitude2");
@@ -1064,12 +1064,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         
         WorkbenchRow selectedRow = workbench.getWorkbenchRowsAsList().get(selection);
-        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
+        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         int localityNameColIndex = workbench.getColumnIndex(localityTableId, "localityName");
         String localityNameStr = selectedRow.getData(localityNameColIndex);
                 
         // get the geography data
-        int geographyTableId = DBTableIdMgr.getIdByClassName(Geography.class.getName());
+        int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
         int countryColIndex = workbench.getColumnIndex(geographyTableId, "Country");
         int stateColIndex = workbench.getColumnIndex(geographyTableId, "State");
         int countyColIndex = workbench.getColumnIndex(geographyTableId, "County");

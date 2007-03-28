@@ -452,7 +452,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected FormPane createFormPanel(NavBoxButton nbb)
     {
         DroppableFormObject dfo = (DroppableFormObject)nbb.getData();
-        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.getDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
+        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
     }
 
     /**

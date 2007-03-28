@@ -107,7 +107,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     {
         super(parent, getResourceString("AgentSearchTitle"), true);
         lucenePath = ExpressSearchTask.getIndexDirPath();
-        tableId    = DBTableIdMgr.getIdByShortName("agent");
+        tableId    = DBTableIdMgr.getInstance().getIdByShortName("agent");
 
         String[] mappings = {"lastName", "lastname", "firstName", "firstname"};
         for (int i=0;i<mappings.length;i++)

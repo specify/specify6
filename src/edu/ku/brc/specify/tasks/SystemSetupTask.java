@@ -325,7 +325,7 @@ public class SystemSetupTask extends BaseTask
     protected void addPickList(final String titleArg, final PickList pickList, final String delCmd, final int position)
     {/*
         // These value should not be hard coded here
-        int                 pickListTableId = DBTableIdMgr.lookupIdByShortName("picklist");
+        int                 pickListTableId = DBTableIdMgr.getInstance().lookupIdByShortName("picklist");
         DroppableFormObject dfo = new DroppableFormObject(SYSTEMSETUPTASK, pickListTableId, pickList);
         NavBoxItemIFace     nbi = addNavBoxItem(navBox, titleArg, SYSTEMSETUPTASK, delCmd, dfo, position);
         NavBoxButton     roc = (NavBoxButton)nbi;
@@ -341,7 +341,7 @@ public class SystemSetupTask extends BaseTask
                 {
                     PickList pickList = new PickList();
                     pickList.initialize();
-                    formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), null, pickList);
+                    formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.getInstance().lookupDefaultFormNameById(dfo.getFormId()), null, pickList);
 
                 } else
                 {
@@ -557,7 +557,7 @@ public class SystemSetupTask extends BaseTask
 
                 savePickList(pickList);
 
-                String viewName = DBTableIdMgr.getDefaultFormNameById(DBTableIdMgr.getIdByShortName("picklist"));
+                String viewName = DBTableIdMgr.getInstance().getDefaultFormNameById(DBTableIdMgr.getInstance().getIdByShortName("picklist"));
                 removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
 
             } else if (cmdAction.isAction("DeletePickList"))
@@ -567,7 +567,7 @@ public class SystemSetupTask extends BaseTask
 
                 if (recentFormPane != null && recentFormPane.getData() != null)
                 {
-                    String viewName = DBTableIdMgr.getDefaultFormNameById(DBTableIdMgr.getIdByShortName("picklist"));
+                    String viewName = DBTableIdMgr.getInstance().getDefaultFormNameById(DBTableIdMgr.getInstance().getIdByShortName("picklist"));
                     removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
                 }
 

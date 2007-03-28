@@ -707,7 +707,7 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            TableInfo parentTI = DBTableIdMgr.getByClassName(parentDataObj.getClass().getName());
+            TableInfo parentTI = DBTableIdMgr.getInstance().getByClassName(parentDataObj.getClass().getName());
             TableRelationship rel = parentTI.getRelationshipByName(cellName);
             this.dataClassName = rel.getClassName();
         }

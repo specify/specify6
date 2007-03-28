@@ -774,7 +774,7 @@ public class UICacheManager
     {
         int    fontSize    = baseFontArg.getSize();
         int    oldFontSize = oldBaseFont.getSize();
-        String family   = baseFontArg.getFamily();
+        String family      = baseFontArg.getFamily();
         
         UIDefaults uiDefaults = UIManager.getDefaults();
         Enumeration<Object> e = uiDefaults.keys();

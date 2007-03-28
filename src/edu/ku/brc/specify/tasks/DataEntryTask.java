@@ -240,10 +240,10 @@ public class DataEntryTask extends BaseTask
      */
     public static void openView(final Taskable task, final View view, final String mode, final String idStr)
     {
-        int tableId = DBTableIdMgr.getIdByClassName(view.getClassName());
+        int tableId = DBTableIdMgr.getInstance().getIdByClassName(view.getClassName());
 
         
-        String sqlStr = DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
+        String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(tableId, Integer.parseInt(idStr));
         if (StringUtils.isNotEmpty(sqlStr))
         {
             try
@@ -297,7 +297,7 @@ public class DataEntryTask extends BaseTask
         SubPaneIFace subPane = SubPaneMgr.getSubPaneWithRecordSet(recordSet);
         if (subPane == null)
         {
-            String defaultFormName = DBTableIdMgr.getDefaultFormNameById(recordSet.getDbTableId());
+            String defaultFormName = DBTableIdMgr.getInstance().getDefaultFormNameById(recordSet.getDbTableId());
 
             if (StringUtils.isNotEmpty(defaultFormName))
             {
@@ -367,7 +367,7 @@ public class DataEntryTask extends BaseTask
                         View view = appContextMgr.getView(viewsetName, viewName);
                         if (view != null)
                         {
-                            DBTableIdMgr.TableInfo ti = DBTableIdMgr.getByClassName(view.getClassName());
+                            DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                             if (ti != null)
                             {
                                 CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);

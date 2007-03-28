@@ -56,6 +56,7 @@ public class MainFrameSpecify extends MainFrame
     /**
      * @return default map for specify iReport implementation
      */
+    @SuppressWarnings("unchecked")
     public static Map getArgs()
     {
         Map map = new HashMap();

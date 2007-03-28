@@ -104,7 +104,7 @@ public class TypeSearchForQueryFactory
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
-            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(typeSearchInfo.getTableId());
+            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
     
@@ -156,7 +156,7 @@ public class TypeSearchForQueryFactory
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
-            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(typeSearchInfo.getTableId());
+            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
                 return new ValComboBoxFromQuery(tblInfo.getTableName(),

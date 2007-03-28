@@ -525,7 +525,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         // see if lat/lon fields exist
         boolean hasLat1 = false;
         boolean hasLon1 = false;
-        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
+        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         for( WorkbenchTemplateMappingItem item: mappingItems )
         {
             int dataTableId = item.getSrcTableId();
@@ -558,7 +558,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         WorkbenchTemplate template = getWorkbenchTemplate();
         Set<WorkbenchTemplateMappingItem> mappingItems = template.getWorkbenchTemplateMappingItems();
 
-        int localityTableId = DBTableIdMgr.getIdByClassName(Locality.class.getName());
+        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         for( WorkbenchTemplateMappingItem item: mappingItems )
         {
             int dataTableId = item.getSrcTableId();

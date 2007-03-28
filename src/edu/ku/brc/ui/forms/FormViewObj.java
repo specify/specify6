@@ -1555,7 +1555,7 @@ public class FormViewObj implements Viewable,
     {
         recordSetItemList = new Vector<RecordSetItemIFace>(recordSet.getItems());
         
-        tableInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
+        tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         // XXX Check for Error here
         
         Object       firstDataObj = getDataObjectViaRecordSet(0);

@@ -53,6 +53,7 @@
     <icon name="Address"       file="address.png" sizes="all"/>
     <icon name="ReferenceWork" file="referencework.png" sizes="all"/>
     <icon name="Author"        file="author.png" sizes="all"/>
+    <icon name="GeologicTimePeriod" file="geologictime.png" sizes="all"/>
     <icon name="Template"      file="template.png" sizes="all"/>
     
     <!-- Aliases -->
@@ -72,6 +73,7 @@
     <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
     <icon name="CardImage"		   alias="image"/>
     <icon name="ShowMap"		   alias="LocalityMapper"/>
+    <icon name="RepositoryAgreement" alias="Accession"/>
     
     <icon name="DiGIR"             file="DigirShovel.png"/>
     

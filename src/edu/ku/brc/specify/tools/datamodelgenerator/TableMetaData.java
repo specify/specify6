@@ -24,14 +24,12 @@ public class TableMetaData
 	public TableMetaData(final String  id, 
                          final String  className, 
                          final Display display, 
-                         final boolean isForWorkBench,
                          final boolean isForQuery,
                          final String businessRule)
 	{
 		this.id             = id;
         this.className      = className;
         this.display        = display;
-        this.isForWorkBench = isForWorkBench;
         this.isForQuery     = isForQuery;
         this.businessRule   = businessRule;
 	}

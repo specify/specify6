@@ -249,7 +249,7 @@ public class View implements Comparable<View>
                 }
             } else
             {
-                businessRule = DBTableIdMgr.getBusinessRule(className);
+                businessRule = DBTableIdMgr.getInstance().getBusinessRule(className);
             }
         }
         

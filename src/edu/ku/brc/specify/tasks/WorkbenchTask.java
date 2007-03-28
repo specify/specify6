@@ -23,9 +23,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -65,12 +67,14 @@ import edu.ku.brc.af.tasks.subpane.ChartPane;
 import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.af.tasks.subpane.PieChartPane;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -124,7 +128,9 @@ public class WorkbenchTask extends BaseTask
     public static final String     EXPORT_DATA_FILE      = "Export Data";
     public static final String     EXPORT_TEMPLATE       = "ExportTemplate";
     
-    
+    protected static WeakReference<DBTableIdMgr> databasechema = null;
+
+    // Data Members
     protected NavBox                      templateNavBox;
     protected NavBox                      workbenchNavBox;
     protected Vector<ToolBarDropDownBtn>  tbList         = new Vector<ToolBarDropDownBtn>();
@@ -134,6 +140,7 @@ public class WorkbenchTask extends BaseTask
     protected Vector<NavBoxItemIFace>     enableNavBoxList = new Vector<NavBoxItemIFace>();
     
     protected WorkbenchTemplate           selectedTemplate = null; // Transient set by selectExistingTemplate
+
 
 	/**
 	 * Constructor. 
@@ -249,6 +256,30 @@ public class WorkbenchTask extends BaseTask
         }
     }
     
+    
+    /**
+     * Reads in the disciplines file (is loaded when the class is loaded).
+     * @return Reads in the disciplines file (is loaded when the class is loaded).
+     */
+    public static DBTableIdMgr getDatabaseSchema()
+    {
+        DBTableIdMgr schema = null;
+        
+        if (schema != null)
+        {
+            schema = databasechema.get();
+        }
+        
+        if (schema == null)
+        {
+            schema = new DBTableIdMgr(false);
+            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+            databasechema = new WeakReference<DBTableIdMgr>(schema);
+        }
+        
+        return databasechema.get();
+    }
+    
     /**
      * Adds a WorkbenchTemplate to the Left Pane NavBox.
      * @param workbenchTemplate the template to be added
@@ -299,9 +330,11 @@ public class WorkbenchTask extends BaseTask
     
     /**
      * Finds the Rollover command that represents the item that has the passed in Record id and
-     * it is checking the CmmandAction's attr by name for the RecordSet
-     * @param workbench
-     * @return
+     * it is checking the CmmandAction's attr by name for the RecordSet.
+     * @param navBox the nav box of items
+     * @param recordId the rcordid to search for
+     * @param cmdAttrName the attr name to use when checking CommandActions
+     * @return the rollover command that matches
      */
     protected RolloverCommand getNavBtnById(final NavBox navBox, final Long recordId, final String cmdAttrName)
     {
@@ -614,7 +647,7 @@ public class WorkbenchTask extends BaseTask
                         ImportColumnInfo             fileItem = colInfo.get(i);
                         if (wbItem.getViewOrder().shortValue() == fileItem.getColInx().shortValue())
                         {
-                            if (ImportColumnInfo.getType(wbItem.getDataType()) == ImportColumnInfo.ColumnType.Date)
+                            if (ImportColumnInfo.getType(getDataType(wbItem)) == ImportColumnInfo.ColumnType.Date)
                             {
                                 ImportColumnInfo.ColumnType colType = fileItem.getColType();
                                 if (colType != ImportColumnInfo.ColumnType.String && colType != ImportColumnInfo.ColumnType.Double)
@@ -622,7 +655,7 @@ public class WorkbenchTask extends BaseTask
                                     match = false;
                                     break;
                                 }
-                            } else if (ImportColumnInfo.getType(wbItem.getDataType()) != fileItem.getColType())
+                            } else if (ImportColumnInfo.getType(getDataType(wbItem)) != fileItem.getColType())
                             {
                                 match = false;
                                 break;
@@ -1907,9 +1940,62 @@ public class WorkbenchTask extends BaseTask
                 createWorkbench(null, workbenchTemplate, true);
                 break;
         }
-
     }
     
+    /**
+     * Returns the class of the DB field target of this mapping.
+     * 
+     * @return a {@link Class} object representing the DB target field of this mapping.
+     */
+    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi)
+    {
+        // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
+        if (wbtmi.getSrcTableId() == null)
+        {
+            return String.class;
+        }
+        
+        DBTableIdMgr schema = getDatabaseSchema();
+        TableInfo tableInfo = schema.getInfoById(wbtmi.getSrcTableId());
+        if (tableInfo == null)
+        {
+            throw new RuntimeException("Cannot find TableInfo in DBTableIdMgr for ID=" + wbtmi.getSrcTableId());
+        }
+        
+        for (DBTableIdMgr.FieldInfo fi : tableInfo.getFields())
+        {
+            if (fi.getName().equals(wbtmi.getFieldName()))
+            {
+                String type = fi.getType();
+                if (StringUtils.isNotEmpty(type))
+                {
+                    if (type.equals("calendar_date"))
+                    {
+                        return Calendar.class;
+                        
+                    } else if (type.equals("text"))
+                    {
+                        return String.class;
+                        
+                    } else
+                    {
+                        try
+                        {
+                            return Class.forName(type);
+                            
+                        } catch (Exception e)
+                        {
+                            log.error(e);
+                        }
+                    }
+                }
+            }
+        }
+
+        throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
+    }
+
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------

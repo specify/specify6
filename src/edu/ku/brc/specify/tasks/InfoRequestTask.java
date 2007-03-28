@@ -245,7 +245,7 @@ public class InfoRequestTask extends BaseTask
      */
     public static void createInfoRequest(final RecordSetIFace recordSet)
     {
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getByShortClassName(InfoRequest.class.getSimpleName());
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         

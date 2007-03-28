@@ -629,12 +629,12 @@ public final class UIHelper
      * @param action the aciton
      * @return menu item
      */
-    public static JMenuItem createMenuItem(final JMenu          menu,
-                                           final String         label,
-                                           final String         mnemonic,
-                                           final String         accessibleDescription,
-                                           final boolean        enabled,
-                                           final AbstractAction action)
+    public static JMenuItem createMenuItemWithAction(final JMenu   menu,
+                                                     final String  label,
+                                                     final String  mnemonic,
+                                                     final String  accessibleDescription,
+                                                     final boolean enabled,
+                                                     final Action  action)
     {
         JMenuItem mi = new JMenuItem(label);
         if (menu != null)
@@ -1269,7 +1269,7 @@ public final class UIHelper
                                                                 final boolean          isEditMode,
                                                                 final boolean          isNewObject)
     {
-        TableInfo setTI = DBTableIdMgr.getByClassName(dataObj.getClass().getName());
+        TableInfo setTI = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
         String defFormName = setTI.getEditObjDialog();
 
         if (StringUtils.isNotEmpty(defFormName))

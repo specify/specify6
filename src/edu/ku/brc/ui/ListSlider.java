@@ -70,7 +70,8 @@ public class ListSlider extends JPanel
     private Dimension           minimumListSize = new Dimension(50,50);
     private Dimension           maximumListSize = new Dimension(500,500);
     private boolean             isGrowableList = true;
-private DefaultListCellRenderer cellRenderer = null;
+    private DefaultListCellRenderer cellRenderer = null;
+    
     /**
      * Constructor
      */

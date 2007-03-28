@@ -113,7 +113,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
 
             if (recordSets.size() > 0)
             {
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSets.get(0).getDbTableId());
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSets.get(0).getDbTableId());
                 if (tblInfo != null)
                 {
                     ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);

@@ -56,25 +56,20 @@ public class DBTableIdMgr
     
     // Static Data Members
 	protected static final Logger log = Logger.getLogger(DBTableIdMgr.class);
-    private static final DBTableIdMgr instance;
-	//private static String datamodelFilename = XMLHelper.getConfigDirPath("specify_datamodel.xml");
+    
+    protected static  DBTableIdMgr instance = null;
     
     // Data Members
-	Hashtable<Integer, TableInfo> hash = new Hashtable<Integer, TableInfo>();
+    protected Hashtable<Integer, TableInfo> hash = new Hashtable<Integer, TableInfo>();
+    protected boolean                       isFullSchema = true;
 
-	static
-	{
-		instance = new DBTableIdMgr();
-		instance.initialize();
-	}
-
-	/**
-	 * Protected Constructor for Singleton
-	 */
-	protected DBTableIdMgr()
-	{
-        // do nothing
-	}
+    /**
+     * Can now be created as a standalone class to read in other types of Schema Definitions (i.e. Workbench Schema).
+     */
+    public DBTableIdMgr(final boolean isFullSchema)
+    {
+        this.isFullSchema = isFullSchema;
+    }
     
     /**
      * Returns the singleton.
@@ -82,21 +77,34 @@ public class DBTableIdMgr
      */
     public static DBTableIdMgr getInstance()
     {
+        if (instance == null)
+        {
+            instance = new DBTableIdMgr(true);
+            instance.initialize();
+        }
         return instance;
     }
 
-	/**
-	 * Reads in datamodel input file and populates the hashtable of teh
-	 * DBTableMgr with TableInfo
-	 */
-	protected void initialize()
-	{
-		log.debug("Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath()+ " to create and populate DBTableMgr");
+    /**
+     * Reads in datamodel input file and populates the hashtable of teh
+     * DBTableMgr with TableInfo
+     */
+    protected void initialize()
+    {
+        initialize(new File(DatamodelHelper.getDatamodelFilePath()));
+    }
+
+    /**
+     * Reads in datamodel input file and populates the hashtable of teh
+     * DBTableMgr with TableInfo
+     */
+    public void initialize(final File inputFile)
+    {
+		log.debug("Reading in datamodel file: " + inputFile.getAbsolutePath() + " to create and populate DBTableMgr");
 		String classname = null;
 		try
 		{
-			File            datamodelFile   = new File(DatamodelHelper.getDatamodelFilePath());
-			FileInputStream fileInputStream = new FileInputStream(datamodelFile);
+			FileInputStream fileInputStream = new FileInputStream(inputFile);
 			SAXReader       reader          = new SAXReader();
 			reader.setValidation(false);
             
@@ -112,7 +120,6 @@ public class DBTableIdMgr
                     
 					String  tablename      = tableNode.attributeValue("table");
 					int     tableId        = Integer.parseInt(tableNode.attributeValue("tableid"));
-                    boolean isWorkbench    = XMLHelper.getAttr(tableNode, "workbench", false);
                     boolean isQuery        = XMLHelper.getAttr(tableNode, "query", false);
 
 					String primaryKeyField = null;
@@ -132,18 +139,17 @@ public class DBTableIdMgr
                     {
 						log.error("tablename is null; check input file");
                     }
-					if (primaryKeyField == null)
+					if (isFullSchema && primaryKeyField == null)
                     {
-						log.error("primaryKeyField is null; check input file");
+						log.error("primaryKeyField is null; check input file table["+tablename+"]");
                     }
 					//log.debug("Populating hashtable for class: " + classname);
                     
                     TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
-                    tblInfo.setForWorkBench(isWorkbench);
                     tblInfo.setForQuery(isQuery);
                     tblInfo.setBusinessRule(XMLHelper.getAttr(tableNode, "businessrule", null));
                     
-					instance.hash.put(tableId, tblInfo); 
+					hash.put(tableId, tblInfo); 
                     
                     Element idElement = (Element)tableNode.selectSingleNode("id");
                     if (idElement != null)
@@ -220,6 +226,18 @@ public class DBTableIdMgr
 	}
     
     /**
+     * Cleanups internal state.
+     */
+    public void cleanUp()
+    {
+        for (TableInfo ti : hash.values())
+        {
+            ti.cleanUp();
+        }
+        hash.clear();
+    }
+    
+    /**
      * Helper to create a FieldInfo Object.
      * @param tableInfo TableInfo Object (owner)
      * @param column the column name
@@ -228,18 +246,18 @@ public class DBTableIdMgr
      * @param length the length of the field
      * @return the FieldInfo object
      */
-    public static FieldInfo createFieldInfo(TableInfo tableInfo, String column, String name, String type, int length)
+    public FieldInfo createFieldInfo(TableInfo tableInfo, String column, String name, String type, int length)
     {
-        return instance.new FieldInfo(tableInfo, column, name, type, length);
+        return new FieldInfo(tableInfo, column, name, type, length);
     }
     
     /**
      * Returns the full collection of Tables. 
      * @return a collection of TableInfo objects
      */
-    public static Collection<TableInfo> getList()
+    public Collection<TableInfo> getList()
     {
-        return instance.hash.values();
+        return hash.values();
     }
 
 	/**
@@ -247,10 +265,10 @@ public class DBTableIdMgr
 	 * @param id the ID of a table
 	 * @return the default form name
 	 */
-	public static String getDefaultFormNameById(final int id)
+	public String getDefaultFormNameById(final int id)
 	{
 		// for now the default name will
-		TableInfo tableInfo = instance.hash.get(id);
+		TableInfo tableInfo = hash.get(id);
 		if (tableInfo != null)
 		{
 			return tableInfo.getDefaultFormName();
@@ -264,9 +282,9 @@ public class DBTableIdMgr
 	 * @param name the name
 	 * @return the id of the table
 	 */
-	public static int getIdByShortName(final String name)
+	public int getIdByShortName(final String name)
 	{
-		for (TableInfo tableInfo : instance.hash.values())
+		for (TableInfo tableInfo : hash.values())
 		{
 			String tableName = tableInfo.getTableName();
 			int inx = tableName.lastIndexOf('.');
@@ -287,9 +305,9 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public static int getIdByClassName(final String className)
+    public int getIdByClassName(final String className)
     {
-        for (TableInfo tableInfo : instance.hash.values())
+        for (TableInfo tableInfo : hash.values())
         {
             if (tableInfo.getClassName().equalsIgnoreCase(className))
             {
@@ -306,9 +324,9 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public static TableInfo getByClassName(final String className)
+    public TableInfo getByClassName(final String className)
     {
-        for (TableInfo tableInfo : instance.hash.values())
+        for (TableInfo tableInfo : hash.values())
         {
             if (tableInfo.getClassName().equalsIgnoreCase(className))
             {
@@ -324,9 +342,9 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public static TableInfo getByShortClassName(final String shortClassName)
+    public TableInfo getByShortClassName(final String shortClassName)
     {
-        for (TableInfo tableInfo : instance.hash.values())
+        for (TableInfo tableInfo : hash.values())
         {
             if (tableInfo.getShortClassName().equalsIgnoreCase(shortClassName))
             {
@@ -341,9 +359,9 @@ public class DBTableIdMgr
      * @param tableId the id to look up
      * @return the table info object
      */
-    public static TableInfo getInfoById(final int tableId)
+    public TableInfo getInfoById(final int tableId)
     {
-        return instance.hash.get(tableId);
+        return hash.get(tableId);
     }
 
 	/**
@@ -351,9 +369,9 @@ public class DBTableIdMgr
     * @param recordSet the recordset containing the record ids
 	 * @return a query object
 	 */
-	public static String getQueryForTable(final RecordSetIFace recordSet)
+	public String getQueryForTable(final RecordSetIFace recordSet)
 	{
-		TableInfo tableInfo = instance.hash.get(recordSet.getDbTableId());
+		TableInfo tableInfo = hash.get(recordSet.getDbTableId());
 		if (tableInfo != null)
 		{
 			StringBuffer strBuf = new StringBuffer("from ");
@@ -376,9 +394,9 @@ public class DBTableIdMgr
 	 * @param recordId a single Record Id
 	 * @return a query object
 	 */
-	public static String getQueryForTable(final int tableId, final long recordId)
+	public String getQueryForTable(final int tableId, final long recordId)
 	{
-		TableInfo tableInfo = instance.hash.get(tableId);
+		TableInfo tableInfo = hash.get(tableId);
 		if (tableInfo != null)
 		{
             StringBuffer strBuf = new StringBuffer("from ");
@@ -461,7 +479,7 @@ public class DBTableIdMgr
      * @param data the data that might have a business rule class
      * @return the business rule object or null
      */
-    public static BusinessRulesIFace getBusinessRule(Object data)
+    public BusinessRulesIFace getBusinessRule(Object data)
     {
         if (data != null)
         {
@@ -475,7 +493,7 @@ public class DBTableIdMgr
      * @param classOfObj the class to look up
      * @return the business rule object or null
      */
-    public static BusinessRulesIFace getBusinessRule(String className)
+    public BusinessRulesIFace getBusinessRule(String className)
     {
         try
         {
@@ -493,7 +511,7 @@ public class DBTableIdMgr
      * @param classOfObj the class to look up
      * @return the business rule object or null
      */
-    public static BusinessRulesIFace getBusinessRule(Class classOfObj)
+    public BusinessRulesIFace getBusinessRule(Class classOfObj)
     {
         TableInfo ti = getByClassName(classOfObj.getName());
         if (ti != null)
@@ -525,7 +543,6 @@ public class DBTableIdMgr
 		protected String   tableName;
 		protected String   primaryKeyName;
 		protected Class<?> classObj;
-        protected boolean  isForWorkBench   = false;
         protected boolean  isForQuery       = false;
         protected String   businessRule;
         
@@ -567,6 +584,12 @@ public class DBTableIdMgr
             relationships = new HashSet<TableRelationship>();
             fields        = new Vector<FieldInfo>();
 		}
+        
+        public void cleanUp()
+        {
+            relationships.clear();
+            fields.clear();
+        }
 
 		public String getShortClassName()
 		{
@@ -703,16 +726,6 @@ public class DBTableIdMgr
         public void setIdType(String idType)
         {
             this.idType = idType;
-        }
-
-        public boolean isForWorkBench()
-        {
-            return isForWorkBench;
-        }
-
-        public void setForWorkBench(boolean isForWorkBench)
-        {
-            this.isForWorkBench = isForWorkBench;
         }
 
         public boolean isForQuery()
@@ -884,12 +897,4 @@ public class DBTableIdMgr
             return name.compareTo(obj.name);
         }
     }
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
-		@SuppressWarnings("unused") DBTableIdMgr manager;
-	}
 }

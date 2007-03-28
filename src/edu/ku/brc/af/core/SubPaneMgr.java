@@ -20,7 +20,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
+import javax.swing.Action;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -29,6 +31,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Manages all the SubPanes that are in the main Tabbed pane. It notifies listeners when SubPanes are added, removed or Shown.
@@ -123,8 +126,22 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         notifyListeners(NotificationType.Added, pane);
 
         this.setSelectedIndex(getTabCount()-1);
+        
+        adjustCloseAllMenu();
 
         return pane;
+    }
+    
+    /**
+     * Enables the Close All action as to whether there state is right in the UI. 
+     */
+    protected void adjustCloseAllMenu()
+    {
+        Action closeAll = UICacheManager.getAction("CloseAll");
+        if (closeAll != null)
+        {
+            closeAll.setEnabled(panes.size() > 1  || TaskMgr.getVisibleTaskCount() > 1);
+        }
     }
     
     /**
@@ -181,46 +198,35 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
 
     /**
-     * Removes a pane and calls shutdown on it.
+     * Asks the pane if it can be closed via a call to aboutToShutdown and it it returns true
+     * then the pane is closed and removed.
      * @param pane the pane to be removed
-     * @return the same pane as the one removed
+     * @return true if the pane was removed false if the user decided it shouldn't via a call to aboutToShutdown.
      */
-    public SubPaneIFace removePane(final SubPaneIFace pane)
+    public boolean removePane(final SubPaneIFace pane)
     {
         if (currentPane == pane)
         {
             pane.showingPane(false);
             currentPane = null;
         }
+        
+        if (!pane.aboutToShutdown())
+        {
+            return false;
+        }
+        
         notifyListeners(NotificationType.Removed, pane);
+        
         this.remove(pane.getUIComponent());
+        
         panes.remove(pane.getName());
+        
         pane.shutdown();
-        return pane;
-    }
-
-    /**
-     * Remove all the SubPanes
-     */
-    public void removeAllPanes()
-    {
-        // Move all the elements to a List so the iterator on the Hashtable works correctly
-        List<SubPaneIFace> list = new ArrayList<SubPaneIFace>(panes.size());
-        for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
-        {
-            list.add(e.nextElement());
-        }
         
-        for (SubPaneIFace sp : list)
-        {
-            removePane(sp);
-        }
-
-        list.clear(); // not really necessary
+        adjustCloseAllMenu();
         
-        // Make Sure
-        removeAll();
-        panes.clear();
+        return true;
     }
     
     /**
@@ -230,9 +236,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public static void replaceSimplePaneForTask(final SubPaneIFace subPane)
     {
-        for (Enumeration<SubPaneIFace> e=instance.panes.elements();e.hasMoreElements();)
+        for (SubPaneIFace sp : instance.panes.values())
         {
-            SubPaneIFace sp = e.nextElement();
             if (sp.getTask() == subPane.getTask() && sp.getUIComponent() instanceof SimpleDescPane)
             {
                 instance.replacePane(sp, subPane);
@@ -252,9 +257,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         SubPaneIFace subPane = null;
         if (rs != null)
         {
-            for (Enumeration<SubPaneIFace> e=instance.panes.elements();e.hasMoreElements();)
+            for (SubPaneIFace sp : instance.panes.values())
             {
-                SubPaneIFace sp = e.nextElement();
                 RecordSetIFace sprs = sp.getRecordSet();
                 if (sprs == rs || 
                    (sprs != null && sprs.getRecordSetId() != null && 
@@ -284,12 +288,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     {
         // Move all the elements to a List so the iterator on the Hashtable works correctly
         // if the a SubPane wants to remove itself
-        List<SubPaneIFace> list = new ArrayList<SubPaneIFace>(panes.size());
-        for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
-        {
-            list.add(e.nextElement());
-        }
-        
+        List<SubPaneIFace> list = new ArrayList<SubPaneIFace>(panes.values());
         for (SubPaneIFace sp : list)
         {
             boolean ok = sp.aboutToShutdown();
@@ -379,23 +378,35 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
 
     /**
-     * Removes all the Tabs.
-     *
+     * Asks each pane if it can close (aboutToShutdown) and then closes the pane.
+     * If any one pane return false from aboutToShutdown then the process stops.
+     * Also, if there is only one visible and then it will always leave at least one pane.
      */
-    public void closeAll()
+    public boolean closeAll()
     {
         SubPaneIFace subPane = this.getCurrentSubPane();
         if (subPane != null)
         {
-            for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
+            Vector<SubPaneIFace> paneList = new Vector<SubPaneIFace>(panes.values()); // Not sure we need to create a new list
+            for (SubPaneIFace pane : paneList)
             {
-                SubPaneIFace sp = e.nextElement();
-                sp.showingPane(false); // Not sure about this notification
-                notifyListeners(NotificationType.Removed, sp);
+                if (panes.size() == 1  && TaskMgr.getVisibleTaskCount() == 1)
+                {
+                    return false;
+                }
+
+                if (!removePane(pane))
+                {
+                    return false;
+                }
+                
             }
-            panes.clear();
+            panes.clear(); // insurance
         }
-        this.removeAll();
+        
+        this.removeAll(); // insurance
+        
+        return true;
     }
 
     /* (non-Javadoc)

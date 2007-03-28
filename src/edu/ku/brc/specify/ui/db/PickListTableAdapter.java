@@ -81,8 +81,8 @@ public class PickListTableAdapter extends PickListDBAdapter
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
-        //DBTableIdMgr.getQueryForTable(tableId, recordId)
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(DBTableIdMgr.getIdByShortName(pickList.getTableName()));
+        //DBTableIdMgr.getInstance().getQueryForTable(tableId, recordId)
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
         if (tableInfo != null)
         {
             // This could be moved to DBTableIdMgr but a new method would be needed
@@ -91,7 +91,7 @@ public class PickListTableAdapter extends PickListDBAdapter
             strBuf.append(" in class ");
             strBuf.append(tableInfo.getShortClassName());
             
-            String sqlStr = strBuf.toString();//DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
+            String sqlStr = strBuf.toString();//DBTableIdMgr.getInstance().getQueryForTable(tableId, Integer.parseInt(idStr));
             if (StringUtils.isNotEmpty(sqlStr))
             {
                 try
@@ -134,8 +134,8 @@ public class PickListTableAdapter extends PickListDBAdapter
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
-        //DBTableIdMgr.getQueryForTable(tableId, recordId)
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(DBTableIdMgr.getIdByShortName(pickList.getTableName()));
+        //DBTableIdMgr.getInstance().getQueryForTable(tableId, recordId)
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
         if (tableInfo != null)
         {
             try

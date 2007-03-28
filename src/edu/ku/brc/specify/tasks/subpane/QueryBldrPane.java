@@ -103,7 +103,7 @@ public class QueryBldrPane extends BaseSubPane
         }
         
         Hashtable<Class, Boolean> alreadyThere = new Hashtable<Class, Boolean>();
-        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getList())
+        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
         {
             if (ti.isForQuery() && StringUtils.isNotEmpty(ti.toString()))
             {
@@ -153,7 +153,7 @@ public class QueryBldrPane extends BaseSubPane
             {
                 if (tr.getType() == DBTableIdMgr.RelationshipType.ManyToOne)
                 {
-                    DBTableIdMgr.TableInfo trTI = DBTableIdMgr.getByClassName(tr.getClassName());
+                    DBTableIdMgr.TableInfo trTI = DBTableIdMgr.getInstance().getByClassName(tr.getClassName());
                     if (alreadyThere.get(trTI.getClassObj()) == null)
                     {
                         tempList.add(new TableInfo(trTI, ti.getTitle() + " - " + fixName(tr.getName()), trTI.getClassObj().getSimpleName()));

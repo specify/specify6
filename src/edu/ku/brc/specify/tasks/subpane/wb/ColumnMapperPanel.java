@@ -56,13 +56,11 @@ import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.help.HelpMgr;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.FieldNameRenderer;
 import edu.ku.brc.specify.tasks.subpane.TableFieldPair;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer;
@@ -104,6 +102,7 @@ public class ColumnMapperPanel extends JPanel
     
     protected ImportDataFileInfo             dataFileInfo      = null;
     protected WorkbenchTemplate              workbenchTemplate = null;
+    protected DBTableIdMgr                   databaseSchema;
     
     protected boolean                        isMappedToAFile;
     
@@ -154,6 +153,8 @@ public class ColumnMapperPanel extends JPanel
      */
     public void createUI()
     {
+        databaseSchema = WorkbenchTask.getDatabaseSchema();
+        
         String[] skipItems = {"TimestampCreated", "LastEditedBy", "TimestampModified"};
         Hashtable<String, Boolean> skipHash = new Hashtable<String, Boolean>();
         for (String name : skipItems)
@@ -161,33 +162,18 @@ public class ColumnMapperPanel extends JPanel
             skipHash.put(name, true);
         }
         
-        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getList())
+        for (DBTableIdMgr.TableInfo ti : databaseSchema.getList())
         {
-            if (ti.isForWorkBench() && StringUtils.isNotEmpty(ti.toString()))
+            if (StringUtils.isNotEmpty(ti.toString()))
             {
                 tableInfoList.add(new TableInfo(ti)); 
                 
                 Vector<TableFieldPair> fldList = new Vector<TableFieldPair>();
-                if (ti.getClassObj() == Geography.class)
+                for (DBTableIdMgr.FieldInfo fi : ti.getFields())
                 {
-                    addGeographyFields(ti, fldList);
-                    
-                } else if (ti.getClassObj() == Taxon.class)
-                {
-                    addTaxonFields(ti, fldList);
-                    
-                } else if (ti.getClassObj() == Location.class)
-                {
-                    addLocationFields(ti, fldList);
-                    
-                } else
-                {
-                    for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+                    if (skipHash.get(fi.getColumn()) == null)
                     {
-                        if (skipHash.get(fi.getColumn()) == null)
-                        {
-                            fldList.add(new TableFieldPair(ti, fi));
-                        }
+                        fldList.add(new TableFieldPair(ti, fi));
                     }
                 }
                 Collections.sort(fldList);
@@ -210,6 +196,7 @@ public class ColumnMapperPanel extends JPanel
         builder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  SwingConstants.CENTER), cc.xy(5, 5));
         
         dataFileColPanel = new JPanel();
+        dataFileColPanel.setBackground(Color.WHITE);
         dataFileColPanel.setLayout(new NavBoxLayoutManager(0,2));
         JScrollPane sp = new JScrollPane(dataFileColPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
@@ -321,6 +308,8 @@ public class ColumnMapperPanel extends JPanel
             {
                 dlg.setVisible(false);
                 isCancelled = true;
+                databaseSchema.cleanUp();
+                databaseSchema = null;
             }
         });
         
@@ -330,6 +319,8 @@ public class ColumnMapperPanel extends JPanel
             {
                 dlg.setVisible(false);
                 isCancelled = false;
+                databaseSchema.cleanUp();
+                databaseSchema = null;
             }
         });
         
@@ -577,59 +568,7 @@ public class ColumnMapperPanel extends JPanel
     }
     
     /**
-     * CReates "fake" TableFieldPair entries for mapping tree items.
-     * XXX Here we need to go get the TreeDefItems.
-     * @param tableinfo x
-     * @param fields x
-     * @param fieldNames x
-     */
-    protected void addFields(final DBTableIdMgr.TableInfo tableInfo, final Vector<TableFieldPair> fields, final String[] fieldNames)
-    {
-        for (String fieldName : fieldNames)
-        {
-            DBTableIdMgr.FieldInfo fieldInfo = DBTableIdMgr.createFieldInfo(tableInfo, fieldName, fieldName, "java.lang.String", 64);
-            fields.add(new TableFieldPair(tableInfo, fieldInfo));
-        }
-    }
-    
-    /**
-     * Creates a denormalized list of possible fields for mapping for Geography.
-     * @param tableinfo the table info
-     * @param fields the list to be filled in 
-     */
-    protected void addGeographyFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
-    {
-        //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        //session.getDataList(clsObject)
-        addFields(tableinfo, fields, new String[] {"Continent", 
-                                                   "Country", 
-                                                   "State", 
-                                                   "County"});
-
-    }
-    
-    /**
-     * Creates a denormalized list of possible fields for mapping Taxon.
-     * @param tableinfo the table info
-     * @param fields the list to be filled in 
-     */
-    protected void addTaxonFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
-    {
-        addFields(tableinfo, fields, new String[] {"Genus Species", "Species", "Genius"});
-    }
-    
-    /**
-     * Creates a denormalized list of possible fields for mapping for Location.
-     * @param tableinfo the table info
-     * @param fields the list to be filled in 
-     */
-    protected void addLocationFields(final DBTableIdMgr.TableInfo tableinfo, final Vector<TableFieldPair> fields)
-    {
-        addFields(tableinfo, fields, new String[] {"Building", "Floor", "Room", "Rack", "Shelf"});  
-    }
-    
-    /**
-     * For a given Data Model Class it returns the TableInfo object for it. (This could be moved to the DBTableIdMgr.
+     * For a given Data Model Class it returns the TableInfo object for it. (This could be moved to the DBTableIdMgr).
      * @param classObj the class object
      * @return the table info
      */
@@ -840,8 +779,8 @@ public class ColumnMapperPanel extends JPanel
         public FieldMappingPanel(final ImportColumnInfo colInfo, final ImageIcon icon)
         {
             this.colInfo = colInfo;
+            setBackground(Color.WHITE);
             
-             
             PanelBuilder    builder = new PanelBuilder(new FormLayout("150px, p:g, p, p:g, 150px, 5px, p, 2px", "p:g"), this);
             CellConstraints cc      = new CellConstraints();
 

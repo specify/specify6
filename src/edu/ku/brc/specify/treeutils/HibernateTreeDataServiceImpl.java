@@ -189,7 +189,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             return false;
         }
         
-        BusinessRulesIFace busRule = DBTableIdMgr.getBusinessRule(o);
+        BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(o);
         
         // we assume that no business rules = no complaints about deleting the object
         if (busRule==null)

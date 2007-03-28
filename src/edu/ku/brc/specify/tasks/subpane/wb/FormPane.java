@@ -43,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
@@ -245,7 +246,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
         //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
-        Class<?> dbFieldType = wbtmi.getDataType();
+        Class<?> dbFieldType = WorkbenchTask.getDataType(wbtmi);
         if (dbFieldType == null)
         {
             // if we can't find a class for the field (i.e. Genus Species, or other 'fake' fields), we say it's a string

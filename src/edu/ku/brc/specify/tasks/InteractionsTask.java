@@ -146,9 +146,9 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DB_CMD_TYPE, this);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         
-        loanTableId        = DBTableIdMgr.getIdByClassName(Loan.class.getName());
-        infoRequestTableId = DBTableIdMgr.getIdByClassName(InfoRequest.class.getName());
-        colObjTableId      = DBTableIdMgr.getIdByClassName(CollectionObject.class.getName());
+        loanTableId        = DBTableIdMgr.getInstance().getIdByClassName(Loan.class.getName());
+        infoRequestTableId = DBTableIdMgr.getInstance().getIdByClassName(InfoRequest.class.getName());
+        colObjTableId      = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
 
     }
     
@@ -399,7 +399,7 @@ public class InteractionsTask extends BaseTask
     {      
         DBTableIdMgr.getInClause(recordSet);
 
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         
         DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
         
@@ -407,7 +407,7 @@ public class InteractionsTask extends BaseTask
         
         // First we process all the CollectionObjects in the RecordSet
         // and create a list of Preparations that can be loaned
-        String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+        String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
         if (StringUtils.isNotBlank(sqlStr))
         {
             final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg((List<CollectionObject>)session.getDataList(sqlStr));
@@ -467,7 +467,7 @@ public class InteractionsTask extends BaseTask
                         DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
                         if (dataEntryTask != null)
                         {
-                            DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.getInfoById(loan.getTableId());
+                            DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
                             dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
                         }
                         return null;
@@ -578,7 +578,7 @@ public class InteractionsTask extends BaseTask
      */
     protected void createInfoRequest(final RecordSetIFace recordSet)
     {
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getByShortClassName(InfoRequest.class.getSimpleName());
+        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         

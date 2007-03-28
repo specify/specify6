@@ -94,7 +94,7 @@ public class RecordSetTask extends BaseTask
         
         // Register all Tables as being able to be saved in a RecordSet
         // Althought some system tables we may not want, they won't be searchable anyway.
-        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getList())
+        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
         {
             ContextMgr.registerService(ti.getObjTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, "CreateRecordSetTT");    
         }
@@ -124,7 +124,7 @@ public class RecordSetTask extends BaseTask
                 session.evict(recordSet);
                 
                 NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
                 if (tblInfo != null)
                 {
                     ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -162,7 +162,7 @@ public class RecordSetTask extends BaseTask
     {
         NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
         
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInfoById(recordSet.getDbTableId());
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         if (tblInfo != null)
         {
             ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -364,7 +364,7 @@ public class RecordSetTask extends BaseTask
                 {
                     RecordSetItemIFace item = recordSet.getItems().iterator().next();
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    String                   sqlStr  = DBTableIdMgr.getQueryForTable(recordSet.getDbTableId(), item.getRecordId());
+                    String                   sqlStr  = DBTableIdMgr.getInstance().getQueryForTable(recordSet.getDbTableId(), item.getRecordId());
                     if (StringUtils.isNotEmpty(sqlStr))
                     {
                         Object dataObj = session.getData(sqlStr);
@@ -438,8 +438,8 @@ public class RecordSetTask extends BaseTask
                     }
                 } else
                 {
-                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.getInfoById(srcRecordSet.getDbTableId());
-                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.getInfoById(dstRecordSet.getDbTableId());
+                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
+                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
                     JOptionPane.showMessageDialog(null, 
                         String.format(getResourceString("RECORDSET_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
                             getResourceString("Error"), 

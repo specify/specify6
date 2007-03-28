@@ -26,7 +26,7 @@ public class WebPageExporter implements RecordSetExporter
      */
     public void exportRecordSet(RecordSet data, Properties reqParams) throws Exception
     {
-        int taxonTableId = DBTableIdMgr.getIdByClassName(Taxon.class.getName());
+        int taxonTableId = DBTableIdMgr.getInstance().getIdByClassName(Taxon.class.getName());
         int dataTableId = data.getDbTableId();
 
         if (dataTableId == taxonTableId)

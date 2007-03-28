@@ -46,8 +46,8 @@ public class GoogleEarthExporter implements RecordSetExporter
 	public void exportRecordSet(RecordSet data, Properties reqParams)
     {
         log.info("Exporting RecordSet");
-        int collObjTableId = DBTableIdMgr.getIdByClassName(CollectionObject.class.getName());
-        int collEvtTableId = DBTableIdMgr.getIdByClassName(CollectingEvent.class.getName());
+        int collObjTableId = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
+        int collEvtTableId = DBTableIdMgr.getInstance().getIdByClassName(CollectingEvent.class.getName());
         int dataTableId = data.getDbTableId();
 
         if (dataTableId == collObjTableId)

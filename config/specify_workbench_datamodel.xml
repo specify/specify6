@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+  <table classname="edu.ku.brc.specify.datamodel.Accession" table="accession" tableid="7" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules">
+    <field column="Status" name="status" type="java.lang.String" length="32"/>
+    <field column="Number" name="number" type="java.lang.String" length="60"/>
+    <field column="VerbatimDate" name="verbatimDate" type="java.lang.String" length="50"/>
+    <field column="DateAccessioned" name="dateAccessioned" type="calendar_date"/>
+    <field column="DateReceived" name="dateReceived" type="calendar_date"/>
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Text3" name="text3" type="text"/>
+    <field column="Number1" name="number1" type="java.lang.Float"/>
+    <field column="Number2" name="number2" type="java.lang.Float"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="YesNo1" name="yesNo1" type="boolean"/>
+    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="AccessionAgent" name="Accession Agent" type="java.lang.String" length="64"/>
+    <field column="Permit1" name="Permit1" type="java.lang.String" length="64"/>
+    <field column="Permit2" name="Permit2" type="java.lang.String" length="64"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" >
+    <field column="StationFieldNumber" name="stationFieldNumber" type="java.lang.String" length="50"/>
+    <field column="Method" name="method" type="java.lang.String" length="50"/>
+    <field column="VerbatimDate" name="verbatimDate" type="java.lang.String" length="50"/>
+    <field column="StartDate" name="startDate" type="calendar_date"/>
+    <field column="StartDatePrecision" name="startDatePrecision" type="short"/>
+    <field column="StartDateVerbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="EndDate" name="endDate" type="calendar_date"/>
+    <field column="EndDatePrecision" name="endDatePrecision" type="short"/>
+    <field column="EndDateVerbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="StartTime" name="startTime" type="short"/>
+    <field column="EndTime" name="endTime" type="short"/>
+    <field column="VerbatimLocality" name="verbatimLocality" type="text"/>
+    <field column="Remarks" name="remarks" type="text"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
+    <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+    <field column="StartDate" name="startDate" type="calendar_date"/>
+    <field column="StartDatePrecision" name="startDatePrecision" type="java.lang.Short"/>
+    <field column="StartDateVerbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="EndDate" name="endDate" type="calendar_date"/>
+    <field column="EndDatePrecision" name="endDatePrecision" type="java.lang.Short"/>
+    <field column="EndDateVerbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
+    <field column="StartTime" name="startTime" type="java.lang.Short"/>
+    <field column="EndTime" name="endTime" type="java.lang.Short"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules">
+    <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
+    <field column="FieldNumber" name="fieldNumber" type="java.lang.String" length="50"/>
+    <field column="Description" name="description" type="java.lang.String" length="50"/>
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+    <field column="YesNo1" name="yesNo1" type="boolean"/>
+    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="CountAmt" name="countAmt" type="java.lang.Integer" length="10"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Name" name="name" type="java.lang.String" length="64"/>
+    <field column="Modifier" name="modifier" type="java.lang.String" length="50"/>
+    <field column="CatalogedDate" name="catalogedDate" type="calendar_date"/>
+    <field column="CatalogedDateVerbatim" name="catalogedDateVerbatim" type="java.lang.String" length="32"/>
+    <field column="GUID" name="guid" type="java.lang.String" length="255"/>
+    <field column="Deaccessioned" name="deaccessioned" type="boolean"/>
+    <field column="CatalogNumber" name="catalogNumber" type="java.lang.Float"/>
+    <field column="CollectionObjectCitation" name="Citation" type="java.lang.String" length="64"/>
+    <field column="Collector1" name="Collector1" type="java.lang.String" length="64"/>
+    <field column="Collector2" name="Collector2" type="java.lang.String" length="64"/>
+    <field column="Collector3" name="Collector3" type="java.lang.String" length="64"/>
+    <field column="Collector4" name="Collector4" type="java.lang.String" length="64"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true" >
+    <field column="TypeStatusName" name="typeStatusName" type="java.lang.String" length="50"/>
+    <field column="DeterminedDate" name="determinedDate" type="calendar_date"/>
+    <field column="Confidence" name="confidence" type="java.lang.String" length="50"/>
+    <field column="Method" name="method" type="java.lang.String" length="50"/>
+    <field column="FeatureOrBasis" name="featureOrBasis" type="java.lang.String" length="50"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+    <field column="YesNo1" name="yesNo1" type="boolean"/>
+    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="Determiner" name="Determiner" type="java.lang.String" length="64"/>
+    <field column="Citation" name="Citation" type="java.lang.String" length="64"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.GeographyBusRules">
+    <field column="Continent" name="Continent" type="java.lang.String" length="128"/>
+    <field column="Country" name="Country" type="java.lang.String" length="128"/>
+    <field column="State" name="State" type="java.lang.String" length="128"/>
+    <field column="County" name="County" type="java.lang.String" length="128"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules">
+    <display objtitle="Geologic Time Period"/>
+    <field column="Name" name="name" type="java.lang.String" length="64"/>
+    <field column="FullName" name="fullName" type="java.lang.String" length="255"/>
+    <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+    <field column="NodeNumber" name="nodeNumber" type="java.lang.Integer" length="10"/>
+    <field column="HighestChildNodeNumber" name="highestChildNodeNumber" type="java.lang.Integer" length="10"/>
+    <field column="Standard" name="standard" type="java.lang.String" length="64"/>
+    <field column="Start" name="start" type="java.lang.Float" length="24"/>
+    <field column="AgeStartUncertainty" name="StartUncertainty" type="java.lang.Float" length="24"/>
+    <field column="End" name="end" type="java.lang.Float" length="24"/>
+    <field column="EndUncertainty" name="endUncertainty" type="java.lang.Float" length="24"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" lazy="true" >
+    <field column="JournalName" name="journalName" type="java.lang.String" length="255"/>
+    <field column="JournalAbbreviation" name="journalAbbreviation" type="java.lang.String" length="50"/>
+    <field column="Remarks" name="remarks" type="text"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
+    <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
+    <field column="NamedPlace" name="namedPlace" type="java.lang.String" length="255"/>
+    <field column="RelationToNamedPlace" name="relationToNamedPlace" type="java.lang.String" length="120"/>
+    <field column="LocalityName" name="localityName" type="java.lang.String" length="255"/>
+    <field column="BaseMeridian" name="baseMeridian" type="java.lang.String" length="50"/>
+    <field column="Range" name="range" type="java.lang.String" length="50"/>
+    <field column="RangeDirection" name="rangeDirection" type="java.lang.String" length="50"/>
+    <field column="Township" name="township" type="java.lang.String" length="50"/>
+    <field column="TownshipDirection" name="townshipDirection" type="java.lang.String" length="50"/>
+    <field column="Section" name="section" type="java.lang.String" length="50"/>
+    <field column="SectionPart" name="sectionPart" type="java.lang.String" length="50"/>
+    <field column="VerbatimElevation" name="verbatimElevation" type="java.lang.String" length="50"/>
+    <field column="OriginalElevationUnit" name="originalElevationUnit" type="java.lang.String" length="50"/>
+    <field column="MinElevation" name="minElevation" type="java.lang.Double"/>
+    <field column="MaxElevation" name="maxElevation" type="java.lang.Double"/>
+    <field column="ElevationMethod" name="elevationMethod" type="java.lang.String" length="50"/>
+    <field column="ElevationAccuracy" name="elevationAccuracy" type="java.lang.Double"/>
+    <field column="OriginalLatLongUnit" name="originalLatLongUnit" type="java.lang.Integer" length="10"/>
+    <field column="LatLongType" name="latLongType" type="java.lang.String" length="50"/>
+    <field column="Latitude1" name="latitude1" type="java.math.BigDecimal"/>
+    <field column="Longitude1" name="longitude1" type="java.math.BigDecimal"/>
+    <field column="Latitude2" name="latitude2" type="java.math.BigDecimal"/>
+    <field column="Longitude2" name="longitude2" type="java.math.BigDecimal"/>
+    <field column="LatLongMethod" name="latLongMethod" type="java.lang.String" length="50"/>
+    <field column="LatLongAccuracy" name="latLongAccuracy" type="java.lang.Double"/>
+    <field column="Datum" name="datum" type="java.lang.String" length="50"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Number1" name="number1" type="java.lang.Double"/>
+    <field column="Number2" name="number2" type="java.lang.Double"/>
+    <field column="YesNo1" name="yesNo1" type="boolean"/>
+    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="NationalParkName" name="nationalParkName" type="java.lang.String" length="64"/>
+    <field column="IslandGroup" name="islandGroup" type="java.lang.String" length="64"/>
+    <field column="Island" name="island" type="java.lang.String" length="64"/>
+    <field column="WaterBody" name="waterBody" type="java.lang.String" length="64"/>
+    <field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
+    <field column="Citation" name="Citation" type="java.lang.String" length="64"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Location" table="location" tableid="58" businessrule="edu.ku.brc.specify.datamodel.busrules.LocationBusRules">
+    <field column="Building" name="Building" type="java.lang.String" length="64"/>
+    <field column="Floor" name="Floor" type="java.lang.String" length="64"/>
+    <field column="Room" name="Room" type="java.lang.String" length="64"/>
+    <field column="Rack" name="Rack" type="java.lang.String" length="64"/>
+    <field column="Shelf" name="Shelf" type="java.lang.String" length="64"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Count" name="count" type="java.lang.Integer" length="10"/>
+    <field column="StorageLocation" name="storageLocation" type="java.lang.String" length="50"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="PreparedDate" name="preparedDate" type="calendar_date"/>
+    <field column="PreparedBy" name="Prepared By" type="java.lang.String" length="64"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true" >
+    <field column="ContainingReferenceWorkID" name="containingReferenceWorkId" type="java.lang.Integer" length="10"/>
+    <field column="ReferenceWorkType" name="referenceWorkType" type="byte" length="3"/>
+    <field column="Title" name="title" type="java.lang.String" length="255"/>
+    <field column="Publisher" name="publisher" type="java.lang.String" length="50"/>
+    <field column="PlaceOfPublication" name="placeOfPublication" type="java.lang.String" length="50"/>
+    <field column="WorkDate" name="workDate" type="java.lang.String" length="25"/>
+    <field column="Volume" name="volume" type="java.lang.String" length="25"/>
+    <field column="Pages" name="pages" type="java.lang.String" length="50"/>
+    <field column="URL" name="url" type="text"/>
+    <field column="LibraryNumber" name="libraryNumber" type="java.lang.String" length="50"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+    <field column="IsPublished" name="isPublished" type="boolean"/>
+    <field column="YesNo1" name="yesNo1" type="boolean"/>
+    <field column="YesNo2" name="yesNo2" type="boolean"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" table="repositoryagreement" tableid="70" lazy="true" >
+    <field column="Number" name="number" type="java.lang.String" length="60"/>
+    <field column="Status" name="status" type="java.lang.String" length="32"/>
+    <field column="StartDate" name="startDate" type="calendar_date"/>
+    <field column="EndDate" name="endDate" type="calendar_date"/>
+    <field column="DateReceived" name="dateReceived" type="calendar_date"/>
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Text3" name="text3" type="text"/>
+    <field column="Number1" name="number1" type="java.lang.Float"/>
+    <field column="Number2" name="number2" type="java.lang.Float"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="YesNo1" name="yesNo1" type="boolean"/>
+    <field column="YesNo2" name="yesNo2" type="boolean"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy" tableid="73" >
+    <field column="SuperGroup" name="superGroup" type="java.lang.String" length="50"/>
+    <field column="LithoGroup" name="lithoGroup" type="java.lang.String" length="50"/>
+    <field column="Formation" name="formation" type="java.lang.String" length="50"/>
+    <field column="Member" name="member" type="java.lang.String" length="50"/>
+    <field column="Bed" name="bed" type="java.lang.String" length="50"/>
+    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Text1" name="text1" type="text"/>
+    <field column="Text2" name="text2" type="text"/>
+    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+    <field column="YesNo1" name="yesNo1" type="boolean"/>
+    <field column="YesNo2" name="yesNo2" type="boolean"/>
+  </table>
+  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4" businessrule="edu.ku.brc.specify.datamodel.busrules.TaxonBusRules">
+    <field column="Order" name="Order" type="java.lang.String" length="64"/>
+    <field column="Family" name="Family" type="java.lang.String" length="64"/>
+    <field column="Genus" name="Genus" type="java.lang.String" length="64"/>
+    <field column="Sub Genus" name="Sub Genus" type="java.lang.String" length="64"/>
+    <field column="Genus Species" name="Genus Species" type="java.lang.String" length="128"/>
+    <field column="Species" name="Species" type="java.lang.String" length="64"/>
+    <field column="Sub Species" name="Sub Species" type="java.lang.String" length="64"/>
+    <field column="Citation" name="Citation" type="java.lang.String" length="128"/>
+  </table>
+</database>

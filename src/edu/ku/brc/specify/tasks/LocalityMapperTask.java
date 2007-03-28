@@ -85,7 +85,7 @@ public class LocalityMapperTask extends BaseTask
     {
         
         
-        String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+        String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
         if (StringUtils.isNotEmpty(sqlStr))
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

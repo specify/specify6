@@ -853,13 +853,13 @@ public class TableViewObj implements Viewable,
                 RecordSetIFace recordSet = (RecordSetIFace)dataObj;
                 
                 DBTableIdMgr.getInClause(recordSet);
-                DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.lookupInfoById(recordSet.getDbTableId());
+                DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().lookupInfoById(recordSet.getDbTableId());
                 
                 DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
                 
                 //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 
-                String sqlStr = DBTableIdMgr.getQueryForTable(recordSet);
+                String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
                 if (StringUtils.isNotBlank(sqlStr))
                 {
                     dataObjList =(List<Object>)session.getDataList(sqlStr);
@@ -1308,7 +1308,7 @@ public class TableViewObj implements Viewable,
         fullObjPath.append(subFormCell.getName());
         
         String                 clsName = getParentClassName();
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getByClassName(clsName);
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(clsName);
         
         if (tblInfo != null)
         {
@@ -1558,7 +1558,7 @@ public class TableViewObj implements Viewable,
         {
             if (StringUtils.isNotEmpty(formCell.getName()))
             {
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getByClassName(parentClassName);
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(parentClassName);
                 if (tblInfo != null)
                 {
                     DBTableIdMgr.RelationshipType type = tblInfo.getRelType(formCell.getName());

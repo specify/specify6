@@ -9,7 +9,6 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import java.awt.Image;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -72,10 +71,11 @@ public class GridTableModel extends SpreadSheetModel
                 imageMappingItem = new WorkbenchTemplateMappingItem()
                 {
                     @Override
-                    public Class<?> getDataType()
+                    public String getFieldName()
                     {
-                        return Image.class;
+                        return "Image";
                     }
+
                 };
                 imageMappingItem.initialize();
                 imageMappingItem.setCaption("Card Image"); // XXX I18N"
