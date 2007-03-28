@@ -13,13 +13,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import org.apache.commons.io.FilenameUtils;
+
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.wb.CSVExport;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureCSV;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 import edu.ku.brc.specify.tasks.subpane.wb.DataExport;
 import edu.ku.brc.specify.tasks.subpane.wb.XLSExport;
+import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * @author timbo
@@ -54,14 +57,25 @@ public class ExportToFile implements RecordSetExporter
         DataExport exporter = buildExporter(reqParams);
         if (exporter != null)
         {
-          try
-          {
-            exporter.writeData(data);
-          }
-          catch (IOException e)
-          {
-              throw(e);
-          }
+            String name = FilenameUtils.getName(exporter.getConfig().getFileName());
+            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+            if (statusBar != null)
+            {
+                statusBar.setText(String.format(UICacheManager.getResourceString("EXPORTING_TO"), new Object[] {name}));
+            }
+            try
+            {
+                exporter.writeData(data);
+                
+                if (statusBar != null)
+                {
+                    statusBar.setText(String.format(UICacheManager.getResourceString("EXPORTING_DONE"), new Object[] {name}));
+                }
+            }
+            catch (IOException e)
+            {
+                throw(e);
+            }
         }
     }
 
