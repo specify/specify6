@@ -129,6 +129,17 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
     }
     // End Initializer
     
+    /**
+     * Assumes it is connected to a Session and forces all the data to be loaded. 
+     */
+    public void forceLoad()
+    {
+        for (WorkbenchDataItem item : getWorkbenchDataItems())
+        {
+            item.getCellData();
+        }
+    }
+    
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchRowID", nullable = false)
@@ -201,7 +212,7 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
      * @param imgFilePath the full path to the image file
      * @throws IOException 
      */
-    public void setCardImage(final String imgFilePath) throws IOException
+    public void setCardImage(final String imgFilePath)
     {
         setCardImage(new File(imgFilePath));
     }
@@ -215,7 +226,7 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
      * @param imageFile the full path to the image file
      * @throws IOException 
      */
-    public void setCardImage(final File imageFile) throws IOException
+    public void setCardImage(final File imageFile)
     {
         try
         {

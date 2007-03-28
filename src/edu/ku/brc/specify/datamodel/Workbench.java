@@ -125,6 +125,18 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     // End Initializer
 
     
+    /**
+     * Assumes it is connected to a Session and forces all the data to be loaded. 
+     */
+    public void forceLoad()
+    {
+        getWorkbenchTemplate().forceLoad();
+        
+        for (WorkbenchRow row : getWorkbenchRows())
+        {
+            row.forceLoad();
+        }
+    }
 
     // Property accessors
 

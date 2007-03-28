@@ -328,9 +328,10 @@ public class StatGroupTable extends JPanel
             }
 
             if (width >= 0)
+            {
                 column.setPreferredWidth(width + margin); // <1.3: without margin
-            else
-                ; // ???
+            }
+            
 
             totalWidth += column.getPreferredWidth();
         }
@@ -372,7 +373,7 @@ public class StatGroupTable extends JPanel
                 table.setCursor(defCursor);
             }
         }
-    };
+    }
 
     class LinkListener extends MouseAdapter
     {
@@ -394,7 +395,7 @@ public class StatGroupTable extends JPanel
 
             }
         }
-    };
+    }
 
     // This renderer extends a component. It is used each time a
     // cell must be displayed.

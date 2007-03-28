@@ -16,8 +16,7 @@ package edu.ku.brc.af.core;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,7 +42,7 @@ public class NavBoxAction implements ActionListener
     protected Taskable              originatingTask = null;
     protected String                type;
     protected String                action;
-    protected Map<String, Object>   properties      = null; 
+    protected Properties            properties      = null; 
     protected CommandAction         cmdAction       = null;
 
 
@@ -65,7 +64,7 @@ public class NavBoxAction implements ActionListener
         this.type            = tcd.getParams().get("type");
         this.action          = tcd.getParams().get("action");
         
-        this.properties = new Hashtable<String, Object>();
+        this.properties = new Properties();
         this.properties.putAll(tcd.getParams());
         
         setOriginatingTask(origTask);
@@ -112,7 +111,7 @@ public class NavBoxAction implements ActionListener
         {
             if (this.properties == null)
             {
-                this.properties = new Hashtable<String, Object>();
+                this.properties = new Properties();
             }
             this.properties.put(ORGINATING_TASK, this.originatingTask);
         }
@@ -152,7 +151,7 @@ public class NavBoxAction implements ActionListener
     {
         if (properties == null)
         {
-            properties = new Hashtable<String, Object>();
+            properties = new Properties();
         }
         properties.put(name, value);
     }

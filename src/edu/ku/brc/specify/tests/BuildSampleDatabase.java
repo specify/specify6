@@ -904,14 +904,7 @@ public class BuildSampleDatabase
             WorkbenchDataItem wbdi2 = createWorkbenchDataItem(wbRow, "CN-10" + i, 2);
             
             File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
-            try
-            {
-                wbRow.setCardImage(f.getAbsolutePath());
-            }
-            catch (IOException e)
-            {
-                log.error("Failed to set card image for workbench row", e);
-            }
+            wbRow.setCardImage(f.getAbsolutePath());
             
             dataObjects.add(wbtmi);
             dataObjects.add(wbtmi1);

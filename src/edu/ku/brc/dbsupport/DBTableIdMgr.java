@@ -143,12 +143,16 @@ public class DBTableIdMgr
                     {
 						log.error("primaryKeyField is null; check input file table["+tablename+"]");
                     }
-					//log.debug("Populating hashtable for class: " + classname);
+					//log.debug("Populating hashtable ID["+tableId+"]for class: " + classname+" "+ inputFile.getName());
                     
                     TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
                     tblInfo.setForQuery(isQuery);
                     tblInfo.setBusinessRule(XMLHelper.getAttr(tableNode, "businessrule", null));
                     
+                    if (hash.get(tableId) != null)
+                    {
+                        log.error("Table ID used twice["+tableId+"]");
+                    }
 					hash.put(tableId, tblInfo); 
                     
                     Element idElement = (Element)tableNode.selectSingleNode("id");
@@ -361,6 +365,10 @@ public class DBTableIdMgr
      */
     public TableInfo getInfoById(final int tableId)
     {
+        if (hash.get(tableId) == null)
+        {
+            log.error("Couldn't find tableId["+tableId+"]");
+        }
         return hash.get(tableId);
     }
 

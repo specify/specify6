@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
@@ -731,15 +730,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         if (userAction == JFileChooser.APPROVE_OPTION)
         {
             String chosenFile = fileChooser.getSelectedFile().getAbsolutePath();
-            try
-            {
-                row.setCardImage(chosenFile);
-                return true;
-            }
-            catch (IOException e)
-            {
-                log.error("Failed to set card image for workbench row", e);
-            }
+            row.setCardImage(chosenFile);
+            return true;
         }
         return false;
     }

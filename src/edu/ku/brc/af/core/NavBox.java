@@ -83,9 +83,9 @@ public class NavBox extends JPanel implements NavBoxIFace
         setBackground(Color.WHITE);
         setOpaque(true);
         
-        /*
+        
         if (collapsable)
-        {
+        {/*
             collapsableIconOpen   = IconManager.getIcon("Minimize");
             collapsableIconClosed = IconManager.getIcon("Maximize");
             
@@ -110,7 +110,7 @@ public class NavBox extends JPanel implements NavBoxIFace
                     }
                 }
             });
-        }*/        
+        */ }       
     }
     
     /**

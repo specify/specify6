@@ -89,12 +89,7 @@ public class CommandAction
      */
     public CommandAction(final String type, final String action, final int tableId)
     {
-        this.type    = type;
-        this.action  = action;
-        this.tableId = tableId;
-        this.data    = null;
-        this.srcObj  = null;
-        this.dstObj  = null;
+        this(type, action, tableId, null);
     }
     
     /**
@@ -252,7 +247,7 @@ public class CommandAction
         properties.put(name, value);
     }
     
-    public void addProperties(final Map<String, Object> props)
+    public void addProperties(final Properties props)
     {
         if (props != null)
         {

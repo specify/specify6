@@ -97,6 +97,17 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     }
     
     // End Initializer
+    
+    /**
+     * Assumes it is connected to a Session and forces all the data to be loaded. 
+     */
+    public void forceLoad()
+    {
+        for (WorkbenchTemplateMappingItem item : getWorkbenchTemplateMappingItems())
+        {
+            item.getFieldName();
+        }
+    }
 
     // Property accessors
 

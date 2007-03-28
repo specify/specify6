@@ -11,7 +11,9 @@
 		<plugin class="edu.ku.brc.specify.tasks.LocationTreeTask" visible="false"/>
 		<plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask" visible="false"/>
 		<plugin class="edu.ku.brc.specify.tasks.GtpTreeTask" visible="false"/>
+		-->
 		<plugin class="edu.ku.brc.specify.tasks.LabelsTask" visible="false"/>
+		<!--
 		<plugin class="edu.ku.brc.specify.tasks.ReportsTask" visible="false"/>
 		<plugin class="edu.ku.brc.specify.tasks.InteractionsTask" visible="false"/>
 		<plugin class="edu.ku.brc.af.tasks.StatsTask" visible="false"/>
