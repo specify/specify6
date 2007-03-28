@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIHelper.OSTYPE;
 
 
 /***************************************************************************************************
@@ -615,7 +616,16 @@ public class SpreadSheet  extends SearchableJXTable
             
             // toggle the selection state of the clicked row
             // and set the current row as the new anchor
-            if (e.isControlDown())
+            boolean ctrlDown = false;
+            if (UIHelper.getOSType() == OSTYPE.MacOSX)
+            {
+            	ctrlDown = e.isMetaDown();
+            }
+            else
+            {
+            	ctrlDown = e.isControlDown();
+            }
+            if (ctrlDown)
             {
                 ListSelectionModel selModel = table.getSelectionModel();
                 
@@ -676,8 +686,8 @@ public class SpreadSheet  extends SearchableJXTable
             log.debug("lead   :" + selLead);
             
             // the user has released the mouse button, so we're done selecting rows
-            RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
-            int            row = lbl.getRowNum()-1;
+            //RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
+            //int            row = lbl.getRowNum()-1;
 
             rowSelectionStarted = false;
             table.getSelectionModel().setValueIsAdjusting(false);
