@@ -265,7 +265,7 @@ public class WorkbenchTask extends BaseTask
     {
         DBTableIdMgr schema = null;
         
-        if (schema != null)
+        if (databasechema != null)
         {
             schema = databasechema.get();
         }
