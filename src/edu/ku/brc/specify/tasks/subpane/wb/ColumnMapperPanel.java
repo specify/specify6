@@ -308,8 +308,6 @@ public class ColumnMapperPanel extends JPanel
             {
                 dlg.setVisible(false);
                 isCancelled = true;
-                databaseSchema.cleanUp();
-                databaseSchema = null;
             }
         });
         
@@ -319,8 +317,6 @@ public class ColumnMapperPanel extends JPanel
             {
                 dlg.setVisible(false);
                 isCancelled = false;
-                databaseSchema.cleanUp();
-                databaseSchema = null;
             }
         });
         
