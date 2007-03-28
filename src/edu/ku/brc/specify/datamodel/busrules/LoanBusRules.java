@@ -65,7 +65,7 @@ public class LoanBusRules extends BaseBusRules
         if (viewable instanceof FormViewObj)
         {
             FormViewObj formViewObj = (FormViewObj)viewable;
-            if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
+            if (formViewObj.getDataObj() instanceof Loan)
             {
                 MultiView mvParent = formViewObj.getMVParent();
                 Loan      loan     = (Loan)formViewObj.getDataObj();

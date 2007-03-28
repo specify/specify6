@@ -45,9 +45,11 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.ui.UIHelper;
 
 /**
+ * THis class is used to show Card Images that are "linked" to a row of data.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Mar 16, 2007
  *
@@ -77,20 +79,12 @@ public class CardImageFrame extends JFrame
     protected Hashtable<Integer,Integer> rowToImageSizeHash = new Hashtable<Integer, Integer>();
     
     /**
-     * Constrcutor. 
+     * Constructor. 
      */
     public CardImageFrame(final int mapSize)
     {
-        //panel.add(cardImageLabel, BorderLayout.CENTER);
-        //panel.add(progress, BorderLayout.SOUTH);
-        //progress.setVisible(false);
-        
-        
         Dimension minSize = new Dimension(mapSize, mapSize);
         cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-        //cardImageLabel.setSize(minSize);
-        //cardImageLabel.setPreferredSize(minSize);
-        //cardImageLabel.setMinimumSize(minSize);
         
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g,c:p,f:p:g", "f:p:g,p,5px,p,f:p:g"));
         CellConstraints cc      = new CellConstraints();

@@ -97,9 +97,9 @@ public class QueryBldrPane extends BaseSubPane
     {
         String[] skipItems = {"TimestampCreated", "LastEditedBy", "TimestampModified"};
         Hashtable<String, String> skipHash = new Hashtable<String, String>();
-        for (String name : skipItems)
+        for (String nameStr : skipItems)
         {
-            skipHash.put(name, "X");
+            skipHash.put(nameStr, "X");
         }
         
         Hashtable<Class, Boolean> alreadyThere = new Hashtable<Class, Boolean>();
@@ -527,20 +527,20 @@ public class QueryBldrPane extends BaseSubPane
         
         /**
          * Split apart the name keying on upper case
-         * @param name the name of the field
+         * @param nameToFix the name of the field
          * @return the splt apart name
          */
-        protected String fixName(final String name)
+        protected String fixName(final String nameToFix)
         {
             StringBuilder s = new StringBuilder();
-            for (int i=0;i<name.length();i++)
+            for (int i=0;i<nameToFix.length();i++)
             {
                 if (i == 0) 
                 {
-                    s.append(Character.toUpperCase(name.charAt(i)));
+                    s.append(Character.toUpperCase(nameToFix.charAt(i)));
                 } else
                 {
-                    char c = name.charAt(i);
+                    char c = nameToFix.charAt(i);
                     if (Character.isUpperCase(c))
                     {
                         s.append(' ');

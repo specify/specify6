@@ -22,9 +22,11 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
 
 /**
+ * The Model for the Spreadsheet for the Workbench and it can add a new image column to the mode when it is needed.
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Mar 8, 2007
  *
@@ -57,11 +59,18 @@ public class GridTableModel extends SpreadSheetModel
         fireTableDataChanged();
     }
     
+    /**
+     * @return whether it is in image mode or not.
+     */
     public boolean isInImageMode()
     {
         return isInImageMode;
     }
 
+    /**
+     * Sets the model into image mode so it can add a the image column to the spreadsheet.
+     * @param isInImageMode
+     */
     public void setInImageMode(boolean isInImageMode)
     {
         if (!this.isInImageMode && isInImageMode)

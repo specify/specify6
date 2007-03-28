@@ -48,7 +48,7 @@ import edu.ku.brc.ui.validation.ValSpinner;
  * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Mar 22, 2007
  *
@@ -297,21 +297,33 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         changeTracker.clear();
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
     public void stateChanged(ChangeEvent e)
     {
         changeTracker.put(e.getSource(), true);
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
+     */
     public void insertUpdate(DocumentEvent e)
     {
         changeTracker.put(e.getDocument(), true);
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
+     */
     public void removeUpdate(DocumentEvent e)
     {
         changeTracker.put(e.getDocument(), true);
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+     */
     public void changedUpdate(DocumentEvent e)
     {
         changeTracker.put(e.getDocument(), true);

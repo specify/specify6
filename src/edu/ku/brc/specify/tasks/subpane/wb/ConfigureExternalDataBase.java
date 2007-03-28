@@ -23,8 +23,6 @@ import org.apache.log4j.Logger;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
-import edu.ku.brc.specify.tasks.ExportTask;
-
 /**
  * @author timbo
  *

@@ -303,6 +303,7 @@ public class XMLHelper
     * @param file the html file to be read.
     * @return the file as a string
     */
+   @SuppressWarnings("deprecation")
    public static String fixUpHTML(final File file)
    {
        String path = FilenameUtils.getFullPath(file.getAbsolutePath());
@@ -331,7 +332,7 @@ public class XMLHelper
                    
                    sb.append(line.substring(0, inx+5));
                    File f = new File(path);
-                   sb.append(f.toURL());
+                   sb.append(f.toURL()); // needed for 1.5
                    sb.append(line.substring(inx+5, line.length()));
                } else
                {

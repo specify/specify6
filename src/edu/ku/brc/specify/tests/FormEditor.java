@@ -165,6 +165,7 @@ public class FormEditor implements DatabaseLoginListener
      * this method should be invoked from the
      * event-dispatching thread.
      */
+    @SuppressWarnings("unused")
     private void initialize()
     {
         UICacheManager.getInstance(); // initializes it first thing

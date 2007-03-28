@@ -68,9 +68,9 @@ public class ListSlider extends JPanel
     private JButton             removeAllButton;      
     private Dimension           preferredListSize = new Dimension(200,200);
     private Dimension           minimumListSize = new Dimension(50,50);
-    private Dimension           maximumListSize = new Dimension(500,500);
+    //private Dimension           maximumListSize = new Dimension(500,500);
     private boolean             isGrowableList = true;
-    private DefaultListCellRenderer cellRenderer = null;
+    //private DefaultListCellRenderer cellRenderer = null;
     
     /**
      * Constructor
@@ -296,11 +296,6 @@ public class ListSlider extends JPanel
     public void setMinimumListSize(Dimension d)
     {
         minimumListSize = d;
-    }
-
-    public void setMaximumListSize(Dimension d)
-    {
-        maximumListSize = d;
     }
 
     public void setGrowableLists(boolean b)

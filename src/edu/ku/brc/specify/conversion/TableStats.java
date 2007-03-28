@@ -119,12 +119,12 @@ public class TableStats
             }
         }
         
-        public int getColNameIndex(final ResultSet rs, final String name) throws SQLException
+        public int getColNameIndex(final ResultSet rs, final String colNameArg) throws SQLException
         {
             for (int i=1;i<rs.getMetaData().getColumnCount();i++)
             {
                 String colName = rs.getMetaData().getColumnName(i);
-                if (colName.equals(name))
+                if (colName.equals(colNameArg))
                 {
                     return i;
                 }

@@ -70,8 +70,8 @@ public class EMailHelper
 
     public enum AccountType {Unknown, POP3, IMAP}
 
-    public static final String POP3       = "POP3";
-    public static final String IMAP       = "IMAP";
+    public static final String POP3_STR   = "POP3";
+    public static final String IMAP_STR   = "IMAP";
     public static final String PLAIN_TEXT = "text/plain";
     public static final String HTML_TEXT  = "text/html";
 
@@ -332,7 +332,7 @@ public class EMailHelper
      */
     public static boolean isIMAP(final String acctType)
     {
-        return acctType != null && acctType.equals(IMAP);
+        return acctType != null && acctType.equals(IMAP_STR);
     }
 
     /**

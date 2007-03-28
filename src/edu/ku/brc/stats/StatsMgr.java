@@ -298,7 +298,7 @@ public class StatsMgr
                 }
 
                 Element titleElement = (Element)element.selectSingleNode("title");
-                if (sqlElement == null)
+                if (titleElement == null)
                 {
                     throw new RuntimeException("sql element is null!");
                 }

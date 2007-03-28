@@ -56,9 +56,11 @@ import edu.ku.brc.ui.validation.ValFormattedTextField;
 import edu.ku.brc.ui.validation.ValTextField;
 
 /**
+ * This Panel holds the form elements for Template definition of a Workbench.
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Mar 8, 2007
  *
@@ -193,7 +195,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     }
     
     /**
-     * @return WorkbenchPaneSS
+     * @return the WorkbenchPaneSS
      */
     public WorkbenchPaneSS getWorkbenchPane()
     {
