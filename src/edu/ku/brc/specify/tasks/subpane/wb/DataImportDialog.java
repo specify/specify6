@@ -77,6 +77,7 @@ import edu.ku.brc.ui.UIHelper;
  * Created Date: Mar 26, 2007
  *
  */
+@SuppressWarnings("serial")
 public class DataImportDialog extends JDialog implements ActionListener // implements ChangeListener 
 {
     // ConfigureCSV conf = new ConfigureCSV();
@@ -93,12 +94,11 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     private JRadioButton           other;
     private JTextField          otherText;
     private char                delimiterChar;
+    @SuppressWarnings("unused")
     private char                stringQualifierChar;
-    private JSpinner spinner;
     private JLabel textQualLabel;
     private JComboBox textQualCombo;
     private JCheckBox containsHeaders;
-    private int importFromRowNum = -1;
     private static final Logger log = Logger.getLogger(DataImportDialog.class);
     
     private boolean isCsvImport = true;
@@ -444,11 +444,11 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
          */
         public void keyReleased(KeyEvent ke)
         {
-            log.debug("character typed");
-            // make sure the user has entered a text string in teh find box before enabling find buttons
-            boolean charentered = (otherText.getText().length() == 1);
-            delimiterChar = otherText.getText().toCharArray()[0];
-            log.debug("char entered: " + delimiterChar);
+//            log.debug("character typed");
+//            // make sure the user has entered a text string in teh find box before enabling find buttons
+//            boolean charentered = (otherText.getText().length() == 1);
+//            delimiterChar = otherText.getText().toCharArray()[0];
+//            log.debug("char entered: " + delimiterChar);
             //if(replaceField!=null) replaceTextState = (replaceField.getText().length() > 0);
             //nextButton.setEnabled(findTextState);
             //memoryReplaceButton.setEnabled(findTextState && replaceTextState);
