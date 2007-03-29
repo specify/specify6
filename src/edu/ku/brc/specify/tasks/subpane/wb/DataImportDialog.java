@@ -82,9 +82,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     // ConfigureCSV conf = new ConfigureCSV();
 
     JButton                     cancelBtn;
-    JButton                     backBtn;
-    JButton                     nextBtn;
-    JButton                     finishBtn;
+    //JButton                     backBtn;
+    //JButton                     nextBtn;
+    JButton                     okBtn;
     JButton                     helpBtn;
     private JRadioButton           tab;
     private JRadioButton           space;
@@ -96,8 +96,14 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     //private char                delimiterChar;
     @SuppressWarnings("unused")
     private char                stringQualifierChar;
+    private char                delimChar;
     private JLabel textQualLabel;
     private JComboBox textQualCombo;
+    
+    private JLabel charSetLabel;
+    private JComboBox charSetCombo;
+    private JLabel escapeModeLabel;
+    private JComboBox escapeModeCombo;
     private JCheckBox containsHeaders;
     private static final Logger log = Logger.getLogger(DataImportDialog.class);
     
@@ -106,45 +112,62 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     /**
      * 
      */
-    public DataImportDialog(final Frame frame, final String title)
+    public DataImportDialog(final Frame frame, final String title, final String filePathName)
     {
-        setContentPane(createConfigPanel(isCsvImport));
-        setTitle(getResourceString("logintitle"));
+        setContentPane(createConfigPanel(filePathName, isCsvImport));
+        setTitle(getResourceString(title));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         pack();
     }
 
-    public JPanel createConfigPanel(boolean isCSV)
+    public JPanel createConfigPanel(String filePathName, boolean isCSV)
     {
-        JPanel configPanel = new FormDebugPanel();
+        //JPanel configPanel = new FormDebugPanel();
+        JPanel configPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "5dlu, p,3dlu , p:g,3dlu,", // columns
+                "5px, 15px,p,30px , p:g,15px,", // columns
                 
-                "5dlu," + //padding
-                "p,15dlu, " +//directions
-                "p,15dlu, " +//delim panel
-                "p, 3dlu,"+//previe separator
-                "p,3dlu," + //tablePreview
-                "p,5dlu" //buttongs
+                "5px," + //padding
+                //"p,15px, " +//directions
+                "p,3px, " +//separator     
+                "p,10px, " +//delim panel
+                //"p,15px, " +//separator           
+                "p,3px, " +//file info separator
+                "p,3px, " +//file info lable
+                "p,10px, " +//row header
+                "p, 3px,"+//previe separator
+                "p,10px," + //tablePreview
+                "p,10px" //buttongs
                 ), configPanel);// rows
 
        // JLabel directions = new JLabel(getResourceString("DELIM_EXPLAIN"));
         
-        JTextArea directions = new JTextArea(getResourceString("DELIM_EXPLAIN"));
-        directions.setLineWrap(true);
-        directions.setWrapStyleWord(true);
-        directions.setEditable(false);
-        directions.setBackground(builder.getPanel().getBackground());
+//        JTextArea directions = new JTextArea(getResourceString("DELIM_EXPLAIN"));
+//        directions.setLineWrap(true);
+//        directions.setWrapStyleWord(true);
+//        directions.setEditable(false);
+//        directions.setBackground(builder.getPanel().getBackground());
         //directions.setFont(builder.getPanel().getFont());
+        JLabel fileInfo = new JLabel(getResourceString("FILE_PREVIEW") + " " + filePathName);
+        JPanel buttonpanel = buildButtons();
+        containsHeaders = new JCheckBox(getResourceString("COLUMN_HEAD"));
+        containsHeaders.setSelected(true);
         
-        builder.add(directions, cc.xyw(2,2,4));
-        builder.add(createDelimiterPanel(), cc.xy(2, 4));        
-        builder.add(createOtherControlsPanel(), cc.xy(4, 4));
+        //builder.add         (directions,                            cc.xyw(2,2,4));
+        builder.addSeparator(getResourceString("DATA_IMPORT_OPS"),  cc.xyw(2,2,4)); 
+        builder.add         (createDelimiterPanel(),                cc.xy (3,4));        
+        builder.add         (createOtherControlsPanel(),            cc.xy (5,4));       
+        //builder.addSeparator("",                                    cc.xyw(2,6,4));      
+          
+        builder.addSeparator(getResourceString("FILE_IMPORT"),      cc.xyw(2,6,4));
+        builder.add         (fileInfo,                              cc.xyw(3,8,4));
+        builder.add         (containsHeaders,                       cc.xyw(3,10,3));   
         
-        builder.addSeparator(getResourceString("DATA_PREVIEW"),    cc.xyw(2, 6,4));
-        builder.add(createTablePreview(null),                       cc.xyw(2, 8,4));
-        builder.add(buildButtons(),          cc.xyw(2,10,4)); 
+        builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,12,4));
+        builder.add         (createTablePreview(null),              cc.xyw(3,14,3));       
+        builder.add         (buttonpanel,                           cc.xyw(2,16,4)); 
+        configPanel.setMinimumSize(buttonpanel.getMinimumSize());
         return configPanel;
     }
 
@@ -152,9 +175,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     {
 
         cancelBtn = new JButton(getResourceString("Cancel"));
-        backBtn = new JButton(getResourceString("Back"));
-        nextBtn = new JButton(getResourceString("Next"));
-        finishBtn = new JButton(getResourceString("Finish"));
+        okBtn = new JButton(getResourceString("OK"));
         helpBtn = new JButton(getResourceString("Help"));
 
         cancelBtn.addActionListener(new ActionListener()
@@ -165,23 +186,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
             }
         });
 
-        backBtn.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                log.debug("back button clicked");
-            }
-        });
-
-        nextBtn.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                log.debug("next button clicked");
-            }
-        });
-
-        finishBtn.addActionListener(new ActionListener()
+        okBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -189,9 +194,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
             }
         });
 
-        getRootPane().setDefaultButton(nextBtn);
+        getRootPane().setDefaultButton(okBtn);
         HelpMgr.registerComponent(helpBtn, "configcsv");
-        return ButtonBarFactory.buildRightAlignedBar(helpBtn, cancelBtn, backBtn, nextBtn, finishBtn);
+        return  ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn);
     }
     
     public JPanel createOtherControlsPanel()
@@ -199,35 +204,50 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         JPanel myPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         FormLayout formLayout = new FormLayout(
-                "p,3dlu, p,3dlu",// p,3dlu", 
-                //"p,3dlu, " + //
-                "p,3dlu,   p,3dlu");
+                "p,3px, p,3px",// p,3px", 
+                //"p,3px, " + //
+                "p,4px,   p,4px,  p,4px,  p,4px");
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
 
         textQualLabel = new JLabel(getResourceString("TEXT_QUAL"));
-        
-        String[] qualifiers = { "  \"", "  \'", "{none}" };
-
+        String[] qualifiers = { "\"", "\'", "{none}" };
         textQualCombo = new JComboBox(qualifiers);
         textQualCombo.setSelectedIndex(0);
         textQualCombo.addActionListener(this);
-        //textQualCombo
+
+
+        charSetLabel = new JLabel(getResourceString("CHAR_SET"));
+        String[] charsets = { "DEFAULT", "US-ASCII", "ISO-8859-1", "UTF-8" };
+        charSetCombo = new JComboBox(charsets);
+        charSetCombo.setSelectedIndex(0);
+        charSetCombo.addActionListener(this);
         
-        containsHeaders = new JCheckBox("First row contain column headers");
+        escapeModeLabel = new JLabel(getResourceString("ESCAPE_MODE"));
+        String[] escapeModes = { "backslash", "doubled"};
+        escapeModeCombo = new JComboBox(escapeModes);
+        escapeModeCombo.setSelectedIndex(0);
+        escapeModeCombo.addActionListener(this);
+
         builder.add(textQualLabel,    cc.xy(1, 1));
         builder.add(textQualCombo,    cc.xy(3, 1));     
-        builder.add(containsHeaders,    cc.xyw(1, 3,3));     
+        builder.add(charSetLabel,    cc.xy(1, 3));
+        builder.add(charSetCombo,    cc.xy(3, 3));            
+        builder.add(escapeModeLabel,    cc.xy(1, 5));
+        builder.add(escapeModeCombo,    cc.xy(3, 5));   
+
         return myPanel;       
     }
+    
     /** Listens to the combo box. */
     public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
-        String qualifier = (String)cb.getSelectedItem();
-        if(qualifier.equals("  \""))
+        String str = (String)cb.getSelectedItem();
+        //cb.getS
+        if(str.equals("\""))
         {
             stringQualifierChar = '\'';
         }
-        else if(qualifier.equals("  \'"))
+        else if(str.equals("\'"))
         {
             stringQualifierChar = '\'';
         }
@@ -239,27 +259,34 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         JPanel myPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         FormLayout formLayout = new FormLayout(
-                "p,p,3dlu, p:g,3dlu, p,3dlu,p,3dlu,",// p,3dlu", 
-                //"p,3dlu, " + //
-                "p,3dlu,   p,3dlu, p,3dlu , p,3dlu , p,3dlu , p,3dlu, p,3dlu ");
+                "p,p,2px, p:g,2px, p,2px,p,2px,",// p,3px", 
+                //"p,3px, " + //
+                "p,2px,   p,2px, p,2px , p,2px , p,2px , p,2px, p,2px ");
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
-
+        Color curColor = myPanel.getBackground();
+        Color newColor = curColor;//.brighter();
         
         
         tab = new JRadioButton(getResourceString("TAB"));
         tab.addItemListener(new CheckboxItemListener());
+        tab.setBackground(newColor);
         
         space = new JRadioButton(getResourceString("SPACE"));
         space.addItemListener(new CheckboxItemListener());
+        space.setBackground(newColor);
 
         comma = new JRadioButton(getResourceString("COMMA"));
         comma.addItemListener(new CheckboxItemListener());
-
+        comma.setSelected(true);
+        comma.setBackground(newColor);
+        
         semicolon = new JRadioButton(getResourceString("SEMICOLON"));
         semicolon.addItemListener(new CheckboxItemListener());
+        semicolon.setBackground(newColor);
         
         other = new JRadioButton(getResourceString("OTHER"));
         other.addItemListener(new CheckboxItemListener());
+        other.setBackground(newColor);
         
         otherText = new JTextField();
         otherText.addKeyListener(new CharFieldKeyAdapter());
@@ -275,15 +302,16 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         group.add(semicolon);
         
         //builder.add(directions,                                     cc.xywh(2, 1,  8, 1));
-        builder.addSeparator(getResourceString("SELECT_DELIMS"),    cc.xyw(1, 1, 6));
-        builder.add(tab,                                            cc.xyw(1, 3,4));
-        builder.add(space,                                          cc.xyw(1, 5,4));
-        builder.add(comma,                                          cc.xyw(1, 7,4));
-        builder.add(semicolon,                                      cc.xyw(1, 9,4));
+        builder.addSeparator(getResourceString("SELECT_DELIMS"),    cc.xyw(1, 1, 4));
+        builder.add(comma,                                            cc.xyw(1, 3,4));
+        builder.add(semicolon,                                          cc.xyw(1, 5,4));
+        builder.add(space,                                          cc.xyw(1, 7,4));
+        builder.add(tab,                                      cc.xyw(1, 9,4));
         builder.add(other,                                          cc.xy(1, 11));
         builder.add(otherText,                                      cc.xy(2, 11));
         
         
+        myPanel.setBackground(newColor);
         return myPanel;
     }
     
@@ -346,7 +374,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         JScrollPane pane = new JScrollPane(t, 
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
                  JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        pane.setPreferredSize(new Dimension(100,100));
+        pane.setPreferredSize(new Dimension(500,100));
         //pane.add(t);
         //pane.set
         //pane.p
@@ -358,65 +386,14 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     {
         
     }
-    /**
-     * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
-     * @param tableArg the table that should have it's columns adjusted
-     */
-//    private void initColumnSizes(final JTable tableArg) 
-//    {
-//        TableModel  tblModel    = tableArg.getModel();
-//        TableColumn column      = null;
-//        Component   comp        = null;
-//        int         headerWidth = 0;
-//        int         cellWidth   = 0;
-//        
-//        TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
-//
-//        GridCellEditor cellEditor = new GridCellEditor();
-//        //UICacheManager.getInstance().hookUpUndoableEditListener(cellEditor);
-//        
-//        for (int i = 0; i < tblModel.getColumnCount(); i++) 
-//        {
-//            column = tableArg.getColumnModel().getColumn(i);
-//
-//            comp = headerRenderer.getTableCellRendererComponent(
-//                                 null, column.getHeaderValue(),
-//                                 false, false, 0, 0);
-//            headerWidth = comp.getPreferredSize().width;
-//
-//            comp = tableArg.getDefaultRenderer(tblModel.getColumnClass(i)).
-//                                               getTableCellRendererComponent(tableArg, tblModel.getValueAt(0, i), false, false, 0, i);
-//            
-//            cellWidth = comp.getPreferredSize().width;
-//            
-//            //comp.setBackground(Color.WHITE);
-//            
-//            int maxWidth = headerWidth + 10;
-//            TableModel m = tableArg.getModel();
-//            FontMetrics fm     = new JLabel().getFontMetrics(myPanel.getFont());
-//            for (int row=0;row<tableArg.getModel().getRowCount();row++)
-//            {
-//                String text = m.getValueAt(row, i).toString();
-//                maxWidth = Math.max(maxWidth, fm.stringWidth(text)+10);
-//                //System.out.println(i+" "+maxWidth);
-//            }
-//
-//            //XXX: Before Swing 1.1 Beta 2, use setMinWidth instead.
-//            column.setPreferredWidth(Math.max(maxWidth, cellWidth));
-//            
-//            column.setCellEditor(cellEditor);
-//        }
-//        
-//        //tableArg.setCellEditor(new GridCellEditor());
-//
-//    }
+
     /**
      * @param args
      */
     public static void main(String[] args)
     {
         DataImportDialog dlg = new DataImportDialog((Frame) UICacheManager
-                .get(UICacheManager.FRAME), "Column Mapper");
+                .get(UICacheManager.FRAME), getResourceString("IMPORT_CVS"), "c:\\work\\blah\\blah\\filename.csv");
 
         UIHelper.centerAndShow(dlg);
     }
@@ -444,17 +421,20 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
          */
         public void keyReleased(KeyEvent ke)
         {
-//            log.debug("character typed");
-//            // make sure the user has entered a text string in teh find box before enabling find buttons
-//            boolean charentered = (otherText.getText().length() == 1);
-//            delimiterChar = otherText.getText().toCharArray()[0];
-//            log.debug("char entered: " + delimiterChar);
-            //if(replaceField!=null) replaceTextState = (replaceField.getText().length() > 0);
-            //nextButton.setEnabled(findTextState);
-            //memoryReplaceButton.setEnabled(findTextState && replaceTextState);
-            //make sure the user has entered a text string in teh replace textfield before enabling replace buttons
-            //if(replaceButton!=null)replaceButton.setEnabled(findTextState && replaceTextState);
-            //if(replaceAllButton!=null)replaceAllButton.setEnabled(findTextState && replaceTextState);
+            if(otherText.getText().length() == 1)
+            {                
+                delimChar = otherText.getText().toCharArray()[0];
+                log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
+            }            
+            else if(otherText.getText().length()==0)
+            {
+                delimChar = ',';
+                log.debug("Other value cleared for delimiter setting to default: ["+ delimChar +"]" );
+            }
+            else
+            {
+                log.error("Other field should not allow more that one character as a delimiter");
+            }
         }
     }
     
@@ -483,11 +463,38 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
          */
         public void itemStateChanged(ItemEvent e)
         {
+            
+//            private JRadioButton           tab;
+//            private JRadioButton           space;
+//            private JRadioButton           semicolon;
+//            private JRadioButton           comma;
+//            private JRadioButton           other;
+            
+            
+            if(other==null)return;
             if (other.isSelected())
             {
                 otherText.setEditable(true);
                 otherText.requestFocus();
-            } else otherText.setEditable(false);
+            } else if(tab.isSelected())
+            {
+                delimChar = '\t';
+            }else if(space.isSelected())
+            {
+                delimChar = ' ';
+            }
+            else if(semicolon.isSelected())
+            {
+                delimChar = ';';
+            }
+            else if(comma.isSelected())
+            {
+                delimChar = ',';
+            }
+            else
+            {
+                otherText.setEditable(false);
+            }
             updateTableDispaly();
         }
     }  
@@ -600,5 +607,37 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 Toolkit.getDefaultToolkit().beep();
             }
         }
+    }
+
+    /**
+     * @return the stringQualifierChar
+     */
+    public char getStringQualifierChar()
+    {
+        return stringQualifierChar;
+    }
+
+    /**
+     * @param stringQualifierChar the stringQualifierChar to set
+     */
+    public void setStringQualifierChar(char stringQualifierChar)
+    {
+        this.stringQualifierChar = stringQualifierChar;
+    }
+
+    /**
+     * @return the delimChar
+     */
+    public char getDelimChar()
+    {
+        return delimChar;
+    }
+
+    /**
+     * @param delimChar the delimChar to set
+     */
+    public void setDelimChar(char delimChar)
+    {
+        this.delimChar = delimChar;
     }
 }
