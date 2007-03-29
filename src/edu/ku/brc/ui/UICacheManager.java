@@ -934,6 +934,7 @@ public class UICacheManager
                                      new Integer(KeyEvent.VK_X),
                                      KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(cutAction);
+       cutAction.setEnabled(false);
        actionMap.put(CUT, cutAction);
        
        Action copyAction = makeAction(DefaultEditorKit.CopyAction.class,
@@ -944,6 +945,7 @@ public class UICacheManager
                                       new Integer(KeyEvent.VK_C),
                                       KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(copyAction);
+       copyAction.setEnabled(false);
        actionMap.put(COPY, copyAction);
        
        Action pasteAction = makeAction(DefaultEditorKit.PasteAction.class,
@@ -953,6 +955,7 @@ public class UICacheManager
                                        "Paste contents of clipboard",
                                        new Integer(KeyEvent.VK_P),
                                        KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+       pasteAction.setEnabled(false);
        menu.add(pasteAction);
        actionMap.put(PASTE, pasteAction);
        /*
@@ -975,9 +978,22 @@ public class UICacheManager
                new Integer(KeyEvent.VK_F),
                KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         menu.add(launchReplaceAction);
+        launchReplaceAction.setEnabled(false);
         actionMap.put(FINDREPLACE, launchReplaceAction);
 
        return menu;
+    }
+    
+    
+    /**
+     * Enables/Disables Cut/Copy/Paste.
+     * @param enable true/false
+     */
+    public static void enableCutCopyPaste(final boolean enable)
+    {
+        instance.actionMap.get(CUT).setEnabled(enable);
+        instance.actionMap.get(COPY).setEnabled(enable);
+        instance.actionMap.get(PASTE).setEnabled(enable);
     }
 
     @SuppressWarnings("unchecked")

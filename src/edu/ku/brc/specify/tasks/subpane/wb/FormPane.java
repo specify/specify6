@@ -302,8 +302,16 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             controlProperties = new EditFormControl((Frame)UICacheManager.get(UICacheManager.FRAME), "Properties", selectedInputPanel, this); // I18N
         }
         controlProperties.setVisible(true);
+        if (!controlProperties.isCancelled())
+        {
+            workbenchPane.gridColumnsUpdated();
+        }
     }
     
+    /**
+     * Tells the pane whether it is about to show or not.
+     * @param show true show, false hide
+     */
     public void showingPane(final boolean show)
     {
         if (show)
@@ -324,6 +332,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     }
     
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setVisible(boolean)
+     */
     @Override
     public void setVisible(boolean aFlag)
     {

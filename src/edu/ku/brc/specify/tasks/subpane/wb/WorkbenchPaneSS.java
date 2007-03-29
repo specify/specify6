@@ -224,6 +224,18 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
         
+        /*
+        spreadSheet.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e)
+            {
+                UICacheManager.enableCutCopyPaste(true);
+            }
+            public void focusLost(FocusEvent e)
+            {
+                UICacheManager.enableCutCopyPaste(false);
+            }
+        });*/
+        
         findPanel = spreadSheet.getFindReplacePanel();
         UICacheManager.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
     
@@ -494,6 +506,13 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
     }
     
+    /**
+     * @param comp
+     * @param keyCode
+     * @param actionName
+     * @param action
+     * @return
+     */
     protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action)
     {
         InputMap  inputMap  = comp.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -534,6 +553,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 }
             }
         };
+    }
+    
+    /**
+     * Tells the GridModel to update itself. 
+     */
+    public void gridColumnsUpdated()
+    {
+        model.fireTableStructureChanged();
     }
     
     /**

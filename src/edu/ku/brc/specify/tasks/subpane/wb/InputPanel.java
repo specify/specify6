@@ -107,6 +107,8 @@ public class InputPanel extends JPanel implements GhostActionable
             setLocation(wbtmi.getXCoord(), wbtmi.getYCoord());
         }
         doLayout();
+        
+        dragFlavors.add(INPUTPANEL_FLAVOR);
     }
     
     /* (non-Javadoc)

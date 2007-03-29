@@ -175,7 +175,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 repaint();
                 
                 Point pnt = e.getPoint();
-                boolean clicked = Math.abs(pnt.x - downME.x) < 6 && Math.abs(pnt.y - downME.y) < 6;
+                boolean clicked = Math.abs(pnt.x - downME.x) < 4 && Math.abs(pnt.y - downME.y) < 4;
                 Rectangle r = itself.getBounds();
                 r.x = 0;
                 r.y = 0;
