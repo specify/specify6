@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
-package edu.ku.brc.specify.help;
+package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
@@ -21,6 +21,7 @@ import javax.help.InvalidHelpSetContextException;
 import javax.help.Map;
 import javax.swing.AbstractButton;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -31,8 +32,11 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
+ * Help System Wrapper to make it easier to start and load help.
+ * 
  * @author timbo
  * 
  * @code_status Beta
@@ -44,7 +48,7 @@ public class HelpMgr
 
     protected static HelpSet    hs;
     protected static HelpBroker hb;
-    protected static String     helpSystemName = "SpecifyHelp";
+    protected static String     helpSystemName;
     protected static JMenu      helpMenu;
     protected static JMenuItem  mainHelpMenuItem;
 
@@ -66,14 +70,18 @@ public class HelpMgr
 
     /**
      * Creates a Helpset and HelpBroker.
+     * @param helpName the name of the help
      */
-    public static void initializeHelp()
+    public static void initializeHelp(final String helpName)
     {
+        helpSystemName = helpName;
+        
         // Find the HelpSet file and create the HelpSet object:
         ClassLoader cl = Specify.class.getClassLoader();
         try
         {
-            URL hsURL = HelpSet.findHelpSet(cl, helpSystemName);
+            
+            URL hsURL = HelpSet.findHelpSet(cl, helpName);
             hs = new HelpSet(cl, hsURL);
 
         } catch (Exception ee)
@@ -88,14 +96,15 @@ public class HelpMgr
 
     /**
      * Adds a help menu to the main menu
+     * @param appName the name of the menu item usuall the Application name.
      */
-    public static void initializeHelpUI()
+    public static void initializeHelpUI(final String appName)
     {
-        helpMenu = new JMenu(getResourceString("Help"));
-        mainHelpMenuItem = new JMenuItem("Specify");
+        helpMenu         = new JMenu(getResourceString("Help"));
+        mainHelpMenuItem = new JMenuItem(appName);
         mainHelpMenuItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
         helpMenu.add(mainHelpMenuItem);
-        Specify.getSpecify().getMenuBar().add(helpMenu);
+        ((JMenuBar)UICacheManager.get(UICacheManager.MENUBAR)).add(helpMenu);
         registerComponent(mainHelpMenuItem, true);
     }
 

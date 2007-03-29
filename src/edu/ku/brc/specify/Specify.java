@@ -77,10 +77,10 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.Collector;
-import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.CollectorActionListener;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -946,7 +946,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UICacheManager.register(UICacheManager.FRAME, topFrame);
                 
-                HelpMgr.initializeHelpUI();
+                HelpMgr.initializeHelpUI("Specify");
             }
             
             initStartUpPanels(databaseNameArg, userNameArg);
@@ -1144,7 +1144,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               }
               
               
-              HelpMgr.initializeHelp();
+              HelpMgr.initializeHelp("SpecifyHelp");
               
               // Startup Specify
               Specify specify = new Specify();

@@ -60,12 +60,12 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.help.HelpMgr;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.FieldNameRenderer;
 import edu.ku.brc.specify.tasks.subpane.TableFieldPair;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 
 

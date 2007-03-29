@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.factories.ButtonBarFactory;
 
-import edu.ku.brc.specify.help.HelpMgr;
+import edu.ku.brc.specify.ui.HelpMgr;
 
 /**
  * Choose an object from a list of Objects using their "toString"

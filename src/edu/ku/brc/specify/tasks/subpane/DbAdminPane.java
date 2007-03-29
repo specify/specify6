@@ -60,7 +60,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.help.HelpMgr;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.ListSlider;
 
 /**
