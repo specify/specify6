@@ -94,37 +94,37 @@ public class LatLonConverter
             
             return decFormatter2.format(num) + " " + minutes + " " + seconds;
             
-        } else
-        {
-            double num       = Math.abs(bc.doubleValue());
-            int    whole     = (int)Math.floor(num);
-            double remainder = num - whole;
-            
-            double minutes      = remainder * 60.0;
-            int    minutesWhole = (int)Math.floor(minutes);
-            double secondsFraction = minutes - minutesWhole;
-            double seconds = secondsFraction * 60.0;
-            
-            StringBuilder sb = new StringBuilder();
-            if (degreesFMT == DEGREES_FORMAT.Symbol)
-            {
-                sb.append("\u00B0");
-            }
-            sb.append(whole);
-            sb.append(' ');
-            sb.append(minutesWhole);
-            sb.append(' ');
-            sb.append(StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0"));
-            
-            if (degreesFMT == DEGREES_FORMAT.String)
-            {
-                int inx = bc.doubleValue() < 0.0 ? 1 : 0;
-                sb.append(' ');
-                sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
-            }
-            //return whole + (DEGREES_FORMAT.None ? "\u00B0" : "") + " " + minutesWhole + " " + StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0");
-            return sb.toString();
         }
+        //else
+        
+        double num       = Math.abs(bc.doubleValue());
+        int    whole     = (int)Math.floor(num);
+        double remainder = num - whole;
+        
+        double minutes      = remainder * 60.0;
+        int    minutesWhole = (int)Math.floor(minutes);
+        double secondsFraction = minutes - minutesWhole;
+        double seconds = secondsFraction * 60.0;
+        
+        StringBuilder sb = new StringBuilder();
+        if (degreesFMT == DEGREES_FORMAT.Symbol)
+        {
+            sb.append("\u00B0");
+        }
+        sb.append(whole);
+        sb.append(' ');
+        sb.append(minutesWhole);
+        sb.append(' ');
+        sb.append(StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0"));
+        
+        if (degreesFMT == DEGREES_FORMAT.String)
+        {
+            int inx = bc.doubleValue() < 0.0 ? 1 : 0;
+            sb.append(' ');
+            sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+        }
+        //return whole + (DEGREES_FORMAT.None ? "\u00B0" : "") + " " + minutesWhole + " " + StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0");
+        return sb.toString();
     }
     
     /**
@@ -162,33 +162,33 @@ public class LatLonConverter
             //System.out.println("["+decFormatter2.format(num)+"]["+minutes+"]");
             return decFormatter2.format(num) + " " + minutes;
             
-        } else
-        {
-            double num       = Math.abs(bc.doubleValue());
-            int    whole     = (int)Math.floor(num);
-            double remainder = num - whole;
-            
-            double minutes = remainder * 60.0;
-            //System.out.println("["+whole+"]["+String.format("%10.10f", new Object[] {minutes})+"]");
-            
-            StringBuilder sb = new StringBuilder();
-            if (degreesFMT == DEGREES_FORMAT.Symbol)
-            {
-                sb.append("\u00B0");
-            }
-            sb.append(whole);
-            sb.append(' ');
-            sb.append(StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0"));
-            
-            if (degreesFMT == DEGREES_FORMAT.String)
-            {
-                int inx = bc.doubleValue() < 0.0 ? 1 : 0;
-                sb.append(' ');
-                sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
-            }
-            //return whole + (degreesFMT == DEGREES_FORMAT.Symbol ? "\u00B0" : "") + " " + StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0");
-            return sb.toString();
         }
+        //else
+        
+        double num       = Math.abs(bc.doubleValue());
+        int    whole     = (int)Math.floor(num);
+        double remainder = num - whole;
+        
+        double minutes = remainder * 60.0;
+        //System.out.println("["+whole+"]["+String.format("%10.10f", new Object[] {minutes})+"]");
+        
+        StringBuilder sb = new StringBuilder();
+        if (degreesFMT == DEGREES_FORMAT.Symbol)
+        {
+            sb.append("\u00B0");
+        }
+        sb.append(whole);
+        sb.append(' ');
+        sb.append(StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0"));
+        
+        if (degreesFMT == DEGREES_FORMAT.String)
+        {
+            int inx = bc.doubleValue() < 0.0 ? 1 : 0;
+            sb.append(' ');
+            sb.append(direction == DIRECTION.NorthSouth ? northSouth[inx] : eastWest[inx]);
+        }
+        //return whole + (degreesFMT == DEGREES_FORMAT.Symbol ? "\u00B0" : "") + " " + StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0");
+        return sb.toString();
         
     }
         
