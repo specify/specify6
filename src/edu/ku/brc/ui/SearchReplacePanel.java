@@ -70,9 +70,12 @@ public class SearchReplacePanel extends JPanel
     private SearchableJXTable table;
     private Pattern                  pattern;
     private Searchable               searchable;
+    @SuppressWarnings("unused")
     private boolean                  isStartOfSearch         = true;
     private boolean                  isSearchDown            = true;
+    @SuppressWarnings("unused")
     private boolean                  isFinishedSearchingDown = false;
+    @SuppressWarnings("unused")
     private boolean                  isFinishedSearchingUp   = true;
     private int                      lastIndex               = -1;
 
