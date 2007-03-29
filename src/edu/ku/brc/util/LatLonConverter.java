@@ -399,4 +399,55 @@ public class LatLonConverter
         }
         return "";
     }
+    
+    public static BigDecimal convertDirectionalDDMMSSToDDDD(final String str)
+    {
+        String[] parts = StringUtils.split(str);
+        double p0 =  Double.parseDouble(parts[0]);
+        double p1 =  Double.parseDouble(parts[1]);
+        double p2 =  Double.parseDouble(parts[2]);
+        String dir = parts[3].substring(0, 1);
+
+        BigDecimal val = new BigDecimal(p0 + ((p1 + (p2 / 60.0)) / 60.0));
+
+        if ( isNegative(dir) )
+        {
+            val = val.multiply(minusOne);
+        }
+
+        return val;
+    }
+
+    public static BigDecimal convertDirectionalDDMMMMToDDDD(final String dm)
+    {
+        String[] parts = StringUtils.split(dm);
+        double p0 =  Double.parseDouble(parts[0]);
+        double p1 =  Double.parseDouble(parts[1]);
+        String dir = parts[2].substring(0, 1);
+
+        BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
+
+        if ( isNegative(dir) )
+        {
+            val = val.multiply(minusOne);
+        }
+
+        return val;
+    }
+
+    public static BigDecimal convertDirectionalDDDDToDDDD(final String str)
+    {
+        String[] parts = StringUtils.split(str);
+        double p0  = Double.parseDouble(parts[0]);
+        String dir = parts[1].substring(0, 1);
+        
+        BigDecimal val = new BigDecimal(p0);
+
+        if ( isNegative(dir) )
+        {
+            val = val.multiply(minusOne);
+        }
+
+        return val;
+    }
 }
