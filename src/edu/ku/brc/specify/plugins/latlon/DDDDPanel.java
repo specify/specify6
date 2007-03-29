@@ -34,6 +34,7 @@ import edu.ku.brc.ui.validation.DataChangeNotifier;
 import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.ValTextField;
 import edu.ku.brc.ui.validation.UIValidatable.ErrorType;
+import edu.ku.brc.util.LatLonConverter;
 
 /**
  * 

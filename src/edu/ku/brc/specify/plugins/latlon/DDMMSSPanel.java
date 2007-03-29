@@ -6,7 +6,8 @@
  */
 
 package edu.ku.brc.specify.plugins.latlon;
-import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.stripZeroes;
+import static edu.ku.brc.util.LatLonConverter.stripZeroes;
+
 import javax.swing.JLabel;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +16,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
 import edu.ku.brc.ui.validation.ValTextField;
+import edu.ku.brc.util.LatLonConverter;
 
 /**
  * Used for entering lat/lon data in the Degrees, Minutes, and Decimal Seconds.

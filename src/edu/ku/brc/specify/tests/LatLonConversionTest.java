@@ -14,12 +14,12 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.convertDDDDToDDDD;
-import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.convertDDMMMMToDDDD;
-import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.convertDDMMSSToDDDD;
-import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.convertToDDDDDD;
-import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.convertToDDMMMM;
-import static edu.ku.brc.specify.plugins.latlon.LatLonConverter.convertToDDMMSS;
+import static edu.ku.brc.util.LatLonConverter.convertDDDDToDDDD;
+import static edu.ku.brc.util.LatLonConverter.convertDDMMMMToDDDD;
+import static edu.ku.brc.util.LatLonConverter.convertDDMMSSToDDDD;
+import static edu.ku.brc.util.LatLonConverter.convertToDDDDDD;
+import static edu.ku.brc.util.LatLonConverter.convertToDDMMMM;
+import static edu.ku.brc.util.LatLonConverter.convertToDDMMSS;
 
 import java.math.BigDecimal;
 
@@ -27,11 +27,11 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.plugins.latlon.LatLonConverter;
-import edu.ku.brc.specify.plugins.latlon.LatLonConverter.DEGREES_FORMAT;
-import edu.ku.brc.specify.plugins.latlon.LatLonConverter.DIRECTION;
-import edu.ku.brc.specify.plugins.latlon.LatLonConverter.FORMAT;
-import edu.ku.brc.specify.plugins.latlon.LatLonConverter.LATLON;
+import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.LatLonConverter.DEGREES_FORMAT;
+import edu.ku.brc.util.LatLonConverter.DIRECTION;
+import edu.ku.brc.util.LatLonConverter.FORMAT;
+import edu.ku.brc.util.LatLonConverter.LATLON;
 
 /**
  * Tests conversion of BigDecimal to a String and back to BigDecimal.
@@ -48,7 +48,7 @@ public class LatLonConversionTest extends TestCase
     protected static final Logger log = Logger.getLogger(LatLonConversionTest.class);
     
     /**
-     * Test method for {@link edu.ku.brc.specify.plugins.latlon.LatLonConverter#convertToDDMMSS(java.math.BigDecimal)}.
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertToDDMMSS(java.math.BigDecimal)}.
      */
     public void testConvertToDDMMSS()
     {
@@ -84,7 +84,7 @@ public class LatLonConversionTest extends TestCase
     }
 
     /**
-     * Test method for {@link edu.ku.brc.specify.plugins.latlon.LatLonConverter#convertToDDMMMM(java.math.BigDecimal)}.
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertToDDMMMM(java.math.BigDecimal)}.
      */
     public void testConvertToDDMMMM()
     {
@@ -120,7 +120,7 @@ public class LatLonConversionTest extends TestCase
     }
 
     /**
-     * Test method for {@link edu.ku.brc.specify.plugins.latlon.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
      */
     public void testConvertDDDDToDDDDString()
     {
@@ -168,7 +168,7 @@ public class LatLonConversionTest extends TestCase
     }
     
     /**
-     * Test method for {@link edu.ku.brc.specify.plugins.latlon.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
      */
     public void testDegreesSymbol()
     {

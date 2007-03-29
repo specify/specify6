@@ -5,7 +5,7 @@
  * 
  */
 
-package edu.ku.brc.specify.plugins.latlon;
+package edu.ku.brc.util;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
