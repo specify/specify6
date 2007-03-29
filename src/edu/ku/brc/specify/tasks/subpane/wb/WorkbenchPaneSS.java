@@ -35,6 +35,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.List;
@@ -1298,11 +1299,22 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     }
     
     /**
+     * loads workbench from the database and backs it up (exports to an xls file).
+     */
+    protected void backupObject()
+    {
+        WorkbenchBackupMgr.backupWorkbench(workbench, (WorkbenchTask) task);
+    }
+    
+    /**
      * Save the Data. 
      */
     protected void saveObject()
     {
+        //backup current database contents for workbench
+        backupObject();
 
+        
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -1333,6 +1345,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
             
+           
             hasChanged = false;
 
         } catch (StaleObjectException e) // was StaleObjectStateException
@@ -1356,7 +1369,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
         session.close();
         session = null;
-
+        
     }
     
     /**

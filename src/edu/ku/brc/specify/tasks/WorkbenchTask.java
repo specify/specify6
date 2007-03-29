@@ -1041,7 +1041,7 @@ public class WorkbenchTask extends BaseTask
      * @param items the items to be used for the headers
      * @param cmdAction the command action to send
      */
-    protected void sendExportCommand(final Properties                        props, 
+    public void sendExportCommand(final Properties                        props, 
                                      final Set<WorkbenchTemplateMappingItem> items, 
                                      final CommandAction                     cmdAction)
     {
