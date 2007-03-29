@@ -282,10 +282,20 @@ public class LatLonConverter
     {
         String[] parts = StringUtils.split(str);
         double p0 =  Double.parseDouble(parts[0]);
+        boolean neg = false;
+        if (p0 < 0)
+        {
+            p0 = p0*-1;
+            neg = true;
+        }
         double p1 =  Double.parseDouble(parts[1]);
         double p2 =  Double.parseDouble(parts[2]);
 
         BigDecimal val = new BigDecimal(p0 + ((p1 + (p2 / 60.0)) / 60.0));
+        if (neg)
+        {
+            val = val.multiply(minusOne);
+        }
         return val;
     }
     
@@ -317,10 +327,20 @@ public class LatLonConverter
         
         
         double p0 =  Double.parseDouble(parts[0]);
+        boolean neg = false;
+        if (p0 < 0)
+        {
+            p0 = p0*-1;
+            neg = true;
+        }
         double p1 =  Double.parseDouble(parts[1]);
 
         BigDecimal val = new BigDecimal(p0 + (p1 / 60.0));
 
+        if (neg)
+        {
+            val = val.multiply(minusOne);
+        }
         return val;
     }
     
