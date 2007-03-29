@@ -322,7 +322,10 @@ public class SystemSetupTask extends BaseTask
      * Add an PickList Item to the box
      * @param pickList the pickList to be added
      */
-    protected void addPickList(final String titleArg, final PickList pickList, final String delCmd, final int position)
+    protected void addPickList(@SuppressWarnings("unused") final String titleArg, 
+                               @SuppressWarnings("unused") final PickList pickList, 
+                               @SuppressWarnings("unused") final String delCmd, 
+                               @SuppressWarnings("unused") final int position)
     {/*
         // These value should not be hard coded here
         int                 pickListTableId = DBTableIdMgr.getInstance().lookupIdByShortName("picklist");

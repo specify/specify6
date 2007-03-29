@@ -158,15 +158,27 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             {
                 repaint();
                 wasPopUp = e.isPopupTrigger();
+                if (popupMenu != null && wasPopUp && itself.isEnabled())
+                {
+                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
             }
             
             @Override
             public void mouseReleased(MouseEvent e)
             {
                 repaint();
-                if (isEnabled() && !e.isPopupTrigger() && !wasPopUp)
+                
+                if (itself.isEnabled())
                 {
-                    doAction(itself);
+                    if (popupMenu != null && !wasPopUp && e.isPopupTrigger())
+                    {
+                        popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                        
+                    } else if (!e.isPopupTrigger() && !wasPopUp)
+                    {
+                        doAction(itself);
+                    }
                 }
             }
 
@@ -222,6 +234,15 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             };
             addMouseListener(mouseListener);
         }*/
+    }
+
+    /**
+     * Sets the popup menu
+     * @param popupMenu the pm
+     */
+    public void setPopupMenu(final JPopupMenu popupMenu)
+    {
+        this.popupMenu = popupMenu;
     }
 
     /**

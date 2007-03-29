@@ -18,7 +18,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -301,21 +300,8 @@ public class ColumnMapperPanel extends JPanel
         okBtn     = new JButton(getResourceString("OK")); 
         cancelBtn = new JButton(getResourceString("Cancel"));
         okBtn.setEnabled(false);
-        
-        if (workbenchTemplate != null)
-        {
-            JButton applyBtn = new JButton(getResourceString("Properties")); 
-            builder.add(ButtonBarFactory.buildOKCancelApplyHelpBar(okBtn, cancelBtn, applyBtn, helpBtn), cc.xywh(1, 11, 5, 1));
-            applyBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    editProps();
-                }
-            });
-        } else
-        {
-            builder.add(ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn), cc.xywh(1, 11, 5, 1));
-        }
+
+        builder.add(ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn), cc.xywh(1, 11, 5, 1));
 
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -829,12 +815,12 @@ public class ColumnMapperPanel extends JPanel
 
             closeBtn     = new JLabel(IconManager.getIcon("Close"));
             fieldLabel   = new JLabel(colInfo.getColName());
-            mappingLabel = new JLabel(noMappingStr, JLabel.RIGHT);
+            mappingLabel = new JLabel(noMappingStr, SwingConstants.RIGHT);
             
-            Font font = fieldLabel.getFont();
-            font = new Font(font.getName(), font.getStyle(), font.getSize()-2);
-            fieldLabel.setFont(font);
-            mappingLabel.setFont(font);
+            //Font font = fieldLabel.getFont();
+            //font = new Font(font.getName(), font.getStyle(), font.getSize()-2);
+            //fieldLabel.setFont(font);
+            //mappingLabel.setFont(font);
             
             builder.add(fieldLabel, cc.xy(1,1));
             builder.add(iconLabel = new JLabel(icon), cc.xy(3,1));

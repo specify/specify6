@@ -661,10 +661,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      * @param esrPane the desintation panel of the results
      * @return true if OK
      */
-    public static boolean exeQueryRemote(final File      lucenePath,
-                                        final Analyzer   analyzer,
-                                        final String     searchTextStr,
-                                        final ExpressSearchResultsPaneIFace esrPane)
+    public static boolean exeQueryRemote(final File       lucenePath,
+                                         final Analyzer   analyzer,
+                                         final String     searchTextStr,
+                                         final ExpressSearchResultsPaneIFace esrPane)
     {
         
         HTTPGetter getter = new HTTPGetter();

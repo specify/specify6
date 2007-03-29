@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.RolloverCommand;
@@ -95,7 +96,7 @@ public class InputPanel extends JPanel implements GhostActionable
         setLayout(null);
         
         this.wbtmi = wbtmi;
-        this.label = new JLabel(label, JLabel.RIGHT);
+        this.label = new JLabel(label, SwingConstants.RIGHT);
         this.comp  = comp;
         
         add(this.label);

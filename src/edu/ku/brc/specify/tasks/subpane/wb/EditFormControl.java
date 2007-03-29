@@ -28,6 +28,7 @@ import java.util.Properties;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -107,21 +108,21 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
             Dimension canvasSize  = formPane.getSize();
             Dimension controlSize = inputPanel.getSize();
             
-            panelBlder.add(new JLabel("X:", JLabel.RIGHT), cc.xy(1, y));
+            panelBlder.add(new JLabel("X:", SwingConstants.RIGHT), cc.xy(1, y));
             panelBlder.add(xCoord = new ValSpinner(0, canvasSize.width-controlSize.width, false, false), cc.xy(3, y));
             y += 2;
             
-            panelBlder.add(new JLabel("Y:", JLabel.RIGHT), cc.xy(1, y));
+            panelBlder.add(new JLabel("Y:", SwingConstants.RIGHT), cc.xy(1, y));
             panelBlder.add(yCoord = new ValSpinner(0, canvasSize.height-controlSize.height, false, false), cc.xy(3, y));
             y += 2;
             
-            panelBlder.add(new JLabel("Label:", JLabel.RIGHT), cc.xy(1, y));
+            panelBlder.add(new JLabel("Label:", SwingConstants.RIGHT), cc.xy(1, y));
             panelBlder.add(labelTF = new JTextField(25), cc.xywh(3, y, 2, 1));
             y += 2;
             
             if (inputPanel.getComp() instanceof JTextField)
             {
-                panelBlder.add(new JLabel("Field Columns:", JLabel.RIGHT), cc.xy(1, y));
+                panelBlder.add(new JLabel("Field Columns:", SwingConstants.RIGHT), cc.xy(1, y));
                 panelBlder.add(fieldWidth = new ValSpinner(0, 100, false, false), cc.xy(3, y));
                 y += 2;
             }

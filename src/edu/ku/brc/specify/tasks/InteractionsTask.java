@@ -698,10 +698,8 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Creates an Excel SpreadSheet or CVS file and attaches it to an email and send it to an agent.
-     * 
-     * @param infoRequest the info request to be sent
      */
-    public void createAndSendEMail(final SubPaneIFace subPane)
+    public void createAndSendEMail()
     {
         FormViewObj formViewObj = getCurrentFormViewObj();
         if (formViewObj != null) // Should never happen
@@ -856,10 +854,10 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Starts process to return a loan.
-     * @param doPartial true means show dialog and do partial, false means just return the loan
+     * @param agent the agent doing the return
+     * @param returns the list of items being returned
      */
-    protected void doReturnLoan(final Loan   loan, 
-                                final Agent  agent, 
+    protected void doReturnLoan(final Agent  agent, 
                                 final List<LoanReturnInfo> returns)
     {
         final SwingWorker worker = new SwingWorker()
@@ -942,7 +940,7 @@ public class InteractionsTask extends BaseTask
                 List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
                 if (returns.size() > 0)
                 {
-                    doReturnLoan(loan, dlg.getAgent(), returns);
+                    doReturnLoan(dlg.getAgent(), returns);
                 }
             }
             
@@ -1019,7 +1017,7 @@ public class InteractionsTask extends BaseTask
     {
         if (cmdAction.isAction(CREATE_MAILMSG))
         {
-            createAndSendEMail((SubPaneIFace)cmdAction.getData());
+            createAndSendEMail();
             
         } else if (cmdAction.isAction(PRINT_LOAN))
         {

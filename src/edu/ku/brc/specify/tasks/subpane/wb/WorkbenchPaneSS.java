@@ -42,10 +42,10 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractCellEditor;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -57,7 +57,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -73,6 +72,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
@@ -223,21 +223,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         model       = new GridTableModel(workbench, headers);
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
-        
-        JButton editPropsBtn = UIHelper.createIconBtn("EditIcon", getResourceString("WB_EDIT_PROPS"), new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                if (WorkbenchTask.askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
-                {
-                    //newWorkbenchName = workbench.getName();
-                } else
-                {
-                    //return null;
-                }
-            }
-        });
-        editPropsBtn.setEnabled(true);
-        spreadSheet.getScrollPane().setCorner(JScrollPane.UPPER_LEFT_CORNER, editPropsBtn);
         
         findPanel = spreadSheet.getFindReplacePanel();
         UICacheManager.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
@@ -1206,7 +1191,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
-        GridCellEditor cellEditor = new GridCellEditor();
+        GridCellEditor cellEditor = new GridCellEditor(new JTextField());
         //UICacheManager.getInstance().hookUpUndoableEditListener(cellEditor);
         
         for (int i = 0; i < tblModel.getColumnCount(); i++) 
@@ -1539,14 +1524,17 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     //------------------------------------------------------------
 
 
-    class GridCellEditor extends AbstractCellEditor implements TableCellEditor//, UndoableTextIFace
+    class GridCellEditor extends DefaultCellEditor implements TableCellEditor//, UndoableTextIFace
     {
-        protected JTextField  textField   = new JTextField();
-        protected UndoManager undoManager = new UndoManager();
+        protected JTextField  textField;
+        //protected UndoManager undoManager = new UndoManager();
 
-        public GridCellEditor()
+        public GridCellEditor(final JTextField textField)
         {
+            super(textField);
+            this.textField = textField;
             textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            setClickCountToStart (1); 
         }
 
         /* (non-Javadoc)
@@ -1561,26 +1549,42 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
          * @see javax.swing.AbstractCellEditor#isCellEditable(java.util.EventObject)
          */
         @Override
-        public boolean isCellEditable(EventObject anEvent) 
+        public boolean isCellEditable(EventObject e) 
         { 
             return true; 
         }
-        
+
         //
         //          Implementing the CellEditor Interface
         //
         /** Implements the <code>TableCellEditor</code> interface. */
-        public Component getTableCellEditorComponent(JTable  tbl, 
+        @Override
+        public Component getTableCellEditorComponent(JTable  table, 
                                                      Object  value,
                                                      boolean isSelected,
                                                      int     row, 
                                                      int     column)
         {
+            
             textField.setText(value != null ? value.toString() : "");
-            //textField.selectAll();
-            //undoManager.discardAllEdits();
-            //UICacheManager.getUndoAction().setUndoManager(undoManager);
-            //UICacheManager.getRedoAction().setUndoManager(undoManager);
+                    
+            try
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {            
+                        Caret c = textField.getCaret();
+
+                        // for keyboard
+                        c.setVisible(true);
+                        c.setSelectionVisible(true);
+                        textField.requestFocus();
+                    }
+                });
+            }
+            catch( Exception e ) { }
+
             return textField;
         }
 
@@ -1589,7 +1593,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
          */
         public UndoManager getUndoManager()
         {
-            return undoManager;
+            return null;//undoManager;
         }
         
         /* (non-Javadoc)

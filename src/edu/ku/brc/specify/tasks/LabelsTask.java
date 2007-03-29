@@ -545,31 +545,30 @@ public class LabelsTask extends BaseTask
         {
             if (cmdAction.getData() == null) //no dropping yet.
             {
-                openIReportEditor(cmdAction);
+                openIReportEditor();
             }
-   }
- 
+        }
     }
     
     /**
-     * OpenTheIReport editor
+     * Open the IReport editor.
      * @param cmdAction the command to be processed
      */
-    private void openIReportEditor(final CommandAction cmdAction) 
+    private void openIReportEditor() 
     {
-       if (iReportMainFrame == null)
-       {
-           MainFrame.reportClassLoader.rescanLibDirectory();
-           Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
-           Map args = MainFrameSpecify.getArgs();
-           iReportMainFrame = new MainFrameSpecify(args);
-       }
+        if (iReportMainFrame == null)
+        {
+            MainFrame.reportClassLoader.rescanLibDirectory();
+            Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
+            Map args = MainFrameSpecify.getArgs();
+            iReportMainFrame = new MainFrameSpecify(args);
+        }
         SwingUtilities.invokeLater( new Runnable()
         {
-            public void run()
-            {
-                iReportMainFrame.setVisible(true);
-            }
+             public void run()
+             {
+                 iReportMainFrame.setVisible(true);
+             }
         });
     }
         

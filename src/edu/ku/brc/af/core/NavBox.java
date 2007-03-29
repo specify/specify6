@@ -32,6 +32,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)<br>
@@ -397,6 +398,27 @@ public class NavBox extends JPanel implements NavBoxIFace
         }
         return  nbi;
     }
-
+    
+    public static void refresh(final NavBoxItemIFace nbi)
+    {
+        NavBox box = (NavBox)nbi.getUIComponent().getParent();
+        
+        Component comp = nbi.getUIComponent();
+        comp.invalidate();
+        comp.doLayout();
+        comp.setSize(comp.getPreferredSize());
+        comp.repaint();
+        
+        box.invalidate();
+        box.doLayout();
+        box.setSize(box.getPreferredSize());
+        box.repaint();
+        
+        NavBoxMgr.getInstance().invalidate();
+        NavBoxMgr.getInstance().doLayout();
+        NavBoxMgr.getInstance().repaint();
+        
+        UICacheManager.forceTopFrameRepaint();
+    }
 
 }

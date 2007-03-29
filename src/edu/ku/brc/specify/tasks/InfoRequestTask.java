@@ -160,9 +160,8 @@ public class InfoRequestTask extends BaseTask
     /**
      * Save a info request.
      * @param infoRequest the ir to be saved
-     * @param recordSet the recordSet to be saved with it
      */
-    public void saveInfoRequest(final InfoRequest infoRequest, final RecordSetIFace recordSet)
+    public void saveInfoRequest(final InfoRequest infoRequest)
     {
         addInfoRequest(infoRequest);
 
@@ -386,10 +385,8 @@ public class InfoRequestTask extends BaseTask
     
     /**
      * Creates an Excel SpreadSheet or CVS file and attaches it to an email and send it to an agent.
-     * 
-     * @param infoRequest the info request to be sent
      */
-    public void createAndSendEMail(final SubPaneIFace subPane)
+    public void createAndSendEMail()
     {
         FormViewObj formViewObj = getCurrentFormViewObj();
         if (formViewObj != null) // Should never happen
@@ -516,7 +513,7 @@ public class InfoRequestTask extends BaseTask
     {
         if (cmdAction.isAction(CREATE_MAILMSG))
         {
-            createAndSendEMail((SubPaneIFace)cmdAction.getData());
+            createAndSendEMail();
             
         } else if (cmdAction.isAction("Save"))
         {
@@ -533,7 +530,7 @@ public class InfoRequestTask extends BaseTask
                 
                 // Get Info Request Information
                 
-                saveInfoRequest(infoRequest, (RecordSetIFace)data);
+                saveInfoRequest(infoRequest);
             }
         } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
         {

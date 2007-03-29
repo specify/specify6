@@ -685,10 +685,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#initialize(java.util.List)
      */
-    public void initialize(List<TaskCommandDef> cmds, final boolean isVisible)
+    public void initialize(List<TaskCommandDef> cmds, final boolean isVisibleArg)
     {
-        this.commands = cmds;
-        this.isVisible = isVisible;
+        this.commands  = cmds;
+        this.isVisible = isVisibleArg;
         initialize(); // initializes the Taskable
     }
     
@@ -714,12 +714,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             {
                 return dlg.getRecordSets().get(0);
                 
-            } else
-            {
-                dlg.setVisible(true); // modal (waits for answer here)
-                return dlg.getSelectedRecordSet();
             }
-
+            // else
+            dlg.setVisible(true); // modal (waits for answer here)
+            return dlg.getSelectedRecordSet();
         }
         
         // else

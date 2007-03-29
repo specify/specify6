@@ -21,7 +21,6 @@ import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.sql.Connection;
@@ -312,31 +311,25 @@ public class WorkbenchTask extends BaseTask
         rs.addItem(workbenchTemplate.getWorkbenchTemplateId());
         cmd.setProperty("template", rs);
         
-        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(templateNavBox, 
-                                                                               workbenchTemplate.getName(),
-                                                                               "Template", 
-                                                                               cmd, 
-                                                                               new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbenchTemplate), 
-                                                                               true);// true means make it draggable
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(templateNavBox, 
+                                                                   workbenchTemplate.getName(),
+                                                                   "Template", 
+                                                                   cmd, 
+                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbenchTemplate), 
+                                                                   true);// true means make it draggable
         roc.setData(rs);
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(new DataFlavor(Workbench.class, WORKBENCHTEMPLATE));
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
-
-        /*
-        MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
+        
+        JPopupMenu popupMenu = new JPopupMenu();
+        UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_PROPS"), getResourceString("WB_EDIT_PROPS_MNEU"), null, true, new ActionListener() {
+            public void actionPerformed(ActionEvent e)
             {
-                RolloverCommand rocLocal = (RolloverCommand)e.getSource();
-                if (rocLocal.isEnabled())
-                {
-                    selectTemplateEditAction(e);
-                }
+                editWorkbenchTemplateProps(roc);
             }
-          };
-        roc.addMouseListener(mouseInputAdapter);*/
+        });
+        roc.setPopupMenu(popupMenu);
         
      }
     
@@ -350,16 +343,99 @@ public class WorkbenchTask extends BaseTask
         RecordSet     rs  = new RecordSet(workbench.getName(), Workbench.getClassTableId());
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
-        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
-                                                                               new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbench), 
-                                                                               true);// true means make it draggable
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
+                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbench), 
+                                                                   true);// true means make it draggable
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
         
         roc.addDragDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+       
+        JPopupMenu popupMenu = new JPopupMenu();
+        UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_PROPS"), getResourceString("WB_EDIT_PROPS_MNEU"), null, true, new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                editWorkbenchProps(roc);
+            }
+        });
+        roc.setPopupMenu(popupMenu);
 
+    }
+    
+    /**
+     * Pops up the editor for the Workbench porperties.
+     * @param roc the RolloverCommand that invoked it
+     */
+    protected void editWorkbenchProps(final RolloverCommand roc)
+    {
+        if (roc != null)
+        {
+            Workbench workbench = loadWorkbench((RecordSet)((CommandAction)roc.getData()).getProperty("workbench"));
+            if (workbench != null && askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+    
+                    session.beginTransaction();
+                    Workbench mergedWB = (Workbench)session.merge(workbench);
+                    session.save(mergedWB);
+                    session.commit();
+                    session.flush();
+                    
+                    roc.setLabelText(workbench.getName());
+
+                    NavBox.refresh((NavBoxItemIFace)roc);
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    session.close();    
+                }
+            }
+        }
+    }
+    
+    /**
+     * Pops up the editor for the WorkbenchTemplate porperties.
+     * @param roc the RolloverCommand that invoked it
+     */
+    protected void editWorkbenchTemplateProps(final RolloverCommand roc)
+    {
+        if (roc != null)
+        {
+            WorkbenchTemplate workbenchTemplate = loadWorkbenchTemplate((RecordSet)roc.getData());
+            if (workbenchTemplate != null && askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+    
+                    session.beginTransaction();
+                    WorkbenchTemplate mergedWBT = (WorkbenchTemplate)session.merge(workbenchTemplate);
+                    session.save(mergedWBT);
+                    session.commit();
+                    session.flush();
+                    
+                    roc.setLabelText(workbenchTemplate.getName());
+
+                    NavBox.refresh((NavBoxItemIFace)roc);
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    session.close();    
+                }
+            }
+        }
     }
     
     /**
@@ -2009,52 +2085,6 @@ public class WorkbenchTask extends BaseTask
             }
         }
         return null;
-    }
-    
-    /**
-     * Asks the user choose among three options when clicking on a template icon.
-     * @param cmdAction the command that issued the action
-     */
-    protected void selectTemplateEditAction(final MouseEvent mouseEvent)
-    {
-        RolloverCommand   roc                = (RolloverCommand)mouseEvent.getSource();
-        WorkbenchTemplate workbenchTemplate  = loadWorkbenchTemplate((RecordSet)roc.getData());
-        
-        if (workbenchTemplate != null)
-        {
-                
-            String[] options = {getResourceString("WB_EDIT_MAPPINGS"), 
-                                getResourceString("WB_EDIT_TEMPLATE_INFO")};
-    
-            class MenuAction implements ActionListener
-            {
-                protected WorkbenchTemplate workbenchTemplateMenu;
-                protected int               actionMenu;
-                protected RolloverCommand   rocMenu;
-                
-                public MenuAction(final WorkbenchTemplate workbenchTemplateMenu, final RolloverCommand rocMenu, final int actionMenu)
-                {
-                    this.workbenchTemplateMenu = workbenchTemplateMenu;
-                    this.rocMenu               = rocMenu;
-                    this.actionMenu            = actionMenu;
-                }
-                public void actionPerformed(ActionEvent arg0)
-                {
-                    doTemplateAction(workbenchTemplateMenu, rocMenu, actionMenu);
-                    
-                }
-            }
-            JPopupMenu popupMenu = new JPopupMenu();
-            for (int i=0;i<options.length;i++)
-            {
-                UIHelper.createMenuItem(popupMenu, options[i], null, null, true, new MenuAction(workbenchTemplate, roc, i));
-            }
-            popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
-            
-        } else
-        {
-            log.error("Couldn't load WorkbenchTemplate into memory.");
-        }
     }
     
     /**

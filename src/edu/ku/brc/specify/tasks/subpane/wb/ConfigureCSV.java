@@ -334,7 +334,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
         return CsvReader.ESCAPE_MODE_DOUBLED;
     }
 
-    private ImportColumnInfo.ColumnType getCellType(int colIndex)
+    private ImportColumnInfo.ColumnType getCellType(@SuppressWarnings("unused") int colIndex)
     {
         return ImportColumnInfo.ColumnType.String; // hmmmm....
     }
