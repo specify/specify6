@@ -315,6 +315,14 @@ public class Trash extends JComponent implements GhostActionable
         addMouseMotionListener(mouseInputAdapter);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        // Auto-generated method stub
+    }
+    
     /**
      * Returns the adaptor for tracking mouse drop gestures
      * @return Returns the adaptor for tracking mouse drop gestures

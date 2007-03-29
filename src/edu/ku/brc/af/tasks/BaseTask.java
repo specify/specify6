@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.af.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -27,8 +25,6 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
@@ -40,6 +36,7 @@ import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.SubPaneMgrListener;
@@ -50,6 +47,7 @@ import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -58,6 +56,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MemoryDropDownButton;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
@@ -106,7 +105,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected boolean             taskCentricPanesOnly = true;
     protected boolean             closeOnLastPane      = false;
     protected SubPaneIFace        starterPane          = null;
-    protected boolean             isVisible;
+    protected boolean             isVisible            = true;
 
     // Data Members needed for support "recent form pane" management
     protected FormPane  recentFormPane = null;
@@ -231,57 +230,46 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final Object        data,
                                             final int           position)
     {
-        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16);
-        NavBoxButton rb = (NavBoxButton)nb;
-
-        // This is part of the "DndDeletable" Interface,
-        // the object is responsible for knowing how to delete itself.
-        rb.setDeleteCommandAction(delCmdAction);
-
-        if (delCmdAction != null)
+        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, labelText, iconName, null, delCmdAction, true, position);
+        if (nbi instanceof GhostActionable)
         {
-            JPopupMenu popupMenu = rb.getPopupMenu();
-
-            JMenuItem delMenuItem = new JMenuItem(getResourceString("Delete"));
-            delMenuItem.addActionListener(new RSAction(delCmdAction));
-            popupMenu.add(delMenuItem);
+            ((GhostActionable)nbi).setData(data != null ? data : this);
         }
-
-        if (position == -1)
-        {
-            navBox.add(nb);
-
-        } else
-        {
-            navBox.insert(nb, false, position);
-        }
-
-        if (nb instanceof GhostActionable)
-        {
-            GhostActionable ga = (GhostActionable)nb;
-            ga.createMouseInputAdapter(); // this makes it draggable
-            ga.setData(data != null ? data : this);
-        }
-        return nb;
+        return nbi;
     }
     
-    protected NavBoxItemIFace makeDraggableAndDroppableNavBtn(final NavBox        navBox,
-                                                              final String        labelText,
-                                                              final String        iconName,
-                                                              final CommandAction cmdAction,
-                                                              final CommandAction delCmdAction,
-                                                              final boolean       makeDraggable)
+    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+                                            final String        labelText,
+                                            final String        iconName,
+                                            final CommandAction cmdAction,
+                                            final CommandAction delCmdAction,
+                                            final Class         flavorClass,
+                                            final String        dragFlavor,
+                                            final String        dropFlavor)
+{
+        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, labelText, iconName, cmdAction, delCmdAction, true, -1);
+        roc.addDragDataFlavor(new DataFlavor(Workbench.class, dragFlavor));
+        roc.addDropDataFlavor(new DataFlavor(flavorClass, dropFlavor));
+        return (NavBoxItemIFace)roc;
+    }
+    
+    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+                                            final String        labelText,
+                                            final String        iconName,
+                                            final CommandAction cmdAction,
+                                            final CommandAction delCmdAction,
+                                            final boolean       makeDraggable)
     {
-        return makeDraggableAndDroppableNavBtn(navBox, labelText, iconName, cmdAction, delCmdAction, makeDraggable, -1);
+        return makeDnDNavBtn(navBox, labelText, iconName, cmdAction, delCmdAction, makeDraggable, -1);
     }
-    
-    protected NavBoxItemIFace makeDraggableAndDroppableNavBtn(final NavBox        navBox,
-                                                              final String        labelText,
-                                                              final String        iconName,
-                                                              final CommandAction cmdAction,
-                                                              final CommandAction delCmdAction,
-                                                              final boolean       makeDraggable,
-                                                              final int           position)
+ 
+    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+                                            final String        labelText,
+                                            final String        iconName,
+                                            final CommandAction cmdAction,
+                                            final CommandAction delCmdAction,
+                                            final boolean       makeDraggable,
+                                            final int           position)
     {
         NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16);
         if (cmdAction != null)
@@ -306,39 +294,44 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         }
 
         // Make the Btn Draggable
-        if (makeDraggable && nb instanceof GhostActionable)
+        if (nb instanceof GhostActionable)
         {
-            ((GhostActionable)nb).createMouseInputAdapter(); // this makes it draggable
+            GhostActionable ga = (GhostActionable)nb;
+            if (makeDraggable)
+            {
+                ga.createMouseInputAdapter(); // this makes it draggable
+                ga.getMouseInputAdapter().registerWithGlassPane();
+                
+            } else
+            {
+                UICacheManager.getGlassPane().add(ga);
+            }
         }
         return nb;
     }
 
-    protected NavBoxItemIFace makeDraggableAndDroppableNavBtn(final NavBox        navBox,
-                                                              final String        labelText,
-                                                              final String        iconName,
-                                                              final boolean       makeDraggable,
-                                                              final int           position,
-                                                              final ActionListener al)
+    /**
+     * Removes a NavBoxItemIFace from a NavBoxIFace.
+     * @param box the containing box
+     * @param nbi the item to be removed
+     */
+    protected void deleteDnDBtn(final NavBoxIFace box, final NavBoxItemIFace nbi)
     {
-        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16, al);
-        if (position == -1)
+        RolloverCommand roc = (RolloverCommand)nbi;
+        if (nbi instanceof GhostActionable)
         {
-            navBox.add(nb);
-
-        } else
-        {
-            navBox.insert(nb, false, position);
+            UICacheManager.getGlassPane().remove((GhostActionable)roc);
+            
+            box.remove(nbi);
+            
+            // XXX this is pathetic and needs to be made generic
+            NavBoxMgr.getInstance().invalidate();
+            NavBoxMgr.getInstance().doLayout();
+            NavBoxMgr.getInstance().repaint();
+            UICacheManager.forceTopFrameRepaint();
         }
-
-        // Make the Btn Draggable
-        if (makeDraggable && nb instanceof GhostActionable)
-        {
-            ((GhostActionable)nb).createMouseInputAdapter(); // this makes it draggable
-        }
-        return nb;
     }
-
-
+    
     /**
      * Helper method to add an item to the navbox.
      * @param navBox navBox
@@ -692,9 +685,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#initialize(java.util.List)
      */
-    public void initialize(List<TaskCommandDef> cmds)
+    public void initialize(List<TaskCommandDef> cmds, final boolean isVisible)
     {
         this.commands = cmds;
+        this.isVisible = isVisible;
         initialize(); // initializes the Taskable
     }
     

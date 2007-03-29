@@ -102,29 +102,32 @@ public class ExportTask extends BaseTask
             extendedNavBoxes.clear();
             exportersList.clear();
 
-            NavBox navBox = new NavBox(getResourceString("Formats")+ "/" + getResourceString("Applications"));
-            
-            // for each registered exporter, create a TaskCommandDef for it
-            for (Class<? extends RecordSetExporter> exporterClass: exportersRegistry)
+            if (isVisible)
             {
-                RecordSetExporter exporter = null;
-                try
-                {
-                    exporter = exporterClass.newInstance();
-                    loadedExporters.add(exporter);
-                }
-                catch (Exception e)
-                {
-                    log.warn("Failed to instantiate an exporter",e);
-                    continue;
-                }
+                NavBox navBox = new NavBox(getResourceString("Formats")+ "/" + getResourceString("Applications"));
                 
-                CommandAction cmdAction = new CommandAction(EXPORT, EXPORT_RS);
-                cmdAction.setProperty("exporter",exporter);
-                exportersList.add(makeDraggableAndDroppableNavBtn(navBox, exporter.getName(), exporter.getIconName(), cmdAction, null, true));// true means make it draggable
+                // for each registered exporter, create a TaskCommandDef for it
+                for (Class<? extends RecordSetExporter> exporterClass: exportersRegistry)
+                {
+                    RecordSetExporter exporter = null;
+                    try
+                    {
+                        exporter = exporterClass.newInstance();
+                        loadedExporters.add(exporter);
+                    }
+                    catch (Exception e)
+                    {
+                        log.warn("Failed to instantiate an exporter",e);
+                        continue;
+                    }
+                    
+                    CommandAction cmdAction = new CommandAction(EXPORT, EXPORT_RS);
+                    cmdAction.setProperty("exporter",exporter);
+                    exportersList.add(makeDnDNavBtn(navBox, exporter.getName(), exporter.getIconName(), cmdAction, null, true));// true means make it draggable
+                }
+    
+                navBoxes.addElement(navBox);
             }
-
-            navBoxes.addElement(navBox);
         }
 
     }

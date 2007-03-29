@@ -108,6 +108,15 @@ public class DroppableNavBox extends NavBox implements GhostActionable
      */
     public void createMouseInputAdapter()
     {
+        // nothing
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        // Auto-generated method stub
     }
     
     /**

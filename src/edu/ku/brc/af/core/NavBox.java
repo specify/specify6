@@ -229,7 +229,12 @@ public class NavBox extends JPanel implements NavBoxIFace
     {
         remove(item.getUIComponent());
         items.remove(item);
+        
+        invalidate();
+        validate();
         doLayout();
+        setSize(getPreferredSize());
+        repaint();
     }
 
     /**

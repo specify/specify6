@@ -62,7 +62,7 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 /**
  * A task to manage Labels and response to Label Commands.
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * @author rods
  *
@@ -119,42 +119,44 @@ public class LabelsTask extends BaseTask
             extendedNavBoxes.clear();
             labelsList.clear();
 
-
-            NavBox navBox = new NavBox(name);
-            
-            for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
+            if (isVisible)
             {
-                Map<String, String> params = ap.getMetaDataMap();
-                params.put("title", ap.getDescription());
-                params.put("file", ap.getName());
-                //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
+                NavBox navBox = new NavBox(name);
                 
-                commands.add(new TaskCommandDef(ap.getDescription(), name, params));
-            }
-            
-            // Then add
-            if (commands != null)
-            {
-                for (TaskCommandDef tcd : commands)
+                for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
                 {
-                    // XXX won't be needed when we start validating the XML
-                    String tableIdStr = tcd.getParams().get("tableid");
-                    if (tableIdStr != null)
+                    Map<String, String> params = ap.getMetaDataMap();
+                    params.put("title", ap.getDescription());
+                    params.put("file", ap.getName());
+                    //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
+                    
+                    commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+                }
+                
+                // Then add
+                if (commands != null)
+                {
+                    for (TaskCommandDef tcd : commands)
                     {
-                        CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, null);
-                        cmdAction.addStringProperties(tcd.getParams());
-                        labelsList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), name, cmdAction, null, true));// true means make it draggable
-                        
-                    } else
-                    {
-                        log.error("Label Command is missing the table id");
+                        // XXX won't be needed when we start validating the XML
+                        String tableIdStr = tcd.getParams().get("tableid");
+                        if (tableIdStr != null)
+                        {
+                            CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, null);
+                            cmdAction.addStringProperties(tcd.getParams());
+                            labelsList.add(makeDnDNavBtn(navBox, tcd.getName(), name, cmdAction, null, true));// true means make it draggable
+                            
+                        } else
+                        {
+                            log.error("Label Command is missing the table id");
+                        }
                     }
                 }
+                
+                navBox.add(NavBox.createBtn(getResourceString("LabelEditor"),  "Loan", IconManager.IconSize.Std16, new NavBoxAction(LABELS, OPEN_EDITOR))); // I18N
+                
+                navBoxes.addElement(navBox);
             }
-            
-            navBox.add(NavBox.createBtn(getResourceString("LabelEditor"),  "Loan", IconManager.IconSize.Std16, new NavBoxAction(LABELS, OPEN_EDITOR))); // I18N
-            
-            navBoxes.addElement(navBox);
         }
 
     }
@@ -322,7 +324,7 @@ public class LabelsTask extends BaseTask
     }
 
     /**
-     * Checks to make sure we are the current SubPane and then creates the labels from the selected RecordSet
+     * Checks to make sure we are the current SubPane and then creates the labels from the selected RecordSet.
      * @param data the data that "should" be a RecordSet
      */
     protected void createLabelFromSelectedRecordSet(final Object data)

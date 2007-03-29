@@ -346,7 +346,8 @@ public class TaskMgr
         for (Enumeration<Taskable> e=instance.tasks.elements();e.hasMoreElements();)
         {
             Taskable taskablePlugin = e.nextElement();
-            taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()));
+            int index = instance.visibleTasks.indexOf(taskablePlugin);
+            taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()), index > -1);
         }
     }
 

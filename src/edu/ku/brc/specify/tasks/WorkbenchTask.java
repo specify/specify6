@@ -43,7 +43,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -115,6 +114,7 @@ public class WorkbenchTask extends BaseTask
     
 	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
     public static final String     WORKBENCH             = "Workbench";
+    public static final String     WORKBENCHTEMPLATE     = "WorkbenchTemplate";
     public static final String     NEW_WORKBENCH         = "New Workbench";
     public static final String     NEW_TEMPLATE          = "New Template";
     public static final String     IMPORT_DATA_FILE      = "New Template From File";
@@ -165,13 +165,20 @@ public class WorkbenchTask extends BaseTask
             int wbTblId    = Workbench.getClassTableId(); 
             int wbTmpTblId = WorkbenchTemplate.getClassTableId();
             
+            RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_IMPORTDATA"),   "Import", new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString(WB_IMPORTCARDS),    "Import", new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_TEMPLATE"), "PlusSign", new CommandAction(WORKBENCH, NEW_TEMPLATE, wbTmpTblId),     null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_NEW_DATASET"),  "PlusSign", new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),    null, false);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_EXPORT_DATA"),   "Export", new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true);// true means make it draggable
-            makeDraggableAndDroppableNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"),   "Export", new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTmpTblId), null, true);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"),   "Import", new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString(WB_IMPORTCARDS),    "Import", new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_NEW_TEMPLATE"), "PlusSign", new CommandAction(WORKBENCH, NEW_TEMPLATE, wbTmpTblId),     null, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),  "PlusSign", new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),    null, false);// true means make it draggable
+            
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"),   "Export", new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true);// true means make it draggable
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+            roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
+            
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"),   "Export", new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTmpTblId), null, true);// true means make it draggable
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCHTEMPLATE));
+            roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
             
             navBoxes.addElement(navBox);
             
@@ -236,9 +243,14 @@ public class WorkbenchTask extends BaseTask
                         CommandAction cmdAction = new CommandAction(WORKBENCH, PRINT_REPORT, Workbench.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
                         
-                        NavBoxItemIFace nbi = makeDraggableAndDroppableNavBtn(reportsNavBox, tcd.getName(), "Reports", cmdAction, null, true);
-                        reportsList.add(nbi);// true means make it draggable
+                        NavBoxItemIFace nbi = makeDnDNavBtn(reportsNavBox, tcd.getName(), "Reports", cmdAction, null, true);// true means make it draggable
+                        reportsList.add(nbi);
                         enableNavBoxList.add(nbi);
+                        
+                        roc = (RolloverCommand)nbi;
+                        roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+                        roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
+
 
                     } else
                     {
@@ -246,8 +258,15 @@ public class WorkbenchTask extends BaseTask
                     }
                 }
                 
-                enableNavBoxList.add(makeDraggableAndDroppableNavBtn(reportsNavBox, getResourceString("CHART"),    "Reports", new CommandAction(WORKBENCH, WB_BARCHART), null, false));// true means make it draggable
-                enableNavBoxList.add(makeDraggableAndDroppableNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Reports", new CommandAction(WORKBENCH, WB_TOP10_REPORT), null, false));// true means make it draggable
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Reports", new CommandAction(WORKBENCH, WB_BARCHART), null, true);
+                enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
+                roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+                roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
+
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Reports", new CommandAction(WORKBENCH, WB_TOP10_REPORT), null, true);
+                enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
+                roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+                roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
             }
             
             // Add these last and in order
@@ -293,7 +312,7 @@ public class WorkbenchTask extends BaseTask
         rs.addItem(workbenchTemplate.getWorkbenchTemplateId());
         cmd.setProperty("template", rs);
         
-        RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(templateNavBox, 
+        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(templateNavBox, 
                                                                                workbenchTemplate.getName(),
                                                                                "Template", 
                                                                                cmd, 
@@ -301,8 +320,10 @@ public class WorkbenchTask extends BaseTask
                                                                                true);// true means make it draggable
         roc.setData(rs);
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        
-        
+        roc.addDragDataFlavor(new DataFlavor(Workbench.class, WORKBENCHTEMPLATE));
+        roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
+
+        /*
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
         {
             @Override
@@ -315,7 +336,7 @@ public class WorkbenchTask extends BaseTask
                 }
             }
           };
-        roc.addMouseListener(mouseInputAdapter);
+        roc.addMouseListener(mouseInputAdapter);*/
         
      }
     
@@ -329,10 +350,16 @@ public class WorkbenchTask extends BaseTask
         RecordSet     rs  = new RecordSet(workbench.getName(), Workbench.getClassTableId());
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
-        RolloverCommand roc = (RolloverCommand)makeDraggableAndDroppableNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
+        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
                                                                                new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbench), 
                                                                                true);// true means make it draggable
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        
+        roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
+        roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
+        
+        roc.addDragDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+
     }
     
     /**
@@ -488,9 +515,9 @@ public class WorkbenchTask extends BaseTask
      * @param data the data object
      * @return true if OK, false if cancelled
      */
-    protected boolean askUserForInfo(final String viewSetName, 
-                                     final String dlgTitle,
-                                     final Object data)
+    public static boolean askUserForInfo(final String viewSetName, 
+                                         final String dlgTitle,
+                                         final Object data)
     {
         ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
                 (Frame)UICacheManager.get(UICacheManager.TOPFRAME),
@@ -799,14 +826,7 @@ public class WorkbenchTask extends BaseTask
        // Check incoming command for a RecordSet contain the Workbench
        Workbench workbench  = null;
        Object    data = cmdAction.getData();
-       if (data == null)
-       {
-           Object wbObj = cmdAction.getProperty("workbench");
-           if (wbObj instanceof RecordSet)
-           {
-               workbench = loadWorkbench((RecordSet)wbObj);
-           }
-       } else if (data instanceof CommandAction)
+       if (data instanceof CommandAction)
        {
            CommandAction subCmd = (CommandAction)data;
            if (subCmd != cmdAction)
@@ -814,21 +834,7 @@ public class WorkbenchTask extends BaseTask
                if (subCmd.getTableId() == cmdAction.getTableId())
                {
                    workbench = selectWorkbench(subCmd);
-                   
-               } else
-               {
-                   return;
                }
-           }
-       } else if (data instanceof RecordSet)
-       {
-           RecordSet rs = (RecordSet)data;
-           if (rs.getDbTableId() == Workbench.getClassTableId())
-           {
-               workbench = loadWorkbench((RecordSet)data);
-           } else
-           {
-               return;
            }
        }
        
@@ -1342,9 +1348,7 @@ public class WorkbenchTask extends BaseTask
                 session.commit();
                 session.flush();
                 
-                workbenchNavBox.remove(nbi);
-                
-                NavBoxMgr.getInstance().validate();
+                deleteDnDBtn(workbenchNavBox, nbi);
                 
                 updateNavBoxUI(null);
                 
@@ -2020,8 +2024,7 @@ public class WorkbenchTask extends BaseTask
         {
                 
             String[] options = {getResourceString("WB_EDIT_MAPPINGS"), 
-                                getResourceString("WB_EDIT_TEMPLATE_INFO"), 
-                                String.format(getResourceString("WB_CREATE_EMPTY_DATASET"), new Object[] {workbenchTemplate.getName()})};
+                                getResourceString("WB_EDIT_TEMPLATE_INFO")};
     
             class MenuAction implements ActionListener
             {
@@ -2106,7 +2109,7 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
-     * Looks for the embedded COmmandAction and processes that as the command.
+     * Looks for the embedded CommandAction and processes that as the command.
      * @param cmdAction the command that was invoked
      */
     protected void workbenchSelected(final CommandAction cmdAction)
@@ -2131,6 +2134,7 @@ public class WorkbenchTask extends BaseTask
             
         } else
         {
+            // This is for when the user clicks directly on the workbench
             Workbench workbench = loadWorkbench((RecordSet)cmdAction.getProperty("workbench"));
             if (workbench != null)
             {
@@ -2157,6 +2161,17 @@ public class WorkbenchTask extends BaseTask
                 subCmd.setProperty("template", cmdAction.getProperty("template"));
                 processWorkbenchCommands(subCmd);
                 subCmd.getProperties().remove("template");
+            }
+        } else
+        {
+            // This is for when the user clicks directly on the workbench
+            WorkbenchTemplate workbenchTemplate = loadWorkbenchTemplate((RecordSet)cmdAction.getProperty("template"));
+            if (workbenchTemplate != null)
+            {
+                editTemplate(workbenchTemplate);
+            } else
+            {
+                log.error("workbenchTemplate was null!");
             }
         }
     }

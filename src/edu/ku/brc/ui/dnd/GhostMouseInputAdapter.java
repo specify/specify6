@@ -84,6 +84,17 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         this.ghostActionable = ghostActionable;
         this.listeners       = new ArrayList<GhostDropListener>();
     }
+    
+    public void registerWithGlassPane()
+    {
+        glassPane.add(ghostActionable);
+    }
+    
+    public void unregisterWithGlassPane()
+    {
+        glassPane.remove(ghostActionable);
+    }
+    
 
     public ImagePaintMode getPaintPositionMode()
     {
@@ -139,6 +150,8 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         DragAndDropLock.setLocked(true);
         DragAndDropLock.setDragAndDropStarted(true);
 
+        glassPane.startDrag(ghostActionable);
+        
         glassPane.setVisible(true);
 
         Point p = (Point) pnt.clone();
@@ -176,6 +189,8 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
             return;
         }
         DragAndDropLock.setDragAndDropStarted(false);
+        
+        glassPane.stopDrag();
 
         Component srcOfDropComp = e.getComponent();
         if (!(srcOfDropComp instanceof GhostActionable))
@@ -222,7 +237,9 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
             BufferedImage bi = ghostActionable.getBufferedImage();
             glassPane.setImage(bi, bi.getWidth());
             
-            if (doAnimationOnDrop)
+            boolean isDropOK = glassPane.isDropOK(ghostActionable, (GhostActionable)dropComponent);
+            
+            if (doAnimationOnDrop && isDropOK)
             {
                 glassPane.startAnimation(SwingUtilities.convertRectangle(dropComponent,
                                                                         ((JComponent)dropComponent).getVisibleRect(),
@@ -233,9 +250,12 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
                 glassPane.repaint();
             }
             
-            if (srcOfDropComp instanceof GhostActionable)
+            if (srcOfDropComp instanceof GhostActionable) // this check really needed?
             {
-                ((GhostActionable)dropComponent).doAction((GhostActionable)srcOfDropComp);
+                if (isDropOK)
+                {
+                    doCommandAction((GhostActionable)dropComponent, (GhostActionable)srcOfDropComp);
+                }
                 clearIt = false;
             }
 
@@ -258,6 +278,21 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
             glassPane.setVisible(false);
             DragAndDropLock.setLocked(false);
         }
+    }
+        
+    /**
+     * Perform the drop action.
+     * @param drop the GhostActionable to perform it on 
+     * @param src the source of the drop
+     */
+    protected void doCommandAction(final GhostActionable drop, final GhostActionable src)
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                drop.doAction(src);
+            }
+        });
     }
 
     /**

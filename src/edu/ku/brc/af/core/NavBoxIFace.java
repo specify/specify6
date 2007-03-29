@@ -78,4 +78,10 @@ public interface NavBoxIFace
      */
     public List<NavBoxItemIFace> getItems();
     
+    /**
+     * Removes an item from the box.
+     * @param nbi the item to be removed
+     */
+    public void remove(NavBoxItemIFace nbi);
+    
 }

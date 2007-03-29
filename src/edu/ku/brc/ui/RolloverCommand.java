@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -29,9 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
@@ -43,7 +39,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
@@ -55,6 +50,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.DndDeletable;
+import edu.ku.brc.ui.dnd.DragAndDropLock;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
@@ -77,14 +73,15 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     
     protected JTextField             txtFld     = null;
     protected JLabel                 iconLabel;
-    protected boolean                isEditing  = false;
+    protected boolean                isEditing   = false;
 
-    protected boolean                isOver     = false;
-    protected static Color           focusColor = Color.BLUE;
-    protected Vector<ActionListener> actions    = new Vector<ActionListener>();
+    protected boolean                isOver      = false;
+    protected static Color           focusColor  = Color.BLUE;
+    protected static Color           activeColor = new Color(0, 128, 0);
+    protected Vector<ActionListener> actions     = new Vector<ActionListener>();
 
-    protected ImageIcon              imgIcon    = null;
-    protected String                 label      = "";
+    protected ImageIcon              imgIcon     = null;
+    protected String                 label       = "";
 
     protected BufferedImage          sizeBufImg       = null;
     protected Dimension              preferredSize    = new Dimension(0,0);
@@ -107,6 +104,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
     protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
     protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
+    protected boolean                isActive     = false;
 
     // DndDeletable
     protected CommandAction          deleteCmdAction = null;
@@ -137,6 +135,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         itself       = this;
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
+            protected boolean wasPopUp = false;
             @Override
             public void mouseEntered(MouseEvent e)
             {
@@ -155,18 +154,27 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 //UICacheManager.displayStatusBarText("");
             }
             @Override
-            public void mouseClicked(MouseEvent e)
+            public void mousePressed(MouseEvent e)
             {
                 repaint();
-                if (isEnabled() && !e.isPopupTrigger())
+                wasPopUp = e.isPopupTrigger();
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                repaint();
+                if (isEnabled() && !e.isPopupTrigger() && !wasPopUp)
                 {
                     doAction(itself);
                 }
             }
+
           };
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
 
+        /*
         ActionListener actionListener = new ActionListener() {
               public void actionPerformed(ActionEvent actionEvent) {
                   startEditting();
@@ -213,7 +221,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                   }
             };
             addMouseListener(mouseListener);
-        }
+        }*/
     }
 
     /**
@@ -429,14 +437,23 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             }
 
 
-            if (isOver && !this.hasFocus())
+            if ((isActive || (!DragAndDropLock.isDragAndDropStarted() && isOver)) && !this.hasFocus())
             {
-                 g.setColor(UIManager.getLookAndFeel() instanceof PlasticLookAndFeel ? PlasticLookAndFeel.getFocusColor() : Color.BLUE);
-                 //g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
-                 Graphics2D g2d = (Graphics2D)g;
-                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                 RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
-                 g2d.draw(rr);
+                Color color;
+                if (isActive)
+                {
+                    color = activeColor;
+                } else
+                {
+                    color = UIManager.getLookAndFeel() instanceof PlasticLookAndFeel ? PlasticLookAndFeel.getFocusColor() : Color.BLUE;
+                }
+                g.setColor(color);
+                
+                //g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
+                Graphics2D g2d = (Graphics2D)g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
+                g2d.draw(rr);
             }
         }
     }
@@ -593,6 +610,15 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     public GhostMouseInputAdapter getMouseInputAdapter()
     {
         return mouseDropAdapter;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        this.isActive = isActive;
+        repaint();
     }
 
     /**

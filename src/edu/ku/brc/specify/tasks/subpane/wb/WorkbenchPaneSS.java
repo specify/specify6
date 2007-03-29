@@ -57,6 +57,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -222,6 +223,21 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         model       = new GridTableModel(workbench, headers);
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
+        
+        JButton editPropsBtn = UIHelper.createIconBtn("EditIcon", getResourceString("WB_EDIT_PROPS"), new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (WorkbenchTask.askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
+                {
+                    //newWorkbenchName = workbench.getName();
+                } else
+                {
+                    //return null;
+                }
+            }
+        });
+        editPropsBtn.setEnabled(true);
+        spreadSheet.getScrollPane().setCorner(JScrollPane.UPPER_LEFT_CORNER, editPropsBtn);
         
         findPanel = spreadSheet.getFindReplacePanel();
         UICacheManager.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
@@ -501,7 +517,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         inputMap.put(KeyStroke.getKeyStroke(keyCode, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), actionName);
         actionMap.put(actionName, action);
         
-        UICacheManager.registerAction(actionName, action);
+        //UICacheManager.registerAction(actionName, action);
         return action;
     }
     
@@ -1420,6 +1436,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
+            //UICacheManager.unregisterAction(workbench.getName()+"_AddRow");
         }
         
         return retStatus;

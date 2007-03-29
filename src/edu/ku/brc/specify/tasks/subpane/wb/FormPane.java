@@ -481,6 +481,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
      */
     public void createMouseInputAdapter()
     {
+        // nothing
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        // Auto-generated method stub
     }
     
     /**

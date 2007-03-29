@@ -371,7 +371,15 @@ public class FormPane extends DroppableTaskPane
     {
         return data;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        // Auto-generated method stub
+    }
+    
     /**
      * Returns the Viewable for this FormPane.
      * @return the Viewable for this FormPane

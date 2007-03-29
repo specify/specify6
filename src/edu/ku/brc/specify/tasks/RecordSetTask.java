@@ -17,7 +17,6 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,13 +34,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -254,21 +253,7 @@ public class RecordSetTask extends BaseTask
      */
     protected void deleteRecordSetFromUI(final NavBoxItemIFace boxItem, final RecordSetIFace recordSet)
     {
-        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByTitle(navBox, recordSet.getName()).getUIComponent();
-        if (comp != null)
-        {
-            navBox.remove(comp);
-
-            // XXX this is pathetic and needs to be generized
-            navBox.invalidate();
-            navBox.setSize(navBox.getPreferredSize());
-            navBox.doLayout();
-            navBox.repaint();
-            NavBoxMgr.getInstance().invalidate();
-            NavBoxMgr.getInstance().doLayout();
-            NavBoxMgr.getInstance().repaint();
-            UICacheManager.forceTopFrameRepaint();
-        }
+        deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, recordSet.getName()));
     }
 
     /**

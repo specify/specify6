@@ -54,6 +54,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -133,7 +135,7 @@ public class ColumnMapperPanel extends JPanel
     {
         this.dlg               = dlg;
         this.workbenchTemplate = wbTemplate;
-        this.isMappedToAFile = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
+        this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         
         createUI();
     }
@@ -300,8 +302,21 @@ public class ColumnMapperPanel extends JPanel
         cancelBtn = new JButton(getResourceString("Cancel"));
         okBtn.setEnabled(false);
         
-        builder.add(ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn), cc.xywh(1, 11, 5, 1));
-        
+        if (workbenchTemplate != null)
+        {
+            JButton applyBtn = new JButton(getResourceString("Properties")); 
+            builder.add(ButtonBarFactory.buildOKCancelApplyHelpBar(okBtn, cancelBtn, applyBtn, helpBtn), cc.xywh(1, 11, 5, 1));
+            applyBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    editProps();
+                }
+            });
+        } else
+        {
+            builder.add(ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn), cc.xywh(1, 11, 5, 1));
+        }
+
         cancelBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -338,6 +353,38 @@ public class ColumnMapperPanel extends JPanel
         }
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+    }
+    
+    protected void editProps()
+    {
+        if (WorkbenchTask.askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+
+                session.beginTransaction();
+                session.attach(workbenchTemplate);
+                session.save(workbenchTemplate);
+                session.commit();
+                session.flush();
+                
+                //if (roc != null)
+                //{
+                //    roc.setLabelText(workbenchTemplate.getName());
+                //}
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                
+            } finally
+            {
+                session.close();    
+            }
+
+        }
+
     }
     
     /**

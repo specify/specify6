@@ -60,7 +60,7 @@ public interface Taskable
      * can be called mulitple times with no ill effects.
      *
      */
-    public void initialize();
+    //public void initialize();
 
     /**
      * Requests the context for this task.
@@ -86,7 +86,7 @@ public interface Taskable
      *
      * @param cmds the list of commands for the task
      */
-    public void initialize(List<TaskCommandDef> cmds);
+    public void initialize(List<TaskCommandDef> cmds, boolean isVisible);
 
     /**
      * Returns the implementing Class type.

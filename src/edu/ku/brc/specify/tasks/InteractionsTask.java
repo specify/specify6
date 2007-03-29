@@ -47,7 +47,6 @@ import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
@@ -168,14 +167,14 @@ public class InteractionsTask extends BaseTask
             NavBox navBox = new NavBox(getResourceString("Actions"));
             
             CommandAction cmdAction = new CommandAction(INTERACTIONS, NEW_LOAN);
-            NavBoxButton roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, null, true);// true means make it draggable
+            NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, null, true);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), "Loan", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), "Loan", IconManager.IconSize.Std16));
             
             cmdAction = new CommandAction(INTERACTIONS, InfoRequestName);
-            roc = (NavBoxButton)makeDraggableAndDroppableNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, null, true);// true means make it draggable
+            roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, null, true);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
             
@@ -212,7 +211,7 @@ public class InteractionsTask extends BaseTask
                         
                         cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
-                        invoiceList.add(makeDraggableAndDroppableNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true));// true means make it draggable
+                        invoiceList.add(makeDnDNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true));// true means make it draggable
 
                     } else
                     {
@@ -852,22 +851,7 @@ public class InteractionsTask extends BaseTask
      */
     protected void deleteInfoRequestFromUI(final NavBoxItemIFace boxItem, final InfoRequest infoRequest)
     {
-        
-        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByTitle(infoRequest.getIdentityTitle()).getUIComponent(); 
-        if (comp != null)
-        {
-            infoRequestNavBox.remove(comp);
-            
-            // XXX this is pathetic and needs to be generized
-            infoRequestNavBox.invalidate();
-            infoRequestNavBox.setSize(infoRequestNavBox.getPreferredSize());
-            infoRequestNavBox.doLayout();
-            infoRequestNavBox.repaint();
-            NavBoxMgr.getInstance().invalidate();
-            NavBoxMgr.getInstance().doLayout();
-            NavBoxMgr.getInstance().repaint();
-            UICacheManager.forceTopFrameRepaint();
-        }
+        deleteDnDBtn(infoRequestNavBox, boxItem != null ? boxItem : getBoxByTitle(infoRequest.getIdentityTitle()));
     }
     
     /**

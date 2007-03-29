@@ -856,6 +856,24 @@ public class UICacheManager
     }
     
     /**
+     * Register's an action.
+     * @param name thee name of the action
+     * @param action the action 
+     * @return the action passed in
+     */
+    public static void unregisterAction(final String name)
+    {
+        if (instance.actionMap.get(name) != null)
+        {
+            instance.actionMap.remove(name);
+            
+        } else
+        {
+            log.error("Couldn't find Action with name["+name+"].");
+        }
+    }
+    
+    /**
      * Adds Key navigation bindings to a component. (Is this needed?)
      * @param comp the component
      */

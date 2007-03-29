@@ -241,6 +241,14 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
         return mouseInputAdapter;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        // Auto-generated method stub
+    }
+    
     /**
      * Returns the width
      * @return Returns the width

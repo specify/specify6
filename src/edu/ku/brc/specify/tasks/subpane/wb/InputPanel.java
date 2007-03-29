@@ -323,6 +323,15 @@ public class InputPanel extends JPanel implements GhostActionable
         return mouseDropAdapter;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
     /**
      * Returns the width.
      * @return Returns the width

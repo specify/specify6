@@ -75,4 +75,11 @@ public interface GhostActionable
      */
     public List<DataFlavor> getDragDataFlavors();
     
+    /**
+     * Sets it into an "active" state which means it should show some UI
+     * that implies it can be dropped on.
+     * @param isActive true/false
+     */
+    public void setActive(boolean isActive);
+    
 }

@@ -7,11 +7,14 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -52,6 +55,9 @@ public class GhostGlassPane extends JPanel
     protected Point         offset      = new Point();
 
     protected ImagePaintMode paintPositionMode = ImagePaintMode.DRAG;
+    
+    protected Vector<GhostActionable> actionables = new Vector<GhostActionable>();
+    protected Vector<GhostActionable> enumList    = new Vector<GhostActionable>();
 
     /**
      * Default Constructor
@@ -273,6 +279,76 @@ public class GhostGlassPane extends JPanel
         visibleRect = null;
         dragged = null;
         DragAndDropLock.setLocked(false);  
+    }
+    
+    /**
+     * Sets active state for all items that match one of the drag flavors.
+     * @param dragActionable the item
+     */
+    public boolean isDropOK(final GhostActionable dragActionable, final GhostActionable dropActionable)
+    {
+        List<DataFlavor> dragList = dragActionable.getDragDataFlavors();
+        //for (DataFlavor dragFlavor : dragList)
+        //{
+        //    System.out.println("["+dragFlavor.getHumanPresentableName()+"]");
+        //}
+        
+        //System.out.println("\n\ndropActionable "+dropActionable);
+        for (DataFlavor dragFlavor : dragList)
+        {
+            //System.out.println("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ----------");
+            for (DataFlavor dropFlavor : dropActionable.getDropDataFlavors())
+            {
+                //System.out.println("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"]");
+                if (dragFlavor.getHumanPresentableName().equals(dropFlavor.getHumanPresentableName()))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    /**
+     * Sets active state for all items that match one of the drag flavors.
+     * @param dragActionable the item
+     */
+    public void startDrag(final GhostActionable dragActionable)
+    {
+        for (GhostActionable dropActionable : actionables)
+        {
+            dropActionable.setActive(isDropOK(dragActionable, dropActionable)); 
+        }
+    }
+    
+    /**
+     * Resets active state after drag.
+     */
+    public void stopDrag()
+    {
+        for (GhostActionable dropActionable : actionables)
+        {
+            dropActionable.setActive(false);
+        }
+    }
+    
+    /**
+     * Adds the a actionable to be tracked.
+     * @param actionable the actionable
+     */
+    public void add(final GhostActionable actionable)
+    {
+        actionables.add(actionable);
+    }
+
+    /**
+     * Removes the a actionable from being tracked.
+     * @param actionable the actionable
+     */
+    public void remove(final GhostActionable actionable)
+    {
+        actionables.remove(actionable);
     }
 
     //------------------------------------------------------------
