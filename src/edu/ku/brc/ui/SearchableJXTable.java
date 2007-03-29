@@ -36,6 +36,7 @@ import org.jdesktop.swingx.JXTable;
  * Created Date: Mar 12, 2007
  *
  */
+@SuppressWarnings("serial")
 public class SearchableJXTable  extends JXTable
 {
     private static final Logger log                     = Logger.getLogger(SearchableJXTable.class);
