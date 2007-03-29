@@ -93,7 +93,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     private JRadioButton           comma;
     private JRadioButton           other;
     private JTextField          otherText;
-    private char                delimiterChar;
+    //@SuppressWarnings("unused")
+    //private char                delimiterChar;
     @SuppressWarnings("unused")
     private char                stringQualifierChar;
     private JLabel textQualLabel;
