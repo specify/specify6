@@ -21,6 +21,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -135,7 +137,9 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         itself       = this;
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
-            protected boolean wasPopUp = false;
+            protected boolean    wasPopUp = false;
+            protected Point      downME   = null;
+            
             @Override
             public void mouseEntered(MouseEvent e)
             {
@@ -156,6 +160,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             @Override
             public void mousePressed(MouseEvent e)
             {
+                downME = e.getPoint();
                 repaint();
                 wasPopUp = e.isPopupTrigger();
                 if (popupMenu != null && wasPopUp && itself.isEnabled())
@@ -169,7 +174,12 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             {
                 repaint();
                 
-                if (itself.isEnabled())
+                Point pnt = e.getPoint();
+                boolean clicked = Math.abs(pnt.x - downME.x) < 6 && Math.abs(pnt.y - downME.y) < 6;
+                Rectangle r = itself.getBounds();
+                r.x = 0;
+                r.y = 0;
+                if (clicked && itself.isEnabled() && r.contains(e.getPoint()))
                 {
                     if (popupMenu != null && !wasPopUp && e.isPopupTrigger())
                     {

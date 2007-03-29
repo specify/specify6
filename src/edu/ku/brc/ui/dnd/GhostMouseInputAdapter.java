@@ -232,7 +232,11 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         offsetFromStartPnt.setLocation(e.getPoint());
 
         boolean clearIt = true;
-        if (dropComponent instanceof GhostActionable && dropComponent instanceof JComponent)
+        if (dropComponent == ghostActionable)
+        {
+            clearIt = true;
+            
+        } else if (dropComponent instanceof GhostActionable && dropComponent instanceof JComponent)
         {
             BufferedImage bi = ghostActionable.getBufferedImage();
             glassPane.setImage(bi, bi.getWidth());
