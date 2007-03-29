@@ -98,29 +98,32 @@ public class ExportTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             readExporterRegistry();
-            
-            extendedNavBoxes.clear();
-            exportersList.clear();
 
+            // create an instance of each registered exporter
+            exportersList.clear();
+            for (Class<? extends RecordSetExporter> exporterClass: exportersRegistry)
+            {
+                try
+                {
+                    RecordSetExporter exporter = exporterClass.newInstance();
+                    loadedExporters.add(exporter);
+                }
+                catch (Exception e)
+                {
+                    log.warn("Failed to instantiate an exporter",e);
+                    continue;
+                }
+            }
+
+            // if visible, create a nav box button for each exporter
             if (isVisible)
             {
+                extendedNavBoxes.clear();
                 NavBox navBox = new NavBox(getResourceString("Formats")+ "/" + getResourceString("Applications"));
                 
                 // for each registered exporter, create a TaskCommandDef for it
-                for (Class<? extends RecordSetExporter> exporterClass: exportersRegistry)
+                for (RecordSetExporter exporter: loadedExporters)
                 {
-                    RecordSetExporter exporter = null;
-                    try
-                    {
-                        exporter = exporterClass.newInstance();
-                        loadedExporters.add(exporter);
-                    }
-                    catch (Exception e)
-                    {
-                        log.warn("Failed to instantiate an exporter",e);
-                        continue;
-                    }
-                    
                     CommandAction cmdAction = new CommandAction(EXPORT, EXPORT_RS);
                     cmdAction.setProperty("exporter",exporter);
                     exportersList.add(makeDnDNavBtn(navBox, exporter.getName(), exporter.getIconName(), cmdAction, null, true));// true means make it draggable
