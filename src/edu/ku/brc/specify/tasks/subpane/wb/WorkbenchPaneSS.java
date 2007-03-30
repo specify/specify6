@@ -511,6 +511,22 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     }
     
     /**
+     * Checks the cell for cell editing and stops it.
+     */
+    protected void checkForCellEditing()
+    {
+        if (spreadSheet.getCellEditor() != null)
+        {
+            int index = spreadSheet.getEditingColumn();
+            if (spreadSheet.getColumnClass(index) != java.lang.Boolean.class)
+            {
+                spreadSheet.getCellEditor().stopCellEditing();
+            }
+        }
+    }
+    
+    
+    /**
      * @param comp
      * @param keyCode
      * @param actionName
@@ -658,6 +674,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
         } else
         {
+            checkForCellEditing();
+            
             formPane.switching(false);
             
             // Showing Form and hiding Spreadsheet
@@ -1263,7 +1281,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             column.setCellEditor(cellEditor);
         }
         
-        //tableArg.setCellEditor(new GridCellEditor());
+        tableArg.setCellEditor(cellEditor);
 
     }
     
@@ -1320,6 +1338,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      */
     protected void saveObject()
     {
+        checkForCellEditing();
+        
         //backup current database contents for workbench
         backupObject();
 
@@ -1618,7 +1638,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             
             textField.setText(value != null ? value.toString() : "");
-                    
             try
             {
                 SwingUtilities.invokeLater(new Runnable()

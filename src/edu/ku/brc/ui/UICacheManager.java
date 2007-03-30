@@ -700,7 +700,7 @@ public class UICacheManager
                                                   final String keyBtn2,
                                                   final int    iconOption)
     {
-        return displayConfirm(getResourceString(titleKey), getResourceString(msgKey), getResourceString(keyBtn1), getResourceString(keyBtn1), iconOption);
+        return displayConfirm(getResourceString(titleKey), getResourceString(msgKey), getResourceString(keyBtn1), getResourceString(keyBtn2), iconOption);
     }
 
     //----------------------------------------------------------------------------------
