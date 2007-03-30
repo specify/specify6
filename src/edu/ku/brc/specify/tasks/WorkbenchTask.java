@@ -631,6 +631,7 @@ public class WorkbenchTask extends BaseTask
        
         dlg.setContentPane(mapper);
         dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dlg.getRootPane().setDefaultButton(mapper.getOkBtn());
         dlg.pack();
         UIHelper.centerAndShow(dlg);
          
@@ -1923,8 +1924,7 @@ public class WorkbenchTask extends BaseTask
                             boolean wasDeleted = false;
                             if (colDeletedHash.get(item.getColumnNumber()) != null)
                             {
-                                row.getWorkbenchDataItems().remove(item);
-                                item.setWorkbenchRow(null);
+                                row.delete(item);
                                 session.delete(item);
                                 wasDeleted = true;
                             }
@@ -1970,6 +1970,7 @@ public class WorkbenchTask extends BaseTask
             ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg);
             
             dlg.setContentPane(mapper);
+            dlg.getRootPane().setDefaultButton(mapper.getOkBtn());
             dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dlg.pack();
             UIHelper.centerAndShow(dlg);
@@ -2052,17 +2053,14 @@ public class WorkbenchTask extends BaseTask
             case OutOfMemory : 
                 key = "WB_ERROR_IMAGE_MEMORY";
                 break;
+            default:
+                break;
         }
         
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
         statusBar.setErrorMessage(getResourceString(key), row.getLoadException());
         
-        Object[] options = { getResourceString("Continue"), getResourceString("WB_STOP_LOADING") };
-        int n = JOptionPane.showOptionDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME), 
-                getResourceString(key),
-                getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.YES_NO_OPTION,
-                JOptionPane.ERROR_MESSAGE, null, options, options[2]);
-        return n == 0;
+        return UICacheManager.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key, "Continue", "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
     }
     
     /**

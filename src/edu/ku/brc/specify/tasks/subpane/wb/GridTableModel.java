@@ -213,45 +213,8 @@ public class GridTableModel extends SpreadSheetModel
         {
             selInx = spreadSheet.getEditingRow();
         }
-        System.out.println("selInx "+selInx);
         
         addRowAt(getRowCount(), selInx);
-        
-        /*
-        if (getRowCount() >= 0)
-        {
-            WorkbenchRow wbRow  = getRowCount() > 0 ? workbench.getWorkbenchRowsAsList().get(getRowCount()-1) : null;
-            WorkbenchRow newRow = workbench.addRow();
-            
-            if (wbRow != null)
-            {
-                // Do Carry Forward
-                for (WorkbenchTemplateMappingItem wbdmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
-                {
-                    if (wbdmi.getCarryForward())
-                    {
-                        newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
-                    }
-                }
-            }
-        }
-        
-        if (spreadSheet != null)
-        {
-            spreadSheet.addRow();
-        }
-        
-        fireDataChanged();
-        
-        if (spreadSheet != null)
-        {
-            int lastRow = spreadSheet.getRowCount()-1;
-            spreadSheet.scrollToRow(lastRow);
-            spreadSheet.setRowSelectionInterval(lastRow, lastRow);
-            spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
-
-        }
-        */
     }
 
     /* (non-Javadoc)

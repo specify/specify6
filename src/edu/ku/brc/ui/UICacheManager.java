@@ -673,8 +673,8 @@ public class UICacheManager
      */
     public static boolean displayConfirm(final String title, 
                                          final String msg,
-                                         final String keyBtn1,
-                                         final String keyBtn2,
+                                         final String keyBtn1, // Yes
+                                         final String keyBtn2, // No
                                          final int    iconOption)
     {
         // Custom button text

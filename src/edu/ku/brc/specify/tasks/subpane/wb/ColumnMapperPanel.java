@@ -53,8 +53,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -94,6 +92,8 @@ public class ColumnMapperPanel extends JPanel
     protected JButton                        okBtn;
     protected JButton                        cancelBtn;
     protected boolean                        isCancelled = true;
+    protected boolean                        hasChanged  = false;
+    protected boolean                        doingFill   = false;
     protected JDialog                        dlg;
     
     protected JPanel                         dataFileColPanel;
@@ -233,7 +233,11 @@ public class ColumnMapperPanel extends JPanel
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    fillFieldList(((TableInfo)tableList.getSelectedValue()).getTableInfo());
+                    Object selObj = tableList.getSelectedValue();
+                    if (selObj != null)
+                    {
+                        fillFieldList(((TableInfo)selObj).getTableInfo());
+                    }
                 }
             }
         });
@@ -250,6 +254,8 @@ public class ColumnMapperPanel extends JPanel
         //arrowBuilder.getPanel().setBorder(BorderFactory.createLoweredBevelBorder());
         builder.add(arrowBuilder.getPanel(), cc.xy(3, 7));
         
+        unmapBtn.setVisible(false);
+        
         fieldList = new JList(new DefaultListModel());
         fieldList.setCellRenderer(new FieldNameRenderer(IconManager.IconSize.Std16));
         
@@ -259,7 +265,10 @@ public class ColumnMapperPanel extends JPanel
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             public void valueChanged(ListSelectionEvent e)
             {
-                updateEnabledState();
+                if (!doingFill)
+                {
+                    updateEnabledState();
+                }
             }
         });
         
@@ -339,6 +348,25 @@ public class ColumnMapperPanel extends JPanel
         }
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+
+    }
+    
+    /**
+     * @return
+     */
+    public JButton getOkBtn()
+    {
+        return okBtn;
+    }
+
+    /**
+     * Set has Changed.
+     * @param hasChanged true false
+     */
+    protected void setChanged(final boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+        okBtn.setEnabled(hasChanged);
     }
     
     /**
@@ -379,7 +407,7 @@ public class ColumnMapperPanel extends JPanel
         
         removeMapItemBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped() && mappingItems.get(currentInx).isNew());
         
-        if (okBtn != null)
+        if (okBtn != null && hasChanged)
         {
             boolean enabled = false;
             for (FieldMappingPanel fmp : mappingItems)
@@ -466,6 +494,8 @@ public class ColumnMapperPanel extends JPanel
         fmp.setTableField(tblField);
         fieldList.repaint();
 
+        setChanged(true);
+        
         updateEnabledState();
     }
     
@@ -609,7 +639,7 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void autoMapFromDataFile()
     {
-        boolean missedMapping = false;  // assume we can auto map everything
+        boolean notAllMapped = false;  // assume we can auto map everything
         
         currentInx = 0;
         for (FieldMappingPanel fmp : mappingItems)
@@ -656,14 +686,18 @@ public class ColumnMapperPanel extends JPanel
             if (tblField != null)
             {
                 map(tblField);
+                
             } else
             {
-                missedMapping = true; // oops, couldn't find a mapping for something
+                notAllMapped = true; // oops, couldn't find a mapping for something
             }
             currentInx++;
         }
         
-        okBtn.setEnabled(missedMapping);
+        if (!notAllMapped)
+        {
+            okBtn.setEnabled(false);
+        }
         
         currentInx = -1;
         updateEnabledState();
@@ -674,6 +708,8 @@ public class ColumnMapperPanel extends JPanel
      */
     protected void fillFromTemplate()
     {
+        doingFill = true;
+        
         // Map the TableInfo's Table ID to it's index in the Vector
         Hashtable<Integer, Integer> tblIdToListIndex = new Hashtable<Integer, Integer>();
         for (int i=0;i<tableInfoList.size();i++)
@@ -699,6 +735,14 @@ public class ColumnMapperPanel extends JPanel
                 fieldNum++;
             }
             addMapItem(true);
+        }
+        doingFill = false;
+        
+        tableList.getSelectionModel().clearSelection();
+        fieldList.getSelectionModel().clearSelection();
+        if (currentInx != -1)
+        {
+            mappingItems.get(currentInx).setHasFocus(false);
         }
     }
     
@@ -757,7 +801,6 @@ public class ColumnMapperPanel extends JPanel
         protected Color             bgColor       = null;
         protected JLabel            fieldLabel;
         protected JLabel            mappingLabel;
-        protected JLabel            closeBtn;
         protected JLabel            iconLabel;
         protected ImageIcon         icon;
         
@@ -777,10 +820,10 @@ public class ColumnMapperPanel extends JPanel
             this.colInfo = colInfo;
             setBackground(Color.WHITE);
             
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("150px, p:g, p, p:g, 150px, 5px, p, 2px", "p:g"), this);
+            //PanelBuilder    builder = new PanelBuilder(new FormLayout("150px, p:g, p, p:g, 150px, 5px, p, 2px", "p:g"), this);
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("150px, p:g, p, p:g, 150px", "p:g"), this);
             CellConstraints cc      = new CellConstraints();
 
-            closeBtn     = new JLabel(IconManager.getIcon("Close"));
             fieldLabel   = new JLabel(colInfo.getColName());
             mappingLabel = new JLabel(noMappingStr, SwingConstants.RIGHT);
             
@@ -792,8 +835,6 @@ public class ColumnMapperPanel extends JPanel
             builder.add(fieldLabel, cc.xy(1,1));
             builder.add(iconLabel = new JLabel(icon), cc.xy(3,1));
             builder.add(mappingLabel, cc.xy(5,1));
-            builder.add(closeBtn, cc.xy(7,1));
-            closeBtn.setVisible(false);
             setIcon(icon);
             
             thisItem = this;
@@ -815,19 +856,6 @@ public class ColumnMapperPanel extends JPanel
                     selectMappingPanel(thisItem);
                 }
             });
-            
-            closeBtn.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (mappingLabel.isVisible())
-                    {
-                        unmap(thisItem);
-                    } else
-                    {
-                        removeMapItem(thisItem);
-                    }
-                }
-            });
         }
         
         /**
@@ -838,7 +866,6 @@ public class ColumnMapperPanel extends JPanel
         {
             tblField = fieldInfoArg;
             mappingLabel.setText(fieldInfoArg != null ? fieldInfoArg.getFieldInfo().getColumn() : noMappingStr);
-            closeBtn.setVisible(fieldInfoArg != null);
         }
         
         public void setMappingLabelVisible(final boolean isVis)

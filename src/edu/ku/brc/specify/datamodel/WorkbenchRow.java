@@ -459,6 +459,20 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         return wbdi;
     }
     
+    /**
+     * Removes an item from the Row.
+     * @param item the item to be removed
+     * @return the same items that was removed
+     */
+    public WorkbenchDataItem delete(final WorkbenchDataItem item)
+    {
+        short colInx = item.getColumnNumber();
+        items.remove(colInx);
+        workbenchDataItems.remove(item);
+        item.setWorkbenchRow(null);
+        return item;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */

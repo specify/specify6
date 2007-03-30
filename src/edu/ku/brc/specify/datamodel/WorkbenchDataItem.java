@@ -43,11 +43,16 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
+    public static final int VAL_NONE   = 0;
+    public static final int VAL_OK     = 1;
+    public static final int VAL_ERROR  = 2;
+        
     // Fields
     protected Long         workbenchDataItemId;
     protected String       cellData;
     protected Short        rowNumber;
     protected Short        columnNumber;
+    protected Short        validationStatus;
     protected WorkbenchRow workbenchRow;
 
     // Constructors
@@ -82,6 +87,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         cellData            = null;
         rowNumber           = null;
         columnNumber        = null;
+        validationStatus    = VAL_NONE;
         workbenchRow        = null;
     }
 
@@ -167,6 +173,17 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     public void setColumnNumber(Short columnNumber)
     {
         this.columnNumber = columnNumber;
+    }
+
+    @Column(name = "ValidationStatus", unique = false, nullable = true, insertable = true, updatable = true)
+    public Short getValidationStatus()
+    {
+        return validationStatus;
+    }
+
+    public void setValidationStatus(Short validationStatus)
+    {
+        this.validationStatus = validationStatus;
     }
 
     /**

@@ -536,11 +536,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     {
         if (spreadSheet.getCellEditor() != null)
         {
-            int index = spreadSheet.getEditingColumn();
-            if (spreadSheet.getColumnClass(index) != java.lang.Boolean.class)
-            {
-                spreadSheet.getCellEditor().stopCellEditing();
-            }
+            int index = spreadSheet.getSelectedRow();
+            spreadSheet.getCellEditor().stopCellEditing();
+            spreadSheet.setRowSelectionInterval(index, index);
         }
     }
     

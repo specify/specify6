@@ -221,12 +221,13 @@ public class SpreadSheet  extends SearchableJXTable
         int rowCount = getModel().getRowCount();
         
         Component comp = rowHeaderPanel.getComponent(rowCount);
-        remove(comp);
+        rowHeaderPanel.remove(comp);
 
         Dimension dim = new Dimension(rowLabelWidth, rowHeight * (rowCount));
         rowHeaderPanel.setPreferredSize(dim);
         rowHeaderPanel.setSize(dim);
-        
+        rowHeaderPanel.validate();
+ 
         resizeAndRepaint();
         
         if (rowCount > -1)
