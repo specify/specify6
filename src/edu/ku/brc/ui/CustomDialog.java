@@ -281,7 +281,7 @@ public class CustomDialog extends JDialog
     protected void applyButtonPressed()
     {
         isCancelled = false;
-        btnPressed  = HELP_BTN;
+        btnPressed  = APPLY_BTN;
     }
 
     /**

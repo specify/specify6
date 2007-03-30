@@ -62,6 +62,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -118,10 +119,14 @@ import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
+import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.StringConverter;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
@@ -160,6 +165,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected JButton               controlPropsBtn = null;
     protected JButton               exportKmlBtn    = null;
     protected JButton               biogeomancerBtn = null;
+    protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn = null;
 
     protected List<JButton>         selectionSensativeButtons          = new Vector<JButton>();
@@ -372,6 +378,15 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         selectionSensativeButtons.add(biogeomancerBtn);
         
+        convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.Std16, "WB_CONVERT_GEO_FORMAT", true, new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showGeoRefConvertDialog();
+            }
+        });
+        convertGeoRefFormatBtn.setEnabled(true);
+        
         exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -456,7 +471,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, exportExcelCsvBtn};
+        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
         PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "p:g"));
         
         spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
@@ -794,6 +809,70 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         return false;
     }
     
+    protected void showGeoRefConvertDialog()
+    {
+        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        
+        if (!workbench.containsGeoRefData())
+        {
+            statusBar.setErrorMessage(getResourceString("NoGeoRefColumns"));
+            return;
+        }
+        
+        List<String> outputFormats = new Vector<String>();
+        String dddddd = getResourceString("DDDDDD");
+        String ddmmmm = getResourceString("DDMMMM");
+        String ddmmss = getResourceString("DDMMSS");
+        outputFormats.add(dddddd);
+        outputFormats.add(ddmmmm);
+        outputFormats.add(ddmmss);
+        
+        final int locTabId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+        final int latColIndex = workbench.getColumnIndex(locTabId,"latitude1");
+        final int lonColIndex = workbench.getColumnIndex(locTabId, "longitude1");
+
+        JFrame mainFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        
+        String title = getResourceString("GeoRefConv");
+        String description = getResourceString("GeoRefConvDesc");
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null,Type.RadioButton)
+        {
+            @Override
+            protected void okButtonPressed()
+            {
+                // don't call super.okButtonPressed() b/c it will close the window
+                isCancelled = false;
+                btnPressed  = OK_BTN;
+                switch( getSelectedIndex() )
+                {
+                    case 0:
+                    {
+                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        break;
+                    }
+                    case 1:
+                    {
+                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                        break;
+                    }
+                    case 2:
+                    {
+                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                        break;
+                    }
+                }
+            }
+        };
+        dlg.setModal(false);
+        dlg.setOkLabel(getResourceString("Apply"));
+        dlg.setCancelLabel(getResourceString("Close"));
+        dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dlg.setVisible(true);
+    }
+    
     /**
      * Show a map for any number of selected records.
      */
@@ -933,6 +1012,21 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
         statusBar.setIndeterminate(false);
         statusBar.setText("");
+    }
+    
+    protected void convertColumnContents(int columnIndex, StringConverter converter, String outputFormat)
+    {
+        int rowCnt = model.getRowCount();
+        for (int i = 0; i < rowCnt; ++i)
+        {
+            String currentValue = (String)model.getValueAt(i, columnIndex);
+            String convertedValue = converter.convert(currentValue, outputFormat);
+            model.setValueAt(convertedValue, i, columnIndex);
+            if (!currentValue.equals(convertedValue))
+            {
+                setChanged(true);
+            }
+        }
     }
     
     /**
@@ -1613,6 +1707,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         /* (non-Javadoc)
          * @see javax.swing.CellEditor#getCellEditorValue()
          */
+        @Override
         public Object getCellEditorValue() 
         {
             return textField.getText();
@@ -1630,7 +1725,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         //
         //          Implementing the CellEditor Interface
         //
-        /** Implements the <code>TableCellEditor</code> interface. */
+        
+        /* (non-Javadoc)
+         * @see javax.swing.DefaultCellEditor#getTableCellEditorComponent(javax.swing.JTable, java.lang.Object, boolean, int, int)
+         */
         @Override
         public Component getTableCellEditorComponent(JTable  table, 
                                                      Object  value,
@@ -1655,7 +1753,10 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                     }
                 });
             }
-            catch( Exception e ) { }
+            catch( Exception e )
+            {
+                // ignore it?
+            }
 
             return textField;
         }

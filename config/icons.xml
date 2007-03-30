@@ -74,6 +74,7 @@
     <icon name="CardImage"		   alias="image"/>
     <icon name="ShowMap"		   alias="LocalityMapper"/>
     <icon name="RepositoryAgreement" alias="Accession"/>
+    <icon name="ConvertGeoRef"	   alias="Configure"/>
     
     <icon name="DiGIR"             file="DigirShovel.png"/>
     
