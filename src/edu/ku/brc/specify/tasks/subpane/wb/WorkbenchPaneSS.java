@@ -28,6 +28,8 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -212,15 +214,21 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
         
-         // pre load all the data
+        boolean hasOneOrMoreImages = false;
+        // pre load all the data
         for (WorkbenchRow wbRow : workbench.getWorkbenchRows())
         {
             for (WorkbenchDataItem wbdi : wbRow.getWorkbenchDataItems())
             {
                 wbdi.getCellData();
             }
+            
+            if (!hasOneOrMoreImages && !showImageView && wbRow.getCardImage() != null)
+            {
+                hasOneOrMoreImages = true;
+            }
         } 
-
+        
         model       = new GridTableModel(workbench, headers);
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
@@ -302,20 +310,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         insertRowBtn = createIconBtn("InsertSign", "WB_INSERT_ROW", insertAction);
         selectionSensativeButtons.add(insertRowBtn);
 
-        /*addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                model.appendRow();
-                resultsetController.setLength(model.getRowCount());
-                int selInx = model.getRowCount()-1;
-                resultsetController.setIndex(selInx);
-                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
-
-            }
-        });
-        addRowsBtn.setEnabled(true);
-        */
         Action addAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_N, "AddRow", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -401,6 +395,19 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                     }
 
                     setCurrentRow( spreadSheet.getSelectedRow());
+                }
+            }
+        });
+        
+        spreadSheet.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e)
+            {
+                int row = spreadSheet.getSelectedRow();
+                int col = spreadSheet.getSelectedColumn();
+                if (row > -1 && col > -1)
+                {
+                    TableCellEditor tableCellEditor = spreadSheet.getCellEditor (row, col);
+                    tableCellEditor.stopCellEditing();
                 }
             }
         });
@@ -495,13 +502,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         builder.add(saveBtn,            cc.xy(7,3));
         builder.add(createSwitcher(),   cc.xy(9,3));
         
-        if (showImageView)
+        if (showImageView || hasOneOrMoreImages)
         {
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
                 {
                     toggleCardImageVisible();
+                    ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
                 }
             });
         }
