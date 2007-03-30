@@ -820,9 +820,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         
         List<String> outputFormats = new Vector<String>();
-        String dddddd = getResourceString("DD.DDDD (32.7619)");
-        String ddmmmm = getResourceString("DD MM.MM (32 45.714)");
-        String ddmmss = getResourceString("DD MM SS.SS (32 45 42.84)");
+        String dddddd = getResourceString("DDDDDD");
+        String ddmmmm = getResourceString("DDMMMM");
+        String ddmmss = getResourceString("DDMMSS");
         outputFormats.add(dddddd);
         outputFormats.add(ddmmmm);
         outputFormats.add(ddmmss);
