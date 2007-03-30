@@ -566,6 +566,7 @@ public final class UIHelper
             mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
         }
         mi.addActionListener(al);
+        mi.setEnabled(enabled);
         return mi;
     }
     

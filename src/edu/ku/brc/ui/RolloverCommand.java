@@ -79,7 +79,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
     protected boolean                isOver      = false;
     protected static Color           focusColor  = Color.BLUE;
-    protected static Color           activeColor = new Color(0, 128, 0);
+    protected static Color           activeColor = new Color(0, 150, 0);
     protected Vector<ActionListener> actions     = new Vector<ActionListener>();
 
     protected ImageIcon              imgIcon     = null;
@@ -476,7 +476,8 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                     color = activeColor;
                 } else
                 {
-                    color = UIManager.getLookAndFeel() instanceof PlasticLookAndFeel ? PlasticLookAndFeel.getFocusColor() : Color.BLUE;
+                    Color mouseOverColor = dragFlavors.size() > 0 ? activeColor : Color.BLUE;
+                    color = (this.hasFocus() && UIManager.getLookAndFeel() instanceof PlasticLookAndFeel) ? PlasticLookAndFeel.getFocusColor() :mouseOverColor;
                 }
                 g.setColor(color);
                 

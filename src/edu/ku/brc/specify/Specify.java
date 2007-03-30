@@ -548,7 +548,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         JMenuItem mi;
 
         JMenu menu = UIHelper.createMenu(mb, "FileMenu", "FileMneu");
-        mi = UIHelper.createMenuItem(menu, "Login", "L", "Database Login", false, null);
+        mi = UIHelper.createMenuItem(menu, "Login", "L", "Database Login", true, null);
         mi.addActionListener(new ActionListener()
                 {
                     @SuppressWarnings("synthetic-access")
@@ -613,7 +613,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
             menu.addSeparator();
-            mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
+            mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
