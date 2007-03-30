@@ -29,7 +29,10 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     protected String     colName;
     protected String     data;
     
-    public ImportColumnInfo(short colInx, ColumnType colType, String colName, String data)
+    public ImportColumnInfo(final short      colInx, 
+                            final ColumnType colType, 
+                            final String     colName, 
+                            final String     data)
     {
         super();
         

@@ -208,6 +208,16 @@ public class GridTableModel extends SpreadSheetModel
     @Override
     public void appendRow()
     {
+        int selInx = spreadSheet.getSelectedRow();
+        if (selInx == -1)
+        {
+            selInx = spreadSheet.getEditingRow();
+        }
+        System.out.println("selInx "+selInx);
+        
+        addRowAt(getRowCount(), selInx);
+        
+        /*
         if (getRowCount() >= 0)
         {
             WorkbenchRow wbRow  = getRowCount() > 0 ? workbench.getWorkbenchRowsAsList().get(getRowCount()-1) : null;
@@ -241,6 +251,7 @@ public class GridTableModel extends SpreadSheetModel
             spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
 
         }
+        */
     }
 
     /* (non-Javadoc)
@@ -313,28 +324,44 @@ public class GridTableModel extends SpreadSheetModel
     public void insertRow(int rowInx)
     {
         int oldRowIndex = rowInx;
-        int rowIndex    = rowInx;
+        int rowIndex    = rowInx == -1 ? this.getRowCount() : rowInx;
         if (this.getRowCount() == -1)
         {
             if (this.getRowCount() > 0)
             {
                 oldRowIndex = this.getRowCount()-1;
                 rowIndex    = this.getRowCount();
+            } else
+            {
+                rowIndex = -1;
             }
         }
-        
-        WorkbenchRow wbRow;
-        WorkbenchRow newRow;
-        if (rowIndex == -1)
+        addRowAt(rowIndex, oldRowIndex);
+    }
+    
+    /**
+     * Add the row at an index and copy any Carry Forward Values.
+     * @param rowIndex the index to add at
+     * @param oldRowIndex the index to copy from
+     */
+    protected void addRowAt(final int rowIndex, final int oldRowIndex)
+    {
+        WorkbenchRow wbRow  = null;
+        if (oldRowIndex > -1)
         {
-            wbRow  = null;
-            newRow = workbench.insertRow((short)0);
+            wbRow  = workbench.getWorkbenchRowsAsList().get(oldRowIndex);
+        }
+        
+        WorkbenchRow newRow;
+        if (rowIndex == -1 || rowIndex == getRowCount())
+        {
+            newRow = workbench.addRow();
             
         } else
         {
-            wbRow  = workbench.getWorkbenchRowsAsList().get(oldRowIndex);
             newRow = workbench.insertRow((short)rowIndex);
         }
+        
         
         // Do Carry Forward
         if (wbRow != null)
@@ -357,8 +384,8 @@ public class GridTableModel extends SpreadSheetModel
         
         if (spreadSheet != null)
         {
-            spreadSheet.scrollToRow(rowInx);
-            spreadSheet.setRowSelectionInterval(oldRowIndex, oldRowIndex);
+            spreadSheet.scrollToRow(rowIndex);
+            spreadSheet.setRowSelectionInterval(rowIndex, rowIndex);
             spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
         }
     }

@@ -232,12 +232,12 @@ public class ChooseFromListDlg<T> extends JDialog
                              final ImageIcon icon,
                              final String    helpContext) throws HeadlessException
     {
-        super(frame, true);
+        this(frame, title, whichBtns, itemList);
         
-        this.title       = title;
-        this.items       = itemList;
         this.icon        = icon;
         this.helpContext = helpContext;
+        
+        setModal(true);
 
         setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

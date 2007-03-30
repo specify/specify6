@@ -134,7 +134,7 @@ public class CustomDialog extends JDialog
     {
         super(dialog, title, isModal);
         
-        this.whichBtns = OK_BTN | CANCEL_BTN;
+        this.whichBtns    = whichBtns;
         this.contentPanel = contentPanel;
     }
 

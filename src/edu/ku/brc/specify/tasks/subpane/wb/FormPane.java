@@ -42,7 +42,6 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -404,8 +403,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                 }
             } else
             {
-                ((JTextField)p.getComp()).setText(wbRow.getData(col));
-                wbRow.setData(((JTextField)p.getComp()).getText(), col);
+                ((JTextComponent)p.getComp()).setText(wbRow.getData(col));
+                wbRow.setData(((JTextComponent)p.getComp()).getText(), col);
             }
         }
         ignoreChanges = false;

@@ -295,6 +295,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             public void actionPerformed(ActionEvent ae)
             {
+                checkForCellEditing();
                 int curSelInx = spreadSheet.getSelectedRow();
                 model.insertRow(curSelInx);
                 resultsetController.setLength(model.getRowCount());
@@ -311,6 +312,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             public void actionPerformed(ActionEvent ae)
             {
+                checkForCellEditing();
                 model.appendRow();
                 resultsetController.setLength(model.getRowCount());
                 int selInx = model.getRowCount()-1;
@@ -471,7 +473,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         PanelBuilder outerRSPanel = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p", "p"));
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "p"));
-        resultsetController  = new ResultSetController(null, true, true, "XXXX", model.getRowCount());
+        resultsetController  = new ResultSetController(null, true, true, getResourceString("Record"), model.getRowCount());
         resultsetController.addListener(formPane);
         resultsetController.addListener(this);
         resultsetController.getNewRecBtn().addActionListener(insertAction);

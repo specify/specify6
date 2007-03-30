@@ -189,7 +189,7 @@ public class ColumnMapperPanel extends JPanel
         
         PanelBuilder header = new PanelBuilder(new FormLayout("p,f:p:g,p", "p,2px,p"));
         header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), SwingConstants.CENTER), cc.xywh(1, 1, 3, 1));
-        header.add(new JLabel(workbenchTemplate != null ? "Import" : "Schema", SwingConstants.LEFT), cc.xy(1,3)); // XXX I18N
+        header.add(new JLabel(workbenchTemplate != null ? "Columns" : "Schema", SwingConstants.LEFT), cc.xy(1,3)); // XXX I18N
         header.add(new JLabel(workbenchTemplate != null ? "Schema" : "", SwingConstants.RIGHT), cc.xy(3,3));  // XXX I18N
 
         builder.add(header.getPanel(), cc.xy(1, 1));
@@ -341,38 +341,6 @@ public class ColumnMapperPanel extends JPanel
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
     }
     
-    protected void editProps()
-    {
-        if (WorkbenchTask.askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-
-                session.beginTransaction();
-                session.attach(workbenchTemplate);
-                session.save(workbenchTemplate);
-                session.commit();
-                session.flush();
-                
-                //if (roc != null)
-                //{
-                //    roc.setLabelText(workbenchTemplate.getName());
-                //}
-                
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                
-            } finally
-            {
-                session.close();    
-            }
-
-        }
-
-    }
-    
     /**
      * Returns whether the dialog was cancelled.
      * @return whether the dialog was cancelled.
@@ -427,7 +395,7 @@ public class ColumnMapperPanel extends JPanel
     }
     
     /**
-     * Select a FieldMappingPanel and unselect the old one/
+     * Select a FieldMappingPanel and unselect the old one.
      * @param fmp the selected FieldMappingPanel
      */
     protected void selectMappingPanel(final FieldMappingPanel fmp)
@@ -460,7 +428,6 @@ public class ColumnMapperPanel extends JPanel
         }
         
         updateEnabledState();
-
     }
     
     /**
@@ -547,8 +514,8 @@ public class ColumnMapperPanel extends JPanel
             maxDataColIndex = 0;
         }
 
-        TableFieldPair    tblField  = (TableFieldPair)fieldList.getSelectedValue();
-        Class<?> tableClass = null;
+        TableFieldPair tblField   = (TableFieldPair)fieldList.getSelectedValue();
+        Class<?>       tableClass = null;
         try
         {
             Object newDbObj = tblField.getTableinfo().getClassObj().newInstance();
@@ -560,9 +527,9 @@ public class ColumnMapperPanel extends JPanel
             log.warn("Exception while looking up field type.  Assuming java.lang.String.",e);
             tableClass = String.class;
         }
-        ImportColumnInfo  colInfo   = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(tableClass), tblField.getFieldInfo().getColumn(), null);
         
-        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
+        ImportColumnInfo  colInfo = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(tableClass), tblField.getFieldInfo().getColumn(), null);
+        FieldMappingPanel fmp     = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
         
         fmp.setNew(isNew); // new Items that was not in the data file.
         
@@ -647,8 +614,8 @@ public class ColumnMapperPanel extends JPanel
         currentInx = 0;
         for (FieldMappingPanel fmp : mappingItems)
         {
-            String     fieldName     = StringUtils.deleteWhitespace(fmp.getFieldName().toLowerCase());
-            TableFieldPair tblField      = null;
+            String         fieldName = StringUtils.deleteWhitespace(fmp.getFieldName().toLowerCase());
+            TableFieldPair tblField  = null;
             
             if (fieldName.indexOf("date") > -1)
             {

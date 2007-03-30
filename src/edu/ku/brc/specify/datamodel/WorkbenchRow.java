@@ -461,6 +461,7 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
             {
                 wbdi = new WorkbenchDataItem(this, dataStr, rowNumber, col); // adds it to the row also
                 items.put(wbdi.getColumnNumber(), wbdi);
+                workbenchDataItems.add(wbdi);
             }
         }
         return wbdi;
@@ -523,14 +524,7 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
             try
             {
                 ImageIcon iconImage = new ImageIcon(cardImageFullPath);
-                if (iconImage != null)
-                {
-                    fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
-                } else
-                {
-                    loadStatus = LoadStatus.Error;
-                    return null;
-                }
+                fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
                 
             } catch (java.lang.OutOfMemoryError memEx)
             {
