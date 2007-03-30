@@ -5,66 +5,60 @@ import java.util.Vector;
 
 public class GeoRefConverter implements StringConverter
 {
-    public enum Pattern
+    public enum GeoRefFormat
     {
         DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\s\\d{2}\\.\\d{0,}\\s*")
         {
             @Override
-            public String convertToDecimalDegrees(String orig)
+            public BigDecimal convertToDecimalDegrees(String orig)
             {
-                BigDecimal dd = LatLonConverter.convertDDMMSSToDDDD(orig);
-                return dd.toPlainString();
+                return LatLonConverter.convertDDMMSSToDDDD(orig);
             }
         },
         DM_PLUS_MINUS  ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\.\\d{0,}\\s*")
         {
             @Override
-            public String convertToDecimalDegrees(String orig)
+            public BigDecimal convertToDecimalDegrees(String orig)
             {
-                BigDecimal dd = LatLonConverter.convertDDMMMMToDDDD(orig);
-                return dd.toPlainString();
+                return LatLonConverter.convertDDMMMMToDDDD(orig);
             }
         },
         D_PLUS_MINUS   ("[\\+\\-]?\\d{1,3}\\.\\d{0,}\\s*")
         {
             @Override
-            public String convertToDecimalDegrees(String orig)
+            public BigDecimal convertToDecimalDegrees(String orig)
             {
-                BigDecimal dd = LatLonConverter.convertDDDDToDDDD(orig);
-                return dd.toPlainString();
+                return LatLonConverter.convertDDDDToDDDD(orig);
             }
         },
         DMS_NSEW       ("\\d{1,3}\\s\\d{2}\\s\\d{1,2}\\.\\d{0,}\\s[NSEW]{1}.*")
         {
             @Override
-            public String convertToDecimalDegrees(String orig)
+            public BigDecimal convertToDecimalDegrees(String orig)
             {
-                BigDecimal dd = LatLonConverter.convertDirectionalDDMMSSToDDDD(orig);
-                return dd.toPlainString();
+                return LatLonConverter.convertDirectionalDDMMSSToDDDD(orig);
             }
         },
         DM_NSEW        ("\\d{1,3}\\s\\d{1,2}\\.\\d{0,}\\s[NSEW]{1}.*")
         {
             @Override
-            public String convertToDecimalDegrees(String orig)
+            public BigDecimal convertToDecimalDegrees(String orig)
             {
-                BigDecimal dd = LatLonConverter.convertDirectionalDDMMMMToDDDD(orig);
-                return dd.toPlainString();
+                return LatLonConverter.convertDirectionalDDMMMMToDDDD(orig);
             }
         },
         D_NSEW         ("\\d{1,3}\\.\\d{0,}\\s[NSEW]{1}.*")
         {
             @Override
-            public String convertToDecimalDegrees(String orig)
+            public BigDecimal convertToDecimalDegrees(String orig)
             {
-                BigDecimal dd = LatLonConverter.convertDirectionalDDDDToDDDD(orig);
-                return dd.toPlainString();
+                return LatLonConverter.convertDirectionalDDDDToDDDD(orig);
             }
         };
         
-        private final String regex;
+        public final String regex;
         
-        Pattern(String regex)
+        GeoRefFormat(String regex)
         {
             this.regex = regex;
         }
@@ -74,7 +68,7 @@ public class GeoRefConverter implements StringConverter
             return input.matches(regex);
         }
         
-        public abstract String convertToDecimalDegrees(String original);
+        public abstract BigDecimal convertToDecimalDegrees(String original);
     }
     
     public GeoRefConverter()
@@ -87,17 +81,42 @@ public class GeoRefConverter implements StringConverter
      */
     public String convert(String original, String destFormat)
     {
-        // first we have to 'discover' the original format
-
-        for (Pattern p: Pattern.values())
+        if (original == null)
         {
-            if (p.matches(original))
+            return null;
+        }
+        
+        // first we have to 'discover' the original format
+        // and convert to decimal degrees
+        // then we convert to the requested format
+
+        BigDecimal degreesPlusMinus = null;
+        for (GeoRefFormat format: GeoRefFormat.values())
+        {
+            if (original.matches(format.regex))
             {
-                System.out.println(p + " matched the input string");
-                String converted = p.convertToDecimalDegrees(original);
-                System.out.println("Converted output: " + converted);
-                return converted;
+                degreesPlusMinus = format.convertToDecimalDegrees(original);
+                break;
             }
+        }
+        
+        // if we weren't able to find a matching format, return the original
+        if (degreesPlusMinus == null)
+        {
+            return original;
+        }
+        
+        if (destFormat == GeoRefFormat.DMS_PLUS_MINUS.name())
+        {
+            return LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus);
+        }
+        else if (destFormat == GeoRefFormat.DM_PLUS_MINUS.name())
+        {
+            return LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus);
+        }
+        else if (destFormat == GeoRefFormat.D_PLUS_MINUS.name())
+        {
+            return LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus);
         }
         
         return null;
@@ -112,26 +131,21 @@ public class GeoRefConverter implements StringConverter
         inputStrings.add("-32 45 16.82");
         inputStrings.add("-132 45 16.8234");
         inputStrings.add("32 45 16.82 S");
-        inputStrings.add("132 45 16.82235 W");
+        inputStrings.add("132 45 16.82235");
         inputStrings.add("-32 45.15166");
-        inputStrings.add("-32 45.16236");
+        inputStrings.add("32 45.16236");
         inputStrings.add("32 45.1616 S");
         inputStrings.add("52 22.6 W");
-        inputStrings.add("-108.13461");
+        inputStrings.add("108.13461");
         inputStrings.add("-20.26");
-        inputStrings.add("100.1351 S");
+        inputStrings.add("100.1351 N");
         inputStrings.add("9.15161 W");
 
+        GeoRefConverter converter = new GeoRefConverter();
+        
         for (String input: inputStrings)
         {
-            for (Pattern p: Pattern.values())
-            {
-                if (p.matches(input))
-                {
-                    System.out.println(p + " matched the input string");
-                    System.out.println("Converted output: " + p.convertToDecimalDegrees(input));
-                }
-            }
+            System.out.println("Converted output: " + converter.convert(input, GeoRefFormat.D_PLUS_MINUS.name()));
         }
     }
 }

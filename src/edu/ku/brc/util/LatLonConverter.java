@@ -66,6 +66,18 @@ public class LatLonConverter
         return convertToDDMMSS(bc, DEGREES_FORMAT.None, DIRECTION.None);
     }
     
+    public static String convertToSignedDDMMSS(final BigDecimal dd)
+    {
+        String sign = "";
+        if (dd.compareTo(dd.abs()) < 0)
+        {
+            sign = "-";
+        }
+        
+        String convertedAbs = convertToDDMMSS(dd);
+        return sign + convertedAbs;
+    }
+    
     /**
      * Converts BigDecimal to Degrees, Minutes and Decimal Seconds.
      * @param bc the DigDecimal to be converted.
@@ -137,6 +149,18 @@ public class LatLonConverter
         return convertToDDMMMM(bc, DEGREES_FORMAT.None, DIRECTION.None);
     }
     
+    public static String convertToSignedDDMMMM(final BigDecimal dd)
+    {
+        String sign = "";
+        if (dd.compareTo(dd.abs()) < 0)
+        {
+            sign = "-";
+        }
+        
+        String convertedAbs = convertToDDMMMM(dd);
+        return sign + convertedAbs;
+    }
+    
     /**
      * Converts BigDecimal to Degrees and Decimal Minutes.
      * @param bc the DigDecimal to be converted.
@@ -200,6 +224,18 @@ public class LatLonConverter
     public static String convertToDDDDDD(final BigDecimal bc)
     {
         return convertToDDDDDD(bc, DEGREES_FORMAT.None, DIRECTION.None);
+    }
+    
+    public static String convertToSignedDDDDDD(final BigDecimal dd)
+    {
+        String sign = "";
+        if (dd.compareTo(dd.abs()) < 0)
+        {
+            sign = "-";
+        }
+        
+        String convertedAbs = convertToDDDDDD(dd);
+        return sign + convertedAbs;
     }
     
     /**
