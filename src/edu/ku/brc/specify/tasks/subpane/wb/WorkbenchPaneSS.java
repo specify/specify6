@@ -103,6 +103,8 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
+import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
+import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.plugins.BioGeoMancer;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -1165,13 +1167,13 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         
         // put all the selected rows in a List
-        List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
+        List<GoogleEarthPlacemarkIFace> selectedRows = new Vector<GoogleEarthPlacemarkIFace>();
         List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
         for (int i = 0; i < selection.length; ++i )
         {
             int index = selection[i];
             WorkbenchRow row = rows.get(index);
-            selectedRows.add(row);
+            selectedRows.add(new WorkbenchRowPlacemarkWrapper(row));
         }
         
         // get an icon URL that is specific to the current context
