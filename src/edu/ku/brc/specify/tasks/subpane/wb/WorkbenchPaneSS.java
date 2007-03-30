@@ -1330,7 +1330,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      */
     protected void backupObject()
     {
-        WorkbenchBackupMgr.backupWorkbench(workbench, (WorkbenchTask) task);
+        WorkbenchBackupMgr.backupWorkbench(workbench.getId(), (WorkbenchTask) task);
     }
     
     /**
@@ -1338,11 +1338,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      */
     protected void saveObject()
     {
-        checkForCellEditing();
-        
         //backup current database contents for workbench
         backupObject();
-
+        
+        checkForCellEditing();
+        
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try

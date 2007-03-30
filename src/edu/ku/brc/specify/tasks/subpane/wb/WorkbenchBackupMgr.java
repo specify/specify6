@@ -24,6 +24,7 @@ import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -102,34 +103,41 @@ public class WorkbenchBackupMgr
     /**
      * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the default working Path, and deletes old backups if necessary.
      */
-    public static void backupWorkbench(final Workbench workbench, final WorkbenchTask task)
+    public static void backupWorkbench(final  long workbenchId, final WorkbenchTask task)
     {
-        String fileName = getPrefix(workbench) + workbench.getName()
-                + new Date().toString() + ".xls";
-
-        Properties props = new Properties();
-        props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
-        props.setProperty("fileName", UICacheManager.getDefaultWorkingPathSubDir(backupSubDir, true) + File.separator + fileName);
-
-        CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
-        command.setProperty("exporter", ExportToFile.class);
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
+            Workbench workbench = session.get(Workbench.class, workbenchId);
             session.attach(workbench);
             workbench.forceLoad();
             session.close();
             session = null;
+            
+            String fileName = getPrefix(workbench) + workbench.getName() + new Date().toString()
+                    + ".xls";
+
+            Properties props = new Properties();
+            props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
+            props.setProperty("fileName", UICacheManager.getDefaultWorkingPathSubDir(backupSubDir,
+                    true)
+                    + File.separator + fileName);
+
+            CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
+            command.setProperty("exporter", ExportToFile.class);
             command.setData(workbench.getWorkbenchRowsAsList());
-                        
-            //XXX the command has to be sent synchronously so the backup happens before the save, so when dispatchCommand goes asynchronous
-            //more work will have to done here...
+
+            // XXX the command has to be sent synchronously so the backup happens before the save,
+            // so when dispatchCommand goes asynchronous
+            // more work will have to done here...
             task.sendExportCommand(props, workbench.getWorkbenchTemplate()
                     .getWorkbenchTemplateMappingItems(), command);
-            
-            
-            //XXX again assuming command was dispatched synchronously...
-            //if backup worked then remove old backups if necessary.
+
+            // XXX again assuming command was dispatched synchronously...
+            // Clear the status bar message about successful 'export'? - but what if error during
+            // backup?,
+            // and remove old backups if necessary.
+            ((JStatusBar) UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
             cleanupBackups(workbench);
         }
         catch (Exception ex)
