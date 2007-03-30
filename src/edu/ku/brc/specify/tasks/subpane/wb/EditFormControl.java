@@ -131,7 +131,10 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
              
             xCoord.addChangeListener(this);
             yCoord.addChangeListener(this);
-            fieldWidth.addChangeListener(this);
+            if (fieldWidth != null)
+            {
+                fieldWidth.addChangeListener(this);
+            }
             labelTF.getDocument().addDocumentListener(this);
     
             mainPanel.add(panel, BorderLayout.CENTER);

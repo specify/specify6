@@ -37,10 +37,12 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -107,14 +109,23 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         
         MouseAdapter clickable = new MouseAdapter()
         {
+            protected InputPanel getInputPanel(final Object obj)
+            {
+                Component comp = ((Component)obj).getParent();
+                while (comp != null && !(comp instanceof InputPanel))
+                {
+                    comp = comp.getParent();
+                }
+                return comp instanceof InputPanel ? (InputPanel)comp : null;
+            }
             public void mousePressed(MouseEvent e)
             {
                 if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
                 {
                     showControlProps();
                 }
-                
-                selectedInputPanel = (InputPanel)((Component)e.getSource()).getParent();
+
+                selectedInputPanel = getInputPanel(e.getSource());
                 controlPropsBtn.setEnabled(true);
                 
                 if (controlProperties != null)
@@ -125,7 +136,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             
             public void mouseClicked(MouseEvent e)
             {
-                selectedInputPanel = (InputPanel)((Component)e.getSource()).getParent();
+                selectedInputPanel = getInputPanel(e.getSource());
                 controlPropsBtn.setEnabled(true);
                 
                 if (controlProperties != null)
@@ -308,6 +319,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         {
             workbenchPane.gridColumnsUpdated();
         }
+        controlProperties.dispose();
+        controlProperties = null;
     }
     
     /**
@@ -452,7 +465,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                     }
                 } else
                 {
-                    ((JTextField)p.getComp()).setText(wbRow.getData(col));
+                    ((JTextComponent)p.getComp()).setText(wbRow.getData(col));
                 }
             }
             ignoreChanges = false;
@@ -489,6 +502,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             repaint();
             validate();
             doLayout();
+            
+            // Update the template
+            WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
+            wbtmi.setXCoord((short)location.x);
+            wbtmi.setYCoord((short)location.y);
+            workbenchPane.setChanged(true);
         }
     }
     

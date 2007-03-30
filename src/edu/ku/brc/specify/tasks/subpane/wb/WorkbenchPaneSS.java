@@ -28,8 +28,6 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -335,7 +333,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         });
         carryForwardBtn.setEnabled(true);
 
-        toggleCardImageBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_CARD", true, new ActionListener()
+        toggleCardImageBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMAGES", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -398,19 +396,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         });
         
-        spreadSheet.addFocusListener(new FocusAdapter() {
-            public void focusLost(FocusEvent e)
-            {
-                int row = spreadSheet.getSelectedRow();
-                int col = spreadSheet.getSelectedColumn();
-                if (row > -1 && col > -1)
-                {
-                    TableCellEditor tableCellEditor = spreadSheet.getCellEditor (row, col);
-                    tableCellEditor.stopCellEditing();
-                }
-            }
-        });
-        
         // setup the JFrame to show images attached to WorkbenchRows
         cardImageFrame = new CardImageFrame(mapSize);
         cardImageFrame.installLoadActionListener(new ActionListener()
@@ -427,6 +412,17 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                     showCardImageForSelectedRow();
                     setChanged(true);
                 }
+            }
+        });
+        
+        cardImageFrame.installClearActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                // figure out what row is selected
+                int firstRowSelected = spreadSheet.getSelectedRow();
+                WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
+                row.setCardImage((File)null);
             }
         });
         cardImageFrame.installCloseActionListener(new ActionListener()
@@ -691,11 +687,12 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
      */
     public void toggleCardImageVisible()
     {
-        // we simply have to toggle the visibility
+        // We simply have to toggle the visibility
         // and add or remove the ListSelectionListener (to avoid loading images when not visible)
         boolean visible = cardImageFrame.isVisible();
         if (visible)
         {
+            toggleCardImageBtn.setToolTipText(getResourceString("WB_SHOW_IMAGES"));
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(false);
             blockChanges = true;
@@ -722,6 +719,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 //            // so we'll grab it here, then set it at the end of this method
 //            int originalSelectionRow = spreadSheet.getSelectedRow();
 
+            toggleCardImageBtn.setToolTipText(getResourceString("WB_HIDE_IMAGES"));
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             cardImageFrame.setVisible(true);
             
@@ -1494,6 +1492,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             if (cardFrameWasShowing)
             {
                 toggleCardImageVisible();
+                ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
             }
         }
         else
@@ -1511,6 +1510,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             if (mapFrame!=null && mapFrame.isVisible())
             {
                 mapFrame.setVisible(false);
+                
             }
         }
         super.showingPane(show);

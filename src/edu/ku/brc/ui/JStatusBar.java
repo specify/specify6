@@ -126,7 +126,7 @@ public class JStatusBar extends JPanel
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                if (e.getClickCount()==2 && lastException!=null)
+                if (e.getClickCount() == 2 && lastException != null)
                 {
                     String message = lastException.getLocalizedMessage();
                     JOptionPane.showMessageDialog(getParent(), message, statusLabel.getText(), JOptionPane.ERROR_MESSAGE);
@@ -171,7 +171,8 @@ public class JStatusBar extends JPanel
      * This is just a helper method that combines the work of the {@link #setText(String)}
      * and {@link #setAsError()} methods.
      * 
-     * @param message the the text of the error message
+     * @param message the text of the error message
+     * @param e the exception
      */
     public void setErrorMessage(String message, Exception e)
     {
@@ -179,6 +180,20 @@ public class JStatusBar extends JPanel
         statusLabel.setForeground(ERROR_COLOR);
         statusLabel.setIcon(errorIcon);
         this.lastException = e;
+    }
+
+    /**
+     * This is just a helper method that combines the work of the {@link #setText(String)}
+     * and {@link #setAsError()} methods.
+     * 
+     * @param message the the text of the error message
+     */
+    public void setErrorMessage(String message)
+    {
+        setText(message);
+        statusLabel.setForeground(ERROR_COLOR);
+        statusLabel.setIcon(errorIcon);
+        this.lastException = null;
     }
 
     /**

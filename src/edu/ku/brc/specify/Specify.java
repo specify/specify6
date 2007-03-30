@@ -96,6 +96,7 @@ import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileCache;
 import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.MemoryWarningSystem;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 /**
  * Specify Main Application Class
@@ -469,7 +470,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         topFrame = new JFrame(gc);
         topFrame.setIconImage( IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage() );
-
+        //topFrame.setAlwaysOnTop(true);
+        
         topFrame.setGlassPane(glassPane = new GhostGlassPane());
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
@@ -1130,6 +1132,52 @@ public class Specify extends JPanel implements DatabaseLoginListener
       SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
+              MemoryWarningSystem.setPercentageUsageThreshold(0.75);
+
+              MemoryWarningSystem mws = new MemoryWarningSystem();
+              mws.addListener(new MemoryWarningSystem.Listener()
+              {
+                  protected void setMessage(final String msg, final boolean isError)
+                  {
+                      JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                      if (statusBar != null)
+                      {
+                          if (isError)
+                          {
+                              statusBar.setErrorMessage(msg);
+                          } else
+                          {
+                              statusBar.setText(msg);
+                          }
+                      } else
+                      {
+                          System.err.println(msg);
+                      }
+                  }
+                  
+                  public void memoryUsage(long usedMemory, long maxMemory)
+                  {
+                      double percentageUsed = ((double) usedMemory) / maxMemory;
+                      
+                      String msg = String.format("Percent Memory Used %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
+                      setMessage(msg, false);
+
+                  }
+
+                  public void memoryUsageLow(long usedMemory, long maxMemory)
+                  {
+                      double percentageUsed = ((double) usedMemory) / maxMemory;
+                        
+                      String msg = String.format("Memory is Low! Percentage Used = %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
+                      setMessage(msg, true);
+                        
+                      if (MemoryWarningSystem.getThresholdPercentage() < 0.8)
+                      {
+                          MemoryWarningSystem.setPercentageUsageThreshold(0.8);
+                      }
+                    }
+                });
+              
               try
               {
                   if (!System.getProperty("os.name").equals("Mac OS X"))

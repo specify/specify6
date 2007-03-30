@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -42,6 +44,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -65,12 +68,16 @@ public class CardImageFrame extends JFrame
     protected boolean      showingCardImageLabel      = true;
     protected ImageIcon    cardImage                  = null;
     protected JButton      loadImgBtn                 = null;
-    protected JMenuItem    closeItem;
     protected JPanel       mainPane;
     protected JScrollPane  scrollPane;
-    
-    protected JCheckBoxMenuItem origMenuItem;
-    protected JCheckBoxMenuItem reduceMenuItem;
+
+    protected JMenu             viewMenu;
+    protected JMenu             imageMenu;
+    protected JMenuItem         closeMI;
+    protected JMenuItem         replaceMI;
+    protected JMenuItem         clearMI;
+    protected JCheckBoxMenuItem origMI;
+    protected JCheckBoxMenuItem reduceMI;
     
     /** This hash keeps track of the size that a given image was last displayed as.  If an image is displayed as full size, we add an entry
      * to this hash where the key is row.hashCode() and the value is 1.  If the image is displayed as reduced size, the value is -1.  (We
@@ -89,9 +96,9 @@ public class CardImageFrame extends JFrame
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g,c:p,f:p:g", "f:p:g,p,5px,p,f:p:g"));
         CellConstraints cc      = new CellConstraints();
         
-        loadImgBtn = new JButton("Load New Image"); // XXX I18N
+        loadImgBtn = new JButton(getResourceString("WB_LOAD_NEW_IMAGE"));
         
-        builder.add(new JLabel("No card image available for the selected row", SwingConstants.CENTER), cc.xy(2, 2));
+        builder.add(new JLabel(getResourceString("WB_NO_IMAGE_ROW"), SwingConstants.CENTER), cc.xy(2, 2));
         builder.add(loadImgBtn, cc.xy(2, 4));
         
         noCardImageMessagePanel = builder.getPanel();
@@ -106,25 +113,32 @@ public class CardImageFrame extends JFrame
         
         JMenuBar  menuBar   = new JMenuBar();
         JMenu     fileMenu  = UIHelper.createMenu(menuBar, "File", "FileMneu");
-        closeItem = UIHelper.createMenuItem(fileMenu, "Close", "CloseMneu", "", true, null);
+        closeMI = UIHelper.createMenuItem(fileMenu, "Close", "CloseMneu", "", true, null);
         
-        JMenu     viewMenu  = UIHelper.createMenu(menuBar, "View", "ViewMneu");
+        viewMenu  = UIHelper.createMenu(menuBar, "View", "ViewMneu");
         
-        reduceMenuItem = UIHelper.createCheckBoxMenuItem(viewMenu, "WB_REDUCED_SIZE", "ReducedSizeMneu", "", true, null);
-        reduceMenuItem.addActionListener(new ActionListener() {
+        reduceMI = UIHelper.createCheckBoxMenuItem(viewMenu, "WB_REDUCED_SIZE", "ReducedSizeMneu", "", true, null);
+        reduceMI.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 showReducedImage();
             }
         });
         
-        origMenuItem = UIHelper.createCheckBoxMenuItem(viewMenu, "WB_ORIG_SIZE", "OrigMneu", "", true, null);
-        origMenuItem.addActionListener(new ActionListener() {
+        origMI = UIHelper.createCheckBoxMenuItem(viewMenu, "WB_ORIG_SIZE", "OrigMneu", "", true, null);
+        origMI.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 showOriginalSizeImage();
             }
         });
+        
+        imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
+        clearMI   = UIHelper.createMenuItem(imageMenu, "Clear", "ClearMneu", "", true, null);
+        replaceMI = UIHelper.createCheckBoxMenuItem(imageMenu, "Replace", "ReplaceMneu", "", true, null);
+
+        enableMenus(false);
+        
         setJMenuBar(menuBar);
         
         pack();
@@ -135,7 +149,7 @@ public class CardImageFrame extends JFrame
      */
     public void showReducedImage()
     {
-        if (row==null)
+        if (row == null)
         {
             return;
         }
@@ -144,8 +158,8 @@ public class CardImageFrame extends JFrame
         
         cardImage = row.getCardImage();
         cardImageLabel.setIcon(cardImage);
-        reduceMenuItem.setSelected(true);
-        origMenuItem.setSelected(false);
+        reduceMI.setSelected(true);
+        origMI.setSelected(false);
         if (cardImage != null)
         {
             cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
@@ -160,7 +174,7 @@ public class CardImageFrame extends JFrame
      */
     public void showOriginalSizeImage()
     {
-        if (row==null)
+        if (row == null)
         {
             return;
         }
@@ -168,13 +182,19 @@ public class CardImageFrame extends JFrame
         rowToImageSizeHash.put(row.hashCode(), 1);
         
         cardImage = row.getFullSizeImage();
-        cardImageLabel.setIcon(cardImage);
-        reduceMenuItem.setSelected(false);
-        origMenuItem.setSelected(true);
         if (cardImage != null)
         {
-            mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-            mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+            cardImageLabel.setIcon(cardImage);
+            reduceMI.setSelected(false);
+            origMI.setSelected(true);
+            if (cardImage != null)
+            {
+                mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+                mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+            }
+        } else
+        {
+            WorkbenchTask.showLoadStatus(row);
         }
         mainPane.repaint();
     }
@@ -186,6 +206,16 @@ public class CardImageFrame extends JFrame
     public void installLoadActionListener(final ActionListener al)
     {
         loadImgBtn.addActionListener(al);
+        replaceMI.addActionListener(al);
+    }
+    
+    /**
+     * When there is no image the user can press "load" and load a new image.
+     * @param al the action listener for the load button
+     */
+    public void installClearActionListener(final ActionListener al)
+    {
+        clearMI.addActionListener(al);
     }
     
     /**
@@ -194,7 +224,21 @@ public class CardImageFrame extends JFrame
      */
     public void installCloseActionListener(final ActionListener al)
     {
-        closeItem.addActionListener(al);
+        closeMI.addActionListener(al);
+    }
+    
+    /**
+     * Enables Menus per image state.
+     * @param enable true/false
+     */
+    protected void enableMenus(final boolean enable)
+    {
+        viewMenu.setEnabled(enable);
+        imageMenu.setEnabled(enable);
+        clearMI.setEnabled(enable);
+        replaceMI.setEnabled(enable);
+        origMI.setEnabled(enable);
+        reduceMI.setEnabled(enable);
     }
     
     /**
@@ -226,6 +270,7 @@ public class CardImageFrame extends JFrame
                     mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
                     showingCardImageLabel = false;
                 }
+                enableMenus(false);
             }
             else
             {
@@ -237,6 +282,7 @@ public class CardImageFrame extends JFrame
                     showingCardImageLabel = true;
                 }
                 cardImageLabel.setText(null);
+                enableMenus(true);
             }
             
         } else

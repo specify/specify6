@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -31,6 +32,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -148,8 +150,12 @@ public class InputPanel extends JPanel implements GhostActionable
     /**
      * @return the comp
      */
-    public JComponent getComp()
+    public Component getComp()
     {
+        if (comp instanceof JScrollPane)
+        {
+            return ((JScrollPane)comp).getViewport().getView();
+        }
         return comp;
     }
     

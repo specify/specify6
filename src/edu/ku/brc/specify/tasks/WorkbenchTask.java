@@ -90,6 +90,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -257,12 +258,12 @@ public class WorkbenchTask extends BaseTask
                     }
                 }
                 
-                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Reports", new CommandAction(WORKBENCH, WB_BARCHART), null, true);
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Reports", new CommandAction(WORKBENCH, WB_BARCHART, Workbench.getClassTableId()), null, true);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
 
-                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Reports", new CommandAction(WORKBENCH, WB_TOP10_REPORT), null, true);
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Reports", new CommandAction(WORKBENCH, WB_TOP10_REPORT, Workbench.getClassTableId()), null, true);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
@@ -2002,6 +2003,14 @@ public class WorkbenchTask extends BaseTask
                     {
                         WorkbenchRow row = workbench.addRow();
                         row.setCardImage(file);
+                        if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+                        {
+                            if (!showLoadStatus(row))
+                            {
+                                // Shoud we still save or return?
+                                break; 
+                            }
+                        }
                     }
                     session.saveOrUpdate(workbench);
                     session.commit();
@@ -2023,6 +2032,37 @@ public class WorkbenchTask extends BaseTask
                 
             } 
         }
+    }
+    
+    /**
+     * Show error dialog for image load.
+     * @param status the status of the load.
+     * @param loadException the excpetion that occurred.
+     * @return true to continue, false to stop
+     */
+    public static boolean showLoadStatus(final WorkbenchRow row)
+    {
+        String key = "WB_ERROR_IMAGE_GENERIC";
+        switch (row.getLoadStatus())
+        {
+            case TooLarge : 
+                key = "WB_ERROR_IMAGE_TOOLARGE";
+                break;
+                
+            case OutOfMemory : 
+                key = "WB_ERROR_IMAGE_MEMORY";
+                break;
+        }
+        
+        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        statusBar.setErrorMessage(getResourceString(key), row.getLoadException());
+        
+        Object[] options = { getResourceString("Continue"), getResourceString("WB_STOP_LOADING") };
+        int n = JOptionPane.showOptionDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME), 
+                getResourceString(key),
+                getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.YES_NO_OPTION,
+                JOptionPane.ERROR_MESSAGE, null, options, options[2]);
+        return n == 0;
     }
     
     /**
@@ -2265,7 +2305,7 @@ public class WorkbenchTask extends BaseTask
     //-------------------------------------------------------
     
     /**
-     * Processes all Commands of type DATA_ENTRY.
+     * Processes all Commands of type WORKBENCH.
      * @param cmdAction the command to be processed
      */
     protected void processWorkbenchCommands(final CommandAction cmdAction)

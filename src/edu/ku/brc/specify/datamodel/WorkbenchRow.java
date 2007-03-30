@@ -58,6 +58,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -80,6 +81,10 @@ import edu.ku.brc.util.Pair;
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkIFace, Comparable<WorkbenchRow>
 {
+    private static final Logger log = Logger.getLogger(WorkbenchRow.class);
+    
+    public enum LoadStatus {None, Successful, Error, OutOfMemory, TooLarge}
+    
     protected Long                   workbenchRowId;
     protected Short                  rowNumber;
     protected byte[]                 cardImageData;
@@ -97,7 +102,9 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
     protected Hashtable<Short, WorkbenchDataItem>            items    = new Hashtable<Short, WorkbenchDataItem>();
     protected Hashtable<Short, WorkbenchTemplateMappingItem> mappings = null;
     protected Vector<WorkbenchDataItem>                      dataList = null;
-
+    
+    protected LoadStatus                                     loadStatus    = LoadStatus.None;
+    protected Exception                                      loadException = null;
     
     /**
      * Constrcutor (for JPA).
@@ -228,69 +235,115 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
      */
     public void setCardImage(final File imageFile)
     {
+        loadStatus    = LoadStatus.None;
+        loadException = null;
+        
+        if (imageFile == null)
+        {
+            setCardImageData(null);
+            setCardImage((String)null);
+            return;
+        }
+        
         try
         {
-            // read the original
-            BufferedImage img = ImageIO.read(imageFile);
-    
-            // determine if we need to scale
-            int origWidth = img.getWidth();
-            int origHeight = img.getHeight();
-            boolean scale = false;
-            
-            if (origWidth > this.maxWidth || origHeight > maxHeight)
+            log.error(imageFile.length());
+            if (imageFile.length() < 16000000)
             {
-                scale = true;
-            }
-    
-            byte[] imgBytes = null;
-            
-            if (scale)
-            {
-                // calculate the new height and width while maintaining the aspect ratio
-                int thumbWidth;
-                int thumbHeight;
-                if( origWidth >= origHeight )
+                // read the original
+                BufferedImage img = ImageIO.read(imageFile);
+                //log.error(img.());
+                
+                // determine if we need to scale
+                int     origWidth  = img.getWidth();
+                int     origHeight = img.getHeight();
+                boolean scale      = false;
+                
+                if (origWidth > this.maxWidth || origHeight > maxHeight)
                 {
-                    thumbWidth = maxWidth;
-                    thumbHeight = (int)(origHeight * ((float)thumbWidth/(float)origWidth));
+                    scale = true;
+                }
+        
+                byte[] imgBytes = null;
+                
+                if (scale)
+                {
+                    // calculate the new height and width while maintaining the aspect ratio
+                    int thumbWidth;
+                    int thumbHeight;
+                    if( origWidth >= origHeight )
+                    {
+                        thumbWidth = maxWidth;
+                        thumbHeight = (int)(origHeight * ((float)thumbWidth/(float)origWidth));
+                    }
+                    else
+                    {
+                        thumbHeight = maxHeight;
+                        thumbWidth = (int)(origWidth * ((float)thumbHeight/(float)origHeight));
+                    }
+                    
+                    // scale the image
+                    BufferedImage thumbImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB);
+                    Graphics2D    graphics2D = thumbImage.createGraphics();
+                    graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
+        
+                    // save thumbnail image to the byte[] as a JPEG
+                    ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(8192);
+                    JPEGImageEncoder      encoder          = JPEGCodec.createJPEGEncoder(outputByteStream);
+                    JPEGEncodeParam       param            = encoder.getDefaultJPEGEncodeParam(thumbImage);
+                    param.setQuality(1, false);
+                    encoder.setJPEGEncodeParam(param);
+                    encoder.encode(thumbImage);
+                    imgBytes = outputByteStream.toByteArray();
                 }
                 else
                 {
-                    thumbHeight = maxHeight;
-                    thumbWidth = (int)(origWidth * ((float)thumbHeight/(float)origHeight));
+                    // since we don't need to scale the image, just grab its bytes
+                    imgBytes = FileUtils.readFileToByteArray(imageFile);
                 }
                 
-                // scale the image
-                BufferedImage thumbImage = new BufferedImage(thumbWidth,thumbHeight,BufferedImage.TYPE_INT_RGB);
-                Graphics2D graphics2D = thumbImage.createGraphics();
-                graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
-    
-                // save thumbnail image to the byte[] as a JPEG
-                ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(4096);
-                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outputByteStream);
-                JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(thumbImage);
-                param.setQuality(1, false);
-                encoder.setJPEGEncodeParam(param);
-                encoder.encode(thumbImage);
-                imgBytes = outputByteStream.toByteArray();
-            }
-            else
+                this.setCardImageData(imgBytes);
+                this.setCardImageFullPath(imageFile.getAbsolutePath());
+                loadStatus = LoadStatus.Successful;
+                
+            } else
             {
-                // since we don't need to scale the image, just grab its bytes
-                imgBytes = FileUtils.readFileToByteArray(imageFile);
+                loadStatus = LoadStatus.TooLarge;
+
             }
-            
-            this.setCardImageData(imgBytes);
-            this.setCardImageFullPath(imageFile.getAbsolutePath());
-            
-        } catch (Exception ex)
+        } catch (java.lang.OutOfMemoryError memEx)
         {
-            System.err.println(ex);
+            loadStatus = LoadStatus.OutOfMemory;
+            loadException = new Exception("Out of Memory");
+            log.error(memEx);
+        }
+        catch (Exception ex)
+        {
+            log.error(ex);
+            loadStatus    = LoadStatus.Error;
+            loadException = ex;
         }
     }
     
+    /**
+     * @return the loadException
+     */
+    @Transient
+    public Exception getLoadException()
+    {
+        return loadException;
+    }
+
+    /**
+     * @return the loadStatus
+     */
+    @Transient
+    public LoadStatus getLoadStatus()
+    {
+        return loadStatus;
+    }
+
     @Column(name="CardImageFullPath", length=255)
     public String getCardImageFullPath()
     {
@@ -388,7 +441,7 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
     }
     
     /**
-     * Sest the string data into the column items.
+     * Sets the string data into the column items.
      * @param dataStr the string data
      * @param col the column index to be set
      */
@@ -467,7 +520,32 @@ public class WorkbenchRow implements java.io.Serializable, GoogleEarthPlacemarkI
         
         if (fullSizeImage == null)
         {
-            fullSizeImageWR = new WeakReference<ImageIcon>(new ImageIcon(cardImageFullPath));
+            try
+            {
+                ImageIcon iconImage = new ImageIcon(cardImageFullPath);
+                if (iconImage != null)
+                {
+                    fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
+                } else
+                {
+                    loadStatus = LoadStatus.Error;
+                    return null;
+                }
+                
+            } catch (java.lang.OutOfMemoryError memEx)
+            {
+                loadStatus = LoadStatus.OutOfMemory;
+                loadException = new Exception("Out of Memory");
+                log.error(memEx);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                log.error(ex);
+                loadStatus    = LoadStatus.Error;
+                loadException = ex;
+                return null;
+            }
         }
         
         return fullSizeImageWR.get();
