@@ -75,6 +75,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     protected JButton            controlPropsBtn   = null;
     
     protected boolean            ignoreChanges     = false;
+    protected boolean            changesInForm     = false;
+    protected int                currentIndex      = -1;
     
     protected InputPanel         selectedInputPanel = null;   
 
@@ -309,7 +311,22 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     }
     
     /**
-     * Tells the pane whether it is about to show or not.
+     * Tells the form it is being hidden.
+     * @param show true - show, false hide
+     */
+    public void switching(final boolean show)
+    {
+        if (!show)
+        {
+            if (currentIndex > -1 && changesInForm)
+            {
+                copyDataFromForm(currentIndex);
+            }
+        }
+    }
+    
+    /**
+     * Tells the pane whether it is about to show or not when the parent pane is being shown or not.
      * @param show true show, false hide
      */
     public void showingPane(final boolean show)
@@ -331,6 +348,55 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         }
     }
     
+    /**
+     * Copies the data from the form into the row.
+     * @param index the index of the row
+     */
+    protected void copyDataFromForm(final int index)
+    {
+        ignoreChanges = true;
+        
+        changesInForm = false;
+        
+        WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(index);
+        for (InputPanel p : uiComps)
+        {
+            short col = p.getWbtmi().getViewOrder();
+            
+            if (p.getComp() instanceof JTextField)
+            {
+                String data     = ((JTextField)p.getComp()).getText();
+                String cellData = wbRow.getData(col);
+                if (StringUtils.isNotEmpty(cellData) || data != null)
+                {
+                    wbRow.setData(data == null ? "" : data, col);
+                }
+                
+            } else if (p.getComp() instanceof GetSetValueIFace)
+            {
+                Object data     = ((GetSetValueIFace)p.getComp()).getValue();
+                String cellData = wbRow.getData(col);
+                if (StringUtils.isNotEmpty(cellData) || data != null)
+                {
+                    wbRow.setData(data == null ? "" : data.toString(), col);
+                }
+                
+            } else if (p.getComp() instanceof JScrollPane)
+            {
+                JScrollPane sc   = (JScrollPane)p.getComp();
+                Component   comp = sc.getViewport().getView();
+                if (comp instanceof JTextArea)
+                {
+                    wbRow.setData(((JTextArea)comp).getText(), col);
+                }
+            } else
+            {
+                ((JTextField)p.getComp()).setText(wbRow.getData(col));
+                wbRow.setData(((JTextField)p.getComp()).getText(), col);
+            }
+        }
+        ignoreChanges = false;
+    }
     
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setVisible(boolean)
@@ -352,46 +418,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     {
         if (oldIndex != newIndex && isVisible())
         {
-            ignoreChanges = true;
-            
-            WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(oldIndex);
-            for (InputPanel p : uiComps)
-            {
-                short col = p.getWbtmi().getViewOrder();
-                
-                if (p.getComp() instanceof JTextField)
-                {
-                    String data     = ((JTextField)p.getComp()).getText();
-                    String cellData = wbRow.getData(col);
-                    if (StringUtils.isNotEmpty(cellData) || data != null)
-                    {
-                        wbRow.setData(data == null ? "" : data, col);
-                    }
-                    
-                } else if (p.getComp() instanceof GetSetValueIFace)
-                {
-                    Object data     = ((GetSetValueIFace)p.getComp()).getValue();
-                    String cellData = wbRow.getData(col);
-                    if (StringUtils.isNotEmpty(cellData) || data != null)
-                    {
-                        wbRow.setData(data == null ? "" : data.toString(), col);
-                    }
-                    
-                } else if (p.getComp() instanceof JScrollPane)
-                {
-                    JScrollPane sc   = (JScrollPane)p.getComp();
-                    Component   comp = sc.getViewport().getView();
-                    if (comp instanceof JTextArea)
-                    {
-                        wbRow.setData(((JTextArea)comp).getText(), col);
-                    }
-                } else
-                {
-                    ((JTextField)p.getComp()).setText(wbRow.getData(col));
-                    wbRow.setData(((JTextField)p.getComp()).getText(), col);
-                }
-            }
-            ignoreChanges = false;
+            copyDataFromForm(oldIndex);
+            currentIndex = newIndex;
         }
         return true;
     }
@@ -404,6 +432,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         if (isVisible())
         {
             ignoreChanges = true; 
+            currentIndex  = newIndex;
             WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(newIndex);
             for (InputPanel p : uiComps)
             {
@@ -543,6 +572,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     {
         if (!ignoreChanges)
         {
+            changesInForm = true;
             workbenchPane.setChanged(true);
         }
     }
@@ -551,6 +581,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     {
         if (!ignoreChanges)
         {
+            changesInForm = true;
             workbenchPane.setChanged(true);
         }
     }
@@ -559,6 +590,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     {
         if (!ignoreChanges)
         {
+            changesInForm = true;
             workbenchPane.setChanged(true);
         }
     }

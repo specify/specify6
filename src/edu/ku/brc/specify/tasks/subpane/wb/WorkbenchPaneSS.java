@@ -37,7 +37,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.List;
@@ -650,6 +649,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         boolean isSpreadsheet = currentPanelType == PanelType.Spreadsheet;
         if (isSpreadsheet)
         {
+            formPane.switching(false);
+            
             // Showing Spreadsheet and hiding form
             setCurrentRow(resultsetController.getCurrentIndex());
             if (model.getRowCount() > 0)
@@ -661,6 +662,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
         } else
         {
+            formPane.switching(false);
+            
             // Showing Form and hiding Spreadsheet
             setCurrentRow(spreadSheet.getSelectedRow());
             if (model.getRowCount() > 0)
