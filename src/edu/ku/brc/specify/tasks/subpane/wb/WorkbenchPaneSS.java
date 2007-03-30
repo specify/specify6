@@ -820,9 +820,9 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         
         List<String> outputFormats = new Vector<String>();
-        String dddddd = getResourceString("DDDDDD");
-        String ddmmmm = getResourceString("DDMMMM");
-        String ddmmss = getResourceString("DDMMSS");
+        String dddddd = getResourceString("DD.DDDD (32.7619)");
+        String ddmmmm = getResourceString("DD MM.MM (32 45.714)");
+        String ddmmss = getResourceString("DD MM SS.SS (32 45 42.84)");
         outputFormats.add(dddddd);
         outputFormats.add(ddmmmm);
         outputFormats.add(ddmmss);
@@ -840,6 +840,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             @Override
             protected void okButtonPressed()
             {
+                checkForCellEditing();
+                
                 // don't call super.okButtonPressed() b/c it will close the window
                 isCancelled = false;
                 btnPressed  = OK_BTN;
@@ -867,6 +869,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             }
         };
         dlg.setModal(false);
+        dlg.setSelectedIndex(0);
         dlg.setOkLabel(getResourceString("Apply"));
         dlg.setCancelLabel(getResourceString("Close"));
         dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
