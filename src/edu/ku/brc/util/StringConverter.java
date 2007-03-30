@@ -9,5 +9,5 @@ public interface StringConverter
      * @param destFormat the name of the destination format, not a format string as in {@link String#format(String, Object[])}
      * @return the converted string
      */
-    public String convert(String original, String destFormat);
+    public String convert(String original, String destFormat) throws Exception;
 }

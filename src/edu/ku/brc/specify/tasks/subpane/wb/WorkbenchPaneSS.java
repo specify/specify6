@@ -1020,11 +1020,28 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     protected void convertColumnContents(int columnIndex, StringConverter converter, String outputFormat)
     {
         int rowCnt = model.getRowCount();
-        for (int i = 0; i < rowCnt; ++i)
+        for (int rowIndex = 0; rowIndex < rowCnt; ++rowIndex)
         {
-            String currentValue = (String)model.getValueAt(i, columnIndex);
-            String convertedValue = converter.convert(currentValue, outputFormat);
-            model.setValueAt(convertedValue, i, columnIndex);
+            String currentValue = (String)model.getValueAt(rowIndex, columnIndex);
+            if (StringUtils.isBlank(currentValue))
+            {
+                continue;
+            }
+
+            String convertedValue;
+            try
+            {
+                convertedValue = converter.convert(currentValue, outputFormat);
+            }
+            catch (Exception e)
+            {
+                // this value didn't convert correctly
+                // it would be nice to highlight that cell, but I don't know how we could do that
+                log.warn("Could not convert contents of cell (" + rowIndex + "," + columnIndex + ")");
+                continue;
+            }
+            
+            model.setValueAt(convertedValue, rowIndex, columnIndex);
             if (!currentValue.equals(convertedValue))
             {
                 setChanged(true);

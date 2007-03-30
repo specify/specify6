@@ -79,7 +79,7 @@ public class GeoRefConverter implements StringConverter
     /* (non-Javadoc)
      * @see edu.ku.brc.util.StringConverter#convert(java.lang.String, java.lang.String)
      */
-    public String convert(String original, String destFormat)
+    public String convert(String original, String destFormat) throws Exception
     {
         if (original == null)
         {
@@ -100,10 +100,10 @@ public class GeoRefConverter implements StringConverter
             }
         }
         
-        // if we weren't able to find a matching format, return the original
+        // if we weren't able to find a matching format, throw an exception
         if (degreesPlusMinus == null)
         {
-            return original;
+            throw new Exception("Cannot find matching input format");
         }
         
         if (destFormat == GeoRefFormat.DMS_PLUS_MINUS.name())
@@ -124,8 +124,9 @@ public class GeoRefConverter implements StringConverter
 
     /**
      * @param args
+     * @throws Exception 
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         Vector<String> inputStrings = new Vector<String>();
         inputStrings.add("-32 45 16.82");
