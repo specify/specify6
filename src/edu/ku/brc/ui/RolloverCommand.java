@@ -79,7 +79,8 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
     protected boolean                isOver      = false;
     protected static Color           focusColor  = Color.BLUE;
-    protected static Color           activeColor = new Color(0, 150, 0);
+    protected static Color           activeColor = new Color(0, 150, 0, 128);
+    protected static Color           hoverColor  = new Color(0, 0, 150, 128);
     protected Vector<ActionListener> actions     = new Vector<ActionListener>();
 
     protected ImageIcon              imgIcon     = null;
@@ -476,7 +477,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                     color = activeColor;
                 } else
                 {
-                    Color mouseOverColor = dragFlavors.size() > 0 ? activeColor : Color.BLUE;
+                    Color mouseOverColor = dragFlavors.size() > 0 ? activeColor : hoverColor;
                     color = (this.hasFocus() && UIManager.getLookAndFeel() instanceof PlasticLookAndFeel) ? PlasticLookAndFeel.getFocusColor() :mouseOverColor;
                 }
                 g.setColor(color);
@@ -484,7 +485,10 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 //g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
                 Graphics2D g2d = (Graphics2D)g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                //g2d.setRenderingHints(hints);
                 RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top, 10, 10);
+                g2d.draw(rr);
+                rr = new RoundRectangle2D.Double(insets.left+1, insets.top+1, size.width-insets.right-insets.left-2, size.height-insets.bottom-insets.top-2, 10, 10);
                 g2d.draw(rr);
             }
         }

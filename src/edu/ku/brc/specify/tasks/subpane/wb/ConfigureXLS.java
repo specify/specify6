@@ -35,18 +35,18 @@ import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
  *Configures xls file for import to a workbench. Currently only property that is configured is the header list.
  *If first row does not contain headers, they are simply assigned "Column1", "Column2" etc.
  */
-public class ConfigureXLS extends ConfigureExternalDataBase implements ConfigureExternalData
+public class ConfigureXLS extends ConfigureExternalDataBase
 {
     protected int numRows = 0;
     protected int numCols = 0;
 
-    public ConfigureXLS(File file)
+    public ConfigureXLS(final File file)
     {
         super();
-        getConfig(file);
+        readConfig(file);
     }
 
-    public ConfigureXLS(Properties props)
+    public ConfigureXLS(final Properties props)
     {
         super(props);
     }
@@ -60,7 +60,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase implements Configure
 
     /* (non-Javadoc)
      * Sets up colInfo for externalFile.
-     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData#getConfig(java.lang.String)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace#getConfig(java.lang.String)
      */
     @Override
     protected void nonInteractiveConfig()
@@ -162,14 +162,17 @@ public class ConfigureXLS extends ConfigureExternalDataBase implements Configure
             }
 
             //System.out.println("Rows["+numRows+"]  Cols["+numCols+"]");
-
+            Collections.sort(colInfo);
+            
+            status = Status.Valid;
+            
         } catch (IOException ex)
         {
-            ex.printStackTrace();
+            //ex.printStackTrace();
+            status = Status.Error;
         }
-
-        Collections.sort(colInfo);
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#getProperties()
      */

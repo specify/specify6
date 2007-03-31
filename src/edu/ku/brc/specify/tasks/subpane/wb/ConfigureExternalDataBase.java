@@ -30,9 +30,11 @@ import com.csvreader.CsvWriter;
  *
  *Base class for workbench import configuration.
  */
-public abstract class ConfigureExternalDataBase
+public abstract class ConfigureExternalDataBase implements ConfigureExternalDataIFace
 {
     private static final Logger log = Logger.getLogger(ConfigureExternalDataBase.class);
+    
+    protected Status                   status = Status.None;
     
     protected File                     externalFile;
     protected String                   fileName;
@@ -50,16 +52,25 @@ public abstract class ConfigureExternalDataBase
         appendData = false;     
     }
 
-    public ConfigureExternalDataBase(Properties props)
+    public ConfigureExternalDataBase(final Properties props)
     {
         log.debug("ConfigureExternalDataBase(Properties props)");
-        interactive = (props.getProperty("interactive", "true") == "true");
+        interactive        = (props.getProperty("interactive", "true") == "true");
         firstRowHasHeaders = (props.getProperty("firstRowHasHeaders", "false") == "true");
-        appendData = (props.getProperty("appendData", "false") == "false");
-        fileName = props.getProperty("fileName");
+        appendData         = (props.getProperty("appendData", "false") == "false");
+        fileName           = props.getProperty("fileName");
+        
         readHeaders(props.getProperty("headers"));
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace#getStatus()
+     */
+    public Status getStatus()
+    {
+        return status;
+    }
+
     protected void readHeaders(String prop)
     {
         if (prop != null)
@@ -81,13 +92,17 @@ public abstract class ConfigureExternalDataBase
     
     protected String getHeaderString()
     {
-        if (headers == null) { return null; }
+        if (headers == null) 
+        { 
+            return null; 
+        }
         StringWriter sw = new StringWriter();
         CsvWriter csv = new CsvWriter(sw, ',');
         try
         {
             csv.writeRecord(headers, true);
             csv.flush();
+            
         } catch (IOException e)
         {
             log.error(e);
@@ -156,7 +171,7 @@ public abstract class ConfigureExternalDataBase
      * Sets up the properties used when importing the file.
      * @param file - the file containing data to be imported to a workbench
      */
-    public void getConfig(final File file)
+    public void readConfig(final File file)
     {
         log.debug("ConfigureExternalDataBase getConfig(File)" + file.toString());
         externalFile = file;

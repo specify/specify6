@@ -28,7 +28,7 @@ public class CSVExport implements DataExport
 {
     ConfigureCSV config;
     
-    public CSVExport(final ConfigureExternalData config)
+    public CSVExport(final ConfigureExternalDataIFace config)
     {
        this.config = (ConfigureCSV)config; 
     }
@@ -36,15 +36,15 @@ public class CSVExport implements DataExport
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#getConfig()
      */
-    public ConfigureExternalData getConfig()
+    public ConfigureExternalDataIFace getConfig()
     {
         return this.config;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#setConfig(edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#setConfig(edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace)
      */
-    public void setConfig(ConfigureExternalData config)
+    public void setConfig(ConfigureExternalDataIFace config)
     {
         this.config = (ConfigureCSV)config; 
     }

@@ -15,20 +15,27 @@ import edu.ku.brc.specify.datamodel.Workbench;
  *
  *interface for workbench data import
  */
-public interface DataImport
+public interface DataImportIFace
 {
+    public enum Status {None, Valid, Error}
+    
     /**
      * @param config
      */
-    public void setConfig(ConfigureExternalData config);
+    public void setConfig(ConfigureExternalDataIFace config);
 
     /**
      * @return
      */
-    public ConfigureExternalData getConfig();
+    public ConfigureExternalDataIFace getConfig();
 
     /**
      * @param workbench
      */
-    public void getData(Workbench workbench);
+    public DataImportIFace.Status getData(Workbench workbench);
+    
+    /**
+     * @return
+     */
+    public Status getStatus();
 }

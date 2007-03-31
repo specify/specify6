@@ -37,30 +37,35 @@ import edu.ku.brc.ui.UIHelper;
  * 
  * Error handling is not handled.
  */
-public class ConfigureCSV extends ConfigureExternalDataBase implements ConfigureExternalData
+public class ConfigureCSV extends ConfigureExternalDataBase
 {
+    private static final Logger log = Logger.getLogger(ConfigureCSV.class);
+    
     private int     escapeMode;
     private char    delimiter;
     private char    textQualifier;
     private Charset charset;
-    private static final Logger log = Logger.getLogger(ConfigureCSV.class);
+    
     /**
      * Constructor sets defaults (hard coded).
      */
     public ConfigureCSV(final File file)
     {
         super();
+        
         log.info("ConfigureCSV");
         escapeMode = getDefaultEscapeMode();
         delimiter  = getDefaultDelimiter();
         charset    = getDefaultCharset();
         textQualifier = getDefaultTextQualifier();
-        getConfig(file);
+        
+        readConfig(file);
     }
 
     public ConfigureCSV(Properties props)
     {
         super(props);
+        
         String prop;
         prop = props.getProperty("escapeMode");
         if (prop == "backslash")
@@ -143,9 +148,12 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
         {
             try
             {
-                InputStream input = new FileInputStream(externalFile);
-                CsvReader result = new CsvReader(input, delimiterArg, charsetArg);
+                InputStream input  = new FileInputStream(externalFile);
+                CsvReader   result = new CsvReader(input, delimiterArg, charsetArg);
                 result.setEscapeMode(escapeModeArg);
+
+                status = Status.Valid;
+
                 return result;
 
             } catch (FileNotFoundException ex)
@@ -153,6 +161,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
                 ex.printStackTrace();
             }
         }
+        status = Status.Error;
+        
         return null;
     }
 
@@ -184,7 +194,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
     private String[] setupHeaders()
     {
         CsvReader csv = makeReader();
-        if (csv != null)
+        if (csv != null && status == Status.Valid)
         {
             try
             {
@@ -195,14 +205,18 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
                     {
                         result[h] = getDefaultColHeader() + String.valueOf(h + 1);
                     }
+                    
+                    status = Status.Valid;
+                    
                     return result;
                 }
             } catch (IOException ex)
             {
                 ex.printStackTrace();
-                return null;
+                status = Status.Error;
             }
         }
+        status = Status.Error;
         return null;
     }
 
@@ -366,7 +380,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
     protected void nonInteractiveConfig()
     {
         CsvReader csv = makeReader();
-        if (csv != null)
+        if (csv != null && status == Status.Valid)
         {
             try
             {
@@ -378,18 +392,25 @@ public class ConfigureCSV extends ConfigureExternalDataBase implements Configure
                     csv.setHeaders(setupHeaders());
                 }
 
-                colInfo = new Vector<ImportColumnInfo>(csv.getHeaderCount());
-
-                for (int h = 0; h < csv.getHeaderCount(); h++)
+                if (status == Status.Valid)
                 {
-                    colInfo.add(new ImportColumnInfo((short)h, getCellType(h), csv.getHeader(h), null));
+                    colInfo = new Vector<ImportColumnInfo>(csv.getHeaderCount());
+    
+                    for (int h = 0; h < csv.getHeaderCount(); h++)
+                    {
+                        colInfo.add(new ImportColumnInfo((short)h, getCellType(h), csv.getHeader(h), null));
+                    }
+                    Collections.sort(colInfo);
+                    
+                    return;
                 }
+                 
             } catch (IOException ex)
             {
                 ex.printStackTrace();
             }
-            Collections.sort(colInfo);
         }
+        status = Status.Error; // shouldn't be needed because cvs should be null and valid
     }
     
     /* (non-Javadoc)

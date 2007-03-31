@@ -37,137 +37,148 @@ import edu.ku.brc.ui.DateWrapper;
  *
  *Imports xls data to workbenches.
  */
-public class XLSImport implements DataImport
+public class XLSImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(XLSImport.class);
     
-    protected ConfigureXLS config;
+    protected ConfigureExternalDataIFace config;
+    protected Status                     status = DataImportIFace.Status.None;
     
     /**
      * Constrcutor.
-     * @param config the cvonfiguration
+     * @param config the configuration
      */
-    public XLSImport(final ConfigureExternalData config)
+    public XLSImport(final ConfigureExternalDataIFace config)
     {
-        setConfig(config);
+        this.config = config;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getStatus()
+     */
+    public Status getStatus()
+    {
+        return status;
     }
 
     /* (non-Javadoc)
      * Loads data from the file configured by the config member into a workbench.
      * @param workbench - the workbench to be loaded
-     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImport#getData(edu.ku.brc.specify.datamodel.Workbench)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getData(edu.ku.brc.specify.datamodel.Workbench)
      */
-    public void getData(final Workbench workbench)
+    public DataImportIFace.Status getData(final Workbench workbench)
     {
-        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-        try
+        if (config.getStatus() == ConfigureExternalDataIFace.Status.Valid)
         {
-            InputStream     input    = new FileInputStream(config.getFile());
-            POIFSFileSystem fs       = new POIFSFileSystem(input);
-            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
-            HSSFSheet       sheet    = workBook.getSheetAt(0);
-            int             numRows  = 0;
-
-            // Calculate the number of rows and columns
-
-            Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
-            Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
-            wbtmiList.addAll(wbtmiSet);
-            Collections.sort(wbtmiList);
-
-            // Iterate over each row in the sheet
-            Iterator<?> rows = sheet.rowIterator();
-            while (rows.hasNext())
+            DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+            try
             {
-                HSSFRow row = (HSSFRow) rows.next();
-
-                //System.out.println("Row #" + row.getRowNum());
-
-                if (numRows == 0 && config.getFirstRowHasHeaders())
+                InputStream     input    = new FileInputStream(config.getFile());
+                POIFSFileSystem fs       = new POIFSFileSystem(input);
+                HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+                HSSFSheet       sheet    = workBook.getSheetAt(0);
+                int             numRows  = 0;
+    
+                // Calculate the number of rows and columns
+    
+                Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
+                Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
+                
+                wbtmiList.addAll(wbtmiSet);
+                
+                Collections.sort(wbtmiList);
+    
+                // Iterate over each row in the sheet
+                Iterator<?> rows = sheet.rowIterator();
+                while (rows.hasNext())
                 {
+                    HSSFRow row = (HSSFRow) rows.next();
+    
+                    if (numRows == 0 && config.getFirstRowHasHeaders())
+                    {
+                        numRows++;
+                        continue;
+                    }
+    
+                    WorkbenchRow wbRow = workbench.addRow();
+    
+                    for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
+                    {
+                        short cellNum = wbtmi.getOrigImportColumnIndex().shortValue();
+                        if (cellNum == -1)
+                        {
+                            continue;
+                        }
+                        HSSFCell cell    = row.getCell(cellNum);
+                        if (cell == null)
+                        {
+                            continue;
+                        }
+                        int      type    = cell.getCellType();
+                        String   value   = "";
+                        boolean  skip    = false;
+    
+                        switch (type)
+                        {
+                            case HSSFCell.CELL_TYPE_NUMERIC:
+                                if (WorkbenchTask.getDataType(wbtmi).equals(Calendar.class) || WorkbenchTask.getDataType(wbtmi).equals(Date.class))
+                                {
+                                    value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
+    
+                                } else if (WorkbenchTask.getDataType(wbtmi).equals(Integer.class))
+                                {
+                                    double numeric = cell.getNumericCellValue();
+                                    value = Integer.toString((int) numeric);
+    
+                                } else
+                                {
+                                    double numeric = cell.getNumericCellValue();
+                                    value = Double.toString(numeric);
+                                }
+                                break;
+    
+                            case HSSFCell.CELL_TYPE_STRING:
+                                value = cell.getStringCellValue();
+                                break;
+    
+                            case HSSFCell.CELL_TYPE_BLANK:
+                                value = "";
+                                type = HSSFCell.CELL_TYPE_STRING;
+                                break;
+    
+                            case HSSFCell.CELL_TYPE_BOOLEAN:
+                                boolean bool = cell.getBooleanCellValue();
+                                value = Boolean.toString(bool);
+                                break;
+    
+                            default:
+                                skip = true;
+                                break;
+                        }
+    
+                        if (!skip)
+                        {
+                            wbRow.setData(value, wbtmi.getViewOrder());
+                        }
+                    }
                     numRows++;
-                    continue;
                 }
-
-                WorkbenchRow wbRow = workbench.addRow();
-
-                for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
-                {
-                    short cellNum = wbtmi.getOrigImportColumnIndex().shortValue();
-                    if (cellNum == -1)
-                    {
-                        continue;
-                    }
-                    HSSFCell cell    = row.getCell(cellNum);
-                    if (cell == null)
-                    {
-                        continue;
-                    }
-                    int      type    = cell.getCellType();
-                    String   value   = "";
-                    boolean  skip    = false;
-
-                    switch (type)
-                    {
-                        case HSSFCell.CELL_TYPE_NUMERIC:
-                            if (WorkbenchTask.getDataType(wbtmi).equals(Calendar.class) || WorkbenchTask.getDataType(wbtmi).equals(Date.class))
-                            {
-                                value = scrDateFormat.getSimpleDateFormat().format(
-                                        cell.getDateCellValue());
-
-                            } else if (WorkbenchTask.getDataType(wbtmi).equals(Integer.class))
-                            {
-                                double numeric = cell.getNumericCellValue();
-                                value = Integer.toString((int) numeric);
-
-                            } else
-                            {
-                                double numeric = cell.getNumericCellValue();
-                                value = Double.toString(numeric);
-                            }
-                            break;
-
-                        case HSSFCell.CELL_TYPE_STRING:
-                            value = cell.getStringCellValue();
-                            break;
-
-                        case HSSFCell.CELL_TYPE_BLANK:
-                            value = "";
-                            type = HSSFCell.CELL_TYPE_STRING;
-                            break;
-
-                        case HSSFCell.CELL_TYPE_BOOLEAN:
-                            boolean bool = cell.getBooleanCellValue();
-                            value = Boolean.toString(bool);
-                            //type = HSSFCell.CELL_TYPE_STRING;
-                            break;
-
-                        default:
-                            //System.out.println("unsuported cell type");
-                            skip = true;
-                            break;
-                    }
-
-                    if (!skip)
-                    {
-                        wbRow.setData(value, wbtmi.getViewOrder());
-                    }
-                }
-                numRows++;
+                return status = DataImportIFace.Status.Valid;
+                
+            } catch (IOException ex)
+            {
+                log.error(ex);
             }
-
-        } catch (IOException ex)
-        {
-            log.error(ex);
         }
+        return status = DataImportIFace.Status.Error;
     }
 
-    public void setConfig(final ConfigureExternalData config)
+    public void setConfig(final ConfigureExternalDataIFace config)
     {
-        this.config = (ConfigureXLS) config;
+        this.config = config;
     }
 
-    public ConfigureExternalData getConfig()
+    public ConfigureExternalDataIFace getConfig()
     {
         return this.config;
     }

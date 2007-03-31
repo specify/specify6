@@ -22,12 +22,12 @@ public interface DataExport
     /**
      * @param config
      */
-    public void setConfig(ConfigureExternalData config);
+    public void setConfig(ConfigureExternalDataIFace config);
 
     /**
      * @return
      */
-    public ConfigureExternalData getConfig();
+    public ConfigureExternalDataIFace getConfig();
     
     /**
      * @param data list of workbench rows to export

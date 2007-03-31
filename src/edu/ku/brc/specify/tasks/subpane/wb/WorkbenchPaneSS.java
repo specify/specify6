@@ -1118,7 +1118,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         if (StringUtils.isEmpty(fileName)) { return; }
         props.setProperty("fileName", path + File.separator + fileName);
 
-        ConfigureExternalData config = ExportFileConfigurationFactory.getConfiguration(props);
+        ConfigureExternalDataIFace config = ExportFileConfigurationFactory.getConfiguration(props);
 
         // Could get config to interactively get props or to look them up from prefs or ???
         // for now hard coding stuff...

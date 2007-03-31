@@ -14,7 +14,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureCSV;
-import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData;
+import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 
 /**
@@ -36,7 +36,7 @@ public class ExportFileConfigurationFactory
         
     }
 
-    public static ConfigureExternalData getConfiguration(Properties props)
+    public static ConfigureExternalDataIFace getConfiguration(Properties props)
     {
         if (props.getProperty("mimetype", XLS_MIME_TYPE) == XLS_MIME_TYPE)
         {

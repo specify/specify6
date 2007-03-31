@@ -34,7 +34,7 @@ public class XLSExport implements DataExport
 {
     ConfigureXLS config;
     
-    public XLSExport(ConfigureExternalData config)
+    public XLSExport(ConfigureExternalDataIFace config)
     {
         setConfig(config);
     }
@@ -44,7 +44,7 @@ public class XLSExport implements DataExport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#getConfig()
      */
-    public ConfigureExternalData getConfig()
+    public ConfigureExternalDataIFace getConfig()
     {
         return config;
     }
@@ -52,9 +52,9 @@ public class XLSExport implements DataExport
     /*
      * (non-Javadoc)
      * 
-     * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#setConfig(edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#setConfig(edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace)
      */
-    public void setConfig(ConfigureExternalData config)
+    public void setConfig(ConfigureExternalDataIFace config)
     {
         this.config = (ConfigureXLS)config;
     }

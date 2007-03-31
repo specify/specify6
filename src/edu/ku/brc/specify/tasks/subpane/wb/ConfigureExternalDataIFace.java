@@ -19,26 +19,34 @@ import java.util.Vector;
  * @code_status Alpha
  * 
  */
-public interface ConfigureExternalData
+public interface ConfigureExternalDataIFace
 {
+    public enum Status {None, Valid, Error}
+    
+    /**
+     * Returns whether the configuration was valid.
+     * @return the status.
+     */
+    public Status getStatus();
+    
     /**
      * configures import/export settings for file.
      * 
      * @param file
      */
-    void getConfig(final File file);
+    public void readConfig(final File file);
 
      /**
      * does the first row of data contain column names?
      * 
      * @return
      */
-    boolean getFirstRowHasHeaders();
+    public boolean getFirstRowHasHeaders();
     
     /**
      * @param value
      */
-    void setFirstRowHasHeaders(final boolean value);
+    public void setFirstRowHasHeaders(boolean value);
 
     // 
     /**
@@ -46,19 +54,19 @@ public interface ConfigureExternalData
      * 
      * @return
      */
-    Vector<ImportColumnInfo> getColInfo();
+    public Vector<ImportColumnInfo> getColInfo();
 
     /**
      * the file containing the data to be imported.
      * 
      * @return
      */
-    File getFile();
+    public File getFile();
     
     /**
      * @return 
      */
-    String getFileName();
+    public String getFileName();
 
     /** 
      * if interactive then column headers, separators, etc are obtained from user. else
@@ -66,15 +74,15 @@ public interface ConfigureExternalData
      * 
      * @param arg to be or not to be interactive
      */
-    void setInteractive(final boolean arg);
+    public void setInteractive(boolean arg);
 
     /**
      * @return the properties for the configuration
      */
-    Properties getProperties();
+    public Properties getProperties();
     
     /**
      * @param headers captions for the columns headings. 
      */
-    void setHeaders(final String[] headers);
+    public void setHeaders(String[] headers);
 }

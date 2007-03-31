@@ -83,7 +83,8 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
-import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalData;
+import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
+import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -1047,7 +1048,7 @@ public class WorkbenchTask extends BaseTask
                                      final Set<WorkbenchTemplateMappingItem> items, 
                                      final CommandAction                     cmdAction)
     {
-        ConfigureExternalData config = ExportFileConfigurationFactory.getConfiguration(props);
+        ConfigureExternalDataIFace config = ExportFileConfigurationFactory.getConfiguration(props);
 
         // Could get config to interactively get props or to look them up from prefs or ???
         // for now hard coding stuff...
@@ -1084,44 +1085,53 @@ public class WorkbenchTask extends BaseTask
         
         String fileName = fileDialog.getFile();
         String path     = fileDialog.getDirectory();
-        if (StringUtils.isNotEmpty(fileName))
+        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(path))
         {
             file = new File(path + File.separator + fileName);
+        } else
+        {
+            return null;
         }
         
         WorkbenchTemplate workbenchTemplate = null;
         
-        if (file != null && file.exists())
+        if (file.exists())
         {
-            ImportDataFileInfo dataFileInfo = new ImportDataFileInfo(file);
-            
-            int btnPressed = selectExistingTemplate(dataFileInfo.getColInfo());
-            workbenchTemplate = selectedTemplate;
-            selectedTemplate  = null;
-            if (btnPressed == ChooseFromListDlg.APPLY_BTN)
+            ImportDataFileInfo dataFileInfo = new ImportDataFileInfo();
+            if (dataFileInfo.load(file))
             {
-                // Create a new Template 
-                JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("WB_COL_MAPPER"), true);
-                ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg, dataFileInfo);
-                
-                dlg.setContentPane(mapper);
-                dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                dlg.pack();
-                UIHelper.centerAndShow(dlg);
-                 
-                if (!mapper.isCancelled())
-                {   
-                    workbenchTemplate = createTemplate(mapper, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
+                int btnPressed = selectExistingTemplate(dataFileInfo.getColInfo());
+                workbenchTemplate = selectedTemplate;
+                selectedTemplate  = null;
+                if (btnPressed == ChooseFromListDlg.APPLY_BTN)
+                {
+                    // Create a new Template 
+                    JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("WB_COL_MAPPER"), true);
+                    ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg, dataFileInfo);
+                    
+                    dlg.setContentPane(mapper);
+                    dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    dlg.pack();
+                    UIHelper.centerAndShow(dlg);
+                     
+                    if (!mapper.isCancelled())
+                    {   
+                        workbenchTemplate = createTemplate(mapper, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
+                    }
+                    
+                } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
+                {
+                    return null;
                 }
                 
-            } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
+                if (workbenchTemplate != null)
+                {
+                    createWorkbench(dataFileInfo, workbenchTemplate, false);
+                }
+            } else
             {
-                return null;
-            }
-            
-            if (workbenchTemplate != null)
-            {
-                createWorkbench(dataFileInfo, workbenchTemplate, false);
+                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                statusBar.setErrorMessage(String.format(getResourceString("WB_PARSE_FILE_ERROR"), new Object[] { file.getName() }));
             }
         }
         
@@ -1210,7 +1220,10 @@ public class WorkbenchTask extends BaseTask
         {
             if (dataFileInfo != null)
             {
-                dataFileInfo.loadData(workbench);
+                if (dataFileInfo.loadData(workbench) == DataImportIFace.Status.Error)
+                {
+                    return null;
+                }
                 
             } else
             {

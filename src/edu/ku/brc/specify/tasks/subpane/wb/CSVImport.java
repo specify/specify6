@@ -28,19 +28,31 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  * 
  * Imports csv data into a workbench
  */
-public class CSVImport implements DataImport
+public class CSVImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(CSVImport.class);
     
-    protected ConfigureCSV config;
+    protected ConfigureExternalDataIFace config;
+    protected Status                     status = DataImportIFace.Status.None;
+
     
-    
-    public CSVImport(final ConfigureExternalData config)
+    public CSVImport(final ConfigureExternalDataIFace config)
     {
-        setConfig(config);
+        this.config = config;
     }
 
-    public ConfigureExternalData getConfig()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getStatus()
+     */
+    public Status getStatus()
+    {
+        return status;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getConfig()
+     */
+    public ConfigureExternalDataIFace getConfig()
     {
         return config;
     }
@@ -48,58 +60,71 @@ public class CSVImport implements DataImport
     /*
      * (non-Javadoc) Loads data from the file configured by the config member into a workbench.
      * @param Workbench - the workbench to getData into
-     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImport#getData(edu.ku.brc.specify.datamodel.Workbench)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getData(edu.ku.brc.specify.datamodel.Workbench)
      */
-    public void getData(final Workbench workbench)
+    public DataImportIFace.Status getData(final Workbench workbench)
     {
         try
         {
-            CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config.getDelimiter(), config.getCharset());
-            csv.setEscapeMode(config.getEscapeMode());
-            csv.setTextQualifier(config.getTextQualifier());
-
-            Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
-            Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
-            wbtmiList.addAll(wbtmiSet);
-            Collections.sort(wbtmiList);
-
-            if (config.getFirstRowHasHeaders())
+            ConfigureCSV configCSV = null;
+            if (config instanceof ConfigureCSV)
             {
-                csv.readHeaders();
-            }
-            
-            // Create hash of the column number so later we can easily 
-            // look up whether this column should be used.
-            Hashtable<Short, WorkbenchTemplateMappingItem> colHash = new Hashtable<Short, WorkbenchTemplateMappingItem>();
-            for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
-            {
-                if (wbtmi.getOrigImportColumnIndex() > -1)
+                configCSV = (ConfigureCSV)config;
+                
+                if (configCSV.getStatus() == ConfigureExternalDataIFace.Status.Valid)
                 {
-                    colHash.put(wbtmi.getOrigImportColumnIndex(), wbtmi);
-                }
-            }
-            
-            while (csv.readRecord())
-            {
-                WorkbenchRow wbRow = workbench.addRow();
-                for (int col = 0; col < csv.getColumnCount(); col++)
-                {
-                    // Skip the column if it isn't found in the hash
-                    WorkbenchTemplateMappingItem wbtmi = colHash.get((short) col);
-                    if (wbtmi != null)
+                    CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), configCSV.getDelimiter(), configCSV.getCharset());
+                    csv.setEscapeMode(configCSV.getEscapeMode());
+                    csv.setTextQualifier(configCSV.getTextQualifier());
+        
+                    Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
+                    Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
+                    wbtmiList.addAll(wbtmiSet);
+                    Collections.sort(wbtmiList);
+        
+                    if (config.getFirstRowHasHeaders())
                     {
-                        wbRow.setData(csv.get(col), wbtmi.getViewOrder());
+                        csv.readHeaders();
                     }
+                    
+                    // Create hash of the column number so later we can easily 
+                    // look up whether this column should be used.
+                    Hashtable<Short, WorkbenchTemplateMappingItem> colHash = new Hashtable<Short, WorkbenchTemplateMappingItem>();
+                    for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
+                    {
+                        if (wbtmi.getOrigImportColumnIndex() > -1)
+                        {
+                            colHash.put(wbtmi.getOrigImportColumnIndex(), wbtmi);
+                        }
+                    }
+                    
+                    while (csv.readRecord())
+                    {
+                        WorkbenchRow wbRow = workbench.addRow();
+                        for (int col = 0; col < csv.getColumnCount(); col++)
+                        {
+                            // Skip the column if it isn't found in the hash
+                            WorkbenchTemplateMappingItem wbtmi = colHash.get((short) col);
+                            if (wbtmi != null)
+                            {
+                                wbRow.setData(csv.get(col), wbtmi.getViewOrder());
+                            }
+                        }
+                    }
+                    
+                    return status = DataImportIFace.Status.Valid;
                 }
             }
-
+            
         } catch (IOException ex)
         {
            log.error(ex);
         }
+        
+        return status = DataImportIFace.Status.Error;
     }
 
-    public void setConfig(final ConfigureExternalData config)
+    public void setConfig(final ConfigureExternalDataIFace config)
     {
         this.config = (ConfigureCSV) config;
     }

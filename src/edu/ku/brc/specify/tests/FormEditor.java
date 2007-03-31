@@ -1272,6 +1272,7 @@ public class FormEditor implements DatabaseLoginListener
                                        "rods", 
                                        "rods"))
                 {
+                    /*
                     ImportDataFileInfo dataFileInfo = new ImportDataFileInfo(new File("/home/rods/Documents/_GuyanaTripX.xls"));
 
                     IconManager.setApplicationClass(Specify.class);
@@ -1315,7 +1316,7 @@ public class FormEditor implements DatabaseLoginListener
                     }
                     
 
-                    if (true) return;                    
+                    if (true) return;  */                  
                 }
 
                 
