@@ -73,6 +73,8 @@ public class CSVImport extends DataImport implements DataImportIFace
                     wbtmiList.addAll(wbtmiSet);
                     Collections.sort(wbtmiList);
         
+                    this.truncations.clear();
+                    
                     if (config.getFirstRowHasHeaders())
                     {
                         csv.readHeaders();

@@ -78,6 +78,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                 wbtmiList.addAll(wbtmiSet);
                 
                 Collections.sort(wbtmiList);
+                
+                this.truncations.clear();
     
                 // Iterate over each row in the sheet
                 Iterator<?> rows = sheet.rowIterator();
