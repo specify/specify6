@@ -45,6 +45,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     private char    delimiter;
     private char    textQualifier;
     private Charset charset;
+    private int numOfColsToAppend;
+    private boolean isCanceled;
     
     /**
      * Constructor sets defaults (hard coded).
@@ -57,7 +59,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         delimiter  = getDefaultDelimiter();
         charset    = getDefaultCharset();
         textQualifier = getDefaultTextQualifier();
-        
+        numOfColsToAppend = 0;
+        isCanceled = false;
         readConfig(file);
     }
 
@@ -365,16 +368,14 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 		 escapeMode = determineEscapeMode();
 		 firstRowHasHeaders = determineFirstRowHasHeaders();
 		 textQualifier = determineTextQualifier();
-		
-//		DataImportDialog dlg = new DataImportDialog(this);
-//		dlg.setEscapeMode(this.getDefaultEscapeMode());
-//		dlg.setDelimChar(this.getDefaultDelimiter());
-//		dlg.setStringQualifierChar(this.getDefaultTextQualifier());
-//		dlg.setCharset(this.getDefaultCharset());
-//		dlg.initForCSV();
+         nonInteractiveConfig();
+		 
+//		DataImportDialog dlg = new DataImportDialog(this, delimiter,
+//                textQualifier, charset, escapeMode, firstRowHasHeaders);
 //		dlg.setModal(true);
 //		UIHelper.centerAndShow(dlg);
-//		
+//        this.isCanceled = dlg.isCancelled();
+//		if(!isCanceled)nonInteractiveConfig();
 //		delimiter = dlg.getDelimChar();
 //		charset = dlg.getCharset();
 //		escapeMode = dlg.getEscapeMode();
@@ -386,7 +387,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 //		log.debug("furst row has headers: " + firstRowHasHeaders);
 //		log.debug("textqualifier: " + textQualifier);// charset = dlg.getC
 //		
-		nonInteractiveConfig();
+		
 	}
 
     /*
@@ -511,4 +512,36 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 	{
 		this.charset = charset;
 	}
+
+    /**
+     * @return the numOfColsToAppend
+     */
+    public int getNumOfColsToAppend()
+    {
+        return numOfColsToAppend;
+    }
+
+    /**
+     * @param numOfColsToAppend the numOfColsToAppend to set
+     */
+    public void setNumOfColsToAppend(int numOfColsToAppend)
+    {
+        this.numOfColsToAppend = numOfColsToAppend;
+    }
+
+    /**
+     * @return the isCanceled
+     */
+    public boolean isCanceled()
+    {
+        return isCanceled;
+    }
+
+    /**
+     * @param isCanceled the isCanceled to set
+     */
+    public void setCanceled(boolean isCanceled)
+    {
+        this.isCanceled = isCanceled;
+    }
 }

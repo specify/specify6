@@ -108,7 +108,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     private JComboBox escapeModeCombo;
     private JCheckBox containsHeaders;
     private static final Logger log = Logger.getLogger(DataImportDialog.class);
-    protected boolean           isCancelled      = true;
+    private boolean           isCancelled      = true;
     //private boolean isCsvImport = true;
     public static final int OK_BTN             = 1;
     public static final int CANCEL_BTN         = 2;
@@ -122,18 +122,30 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     /**
      * 
      */
-    public DataImportDialog(final ConfigureCSV config)
+    
+//  dlg.setEscapeMode(this.getDefaultEscapeMode());
+//  dlg.setDelimChar(this.getDefaultDelimiter());
+//  dlg.setStringQualifierChar(this.getDefaultTextQualifier());
+//  dlg.setCharset(this.getDefaultCharset());
+    public DataImportDialog(final ConfigureCSV config, char defaultDelimChar, 
+                            char defaultTextQual, Charset defaultCharSet,
+                            int defaultEscMode, boolean doesHaveHeaders)
     {
     	this.config = config;
     	this.file = config.getFile();
     	this.fileName = file.getAbsolutePath().toString();
-        this.doesFirstRowHaveHeaders = true;
+        this.doesFirstRowHaveHeaders = doesHaveHeaders;
+        this.charset = defaultCharSet;
+        this.escapeMode = defaultEscMode;
+        this.delimChar = defaultDelimChar;
+        this.stringQualifierChar = defaultTextQual;
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
+        initForCSV();
 
     }
     
-    public void initForCSV()
+    private void initForCSV()
     {
     	setContentPane(createConfigPanelForCSV());
     	init(getResourceString("IMPORT_CVS"));
@@ -1131,4 +1143,20 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	{
 		this.fileName = fileName;
 	}
+
+    /**
+     * @return the isCancelled
+     */
+    public boolean isCancelled()
+    {
+        return isCancelled;
+    }
+
+    /**
+     * @param isCancelled the isCancelled to set
+     */
+    public void setCancelled(boolean isCancelled)
+    {
+        this.isCancelled = isCancelled;
+    }
 }
