@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -109,6 +110,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
         }
         
+        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        
         if (instance.panes.contains(pane))
         {
             showPane(pane);
@@ -152,6 +155,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace renamePane(final SubPaneIFace pane, final String newName)
     {
+        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        
         panes.remove(pane.getName());
         pane.setName(newName);
         this.setTitleAt(indexOfComponent(pane.getUIComponent()), newName);
@@ -168,6 +173,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
     {
+        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        
         //System.err.println("SubPaneMgr::replacePane ************************************************");
 
         // The caller is assuming that the pane is there to be replaced, but the SubPaneMgr can't
@@ -205,6 +212,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean removePane(final SubPaneIFace pane)
     {
+        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        
         if (currentPane == pane)
         {
             pane.showingPane(false);
@@ -307,6 +316,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
       */
     public SubPaneIFace showPane(final String name)
     {
+        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        
         // Look the the desired pane
         SubPaneIFace pane = panes.get(name);
         return showPane(pane);

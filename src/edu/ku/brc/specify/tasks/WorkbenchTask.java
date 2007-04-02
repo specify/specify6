@@ -888,32 +888,55 @@ public class WorkbenchTask extends BaseTask
      */
     public boolean getExportInfo(final Properties props)
     {
-        ChooseFromListDlg<ExportFileConfigurationFactory.ExportableType> dlg = 
-            new ChooseFromListDlg<ExportFileConfigurationFactory.ExportableType>((Frame) UICacheManager.get(UICacheManager.FRAME), 
-                    getResourceString("WB_FILE_FORMAT"),
-                    null,
-                    ChooseFromListDlg.OKCANCELHELP, 
-                    ExportFileConfigurationFactory.getExportList(), "WorkbenchImportCvs");
-        dlg.setModal(true);
-        UIHelper.centerAndShow(dlg);
-
-        if (!dlg.isCancelled())
+        String extension = "";
+        if (true)
         {
-            props.setProperty("mimetype", dlg.getSelectedObject().getMimeType());
+            for (ExportFileConfigurationFactory.ExportableType type : ExportFileConfigurationFactory.getExportList())
+            {
+                if (type.getMimeType() == ExportFileConfigurationFactory.XLS_MIME_TYPE)
+                {
+                    props.setProperty("mimetype", type.getMimeType());
+                    extension = type.getExtension();
+                    break;
+                }
+            }
             
         } else
         {
-            return false;
+            ChooseFromListDlg<ExportFileConfigurationFactory.ExportableType> dlg = 
+                new ChooseFromListDlg<ExportFileConfigurationFactory.ExportableType>((Frame) UICacheManager.get(UICacheManager.FRAME), 
+                        getResourceString("WB_FILE_FORMAT"),
+                        null,
+                        ChooseFromListDlg.OKCANCELHELP, 
+                        ExportFileConfigurationFactory.getExportList(), "WorkbenchImportCvs");
+            dlg.setModal(true);
+            UIHelper.centerAndShow(dlg);
+    
+            if (!dlg.isCancelled())
+            {
+                props.setProperty("mimetype", dlg.getSelectedObject().getMimeType());
+                
+            } else
+            {
+                return false;
+            }
+            extension = dlg.getSelectedObject().getExtension();
         }
-
+        
         FileDialog fileDialog = new FileDialog((Frame) UICacheManager.get(UICacheManager.FRAME),
                                                getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
         UIHelper.centerAndShow(fileDialog);
 
         String fileName = fileDialog.getFile();
+        if (StringUtils.isEmpty(fileName))
+        {
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage(getResourceString("WB_EXPORT_NOFILENAME"));
+            return false;
+        }
+        
         if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName)))
         {
-            fileName += (fileName.endsWith(".") ? "" : ".") + dlg.getSelectedObject().getExtension();
+            fileName += (fileName.endsWith(".") ? "" : ".") + extension;
         }
 
         String path = fileDialog.getDirectory();
@@ -922,6 +945,7 @@ public class WorkbenchTask extends BaseTask
             return false;
         }
         props.setProperty("fileName", path + File.separator + fileName);
+
         return true;
     }
     

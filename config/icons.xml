@@ -8,7 +8,7 @@
     <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
     <icon name="AppIcon"    file="specify_icon.gif" sizes="32"/>
     <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
-    <icon name="Workbench"  file="workbench.gif" sizes="all"/>
+    <icon name="OnRamp"     file="workbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="form.gif" sizes="all"/>
     <icon name="Taxon_Tree" file="taxon.gif" sizes="all"/>
     <icon name="Labels"     file="labels.gif" sizes="all"/>

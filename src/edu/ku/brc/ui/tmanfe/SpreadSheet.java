@@ -302,7 +302,7 @@ public class SpreadSheet  extends SearchableJXTable
     }
     
     /**
-     * CReates the popup menu for a cell.
+     * CReates the popup menu for a cell. (THis really needs to be moved outside of this class).
      * @param pnt the point to pop it up
      * @return the popup menu
      */
@@ -311,9 +311,8 @@ public class SpreadSheet  extends SearchableJXTable
         final int row = rowAtPoint(pnt);
         
         Class cellClass = getModel().getColumnClass(columnAtPoint(pnt));
-        boolean isImage = cellClass.isInstance(ImageIcon.class) || cellClass.isInstance(Image.class);
+        boolean isImage =  cellClass == ImageIcon.class || cellClass == Image.class;
         
-        System.out.println(cellClass);
         JPopupMenu pMenu = new JPopupMenu();
         
         if (getSelectedColumnCount() == 1)
