@@ -9,20 +9,13 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
-import org.apache.poi.hpsf.PropertySetFactory;
-import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.eventfilesystem.POIFSReader;
-import org.apache.poi.poifs.eventfilesystem.POIFSReaderEvent;
-import org.apache.poi.poifs.eventfilesystem.POIFSReaderListener;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -233,42 +226,4 @@ public class XLSExport implements DataExport
         }
     }
     
-        public static void main(String[] args) throws IOException
-        {
-            //final String filename = "/home/timbo/Desktop/gumbo.xls";
-            final String filename = "/home/timbo/Desktop/_GuyanaNo2006Trip.xls";
-            POIFSReader r         = new POIFSReader();
-            r.registerListener(new MyPOIFSReaderListener(),
-                "\005SummaryInformation");
-            r.read(new FileInputStream(filename));
-            System.out.println("read it");
-        }
-
-        static class MyPOIFSReaderListener implements POIFSReaderListener
-        {
-            public void processPOIFSReaderEvent(POIFSReaderEvent event)
-            {
-                System.out.println("heard that");
-                SummaryInformation si = null;
-                try
-                {
-                    si = (SummaryInformation)
-                    PropertySetFactory.create(event.getStream());
-                }
-                catch (Exception ex)
-                {
-                    System.out.println("kaboom");
-                    throw new RuntimeException
-                        ("Property set stream \"" + event.getPath() +
-                            event.getName() + "\": " + ex);
-                }
-
-                final String title = si.getTitle();
-
-                if (title != null)
-                    System.out.println("Title: \"" + title + "\"");
-                else
-                    System.out.println("Document has no title.");
-                }
-            }
     }
