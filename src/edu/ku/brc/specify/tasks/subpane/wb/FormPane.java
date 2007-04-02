@@ -35,6 +35,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -53,6 +55,7 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
+import edu.ku.brc.ui.validation.ValCheckBox;
 import edu.ku.brc.ui.validation.ValFormattedTextField;
 import edu.ku.brc.ui.validation.ValTextField;
 
@@ -66,7 +69,10 @@ import edu.ku.brc.ui.validation.ValTextField;
  * Mar 8, 2007
  *
  */
-public class FormPane extends JPanel implements ResultSetControllerListener, GhostActionable, DocumentListener
+public class FormPane extends JPanel implements ResultSetControllerListener, 
+                                                GhostActionable,
+                                                DocumentListener,
+                                                ChangeListener
 {
     protected WorkbenchPaneSS    workbenchPane;
     protected Workbench          workbench;
@@ -117,6 +123,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
                 }
                 return comp instanceof InputPanel ? (InputPanel)comp : null;
             }
+            
             public void mousePressed(MouseEvent e)
             {
                 if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
@@ -165,7 +172,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
         int y = 5;
         for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
-            InputPanel p = new InputPanel(wbtmi, wbtmi.getCaption()+":", createUIComp(wbtmi));
+            InputPanel p = new InputPanel(wbtmi, wbtmi.getCaption(), createUIComp(wbtmi));
             p.createMouseInputAdapter(); // this makes it draggable
             p.getMouseInputAdapter().setDropCanvas(this);
             
@@ -276,6 +283,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
             txt.getDocument().addDocumentListener(this);
             comp = txt;
             
+        }
+        else if (dbFieldType.equals(Boolean.class)) // strings
+        {
+            ValCheckBox checkBox = new ValCheckBox(wbtmi.getCaption(), false, false);
+            checkBox.addChangeListener(this);
+            comp = checkBox;
         }
         else if (dbFieldType.equals(String.class)) // strings
         {
@@ -605,6 +618,18 @@ public class FormPane extends JPanel implements ResultSetControllerListener, Gho
     }
     
     public void changedUpdate(DocumentEvent e) 
+    {
+        if (!ignoreChanges)
+        {
+            changesInForm = true;
+            workbenchPane.setChanged(true);
+        }
+    }
+
+    //-----------------------------------------------
+    // DocumentListener Interface
+    //-----------------------------------------------
+    public void stateChanged(ChangeEvent e)
     {
         if (!ignoreChanges)
         {

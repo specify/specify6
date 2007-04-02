@@ -734,7 +734,13 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         g2.setColor(Color.BLACK);
         if (label != null)
         {
-            g2.drawString(label, left+1+imgIcon.getIconWidth()+1, top+((height-fm.getHeight())/2)+fm.getAscent());
+            if (imgIcon != null)
+            {
+                g2.drawString(label, left+1+imgIcon.getIconWidth()+1, top+((height-fm.getHeight())/2)+fm.getAscent());
+            } else
+            {
+                g2.drawString(label, left+1, top+((height-fm.getHeight())/2)+fm.getAscent());
+            }
         }
         g2.dispose();
     }

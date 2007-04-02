@@ -31,7 +31,6 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -44,6 +43,7 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
+import edu.ku.brc.ui.validation.ValCheckBox;
 
 /**
  * Simple panel that doies it's own layout of a JLabel (Caption) and a JComponent. It is draggable on a panel (canvas).
@@ -77,7 +77,6 @@ public class InputPanel extends JPanel implements GhostActionable
     protected Dimension              prefferedRenderSize = new Dimension(0,0);
     protected boolean                verticalLayout      = false;
 
-    protected JPopupMenu             popupMenu    = null;
     protected RolloverCommand        itself       = null; // for the mouse adapter
 
     protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
@@ -98,8 +97,16 @@ public class InputPanel extends JPanel implements GhostActionable
         setLayout(null);
         
         this.wbtmi = wbtmi;
-        this.label = new JLabel(label, SwingConstants.RIGHT);
         this.comp  = comp;
+        
+        if (comp instanceof ValCheckBox)
+        {
+            this.label = new JLabel("   ", SwingConstants.RIGHT);
+        } else
+        {
+            this.label = new JLabel(label+":", SwingConstants.RIGHT);
+        }
+
         
         add(this.label);
         add(this.comp);
@@ -157,6 +164,27 @@ public class InputPanel extends JPanel implements GhostActionable
             return ((JScrollPane)comp).getViewport().getView();
         }
         return comp;
+    }
+    
+    public String getLabelText()
+    {
+        if (comp instanceof ValCheckBox)
+        {
+            return ((ValCheckBox)comp).getText();
+        }
+        // else
+        return label.getText();
+    }
+    
+    public void setLabelText(final String text)
+    {
+        if (comp instanceof ValCheckBox)
+        {
+            ((ValCheckBox)comp).setText(text);
+        } else
+        {
+            label.setText(text);
+        }
     }
     
     /**

@@ -42,6 +42,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.validation.ValCheckBox;
 import edu.ku.brc.ui.validation.ValSpinner;
 
 /**
@@ -217,9 +218,9 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         Point location = inputPanel.getLocation();
         xCoord.setValue(((Double)location.getX()).intValue());
         yCoord.setValue(((Double)location.getY()).intValue());
-        labelTF.setText(inputPanel.getLabel().getText());
+        labelTF.setText(inputPanel.getLabelText());
         
-        origLabel    = inputPanel.getLabel().getText();
+        origLabel    = inputPanel.getLabelText();
         origLocation = new Point(location.x, location.y);
         
         if (inputPanel.getComp() instanceof JTextField)
@@ -280,16 +281,22 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         
         if (changeTracker.get(labelTF.getDocument()) != null)
         {
-            inputPanel.getLabel().setText(labelTF.getText());
+            if (inputPanel.getComp() instanceof ValCheckBox)
+            {
+                ((ValCheckBox)inputPanel.getComp()).setText(labelTF.getText());
+            } else
+            {
+                inputPanel.setLabelText(labelTF.getText());
+            }
             doResize = true;
         }
         
-        if (changeTracker.get(fieldWidth) != null)
+        if (fieldWidth != null && changeTracker.get(fieldWidth) != null)
         {
             if (inputPanel.getComp() instanceof JTextField)
             {
                 ((JTextField)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
-            }
+             }
             doResize = true;
         }
         

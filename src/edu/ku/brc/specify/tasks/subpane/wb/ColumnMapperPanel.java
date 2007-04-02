@@ -526,6 +526,8 @@ public class ColumnMapperPanel extends JPanel
              fmp.setIcon(null);
          }
          fieldList.repaint();
+         
+         setChanged(true);
 
         // Need to Sort Here
         updateEnabledState();

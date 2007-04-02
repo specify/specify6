@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
@@ -18,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.util.EventObject;
 import java.util.Hashtable;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -299,11 +301,19 @@ public class SpreadSheet  extends SearchableJXTable
         return scrollPane;
     }
     
+    /**
+     * CReates the popup menu for a cell.
+     * @param pnt the point to pop it up
+     * @return the popup menu
+     */
     protected JPopupMenu createMenuForSelection(final Point pnt)
     {
         final int row = rowAtPoint(pnt);
-        //int col = columnAtPoint(pnt);
         
+        Class cellClass = getModel().getColumnClass(columnAtPoint(pnt));
+        boolean isImage = cellClass.isInstance(ImageIcon.class) || cellClass.isInstance(Image.class);
+        
+        System.out.println(cellClass);
         JPopupMenu pMenu = new JPopupMenu();
         
         if (getSelectedColumnCount() == 1)
@@ -311,37 +321,46 @@ public class SpreadSheet  extends SearchableJXTable
             final int[] rows = getSelectedRows();
             if (row == rows[0])
             {
-                JMenuItem mi = pMenu.add(new JMenuItem("Fill Down"));
-                mi.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        model.fill(getSelectedColumn(), row, rows);
-                        popupMenu.setVisible(false);
-                    }
-                });
+                if (!isImage)
+                {
+                    JMenuItem mi = pMenu.add(new JMenuItem("Fill Down")); // I18N
+                    mi.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            model.fill(getSelectedColumn(), row, rows);
+                            popupMenu.setVisible(false);
+                        }
+                    });
+                }
             } else if (row == rows[rows.length-1])
             {
-                JMenuItem mi = pMenu.add(new JMenuItem("Fill Up"));
-                mi.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        model.fill(getSelectedColumn(), row, rows);
-                        popupMenu.setVisible(false);
-                    }
-                });
+                if (!isImage)
+                {
+                    JMenuItem mi = pMenu.add(new JMenuItem("Fill Up")); // I18N
+                    mi.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            model.fill(getSelectedColumn(), row, rows);
+                            popupMenu.setVisible(false);
+                        }
+                    });
+                }
             }
         }
         
-        JMenuItem mi = pMenu.add(new JMenuItem("Clear Cell(s)"));
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                model.clearCells(getSelectedRows(), getSelectedColumns());
-                popupMenu.setVisible(false);
-            }
-        });
+        if (!isImage)
+        {        
+            JMenuItem mi = pMenu.add(new JMenuItem("Clear Cell(s)"));// I18N
+            mi.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    model.clearCells(getSelectedRows(), getSelectedColumns());
+                    popupMenu.setVisible(false);
+                }
+            });
+        }
         
-        mi = pMenu.add(new JMenuItem("Delete Row(s)"));
+        JMenuItem mi = pMenu.add(new JMenuItem("Delete Row(s)")); // I18N
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {

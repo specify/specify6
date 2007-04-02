@@ -2308,6 +2308,10 @@ public class WorkbenchTask extends BaseTask
                     {
                         return String.class;
                         
+                    } else if (type.equals("boolean"))
+                    {
+                        return Boolean.class;
+                        
                     } else
                     {
                         try
