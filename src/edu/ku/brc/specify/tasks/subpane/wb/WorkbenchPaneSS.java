@@ -1037,7 +1037,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             {
                 // this value didn't convert correctly
                 // it would be nice to highlight that cell, but I don't know how we could do that
-                log.warn("Could not convert contents of cell (" + rowIndex + "," + columnIndex + ")");
+                log.warn("Could not convert contents of cell (" + (rowIndex+1) + "," + (columnIndex+1) + ")");
                 continue;
             }
             
