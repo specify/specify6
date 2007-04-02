@@ -37,12 +37,11 @@ import edu.ku.brc.ui.DateWrapper;
  *
  *Imports xls data to workbenches.
  */
-public class XLSImport implements DataImportIFace
+public class XLSImport extends DataImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(XLSImport.class);
     
     protected ConfigureExternalDataIFace config;
-    protected Status                     status = DataImportIFace.Status.None;
     
     /**
      * Constrcutor.
@@ -51,14 +50,6 @@ public class XLSImport implements DataImportIFace
     public XLSImport(final ConfigureExternalDataIFace config)
     {
         this.config = config;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getStatus()
-     */
-    public Status getStatus()
-    {
-        return status;
     }
 
     /* (non-Javadoc)
@@ -158,13 +149,12 @@ public class XLSImport implements DataImportIFace
     
                         if (!skip)
                         {
-                            wbRow.setData(value, wbtmi.getViewOrder());
+                            wbRow.setData(truncateIfNecessary(value, numRows, cellNum, ""), wbtmi.getViewOrder());
                         }
                     }
                     numRows++;
                 }
-                return status = DataImportIFace.Status.Valid;
-                
+                return status = this.truncations.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
             } catch (IOException ex)
             {
                 log.error(ex);

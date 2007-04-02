@@ -28,25 +28,16 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  * 
  * Imports csv data into a workbench
  */
-public class CSVImport implements DataImportIFace
+public class CSVImport extends DataImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(CSVImport.class);
     
     protected ConfigureExternalDataIFace config;
-    protected Status                     status = DataImportIFace.Status.None;
 
     
     public CSVImport(final ConfigureExternalDataIFace config)
     {
         this.config = config;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getStatus()
-     */
-    public Status getStatus()
-    {
-        return status;
     }
     
     /* (non-Javadoc)
@@ -98,21 +89,22 @@ public class CSVImport implements DataImportIFace
                         }
                     }
                     
+                    int row = config.getFirstRowHasHeaders() ? 1 : 0;
                     while (csv.readRecord())
                     {
                         WorkbenchRow wbRow = workbench.addRow();
+                        row++;
                         for (int col = 0; col < csv.getColumnCount(); col++)
                         {
                             // Skip the column if it isn't found in the hash
                             WorkbenchTemplateMappingItem wbtmi = colHash.get((short) col);
                             if (wbtmi != null)
                             {
-                                wbRow.setData(csv.get(col), wbtmi.getViewOrder());
+                                wbRow.setData(truncateIfNecessary(csv.get(col), row, (short) col, ""), wbtmi.getViewOrder());
                             }
                         }
                     }
-                    
-                    return status = DataImportIFace.Status.Valid;
+                    return status = this.truncations.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
                 }
             }
             

@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.util.Vector;
+
 import edu.ku.brc.specify.datamodel.Workbench;
 
 /**
@@ -17,7 +19,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
  */
 public interface DataImportIFace
 {
-    public enum Status {None, Valid, Error}
+    public enum Status {None, Valid, Error, Modified}
     
     /**
      * @param config
@@ -38,4 +40,9 @@ public interface DataImportIFace
      * @return
      */
     public Status getStatus();
+    
+    /**
+     * @return info on cells truncated during last import
+     */
+    public Vector<DataImportTruncation> getTruncations();
 }
