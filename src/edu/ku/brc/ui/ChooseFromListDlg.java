@@ -15,7 +15,6 @@ package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -43,7 +42,10 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.HelpMgr;
 
@@ -97,6 +99,7 @@ public class ChooseFromListDlg<T> extends JDialog
     protected String            helpContext      = null;
     protected boolean           isMultiSelect    = false;
     protected int[]             selectedIndices  = null;
+    protected boolean           isCloseOnApply   = false;
     
     /**
      * Constructor.
@@ -259,13 +262,16 @@ public class ChooseFromListDlg<T> extends JDialog
     {
         setTitle(title);
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        boolean hasDesc = StringUtils.isNotEmpty(desc);
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(300px;p):g", "p," + (hasDesc ? "2px,p," : "") + "5px,p"));
+        CellConstraints cc      = new CellConstraints();
+        builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        if (desc != null)
+        int y = 1;
+        if (hasDesc)
         {
             JLabel lbl = new JLabel(desc, SwingConstants.CENTER);
-            panel.add(lbl, BorderLayout.NORTH);
+            builder.add(lbl, cc.xy(1,y)); y += 2;
         }
 
         try
@@ -320,7 +326,7 @@ public class ChooseFromListDlg<T> extends JDialog
                 }
             });
             JScrollPane listScroller = new JScrollPane(list);
-            panel.add(listScroller, BorderLayout.CENTER);
+            builder.add(listScroller, cc.xy(1,y)); y += 2;
 
             // Bottom Button UI
             okBtn = new JButton(StringUtils.isNotEmpty(okLabel) ? okLabel : getResourceString("OK"));
@@ -362,9 +368,7 @@ public class ChooseFromListDlg<T> extends JDialog
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            isCancelled = false;
                             btnPressed  = HELP_BTN;
-                            setVisible(false);
                         }
                     }); 
                 }
@@ -377,9 +381,12 @@ public class ChooseFromListDlg<T> extends JDialog
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        isCancelled = false;
                         btnPressed  = APPLY_BTN;
-                        setVisible(false);
+                        if (isCloseOnApply)
+                        {
+                            isCancelled = false;
+                            setVisible(false);
+                        }
                     }
                 });
             }
@@ -414,7 +421,7 @@ public class ChooseFromListDlg<T> extends JDialog
                 bb = ButtonBarFactory.buildOKBar(okBtn);
             }
 
-            panel.add(bb, BorderLayout.SOUTH);
+            builder.add(bb, cc.xy(1,y)); y += 2;
 
             updateUIState();
 
@@ -423,10 +430,15 @@ public class ChooseFromListDlg<T> extends JDialog
             log.error(ex);
         }
 
-        setContentPane(panel);
+        setContentPane(builder.getPanel());
         pack();
         // setLocationRelativeTo(locationComp);
 
+    }
+    
+    public void setCloseOnApply(final boolean isCloseOnApply)
+    {
+        this.isCloseOnApply = isCloseOnApply;
     }
 
     /**

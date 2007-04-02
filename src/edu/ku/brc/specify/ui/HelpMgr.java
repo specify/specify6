@@ -21,7 +21,6 @@ import javax.help.InvalidHelpSetContextException;
 import javax.help.Map;
 import javax.swing.AbstractButton;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -32,7 +31,6 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.specify.Specify;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Help System Wrapper to make it easier to start and load help.
@@ -49,24 +47,6 @@ public class HelpMgr
     protected static HelpSet    hs;
     protected static HelpBroker hb;
     protected static String     helpSystemName;
-    protected static JMenu      helpMenu;
-    protected static JMenuItem  mainHelpMenuItem;
-
-    /**
-     * @return the helpMenu
-     */
-    public static JMenu getHelpMenu()
-    {
-        return helpMenu;
-    }
-
-    /**
-     * @return the mainHelpMenuItem
-     */
-    public static JMenuItem getMainHelpMenuItem()
-    {
-        return mainHelpMenuItem;
-    }
 
     /**
      * Creates a Helpset and HelpBroker.
@@ -96,16 +76,16 @@ public class HelpMgr
 
     /**
      * Adds a help menu to the main menu
-     * @param appName the name of the menu item usuall the Application name.
+     * @param helpMenuName the name of the menu item usuall the Application name.
      */
-    public static void initializeHelpUI(final String appName)
+    public static JMenu createHelpMenuItem(final String helpMenuName)
     {
-        helpMenu         = new JMenu(getResourceString("Help"));
-        mainHelpMenuItem = new JMenuItem(appName);
+        JMenu     helpMenu         = new JMenu(getResourceString("Help"));
+        JMenuItem mainHelpMenuItem = new JMenuItem(helpMenuName);
         mainHelpMenuItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
         helpMenu.add(mainHelpMenuItem);
-        ((JMenuBar)UICacheManager.get(UICacheManager.MENUBAR)).add(helpMenu);
         registerComponent(mainHelpMenuItem, true);
+        return helpMenu;
     }
 
     /**

@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -81,6 +82,7 @@ public class ColumnMapperPanel extends JPanel
 {
     private static final Logger log = Logger.getLogger(ColumnMapperPanel.class);
             
+    protected final String                   helpContext;
     protected Vector<TableInfo>              tableInfoList = new Vector<TableInfo>();
     protected JList                          fieldList;
     protected JList                          tableList;
@@ -122,6 +124,8 @@ public class ColumnMapperPanel extends JPanel
         this.dataFileInfo    = dataFileInfo;
         this.isMappedToAFile = dataFileInfo != null;
         
+        helpContext = dataFileInfo == null ? "OnRampNewTemplate" : "OnRampImportData";
+        
         createUI();
     }
     
@@ -136,6 +140,7 @@ public class ColumnMapperPanel extends JPanel
         this.workbenchTemplate = wbTemplate;
         this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         
+        helpContext = this.isMappedToAFile ? "OnRampImportTemplateEditor" : "OnRampTemplateEditing";
         createUI();
     }
     
@@ -156,13 +161,6 @@ public class ColumnMapperPanel extends JPanel
     {
         databaseSchema = WorkbenchTask.getDatabaseSchema();
         
-        String[] skipItems = {"TimestampCreated", "LastEditedBy", "TimestampModified"};
-        Hashtable<String, Boolean> skipHash = new Hashtable<String, Boolean>();
-        for (String name : skipItems)
-        {
-            skipHash.put(name, true);
-        }
-        
         for (DBTableIdMgr.TableInfo ti : databaseSchema.getList())
         {
             if (StringUtils.isNotEmpty(ti.toString()))
@@ -172,10 +170,7 @@ public class ColumnMapperPanel extends JPanel
                 Vector<TableFieldPair> fldList = new Vector<TableFieldPair>();
                 for (DBTableIdMgr.FieldInfo fi : ti.getFields())
                 {
-                    if (skipHash.get(fi.getColumn()) == null)
-                    {
-                        fldList.add(new TableFieldPair(ti, fi));
-                    }
+                    fldList.add(new TableFieldPair(ti, fi));
                 }
                 Collections.sort(fldList);
                 tableFieldList.put(ti, fldList);
@@ -183,17 +178,23 @@ public class ColumnMapperPanel extends JPanel
         }
         Collections.sort(tableInfoList);
         
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", 
-                                                                 "p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, p, 2px, f:p:g"), this);
+        String          rowDef  = "top:p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, p, 2px, f:p:g";
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", rowDef), this);
         CellConstraints cc      = new CellConstraints();
         
-        PanelBuilder header = new PanelBuilder(new FormLayout("p,f:p:g,p", "p,2px,p"));
-        header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), SwingConstants.CENTER), cc.xywh(1, 1, 3, 1));
-        header.add(new JLabel(workbenchTemplate != null ? "Columns" : "Schema", SwingConstants.LEFT), cc.xy(1,3)); // XXX I18N
-        header.add(new JLabel(workbenchTemplate != null ? "Schema" : "", SwingConstants.RIGHT), cc.xy(3,3));  // XXX I18N
-
-        builder.add(header.getPanel(), cc.xy(1, 1));
-        builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     SwingConstants.CENTER), cc.xy(5, 1));
+        if (isMappedToAFile)
+        {
+            PanelBuilder header = new PanelBuilder(new FormLayout("p,f:p:g,p", "p,2px,p"));
+            header.add(new JLabel(getResourceString("WB_MAPPING_COLUMNS"), SwingConstants.CENTER), cc.xywh(1, 1, 3, 1));
+            header.add(new JLabel(getResourceString("WB_COLUMNS"), SwingConstants.LEFT), cc.xy(1,3)); // XXX I18N
+            header.add(new JLabel(getResourceString("WB_SCHEMA"), SwingConstants.RIGHT), cc.xy(3,3));  // XXX I18N
+            builder.add(header.getPanel(), cc.xy(1, 1));
+            
+        } else
+        {
+            builder.add(new JLabel(getResourceString("WB_SCHEMA"), SwingConstants.CENTER), cc.xy(1, 1));
+        }
+        builder.add(new JLabel(getResourceString("WB_DATAOBJECTS"), SwingConstants.CENTER), cc.xy(5, 1));
         builder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  SwingConstants.CENTER), cc.xy(5, 5));
         
         dataFileColPanel = new JPanel();
@@ -243,7 +244,7 @@ public class ColumnMapperPanel extends JPanel
         });
         
         PanelBuilder arrowBuilder = new PanelBuilder(new FormLayout("f:p:g", "p:g,p,2px,p,p:g"));
-        mapToBtn  = new JButton(IconManager.getIcon("move_left"));
+        mapToBtn = new JButton(IconManager.getIcon("move_left"));
         mapToBtn.setMargin(new Insets(0,0,0,0));
         unmapBtn = new JButton(IconManager.getIcon("move_right"));
         unmapBtn.setMargin(new Insets(0,0,0,0));
@@ -254,6 +255,7 @@ public class ColumnMapperPanel extends JPanel
         //arrowBuilder.getPanel().setBorder(BorderFactory.createLoweredBevelBorder());
         builder.add(arrowBuilder.getPanel(), cc.xy(3, 7));
         
+        mapToBtn.setVisible(isMappedToAFile);
         unmapBtn.setVisible(false);
         
         fieldList = new JList(new DefaultListModel());
@@ -330,7 +332,7 @@ public class ColumnMapperPanel extends JPanel
             }
         });
         
-        HelpMgr.registerComponent(helpBtn, "WorkbenchColMapping");
+        HelpMgr.registerComponent(helpBtn, helpContext);
         
         if (dataFileInfo != null)
         {
@@ -345,10 +347,18 @@ public class ColumnMapperPanel extends JPanel
         if (workbenchTemplate != null)
         {
             fillFromTemplate();
+            setChanged(false);
         }
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                cancelBtn.requestFocus();
+                updateEnabledState();
+            }
+        });
     }
     
     /**
@@ -400,7 +410,7 @@ public class ColumnMapperPanel extends JPanel
     {
         TableFieldPair fieldItem = (TableFieldPair)fieldList.getSelectedValue();
         
-        mapToBtn.setEnabled((fieldItem != null && !fieldItem.isInUse()) && currentInx > -1);
+        mapToBtn.setEnabled(isMappedToAFile && (fieldItem != null && !fieldItem.isInUse()) && currentInx > -1);
         unmapBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped());
         
         addMapItemBtn.setEnabled(fieldItem != null && !fieldItem.isInUse());
@@ -466,9 +476,12 @@ public class ColumnMapperPanel extends JPanel
     {
         DefaultListModel model = (DefaultListModel)fieldList.getModel();
         model.clear();
-        for (TableFieldPair fi : tableFieldList.get(tableInfo))
+        if (tableInfo != null)
         {
-            model.addElement(fi);
+            for (TableFieldPair fi : tableFieldList.get(tableInfo))
+            {
+                model.addElement(fi);
+            }
         }
     }
     
@@ -739,10 +752,11 @@ public class ColumnMapperPanel extends JPanel
         doingFill = false;
         
         tableList.getSelectionModel().clearSelection();
-        fieldList.getSelectionModel().clearSelection();
+        fillFieldList(null); // clears list
         if (currentInx != -1)
         {
             mappingItems.get(currentInx).setHasFocus(false);
+            currentInx = -1;
         }
     }
     
@@ -771,8 +785,8 @@ public class ColumnMapperPanel extends JPanel
                 item.initialize();
                 
                 item.setCaption(colInfo.getColName());
-
                 item.setFieldName(tblField.getFieldInfo().getName());
+                item.setImportedColName(colInfo.getColName());
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());
                 item.setFieldLength((short)tblField.getFieldInfo().getLength());

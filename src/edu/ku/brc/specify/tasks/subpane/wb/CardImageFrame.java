@@ -45,6 +45,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -136,12 +137,21 @@ public class CardImageFrame extends JFrame
         imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
         clearMI   = UIHelper.createMenuItem(imageMenu, "Clear", "ClearMneu", "", true, null);
         replaceMI = UIHelper.createCheckBoxMenuItem(imageMenu, "Replace", "ReplaceMneu", "", true, null);
+        
+        menuBar.add(HelpMgr.createHelpMenuItem(getResourceString("WB_IMAGE_WINDOW")));
 
         enableMenus(false);
         
         setJMenuBar(menuBar);
         
         pack();
+        
+        //HelpMgr.setHelpID(this, "OnRampImageWindow");
+    }
+    
+    public void setHelpContext(final String helpContext)
+    {
+        HelpMgr.setHelpID(this, helpContext);
     }
     
     /**

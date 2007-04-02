@@ -948,7 +948,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UICacheManager.register(UICacheManager.FRAME, topFrame);
                 
-                HelpMgr.initializeHelpUI("Specify");
+                ((JMenuBar)UICacheManager.get(UICacheManager.MENUBAR)).add(HelpMgr.createHelpMenuItem("Specify"));
             }
             
             initStartUpPanels(databaseNameArg, userNameArg);

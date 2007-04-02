@@ -146,7 +146,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     
     private enum PanelType {Spreadsheet, Form}
     
-    protected SearchReplacePanel    findPanel=null;
+    protected SearchReplacePanel    findPanel       = null;
     protected SpreadSheet           spreadSheet;
     protected Workbench             workbench;
     protected GridTableModel        model;
@@ -621,7 +621,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
         // XXX Change later - Assuming first Row
         WorkbenchDataItem firstColItem = row.getItems().get(0);
-        String firstColCellData = (firstColItem!=null) ? firstColItem.getCellData() : "";
+        String firstColCellData = (firstColItem != null) ? firstColItem.getCellData() : "";
         cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
     }
     
@@ -671,6 +671,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     public void showPanel(final PanelType panelType)
     {
         currentPanelType = panelType;
+        
+        if (cardImageFrame != null)
+        {
+            cardImageFrame.setHelpContext(panelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
+        }
         
         cardLayout.show(mainPanel, currentPanelType.toString());
         cpCardLayout.show(controllerPane, currentPanelType.toString());
@@ -756,6 +761,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
 
             toggleCardImageBtn.setToolTipText(getResourceString("WB_HIDE_IMAGES"));
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
+            cardImageFrame.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
             cardImageFrame.setVisible(true);
             
             // tell the table model to show the image column
@@ -835,7 +841,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         String title = getResourceString("GeoRefConv");
         String description = getResourceString("GeoRefConvDesc");
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null,Type.RadioButton)
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null, ToggleButtonChooserDlg.OKCANCEL, Type.RadioButton)
         {
             @Override
             protected void okButtonPressed()
@@ -1421,7 +1427,13 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         Collections.sort(items);
         ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
                                                                         "WB_CARRYFORWARD",
-                                                                        "WB_CHOOSE_CARRYFORWARD", items);
+                                                                        "WB_CHOOSE_CARRYFORWARD", 
+                                                                        items,
+                                                                        null,
+                                                                        ToggleButtonChooserDlg.OKCANCELHELP,
+                                                                        ToggleButtonChooserDlg.Type.Checkbox);
+        
+        dlg.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "OnRampGridEditingCF" : "OnRampFormEditingCF");
         dlg.setAddSelectAll(true);
         dlg.setSelectedObjects(selectedObjects);
         dlg.setModal(true);
@@ -1633,7 +1645,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         }
         else
         {
-            if (cardImageFrame!=null && cardImageFrame.isVisible())
+            if (cardImageFrame != null && cardImageFrame.isVisible())
             {
                 cardFrameWasShowing = true;
                 toggleCardImageVisible();
@@ -1643,7 +1655,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                 cardFrameWasShowing = false;
             }
             
-            if (mapFrame!=null && mapFrame.isVisible())
+            if (mapFrame != null && mapFrame.isVisible())
             {
                 mapFrame.setVisible(false);
                 
@@ -1672,7 +1684,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     @Override
     public String getHelpTarget()
     {
-        return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
+        return currentPanelType == PanelType.Spreadsheet ? "OnRampGridEditing" : "OnRampFormEditing";
     }
     
     //------------------------------------------------------------

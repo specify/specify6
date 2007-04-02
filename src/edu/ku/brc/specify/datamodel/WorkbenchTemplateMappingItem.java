@@ -39,6 +39,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected String            tableName;
     protected Integer           srcTableId;
     protected String            fieldName;
+    protected String            importedColName;
     protected String            caption;
     protected Short             viewOrder;             // The Current View Order
     protected Short             origImportColumnIndex; // The index from the imported data file
@@ -77,6 +78,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         tableName = null;
         srcTableId = null;
         fieldName = null;
+        importedColName = null;
         caption = null;
         viewOrder = null;
         origImportColumnIndex = null;
@@ -175,6 +177,23 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setFieldName(String fieldName)
     {
         this.fieldName = fieldName;
+    }
+
+    /**
+     * @return the importedColName
+     */
+    @Column(name = "ImportedColName", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getImportedColName()
+    {
+        return importedColName;
+    }
+
+    /**
+     * @param importedColName the importedColName to set
+     */
+    public void setImportedColName(String importedColName)
+    {
+        this.importedColName = importedColName;
     }
 
     /**

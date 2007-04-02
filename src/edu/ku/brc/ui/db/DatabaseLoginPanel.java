@@ -446,8 +446,7 @@ public class DatabaseLoginPanel extends JPanel
 
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p", "p,2dlu,p,2dlu,p"),
-                this);
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p", "p,2dlu,p,2dlu,p"), this);
         ImageDisplay icon = new ImageDisplay(IconManager.getIcon("SpecifyLargeIcon"), false, false);
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));

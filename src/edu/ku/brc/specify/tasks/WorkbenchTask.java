@@ -113,20 +113,20 @@ public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
     
-	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
-    public static final String     WORKBENCH             = "Workbench";
-    public static final String     WORKBENCHTEMPLATE     = "WorkbenchTemplate";
-    public static final String     NEW_WORKBENCH         = "New Workbench";
+	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "OnRamp");
+    public static final String     WORKBENCH             = "OnRamp";
+    public static final String     WORKBENCHTEMPLATE     = "OnRampTemplate";
+    public static final String     NEW_WORKBENCH         = "New OnRamp";
     public static final String     NEW_TEMPLATE          = "New Template";
     public static final String     IMPORT_DATA_FILE      = "New Template From File";
     public static final String     SELECTED_TEMPLATE     = "Selected Template";
-    public static final String     SELECTED_WORKBENCH    = "Selected Workbench";
+    public static final String     SELECTED_WORKBENCH    = "Selected OnRamp";
     public static final String     WB_BARCHART           = "WB_BARCHART";
     public static final String     PRINT_REPORT          = "PrintReport";
     public static final String     WB_TOP10_REPORT       = "WB_TOP10_REPORT";
     public static final String     WB_IMPORTCARDS        = "WB_IMPORT_CARDS";
     public static final String     EXPORT_DATA_FILE      = "Export Data";
-    public static final String     EXPORT_TEMPLATE       = "ExportTemplate";
+    public static final String     EXPORT_TEMPLATE       = "Export Template";
     
     protected static WeakReference<DBTableIdMgr> databasechema = null;
 
@@ -540,7 +540,7 @@ public class WorkbenchTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        File htmlFile = new File("help/SpecifyHelp/Workbench/Overview.html");
+        File htmlFile = new File(getResourceString("WB_INITIAL_HTML"));
         try
         {
             String s = XMLHelper.fixUpHTML(htmlFile);
@@ -622,23 +622,44 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
-     * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
-     * @return the new WorkbenchTemplate
+     * CREates and displays the ColumnMapper Dialog (Template Editor), either a DatFileInfo or a Template is passed in, for both can be null.
+     * @param dataFileInfo the imported file info
+     * @param template an existing template
+     * @return the dlg aafter cancel or ok
      */
-    protected WorkbenchTemplate createTemplateFromScratch()
+    protected JDialog showColumnMapperDlg(final ImportDataFileInfo dataFileInfo, 
+                                          final WorkbenchTemplate  template,
+                                          final String             titleKey)
     {
-        JDialog            dlg    = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), "Column Mapper", true);
-        ColumnMapperPanel  mapper = new ColumnMapperPanel(dlg);
+        JDialog            dlg    = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), true);
+        ColumnMapperPanel  mapper;
+        if (template != null)
+        {
+            mapper = new ColumnMapperPanel(dlg, template);
+        } else
+        {
+            mapper = new ColumnMapperPanel(dlg, dataFileInfo);
+        }
        
         dlg.setContentPane(mapper);
         dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dlg.getRootPane().setDefaultButton(mapper.getOkBtn());
         dlg.pack();
         UIHelper.centerAndShow(dlg);
-         
-        if (!mapper.isCancelled())
+        return dlg;
+    }
+    
+    /**
+     * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
+     * @return the new WorkbenchTemplate
+     */
+    protected WorkbenchTemplate createTemplateFromScratch()
+    {
+        JDialog           dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
+        ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
+        if (!cmp.isCancelled())
         { 
-            WorkbenchTemplate workbenchTemplate = createTemplate(mapper, null, null);
+            WorkbenchTemplate workbenchTemplate = createTemplate(cmp, null, null);
             if (workbenchTemplate != null)
             {
                 createWorkbench(null, workbenchTemplate, false);
@@ -719,11 +740,15 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
-     * Displays a list of WorkbenchTemplates that match (exaxtly) the current file. Doesn't
+     * If the colInfo Vector is null then all the templates are added to the list to be displayed.<br>
+     * If not, then it checks all the column in the file against the columns in each Template to see if there is a match
+     * and then uses that.
      * show a Dialog and returns null if there are not templates or none match.
+     * @param colInfo the column info
+     * @param helpContext the help context
      * @return the existing WorkbenchTemplate to use or null
      */
-    protected int selectExistingTemplate(final Vector<ImportColumnInfo> colInfo)
+    protected int selectExistingTemplate(final Vector<ImportColumnInfo> colInfo, final String helpContext)
     {
         this.selectedTemplate = null;
         
@@ -754,9 +779,11 @@ public class WorkbenchTask extends BaseTask
                     {
                         WorkbenchTemplateMappingItem wbItem   = items.get(i);
                         ImportColumnInfo             fileItem = colInfo.get(i);
-                        if (wbItem.getViewOrder().shortValue() == fileItem.getColInx().shortValue())
+                        // Check to see if there is an exact match by name
+                        if (wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName()))
                         {
-                            if (ImportColumnInfo.getType(getDataType(wbItem)) == ImportColumnInfo.ColumnType.Date)
+                            ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(getDataType(wbItem));
+                            if (type == ImportColumnInfo.ColumnType.Date)
                             {
                                 ImportColumnInfo.ColumnType colType = fileItem.getColType();
                                 if (colType != ImportColumnInfo.ColumnType.String && colType != ImportColumnInfo.ColumnType.Double)
@@ -764,7 +791,7 @@ public class WorkbenchTask extends BaseTask
                                     match = false;
                                     break;
                                 }
-                            } else if (ImportColumnInfo.getType(getDataType(wbItem)) != fileItem.getColType())
+                            } else if (type != fileItem.getColType())
                             {
                                 match = false;
                                 break;
@@ -801,10 +828,12 @@ public class WorkbenchTask extends BaseTask
             ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UICacheManager.get(UICacheManager.FRAME), 
                     getResourceString("WB_CHOOSE_TEMPLATE_TITLE"), 
                     getResourceString("WB_CHOOSE_TEMPLATE_REUSE"), 
-                    ChooseFromListDlg.OKCANCELAPPLY,
-                    matchingTemplates);
+                    ChooseFromListDlg.OKCANCELAPPLYHELP,
+                    matchingTemplates,
+                    helpContext);
+            dlg.setCloseOnApply(true);
             dlg.setOkLabel(getResourceString(colInfo != null ? "WB_REUSE" : "OK"));
-            dlg.setApplyLabel(getResourceString("WB_CREATE_NEW_TEMPLATE"));
+            dlg.setApplyLabel(getResourceString("WB_NEW_TEMPLATE"));
             dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
             
@@ -981,7 +1010,7 @@ public class WorkbenchTask extends BaseTask
            {
                if (subCmd.getTableId() == cmdAction.getTableId())
                {
-                   workbenchTemplate = selectWorkbenchTemplate(subCmd);
+                   workbenchTemplate = selectWorkbenchTemplate(subCmd, "OnRampTemplateExporting");
                    
                } else
                {
@@ -992,7 +1021,7 @@ public class WorkbenchTask extends BaseTask
        
        if (workbenchTemplate == null)
        {
-           workbenchTemplate = selectWorkbenchTemplate(cmdAction);
+           workbenchTemplate = selectWorkbenchTemplate(cmdAction, "OnRampTemplateExporting");
        }
 
        // The command may have been clicked on so ask for one
@@ -1100,23 +1129,16 @@ public class WorkbenchTask extends BaseTask
             ImportDataFileInfo dataFileInfo = new ImportDataFileInfo();
             if (dataFileInfo.load(file))
             {
-                int btnPressed = selectExistingTemplate(dataFileInfo.getColInfo());
+                int btnPressed = selectExistingTemplate(dataFileInfo.getColInfo(), "OnRampImportData");
                 workbenchTemplate = selectedTemplate;
                 selectedTemplate  = null;
                 if (btnPressed == ChooseFromListDlg.APPLY_BTN)
                 {
-                    // Create a new Template 
-                    JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("WB_COL_MAPPER"), true);
-                    ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg, dataFileInfo);
-                    
-                    dlg.setContentPane(mapper);
-                    dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                    dlg.pack();
-                    UIHelper.centerAndShow(dlg);
-                     
-                    if (!mapper.isCancelled())
+                    JDialog           dlg = showColumnMapperDlg(dataFileInfo, null, "WB_IMP_TEMPLATE_EDITOR");
+                    ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
+                    if (!cmp.isCancelled())
                     {   
-                        workbenchTemplate = createTemplate(mapper, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
+                        workbenchTemplate = createTemplate(cmp, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
                     }
                     
                 } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
@@ -1639,10 +1661,11 @@ public class WorkbenchTask extends BaseTask
     /**
      * Returns the Workbench referenced in the CommandAction or asks for one instead.
      * @param cmdAction the CommandAction being executed
+     * @param helpContext the help Context
      * @return a workbench object or null
      */
     @SuppressWarnings("unchecked")
-    protected WorkbenchTemplate selectWorkbenchTemplate(final CommandAction cmdAction)
+    protected WorkbenchTemplate selectWorkbenchTemplate(final CommandAction cmdAction, final String helpContext)
     {
         DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
         
@@ -1679,7 +1702,11 @@ public class WorkbenchTask extends BaseTask
                 return list.get(0);
             }
             ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UICacheManager.get(UICacheManager.FRAME),
-                                                                                getResourceString("WB_CHOOSE_TEMPLATE_TITLE"), list);
+                                                                                getResourceString("WB_CHOOSE_TEMPLATE_TITLE"), 
+                                                                                null,
+                                                                                ChooseFromListDlg.OKCANCELHELP, 
+                                                                                list, 
+                                                                                helpContext);
             dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
             if (!dlg.isCancelled())
@@ -1713,11 +1740,12 @@ public class WorkbenchTask extends BaseTask
                 "WB_SELECT_FIELD", 
                 items, 
                 null, 
+                ToggleButtonChooserDlg.OKCANCELHELP,
                 ToggleButtonChooserDlg.Type.RadioButton);
         
+        dlg.setHelpContext("OnRampReporting");
         dlg.setModal(true);
         dlg.setVisible(true);  
-        
         return dlg.isCancelled() ? null : dlg.getSelectedObject();
     }
     
@@ -1824,21 +1852,16 @@ public class WorkbenchTask extends BaseTask
     {
         loadTemplateFromData(workbenchTemplate);
         
-        JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), "Column Mapper", true);
-        ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg, workbenchTemplate);
-       
-        dlg.setContentPane(mapper);
-        dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dlg.pack();
-        UIHelper.centerAndShow(dlg);
-         
-        if (!mapper.isCancelled())
+        JDialog dlg = showColumnMapperDlg(null, workbenchTemplate, 
+                StringUtils.isNotEmpty(workbenchTemplate.getSrcFilePath()) ? "WB_IMP_TEMPLATE_EDITOR" : "WB_TEMPLATE_EDITOR");
+        ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
+        if (!cmp.isCancelled())
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
 
-                WorkbenchTemplate newWorkbenchTemplate = mapper.createWorkbenchTemplate();
+                WorkbenchTemplate newWorkbenchTemplate = cmp.createWorkbenchTemplate();
                 
                 session.attach(workbenchTemplate);
                 
@@ -1972,25 +1995,18 @@ public class WorkbenchTask extends BaseTask
      */
     protected void importCardImages()
     {
-        int               btnPressed        = selectExistingTemplate(null);
+        int               btnPressed        = selectExistingTemplate(null, "OnRampImportImages");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
         selectedTemplate  = null;
         
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
         {
             // Create a new Template 
-            JDialog            dlg          = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("WB_COL_MAPPER"), true);
-            ColumnMapperPanel  mapper       = new ColumnMapperPanel(dlg);
-            
-            dlg.setContentPane(mapper);
-            dlg.getRootPane().setDefaultButton(mapper.getOkBtn());
-            dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            dlg.pack();
-            UIHelper.centerAndShow(dlg);
-             
-            if (!mapper.isCancelled())
+            JDialog           dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
+            ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
+            if (!cmp.isCancelled())
             {   
-                workbenchTemplate = createTemplate(mapper, null, null);
+                workbenchTemplate = createTemplate(cmp, null, null);
             }
             
         } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
@@ -2364,7 +2380,7 @@ public class WorkbenchTask extends BaseTask
         {
             if (isClickedOn)
             {
-                WorkbenchTemplate workbenchTemplate = selectWorkbenchTemplate(cmdAction);
+                WorkbenchTemplate workbenchTemplate = selectWorkbenchTemplate(cmdAction, "OnRampNewDataSet");
                 if (workbenchTemplate != null)
                 {
                     createNewWorkbench(workbenchTemplate);

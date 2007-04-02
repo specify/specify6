@@ -319,7 +319,7 @@ public class XMLHelper
                String line = (String)lineObj;
                if (!fndBegin)
                {
-                   if (line.indexOf("<body>") > -1)
+                   if (line.indexOf("<body") > -1)
                    {
                        fndBegin = true;
                    }

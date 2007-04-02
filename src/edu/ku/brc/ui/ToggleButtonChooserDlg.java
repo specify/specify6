@@ -101,7 +101,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
                               final String  desc, 
                               final List<T> listItems) throws HeadlessException
     {
-        this(parentFrame, title, desc, listItems, null, Type.Checkbox);
+        this(parentFrame, title, desc, listItems, null, OKCANCEL, Type.Checkbox);
     }
 
     /**
@@ -118,9 +118,10 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
                                   final String    desc, 
                                   final List<T>   listItems, 
                                   final ImageIcon icon, 
+                                  final int       whichButtons,
                                   final Type      uiType) throws HeadlessException
     {
-        super(parentFrame, getResourceString(title), true, OK_BTN | CANCEL_BTN, null);
+        super(parentFrame, getResourceString(title), true, whichButtons, null);
         
         this.items  = listItems;
         this.icon   = icon;
