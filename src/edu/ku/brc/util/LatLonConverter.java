@@ -104,7 +104,7 @@ public class LatLonConverter
             
             //System.out.println("["+decFormatter2.format(num)+"]["+minutes+"]["+seconds+"]");
             
-            return decFormatter2.format(num) + " " + minutes + " " + seconds;
+            return decFormatter2.format(num) + " " + decFormatter2.format(minutes) + " " + decFormatter2.format(seconds);
             
         }
         //else
@@ -184,7 +184,7 @@ public class LatLonConverter
             BigDecimal minutes = remainder.multiply(sixty).abs();
             
             //System.out.println("["+decFormatter2.format(num)+"]["+minutes+"]");
-            return decFormatter2.format(num) + " " + minutes;
+            return decFormatter2.format(num) + " " + decFormatter2.format(minutes);
             
         }
         //else

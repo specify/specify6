@@ -1,13 +1,12 @@
 package edu.ku.brc.util;
 
 import java.math.BigDecimal;
-import java.util.Vector;
 
 public class GeoRefConverter implements StringConverter
 {
     public enum GeoRefFormat
     {
-        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\s\\d{2}\\.\\d{0,}\\s*")
+        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\s\\d{1,2}\\.\\d{0,}\\s*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -15,7 +14,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDMMSSToDDDD(orig);
             }
         },
-        DM_PLUS_MINUS  ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\.\\d{0,}\\s*")
+        DM_PLUS_MINUS  ("[\\+\\-]?\\d{0,3}\\s\\d{1,2}\\.\\d{0,}\\s*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -126,27 +125,100 @@ public class GeoRefConverter implements StringConverter
      * @param args
      * @throws Exception 
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
-        Vector<String> inputStrings = new Vector<String>();
-        inputStrings.add("-32 45 16.82");
-        inputStrings.add("-132 45 16.8234");
-        inputStrings.add("32 45 16.82 S");
-        inputStrings.add("132 45 16.82235");
-        inputStrings.add("-32 45.15166");
-        inputStrings.add("32 45.16236");
-        inputStrings.add("32 45.1616 S");
-        inputStrings.add("52 22.6 W");
-        inputStrings.add("108.13461");
-        inputStrings.add("-20.26");
-        inputStrings.add("100.1351 N");
-        inputStrings.add("9.15161 W");
+        String destFormat = GeoRefFormat.DMS_PLUS_MINUS.name();
+        
+        String[] inputStrings = new String[] {
+                "0 0 0",
+                "0 0 0.",
+                "-32 45 16.8232",
+                "-32 45 16.82",
+                "-32 45 6.82",
+                "-32 45 0.82",
+                "-32 45 .82",
+                "-132 45 16.82151",
+                "-132 45 6.82",
+                "-132 45 .82",
+                "32 45 16.82",
+                "32 45 16.82",
+                "32 45 6.82",
+                "32 45 0.82",
+                "32 45 .82",
+                "132 45 16.82",
+                "132 45 6.82",
+                "132 45 .82",
+                "32 45 16.8232 S",
+                "32 45 16.82 S",
+                "32 45 6.82 S",
+                "32 45 .82 S",
+                "132 45 16.82151 W",
+                "132 45 6.82 W",
+                "132 45 .82 W",
+                "32 45 16.82",
+                "32 45 16.82",
+                "32 45 6.82",
+                "32 45 .82",
+                "132 45 16.82",
+                "132 45 6.82",
+                "132 45 .82",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+        };
 
         GeoRefConverter converter = new GeoRefConverter();
         
         for (String input: inputStrings)
         {
-            System.out.println("Converted output: " + converter.convert(input, GeoRefFormat.D_PLUS_MINUS.name()));
+            System.out.println("Input:             " + input);
+            BigDecimal degreesPlusMinus = null;
+            for (GeoRefFormat format: GeoRefFormat.values())
+            {
+                if (input.matches(format.regex))
+                {
+                    System.out.println("Format match:      " + format.name());
+                    degreesPlusMinus = format.convertToDecimalDegrees(input);
+                    break;
+                }
+            }
+            
+            // if we weren't able to find a matching format, throw an exception
+            if (degreesPlusMinus == null)
+            {
+                System.out.println("No matching format found");
+                System.out.println("----------------------------------");
+                continue;
+            }
+            
+            String convertedVal = null;
+            if (destFormat == GeoRefFormat.DMS_PLUS_MINUS.name())
+            {
+                convertedVal = LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus);
+            }
+            else if (destFormat == GeoRefFormat.DM_PLUS_MINUS.name())
+            {
+                convertedVal = LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus);
+            }
+            else if (destFormat == GeoRefFormat.D_PLUS_MINUS.name())
+            {
+                convertedVal = LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus);
+            }
+            
+            System.out.println("Converted value:   " + convertedVal);
+            System.out.println("----------------------------------");
         }
     }
 }
