@@ -179,8 +179,6 @@ public class GeoRefConverter implements StringConverter
                 "",
         };
 
-        GeoRefConverter converter = new GeoRefConverter();
-        
         for (String input: inputStrings)
         {
             System.out.println("Input:             " + input);
