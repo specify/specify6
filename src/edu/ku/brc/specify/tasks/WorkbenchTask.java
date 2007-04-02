@@ -541,16 +541,19 @@ public class WorkbenchTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         File htmlFile = new File(getResourceString("WB_INITIAL_HTML"));
-        try
+        if (htmlFile.exists())
         {
-            String s = XMLHelper.fixUpHTML(htmlFile);
-            if (StringUtils.isNotEmpty(s))
+            try
             {
-                return new HtmlDescPane(title, this, s);    
+                String s = XMLHelper.fixUpHTML(htmlFile);
+                if (StringUtils.isNotEmpty(s))
+                {
+                    return new HtmlDescPane(title, this, s);    
+                }
+            } catch (Exception ex)
+            {
+                // no op
             }
-        } catch (Exception ex)
-        {
-            // no op
         }
         return starterPane = new WorkbenchPaneSS(title, this, null, false);
     }
