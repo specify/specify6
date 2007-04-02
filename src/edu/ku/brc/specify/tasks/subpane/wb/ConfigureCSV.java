@@ -52,8 +52,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     public ConfigureCSV(final File file)
     {
         super();
-        
-        log.info("ConfigureCSV");
+        log.debug("ConfigureCSV");
         escapeMode = getDefaultEscapeMode();
         delimiter  = getDefaultDelimiter();
         charset    = getDefaultCharset();
@@ -359,23 +358,44 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#interactiveConfig()
      */
     @Override
-    protected void interactiveConfig()
-    {
-        delimiter = determineDelimiter();
-        charset = determineCharset();
-        escapeMode = determineEscapeMode();
-        firstRowHasHeaders = determineFirstRowHasHeaders();
-        textQualifier = determineTextQualifier();
-        nonInteractiveConfig();
-    }
+	protected void interactiveConfig()
+	{
+		 delimiter = determineDelimiter();
+		 charset = determineCharset();
+		 escapeMode = determineEscapeMode();
+		 firstRowHasHeaders = determineFirstRowHasHeaders();
+		 textQualifier = determineTextQualifier();
+		
+//		DataImportDialog dlg = new DataImportDialog(this);
+//		dlg.setEscapeMode(this.getDefaultEscapeMode());
+//		dlg.setDelimChar(this.getDefaultDelimiter());
+//		dlg.setStringQualifierChar(this.getDefaultTextQualifier());
+//		dlg.setCharset(this.getDefaultCharset());
+//		dlg.initForCSV();
+//		dlg.setModal(true);
+//		UIHelper.centerAndShow(dlg);
+//		
+//		delimiter = dlg.getDelimChar();
+//		charset = dlg.getCharset();
+//		escapeMode = dlg.getEscapeMode();
+//		firstRowHasHeaders = dlg.getDoesFirstRowHaveHeaders();
+//		textQualifier = dlg.getStringQualifierChar();
+//		log.debug("delim: " + delimiter);
+//		log.debug("charset: " + charset);
+//		log.debug("escapemode: " + escapeMode);
+//		log.debug("furst row has headers: " + firstRowHasHeaders);
+//		log.debug("textqualifier: " + textQualifier);// charset = dlg.getC
+//		
+		nonInteractiveConfig();
+	}
 
     /*
-     * (non-Javadoc)
-     * 
-     * Sets up colInfo for externalFile.
-     * 
-     * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#nonInteractiveConfig()
-     */
+	 * (non-Javadoc)
+	 * 
+	 * Sets up colInfo for externalFile.
+	 * 
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataBase#nonInteractiveConfig()
+	 */
     @Override
     protected void nonInteractiveConfig()
     {
@@ -467,4 +487,28 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     {
         this.textQualifier = textQualifier;
     }
+
+	/**
+	 * @param escapeMode the escapeMode to set
+	 */
+	public void setEscapeMode(int escapeMode)
+	{
+		this.escapeMode = escapeMode;
+	}
+
+	/**
+	 * @param delimiter the delimiter to set
+	 */
+	public void setDelimiter(char delimiter)
+	{
+		this.delimiter = delimiter;
+	}
+
+	/**
+	 * @param charset the charset to set
+	 */
+	public void setCharset(Charset charset)
+	{
+		this.charset = charset;
+	}
 }

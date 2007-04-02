@@ -48,7 +48,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     {
         log.debug("ConfigureExternalDataBase()");
         interactive = true;
-        firstRowHasHeaders = false;
+        firstRowHasHeaders = true;
         appendData = false;     
     }
 
