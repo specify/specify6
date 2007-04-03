@@ -91,6 +91,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -1767,7 +1768,7 @@ public class WorkbenchTask extends BaseTask
                 "WB_SELECT_FIELD", 
                 items, 
                 null, 
-                ToggleButtonChooserDlg.OKCANCELHELP,
+                CustomDialog.OKCANCELHELP,
                 ToggleButtonChooserDlg.Type.RadioButton);
         
         dlg.setHelpContext("OnRampReporting");

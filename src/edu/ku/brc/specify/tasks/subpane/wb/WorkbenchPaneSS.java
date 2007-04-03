@@ -113,6 +113,7 @@ import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
@@ -841,7 +842,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         
         String title = getResourceString("GeoRefConv");
         String description = getResourceString("GeoRefConvDesc");
-        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null, ToggleButtonChooserDlg.OKCANCEL, Type.RadioButton)
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null, CustomDialog.OKCANCEL, Type.RadioButton)
         {
             @Override
             protected void okButtonPressed()
@@ -1322,6 +1323,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     }
     
     
+    public boolean isChanged()
+    {
+        return hasChanged;
+    }
+
     /**
      * Returns the currently selected row in the Spreasdsheet or form.
      * @return the currently selected row in the Spreasdsheet or form.
@@ -1430,7 +1436,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
                                                                         "WB_CHOOSE_CARRYFORWARD", 
                                                                         items,
                                                                         null,
-                                                                        ToggleButtonChooserDlg.OKCANCELHELP,
+                                                                        CustomDialog.OKCANCELHELP,
                                                                         ToggleButtonChooserDlg.Type.Checkbox);
         
         dlg.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "OnRampGridEditingCF" : "OnRampFormEditingCF");

@@ -791,7 +791,7 @@ public class ColumnMapperPanel extends JPanel
                 item.setImportedColName(colInfo.getColName());
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());
-                item.setFieldLength((short)tblField.getFieldInfo().getLength());
+                item.setDataFieldLength((short)tblField.getFieldInfo().getLength());
                 item.setViewOrder(order);
                 item.setOrigImportColumnIndex(fmp.isNew() ? -1 : colInfo.getColInx());
                 order++;

@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -74,6 +75,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                                                 DocumentListener,
                                                 ChangeListener
 {
+    protected static final short TEXTFIELD_DATA_LEN_MAX = 64;
+    protected static final short MAX_COLS               = 64;
+    protected static final short DEFAULT_TEXTFIELD_COLS = 15;
+    protected static final short DEFAULT_TEXTAREA_COLS  = 45;
+    
     protected WorkbenchPaneSS    workbenchPane;
     protected Workbench          workbench;
     protected boolean            hasChanged        = false;
@@ -167,6 +173,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             }
         });
         
+        Vector<InputPanel> itemsToSkip = new Vector<InputPanel>();
         int maxWidthOffset = 0;
         int x = 5;
         int y = 5;
@@ -192,15 +199,28 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 p.setLocation(x, y);
                 y += size.height + 4;
+                
+            } else
+            {
+                itemsToSkip.add(p);
             }
             
         }
         
-        // Now align the control by their text fields
-        for (InputPanel p : uiComps)
+        // Now align the control by their text fields and skips the ones that have actual positions defined.
+        int inx = 0;
+        for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
-            Point pLoc = p.getLocation();
-            p.setLocation(maxWidthOffset-p.getTextFieldOffset(), pLoc.y);
+            InputPanel panel = uiComps.get(inx);
+            if (!itemsToSkip.contains(panel))
+            {
+                Point pLoc = panel.getLocation();
+                x = maxWidthOffset - panel.getTextFieldOffset();
+                panel.setLocation(x, pLoc.y);
+                wbtmi.setXCoord((short)x);
+                wbtmi.setYCoord((short)pLoc.y);
+            }
+            inx++;
         }
         
         
@@ -247,9 +267,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      * Creates a JTextArea in a ScrollPane.
      * @return the scollpane
      */
-    protected JComponent createTextArea()
+    protected JComponent createTextArea(final short len)
     {
-        JTextArea textArea = new JTextArea("", 5, 45);
+        JTextArea textArea = new JTextArea("", 5, len);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.getDocument().addDocumentListener(this);
@@ -259,6 +279,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         return scrollPane;
     }
     
+    
     /**
      * Returns a UI component for editing.
      * @param wbtmi the mapping item
@@ -266,8 +287,64 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
+        return createUIComp(WorkbenchTask.getDataType(wbtmi), 
+                            wbtmi.getCaption(), 
+                            wbtmi.getDataFieldLength(), 
+                            wbtmi.getFieldType(),
+                            getColumns(wbtmi));
+    }
+    
+    /**
+     * Returns 
+     * @param wbtmi
+     * @return
+     */
+    public static short getColumns(final WorkbenchTemplateMappingItem wbtmi)
+    {
+        short columns;
+        if (wbtmi.getFieldType() != null)
+        {
+            columns =  wbtmi.getFieldType() == WorkbenchTemplateMappingItem.TEXTAREA ? DEFAULT_TEXTAREA_COLS : DEFAULT_TEXTFIELD_COLS;
+        } else
+        {
+            columns =  wbtmi.getDataFieldLength() > TEXTFIELD_DATA_LEN_MAX ? DEFAULT_TEXTAREA_COLS : DEFAULT_TEXTFIELD_COLS;
+        }
+        
+        String metaData = wbtmi.getMetaData();
+        if (StringUtils.isNotEmpty(metaData))
+        {
+            Properties props = UIHelper.parseProperties(metaData);
+            if (props != null)
+            {
+                String columnsStr = props.getProperty("columns");
+                if (StringUtils.isNotEmpty(columnsStr))
+                {
+                    short val = Short.parseShort(columnsStr);
+                    if (val > 0 && val < 65)
+                    {
+                        columns = val;
+                    }
+                }
+            }
+        }
+        return columns;
+    }
+    
+    /**
+     * @param dbFieldType
+     * @param caption
+     * @param dataFieldLength
+     * @param fieldType
+     * @return a UI component for editing
+     */
+    protected JComponent createUIComp(final Class<?> dbFieldTypeArg,
+                                      final String   caption,
+                                      final Short    fieldLength, 
+                                      final Short    fieldType,
+                                      final short    columns)
+    {
         //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
-        Class<?> dbFieldType = WorkbenchTask.getDataType(wbtmi);
+        Class<?> dbFieldType = dbFieldTypeArg;
         if (dbFieldType == null)
         {
             // if we can't find a class for the field (i.e. Genus Species, or other 'fake' fields), we say it's a string
@@ -286,35 +363,58 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
         else if (dbFieldType.equals(Boolean.class)) // strings
         {
-            ValCheckBox checkBox = new ValCheckBox(wbtmi.getCaption(), false, false);
+            ValCheckBox checkBox = new ValCheckBox(caption, false, false);
             checkBox.addChangeListener(this);
             comp = checkBox;
         }
-        else if (dbFieldType.equals(String.class)) // strings
+        else
         {
-            Short length = wbtmi.getFieldLength();
-            if (length > 255)
+            if ((fieldLength > 64 && fieldType == null) || fieldType != null && fieldType == WorkbenchTemplateMappingItem.TEXTAREA)
             {
-                comp = createTextArea();
-            }
-            else if (length > 64)
-            {
-                comp = createTextArea();
+                comp = createTextArea(columns);
             }
             else
             {
-                ValTextField txt = new ValTextField(15);
+                ValTextField txt = new ValTextField(columns);
                 txt.getDocument().addDocumentListener(this);
                 comp = txt;
             }
         }
-        else // all others
-        {
-            ValTextField txt = new ValTextField(15);
-            txt.getDocument().addDocumentListener(this);
-            comp = txt;
-        }
         return comp;
+    }
+    
+    /**
+     * Swaps out a TextField for a TextArea and vs.
+     * @param inputPanel the InputPanel that hold the text component
+     * @param fieldLen the length of the text field component (columns)
+     */
+    public void swapTextFieldType(final InputPanel inputPanel, final short fieldLen)
+    {
+        JTextComponent oldComp;
+        short fieldType;
+        if (inputPanel.getComp() instanceof JTextField)
+        {
+            JTextField tf = (JTextField)inputPanel.getComp();
+            tf.getDocument().removeDocumentListener(this);
+            fieldType = WorkbenchTemplateMappingItem.TEXTAREA;
+            oldComp = tf;
+        } else
+        {
+            JTextArea ta = (JTextArea)inputPanel.getComp();
+            ta.getDocument().removeDocumentListener(this);
+            fieldType = WorkbenchTemplateMappingItem.TEXTFIELD;
+            oldComp = ta;
+        }
+        
+        WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
+        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi), wbtmi.getCaption(), fieldLen, fieldType, fieldLen));
+        
+        ignoreChanges = true;
+        ((JTextComponent)inputPanel.getComp()).setText(oldComp.getText());
+        ignoreChanges = false;
+        
+        hasChanged = true;
+        workbenchPane.setChanged(true);
     }
     
     /**

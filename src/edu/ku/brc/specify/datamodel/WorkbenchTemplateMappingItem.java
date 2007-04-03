@@ -32,7 +32,10 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplateMappingItem>
 {
-
+    public final static short UNKNOWN   = 0;
+    public final static short TEXTFIELD = 1;
+    public final static short TEXTAREA  = 2;
+    
     // Fields
 
     protected Long              workbenchTemplateMappingItemId;
@@ -41,9 +44,10 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected String            fieldName;
     protected String            importedColName;
     protected String            caption;
-    protected Short             viewOrder;             // The Current View Order
-    protected Short             origImportColumnIndex; // The index from the imported data file
-    protected Short             fieldLength;            // the length of the data from the specify Schema, usually for strings.
+    protected Short             viewOrder;              // The Current View Order
+    protected Short             origImportColumnIndex;  // The index from the imported data file
+    protected Short             dataFieldLength;        // the length of the data from the specify Schema, usually for strings.
+    protected Short             fieldType;              // the type of field 
     protected WorkbenchTemplate workbenchTemplate;
     protected Boolean           isExportableToContent;
     protected Boolean           isIncludedInTitle;
@@ -82,7 +86,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         caption = null;
         viewOrder = null;
         origImportColumnIndex = null;
-        fieldLength = -1;
+        dataFieldLength = -1;
+        fieldType   = null;
         workbenchTemplate = null;
         metaData = null;
         xCoord = -1;
@@ -239,20 +244,37 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
 
     /**
-     * @return the fieldLength
+     * @return the dataFieldLength
      */
-    @Column(name = "FieldLength", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getFieldLength()
+    @Column(name = "DataFieldLength", unique = false, nullable = true, insertable = true, updatable = true)
+    public Short getDataFieldLength()
     {
-        return fieldLength;
+        return dataFieldLength;
     }
 
     /**
-     * @param fieldLength the fieldLength to set
+     * @param dataFieldLength the dataFieldLength to set
      */
-    public void setFieldLength(Short dataLength)
+    public void setDataFieldLength(Short dataLength)
     {
-        this.fieldLength = dataLength;
+        this.dataFieldLength = dataLength;
+    }
+
+    /**
+     * @return the fieldType
+     */
+    @Column(name = "FieldType", unique = false, nullable = true, insertable = true, updatable = true)
+    public Short getFieldType()
+    {
+        return fieldType;
+    }
+
+    /**
+     * @param fieldType the dataFieldLength to set
+     */
+    public void setFieldType(Short fieldType)
+    {
+        this.fieldType = fieldType;
     }
 
 

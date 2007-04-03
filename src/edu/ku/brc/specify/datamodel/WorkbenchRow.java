@@ -239,7 +239,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         
         try
         {
-            log.error(imageFile.length());
+            //log.error(imageFile.length());
             if (imageFile.length() < 16000000)
             {
                 // read the original

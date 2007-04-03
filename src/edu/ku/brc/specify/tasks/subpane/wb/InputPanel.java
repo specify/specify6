@@ -111,13 +111,26 @@ public class InputPanel extends JPanel implements GhostActionable
         add(this.label);
         add(this.comp);
         
-        if (wbtmi.getXCoord() != null && wbtmi.getYCoord() != null)
+        if (wbtmi.getXCoord() != null && wbtmi.getYCoord() != null && wbtmi.getXCoord() > -1 && wbtmi.getYCoord() > -1)
         {
             setLocation(wbtmi.getXCoord(), wbtmi.getYCoord());
         }
         doLayout();
         
         dragFlavors.add(INPUTPANEL_FLAVOR);
+    }
+    
+    /**
+     * Sets a new Component.
+     * @param newComp the new component
+     */
+    public void setComp(JComponent newComp)
+    {
+        remove(comp);
+        comp = newComp;
+        add(comp);
+        doLayout();
+        repaint();
     }
     
     /* (non-Javadoc)
@@ -164,6 +177,15 @@ public class InputPanel extends JPanel implements GhostActionable
             return ((JScrollPane)comp).getViewport().getView();
         }
         return comp;
+    }
+    
+    public Component getScrollPane()
+    {
+        if (comp instanceof JScrollPane)
+        {
+            return comp;
+        }
+        return null;
     }
     
     public String getLabelText()

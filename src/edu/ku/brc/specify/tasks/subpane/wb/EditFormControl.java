@@ -22,17 +22,22 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -40,6 +45,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.validation.ValCheckBox;
@@ -64,13 +70,20 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
     protected ValSpinner yCoord;
     protected ValSpinner fieldWidth;
     protected JTextField labelTF;
+    protected JComboBox  textFieldType;
+    protected boolean    isTextField;
+    protected int        fieldTypeIndex   = -1; 
+    protected boolean    fieldTypeChanged = false; // not using changeTracker for Field Type Combobox
     
     protected String     origLabel;
     protected Point      origLocation;
     protected int        origFieldLen;
+    protected Short      origFieldType;
+    protected int        origFieldTypeIndex; 
     
     protected Hashtable<Object, Boolean> changeTracker = new Hashtable<Object, Boolean>();
     
+    protected boolean    parentHasChanged;
     /**
      * Constructor.
      * 
@@ -89,6 +102,8 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         
         this.inputPanel = inputPanel;
         this.formPane   = canvasPanel;
+        
+        parentHasChanged = formPane.getWorkbenchPane().isChanged();
     }
 
     /* (non-Javadoc)
@@ -101,9 +116,11 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         {
             super.createUI();
             
+            isTextField = inputPanel.getComp() instanceof JTextComponent;
+                       
             int y    = 1;
             CellConstraints cc         = new CellConstraints();
-            PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", 10)));
+            PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", 8 + (isTextField ? 2 : 0))));
             JPanel          panel      = panelBlder.getPanel();
             
             Dimension canvasSize  = formPane.getSize();
@@ -121,20 +138,40 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
             panelBlder.add(labelTF = new JTextField(25), cc.xywh(3, y, 2, 1));
             y += 2;
             
-            if (inputPanel.getComp() instanceof JTextField)
+            if (isTextField)
             {
                 panelBlder.add(new JLabel("Field Columns:", SwingConstants.RIGHT), cc.xy(1, y));
                 panelBlder.add(fieldWidth = new ValSpinner(0, 100, false, false), cc.xy(3, y));
                 y += 2;
+ 
+                panelBlder.add(new JLabel("Field Type:", SwingConstants.RIGHT), cc.xy(1, y));
+                panelBlder.add(textFieldType = new JComboBox(new Object[] { "Text Field", "Text Area"}), cc.xy(3, y));
+                y += 2;
             }
             
             fill();
+            
+            if (textFieldType != null)
+            {
+                origFieldTypeIndex = textFieldType.getSelectedIndex();
+            }
              
             xCoord.addChangeListener(this);
             yCoord.addChangeListener(this);
-            if (fieldWidth != null)
+            
+            if (isTextField)
             {
                 fieldWidth.addChangeListener(this);
+            }
+            
+            if (isTextField)
+            {
+                textFieldType.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        fieldTypeChanged = textFieldType.getSelectedIndex() != fieldTypeIndex; 
+                    }
+                });
             }
             labelTF.getDocument().addDocumentListener(this);
     
@@ -161,6 +198,10 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
     protected void cancelButtonPressed()
     {
         reset();
+        if (!parentHasChanged)
+        {
+            formPane.getWorkbenchPane().setChanged(false);
+        }
         super.cancelButtonPressed();
     }
 
@@ -179,12 +220,21 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
     @Override
     protected void okButtonPressed()
     {
+        System.out.println(origFieldTypeIndex +" "+ textFieldType.getSelectedIndex());
+        if (textFieldType != null && origFieldTypeIndex != textFieldType.getSelectedIndex())
+        {
+            if (fieldTypeChanged)
+            {
+                adjustControl();
+            }
+            inputPanel.getWbtmi().setFieldType(inputPanel.getComp() instanceof JTextField ? WorkbenchTemplateMappingItem.TEXTFIELD : WorkbenchTemplateMappingItem.TEXTAREA);
+        }
         adjustControl();
         
         inputPanel.getWbtmi().setXCoord((short)((Integer)xCoord.getValue()).intValue());
         inputPanel.getWbtmi().setYCoord((short)((Integer)yCoord.getValue()).intValue());
         inputPanel.getWbtmi().setCaption(labelTF.getText());
-        inputPanel.getWbtmi().setMetaData("columns="+((Integer)xCoord.getValue()).intValue());
+        inputPanel.getWbtmi().setMetaData("columns="+((Integer)fieldWidth.getValue()).intValue());
 
         formPane.getWorkbenchPane().setChanged(true);
         
@@ -201,8 +251,15 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         {
             // ask to save changes
         }
+        
         this.inputPanel = inputPanel;
+        
         fill();
+        
+        if (textFieldType != null)
+        {
+            origFieldTypeIndex = textFieldType.getSelectedIndex();
+        }
     }
 
     /**
@@ -218,14 +275,14 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         Point location = inputPanel.getLocation();
         xCoord.setValue(((Double)location.getX()).intValue());
         yCoord.setValue(((Double)location.getY()).intValue());
-        labelTF.setText(inputPanel.getLabelText());
+        labelTF.setText(StringUtils.strip(inputPanel.getLabelText(), ":"));
         
         origLabel    = inputPanel.getLabelText();
         origLocation = new Point(location.x, location.y);
         
-        if (inputPanel.getComp() instanceof JTextField)
+        if (isTextField)
         {
-            int cols = ((JTextField)inputPanel.getComp()).getColumns();
+            int    cols     = inputPanel.getComp()  instanceof JTextField ? ((JTextField)inputPanel.getComp()).getColumns() : ((JTextArea)inputPanel.getComp()).getColumns();
             String metaData = inputPanel.getWbtmi().getMetaData();
             if (StringUtils.isNotEmpty(metaData))
             {
@@ -245,7 +302,11 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
             }
             
             fieldWidth.setValue(cols);
-            origFieldLen = cols;
+            origFieldLen  = cols;
+            origFieldType = inputPanel.getWbtmi().getFieldType();
+            
+            fieldTypeIndex     = inputPanel.getComp() instanceof JTextField ? 0 : 1;
+            textFieldType.setSelectedIndex(fieldTypeIndex);
         }
         changeTracker.clear();
     }
@@ -259,10 +320,16 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         yCoord.setValue(origLocation.y);
         labelTF.setText(origLabel);
 
-        if (inputPanel.getComp() instanceof JTextField)
+        if (isTextField)
         {
             fieldWidth.setValue(origFieldLen);
         }
+        
+        if (textFieldType != null && origFieldTypeIndex != textFieldType.getSelectedIndex())
+        {
+            fieldTypeChanged = true;
+        }
+
         adjustControl();
     }
     
@@ -286,19 +353,37 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
                 ((ValCheckBox)inputPanel.getComp()).setText(labelTF.getText());
             } else
             {
-                inputPanel.setLabelText(labelTF.getText());
+                inputPanel.setLabelText(labelTF.getText()+":");
             }
             doResize = true;
         }
         
-        if (fieldWidth != null && changeTracker.get(fieldWidth) != null)
+        if (isTextField)
         {
-            if (inputPanel.getComp() instanceof JTextField)
+            if (fieldTypeChanged)
             {
-                ((JTextField)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
-             }
+                formPane.swapTextFieldType(inputPanel, ((Integer)fieldWidth.getValue()).shortValue());
+                    
+                fieldTypeChanged = false;
+                fieldTypeIndex   = textFieldType.getSelectedIndex();
+                isTextField      = inputPanel.getComp() instanceof JTextField;
+            }
+            
+            if (changeTracker.get(fieldWidth) != null)
+            {
+                if (inputPanel.getComp() instanceof JTextField)
+                {
+                    ((JTextField)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
+                } else
+                {
+                    ((JTextArea)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
+                    inputPanel.validate();
+                    inputPanel.repaint();
+                }
+            }
             doResize = true;
         }
+        
         
         if (doResize)
         {
