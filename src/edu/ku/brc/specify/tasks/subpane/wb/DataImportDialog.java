@@ -51,7 +51,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -80,53 +79,44 @@ import edu.ku.brc.specify.ui.HelpMgr;
 @SuppressWarnings("serial")
 public class DataImportDialog extends JDialog implements ActionListener // implements ChangeListener 
 {
-    JButton                     cancelBtn;
-    //JButton                     backBtn;
-    //JButton                     nextBtn;
-    JButton                     okBtn;
-    JButton                     helpBtn;
-    private JRadioButton           tab;
-    private JRadioButton           space;
-    private JRadioButton           semicolon;
-    private JRadioButton           comma;
-    private JRadioButton           other;
-    private JTextField          otherText;
-    //@SuppressWarnings("unused")
-    //private char                delimiterChar;
-    @SuppressWarnings("unused")
-    private char                stringQualifierChar;
-    private char                delimChar;
-    private Charset  charset;
-    private JLabel textQualLabel;
-    private boolean doesFirstRowHaveHeaders;
-    private JComboBox textQualCombo;
-    private int     escapeMode;
-    
-    private JLabel charSetLabel;
-    private JComboBox charSetCombo;
-    private JLabel escapeModeLabel;
-    private JComboBox escapeModeCombo;
-    private JCheckBox containsHeaders;
-    private static final Logger log = Logger.getLogger(DataImportDialog.class);
-    private boolean           isCancelled      = true;
-    //private boolean isCsvImport = true;
-    public static final int OK_BTN             = 1;
-    public static final int CANCEL_BTN         = 2;
-    public static final int HELP_BTN           = 4;
-    protected int               btnPressed       = CANCEL_BTN;
-    private String fileName;
-    private File file;
-    private ConfigureCSV config;
-    private JTable myDisplayTable;
-    PreviewTableModel model ;
-    /**
-     * 
-     */
-    
-//  dlg.setEscapeMode(this.getDefaultEscapeMode());
-//  dlg.setDelimChar(this.getDefaultDelimiter());
-//  dlg.setStringQualifierChar(this.getDefaultTextQualifier());
-//  dlg.setCharset(this.getDefaultCharset());
+	private static final Logger log = Logger.getLogger(DataImportDialog.class);
+	private JButton cancelBtn;
+	private JButton okBtn;
+	private JButton helpBtn;
+	public static final int OK_BTN = 1;
+	public static final int CANCEL_BTN = 2;
+	public static final int HELP_BTN = 4;
+	protected int btnPressed = CANCEL_BTN;
+	private JRadioButton tab;
+	private JRadioButton space;
+	private JRadioButton semicolon;
+	private JRadioButton comma;
+	private JRadioButton other;
+	private JTextField otherText;
+	private char stringQualifierChar;
+	private char delimChar;
+	private Charset charset;
+	private int escapeMode;
+	private boolean doesFirstRowHaveHeaders;
+
+	private JLabel textQualLabel;
+	private JComboBox textQualCombo;
+	private JLabel charSetLabel;
+	private JComboBox charSetCombo;
+	private JLabel escapeModeLabel;
+	private JComboBox escapeModeCombo;
+
+	private JCheckBox containsHeaders;
+
+	private boolean isCancelled = false;
+
+	private String fileName;
+	private File file;
+	private ConfigureCSV config;
+
+	private JTable myDisplayTable;
+	private PreviewTableModel model;
+   
     public DataImportDialog(final ConfigureCSV config, char defaultDelimChar, 
                             char defaultTextQual, Charset defaultCharSet,
                             int defaultEscMode, boolean doesHaveHeaders)
@@ -142,23 +132,26 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
         initForCSV();
-
     }
     
+    public DataImportDialog(final ConfigureXLS config, boolean doesHaveHeaders)
+	{
+	}
+
     private void initForCSV()
     {
     	setContentPane(createConfigPanelForCSV());
     	init(getResourceString("IMPORT_CVS"));
     }
     
-    public void initForXSL()
+    private void initForXSL()
     {
     	setContentPane(createConfigPanelForXSL());
     	init(getResourceString("IMPORT_XSL"));   	
     }
+    
     private void init(String title)
     {
-        //containsHeaders = ;
         setTitle(title);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         pack();
@@ -188,9 +181,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         containsHeaders = new JCheckBox(getResourceString("COLUMN_HEAD"));
         containsHeaders.setSelected(true);
         containsHeaders.addItemListener(new CheckboxItemListener());
-        //containsHeaders.addActionListener(new CheckBoxItemListener());
-        
-        
+              
         builder.addSeparator(getResourceString("DATA_IMPORT_OPS"),  cc.xyw(2,2,4)); 
         builder.add         (createDelimiterPanel(),                cc.xy (3,4));        
         builder.add         (createOtherControlsPanel(),            cc.xy (5,4));       
@@ -214,6 +205,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
        pane.setPreferredSize(new Dimension(500,100));
+       pane.setMaximumSize(new Dimension(500,500));
        return pane;
     }
 
@@ -223,8 +215,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         JPanel configPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "5px, 15px,p,30px , p:g,15px,", // columns
-                
+                "5px, 15px,p,30px , p:g,15px,", // columns               
                 "5px," + 		//padding      
                 "p,3px, " +		//file info separator
                 "p,3px, " +		//file info lable
@@ -238,7 +229,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         JPanel buttonpanel = buildButtons();
         containsHeaders = new JCheckBox(getResourceString("COLUMN_HEAD"));
         containsHeaders.setSelected(true);
-        //containsHeaders.addActionListener(this);   
         containsHeaders.addItemListener(new CheckboxItemListener());
           
         builder.addSeparator(getResourceString("FILE_IMPORT"),      cc.xyw(2,2,4));
@@ -252,6 +242,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         configPanel.setMinimumSize(buttonpanel.getMinimumSize());
         return configPanel;
     }
+    
     private JPanel buildButtons()
     {
         cancelBtn = new JButton(getResourceString("Cancel"));
@@ -298,8 +289,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         JPanel myPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         FormLayout formLayout = new FormLayout(
-                "p,3px, p,3px",// p,3px", 
-                //"p,3px, " + //
+                "p,3px, p,3px",
                 "p,4px,   p,4px,  p,4px,  p,4px");
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
 
@@ -308,7 +298,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         textQualCombo = new JComboBox(qualifiers);
         textQualCombo.setSelectedIndex(0);
         textQualCombo.addActionListener(this);
-
 
         charSetLabel = new JLabel(getResourceString("CHAR_SET"));
         String[] charsets = { "DEFAULT", "US-ASCII", "ISO-8859-1", "UTF-8" };
@@ -332,26 +321,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return myPanel;       
     }
     
-    public void itemStateChanged(ItemEvent e) {
-        Object source = e.getItemSelectable();
-        log.debug("itemStateChanged");
-        if (!(source == containsHeaders)) 
-        {
-        	log.error("Unexpected checkbox source");
-        }
-
-        if (e.getStateChange() == ItemEvent.DESELECTED)
-        {
-        	doesFirstRowHaveHeaders = false;
-        }
-        else if(e.getStateChange() == ItemEvent.SELECTED)
-        {
-        	doesFirstRowHaveHeaders = true;  	
-        }
-        updateTableDisplay();
-        
-    }
-    
     /** Listens to the combo box. */
     public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
@@ -365,7 +334,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         {
             stringQualifierChar = '\'';
         }
-        else if(str.equals("US-ASCII") || str.equals("ISO-8859-1") || str.equals("UTF-8"))// || str.equals(anObject))
+        else if(str.equals("US-ASCII") || 
+        		str.equals("ISO-8859-1") || 
+        		str.equals("UTF-8"))
         {
         	charset = Charset.forName(str);      	
         }
@@ -385,39 +356,36 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         setTableData(myDisplayTable);
     }
     private JPanel createDelimiterPanel()
-    {
-        
+    {      
         JPanel myPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         FormLayout formLayout = new FormLayout(
-                "p,p,2px, p:g,2px, p,2px,p,2px,",// p,3px", 
-                //"p,3px, " + //
+                "p,p,2px, p:g,2px, p,2px,p,2px,",
                 "p,2px,   p,2px, p,2px , p,2px , p,2px , p,2px, p,2px ");
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
-        Color curColor = myPanel.getBackground();
-        Color newColor = curColor;//.brighter();
-        
-        
+        //Color curColor = myPanel.getBackground();
+        //Color newColor = curColor;//.brighter();
+           
         tab = new JRadioButton(getResourceString("TAB"));
         tab.addItemListener(new DelimButtonItemListener());
-        tab.setBackground(newColor);
+        //tab.setBackground(newColor);
         
         space = new JRadioButton(getResourceString("SPACE"));
         space.addItemListener(new DelimButtonItemListener());
-        space.setBackground(newColor);
+        //space.setBackground(newColor);
 
         comma = new JRadioButton(getResourceString("COMMA"));
         comma.addItemListener(new DelimButtonItemListener());
         comma.setSelected(true);
-        comma.setBackground(newColor);
+        //comma.setBackground(newColor);
         
         semicolon = new JRadioButton(getResourceString("SEMICOLON"));
         semicolon.addItemListener(new DelimButtonItemListener());
-        semicolon.setBackground(newColor);
+        //semicolon.setBackground(newColor);
         
         other = new JRadioButton(getResourceString("OTHER"));
         other.addItemListener(new DelimButtonItemListener());
-        other.setBackground(newColor);
+        //other.setBackground(newColor);
         
         otherText = new JTextField();
         otherText.addKeyListener(new CharFieldKeyAdapter());
@@ -441,17 +409,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         builder.add(other,                                          cc.xy(1, 11));
         builder.add(otherText,                                      cc.xy(2, 11));
         
-        myPanel.setBackground(newColor);
+        //myPanel.setBackground(newColor);
         return myPanel;
     }
-    
-    //public void createDummyCsvReader()
-    //{
-    	//ConfigureCSV testcsv = new ConfigureCSV(file);
-//        CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config.getDelimiter(), config.getCharset());
-//        csv.setEscapeMode(config.getEscapeMode());
-//        csv.setTextQualifier(config.getTextQualifier());
-    //}
     
 //    private JScrollPane createTablePreview()
 //    {
@@ -547,120 +507,49 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 //		log.debug("furst row has headers: " + firstRowHasHeaders);
 //		log.debug("textqualifier: " + textQualifier);// charset = dlg.getC
     }
-    /**
-     * @author megkumin
-     *
-     * @code_status Alpha
-     *
-     * Created Date: Mar 15, 2007
-     *
-     */
-    private class CharFieldKeyAdapter extends KeyAdapter
-    {
-        /**
-         * 
-         */
-        public CharFieldKeyAdapter()
-        {
-            super();
-        }
-      
-        /* (non-Javadoc)
-         * @see java.awt.event.KeyAdapter#keyReleased(java.awt.event.KeyEvent)
-         */
-        public void keyReleased(KeyEvent ke)
-        {
-            if(otherText.getText().length() == 1)
-            {                
-                delimChar = otherText.getText().toCharArray()[0];
-                config.setDelimiter(delimChar);
-                log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
-            }            
-            else if(otherText.getText().length()==0)
-            {
-                //delimChar = ',';
-                //log.debug("Other value cleared for delimiter setting to default: ["+ delimChar +"]" );
-            }
-            else
-            {
-                log.error("Other field should not allow more that one character as a delimiter");
-            }
-            updateTableDisplay();
-        }
-    }
+
     
     public int getLargestColumnCount()
     {
     	try
-    	{
-		CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config
-				.getDelimiter(), config.getCharset());
-		csv.setEscapeMode(config.getEscapeMode());
-		csv.setTextQualifier(config.getTextQualifier());	
-		int curRowColumnCount = 0;
-		int highestColumnCount = 0;
-		if(config.getFirstRowHasHeaders())
 		{
-			csv.readHeaders();
-			highestColumnCount = Math.max(highestColumnCount, csv.getHeaders().length);
-			//;
-		}
-		while (csv.readRecord())
+			CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config
+					.getDelimiter(), config.getCharset());
+			csv.setEscapeMode(config.getEscapeMode());
+			csv.setTextQualifier(config.getTextQualifier());
+			int curRowColumnCount = 0;
+			int highestColumnCount = 0;
+			if (config.getFirstRowHasHeaders())
+			{
+				csv.readHeaders();
+				highestColumnCount = Math.max(highestColumnCount, csv.getHeaders().length);
+			}
+			while (csv.readRecord())
+			{
+				curRowColumnCount = csv.getColumnCount();
+				highestColumnCount = Math.max(highestColumnCount, curRowColumnCount);
+
+			}
+			return highestColumnCount;
+		} 
+    	catch (Exception e)
 		{
-			curRowColumnCount = csv.getColumnCount();
-			highestColumnCount = Math.max(highestColumnCount, curRowColumnCount);
-			
+    		log.error("Error attempting to parse input csv file:" + e);
 		}
-		return highestColumnCount;
-    	}
-    	catch(Exception e)
-    	{
-    		
-    	}
-    	return 0;
+		return 0;
     }
     
-    public  String[] padArray(int desiredSize, String[] array)
-    {
-    	
-    	//int arraySize =;
-    	if( array.length < desiredSize)
-    	{
-    		String[] newArray = new String[desiredSize];
-    		//int i = 0;
-    		int highI = 0;
-    		for(int i = 0; i < array.length; i++)
-    		{
-    			newArray[i] = array[i];
-    			highI = i;
-    		}
-    		for(int i = highI; i< desiredSize; i++)
-    			
-    		{
-    			newArray[i] = "";
-    		}
-    		return newArray;
-    	}
-    	return array;
-    	
-    }
-    
-    /*
-     * (non-Javadoc) Loads data from the file configured by the config member into a workbench.
-     * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getData(edu.ku.brc.specify.datamodel.Workbench)
-     */
-    public JTable setTableData(JTable t)
+    private JTable setTableData(JTable t)
 	{
 		try
 		{
-			log.debug("getDAta =- fiele - " + config.getFile().toString());
+			log.debug("setTableData - file - " + config.getFile().toString());
 			CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config
 					.getDelimiter(), config.getCharset());
 			csv.setEscapeMode(config.getEscapeMode());
 			csv.setTextQualifier(config.getTextQualifier());
 
 			String[] headers = {};
-
 			Vector<String[]> tableDataVector = new Vector<String[]>();
 			
 			int highestColumnCount = getLargestColumnCount();
@@ -670,36 +559,41 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 				csv.readHeaders();
 				headers = csv.getHeaders();
 			}
-			padArray(highestColumnCount, headers);
 
 			int rowColumnCount = 0;
-			int rowCount = 0;
 			while (csv.readRecord())
 			{
+				//how many columns does this row of data contain
 				rowColumnCount = csv.getColumnCount();
-				log.debug("RowColumnCount:" + rowColumnCount);
+				//create an array that contains teh row data
 				String[] rowData = new String[csv.getColumnCount()];
 				for (int col = 0; col < csv.getColumnCount(); col++)
 				{
 					rowData[col] = csv.get(col);
 				}
-				padArray(highestColumnCount, rowData);
-				
-				tableDataVector.add(rowData);
-				rowCount++;
+				//if the column count in this row of data is not as large
+				//as the column header count, then "insert" blank string into the cells
+				String[] newArray = padArray(highestColumnCount, rowData, false);
+				//stick the row data into a vector because we do not know how many
+				//rows of data there are
+				tableDataVector.add(newArray);
 			}
 
 			if (!config.getFirstRowHasHeaders() || headers == null)
 			{
-				headers = new String[rowColumnCount];
-				for (int i = 0; i < rowColumnCount; i++)
-				{ 
-					headers[i] = "Column " + i;
-				}
-				padArray(highestColumnCount, headers);
-
+				//create headers with names Column1, Column2...
+				headers = createDummyHeaders(rowColumnCount);
 			}
-
+			
+			//if the header count is not as large as the longest column count in the data set
+			//create dummy headers and append to end of table.
+			headers = padArray(highestColumnCount, headers, true);
+			
+			log.debug("---------------------------------------------------");
+			printArray(headers);
+			log.debug("---------------------------------------------------");
+			
+			//pull row data out of vector and stick into an array for table model.
 			String[][] tableData = new String[tableDataVector.size()][rowColumnCount];
 			for (int i = 0; i < tableData.length; i++)
 			{
@@ -707,8 +601,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 				printArray(tableData[i]);
 			}
 
-			//model.setHeaders(headers);
-			//model.setData(tableData);
 			model = new PreviewTableModel(headers, tableData);
 			t.setModel(model);
 			t.setColumnSelectionAllowed(false);
@@ -718,335 +610,64 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 			t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 			model.fireTableDataChanged();
 			model.fireTableStructureChanged();
-			//model.fire
-			//t.repaint();
 			return t;
 
 		} catch (IOException ex)
 		{
-			log.error(ex);
+			log.error("Error attempting to parse input csv file:" + ex);
 		}
-
 		return null;
+	}
+    
+    public String[] createDummyHeaders( int count)
+    {
+    	String[] headers = new String[count];
+		for (int i = 0; i < count; i++)
+		{ 
+			headers[i] = "Column " + i;
+		}  
+		return headers;
+    }
+    
+    public String[] padArray(int highestColumnCnt, String[] array, boolean replaceWithColumnName)
+	{
+		if (array.length >= highestColumnCnt)
+		{
+			return array;
+		}
+		String[] newArray = new String[highestColumnCnt];
+		int paddingIndex = 0;
+		for (int i = 0; i < array.length; i++)
+		{
+			newArray[i] = array[i];
+			paddingIndex = i;
+		}
+		paddingIndex++;
+		for (int i = paddingIndex; i < highestColumnCnt; i++)
+		{
+			if (replaceWithColumnName)
+			{
+				newArray[i] = "Column " + i;
+			} 
+			else
+			{
+				newArray[i] = "";
+			}
+		}
+		return newArray;
 	}
     
     public void printArray(String[] arrayList)
 	{
-		System.out.println();
 		for (int i = 0; i < arrayList.length; i++)
 		{
-			System.out.print("[" + (i) + "]" + arrayList[i] + " ");
+			log.debug("[" + (i) + "]" + arrayList[i] + " ");
 		}
+		log.debug("");
 	}
     
-    /**
-	 * @author megkumin
-	 * 
-	 * @code_status Alpha
-	 * 
-	 * Created Date: Mar 15, 2007
-	 * 
-	 */
-    private class DelimButtonItemListener implements ItemListener
-    {
-        public DelimButtonItemListener()
-        {
-            super();
-        }
+ 
 
-        /*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
-		 */
-        public void itemStateChanged(ItemEvent e)
-        {
-            if(other==null)return;
-            if (other.isSelected())
-            {
-                otherText.setEditable(true);
-                otherText.requestFocus();
-                otherText.setEnabled(true);
-                if(otherText.getText().length() == 1)
-                {                
-                    delimChar = otherText.getText().toCharArray()[0];
-                    config.setDelimiter(delimChar);
-                    //log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
-                }  
-            } else if(tab.isSelected())
-            {
-                delimChar = '\t';
-                //otherText.setEditable(false);
-                otherText.setEnabled(false);
-            }else if(space.isSelected())
-            {
-                delimChar = ' ';
-                otherText.setEditable(false);
-                otherText.setEnabled(false);
-            }
-            else if(semicolon.isSelected())
-            {
-                delimChar = ';';
-                otherText.setEditable(false);
-                otherText.setEnabled(false);
-            }
-            else if(comma.isSelected())
-            {
-                delimChar = ',';
-                otherText.setEditable(false);
-                otherText.setEnabled(false);
-            }
-            else
-            {
-                otherText.setEditable(false);
-                otherText.setEnabled(false);
-            }
-            config.setDelimiter(delimChar);
-            updateTableDisplay();
-        }
-    }
-    /**
-	 * @author megkumin
-	 * 
-	 * @code_status Alpha
-	 * 
-	 * Created Date: Mar 15, 2007
-	 * 
-	 */
-    private class CheckboxItemListener implements ItemListener
-    {
-        /**
-		 * 
-		 */
-        public CheckboxItemListener()
-        {
-            super();
-        }
-
-        /*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
-		 */
-        public void itemStateChanged(ItemEvent e)
-        {
-        	log.debug("itemStateChanges");
-        	//config
-            if (e.getStateChange() == ItemEvent.SELECTED)
-            {
-            	log.debug("itemStateChanges - SELECTED");
-            	doesFirstRowHaveHeaders = true;
-            	config.setFirstRowHasHeaders(true);
-            }
-            else
-            {
-            	log.debug("itemStateChanges - other");
-            	doesFirstRowHaveHeaders = false;
-            	config.setFirstRowHasHeaders(false);
-            }
-
-            updateTableDisplay();
-        }
-    }  
-    
-    class PreviewTableModel extends AbstractTableModel
-    {
-        private String[] columnNames = {};
-        private String[][] data = {{}};
-        
-        /**
-		 * 
-		 */
-		public PreviewTableModel()
-		{
-			super();
-			// TODO Auto-generated constructor stub
-		}
-
-		public PreviewTableModel(String[] headers, String[][]data)
-        {
-        	super();
-        	this.columnNames = headers;
-        	this.data = data;
-        }
-		
-	    public void setValueAt(Object value, int row, int col) {
-	        data[row][col] = value.toString();
-	        fireTableCellUpdated(row, col);
-	    }
-
-    	/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getColumnCount()
-		 */
-		public int getColumnCount()
-		{
-			return columnNames.length;
-			// TODO Auto-generated method stub
-			//return 0;
-		}
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getRowCount()
-		 */
-		public int getRowCount()
-		{
-			// TODO Auto-generated method stub
-			//return 0;
-			return data.length;
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getValueAt(int, int)
-		 */
-		public Object getValueAt(int rowIndex, int columnIndex)
-		{
-			// TODO Auto-generated method stub
-			return data[rowIndex][columnIndex];
-			//return null;
-		}
-
-		public boolean isCellEditable(int row, int column)
-        {
-            return false;
-        }
-
-		/**
-		 * @return the headers
-		 */
-		public String[] getColumnNames()
-		{
-			return this.columnNames;
-		}
-
-		/**
-		 * @param headers the headers to set
-		 */
-		public void setColumnNames(String[] headers)
-		{
-			this.columnNames = headers;
-			//this.
-		}
-
-		/**
-		 * @return the data
-		 */
-		public String[][] getData()
-		{
-			return this.data;
-		}
-
-		/**
-		 * @param data the data to set
-		 */
-		public void setData(String[][] data)
-		{
-			this.data = data;
-		}    
-    }
-
-    //------------------------------------------------------------
-    // Inner Classes
-    //------------------------------------------------------------
-
-
-    class GridCellEditor extends AbstractCellEditor implements TableCellEditor//, UndoableTextIFace
-    {
-        protected JTextField  textField   = new JTextField();
-        protected UndoManager undoManager = new UndoManager();
-
-        public GridCellEditor()
-        {
-            textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.CellEditor#getCellEditorValue()
-         */
-        public Object getCellEditorValue() 
-        {
-            return textField.getText();
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.AbstractCellEditor#isCellEditable(java.util.EventObject)
-         */
-        @Override
-        public boolean isCellEditable(EventObject anEvent) 
-        { 
-            return false; 
-        }
-        
-        //
-        //          Implementing the CellEditor Interface
-        //
-        /** Implements the <code>TableCellEditor</code> interface. */
-        public Component getTableCellEditorComponent(JTable  tbl, 
-                                                     Object  value,
-                                                     boolean isSelected,
-                                                     int     row, 
-                                                     int     column)
-        {
-            textField.setText(value != null ? value.toString() : "");
-            //textField.selectAll();
-            //undoManager.discardAllEdits();
-            //UICacheManager.getUndoAction().setUndoManager(undoManager);
-            //UICacheManager.getRedoAction().setUndoManager(undoManager);
-            return textField;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
-         */
-        public UndoManager getUndoManager()
-        {
-            return undoManager;
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getText()
-         */
-        public JTextComponent getTextComponent()
-        {
-            return textField;
-        }
-     }
-  
-    /**
-     * @author megkumin
-     * 
-     * @code_status Alpha
-     * 
-     * Created Date: Mar 27, 2007
-     * 
-     */
-    class CharLengthLimitDocument extends PlainDocument
-    {
-        int limit;
-
-        /**
-         * @param limit
-         */
-        public CharLengthLimitDocument(int limit)
-        {
-            this.limit = limit;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.text.PlainDocument#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
-         */
-        public void insertString(int offset, String s, AttributeSet a) throws BadLocationException
-        {
-            if (offset + s.length() <= limit)
-            {
-                super.insertString(offset, s, a);
-            } else
-            {
-                Toolkit.getDefaultToolkit().beep();
-            }
-        }
-    }
 
     /**
      * @return the stringQualifierChar
@@ -1159,4 +780,351 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     {
         this.isCancelled = isCancelled;
     }
+    
+    /**
+     * @author megkumin
+     *
+     * @code_status Alpha
+     *
+     * Created Date: Mar 15, 2007
+     *
+     */
+    private class CharFieldKeyAdapter extends KeyAdapter
+    {
+        /**
+         * 
+         */
+        public CharFieldKeyAdapter()
+        {
+            super();
+        }
+      
+        /* (non-Javadoc)
+         * @see java.awt.event.KeyAdapter#keyReleased(java.awt.event.KeyEvent)
+         */
+        public void keyReleased(KeyEvent ke)
+        {
+            if(otherText.getText().length() == 1)
+            {                
+                delimChar = otherText.getText().toCharArray()[0];
+                config.setDelimiter(delimChar);
+                log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
+            }            
+            else if(otherText.getText().length()>1)
+            {
+                log.error("Other field should not allow more that one character as a delimiter");
+            }
+            updateTableDisplay();
+        }
+    }
+    
+    /**
+     * @author megkumin
+     * 
+     * @code_status Alpha
+     * 
+     * Created Date: Mar 27, 2007
+     * 
+     */
+    private class CharLengthLimitDocument extends PlainDocument
+    {
+        int limit;
+
+        /**
+         * @param limit
+         */
+        public CharLengthLimitDocument(int limit)
+        {
+            this.limit = limit;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.text.PlainDocument#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
+         */
+        public void insertString(int offset, String s, AttributeSet a) throws BadLocationException
+        {
+            if (offset + s.length() <= limit)
+            {
+                super.insertString(offset, s, a);
+            } else
+            {
+                Toolkit.getDefaultToolkit().beep();
+            }
+        }
+    }
+    
+    /**
+	 * @author megkumin
+	 * 
+	 * @code_status Alpha
+	 * 
+	 * Created Date: Mar 15, 2007
+	 * 
+	 */
+    private class CheckboxItemListener implements ItemListener
+    {
+        /**
+		 * 
+		 */
+        public CheckboxItemListener()
+        {
+            super();
+        }
+
+        /*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+		 */
+        public void itemStateChanged(ItemEvent e)
+        {
+            Object source = e.getItemSelectable();
+            log.debug("itemStateChanged");
+            if (!(source == containsHeaders)) 
+            {
+            	log.error("Unexpected checkbox source");
+            }
+        	log.debug("itemStateChange for first row has header checkbox");
+            if (e.getStateChange() == ItemEvent.SELECTED)
+            {
+            	log.debug("itemStateChanges - SELECTED");
+            	doesFirstRowHaveHeaders = true;
+            	config.setFirstRowHasHeaders(true);
+            }
+            else
+            {
+            	log.debug("itemStateChanges - UNSELECTED");
+            	doesFirstRowHaveHeaders = false;
+            	config.setFirstRowHasHeaders(false);
+            }
+            updateTableDisplay();
+        }
+    }  
+    
+    private class PreviewTableModel extends AbstractTableModel
+    {
+        private String[] columnNames = {};
+        private String[][] data = {{}};
+        
+        /**
+		 * 
+		 */
+		public PreviewTableModel()
+		{
+			super();
+		}
+
+		public PreviewTableModel(String[] headers, String[][]data)
+        {
+        	super();
+        	this.columnNames = headers;
+        	this.data = data;
+        }
+		
+	    public void setValueAt(Object value, int row, int col) {
+	        data[row][col] = value.toString();
+	        fireTableCellUpdated(row, col);
+	    }
+
+    	/* (non-Javadoc)
+		 * @see javax.swing.table.TableModel#getColumnCount()
+		 */
+		public int getColumnCount()
+		{
+			return columnNames.length;
+		}
+		
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+        
+		/* (non-Javadoc)
+		 * @see javax.swing.table.TableModel#getRowCount()
+		 */
+		public int getRowCount()
+		{
+			return data.length;
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.table.TableModel#getValueAt(int, int)
+		 */
+		public Object getValueAt(int rowIndex, int columnIndex)
+		{
+			return data[rowIndex][columnIndex];
+		}
+
+		public boolean isCellEditable(int row, int column)
+        {
+            return false;
+        }
+
+		/**
+		 * @return the headers
+		 */
+		public String[] getColumnNames()
+		{
+			return this.columnNames;
+		}
+
+		/**
+		 * @param headers the headers to set
+		 */
+		public void setColumnNames(String[] headers)
+		{
+			this.columnNames = headers;
+		}
+
+		/**
+		 * @return the data
+		 */
+		public String[][] getData()
+		{
+			return this.data;
+		}
+
+		/**
+		 * @param data the data to set
+		 */
+		public void setData(String[][] data)
+		{
+			this.data = data;
+		}    
+    }
+
+    //------------------------------------------------------------
+    // Inner Classes
+    //------------------------------------------------------------
+
+
+    private class GridCellEditor extends AbstractCellEditor implements TableCellEditor//, UndoableTextIFace
+    {
+        protected JTextField  textField   = new JTextField();
+        protected UndoManager undoManager = new UndoManager();
+
+        public GridCellEditor()
+        {
+            textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.CellEditor#getCellEditorValue()
+         */
+        public Object getCellEditorValue() 
+        {
+            return textField.getText();
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.AbstractCellEditor#isCellEditable(java.util.EventObject)
+         */
+        @Override
+        public boolean isCellEditable(EventObject anEvent) 
+        { 
+            return false; 
+        }
+        
+        //
+        //          Implementing the CellEditor Interface
+        //
+        /** Implements the <code>TableCellEditor</code> interface. */
+        public Component getTableCellEditorComponent(JTable  tbl, 
+                                                     Object  value,
+                                                     boolean isSelected,
+                                                     int     row, 
+                                                     int     column)
+        {
+            textField.setText(value != null ? value.toString() : "");
+            //textField.selectAll();
+            //undoManager.discardAllEdits();
+            //UICacheManager.getUndoAction().setUndoManager(undoManager);
+            //UICacheManager.getRedoAction().setUndoManager(undoManager);
+            return textField;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
+         */
+        public UndoManager getUndoManager()
+        {
+            return undoManager;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getText()
+         */
+        public JTextComponent getTextComponent()
+        {
+            return textField;
+        }
+     }
+    /**
+	 * @author megkumin
+	 * 
+	 * @code_status Alpha
+	 * 
+	 * Created Date: Mar 15, 2007
+	 * 
+	 */
+    private class DelimButtonItemListener implements ItemListener
+    {
+        public DelimButtonItemListener()
+        {
+            super();
+        }
+
+        /*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
+		 */
+        public void itemStateChanged(ItemEvent e)
+        {
+            if(other==null)return;
+            if (other.isSelected())
+            {
+                otherText.setEditable(true);
+                otherText.requestFocus();
+                otherText.setEnabled(true);
+                if(otherText.getText().length() == 1)
+                {                
+                    delimChar = otherText.getText().toCharArray()[0];
+                    config.setDelimiter(delimChar);
+                    //log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
+                }  
+            } 
+            else if(tab.isSelected())
+            {
+                delimChar = '\t';
+                //otherText.setEditable(false);
+                otherText.setEnabled(false);
+            }
+            else if(space.isSelected())
+            {
+                delimChar = ' ';
+                otherText.setEditable(false);
+                otherText.setEnabled(false);
+            }
+            else if(semicolon.isSelected())
+            {
+                delimChar = ';';
+                otherText.setEditable(false);
+                otherText.setEnabled(false);
+            }
+            else if(comma.isSelected())
+            {
+                delimChar = ',';
+                otherText.setEditable(false);
+                otherText.setEnabled(false);
+            }
+            else
+            {
+                otherText.setEditable(false);
+                otherText.setEnabled(false);
+            }
+            config.setDelimiter(delimChar);
+            updateTableDisplay();
+        }
+    }
+ 
 }

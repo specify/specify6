@@ -374,8 +374,9 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 //                textQualifier, charset, escapeMode, firstRowHasHeaders);
 //		dlg.setModal(true);
 //		UIHelper.centerAndShow(dlg);
-//        this.isCanceled = dlg.isCancelled();
-//		if(!isCanceled)nonInteractiveConfig();
+////        this.isCanceled = dlg.isCancelled();
+////		if(!isCanceled)
+//		nonInteractiveConfig();
 //		delimiter = dlg.getDelimChar();
 //		charset = dlg.getCharset();
 //		escapeMode = dlg.getEscapeMode();
