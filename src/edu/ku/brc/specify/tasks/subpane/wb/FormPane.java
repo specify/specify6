@@ -638,7 +638,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     public void newRecordAdded()
     {
-        // TODO Auto-generated method stub
+        if (currentIndex > -1)
+        {
+            copyDataFromForm(currentIndex);
+        }
+        workbenchPane.insertRow();
     }
     
     //-----------------------------------------------

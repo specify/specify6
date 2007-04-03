@@ -791,7 +791,8 @@ public class ColumnMapperPanel extends JPanel
                 item.setImportedColName(colInfo.getColName());
                 item.setSrcTableId(tblField.getTableinfo().getTableId());
                 item.setTableName(tblField.getTableinfo().getTableName());
-                item.setDataFieldLength((short)tblField.getFieldInfo().getLength());
+                short len = (short)tblField.getFieldInfo().getLength();
+                item.setDataFieldLength(len == -1 ? 15 : len);
                 
                 //log.error(tblField.getFieldInfo().getLength()+"  tblID: "+tblField.getTableinfo().getTableId());
                 

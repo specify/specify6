@@ -127,7 +127,6 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
-import edu.ku.brc.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.StringConverter;
@@ -143,7 +142,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  * Created Date: Mar 6, 2007
  *
  */
-public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerListener
+public class WorkbenchPaneSS extends BaseSubPane
 {
     private static final Logger log = Logger.getLogger(WorkbenchPaneSS.class);
     
@@ -306,13 +305,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             public void actionPerformed(ActionEvent ae)
             {
-                checkForCellEditing();
-                int curSelInx = spreadSheet.getSelectedRow();
-                model.insertRow(curSelInx);
-                resultsetController.setLength(model.getRowCount());
-                int newInx = curSelInx == -1 ? model.getRowCount()-1 : curSelInx;
-                resultsetController.setIndex(newInx);
-                spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
+                insertRow();
             }
         };
         
@@ -323,17 +316,11 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         {
             public void actionPerformed(ActionEvent ae)
             {
-                checkForCellEditing();
-                model.appendRow();
-                resultsetController.setLength(model.getRowCount());
-                int selInx = model.getRowCount()-1;
-                resultsetController.setIndex(selInx);
-                spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
-
+                addRow();
             }
         });
         addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", addAction);
-        addRowsBtn.setEnabled(true);
+        //addRowsBtn.setEnabled(true);
         addAction.setEnabled(true); 
 
 
@@ -495,8 +482,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "p"));
         resultsetController  = new ResultSetController(null, true, true, getResourceString("Record"), model.getRowCount());
         resultsetController.addListener(formPane);
-        resultsetController.addListener(this);
-        resultsetController.getNewRecBtn().addActionListener(insertAction);
+        //resultsetController.getNewRecBtn().addActionListener(formPane);
         resultsetController.getDelRecBtn().addActionListener(deleteAction);
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
         outerRSPanel.add(rsPanel.getPanel(), cc.xy(2,1));
@@ -595,6 +581,30 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         };
     }
     
+    protected void addRow()
+    {
+        checkForCellEditing();
+        model.appendRow();
+        resultsetController.setLength(model.getRowCount());
+        int selInx = model.getRowCount()-1;
+        resultsetController.setIndex(selInx);
+        spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
+    }
+    
+    protected void insertRow()
+    {
+        checkForCellEditing();
+        // The spreadsheet could return -1 because the user may have never selected anything
+        // and gone right to the form. So in the case 
+        int curSelInx = getCurrentIndexFromFormOrSS();
+        model.insertRow(curSelInx);
+        resultsetController.setLength(model.getRowCount());
+        int newInx = curSelInx == -1 ? model.getRowCount()-1 : curSelInx;
+        resultsetController.setIndex(newInx);
+        spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
+
+    }
+    
     /**
      * Tells the GridModel to update itself. 
      */
@@ -667,6 +677,21 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         return switcher;
     }
     
+    protected int getCurrentIndexFromFormOrSS()
+    {
+        int selectedInx = currentPanelType == PanelType.Spreadsheet ? spreadSheet.getSelectedRow() : resultsetController.getCurrentIndex();
+        if (selectedInx == -1)
+        {
+            return 0;
+        }
+        
+        if (spreadSheet.getRowCount() == 0)
+        {
+            return 0;
+        }
+        return selectedInx == -1 ? spreadSheet.getRowCount() : selectedInx;
+    }
+    
     /**
      * Shows the grid or the form.
      * @param value the panel number
@@ -704,7 +729,8 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             formPane.switching(false);
             
             // Showing Form and hiding Spreadsheet
-            setCurrentRow(spreadSheet.getSelectedRow());
+            
+            setCurrentRow(getCurrentIndexFromFormOrSS());
             if (model.getRowCount() > 0)
             {
                 resultsetController.setIndex(getCurrentRow());
@@ -1702,37 +1728,6 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
     public String getHelpTarget()
     {
         return currentPanelType == PanelType.Spreadsheet ? "OnRampGridEditing" : "OnRampFormEditing";
-    }
-    
-    //------------------------------------------------------------
-    // ResultSetControllerListener
-    //------------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
-     */
-    public boolean indexAboutToChange(int oldIndex, int newIndex)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexChanged(int)
-     */
-    public void indexChanged(int newIndex)
-    {
-        setCurrentRow(newIndex);
-        
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#newRecordAdded()
-     */
-    public void newRecordAdded()
-    {
-        // TODO Auto-generated method stub
-        
     }
 
     //------------------------------------------------------------
