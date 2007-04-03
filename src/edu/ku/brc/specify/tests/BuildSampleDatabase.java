@@ -887,11 +887,11 @@ public class BuildSampleDatabase
         WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, "BasicTemplate", "These are the remarks");
         Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
         WorkbenchTemplateMappingItem wbtmi = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "fieldNumber", "Field Number", "string", 0, 0, wbTemplate);
+                                                                        1, "fieldNumber", "Field Number", "string", 25, 0, 0, wbTemplate);
         WorkbenchTemplateMappingItem wbtmi1 = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "catalogedDate", "Cataloged Date", "Date", 1, 1, wbTemplate);
+                                                                        1, "catalogedDate", "Cataloged Date", "Date", 25, 1, 1, wbTemplate);
         WorkbenchTemplateMappingItem wbtmi2 = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "catalogNumber", "Catalog Number", "string", 2, 2, wbTemplate);
+                                                                        1, "catalogNumber", "Catalog Number", "string", 25, 2, 2, wbTemplate);
 
         dataObjects.add(wbTemplate);
         dataObjects.add(workBench);

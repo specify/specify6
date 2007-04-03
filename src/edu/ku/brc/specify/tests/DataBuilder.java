@@ -2170,6 +2170,7 @@ public class DataBuilder
                                                                           final String fieldName,
                                                                           final String caption,
                                                                           final String dataType,
+                                                                          final int     dataLength,
                                                                           final Integer viewOrder,
                                                                           final Integer dataColumnIndex,
                                                                           final WorkbenchTemplate template)
@@ -2181,6 +2182,7 @@ public class DataBuilder
         wtmi.setFieldName(fieldName);
         wtmi.setTableName(tableName);
         wtmi.setViewOrder(viewOrder.shortValue());
+        wtmi.setDataFieldLength((short)dataLength);
         wtmi.setOrigImportColumnIndex(dataColumnIndex.shortValue());
         wtmi.setWorkbenchTemplate(template);
         wtmi.setSrcTableId(tableId);

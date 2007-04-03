@@ -1503,13 +1503,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             
             Object dObj = session.merge(workbench);
             
+            /*// DEBUG
             for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList())
             {
                 for (WorkbenchDataItem item : row.getWorkbenchDataItems())
                 {
                     System.out.println("["+item.getCellData()+"]");
                 }
-            }
+            }*/
             session.saveOrUpdate(dObj);
             session.commit();
             session.flush();
