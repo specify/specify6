@@ -659,7 +659,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 } else
                 {
                     //valState = UIValidatable.ErrorType.Error;
-                    getToolkit().beep();
+                    //getToolkit().beep();
                 }
                 validateState();
                 //System.out.println("******* "+(valState));
@@ -672,7 +672,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 UIFieldFormatterField field =  docFields[offset];
                 if (!isCharOK(field, str))
                 {
-                    getToolkit().beep();
+                    //getToolkit().beep();
                     //valState = UIValidatable.ErrorType.Error;
                     //System.out.println("******* "+(valState));
                     validateState();
@@ -686,7 +686,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                         if (!isCharOK(docFields[offset + 1], str))
                         {
                             //valState = UIValidatable.ErrorType.Error;
-                            getToolkit().beep();
+                            //getToolkit().beep();
                             validateState();
                             return;
                         }
