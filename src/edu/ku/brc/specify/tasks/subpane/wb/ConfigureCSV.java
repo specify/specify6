@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +49,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     private Charset charset;
     private int numOfColsToAppend;
     private boolean isCanceled;
+    private boolean userTextQualifier;// = true;
     
     /**
      * Constructor sets defaults (hard coded).
@@ -59,6 +62,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         delimiter  = getDefaultDelimiter();
         charset    = getDefaultCharset();
         textQualifier = getDefaultTextQualifier();
+        userTextQualifier = getDefaultUserTextQualifer();
         numOfColsToAppend = 0;
         isCanceled = false;
         readConfig(file);
@@ -115,6 +119,10 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         {
             textQualifier = '\'';
         }
+        else if(prop == "{none}")
+        {
+            userTextQualifier = false;
+        }
         else
         {
             textQualifier = getDefaultTextQualifier();
@@ -144,8 +152,14 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      */
     private CsvReader makeReader(final char delimiterArg,
                                  final Charset charsetArg,
-                                 final int escapeModeArg)
+                                 final int escapeModeArg,
+                                 final char txtQualArg)
     {
+        log.debug("makeReader: ");
+        log.debug("   delimiterArg: " + delimiterArg);
+        log.debug("   charsetArg: " + charsetArg);
+        log.debug("   escapeModeArg: " + escapeModeArg);
+        log.debug("   txtQualArg: " + txtQualArg);
         if (externalFile != null)
         {
             try
@@ -153,7 +167,12 @@ public class ConfigureCSV extends ConfigureExternalDataBase
                 InputStream input  = new FileInputStream(externalFile);
                 CsvReader   result = new CsvReader(input, delimiterArg, charsetArg);
                 result.setEscapeMode(escapeModeArg);
-
+                if(userTextQualifier)
+                {
+                    result.setTextQualifier(txtQualArg);
+                }
+                result.setUseTextQualifier(userTextQualifier);
+                log.debug("Status being set to Valid");
                 status = Status.Valid;
 
                 return result;
@@ -175,7 +194,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      */
     private CsvReader makeReader()
     {
-        return makeReader(delimiter, charset, escapeMode);
+        return makeReader(delimiter, charset, escapeMode,  textQualifier);
     }
 
     /**
@@ -185,7 +204,12 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      */
     private String getDefaultColHeader()
     {
-        return "Column";
+        return getResourceString("DEFAULT_COLUMN_NAME");
+    }
+    
+    private boolean getDefaultUserTextQualifer()
+    {
+        return true;
     }
 
     /**
@@ -363,20 +387,22 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     @Override
 	protected void interactiveConfig()
 	{
-		 delimiter = determineDelimiter();
-		 charset = determineCharset();
-		 escapeMode = determineEscapeMode();
-		 firstRowHasHeaders = determineFirstRowHasHeaders();
-		 textQualifier = determineTextQualifier();
-         nonInteractiveConfig();
+        log.debug("interactiveConfig");
+//		 delimiter = determineDelimiter();
+//		 charset = determineCharset();
+//		 escapeMode = determineEscapeMode();
+//		 firstRowHasHeaders = determineFirstRowHasHeaders();
+//		 textQualifier = determineTextQualifier();
+//         nonInteractiveConfig();
 		 
-//		DataImportDialog dlg = new DataImportDialog(this, delimiter,
-//                textQualifier, charset, escapeMode, firstRowHasHeaders);
-//		dlg.setModal(true);
-//		UIHelper.centerAndShow(dlg);
+		DataImportDialog dlg = new DataImportDialog(this, delimiter,
+                textQualifier, charset, escapeMode, firstRowHasHeaders, userTextQualifier);
+
+        //dlg.getModel().get
+        //dlg.gett
 ////        this.isCanceled = dlg.isCancelled();
 ////		if(!isCanceled)
-//		nonInteractiveConfig();
+		nonInteractiveConfig();
 //		delimiter = dlg.getDelimChar();
 //		charset = dlg.getCharset();
 //		escapeMode = dlg.getEscapeMode();
@@ -401,6 +427,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     @Override
     protected void nonInteractiveConfig()
     {
+        log.debug("nonInteractiveConfig");
         CsvReader csv = makeReader();
         if (csv != null && status == Status.Valid)
         {
@@ -485,9 +512,13 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     /**
      * @param textQualifier the textQualifier to set
      */
-    public void setTextQualifier(char textQualifier)
+    public void setTextQualifier(boolean use, char textQualifier)
     {
-        this.textQualifier = textQualifier;
+        userTextQualifier = true;
+        if(use)
+        {
+            this.textQualifier = textQualifier;
+        }
     }
 
 	/**
@@ -544,5 +575,21 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     public void setCanceled(boolean isCanceled)
     {
         this.isCanceled = isCanceled;
+    }
+
+    /**
+     * @return the userTextQualifier
+     */
+    public boolean isUserTextQualifier()
+    {
+        return userTextQualifier;
+    }
+
+    /**
+     * @param userTextQualifier the userTextQualifier to set
+     */
+    public void setUserTextQualifier(boolean userTextQualifier)
+    {
+        this.userTextQualifier = userTextQualifier;
     }
 }

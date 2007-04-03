@@ -184,6 +184,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.fieldName = fieldName;
     }
 
+    private static int importedColNameMaxLength = 64;
     /**
      * @return the importedColName
      */
@@ -394,6 +395,14 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public static int getClassTableId()
     {
         return 82;
+    }
+
+    /**
+     * @return the importedColNameMaxLength
+     */
+    public static int getImportedColNameMaxLength()
+    {
+        return importedColNameMaxLength;
     }
 
 }

@@ -39,15 +39,20 @@ import java.util.Vector;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
@@ -66,7 +71,11 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author megkumin
@@ -98,6 +107,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	private Charset charset;
 	private int escapeMode;
 	private boolean doesFirstRowHaveHeaders;
+    private boolean userTextQualifier;
 
 	private JLabel textQualLabel;
 	private JComboBox textQualCombo;
@@ -114,12 +124,15 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	private File file;
 	private ConfigureCSV config;
 
+
 	private JTable myDisplayTable;
 	private PreviewTableModel model;
+    DataErrorPanel errorPanel = new DataErrorPanel();
+    private boolean isRefresh;
    
     public DataImportDialog(final ConfigureCSV config, char defaultDelimChar, 
                             char defaultTextQual, Charset defaultCharSet,
-                            int defaultEscMode, boolean doesHaveHeaders)
+                            int defaultEscMode, boolean doesHaveHeaders, boolean useTxtQual)
     {
     	this.config = config;
     	this.file = config.getFile();
@@ -129,6 +142,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         this.escapeMode = defaultEscMode;
         this.delimChar = defaultDelimChar;
         this.stringQualifierChar = defaultTextQual;
+        this.userTextQualifier = useTxtQual;
+        isRefresh = false;
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
         initForCSV();
@@ -142,12 +157,54 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     {
     	setContentPane(createConfigPanelForCSV());
     	init(getResourceString("IMPORT_CVS"));
+        setModal(true);
+        UIHelper.centerAndShow(this);
+        
+    }
+    
+    private boolean checkForErrors(String[]headers, String[][]data)
+    {
+        JList listOfErrors = checkTableDataForSizeConstraints(headers, data);
+        if(listOfErrors.getModel().getSize()>0)
+        {
+            //JScrollPane pane = new JScrollPane(listOfErrors);
+           return true;
+        }  
+        return false;
+    }
+    
+    private void showErrors()
+    {
+        JList listOfErrors = checkTableDataForSizeConstraints(model.getColumnNames(), model.data);
+        if (listOfErrors.getModel().getSize() > 0)
+        {
+            JTextArea textArea = new JTextArea();
+            textArea.setRows(25);
+            textArea.setColumns(60);
+            //textArea.setPreferredSize(new Dimension(600,200));
+            String newline = "\n";
+            for (int i = 0; i < listOfErrors.getModel().getSize(); i++)
+            {
+                textArea.append((String) listOfErrors.getModel().getElementAt(i) + newline
+                        + newline);
+            }
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            textArea.setEditable(false);
+            textArea.setCaretPosition(0);
+            JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            //pane.setPreferredSize(textArea.getPreferredSize());
+            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+        }
     }
     
     private void initForXSL()
     {
     	setContentPane(createConfigPanelForXSL());
-    	init(getResourceString("IMPORT_XSL"));   	
+    	init(getResourceString("IMPORT_XSL"));   
+        setModal(true);
+        UIHelper.centerAndShow(this);
     }
     
     private void init(String title)
@@ -172,7 +229,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 "p,3px, " +		//file info lable
                 "p,10px, " +	//row header
                 "p, 3px,"+		//previe separator
-                "p,10px," + 	//tablePreview
+                "f:p:g,5px," + 	//tablePreview
+                "20px,10px,"+
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
@@ -181,7 +239,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         containsHeaders = new JCheckBox(getResourceString("COLUMN_HEAD"));
         containsHeaders.setSelected(true);
         containsHeaders.addItemListener(new CheckboxItemListener());
-              
+        
+        
+
         builder.addSeparator(getResourceString("DATA_IMPORT_OPS"),  cc.xyw(2,2,4)); 
         builder.add         (createDelimiterPanel(),                cc.xy (3,4));        
         builder.add         (createOtherControlsPanel(),            cc.xy (5,4));       
@@ -193,19 +253,25 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,12,4));
         
         myDisplayTable = setTableData(myDisplayTable);
-        builder.add         (addtoScroll(myDisplayTable),              cc.xyw(3,14,3));       
-        builder.add         (buttonpanel,                           cc.xyw(2,16,4)); 
+        builder.add         (addtoScroll(myDisplayTable),              cc.xyw(3,14,3));   
+        
+        //boolean isDataInError = checkForErrors();
+        builder.add         (errorPanel,              cc.xyw(3,16,4));  
+        //builder.add(dataStatusButton,  cc.xyw(3,16,1));  
+        builder.add         (buttonpanel,                           cc.xyw(2,18,4)); 
         configPanel.setMinimumSize(buttonpanel.getMinimumSize());
         return configPanel;
     }
     
     private JScrollPane addtoScroll(JTable t)
     {
+        //t.setPreferredSize(new Dimension(500,500));
+        //t.setMaximumSize(new Dimension(500,500));
     	JScrollPane pane = new JScrollPane(t, 
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-       pane.setPreferredSize(new Dimension(500,100));
-       pane.setMaximumSize(new Dimension(500,500));
+       //pane.setPreferredSize(t.getPreferredSize());
+       //pane.setMaximumSize(t.getMaximumSize());
        return pane;
     }
 
@@ -221,7 +287,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 "p,3px, " +		//file info lable
                 "p,10px, " +	//row header
                 "p, 3px,"+		//previe separator
-                "p,10px," + 	//tablePreview
+                "f:p:g,5px," + 	//tablePreview
+                "20px,10px,"+
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
@@ -237,8 +304,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         
         builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,8,4));
         myDisplayTable = setTableData(myDisplayTable);
-        builder.add         (addtoScroll(myDisplayTable),           cc.xyw(3,10,3));       
-        builder.add         (buttonpanel,                           cc.xyw(2,12,4)); 
+        builder.add         (addtoScroll(myDisplayTable),           cc.xyw(3,10,3));
+        builder.add         (errorPanel,              cc.xyw(3,12,4));  
+        builder.add         (buttonpanel,                           cc.xyw(2,14,4)); 
         configPanel.setMinimumSize(buttonpanel.getMinimumSize());
         return configPanel;
     }
@@ -294,19 +362,19 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
 
         textQualLabel = new JLabel(getResourceString("TEXT_QUAL"));
-        String[] qualifiers = { "\"", "\'", "{none}" };
+        String[] qualifiers = { "\"", "\'", "{"+getResourceString("NONE")+"}" };
         textQualCombo = new JComboBox(qualifiers);
         textQualCombo.setSelectedIndex(0);
         textQualCombo.addActionListener(this);
 
         charSetLabel = new JLabel(getResourceString("CHAR_SET"));
-        String[] charsets = { "DEFAULT", "US-ASCII", "ISO-8859-1", "UTF-8" };
+        String[] charsets = { getResourceString("DEFAULT"), "US-ASCII", "ISO-8859-1", "UTF-8" };
         charSetCombo = new JComboBox(charsets);
         charSetCombo.setSelectedIndex(0);
         charSetCombo.addActionListener(this);
         
         escapeModeLabel = new JLabel(getResourceString("ESCAPE_MODE"));
-        String[] escapeModes = { "backslash", "doubled"};
+        String[] escapeModes = {getResourceString("BACKSLASH"), getResourceString("DOUBLED")};
         escapeModeCombo = new JComboBox(escapeModes);
         escapeModeCombo.setSelectedIndex(0);
         escapeModeCombo.addActionListener(this);
@@ -324,6 +392,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     /** Listens to the combo box. */
     public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
+        //Object source = e.g
         String str = (String)cb.getSelectedItem();
         log.debug("actionPerformed");
         if(str.equals("\""))
@@ -334,21 +403,25 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         {
             stringQualifierChar = '\'';
         }
+        else if(str.equals("{"+getResourceString("NONE")+"}" ))
+        {
+            
+        }
         else if(str.equals("US-ASCII") || 
         		str.equals("ISO-8859-1") || 
         		str.equals("UTF-8"))
         {
         	charset = Charset.forName(str);      	
         }
-        else if(str.equals("DEFAULT"))
+        else if(str.equals(getResourceString("DEFAULT")))
         {
         	charset = Charset.defaultCharset(); 
         }
-        else if(str.equals("backslash"))
+        else if(str.equals(getResourceString("BACKSLASH")))
         {
         	escapeMode = CsvReader.ESCAPE_MODE_BACKSLASH;        	
         }
-        else if(str.equals("doubled"))
+        else if(str.equals(getResourceString("DOUBLED")))
         {
         	escapeMode = CsvReader.ESCAPE_MODE_DOUBLED;
         }
@@ -475,10 +548,10 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     private void updateTableDisplay()
     {
     	config.setFirstRowHasHeaders(doesFirstRowHaveHeaders);
-    	config.setTextQualifier(stringQualifierChar);
+    	config.setTextQualifier(true, stringQualifierChar);
     	config.setCharset(charset);
     	config.setEscapeMode(escapeMode);
-    	setTableData(myDisplayTable);   
+    	setTableData(myDisplayTable);
     }
 
     /**
@@ -486,7 +559,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
      */
     public static void main(String[] args)
     {
-    	new ConfigureCSV(new File("johsoncountyTrip.csv"));
+    	new ConfigureCSV(new File("demo_files\\workbench\\johsoncountyTrip.csv"));
 //        DataImportDialog dlg = new DataImportDialog(new ConfigureCSV(new File("johsoncountyTrip.csv")));
 //		dlg.setEscapeMode(1);
 //		dlg.setDelimChar(',');
@@ -537,6 +610,16 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     		log.error("Error attempting to parse input csv file:" + e);
 		}
 		return 0;
+    }
+    
+    private boolean isStringLongerThan(int length, String colName)
+    {
+        //if(colName.length()<= WorkbenchTemplateMappingItem.)
+        if(colName.length()<= length)
+        {
+            return true;
+        }
+        return false;
     }
     
     private JTable setTableData(JTable t)
@@ -593,6 +676,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 			printArray(headers);
 			log.debug("---------------------------------------------------");
 			
+
 			//pull row data out of vector and stick into an array for table model.
 			String[][] tableData = new String[tableDataVector.size()][rowColumnCount];
 			for (int i = 0; i < tableData.length; i++)
@@ -601,12 +685,24 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 				printArray(tableData[i]);
 			}
 
+            if(checkForErrors(headers, tableData)) 
+                {
+                errorPanel.setLabelForError();
+                }
+            else{
+                errorPanel.clearLabelFromFailedFind();
+            }
 			model = new PreviewTableModel(headers, tableData);
 			t.setModel(model);
 			t.setColumnSelectionAllowed(false);
 			t.setRowSelectionAllowed(false);
 			t.setCellSelectionEnabled(false);
-			t.setPreferredScrollableViewportSize(t.getPreferredSize());
+            //t.getTableHeader().setC
+            //t.setMinimumSize(new Dimension(500,100));
+            t.setPreferredScrollableViewportSize(new Dimension(500,100));
+            //t.setPreferredSize(new Dimension(500,300));
+            //t.setMaximumSize(new Dimension(500,500));
+			//t.setPreferredScrollableViewportSize(t.getPreferredSize());
 			t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 			model.fireTableDataChanged();
 			model.fireTableStructureChanged();
@@ -618,6 +714,40 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		}
 		return null;
 	}
+    
+    public JList checkTableDataForSizeConstraints(String[]headers, String[][]data){
+        
+        DefaultListModel listModel = new DefaultListModel();
+        JList listOfImportDataErrors = new JList();
+        for(int i=0; i<headers.length; i++)
+         {
+            //boolean isColumnLengthValid = ;
+            if(!isStringLongerThan(WorkbenchTemplateMappingItem.getImportedColNameMaxLength(), headers[i]))
+            {
+                String msg = "Column Name: " + headers[i] + " is too long to be inserted into the database.  \n"
+                + "The Column Name will be truncated to:\n" + headers[i].substring(0, WorkbenchTemplateMappingItem.getImportedColNameMaxLength()-1);
+                log.warn(msg);
+                listModel.addElement(msg);
+                //listOfImportDataErrors
+            }
+        }  
+        for(int i = 0; i < data.length; i++){
+            for(int j=0; j < data[i].length; j++)
+            {
+                String str = data[i][j];
+                if(!isStringLongerThan(255, str))
+                {
+                    String msg = "The value in cell Row=" + i + ", Column=" + headers[j] + " is too long to be inserted into the database.  It will be truncated.\n"
+                    + "Current Value:\n" + str+ "\nTruncated Value:\n" + str.substring(0, 254);
+                    log.warn(msg);
+                    listModel.addElement(msg);
+                    //listOfImportDataErrors
+                }
+            }
+        }
+         listOfImportDataErrors.setModel(listModel);
+         return listOfImportDataErrors;
+    }
     
     public String[] createDummyHeaders( int count)
     {
@@ -661,9 +791,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	{
 		for (int i = 0; i < arrayList.length; i++)
 		{
-			log.debug("[" + (i) + "]" + arrayList[i] + " ");
+			//if(log.isDebugEnabled())System.out.print("[" + (i) + "]" + arrayList[i] + " ");
 		}
-		log.debug("");
+		//log.debug("");
 	}
     
  
@@ -1058,6 +1188,55 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
             return textField;
         }
      }
+    
+    private class DataErrorPanel extends JPanel
+    {
+        private String errorMessage;
+        private JLabel statusInfo;
+        private JButton dataStatusButton;
+        
+        CellConstraints                  cc                      = new CellConstraints();
+        FormLayout                       formLayout              = new FormLayout(
+                                                                         "p,5px,p",
+                                                                         "d");
+        PanelBuilder                     builder                 = new PanelBuilder(formLayout, this);
+        /**
+         * 
+         */
+        public DataErrorPanel()
+        {
+          statusInfo = new JLabel("       ");
+          dataStatusButton = new JButton(getResourceString("DETAILS"));
+          dataStatusButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                showErrors();
+            }
+        });
+            builder.add(statusInfo,          cc.xy(1,1));
+            builder.add(dataStatusButton, cc.xywh(3,1, 1,1));    
+        }
+        /**
+         * 
+         */
+        private void setLabelForError()
+        {
+            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
+            statusInfo.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
+            statusInfo.setText(getResourceString("DATA_IMPORT_ERROR"));
+        } 
+        
+        /**
+         * 
+         */
+        private void clearLabelFromFailedFind()
+        {
+            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
+            statusInfo.setIcon(null);
+            statusInfo.setText("");
+        }
+    }
     /**
 	 * @author megkumin
 	 * 
@@ -1125,6 +1304,21 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
             config.setDelimiter(delimChar);
             updateTableDisplay();
         }
+    }
+    /**
+     * @return the userTextQualifier
+     */
+    public boolean isUserTextQualifier()
+    {
+        return userTextQualifier;
+    }
+
+    /**
+     * @param userTextQualifier the userTextQualifier to set
+     */
+    public void setUserTextQualifier(boolean userTextQualifier)
+    {
+        this.userTextQualifier = userTextQualifier;
     }
  
 }
