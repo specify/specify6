@@ -57,9 +57,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -501,7 +503,7 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
         outerRSPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
         
         mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
-        mainPanel.add(formPane, PanelType.Form.toString());
+        mainPanel.add(new JScrollPane(formPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), PanelType.Form.toString());
         
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
@@ -1500,6 +1502,14 @@ public class WorkbenchPaneSS extends BaseSubPane implements ResultSetControllerL
             session.beginTransaction();
             
             Object dObj = session.merge(workbench);
+            
+            for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList())
+            {
+                for (WorkbenchDataItem item : row.getWorkbenchDataItems())
+                {
+                    System.out.println("["+item.getCellData()+"]");
+                }
+            }
             session.saveOrUpdate(dObj);
             session.commit();
             session.flush();

@@ -6,12 +6,12 @@
     <field column="VerbatimDate" name="verbatimDate" type="java.lang.String" length="50"/>
     <field column="DateAccessioned" name="dateAccessioned" type="calendar_date"/>
     <field column="DateReceived" name="dateReceived" type="calendar_date"/>
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
-    <field column="Text3" name="text3" type="text"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
+    <field column="Text3" name="text3" type="text" length="255"/>
     <field column="Number1" name="number1" type="java.lang.Float"/>
     <field column="Number2" name="number2" type="java.lang.Float"/>
-    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>
     <field column="YesNo2" name="yesNo2" type="boolean"/>
     <field column="AccessionAgent" name="Accession Agent" type="java.lang.String" length="64"/>
@@ -30,8 +30,8 @@
     <field column="EndDateVerbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
     <field column="StartTime" name="startTime" type="short"/>
     <field column="EndTime" name="endTime" type="short"/>
-    <field column="VerbatimLocality" name="verbatimLocality" type="text"/>
-    <field column="Remarks" name="remarks" type="text"/>
+    <field column="VerbatimLocality" name="verbatimLocality" type="text" length="255"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
     <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
@@ -48,14 +48,14 @@
     <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
     <field column="FieldNumber" name="fieldNumber" type="java.lang.String" length="50"/>
     <field column="Description" name="description" type="java.lang.String" length="50"/>
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
     <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
     <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>
     <field column="YesNo2" name="yesNo2" type="boolean"/>
     <field column="CountAmt" name="countAmt" type="java.lang.Integer" length="10"/>
-    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
     <field column="Name" name="name" type="java.lang.String" length="64"/>
     <field column="Modifier" name="modifier" type="java.lang.String" length="50"/>
     <field column="CatalogedDate" name="catalogedDate" type="calendar_date"/>
@@ -75,9 +75,9 @@
     <field column="Confidence" name="confidence" type="java.lang.String" length="50"/>
     <field column="Method" name="method" type="java.lang.String" length="50"/>
     <field column="FeatureOrBasis" name="featureOrBasis" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text"/>
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
     <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
     <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>
@@ -107,7 +107,7 @@
   <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" lazy="true" >
     <field column="JournalName" name="journalName" type="java.lang.String" length="255"/>
     <field column="JournalAbbreviation" name="journalAbbreviation" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
     <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
@@ -136,9 +136,9 @@
     <field column="LatLongMethod" name="latLongMethod" type="java.lang.String" length="50"/>
     <field column="LatLongAccuracy" name="latLongAccuracy" type="java.lang.Double"/>
     <field column="Datum" name="datum" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text"/>
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
     <field column="Number1" name="number1" type="java.lang.Double"/>
     <field column="Number2" name="number2" type="java.lang.Double"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>
@@ -158,11 +158,11 @@
     <field column="Shelf" name="Shelf" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
     <field column="Count" name="count" type="java.lang.Integer" length="10"/>
     <field column="StorageLocation" name="storageLocation" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
     <field column="PreparedDate" name="preparedDate" type="calendar_date"/>
     <field column="PreparedBy" name="Prepared By" type="java.lang.String" length="64"/>
   </table>
@@ -175,11 +175,11 @@
     <field column="WorkDate" name="workDate" type="java.lang.String" length="25"/>
     <field column="Volume" name="volume" type="java.lang.String" length="25"/>
     <field column="Pages" name="pages" type="java.lang.String" length="50"/>
-    <field column="URL" name="url" type="text"/>
+    <field column="URL" name="url" type="text" length="255"/>
     <field column="LibraryNumber" name="libraryNumber" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text"/>
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
     <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
     <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
     <field column="IsPublished" name="isPublished" type="boolean"/>
@@ -192,12 +192,12 @@
     <field column="StartDate" name="startDate" type="calendar_date"/>
     <field column="EndDate" name="endDate" type="calendar_date"/>
     <field column="DateReceived" name="dateReceived" type="calendar_date"/>
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
-    <field column="Text3" name="text3" type="text"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
+    <field column="Text3" name="text3" type="text" length="255"/>
     <field column="Number1" name="number1" type="java.lang.Float"/>
     <field column="Number2" name="number2" type="java.lang.Float"/>
-    <field column="Remarks" name="remarks" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>
     <field column="YesNo2" name="yesNo2" type="boolean"/>
   </table>
@@ -207,9 +207,9 @@
     <field column="Formation" name="formation" type="java.lang.String" length="50"/>
     <field column="Member" name="member" type="java.lang.String" length="50"/>
     <field column="Bed" name="bed" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text"/>
-    <field column="Text1" name="text1" type="text"/>
-    <field column="Text2" name="text2" type="text"/>
+    <field column="Remarks" name="remarks" type="text" length="255"/>
+    <field column="Text1" name="text1" type="text" length="255"/>
+    <field column="Text2" name="text2" type="text" length="255"/>
     <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
     <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>

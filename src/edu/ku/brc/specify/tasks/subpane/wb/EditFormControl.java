@@ -151,6 +151,10 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
             
             fill();
             
+            origFieldLen  = ((Integer)fieldWidth.getValue()).shortValue();
+            origFieldType = inputPanel.getWbtmi().getFieldType();
+
+            
             if (textFieldType != null)
             {
                 origFieldTypeIndex = textFieldType.getSelectedIndex();
@@ -220,7 +224,6 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
     @Override
     protected void okButtonPressed()
     {
-        System.out.println(origFieldTypeIndex +" "+ textFieldType.getSelectedIndex());
         if (textFieldType != null && origFieldTypeIndex != textFieldType.getSelectedIndex())
         {
             if (fieldTypeChanged)
@@ -229,12 +232,15 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
             }
             inputPanel.getWbtmi().setFieldType(inputPanel.getComp() instanceof JTextField ? WorkbenchTemplateMappingItem.TEXTFIELD : WorkbenchTemplateMappingItem.TEXTAREA);
         }
-        adjustControl();
         
         inputPanel.getWbtmi().setXCoord((short)((Integer)xCoord.getValue()).intValue());
         inputPanel.getWbtmi().setYCoord((short)((Integer)yCoord.getValue()).intValue());
         inputPanel.getWbtmi().setCaption(labelTF.getText());
+        inputPanel.setLabelText(labelTF.getText()+":");
         inputPanel.getWbtmi().setMetaData("columns="+((Integer)fieldWidth.getValue()).intValue());
+        
+        adjustControl();
+
 
         formPane.getWorkbenchPane().setChanged(true);
         
@@ -302,8 +308,6 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
             }
             
             fieldWidth.setValue(cols);
-            origFieldLen  = cols;
-            origFieldType = inputPanel.getWbtmi().getFieldType();
             
             fieldTypeIndex     = inputPanel.getComp() instanceof JTextField ? 0 : 1;
             textFieldType.setSelectedIndex(fieldTypeIndex);
@@ -323,11 +327,11 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
         if (isTextField)
         {
             fieldWidth.setValue(origFieldLen);
-        }
-        
-        if (textFieldType != null && origFieldTypeIndex != textFieldType.getSelectedIndex())
-        {
-            fieldTypeChanged = true;
+            
+            if (textFieldType != null && origFieldTypeIndex != textFieldType.getSelectedIndex())
+            {
+                fieldTypeChanged = true;
+            }
         }
 
         adjustControl();
@@ -353,7 +357,7 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
                 ((ValCheckBox)inputPanel.getComp()).setText(labelTF.getText());
             } else
             {
-                inputPanel.setLabelText(labelTF.getText()+":");
+                labelTF.setText(StringUtils.strip(inputPanel.getLabelText(), ":"));
             }
             doResize = true;
         }
@@ -366,7 +370,6 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
                     
                 fieldTypeChanged = false;
                 fieldTypeIndex   = textFieldType.getSelectedIndex();
-                isTextField      = inputPanel.getComp() instanceof JTextField;
             }
             
             if (changeTracker.get(fieldWidth) != null)

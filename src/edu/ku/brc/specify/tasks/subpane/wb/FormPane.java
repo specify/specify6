@@ -9,12 +9,15 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,12 +32,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -43,6 +48,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -50,6 +56,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -75,6 +82,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                                                 DocumentListener,
                                                 ChangeListener
 {
+    private static final Logger log = Logger.getLogger(FormPane.class);
+    
     protected static final short TEXTFIELD_DATA_LEN_MAX = 64;
     protected static final short MAX_COLS               = 64;
     protected static final short DEFAULT_TEXTFIELD_COLS = 15;
@@ -184,7 +193,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             p.getMouseInputAdapter().setDropCanvas(this);
             
             p.getLabel().addMouseListener(clickable);
-            p.getComp().addMouseListener(clickable);
+            //p.getComp().addMouseListener(clickable);
 
             Dimension size = p.getPreferredSize();
             p.setSize(size);
@@ -267,7 +276,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      * Creates a JTextArea in a ScrollPane.
      * @return the scollpane
      */
-    protected JComponent createTextArea(final short len)
+    protected JScrollPane createTextArea(final short len)
     {
         JTextArea textArea = new JTextArea("", 5, len);
         textArea.setLineWrap(true);
@@ -371,12 +380,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             if ((fieldLength > 64 && fieldType == null) || fieldType != null && fieldType == WorkbenchTemplateMappingItem.TEXTAREA)
             {
-                comp = createTextArea(columns);
+                JScrollPane scrollPane = createTextArea(columns);
+                ((JTextArea)scrollPane.getViewport().getView()).setInputVerifier(new LengthVerifier(caption, fieldLength));
+                comp = scrollPane;
             }
             else
             {
                 ValTextField txt = new ValTextField(columns);
                 txt.getDocument().addDocumentListener(this);
+                txt.setInputVerifier(new LengthVerifier(caption, fieldLength));
                 comp = txt;
             }
         }
@@ -430,9 +442,42 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         if (!controlProperties.isCancelled())
         {
             workbenchPane.gridColumnsUpdated();
+            
+            adjustPanelSize();
         }
         controlProperties.dispose();
         controlProperties = null;
+    }
+    
+    /**
+     * Adjust the size of the FormPane to encompass the the controls. 
+     */
+    protected void adjustPanelSize()
+    {
+        int maxX = 0;
+        int maxY = 0;
+        
+        for (InputPanel panel : uiComps)
+        {
+            Rectangle r = panel.getBounds();
+            maxX = Math.max(r.x+r.width, maxX);
+            maxY = Math.max(r.y+r.height, maxY);
+        }
+        
+        Dimension size = getSize();
+        if (maxX != size.width || maxY != size.height)
+        {
+            size.width  = maxX;
+            size.height = maxY;
+            
+            setSize(size);
+            setPreferredSize(size);
+            invalidate();
+            repaint();
+            
+            JViewport viewPort = (JViewport)getParent();
+            viewPort.setViewSize(size);
+        }
     }
     
     /**
@@ -488,9 +533,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             short col = p.getWbtmi().getViewOrder();
             
-            if (p.getComp() instanceof JTextField)
+            if (p.getComp() instanceof JTextComponent)
             {
-                String data     = ((JTextField)p.getComp()).getText();
+                String data     = ((JTextComponent)p.getComp()).getText();
                 String cellData = wbRow.getData(col);
                 if (StringUtils.isNotEmpty(cellData) || data != null)
                 {
@@ -516,8 +561,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 }
             } else
             {
-                ((JTextComponent)p.getComp()).setText(wbRow.getData(col));
-                wbRow.setData(((JTextComponent)p.getComp()).getText(), col);
+               log.error("Can't get data from control["+p.getLabelText()+"]");
             }
         }
         ignoreChanges = false;
@@ -608,12 +652,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             Point location = inputPanel.getLocation();
             Point offset   = ((GhostGlassPane)UICacheManager.get(UICacheManager.GLASSPANE)).getOffset();
             location.translate(offSet.x - offset.x, offSet.y - offset.y);
+            System.out.println("***************************************");
             inputPanel.setLocation(location);
             remove(inputPanel);
             add(inputPanel);
             repaint();
             validate();
             doLayout();
+            
+            adjustPanelSize();
             
             // Update the template
             WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
@@ -735,6 +782,37 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             changesInForm = true;
             workbenchPane.setChanged(true);
+        }
+    }
+    
+    //-----------------------------------------------
+    // Inner Class
+    //-----------------------------------------------
+    class LengthVerifier extends InputVerifier
+    {
+        protected String caption;
+        protected int    maxLength;
+        
+        public LengthVerifier(final String caption, final int maxLength)
+        {
+            this.caption   = caption;
+            this.maxLength = maxLength;
+        }
+        
+        public boolean verify(JComponent comp)
+        {
+            boolean isOK = ((JTextComponent)comp).getText().length() <= maxLength;
+            if (!isOK)
+            {
+                String msg = String.format(getResourceString("WB_NEWDATA_TOO_LONG"), new Object[] { caption, maxLength } );
+                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage(msg);
+                Toolkit.getDefaultToolkit().beep();
+                
+            } else
+            {
+                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+            }
+            return isOK;
         }
     }
     

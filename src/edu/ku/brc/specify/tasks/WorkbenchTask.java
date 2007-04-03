@@ -318,7 +318,7 @@ public class WorkbenchTask extends BaseTask
                                                                    workbenchTemplate.getName(),
                                                                    "Template", 
                                                                    cmd, 
-                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbenchTemplate), 
+                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs), 
                                                                    true);// true means make it draggable
         roc.setData(rs);
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
@@ -347,7 +347,7 @@ public class WorkbenchTask extends BaseTask
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
         final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
-                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, workbench), 
+                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs), 
                                                                    true);// true means make it draggable
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         
@@ -1456,65 +1456,55 @@ public class WorkbenchTask extends BaseTask
      * Deletes a workbench.
      * @param workbench the workbench to be deleted
      */
-    protected void deleteWorkbench(final Workbench workbench)
+    protected void deleteWorkbench(final RecordSet recordSet)
     {
-        for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())
+        Workbench workbench = loadWorkbench(recordSet);
+        if (workbench != null)
         {
-            MultiView mv = sp.getMultiView();
-            if (mv != null)
+            NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
+            if (nbi != null)
             {
-                Object data = mv.getData();
-                if (data != null && data == workbench.getWorkbenchRows())
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                
+                try
                 {
-                    SubPaneMgr.getInstance().removePane(sp);
-                    break;
+                    session.attach(workbench);
+                    
+                    workbench.getWorkbenchTemplate().getWorkbenches().remove(workbench);
+                    workbench.setWorkbenchTemplate(null);
+                
+                    session.beginTransaction();
+                    session.delete(workbench);
+                    session.commit();
+                    session.flush();
+                    
+                    deleteDnDBtn(workbenchNavBox, nbi);
+                    
+                    updateNavBoxUI(null);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    // XXX Error Dialog
+                    
+                } finally 
+                {
+                    session.close();
                 }
+    
             }
+    
+            log.info("Deleted a Workbench ["+workbench.getName()+"]");
         }
-        
-        NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
-        if (nbi != null)
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            
-            try
-            {
-                session.attach(workbench);
-                
-                workbench.getWorkbenchTemplate().getWorkbenches().remove(workbench);
-                workbench.setWorkbenchTemplate(null);
-            
-                session.beginTransaction();
-                session.delete(workbench);
-                session.commit();
-                session.flush();
-                
-                deleteDnDBtn(workbenchNavBox, nbi);
-                
-                updateNavBoxUI(null);
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                // XXX Error Dialog
-                
-            } finally 
-            {
-                session.close();
-            }
-
-        }
-
-        log.info("Deleted a Workbench ["+workbench.getName()+"]");
-
     }
     
     /**
      * Deletes a workbench.
      * @param workbench the workbench to be deleted
      */
-    protected void deleteWorkbenchTemplate(final WorkbenchTemplate workbenchTemplate)
+    protected void deleteWorkbenchTemplate(final RecordSet recordSet)
     {
+        WorkbenchTemplate workbenchTemplate = loadWorkbenchTemplate(recordSet);
         if (workbenchTemplate != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -1908,12 +1898,13 @@ public class WorkbenchTask extends BaseTask
                 short newViewOrder = 0;
                 for (WorkbenchTemplateMappingItem wbtmi : newItems)
                 {
-                    //System.out.print("For ["+wbtmi.getFieldName()+"] ");
+                    System.out.print("New ["+wbtmi.getFieldName()+"] ");
                     // find a match
                     boolean foundMatch = false;
                     for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
                     {
-                        if (oldWbtmi.getTableId() == wbtmi.getTableId() &&
+                        System.out.println("New ["+wbtmi.getFieldName()+"] ["+oldWbtmi.getFieldName()+"] ["+wbtmi.getTableId()+"] ["+oldWbtmi.getTableId()+"]");
+                        if (oldWbtmi.getSrcTableId().intValue() == wbtmi.getSrcTableId().intValue() &&
                             oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
                         {
                             foundMatch = true;
@@ -1922,6 +1913,7 @@ public class WorkbenchTask extends BaseTask
                             break;
                         }
                     }
+                    System.out.println("   ** Found: "+foundMatch);
                     if (!foundMatch)
                     {
                         workbenchTemplate.getWorkbenchTemplateMappingItems().add(wbtmi);
@@ -2433,13 +2425,17 @@ public class WorkbenchTask extends BaseTask
             
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
-            if (cmdAction.getData() instanceof Workbench)
+            if (cmdAction.getData() instanceof RecordSet)
             {
-                deleteWorkbench((Workbench)cmdAction.getData());
-                
-            } else if (cmdAction.getData() instanceof WorkbenchTemplate)
-            {
-                deleteWorkbenchTemplate((WorkbenchTemplate)cmdAction.getData());
+                RecordSet rs = (RecordSet)cmdAction.getData();
+                if (rs.getDbTableId() == Workbench.getClassTableId())
+                {
+                    deleteWorkbench(rs);
+                    
+                } else if (rs.getDbTableId() == WorkbenchTemplate.getClassTableId())
+                {
+                    deleteWorkbenchTemplate(rs);
+                }
             }
         }
     }
