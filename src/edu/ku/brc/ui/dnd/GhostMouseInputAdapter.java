@@ -350,6 +350,11 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     @Override
     public void mouseDragged(MouseEvent e)
     {
+        if (!ghostActionable.isEnabled())
+        {
+            return;
+        }
+        
         //System.out.println("mouseDragged "+DragAndDropLock.isDragAndDropStarted()+" btn "+e.getButton());
         Point pnt = e.getPoint();
         if (!DragAndDropLock.isDragAndDropStarted())

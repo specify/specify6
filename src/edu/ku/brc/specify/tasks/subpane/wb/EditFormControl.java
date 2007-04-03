@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -145,15 +147,17 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
                 y += 2;
  
                 panelBlder.add(new JLabel("Field Type:", SwingConstants.RIGHT), cc.xy(1, y));
-                panelBlder.add(textFieldType = new JComboBox(new Object[] { "Text Field", "Text Area"}), cc.xy(3, y));
+                panelBlder.add(textFieldType = new JComboBox(new Object[] { getResourceString("WB_TEXTFIELD"), getResourceString("WB_TEXTAREA")}), cc.xy(3, y));
                 y += 2;
             }
             
             fill();
             
-            origFieldLen  = ((Integer)fieldWidth.getValue()).shortValue();
-            origFieldType = inputPanel.getWbtmi().getFieldType();
-
+            if (fieldWidth != null)
+            {
+                origFieldLen  = ((Integer)fieldWidth.getValue()).shortValue();
+                origFieldType = inputPanel.getWbtmi().getFieldType();
+            }
             
             if (textFieldType != null)
             {

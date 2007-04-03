@@ -82,4 +82,10 @@ public interface GhostActionable
      */
     public void setActive(boolean isActive);
     
+    /**
+     * Returns whether it is enabled or not.
+     * @return whether it is enabled or not.
+     */
+    public boolean isEnabled();
+    
 }
