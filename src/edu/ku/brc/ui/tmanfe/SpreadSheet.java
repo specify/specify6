@@ -218,7 +218,7 @@ public class SpreadSheet  extends SearchableJXTable
      * Must be called AFTER the model has been adjusted.
      * @param rowInx the row index that was removed
      */
-    public void removeRow(final int rowInx)
+    public void removeRow(final int rowInx, final boolean doSelection)
     {
         int rowCount = getModel().getRowCount();
         
@@ -232,7 +232,7 @@ public class SpreadSheet  extends SearchableJXTable
  
         resizeAndRepaint();
         
-        if (rowCount > -1)
+        if (doSelection && rowCount > 0)
         {
             if (rowInx >= rowCount)
             {

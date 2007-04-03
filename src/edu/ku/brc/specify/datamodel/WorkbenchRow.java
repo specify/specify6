@@ -444,15 +444,15 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         {
             // XXX we may actually want to remove and 
             // delete the item if it is set to empty
-            
             wbdi.setCellData(dataStr);
             
         } else
         {
             if (StringUtils.isNotEmpty(dataStr))
             {
+                Short inx = (short)col;
                 wbdi = new WorkbenchDataItem(this, dataStr, rowNumber, col); // adds it to the row also
-                items.put(wbdi.getColumnNumber(), wbdi);
+                items.put(inx, wbdi);
                 workbenchDataItems.add(wbdi);
             }
         }

@@ -280,13 +280,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                int[] rows = spreadSheet.getSelectedRows();
-                model.deleteRows(spreadSheet.getSelectedRows());
-                resultsetController.setLength(model.getRowCount());
-                
-                int newInx = rows[0];
-                resultsetController.setIndex(newInx);
-                spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
+                deleteRows();
             }
         };
         deleteRowsBtn = createIconBtn("MinusSign", "WB_DELETE_ROW", deleteAction);
@@ -320,7 +314,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", addAction);
-        //addRowsBtn.setEnabled(true);
+        addRowsBtn.setEnabled(true);
         addAction.setEnabled(true); 
 
 
@@ -394,13 +388,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    boolean enable = spreadSheet.getSelectedRow() > -1;
-                    for (JButton btn: selectionSensativeButtons)
-                    {
-                        btn.setEnabled(enable);
-                    }
-
-                    setCurrentRow( spreadSheet.getSelectedRow());
+                    setCurrentRow(spreadSheet.getSelectedRow());
+                    updateBtnUI();
                 }
             }
         });
@@ -531,6 +520,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
+    protected void updateBtnUI()
+    {
+        boolean enable = spreadSheet.getSelectedRow() > -1;
+        for (JButton btn: selectionSensativeButtons)
+        {
+            btn.setEnabled(enable);
+        }
+    }
+    
     
     /**
      * @param comp
@@ -589,6 +587,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         int selInx = model.getRowCount()-1;
         resultsetController.setIndex(selInx);
         spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
+        
+        updateBtnUI();
     }
     
     protected void insertRow()
@@ -602,6 +602,23 @@ public class WorkbenchPaneSS extends BaseSubPane
         int newInx = curSelInx == -1 ? model.getRowCount()-1 : curSelInx;
         resultsetController.setIndex(newInx);
         spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
+        
+        updateBtnUI();
+
+    }
+    
+    protected void deleteRows()
+    {
+        int[] rows = spreadSheet.getSelectedRows();
+        model.deleteRows(spreadSheet.getSelectedRows());
+        resultsetController.setLength(model.getRowCount());
+        
+        int rowCount = spreadSheet.getRowCount();
+        currentRow   = rowCount > 0 ? (rows[0] > rowCount ? rowCount : rows[0]) : -1;
+        resultsetController.setIndex(currentRow);
+        spreadSheet.getSelectionModel().setSelectionInterval(currentRow, currentRow);
+        
+        updateBtnUI();
 
     }
     
@@ -721,6 +738,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 spreadSheet.setColumnSelectionInterval(0, model.getColumnCount()-1);
                 spreadSheet.scrollToRow(Math.min(getCurrentRow()+4, model.getRowCount()));
             }
+            formPane.setShowing(true);
 
         } else
         {
@@ -739,6 +757,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             findPanel.getHideFindPanelAction().hide();
             //disable the ctrl-F from the edit menu
             UICacheManager.disableFindFromEditMenu();
+            formPane.setShowing(false);
         }
         
              

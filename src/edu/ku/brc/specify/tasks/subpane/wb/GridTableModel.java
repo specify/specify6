@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -136,6 +137,11 @@ public class GridTableModel extends SpreadSheetModel
      */
     public Object getValueAt(int row, int column)
     {
+        if (row == 1 && column == 0)
+        {
+            int x = 0;
+            x++;
+        }
         if (isInImageMode && column == headers.size() - 1)
         {
             WorkbenchRow rowObj = workbench.getRow(row);
@@ -238,16 +244,19 @@ public class GridTableModel extends SpreadSheetModel
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#deleteRows(int[])
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void deleteRows(int[] rows)
     {
-        int currentRow = rows[0];
-        for (int i=0;i<rows.length;i++)
+        Arrays.sort(rows);
+        int firstRow = rows[0];
+        for (int i=rows.length-1;i>-1;i--)
         {
-            workbench.deleteRow(currentRow);
+            System.out.println(i);
+            workbench.deleteRow(rows[i]);
             if (spreadSheet != null)
             {
-                spreadSheet.removeRow(currentRow);
+                spreadSheet.removeRow(rows[i], rows.length == 1);
             }
         }
         fireDataChanged();
@@ -255,12 +264,12 @@ public class GridTableModel extends SpreadSheetModel
         int rowCount = workbench.getWorkbenchRowsAsList().size();
         if (spreadSheet != null && rowCount > 0)
         {
-            if (currentRow >= rowCount)
+            if (firstRow >= rowCount)
             {
                 spreadSheet.setRowSelectionInterval(rowCount-1, rowCount-1);
             } else
             {
-                spreadSheet.setRowSelectionInterval(currentRow, currentRow);
+                spreadSheet.setRowSelectionInterval(firstRow, firstRow);
             }
             spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
         }

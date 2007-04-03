@@ -109,6 +109,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     protected EditFormControl    controlProperties = null;
     protected boolean            wasShowing        = false;
     
+    // This is necessary because CardLayout doe4sn't set visibility
+    protected boolean            isShowing         = false;
+    
     /**
      * Creates a Pane for editing a Workbench as a form.
      * @param workbenchPane the workbench pane to be parented into
@@ -247,6 +250,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         });
     }
     
+    public void setShowing(boolean isShowing)
+    {
+        this.isShowing = isShowing;
+    }
+
     /**
      * @return the WorkbenchPaneSS
      */
@@ -590,7 +598,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
-        if (oldIndex != newIndex && isVisible())
+        if (oldIndex != newIndex && isShowing)
         {
             copyDataFromForm(oldIndex);
             currentIndex = newIndex;
@@ -603,7 +611,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     public void indexChanged(int newIndex)
     {
-        if (isVisible())
+        if (isShowing)
         {
             ignoreChanges = true; 
             currentIndex  = newIndex;
