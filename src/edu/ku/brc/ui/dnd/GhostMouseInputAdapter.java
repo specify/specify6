@@ -28,6 +28,8 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostGlassPane.ImagePaintMode;
 
@@ -41,6 +43,8 @@ import edu.ku.brc.ui.dnd.GhostGlassPane.ImagePaintMode;
  */
 public class GhostMouseInputAdapter extends MouseInputAdapter
 {
+    private static final Logger log = Logger.getLogger(GhostMouseInputAdapter.class);
+    
     // Ghost MotionAdaptor
     protected static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor DEF_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -153,6 +157,8 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         glassPane.startDrag(ghostActionable);
         
         glassPane.setVisible(true);
+        
+        //log.error("StartDrag: "+c.getClass().getName()+" "+c.getBounds());
 
         Point p = (Point) pnt.clone();
         SwingUtilities.convertPointToScreen(p, c);
@@ -205,24 +211,25 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
         glassPane.setPoint(p, paintPositionMode);
 
-        //System.out.println(NavBoxMgr.getInstance().getBounds());
-        //JComponent rootPane = NavBoxMgr.getInstance();
         JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
-        //System.out.println(rootPane.getBounds());
-
 
         // find the component that under this point
         Component dropComponent;
         if (dropCanvas != null)
         {
-            System.out.println("++++++++++++++++++++++++++++++++++++++++");
+            //System.out.println("++++++++++++++++++++++++++++++++++++++++");
             Point pp = (Point) e.getPoint().clone();
-            System.out.println(pp);
+            //System.out.println(pp);
             SwingUtilities.convertPointToScreen(pp, srcOfDropComp);
-            System.out.println(pp);
+            //System.out.println(pp);
             SwingUtilities.convertPointFromScreen(pp, dropCanvas);
-            System.out.println(pp +" "+rootPane);
+            //System.out.println(pp +" "+rootPane);
             dropComponent = SwingUtilities.getDeepestComponentAt(dropCanvas, pp.x, pp.y);
+            
+            if (dropComponent == null)
+            {
+                log.error("Drop Component is NULL!");
+            }
 
             Component parent = dropComponent;
             while (parent != null && parent != dropCanvas)
@@ -233,15 +240,16 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
             {
                 dropComponent = dropCanvas;
             }
-            System.out.println("++++++++++++++++++++++++++++++++++++++++\n");
+            //System.out.println("++++++++++++++++++++++++++++++++++++++++\n");
+            
         } else
         {
             Point pp = (Point) e.getPoint().clone();
-            System.out.println(pp);
+            //System.out.println(pp);
             SwingUtilities.convertPointToScreen(pp, srcOfDropComp);
-            System.out.println(pp);
+            //System.out.println(pp);
             SwingUtilities.convertPointFromScreen(pp, rootPane);
-            System.out.println(pp +" "+rootPane);
+            //System.out.println(pp +" "+rootPane);
             dropComponent = SwingUtilities.getDeepestComponentAt(rootPane, pp.x, pp.y);
         }
 

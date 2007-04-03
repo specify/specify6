@@ -182,10 +182,16 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             }
         });
         
+        short maxY = 0;
+        for (WorkbenchTemplateMappingItem wbtmi : headers)
+        {
+            maxY = (short)Math.max(wbtmi.getYCoord(), maxY);
+        }
+        
         Vector<InputPanel> itemsToSkip = new Vector<InputPanel>();
         int maxWidthOffset = 0;
         int x = 5;
-        int y = 5;
+        int y = maxY;
         for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
             InputPanel p = new InputPanel(wbtmi, wbtmi.getCaption(), createUIComp(wbtmi));
@@ -213,7 +219,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 itemsToSkip.add(p);
             }
-            
         }
         
         // Now align the control by their text fields and skips the ones that have actual positions defined.
@@ -652,7 +657,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             Point location = inputPanel.getLocation();
             Point offset   = ((GhostGlassPane)UICacheManager.get(UICacheManager.GLASSPANE)).getOffset();
             location.translate(offSet.x - offset.x, offSet.y - offset.y);
-            System.out.println("***************************************");
+            location.x = Math.max(0, location.x);
+            location.y = Math.max(0, location.y);
+            //System.out.println("***************************************");
             inputPanel.setLocation(location);
             remove(inputPanel);
             add(inputPanel);

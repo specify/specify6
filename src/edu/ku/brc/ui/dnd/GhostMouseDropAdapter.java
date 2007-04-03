@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -22,6 +24,8 @@ import edu.ku.brc.ui.UICacheManager;
  */
 public class GhostMouseDropAdapter extends GhostDropAdapter 
 {
+    private static final Logger log = Logger.getLogger(GhostMouseDropAdapter.class);
+    
     private GhostActionable    ghostActionable;
 
     /**
@@ -89,10 +93,7 @@ public class GhostMouseDropAdapter extends GhostDropAdapter
 
         glassPane.setPoint(p);
         
-        //System.out.println(NavBoxMgr.getInstance().getBounds());
-        //JComponent rootPane = NavBoxMgr.getInstance();
         JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
-        //System.out.println(rootPane.getBounds());
         
         Point pp = (Point) e.getPoint().clone();
         SwingUtilities.convertPointToScreen(pp, c);
@@ -102,6 +103,10 @@ public class GhostMouseDropAdapter extends GhostDropAdapter
         Component dropComponent = SwingUtilities.getDeepestComponentAt(rootPane, pp.x, pp.y);
 
         //System.out.println(component);
+        if (dropComponent == null)
+        {
+            log.error("Drop Component is NULL!");
+        }
         
         boolean clearIt = true;
         if (dropComponent instanceof GhostActionable && dropComponent instanceof JComponent)

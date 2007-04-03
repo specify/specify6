@@ -1898,12 +1898,12 @@ public class WorkbenchTask extends BaseTask
                 short newViewOrder = 0;
                 for (WorkbenchTemplateMappingItem wbtmi : newItems)
                 {
-                    System.out.print("New ["+wbtmi.getFieldName()+"] ");
+                    //System.out.print("New ["+wbtmi.getFieldName()+"] ");
                     // find a match
                     boolean foundMatch = false;
                     for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
                     {
-                        System.out.println("New ["+wbtmi.getFieldName()+"] ["+oldWbtmi.getFieldName()+"] ["+wbtmi.getTableId()+"] ["+oldWbtmi.getTableId()+"]");
+                        //System.out.println("New ["+wbtmi.getFieldName()+"] ["+oldWbtmi.getFieldName()+"] ["+wbtmi.getTableId()+"] ["+oldWbtmi.getTableId()+"]");
                         if (oldWbtmi.getSrcTableId().intValue() == wbtmi.getSrcTableId().intValue() &&
                             oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
                         {
@@ -1913,7 +1913,7 @@ public class WorkbenchTask extends BaseTask
                             break;
                         }
                     }
-                    System.out.println("   ** Found: "+foundMatch);
+                    //System.out.println("   ** Found: "+foundMatch);
                     if (!foundMatch)
                     {
                         workbenchTemplate.getWorkbenchTemplateMappingItems().add(wbtmi);

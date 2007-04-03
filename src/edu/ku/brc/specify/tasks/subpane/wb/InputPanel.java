@@ -142,7 +142,8 @@ public class InputPanel extends JPanel implements GhostActionable
         Dimension labelSize = label.getPreferredSize();
         Dimension compSize  = comp.getPreferredSize();
         
-        Rectangle r = new Rectangle(0, (compSize.height - labelSize.height) / 2, labelSize.width, labelSize.height);
+        //Rectangle r = new Rectangle(0, (compSize.height - labelSize.height) / 2, labelSize.width, labelSize.height);
+        Rectangle r = new Rectangle(0, 0, labelSize.width, compSize.height);
         label.setBounds(r);
         
         r.y      = 0;
