@@ -20,7 +20,6 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -33,11 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.EventObject;
 import java.util.Vector;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -56,12 +52,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
-import javax.swing.undo.UndoManager;
 
 import org.apache.log4j.Logger;
 
@@ -129,7 +122,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	private JTable myDisplayTable;
 	private PreviewTableModel model;
     DataErrorPanel errorPanel = new DataErrorPanel();
-    private boolean isRefresh;
    
     public DataImportDialog(final ConfigureCSV config, char defaultDelimChar, 
                             char defaultTextQual, Charset defaultCharSet,
@@ -144,7 +136,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         this.delimChar = defaultDelimChar;
         this.stringQualifierChar = defaultTextQual;
         this.userTextQualifier = useTxtQual;
-        isRefresh = false;
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
         initForCSV();
@@ -168,7 +159,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         JList listOfErrors = checkTableDataForSizeConstraints(headers, data);
         if(listOfErrors.getModel().getSize()>0)
         {
-            //JScrollPane pane = new JScrollPane(listOfErrors);
            return true;
         }  
         return false;
@@ -182,7 +172,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
             JTextArea textArea = new JTextArea();
             textArea.setRows(25);
             textArea.setColumns(60);
-            //textArea.setPreferredSize(new Dimension(600,200));
             String newline = "\n";
             for (int i = 0; i < listOfErrors.getModel().getSize(); i++)
             {
@@ -195,11 +184,11 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
             textArea.setCaretPosition(0);
             JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            //pane.setPreferredSize(textArea.getPreferredSize());
             JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
         }
     }
     
+    @SuppressWarnings("unused")
     private void initForXSL()
     {
     	setContentPane(createConfigPanelForXSL());
@@ -255,10 +244,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         
         myDisplayTable = setTableData(myDisplayTable);
         builder.add         (addtoScroll(myDisplayTable),              cc.xyw(3,14,3));   
-        
-        //boolean isDataInError = checkForErrors();
+
         builder.add         (errorPanel,              cc.xyw(3,16,4));  
-        //builder.add(dataStatusButton,  cc.xyw(3,16,1));  
         builder.add         (buttonpanel,                           cc.xyw(2,18,4)); 
         configPanel.setMinimumSize(buttonpanel.getMinimumSize());
         return configPanel;
@@ -266,13 +253,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     
     private JScrollPane addtoScroll(JTable t)
     {
-        //t.setPreferredSize(new Dimension(500,500));
-        //t.setMaximumSize(new Dimension(500,500));
     	JScrollPane pane = new JScrollPane(t, 
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-       //pane.setPreferredSize(t.getPreferredSize());
-       //pane.setMaximumSize(t.getMaximumSize());
        return pane;
     }
 
@@ -429,6 +412,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         updateTableDisplay();
         setTableData(myDisplayTable);
     }
+    
     private JPanel createDelimiterPanel()
     {      
         JPanel myPanel = new JPanel();
@@ -487,64 +471,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return myPanel;
     }
     
-//    private JScrollPane createTablePreview()
-//    {
-//        
-//        Object[] columnNames = { "First Name", "Last Name", "Sport", "First Name", "Last Name", "Sport","First Name", "Last Name", "Sport", "# of Years", "Vegetarian" };
-//
-//        Object[][] data = {
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding", new Integer(5), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Alison", "Huml", "Rowing", new Integer(3), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Kathy", "Walrath", "Knitting", new Integer(2), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Sharon", "Zakhour", "Speed reading", new Integer(20), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Philip", "Milne", "Pool",  new Integer(10), new Boolean(false) } ,
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding", new Integer(5), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Alison", "Huml", "Rowing", new Integer(3), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Kathy", "Walrath", "Knitting", new Integer(2), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Sharon", "Zakhour", "Speed reading", new Integer(20), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Philip", "Milne", "Pool",  new Integer(10), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding", new Integer(5), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Alison", "Huml", "Rowing", new Integer(3), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Kathy", "Walrath", "Knitting", new Integer(2), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Sharon", "Zakhour", "Speed reading", new Integer(20), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Philip", "Milne", "Pool",  new Integer(10), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding", new Integer(5), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Alison", "Huml", "Rowing", new Integer(3), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Kathy", "Walrath", "Knitting", new Integer(2), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Sharon", "Zakhour", "Speed reading", new Integer(20), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Philip", "Milne", "Pool",  new Integer(10), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding", new Integer(5), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Alison", "Huml", "Rowing", new Integer(3), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Kathy", "Walrath", "Knitting", new Integer(2), new Boolean(false) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Sharon", "Zakhour", "Speed reading", new Integer(20), new Boolean(true) },
-//                { "Mary bary", "Campione", "Snowboarding","Mary bary", "Campione", "Snowboarding","Philip", "Milne", "Pool",  new Integer(10), new Boolean(false) }};
-//
-//        //JTable myJTable = new JTable(data, columnNames);
-//        JTable t = new JTable(data, columnNames);
-//        
-//        t.setColumnSelectionAllowed(false);
-//        t.setRowSelectionAllowed(false);
-//        t.setCellSelectionEnabled(false);
-//        t.setPreferredScrollableViewportSize(t.getPreferredSize());
-//        t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-//        //t.setPreferredScrollableViewportSize(new Dimension(200,100));
-//        //initColumnSizes(t);
-//        //Dimension size = t.getPreferredScrollableViewportSize();
-//        //t.setPreferredScrollableViewportSize
-//        //    (new Dimension(100,100));
-//        //t.setShowGrid(true);
-//        //t.getModel().i
-//        //t.setModel(new PreviewTableModel());
-//        JScrollPane pane = new JScrollPane(t, 
-//                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-//                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-//        pane.setPreferredSize(new Dimension(500,100));
-//        //pane.add(t);
-//        //pane.set
-//        //pane.p
-//
-//        return pane;
-//    }
     
     private void updateTableDisplay()
     {
@@ -587,8 +513,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     {
     	try
 		{
-			CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config
-					.getDelimiter(), config.getCharset());
+			CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config.getDelimiter(), config.getCharset());
 			csv.setEscapeMode(config.getEscapeMode());
 			csv.setTextQualifier(config.getTextQualifier());
 			int curRowColumnCount = 0;
@@ -615,7 +540,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     
     private boolean isStringLongerThan(int length, String colName)
     {
-        //if(colName.length()<= WorkbenchTemplateMappingItem.)
         if(colName.length()<= length)
         {
             return true;
@@ -698,13 +622,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 			t.setColumnSelectionAllowed(false);
 			t.setRowSelectionAllowed(false);
 			t.setCellSelectionEnabled(false);
-			//t.getTableHeader().is
-            //t.getTableHeader().setC
-            //t.setMinimumSize(new Dimension(500,100));
+			t.getTableHeader().setReorderingAllowed(false);
             t.setPreferredScrollableViewportSize(new Dimension(500,100));
-            //t.setPreferredSize(new Dimension(500,300));
-            //t.setMaximumSize(new Dimension(500,500));
-			//t.setPreferredScrollableViewportSize(t.getPreferredSize());
 			t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 			model.fireTableDataChanged();
 			model.fireTableStructureChanged();
@@ -717,20 +636,19 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		return null;
 	}
     
-    public JList checkTableDataForSizeConstraints(String[]headers, String[][]data){
-        
+    public JList checkTableDataForSizeConstraints(String[]headers, String[][]data)
+    {     
         DefaultListModel listModel = new DefaultListModel();
         JList listOfImportDataErrors = new JList();
         for(int i=0; i<headers.length; i++)
          {
-            //boolean isColumnLengthValid = ;
             if(!isStringLongerThan(WorkbenchTemplateMappingItem.getImportedColNameMaxLength(), headers[i]))
             {
                 String msg = "Column at index=" + i + " is too long to be inserted into the database.  It will be truncated.\n"
-                + "Current Value:\n" + headers[i]+ "\nTruncated Value:\n" + headers[i].substring(0, WorkbenchTemplateMappingItem.getImportedColNameMaxLength()-1);
+                + "Current Value:\n" + headers[i]+ "\nTruncated Value:\n" 
+                + headers[i].substring(0, WorkbenchTemplateMappingItem.getImportedColNameMaxLength()-1);
                 log.warn(msg);
                 listModel.addElement(msg);
-                //listOfImportDataErrors
             }
         }  
         for(int i = 0; i < data.length; i++){
@@ -743,12 +661,11 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                     + "Current Value:\n" + str+ "\nTruncated Value:\n" + str.substring(0, 254);
                     log.warn(msg);
                     listModel.addElement(msg);
-                    //listOfImportDataErrors
                 }
             }
         }
-         listOfImportDataErrors.setModel(listModel);
-         return listOfImportDataErrors;
+        listOfImportDataErrors.setModel(listModel);
+        return listOfImportDataErrors;
     }
     
     public String[] createDummyHeaders( int count)
@@ -798,9 +715,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		//log.debug("");
 	}
     
- 
-
-
     /**
      * @return the stringQualifierChar
      */
@@ -1124,153 +1038,48 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		}    
     }
 
-    //------------------------------------------------------------
-    // Inner Classes
-    //------------------------------------------------------------
-
-
-    private class GridCellEditor extends AbstractCellEditor implements TableCellEditor//, UndoableTextIFace
-    {
-        protected JTextField  textField   = new JTextField();
-        protected UndoManager undoManager = new UndoManager();
-
-        public GridCellEditor()
-        {
-            textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.CellEditor#getCellEditorValue()
-         */
-        public Object getCellEditorValue() 
-        {
-            return textField.getText();
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.AbstractCellEditor#isCellEditable(java.util.EventObject)
-         */
-        @Override
-        public boolean isCellEditable(EventObject anEvent) 
-        { 
-            return false; 
-        }
-        
-        //
-        //          Implementing the CellEditor Interface
-        //
-        /** Implements the <code>TableCellEditor</code> interface. */
-        public Component getTableCellEditorComponent(JTable  tbl, 
-                                                     Object  value,
-                                                     boolean isSelected,
-                                                     int     row, 
-                                                     int     column)
-        {
-            textField.setText(value != null ? value.toString() : "");
-            //textField.selectAll();
-            //undoManager.discardAllEdits();
-            //UICacheManager.getUndoAction().setUndoManager(undoManager);
-            //UICacheManager.getRedoAction().setUndoManager(undoManager);
-            return textField;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
-         */
-        public UndoManager getUndoManager()
-        {
-            return undoManager;
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getText()
-         */
-        public JTextComponent getTextComponent()
-        {
-            return textField;
-        }
-     }
     
     private class DataErrorPanel extends JPanel
     {
-        private String errorMessage;
-        private JLabel statusInfo;
-        private JButton dataStatusButton;
-        
-        CellConstraints                  cc                      = new CellConstraints();
-        FormLayout                       formLayout              = new FormLayout(
-                                                                         "p,5px,p",
-                                                                         "d");
-        PanelBuilder                     builder                 = new PanelBuilder(formLayout, this);
         /**
          * 
          */
         public DataErrorPanel()
-        {
-            //MouseOverJLabel l = new MouseOverJLabel("Some text");
-            //l.setForeground(Color.WHITE);
-            //l.setActivatedTextColor(Color.RED);
-            //l.addActionListener(new ActionListener()
-            //{
-            ///   public void actionPerformed(ActionEvent ae)
-            //    {
-            //        System.out.println("click");
-            //    }
-            //});
-            MouseOverJLabel statusInfoLabel = new MouseOverJLabel();
-            statusInfoLabel.setHorizontalTextPosition(JLabel.RIGHT);
-            statusInfoLabel.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
-            statusInfoLabel.setText(getResourceString("DATA_IMPORT_ERROR"));
-            statusInfoLabel.setActivatedTextColor(Color.RED);
-          //dataStatusButton = new JButton(getResourceString("DETAILS"));
-          statusInfoLabel.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                showErrors();
-            }
-        });
-            builder.add(statusInfoLabel,          cc.xy(1,1));
-            //builder.add(dataStatusButton, cc.xywh(3,1, 1,1));    
-        }
-//        /**
-//         * 
-//         */
-//        private void setLabelForError()
-//        {
-//            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
-//            statusInfo.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
-//            statusInfo.setText(getResourceString("DATA_IMPORT_ERROR"));
-//        } 
-//        
-//        /**
-//         * 
-//         */
-//        private void clearLabelFromFailedFind()
-//        {
-//            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
-//            statusInfo.setIcon(null);
-//            statusInfo.setText("");
-//        }
+		{
+			CellConstraints cc = new CellConstraints();
+			FormLayout formLayout = new FormLayout("p,5px,p", "d");
+			PanelBuilder builder = new PanelBuilder(formLayout, this);
+			MouseOverJLabel statusInfoLabel = new MouseOverJLabel();
+			statusInfoLabel.setHorizontalTextPosition(JLabel.RIGHT);
+			statusInfoLabel.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
+			statusInfoLabel.setText(getResourceString("DATA_IMPORT_ERROR"));
+			statusInfoLabel.setActivatedTextColor(Color.RED);
+			statusInfoLabel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e)
+				{
+					showErrors();
+				}
+			});
+			builder.add(statusInfoLabel, cc.xy(1, 1));
+		}
         
         /**
-         * @param shouldShow - flag noting whether the panel should be visible
-         * @return the find/replace panel to be displayed
-         */
+		 * @param shouldShow -
+		 *            flag noting whether the panel should be visible
+		 * @return the data import error panel to be displayed
+		 */
         private JPanel showDataImportStatusPanel(boolean shouldShow)
-        {
-            if (!shouldShow)
-            {
-            	log.debug("hiding showDataImportStatusPanel");
-                this.setVisible(false);
-            } else
-            {
-            	log.debug("showing showDataImportStatusPanel");
-                this.setVisible(true);
-                //findField.requestFocusInWindow();
-            }
-            return this;
-        }
+		{
+			if (!shouldShow)
+			{
+				this.setVisible(false);
+			} 
+			else
+			{
+				this.setVisible(true);
+			}
+			return this;
+		}
     }
     /**
 	 * @author megkumin
@@ -1304,13 +1113,11 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 {                
                     delimChar = otherText.getText().toCharArray()[0];
                     config.setDelimiter(delimChar);
-                    //log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
                 }  
             } 
             else if(tab.isSelected())
             {
                 delimChar = '\t';
-                //otherText.setEditable(false);
                 otherText.setEnabled(false);
             }
             else if(space.isSelected())
