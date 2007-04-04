@@ -37,6 +37,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -180,6 +182,17 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
                 group.add(togBtn);
             }
             
+            togBtn.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e)
+                {
+                    if (((JToggleButton)e.getSource()).isSelected())
+                    {
+                        okBtn.setEnabled(true);
+                    }
+                }
+            });
+
+            
             togBtn.setOpaque(false);
             buttons.add(togBtn);
             listPanel.add(togBtn, cc.xy(1, yy));
@@ -229,6 +242,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
         
         pack();
         
+        okBtn.setEnabled(false);
         
         if (initialSelectedIndex != -1)
         {
@@ -236,7 +250,6 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
         }
         
         setSelectedObjects(selectedItems);
-
     }
 
     public void setAddSelectAll(boolean addSelectAll)
