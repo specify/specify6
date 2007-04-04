@@ -119,6 +119,7 @@ import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UICacheManager;
@@ -258,7 +259,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                saveObject();
+                
+                SaveProgressDialog progressDialog = new SaveProgressDialog(getResourceString("Save"), false, false);
+                progressDialog.setAlwaysOnTop(true);
+                progressDialog.getProcessProgress().setString("");
+                progressDialog.getProcessProgress().setIndeterminate(true);
+                UIHelper.centerAndShow(progressDialog);
             }
         });
        
@@ -648,6 +654,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void deleteRows()
     {
+        checkForCellEditing();
+        
         int[] rows = spreadSheet.getSelectedRows();
         model.deleteRows(spreadSheet.getSelectedRows());
         resultsetController.setLength(model.getRowCount());
@@ -1659,19 +1667,27 @@ public class WorkbenchPaneSS extends BaseSubPane
             
            
             hasChanged = false;
+            
+            String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench.getName()} );
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(msg);
 
-        } catch (StaleObjectException e) // was StaleObjectStateException
+
+        } catch (StaleObjectException ex) // was StaleObjectStateException
         {
             session.rollback();
             
             // 
             //recoverFromStaleObject("UPDATE_DATA_STALE");
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+
             
-        } catch (Exception e)
+        } catch (Exception ex)
         {
-            log.error("******* " + e);
-            e.printStackTrace();
+            log.error("******* " + ex);
+            ex.printStackTrace();
             session.rollback();
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+
         }
         
         if (saveBtn != null)
@@ -1991,6 +2007,44 @@ public class WorkbenchPaneSS extends BaseSubPane
                 setBorder(null);
             }
             return this;
+        }
+    }
+    
+    class SaveProgressDialog extends ProgressDialog
+    {
+        public SaveProgressDialog(final String  title, 
+                              final boolean includeBothBars,
+                              final boolean includeClose)
+        {
+            super(title, includeBothBars, includeClose);
+            
+            setModal(true);
+            
+            final JDialog dlg = this;
+            final SwingWorker worker = new SwingWorker()
+            {
+                public Object construct()
+                {
+                    try
+                    {
+                        saveObject();
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+                    }
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                public void finished()
+                {
+                    dlg.setVisible(false);
+                    dlg.dispose();
+                }
+            };
+            worker.start();
         }
     }
 }
