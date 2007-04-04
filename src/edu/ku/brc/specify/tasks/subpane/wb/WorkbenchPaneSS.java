@@ -1432,11 +1432,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             dialog.setContentPane(bgmService.createBGMPanel(XMLHelper.readStrToDOM4J(data), dialog));
             dialog.pack();
             
-            ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
-            if (icon != null)
-            {
-                dialog.setIconImage(icon.getImage());
-            }
+            // This must be a Java 6 feature
+            //ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
+            //if (icon != null)
+            //{
+            //    dialog.setIconImage(icon.getImage());
+            //}
             UIHelper.centerAndShow(dialog);
             
             loc = (Locality)bgmService.getValue();
