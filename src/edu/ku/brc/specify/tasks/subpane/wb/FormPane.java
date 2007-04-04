@@ -35,12 +35,11 @@ import java.util.Vector;
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -77,7 +76,7 @@ import edu.ku.brc.ui.validation.ValTextField;
  * Mar 8, 2007
  *
  */
-public class FormPane extends JPanel implements ResultSetControllerListener, 
+public class FormPane extends JComponent implements ResultSetControllerListener, 
                                                 GhostActionable,
                                                 DocumentListener,
                                                 ChangeListener
@@ -108,9 +107,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     
     protected EditFormControl    controlProperties = null;
     protected boolean            wasShowing        = false;
+    protected JScrollPane        scrollPane;
     
     // This is necessary because CardLayout doe4sn't set visibility
-    protected boolean            isShowing         = false;
+    protected Dimension          initialSize       = null; 
     
     /**
      * Creates a Pane for editing a Workbench as a form.
@@ -127,6 +127,16 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         dropFlavors.add(InputPanel.INPUTPANEL_FLAVOR);
         
+        buildUI();
+        
+        scrollPane = new JScrollPane(this, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    }
+    
+    /**
+     * Creates all the UI form the Form. 
+     */
+    protected void buildUI()
+    {
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
         
@@ -185,61 +195,70 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             }
         });
         
+        final int LAYOUT_SPACING = 4;
         short maxY = 0;
-        for (WorkbenchTemplateMappingItem wbtmi : headers)
-        {
-            maxY = (short)Math.max(wbtmi.getYCoord(), maxY);
-        }
-        
-        Vector<InputPanel> itemsToSkip = new Vector<InputPanel>();
+        Vector<InputPanel> delayedLayout = new Vector<InputPanel>();
         int maxWidthOffset = 0;
-        int x = 5;
-        int y = maxY;
         for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
-            InputPanel p = new InputPanel(wbtmi, wbtmi.getCaption(), createUIComp(wbtmi));
-            p.createMouseInputAdapter(); // this makes it draggable
-            p.getMouseInputAdapter().setDropCanvas(this);
+            // Create the INputPanel and make it draggable
+            InputPanel panel = new InputPanel(wbtmi, wbtmi.getCaption(), createUIComp(wbtmi));
+            panel.createMouseInputAdapter(); // this makes it draggable
+            panel.getMouseInputAdapter().setDropCanvas(this);
             
-            p.getLabel().addMouseListener(clickable);
-            //p.getComp().addMouseListener(clickable);
+            // Add the listener for double clicking for properties
+            panel.getLabel().addMouseListener(clickable);
 
-            Dimension size = p.getPreferredSize();
-            p.setSize(size);
-            p.setPreferredSize(size);
+            Dimension size = panel.getPreferredSize();
+            panel.setSize(size);
+            panel.setPreferredSize(size);
             
-            maxWidthOffset = Math.max(p.getTextFieldOffset(), maxWidthOffset);
-            uiComps.add(p);
-            add(p);
+            // Finds the largest label
+            maxWidthOffset = Math.max(panel.getTextFieldOffset(), maxWidthOffset);
             
-            // NOTE: that the constructor sets the location from WorkbenchTemplateMappingItem object
+            // Add it to the Form (drag canvas)
+            uiComps.add(panel);
+            add(panel);
+            
+            // NOTE: that the constructor sets the x,y location from WorkbenchTemplateMappingItem object
+            // so the ones with XCoord and YCoord set do not need to be positioned
             if (wbtmi.getXCoord() == null || wbtmi.getYCoord() == null || wbtmi.getXCoord() == -1 || wbtmi.getYCoord() == -1)
             {
-                p.setLocation(x, y);
-                y += size.height + 4;
+                delayedLayout.add(panel); // remember this for later once we know the Max Y
                 
             } else
             {
-                itemsToSkip.add(p);
+                maxY = (short)Math.max(wbtmi.getYCoord() + size.height, maxY);
             }
         }
         
         // Now align the control by their text fields and skips the ones that have actual positions defined.
-        int inx = 0;
+        // NOTE: We set the X,Y into the Mapping so that each item knows where it is, then if the user
+        // drags and drop anything or save the template everyone knows where they are suppose to be
+        // 
+        int inx  = 0;
+        int maxX = 0;
+        int y    = maxY + LAYOUT_SPACING;
         for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
             InputPanel panel = uiComps.get(inx);
-            if (!itemsToSkip.contains(panel))
+            if (delayedLayout.contains(panel))
             {
-                Point pLoc = panel.getLocation();
-                x = maxWidthOffset - panel.getTextFieldOffset();
-                panel.setLocation(x, pLoc.y);
+                int x = maxWidthOffset - panel.getTextFieldOffset();
+                panel.setLocation(x, y);
                 wbtmi.setXCoord((short)x);
-                wbtmi.setYCoord((short)pLoc.y);
+                wbtmi.setYCoord((short)y);
+                
+                Dimension size = panel.getPreferredSize();
+                y += size.height + LAYOUT_SPACING;
+                
             }
+            Rectangle r = panel.getBounds();
+            maxX = Math.max(maxX, r.x + r.width);
             inx++;
         }
         
+        initialSize = new Dimension(maxX, y);
         
         controlPropsBtn = createIconBtn("ControlEdit", IconManager.IconSize.Std16, "WB_EDIT_CONTROL", true, new ActionListener()
         {
@@ -250,9 +269,19 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         });
     }
     
-    public void setShowing(boolean isShowing)
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#getPreferredSize()
+     */
+    @Override
+    public Dimension getPreferredSize()
     {
-        this.isShowing = isShowing;
+        System.out.println("getPreferredSize "+ initialSize);
+        return initialSize;
+    }
+
+    public JScrollPane getScrollPane()
+    {
+        return scrollPane;
     }
 
     /**
@@ -295,10 +324,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.getDocument().addDocumentListener(this);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        return scrollPane;
+        JScrollPane taScrollPane = new JScrollPane(textArea);
+        taScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        taScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        return taScrollPane;
     }
     
     
@@ -311,26 +340,48 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     {
         return createUIComp(WorkbenchTask.getDataType(wbtmi), 
                             wbtmi.getCaption(), 
-                            wbtmi.getDataFieldLength(), 
+                            wbtmi.getFieldName(), 
                             wbtmi.getFieldType(),
+                            wbtmi.getDataFieldLength(), 
                             getColumns(wbtmi));
     }
     
     /**
-     * Returns 
-     * @param wbtmi
-     * @return
+     * Determinaes whether it is a TextField or whether it SHOULD be a TextField
+     * @param fieldName the name of the field
+     * @param fieldType the type of field
+     * @param fieldLen the length of the data 
+      * @return true to use TextField, false to use TextArea
+     */
+    protected static boolean useTextField(final String fieldName, final Short fieldType, final Short fieldLen)
+    {
+        // Check to see if the length of the data field is past threshold TEXTFIELD_DATA_LEN_MAX
+        // if so, then only create a TextArea if the field name contains the word "remarks"
+        // the user can switch other field fro TextField to TextArea if the wish.
+        if (fieldType != null)
+        {
+            return fieldType == WorkbenchTemplateMappingItem.TEXTFIELD;
+        }
+        
+        if (fieldLen > TEXTFIELD_DATA_LEN_MAX)
+        {
+            return fieldName.toLowerCase().indexOf("remarks") == -1;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Returns the number of columns it should use for the TextComponent.
+     * @param wbtmi the mapping item
+     * @return the number of columns for the UI component
      */
     public static short getColumns(final WorkbenchTemplateMappingItem wbtmi)
     {
-        short columns;
-        if (wbtmi.getFieldType() != null)
-        {
-            columns =  wbtmi.getFieldType() == WorkbenchTemplateMappingItem.TEXTAREA ? DEFAULT_TEXTAREA_COLS : DEFAULT_TEXTFIELD_COLS;
-        } else
-        {
-            columns =  wbtmi.getDataFieldLength() > TEXTFIELD_DATA_LEN_MAX ? DEFAULT_TEXTAREA_COLS : DEFAULT_TEXTFIELD_COLS;
-        }
+        // Check to see if the length of the data field is past threshold TEXTFIELD_DATA_LEN_MAX
+        // if so, then only create a TextArea if the field name contains the word "remarks"
+        // the user can switch other field fro TextField to TextArea if the wish.
+        short columns = useTextField(wbtmi.getFieldName(), wbtmi.getFieldType(), wbtmi.getDataFieldLength()) ? DEFAULT_TEXTFIELD_COLS : DEFAULT_TEXTAREA_COLS;
         
         String metaData = wbtmi.getMetaData();
         if (StringUtils.isNotEmpty(metaData))
@@ -353,16 +404,19 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     }
     
     /**
-     * @param dbFieldType
-     * @param caption
-     * @param dataFieldLength
-     * @param fieldType
+     * Creates the proper UI component for the Mapping item.
+     * @param dbFieldType the field type
+     * @param caption the caption
+     * @param fieldName the name of the field
+     * @param dataFieldLength the length of the definition for that field
+     * @param fieldType the field type
      * @return a UI component for editing
      */
     protected JComponent createUIComp(final Class<?> dbFieldTypeArg,
                                       final String   caption,
-                                      final Short    fieldLength, 
+                                      final String   fieldName,
                                       final Short    fieldType,
+                                      final Short    fieldLength, 
                                       final short    columns)
     {
         //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
@@ -389,21 +443,18 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             checkBox.addChangeListener(this);
             comp = checkBox;
         }
+        else if (useTextField(fieldName, fieldType, fieldLength))
+        {
+            ValTextField txt = new ValTextField(columns);
+            txt.getDocument().addDocumentListener(this);
+            txt.setInputVerifier(new LengthVerifier(caption, fieldLength));
+            comp = txt;
+        }
         else
         {
-            if ((fieldLength > 64 && fieldType == null) || fieldType != null && fieldType == WorkbenchTemplateMappingItem.TEXTAREA)
-            {
-                JScrollPane scrollPane = createTextArea(columns);
-                ((JTextArea)scrollPane.getViewport().getView()).setInputVerifier(new LengthVerifier(caption, fieldLength));
-                comp = scrollPane;
-            }
-            else
-            {
-                ValTextField txt = new ValTextField(columns);
-                txt.getDocument().addDocumentListener(this);
-                txt.setInputVerifier(new LengthVerifier(caption, fieldLength));
-                comp = txt;
-            }
+            JScrollPane taScrollPane = createTextArea(columns);
+            ((JTextArea)taScrollPane.getViewport().getView()).setInputVerifier(new LengthVerifier(caption, fieldLength));
+            comp = taScrollPane;
         }
         return comp;
     }
@@ -432,7 +483,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
         
         WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
-        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi), wbtmi.getCaption(), fieldLen, fieldType, fieldLen));
+        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi), 
+                                        wbtmi.getCaption(), 
+                                        wbtmi.getFieldName(), 
+                                        fieldType, 
+                                        wbtmi.getDataFieldLength(), 
+                                        fieldLen));
         
         ignoreChanges = true;
         ((JTextComponent)inputPanel.getComp()).setText(oldComp.getText());
@@ -480,30 +536,55 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         Dimension size = getSize();
         if (maxX != size.width || maxY != size.height)
         {
-            size.width  = maxX;
-            size.height = maxY;
-            
-            setSize(size);
-            setPreferredSize(size);
-            invalidate();
-            repaint();
-            
-            JViewport viewPort = (JViewport)getParent();
-            viewPort.setViewSize(size);
+            initialSize.width  = maxX;
+            initialSize.height = maxY;
+            scrollPane.validate();
+            scrollPane.repaint();
         }
     }
-    
+
     /**
      * Tells the form it is being hidden.
      * @param show true - show, false hide
      */
-    public void switching(final boolean show)
+    public void aboutToShowHide(final boolean show)
     {
         if (!show)
         {
             if (currentIndex > -1 && changesInForm)
             {
                 copyDataFromForm(currentIndex);
+            }
+        } else 
+        {  
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    uiComps.get(0).getComp().requestFocus();
+                }
+            });
+            
+            if (initialSize != null)
+            {
+                /*
+                System.out.println("Initial Size: "+initialSize);
+                JViewport viewPort = scrollPane.getViewport();
+                Dimension vpSize = viewPort.getSize();
+                System.out.println("vpSize:       "+vpSize);
+                if (vpSize.height < initialSize.height)
+                {
+                    vpSize.height = initialSize.height;
+                }
+                if (vpSize.width < initialSize.width)
+                {
+                    vpSize.width = initialSize.width;
+                }
+                //setSize(vpSize);
+                //setPreferredSize(vpSize);
+                //viewPort.setViewSize(vpSize);
+                System.out.println("vpSize:       "+vpSize);
+                initialSize = null;*/
             }
         }
     }
@@ -537,6 +618,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected void copyDataFromForm(final int index)
     {
+        if (!changesInForm)
+        {
+            return;
+        }
+        
         ignoreChanges = true;
         
         changesInForm = false;
@@ -592,15 +678,56 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
         super.setVisible(aFlag);
     }
+    
+    /**
+     * Sets the data into the form for a given index.
+     * @param index the index of the record to be set
+     */
+    protected void setDataIntoForm(final int index)
+    {
+        if (index < 0)
+        {
+            throw new RuntimeException("Index is less than zero.");
+        }
+        ignoreChanges = true; // turn off change notification
+        
+        WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(index);
+        for (InputPanel p : uiComps)
+        {
+            int col = p.getWbtmi().getViewOrder();
+            
+            if (p.getComp() instanceof GetSetValueIFace)
+            {
+                ((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
+                
+            } else if (p.getComp() instanceof JScrollPane)
+            {
+                JScrollPane sc = (JScrollPane)p.getComp();
+                Component comp = sc.getViewport().getView();
+                if (comp instanceof JTextArea)
+                {
+                    ((JTextArea)comp).setText(wbRow.getData(col));
+                }
+            } else
+            {
+                ((JTextComponent)p.getComp()).setText(wbRow.getData(col));
+            }
+        }
+        ignoreChanges = false;
+    }
+
+    //-----------------------------------------------
+    // ResultSetControllerListener Interface
+    //-----------------------------------------------
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
      */
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
-        if (oldIndex != newIndex && isShowing)
+        if (newIndex != currentIndex && currentIndex > -1 && scrollPane.isVisible())
         {
-            copyDataFromForm(oldIndex);
+            copyDataFromForm(currentIndex);
             currentIndex = newIndex;
         }
         return true;
@@ -611,33 +738,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     public void indexChanged(int newIndex)
     {
-        if (isShowing)
+        if (scrollPane.isVisible())
         {
-            ignoreChanges = true; 
             currentIndex  = newIndex;
-            WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(newIndex);
-            for (InputPanel p : uiComps)
-            {
-                int col = p.getWbtmi().getViewOrder();
-                
-                if (p.getComp() instanceof GetSetValueIFace)
-                {
-                    ((GetSetValueIFace)p.getComp()).setValue(wbRow.getData(col), wbRow.getData(col));
-                    
-                } else if (p.getComp() instanceof JScrollPane)
-                {
-                    JScrollPane sc = (JScrollPane)p.getComp();
-                    Component comp = sc.getViewport().getView();
-                    if (comp instanceof JTextArea)
-                    {
-                        ((JTextArea)comp).setText(wbRow.getData(col));
-                    }
-                } else
-                {
-                    ((JTextComponent)p.getComp()).setText(wbRow.getData(col));
-                }
-            }
-            ignoreChanges = false;
+            setDataIntoForm(currentIndex);
         }
     }
 
@@ -650,7 +754,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             copyDataFromForm(currentIndex);
         }
-        workbenchPane.insertRow();
+        workbenchPane.addRowAfter();
     }
     
     //-----------------------------------------------

@@ -311,6 +311,24 @@ public class GridTableModel extends SpreadSheetModel
         addRowAt(rowIndex, oldRowIndex);
     }
     
+    public void insertAfterRow(int rowInx)
+    {
+        if (rowInx == -1)
+        {
+            throw new RuntimeException("Why is rowInx == -1?");
+        }
+        
+        int oldRowIndex = rowInx;
+        int rowIndex    = rowInx + 1;
+        
+        if (rowIndex > this.getRowCount())
+        {
+            rowIndex = this.getRowCount();
+        }
+        addRowAt(rowIndex, oldRowIndex);
+    }
+  
+    
     /**
      * Add the row at an index and copy any Carry Forward Values.
      * @param rowIndex the index to add at
@@ -319,7 +337,7 @@ public class GridTableModel extends SpreadSheetModel
     protected void addRowAt(final int rowIndex, final int oldRowIndex)
     {
         WorkbenchRow wbRow  = null;
-        if (oldRowIndex > -1)
+        if (oldRowIndex > -1 && getRowCount() > 0)
         {
             wbRow  = workbench.getWorkbenchRowsAsList().get(oldRowIndex);
         }

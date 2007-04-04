@@ -32,6 +32,10 @@
     <field column="EndTime" name="endTime" type="short"/>
     <field column="VerbatimLocality" name="verbatimLocality" type="text" length="255"/>
     <field column="Remarks" name="remarks" type="text" length="255"/>
+    <field column="Collector1" name="Collector1" type="java.lang.String" length="64"/>
+    <field column="Collector2" name="Collector2" type="java.lang.String" length="64"/>
+    <field column="Collector3" name="Collector3" type="java.lang.String" length="64"/>
+    <field column="Collector4" name="Collector4" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
     <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
@@ -64,10 +68,6 @@
     <field column="Deaccessioned" name="deaccessioned" type="boolean"/>
     <field column="CatalogNumber" name="catalogNumber" type="java.lang.Float"/>
     <field column="CollectionObjectCitation" name="Citation" type="java.lang.String" length="64"/>
-    <field column="Collector1" name="Collector1" type="java.lang.String" length="64"/>
-    <field column="Collector2" name="Collector2" type="java.lang.String" length="64"/>
-    <field column="Collector3" name="Collector3" type="java.lang.String" length="64"/>
-    <field column="Collector4" name="Collector4" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true" >
     <field column="TypeStatusName" name="typeStatusName" type="java.lang.String" length="50"/>

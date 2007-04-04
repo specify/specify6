@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -78,6 +79,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected JasperCompilerRunnable compiler         = null;
 
     protected RecordSetIFace         recordSet        = null;
+    protected JRDataSource           dataSource       = null;
     protected File                   cachePath        = null;
     
     protected Properties             params           = null;
@@ -224,10 +226,19 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * @param paramsArg parameters for the report
     */
     public void createReport(final String         mainReportName, 
-                             final RecordSetIFace recrdSet, 
+                             final Object         data, 
                              final Properties     paramsArg)
     {
-        this.recordSet = recrdSet;
+        if (data instanceof RecordSetIFace)
+        {
+            this.recordSet  = (RecordSetIFace)data;
+            this.dataSource = null;
+            
+        } else if (data instanceof JRDataSource)
+        {
+            this.recordSet  = null;
+            this.dataSource = (JRDataSource)data;
+        }
         this.params    = paramsArg;
      
         refreshCacheFromDatabase("jrxml/label");
@@ -318,32 +329,25 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         {
             try
             {
-                String itemnum = "";
-
-                if (recordSet != null)
-                {
-                    itemnum = DBTableIdMgr.getInClause(recordSet);
-                }
-                
                 JasperReport jasperReport = (JasperReport)JRLoader.loadObject(compiledFile.getAbsoluteFile());
                 if (jasperReport != null)
                 {
-
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
+                    
+                    // XXX PREF - This will be converted to a Preference
+                    File imageDir = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "report_images");
+                    // XXXX RELEASE - This Reference to demo_files will need to be removed
+                    if (!imageDir.exists())
+                    {
+                        imageDir = new File("demo_files");
+                    }
+
+                    parameters.put("RPT_IMAGE_DIR", imageDir.getAbsolutePath());
+                    parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
+                    
                     if (recordSet != null)
                     {
-
-                        // XXX PREF - This will be converted to a Preference
-                        File imageDir = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "report_images");
-                        // XXXX RELEASE - This Reference to demo_files will need to be removed
-                        if (!imageDir.exists())
-                        {
-                            imageDir = new File("demo_files");
-                        }
-
-                        parameters.put("RPT_IMAGE_DIR", imageDir.getAbsolutePath());
-                        parameters.put("itemnum", itemnum);
-                        parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
+                        parameters.put("itemnum", DBTableIdMgr.getInClause(recordSet));
                     }
                     
                     // Add external parameters
@@ -356,7 +360,13 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     }
 
                     progressLabel.setText(getResourceString("JasperReportFilling"));
-                    asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getInstance().getConnection());
+                    if (recordSet != null)
+                    {
+                        asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getInstance().getConnection());
+                    } else
+                    {
+                        asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, dataSource);
+                    }
                     asyncFillHandler.addListener(this);
                     asyncFillHandler.startFill();
                     

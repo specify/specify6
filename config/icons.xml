@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <icons>
+    
+    <icon name="AppIcon"    file="specify_icon.gif"   sizes="32"/>
+    <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
+    <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
+    
+    <!--
+    <icon name="AppIcon"    file="onramp_logo32.png" sizes="32"/>
+    <icon name="Specify16"  file="onramp_logo32.png" sizes="16"/>
+    <icon name="SpecifyLargeIcon" file="onramp_logo128.png" sizes="NonStd"/>
+    -->
+    
     <icon name="Save"       file="filesave.png" sizes="all"/>
     <icon name="Import"     file="upload_data.gif" sizes="all"/>
     <icon name="Export"     file="import.png" sizes="all"/>
     
     <icon name="Configure"  file="configure.gif" sizes="all"/>
-    <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
-    <icon name="AppIcon"    file="specify_icon.gif" sizes="32"/>
-    <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
     <icon name="OnRamp"     file="workbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="form.gif" sizes="all"/>
     <icon name="Taxon_Tree" file="taxon.gif" sizes="all"/>
@@ -77,11 +85,12 @@
     <icon name="Repository Agreement" alias="Accession"/>
     <icon name="Reference Work"    alias="ReferenceWork"/>
     <icon name="ConvertGeoRef"	   alias="Configure"/>
+    <icon name="OnRamp"	           alias="Workbench"/>
+    
+    <icon name="Startup"	   alias="AppIcon"/>
     
     <icon name="DiGIR"             file="DigirShovel.png"/>
     
-    <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
-
     <icon name="Blue Dot"    file="blue_dot.png" sizes="all"/>
 
     <icon name="UserInterface" file="form.gif" sizes="all"/>

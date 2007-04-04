@@ -57,11 +57,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -93,6 +91,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -148,31 +147,31 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     private enum PanelType {Spreadsheet, Form}
     
-    protected SearchReplacePanel    findPanel       = null;
+    protected SearchReplacePanel    findPanel              = null;
     protected SpreadSheet           spreadSheet;
     protected Workbench             workbench;
     protected GridTableModel        model;
     protected String[]              columns;
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-    protected boolean               hasChanged      = false;
-    protected boolean               blockChanges    = false;
-    protected RecordSet             recordSet       = null;
+    protected boolean               hasChanged             = false;
+    protected boolean               blockChanges           = false;
+    protected RecordSet             recordSet              = null;
+    protected boolean               bgmCompatible          = false;
     
-    protected JButton               saveBtn         = null;
-    protected JButton               deleteRowsBtn   = null;
-    protected JButton               clearCellsBtn   = null;
-    protected JButton               insertRowBtn    = null;
-    protected JButton               addRowsBtn      = null;
-    protected JButton               carryForwardBtn = null;
-    protected JButton               toggleCardImageBtn = null;
-    protected JButton               showMapBtn      = null;
-    protected JButton               controlPropsBtn = null;
-    protected JButton               exportKmlBtn    = null;
-    protected JButton               biogeomancerBtn = null;
+    protected JButton               saveBtn                = null;
+    protected JButton               deleteRowsBtn          = null;
+    protected JButton               clearCellsBtn          = null;
+    protected JButton               addRowsBtn             = null;
+    protected JButton               carryForwardBtn        = null;
+    protected JButton               toggleImageFrameBtn    = null;
+    protected JButton               showMapBtn             = null;
+    protected JButton               controlPropsBtn        = null;
+    protected JButton               exportKmlBtn           = null;
+    protected JButton               biogeomancerBtn        = null;
     protected JButton               convertGeoRefFormatBtn = null;
-    protected JButton               exportExcelCsvBtn = null;
+    protected JButton               exportExcelCsvBtn      = null;
 
-    protected List<JButton>         selectionSensativeButtons          = new Vector<JButton>();
+    protected List<JButton>         selectionSensativeButtons  = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
     protected FormPane              formPane;
@@ -185,8 +184,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JPanel                controllerPane;
     protected CardLayout            cpCardLayout               = null;
     
-    protected CardImageFrame        cardImageFrame             = null;
-    protected boolean               cardFrameWasShowing        = false;
+    protected CardImageFrame        imageFrame                 = null;
+    protected boolean               imageFrameWasShowing       = false;
     protected ListSelectionListener workbenchRowChangeListener = null;
     
     protected JFrame                mapFrame                   = null;
@@ -240,22 +239,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
         
-        /*
-        spreadSheet.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent e)
-            {
-                UICacheManager.enableCutCopyPaste(true);
-            }
-            public void focusLost(FocusEvent e)
-            {
-                UICacheManager.enableCutCopyPaste(false);
-            }
-        });*/
-        
         findPanel = spreadSheet.getFindReplacePanel();
         UICacheManager.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
     
-        //spreadsheet.setBackground(Color.WHITE);
         initColumnSizes(spreadSheet);
         spreadSheet.setShowGrid(true);
         
@@ -295,22 +281,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         selectionSensativeButtons.add(clearCellsBtn);
         
-        ActionListener insertAction = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                insertRow();
-            }
-        };
-        
-        insertRowBtn = createIconBtn("InsertSign", "WB_INSERT_ROW", insertAction);
-        selectionSensativeButtons.add(insertRowBtn);
-
         Action addAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_N, "AddRow", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                addRow();
+                addRowAfter();
             }
         });
         addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", addAction);
@@ -327,14 +302,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         carryForwardBtn.setEnabled(true);
 
-        toggleCardImageBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMAGES", true, new ActionListener()
+        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMAGES", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                toggleCardImageVisible();
+                toggleImageFrameVisible();
             }
         });
-        toggleCardImageBtn.setEnabled(true);
+        toggleImageFrameBtn.setEnabled(true);
         
         showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.Std16, "WB_SHOW_MAP", true, new ActionListener()
         {
@@ -363,6 +338,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         selectionSensativeButtons.add(biogeomancerBtn);
+        bgmCompatible = isTemplateBGMCompatible();
         
         convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.Std16, "WB_CONVERT_GEO_FORMAT", true, new ActionListener()
         {
@@ -388,15 +364,18 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    setCurrentRow(spreadSheet.getSelectedRow());
+                    JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                    statusBar.setText("");
+                    
+                    currentRow = spreadSheet.getSelectedRow();
                     updateBtnUI();
                 }
             }
         });
         
         // setup the JFrame to show images attached to WorkbenchRows
-        cardImageFrame = new CardImageFrame(mapSize);
-        cardImageFrame.installLoadActionListener(new ActionListener()
+        imageFrame = new CardImageFrame(mapSize);
+        imageFrame.installLoadActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -413,7 +392,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
-        cardImageFrame.installClearActionListener(new ActionListener()
+        imageFrame.installClearActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -423,19 +402,19 @@ public class WorkbenchPaneSS extends BaseSubPane
                 row.setCardImage((File)null);
             }
         });
-        cardImageFrame.installCloseActionListener(new ActionListener()
+        imageFrame.installCloseActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                toggleCardImageVisible();
+                toggleImageFrameVisible();
             }
         });
-        cardImageFrame.addWindowListener(new WindowAdapter()
+        imageFrame.addWindowListener(new WindowAdapter()
         {
             @Override
             public void windowClosing(WindowEvent e)
             {
-                toggleCardImageVisible();
+                toggleImageFrameVisible();
             }
         });
         
@@ -452,7 +431,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
+        JComponent[] comps      = {addRowsBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
         PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "p:g"));
         
         spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
@@ -463,44 +442,73 @@ public class WorkbenchPaneSS extends BaseSubPane
             x += 2;
         }
         
+        // Create the main panel that uses card layout for the form and spreasheet
         mainPanel = new JPanel(cardLayout = new CardLayout());
         
+        // Create the Form Pane
         formPane = new FormPane(this, workbench);
         
-        PanelBuilder outerRSPanel = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p", "p"));
+        // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel  
+        PanelBuilder outerRSPanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g, p", "p"));
+        
+        // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "p"));
         resultsetController  = new ResultSetController(null, true, true, getResourceString("Record"), model.getRowCount());
         resultsetController.addListener(formPane);
-        //resultsetController.getNewRecBtn().addActionListener(formPane);
         resultsetController.getDelRecBtn().addActionListener(deleteAction);
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
+        
+        // Now put the two panel into the single row panel
         outerRSPanel.add(rsPanel.getPanel(), cc.xy(2,1));
         outerRSPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
         
+        // Add the Form and Spreadsheet to the CardLayout
         mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
-        mainPanel.add(new JScrollPane(formPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), PanelType.Form.toString());
+        mainPanel.add(formPane.getScrollPane(), PanelType.Form.toString());
         
+        // The controllerPane is a CardLayout that switches between the Spreadsheet control bar and the Form Control Bar
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(outerRSPanel.getPanel(), PanelType.Form.toString());
         
-        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "fill:p:g, 5px, p");
-        PanelBuilder    builder    = new PanelBuilder(formLayout, this);
+        if (false) // This does work JGoodies is messing something up
+        {
+            // This is the main layout panel it has two rows (really 3 but the middle is just a spacer)
+            // one row for the mainPanel which is a CardLayout for the Form and Spreadsheet
+            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "f:p:g, 5px, p");
+            PanelBuilder    builder    = new PanelBuilder(formLayout, this);
+    
+            builder.add(mainPanel,          cc.xywh(1,1,9,1)); // Row #1
+            builder.add(controllerPane,     cc.xy(1,3));       // Row #2
+            builder.add(toggleImageFrameBtn, cc.xy(3,3));
+            builder.add(carryForwardBtn,    cc.xy(5,3));
+            builder.add(saveBtn,            cc.xy(7,3));
+            builder.add(createSwitcher(),   cc.xy(9,3));
+        } else
+        {
+            // This works
+            setLayout(new BorderLayout());
+            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "f:p:g, 5px, p");
+            PanelBuilder    builder    = new PanelBuilder(formLayout);
 
-        builder.add(mainPanel,          cc.xywh(1,1,9,1));
-        builder.add(controllerPane,     cc.xy(1,3));
-        builder.add(toggleCardImageBtn, cc.xy(3,3));
-        builder.add(carryForwardBtn,    cc.xy(5,3));
-        builder.add(saveBtn,            cc.xy(7,3));
-        builder.add(createSwitcher(),   cc.xy(9,3));
+            add(mainPanel, BorderLayout.CENTER);
+            
+            builder.add(controllerPane,     cc.xy(1,3));
+            builder.add(toggleImageFrameBtn, cc.xy(3,3));
+            builder.add(carryForwardBtn,    cc.xy(5,3));
+            builder.add(saveBtn,            cc.xy(7,3));
+            builder.add(createSwitcher(),   cc.xy(9,3));
+            add(builder.getPanel(), BorderLayout.SOUTH);
+        }
         
+        // See if we need to make the Image Frame visible
         if (showImageView || hasOneOrMoreImages)
         {
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
                 {
-                    toggleCardImageVisible();
+                    toggleImageFrameVisible();
                     ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
                 }
             });
@@ -527,15 +535,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             btn.setEnabled(enable);
         }
+        
+        if (biogeomancerBtn.isEnabled())
+        {
+            biogeomancerBtn.setEnabled(bgmCompatible);
+        }
     }
     
     
     /**
-     * @param comp
-     * @param keyCode
-     * @param actionName
-     * @param action
-     * @return
+     * Adds a Key mappings.
+     * @param comp comp
+     * @param keyCode keyCode
+     * @param actionName actionName
+     * @param action action 
+     * @return the action
      */
     protected Action addRecordKeyMappings(final JComponent comp, final int keyCode, final String actionName, final Action action)
     {
@@ -561,7 +575,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             @SuppressWarnings("synthetic-access")
             public void valueChanged(ListSelectionEvent e)
             {
-                if (e.getValueIsAdjusting() || !cardImageFrame.isVisible())
+                if (e.getValueIsAdjusting() || !imageFrame.isVisible())
                 {
                     // ignore this until the user quits changing the selection
                     return;
@@ -579,7 +593,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         };
     }
     
-    protected void addRow()
+    /**
+     * Adds a row at the end.
+     */
+    protected void addRowAtEnd()
     {
         checkForCellEditing();
         model.appendRow();
@@ -591,11 +608,30 @@ public class WorkbenchPaneSS extends BaseSubPane
         updateBtnUI();
     }
     
-    protected void insertRow()
+    /**
+     * Adds a row after the selection. 
+     */
+    protected void addRowAfter()
     {
         checkForCellEditing();
-        // The spreadsheet could return -1 because the user may have never selected anything
-        // and gone right to the form. So in the case 
+        
+        int curSelInx = getCurrentIndexFromFormOrSS();
+        model.insertAfterRow(curSelInx);
+        resultsetController.setLength(model.getRowCount());
+        
+        int newInx = curSelInx  + 1;
+        resultsetController.setIndex(newInx);
+        spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
+        
+        updateBtnUI();
+    }
+    
+    /**
+     * Inserts a Row above the selection. 
+     */
+    protected void insertRowAbove()
+    {
+        checkForCellEditing();
         int curSelInx = getCurrentIndexFromFormOrSS();
         model.insertRow(curSelInx);
         resultsetController.setLength(model.getRowCount());
@@ -607,6 +643,9 @@ public class WorkbenchPaneSS extends BaseSubPane
 
     }
     
+    /**
+     * Deletes the Selected Rows. 
+     */
     protected void deleteRows()
     {
         int[] rows = spreadSheet.getSelectedRows();
@@ -640,22 +679,20 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             // no selection
             log.debug("No selection, so removing the card image");
-            cardImageFrame.setRow(null);
+            imageFrame.setRow(null);
             return;
         }
         // else
 
         log.debug("Showing image for row " + firstRowSelected);
         WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
-        cardImageFrame.setRow(row);
+        imageFrame.setRow(row);
 
         // XXX Change later - Assuming first Row
         WorkbenchDataItem firstColItem = row.getItems().get(0);
         String firstColCellData = (firstColItem != null) ? firstColItem.getCellData() : "";
-        cardImageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
+        imageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
     }
-    
-    
     
     /**
      * Returns the Workbench for the Pane.
@@ -694,6 +731,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         return switcher;
     }
     
+    /**
+     * Returns the current selected index from a spreadsheet or the form.
+     * @return the current selected index from a spreadsheet or the form.
+     */
     protected int getCurrentIndexFromFormOrSS()
     {
         int selectedInx = currentPanelType == PanelType.Spreadsheet ? spreadSheet.getSelectedRow() : resultsetController.getCurrentIndex();
@@ -715,11 +756,13 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void showPanel(final PanelType panelType)
     {
+        currentRow = getCurrentIndexFromFormOrSS();
+        
         currentPanelType = panelType;
         
-        if (cardImageFrame != null)
+        if (imageFrame != null)
         {
-            cardImageFrame.setHelpContext(panelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
+            imageFrame.setHelpContext(panelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
         }
         
         cardLayout.show(mainPanel, currentPanelType.toString());
@@ -728,44 +771,48 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean isSpreadsheet = currentPanelType == PanelType.Spreadsheet;
         if (isSpreadsheet)
         {
-            formPane.switching(false);
+            formPane.aboutToShowHide(false);
             
             // Showing Spreadsheet and hiding form
-            setCurrentRow(resultsetController.getCurrentIndex());
             if (model.getRowCount() > 0)
             {
-                spreadSheet.setRowSelectionInterval(getCurrentRow(), getCurrentRow());
+                spreadSheet.setRowSelectionInterval(currentRow, currentRow);
                 spreadSheet.setColumnSelectionInterval(0, model.getColumnCount()-1);
-                spreadSheet.scrollToRow(Math.min(getCurrentRow()+4, model.getRowCount()));
+                spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
             }
-            formPane.setShowing(true);
 
         } else
         {
-            checkForCellEditing();
+            // About to Show Form and hiding Spreadsheet
             
-            formPane.switching(false);
+            // cancel any editing in a cell in the spreadsheet
+            checkForCellEditing(); 
             
-            // Showing Form and hiding Spreadsheet
+            // Tell the form we are switching and that it is about to be shown
+            formPane.aboutToShowHide(true);
             
-            setCurrentRow(getCurrentIndexFromFormOrSS());
             if (model.getRowCount() > 0)
             {
-                resultsetController.setIndex(getCurrentRow());
+                resultsetController.setIndex(currentRow);
             }
-            //hide the find/replace panel when you switch to form view
+            
+            // Hide the find/replace panel when you switch to form view
             findPanel.getHideFindPanelAction().hide();
-            //disable the ctrl-F from the edit menu
+            
+            // Disable the ctrl-F from the edit menu
             UICacheManager.disableFindFromEditMenu();
-            formPane.setShowing(false);
+
         }
         
              
-        JComponent[] comps = { addRowsBtn, insertRowBtn, clearCellsBtn, deleteRowsBtn};
+        JComponent[] comps = { addRowsBtn, clearCellsBtn, deleteRowsBtn};
         for (JComponent c : comps)
         {
-            //enable the "Find" action in the Edit menu when a spreadsheet is shown
-            if(isSpreadsheet)UICacheManager.enableFindinEditMenu(findPanel);
+            // Enable the "Find" action in the Edit menu when a spreadsheet is shown
+            if (isSpreadsheet)
+            {
+                UICacheManager.enableFindinEditMenu(findPanel);
+            }
             c.setVisible(isSpreadsheet);
         }
     }
@@ -773,16 +820,16 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Shows / Hides the Image Window. 
      */
-    public void toggleCardImageVisible()
+    public void toggleImageFrameVisible()
     {
         // We simply have to toggle the visibility
         // and add or remove the ListSelectionListener (to avoid loading images when not visible)
-        boolean visible = cardImageFrame.isVisible();
+        boolean visible = imageFrame.isVisible();
         if (visible)
         {
-            toggleCardImageBtn.setToolTipText(getResourceString("WB_SHOW_IMAGES"));
+            toggleImageFrameBtn.setToolTipText(getResourceString("WB_SHOW_IMAGES"));
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
-            cardImageFrame.setVisible(false);
+            imageFrame.setVisible(false);
             blockChanges = true;
             // get the selection before the changes
             int[] selRows = spreadSheet.getSelectedRows();
@@ -803,14 +850,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         else
         {
-//            // when a user hits the "show image" button, for some reason the selection gets nullified
-//            // so we'll grab it here, then set it at the end of this method
-//            int originalSelectionRow = spreadSheet.getSelectedRow();
+            // when a user hits the "show image" button, for some reason the selection gets nullified
+            // so we'll grab it here, then set it at the end of this method
 
-            toggleCardImageBtn.setToolTipText(getResourceString("WB_HIDE_IMAGES"));
+            toggleImageFrameBtn.setToolTipText(getResourceString("WB_HIDE_IMAGES"));
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
-            cardImageFrame.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
-            cardImageFrame.setVisible(true);
+            imageFrame.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
+            imageFrame.setVisible(true);
             
             // tell the table model to show the image column
             blockChanges = true;
@@ -830,8 +876,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
             }
-            //TableColumn tableColumn = spreadSheet.getColumn(model.getColumnCount()-1);
-            //tableColumn.setCellEditor(new DefaultCellEditor(imageComboxbox));
             blockChanges = false;
 
             showCardImageForSelectedRow();
@@ -839,9 +883,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
             column.setCellRenderer(new ImageRenderer());
             spreadSheet.repaint();
-            
-//            spreadSheet.getSelectionModel().setSelectionInterval(originalSelectionRow, originalSelectionRow);
-//            spreadSheet.repaint();
         }
     }
     
@@ -1270,6 +1311,32 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
+     * Checks to see if the template can support BGM.
+     * @return return whether this template supports BGM
+     */
+    protected boolean isTemplateBGMCompatible()
+    {
+        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+        if (workbench.getColumnIndex(localityTableId, "localityName") == -1 ||
+            workbench.getColumnIndex(localityTableId, "latitude1") == -1 ||
+            workbench.getColumnIndex(localityTableId, "longitude1") == -1)
+        {
+            return false;
+        }
+        
+        // get the geography data
+        int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
+        if (workbench.getColumnIndex(geographyTableId, "Country") == -1 ||
+            workbench.getColumnIndex(geographyTableId, "State") == -1 ||
+            workbench.getColumnIndex(geographyTableId, "County") == -1)
+        {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
      * Use the BioGeomancer web service to lookup georeferences for the selected records.
      */
     protected void doBioGeomancerLookup()
@@ -1281,40 +1348,89 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         
-        WorkbenchRow selectedRow = workbench.getWorkbenchRowsAsList().get(selection);
-        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-        int localityNameColIndex = workbench.getColumnIndex(localityTableId, "localityName");
-        String localityNameStr = selectedRow.getData(localityNameColIndex);
-                
-        // get the geography data
-        int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
-        int countryColIndex = workbench.getColumnIndex(geographyTableId, "Country");
-        int stateColIndex = workbench.getColumnIndex(geographyTableId, "State");
-        int countyColIndex = workbench.getColumnIndex(geographyTableId, "County");
-        String country = (countryColIndex!=-1) ? selectedRow.getData(countryColIndex) : "";
-        String state = (stateColIndex!=-1) ? selectedRow.getData(stateColIndex) : "";
-        String county = (countyColIndex!=-1) ? selectedRow.getData(countyColIndex) : "";
+        final WorkbenchRow selectedRow = workbench.getWorkbenchRowsAsList().get(selection);
         
-        // get the latitude1 and longitude1 column indices
-        int latIndex = workbench.getColumnIndex(localityTableId, "latitude1");
-        int lonIndex = workbench.getColumnIndex(localityTableId, "longitude1");
-
         // get an instance of the biogeo service
-        BioGeoMancer bgmService = new BioGeoMancer();
-        bgmService.initialize(null, false);
-        Locality loc = new Locality();
-        loc.initialize();
-        bgmService.setValue(loc,null);
-        
-        // the response is written to the file "biogeomancer.xml"
-        BioGeoMancer.getBioGeoMancerResponse(selectedRow.getWorkbenchRowId().toString(),country,state,county,localityNameStr);
-        
-        // show the BGM frame to allow the user to select from the results
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        statusBar.setText("");
+        
+        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setIndeterminate(true);
+        final SwingWorker worker = new SwingWorker()
+        {
+            protected String    data      = null;
+            protected Exception exception = null;
+            
+            @Override
+            public Object construct()
+            {
+                int    localityTableId      = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+                int    localityNameColIndex = workbench.getColumnIndex(localityTableId, "localityName");
+                String localityNameStr      = selectedRow.getData(localityNameColIndex);
+                        
+                // get the geography data
+                int    geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
+                int    countryColIndex  = workbench.getColumnIndex(geographyTableId, "Country");
+                int    stateColIndex    = workbench.getColumnIndex(geographyTableId, "State");
+                int    countyColIndex   = workbench.getColumnIndex(geographyTableId, "County");
+                
+                String country = (countryColIndex!=-1) ? selectedRow.getData(countryColIndex) : "";
+                String state   = (stateColIndex!=-1) ? selectedRow.getData(stateColIndex) : "";
+                String county  = (countyColIndex!=-1) ? selectedRow.getData(countyColIndex) : "";
+                
+                data      = BioGeoMancer.getBioGeoMancerResponse(selectedRow.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
+                exception = BioGeoMancer.getException();
+                
+                return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            @Override
+            public void finished()
+            {
+                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setIndeterminate(false);
+                if (exception == null)
+                {
+                    processBGMResults(selectedRow, data);
+                    
+                } else
+                {
+                    ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage("BioGeomancer service failure", exception);
+                }
+            }
+        };
+        worker.start();
+    }
+    
+    /**
+     * Processes the BGM results and displays a dialog.
+     * @param selectedRow the WorkbenchRow we are working on
+     * @param data the results we got back from BGM
+     */
+    protected void processBGMResults(final WorkbenchRow selectedRow, final String data)
+    {
+        // show the BGM frame to allow the user to select from the results
         try
         {
-            statusBar.setText("");
-            showBioGeomancerDialog(bgmService);
+            BioGeoMancer bgmService = new BioGeoMancer();
+            bgmService.initialize(null, false);
+            
+            Locality loc = new Locality();
+            loc.initialize();
+            bgmService.setValue(loc, null);
+            
+            JDialog dialog = new JDialog();
+            dialog.setTitle("BioGeoManacer");
+            dialog.setModal(true);
+            dialog.setContentPane(bgmService.createBGMPanel(XMLHelper.readStrToDOM4J(data), dialog));
+            dialog.pack();
+            
+            ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
+            if (icon != null)
+            {
+                dialog.setIconImage(icon.getImage());
+            }
+            UIHelper.centerAndShow(dialog);
+            
             loc = (Locality)bgmService.getValue();
             if (loc == null || loc.getLatitude1() == null || loc.getLongitude1() == null)
             {
@@ -1323,6 +1439,12 @@ public class WorkbenchPaneSS extends BaseSubPane
                 return;
             }
             log.debug("Lat:"+loc.getLatitude1().toString() + " Long:" + loc.getLongitude1().toString());
+            
+            // get the latitude1 and longitude1 column indices
+            int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+            int latIndex        = workbench.getColumnIndex(localityTableId, "latitude1");
+            int lonIndex        = workbench.getColumnIndex(localityTableId, "longitude1");
+
             selectedRow.setData(loc.getLatitude1().toString(), (short)latIndex);
             selectedRow.setData(loc.getLongitude1().toString(), (short)lonIndex);
             spreadSheet.repaint();
@@ -1330,23 +1452,26 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         catch (Exception e)
         {
-            statusBar.setErrorMessage("BioGeomancer service failure", e);
+            e.printStackTrace();
+            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage("BioGeomancer service failure", e);
         }
+
     }
     
     /**
      * @param bgService
      * @throws Exception
      */
-    protected void showBioGeomancerDialog(BioGeoMancer bgService) throws Exception
+    protected void showBioGeomancerDialog(final BioGeoMancer bgService) throws Exception
     {
         JDialog dialog = new JDialog();
         dialog.setModal(true);
         JPanel p = new JPanel(new BorderLayout());
-        p.add(bgService.processBGMDOM(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), dialog), BorderLayout.CENTER);
+        p.add(bgService.createBGMPanel(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), dialog), BorderLayout.CENTER);
         dialog.setContentPane(p);
         dialog.setLocation(0,0);
         dialog.pack();
+        
         //ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
 //        if (icon != null)
 //        {
@@ -1373,38 +1498,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     public boolean isChanged()
     {
         return hasChanged;
-    }
-
-    /**
-     * Returns the currently selected row in the Spreasdsheet or form.
-     * @return the currently selected row in the Spreasdsheet or form.
-     */
-    public int getCurrentRow()
-    {
-        return currentRow;
-    }
-
-    /**
-     * Sets the currently selected row in the Spreasdsheet or form.
-     * @param currentRow the current row
-     */
-    public void setCurrentRow(int curRow)
-    {
-        if (curRow > -1 && this.currentRow != curRow)
-        {
-            this.currentRow = curRow;
-            
-            if (currentPanelType == PanelType.Form)
-            {
-                if (curRow != spreadSheet.getSelectedRow())
-                {
-                    spreadSheet.setRowSelectionInterval(curRow, curRow);
-                }
-            } else
-            {
-                resultsetController.setIndex(curRow);
-            }
-        }
     }
 
     /**
@@ -1699,22 +1792,22 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         if (show)
         {
-            if (cardFrameWasShowing)
+            if (imageFrameWasShowing)
             {
-                toggleCardImageVisible();
+                toggleImageFrameVisible();
                 ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
             }
         }
         else
         {
-            if (cardImageFrame != null && cardImageFrame.isVisible())
+            if (imageFrame != null && imageFrame.isVisible())
             {
-                cardFrameWasShowing = true;
-                toggleCardImageVisible();
+                imageFrameWasShowing = true;
+                toggleImageFrameVisible();
             }
             else
             {
-                cardFrameWasShowing = false;
+                imageFrameWasShowing = false;
             }
             
             if (mapFrame != null && mapFrame.isVisible())

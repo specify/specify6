@@ -51,6 +51,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected WorkbenchTemplate workbenchTemplate;
     protected Boolean           isExportableToContent;
     protected Boolean           isIncludedInTitle;
+    protected Boolean           isRequired;
 
     // UI Layout extras
     protected String            metaData;
@@ -95,6 +96,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         carryForward          = false;
         isExportableToContent = true;
         isIncludedInTitle     = false;
+        isRequired            = false;
 
     }
 
@@ -343,6 +345,17 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setIsIncludedInTitle(Boolean isIncludedInTitle)
     {
         this.isIncludedInTitle = isIncludedInTitle;
+    }
+
+    @Column(name="IsRequired",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getIsRequired()
+    {
+        return isRequired;
+    }
+
+    public void setIsRequired(Boolean isRequired)
+    {
+        this.isRequired = isRequired;
     }
 
     /**

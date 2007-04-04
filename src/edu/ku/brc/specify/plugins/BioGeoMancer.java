@@ -22,15 +22,14 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,8 +66,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -98,10 +97,12 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 {
     private static final Logger log = Logger.getLogger(BioGeoMancer.class);
     
-    protected boolean doingCache = true;
+    protected static Exception    exception = null; 
+    
+    protected boolean             doingCache = false;
 
-    protected static final int BGM_WIDTH  = 500;
-    protected static final int BGM_HEIGHT = 400;
+    protected static final int BGM_WIDTH  = 400;
+    protected static final int BGM_HEIGHT = 250;
 
     protected JTextField          latitude;
     protected JTextField          longitude;
@@ -139,14 +140,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         {
             frame = new JFrame();
             JPanel p = new JPanel(new BorderLayout());
-            p.add(processBGMDOM(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), null), BorderLayout.CENTER);
+            p.add(createBGMPanel(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), null), BorderLayout.CENTER);
 
             frame.setContentPane(p);
             frame.setVisible(true);
             frame.setLocation(0,0);
             frame.setSize(frame.getPreferredSize());
 
-            System.out.println(progress);
             //progress.setIndeterminate(true);
             //progress.setValue(50);
             progress.setVisible(false);
@@ -187,71 +187,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             }
         });
     }
-
-    //--------------------------------------------------------
-    //-- Utility Methods
-    //--------------------------------------------------------
-
-    /**
-     * Sends request to BioGeoMancer.
-     * @param id id
-     * @param country country
-     * @param adm1 country
-     * @param adm2 adm2
-     * @param localityArg locality
-     * @return returns the response body content
-     */
-    public static String getBioGeoMancerResponse(final String id,
-                                                 final String country,
-                                                 final String adm1,
-                                                 final String adm2,
-                                                 final String localityArg)
-    {
-        String retVal = null;
-        
-        try
-        {
-            HttpClient httpClient = new HttpClient();
-            PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl");
-            StringBuilder strBuf = new StringBuilder(128);
-            strBuf.append("\""+ id + "\",");
-            strBuf.append("\""+ country + "\",");
-            strBuf.append("\""+ adm1 + "\",");
-            strBuf.append("\""+ (adm2 != null ? adm2 : "") + "\",");
-            strBuf.append("\""+ localityArg + "\"\r\n");
-
-            NameValuePair[] postData = {
-                //new NameValuePair("batchtext", "\"12931\",\"Mexico\",\"Veracruz\",\"\",\"12 km NW of Catemaco\"\r\n"),
-                new NameValuePair("batchtext", strBuf.toString()),
-                new NameValuePair("format", "xml") };
-
-            //the 2.0 beta1 version has a
-            // PostMethod.setRequestBody(NameValuePair[])
-            //method, as addParameters is deprecated
-            postMethod.addParameters(postData);
-
-            String responseBody = "";
-
-            httpClient.executeMethod(postMethod);
-            responseBody = postMethod.getResponseBodyAsString();
-
-            Writer output = new BufferedWriter(new FileWriter("biogeomancer.xml"));
-            output.write(responseBody);
-            output.flush();
-            output.close();
-
-            //release the connection used by the method
-            postMethod.releaseConnection();
-
-            retVal = responseBody;
-
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return retVal;
-    }
-
+    
     /**
      * Process the DOM element.
      * @param element element
@@ -275,7 +211,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             
         }
         // else
-        System.out.println("****** ["+name+"] was not found.");
+        log.error("****** ["+name+"] was not found.");
         return "";
     }
 
@@ -351,10 +287,10 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param root the root DOM node of the document
      * @return a panel with the results
      */
-    public JPanel processBGMDOM(Element root, final Window window)
+    public JPanel createBGMPanel(final Element root, final Window window)
     {
         String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 19);
-        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,10px,p,2px,p:g", rowDef));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,10px,p,2px,C:p:g", rowDef));
 
         Element summary = (Element)root.selectSingleNode("//summary");
         if (summary != null)
@@ -368,11 +304,16 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            addRow(summary, builder, cc, "Adm2",     "queryAdm2",    1, 9);
            addRow(summary, builder, cc, "Locality", "queryString",  1, 11);
 
-           label.setText("Loading Map...");
-           builder.add(label, cc.xywh(7,1,1,11));
+           label.setText(getResourceString("LOADING_MAP"));
+           builder.add(label, cc.xywh(7,3,1,25));
+           //builder.add(new JScrollPane(label, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(7,3,1,25));
 
-           label.setPreferredSize(new Dimension(BGM_WIDTH,BGM_HEIGHT));
-
+           label.setPreferredSize(new Dimension(BGM_WIDTH, BGM_HEIGHT));
+           
+           okBtn = new JButton(getResourceString("Accept"));
+           okBtn.setEnabled(false);
+           JButton closeBtn = new JButton(getResourceString("Close"));
+           
            int rowInx = 13;
            String [] dataNames  = {"countryBoundingBox",   "matchedRecordCount", "boundingBox",  "boundingBoxCentroid",   "boundingBoxCentroidErrorRadius", "boundingBoxCentroidErrorRadiusUnits", "multiPointMatch",  "weightedCentroid"};
            String [] dataLabels = {"Country Bounding Box", "Matched Count",      "Bounding Box", "Bounding Box Centroid", "Centroid Error Radius",          "Centroid Error Radius Units",         "Multi Point Match", "Weighted Centroid"};
@@ -397,10 +338,10 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                    row[0] = Integer.toString(cnt);
                    for (int i=0;i<elementNames.length;i++)
                    {
-                       System.out.println("["+elementNames[i]+"]");
+                       //log.debug("["+elementNames[i]+"]");
                        row[i+1] = getData(rec, elementNames[i]);
 
-                       System.out.println("["+elementNames[i]+"]["+row[i]+"]");
+                       log.debug("["+elementNames[i]+"]["+row[i]+"]");
                    }
 
                    if (true)
@@ -438,10 +379,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                public void valueChanged(ListSelectionEvent e)
                {
-                   okBtn.setEnabled(table.getSelectedRowCount() > 0);
+                   if (!e.getValueIsAdjusting() && okBtn != null && table != null)
+                   {
+                       okBtn.setEnabled(table.getSelectedRowCount() > 0);
+                   }
                }});
 
-           /*
+           
            table.addMouseListener(new MouseAdapter() {
                public void mouseClicked(MouseEvent e) {
                    if (e.getClickCount() == 2) {
@@ -449,29 +393,36 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                    }
                }
            });
-           */
+           
+           
+           if (bgmTableModel.getRowCount() == 0)
+           {
+               label.setText("");
+               
+           } else if (bgmTableModel.getRowCount() == 1)
+           {
+               table.setRowSelectionInterval(0, 0);
+               okBtn.setEnabled(true);
+           }
+           
 
            JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
            builder.add(scrollPane, cc.xywh(1,rowInx, 7, 1));
            rowInx += 2;
+           
 
-           okBtn = new JButton(getResourceString("Save"));
-           okBtn.setEnabled(false);
-           JButton closeBtn = new JButton(getResourceString("Close"));
            //okBtn.addActionListener(this);
            if (getRootPane() != null)
            {
                getRootPane().setDefaultButton(okBtn);
            }
 
-           ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-           btnBuilder.addGlue();
-           btnBuilder.addGriddedButtons(new JButton[] {closeBtn, okBtn});
-
            PanelBuilder btnBar = new PanelBuilder(new FormLayout("50px,f:p:g,r:p,10px", "p"));
-           progress = new JProgressBar(0,100);
+           progress = new JProgressBar(0, 100);
+           progress.setVisible(false);
+           
            btnBar.add(progress, cc.xy(1,1));
-           btnBar.add(btnBuilder.getPanel(), cc.xy(3,1));
+           btnBar.add(ButtonBarFactory.buildOKCancelBar(okBtn, closeBtn), cc.xy(3,1));
            builder.add(btnBar.getPanel(), cc.xywh(3,rowInx, 5, 1));
 
            closeBtn.addActionListener( new ActionListener() {
@@ -695,6 +646,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                 if (!doingCache)
                 {
                     domStr = getBioGeoMancerResponse(locality.getLocalityId().toString(), getGeo(geo, 200), getGeo(geo, 300), getGeo(geo, 400), locality.getLocalityName());
+                    
                 } else
                 {
                     try
@@ -725,6 +677,78 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             }
         };
         worker.start();
+    }
+    
+    
+    //--------------------------------------------------------
+    //-- Utility Methods
+    //--------------------------------------------------------
+
+    /**
+     * Sends request to BioGeoMancer.
+     * @param id id
+     * @param country country
+     * @param adm1 country
+     * @param adm2 adm2
+     * @param localityArg locality
+     * @return returns the response body content
+     */
+    public static String getBioGeoMancerResponse(final String id,
+                                                 final String country,
+                                                 final String adm1,
+                                                 final String adm2,
+                                                 final String localityArg)
+    {
+        String retVal = null;
+        
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl");
+            StringBuilder strBuf = new StringBuilder(128);
+            strBuf.append("\""+ id + "\",");
+            strBuf.append("\""+ country + "\",");
+            strBuf.append("\""+ adm1 + "\",");
+            strBuf.append("\""+ (adm2 != null ? adm2 : "") + "\",");
+            strBuf.append("\""+ localityArg + "\"\r\n");
+
+            NameValuePair[] postData = {
+                //new NameValuePair("batchtext", "\"12931\",\"Mexico\",\"Veracruz\",\"\",\"12 km NW of Catemaco\"\r\n"),
+                new NameValuePair("batchtext", strBuf.toString()),
+                new NameValuePair("format", "xml") };
+
+            //the 2.0 beta1 version has a
+            // PostMethod.setRequestBody(NameValuePair[])
+            //method, as addParameters is deprecated
+            postMethod.addParameters(postData);
+
+            String responseBody = "";
+
+            httpClient.executeMethod(postMethod);
+            responseBody = postMethod.getResponseBodyAsString();
+
+            /*
+            Writer output = new BufferedWriter(new FileWriter("biogeomancer.xml"));
+            output.write(responseBody);
+            output.flush();
+            output.close();
+    */
+            
+            //release the connection used by the method
+            postMethod.releaseConnection();
+
+            retVal = responseBody;
+            
+        } catch (Exception ex)
+        {
+            exception = ex;
+        }
+        return retVal;
+    }
+
+    public static Exception getException()
+    {
+        return exception;
     }
 
     //--------------------------------------------------------
@@ -760,25 +784,33 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         String latText = latitude.getText();
         String lonText = longitude.getText();
         
-        try
+        if (StringUtils.isNotEmpty(latText) && StringUtils.isNotEmpty(lonText))
         {
-            newLat = new BigDecimal(latText);
-            newLon = new BigDecimal(lonText);
-        }
-        catch (NumberFormatException nfe)
+            
+            try
+            {
+                newLat = new BigDecimal(latText);
+                newLon = new BigDecimal(lonText);
+            }
+            catch (NumberFormatException nfe)
+            {
+                log.error("Could not parse georeference string as a decimal number", nfe);
+                newLat = null;
+                newLon = null;
+            }
+            
+            log.debug("latitude:  " + newLat);
+            log.debug("longitude: " + newLon);
+            
+            if (newLat != null && newLon != null)
+            {
+                locality.setLatitude1(newLat);
+                locality.setLongitude1(newLon);
+            }
+        } else
         {
-            log.error("Could not parse georeference string as a decimal number", nfe);
-            newLat = null;
-            newLon = null;
-        }
-        
-        System.out.println("latitude:  " + newLat);
-        System.out.println("longitude: " + newLon);
-        
-        if (newLat != null && newLon != null)
-        {
-            locality.setLatitude1(newLat);
-            locality.setLongitude1(newLon);
+            locality.setLatitude1(new BigDecimal(0.0));
+            locality.setLongitude1(new BigDecimal(0.0));
         }
         
         return locality;
@@ -823,6 +855,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     public void mapReceived(Icon map)
     {
         label.setIcon(map);
+        label.invalidate();
     }
 
     public void exceptionOccurred(Exception e)
