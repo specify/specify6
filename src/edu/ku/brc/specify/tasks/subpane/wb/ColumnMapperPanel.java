@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -81,7 +82,7 @@ import edu.ku.brc.ui.IconManager;
 public class ColumnMapperPanel extends JPanel
 {
     private static final Logger log = Logger.getLogger(ColumnMapperPanel.class);
-            
+    
     protected final String                   helpContext;
     protected Vector<TableInfo>              tableInfoList = new Vector<TableInfo>();
     protected JList                          fieldList;
@@ -99,8 +100,9 @@ public class ColumnMapperPanel extends JPanel
     protected JDialog                        dlg;
     
     protected JPanel                         dataFileColPanel;
-    protected Vector<FieldMappingPanel>      mappingItems = new Vector<FieldMappingPanel>();
-    protected int                            currentInx = -1;
+    protected Vector<FieldMappingPanel>      mappingItems      = new Vector<FieldMappingPanel>();
+    protected Vector<FieldMappingPanel>      removedItems      = new Vector<FieldMappingPanel>();
+    protected int                            currentInx        = -1;
     protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>>();
     
     protected ImportDataFileInfo             dataFileInfo      = null;
@@ -415,7 +417,8 @@ public class ColumnMapperPanel extends JPanel
         
         addMapItemBtn.setEnabled(fieldItem != null && !fieldItem.isInUse());
         
-        removeMapItemBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped() && mappingItems.get(currentInx).isNew());
+        //removeMapItemBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped() && mappingItems.get(currentInx).isNew());
+        removeMapItemBtn.setEnabled(currentInx > -1 && mappingItems.get(currentInx).isMapped());
         
         if (okBtn != null && hasChanged)
         {
@@ -522,8 +525,6 @@ public class ColumnMapperPanel extends JPanel
          if (fieldInfo != null)
          {
              fieldInfo.setInUse(false);
-             fmp.setTableField(null);
-             fmp.setIcon(null);
          }
          fieldList.repaint();
          
@@ -573,14 +574,35 @@ public class ColumnMapperPanel extends JPanel
             tableClass = String.class;
         }
         
-        ImportColumnInfo  colInfo = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(tableClass), tblField.getFieldInfo().getColumn(), null);
-        FieldMappingPanel fmp     = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
+        FieldMappingPanel fmp = null;
+        for (FieldMappingPanel fldMapPanel : removedItems)
+        {
+            if (fldMapPanel.getTableField() == tblField)
+            {
+                fmp = fldMapPanel;
+                removedItems.remove(fldMapPanel);
+                break;
+            }
+        }
         
-        fmp.setNew(isNew); // new Items that was not in the data file.
-        
-        selectMappingPanel(fmp);
-
-        map(tblField);
+        if (fmp == null)
+        {
+            ImportColumnInfo  colInfo = new ImportColumnInfo(maxDataColIndex, ImportColumnInfo.getType(tableClass), tblField.getFieldInfo().getColumn(), null);
+            fmp = addMappingItem(colInfo, IconManager.getIcon(tblField.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
+            fmp.setNew(isNew); // new Items that was not in the data file.
+            
+            selectMappingPanel(fmp);
+            
+            map(tblField);
+            
+        } else
+        {
+            fmp.getTableField().setInUse(true);
+            mappingItems.add(fmp);
+            dataFileColPanel.add(fmp);
+            
+            selectMappingPanel(fmp);
+        }
         
         dataFileColPanel.validate();
         fieldList.repaint();
@@ -597,6 +619,11 @@ public class ColumnMapperPanel extends JPanel
         
         unmap(fmp);
         
+        if (!fmp.isNew())
+        {
+            removedItems.add(fmp);
+        }
+        
         mappingItems.remove(fmp);
         dataFileColPanel.remove(fmp);
         currentInx = -1;
@@ -604,6 +631,8 @@ public class ColumnMapperPanel extends JPanel
         dataFileColPanel.validate();
         fieldList.repaint();
         dataFileColPanel.repaint();
+        
+        setChanged(true);
 
         updateEnabledState();
     }
@@ -635,11 +664,11 @@ public class ColumnMapperPanel extends JPanel
     {
         if (ti != null)
         {
+            String fldFieldName = fieldName.toLowerCase();
             for (TableFieldPair tblField : tableFieldList.get(ti))
             {
                 //System.out.println("["+tblField.getFieldInfo().getColumn().toLowerCase()+"]["+fieldName.toLowerCase()+"]");
                 String tblFieldName = tblField.getFieldInfo().getColumn().toLowerCase();
-                String fldFieldName = fieldName.toLowerCase();
                 if (tblFieldName.equals(fldFieldName) || tblFieldName.startsWith(fldFieldName))
                 {
                     return tblField;
@@ -647,6 +676,59 @@ public class ColumnMapperPanel extends JPanel
             }
         }
         return null;
+    }
+    
+    /**
+     * Automaps a filed name to the Specify Schema
+     * @param fieldNameArg the field name
+     * @return the Table Field Pair
+     */
+    protected TableFieldPair autoMapFieldName(final String fieldNameArg)
+    {
+        String fieldNameLower = fieldNameArg.toLowerCase();
+        String fieldName      = StringUtils.deleteWhitespace(fieldNameLower);
+        
+        TableFieldPair tblField  = null;
+        
+        // Check some standard common names
+        if (fieldName.indexOf("date") > -1)
+        {
+            if (fieldName.indexOf("start") > -1)
+            {
+                tblField = getFieldInfo(getTableInfo(CollectingEvent.class), "StartDate");
+                
+            } else if (fieldName.indexOf("end") > -1)
+            {
+                tblField = getFieldInfo(getTableInfo(CollectingEvent.class), "EndDate");
+            }
+        } else if (fieldName.startsWith("field"))
+        {
+            if (fieldName.startsWith("fieldno") || fieldName.startsWith("fieldnum"))
+            {
+                tblField = getFieldInfo(getTableInfo(CollectionObject.class), "FieldNumber");
+            }
+        } else if (fieldName.startsWith("catalog"))
+        {
+            if (fieldName.startsWith("catalogno") || fieldName.startsWith("catalognum"))
+            {
+                tblField = getFieldInfo(getTableInfo(CollectionObject.class), "CatalogNumber");
+            }
+        }
+        
+        // If we had not luck then just loop through everything looking for it.
+        if (tblField == null)
+        {
+            for (DBTableIdMgr.TableInfo ti : tableFieldList.keySet())
+            {
+                tblField = getFieldInfo(getTableInfo(ti.getClassObj()), fieldNameLower);
+                if (tblField != null)
+                {
+                    break;
+                }
+            }
+        }
+        
+        return tblField;
     }
     
     /**
@@ -659,45 +741,7 @@ public class ColumnMapperPanel extends JPanel
         currentInx = 0;
         for (FieldMappingPanel fmp : mappingItems)
         {
-            String         fieldName = StringUtils.deleteWhitespace(fmp.getFieldName().toLowerCase());
-            TableFieldPair tblField  = null;
-            
-            if (fieldName.indexOf("date") > -1)
-            {
-                if (fieldName.indexOf("start") > -1)
-                {
-                    tblField = getFieldInfo(getTableInfo(CollectingEvent.class), "StartDate");
-                    
-                } else if (fieldName.indexOf("end") > -1)
-                {
-                    tblField = getFieldInfo(getTableInfo(CollectingEvent.class), "EndDate");
-                }
-            } else if (fieldName.startsWith("field"))
-            {
-                if (fieldName.startsWith("fieldno") || fieldName.startsWith("fieldnum"))
-                {
-                    tblField = getFieldInfo(getTableInfo(CollectionObject.class), "FieldNumber");
-                }
-            } else if (fieldName.startsWith("catalog"))
-            {
-                if (fieldName.startsWith("catalogno") || fieldName.startsWith("catalognum"))
-                {
-                    tblField = getFieldInfo(getTableInfo(CollectionObject.class), "CatalogNumber");
-                }
-            }
-            
-            if (tblField == null)
-            {
-                for (DBTableIdMgr.TableInfo ti : tableFieldList.keySet())
-                {
-                    tblField = getFieldInfo(getTableInfo(ti.getClassObj()), fmp.getFieldName());
-                    if (tblField != null)
-                    {
-                        break;
-                    }
-                }
-            }
-            
+            TableFieldPair tblField = autoMapFieldName(fmp.getFieldName());
             if (tblField != null)
             {
                 map(tblField);
@@ -815,6 +859,7 @@ public class ColumnMapperPanel extends JPanel
     //------------------------------------------------------------
     class FieldMappingPanel extends JPanel
     {
+        
         protected String            noMappingStr = getResourceString("WB_NO_MAPPING");
 
         protected boolean           hasFocus      = false;
@@ -827,6 +872,7 @@ public class ColumnMapperPanel extends JPanel
         protected TableFieldPair    tblField      = null;
         protected ImportColumnInfo  colInfo       = null;
         protected boolean           isNew         = false;
+        
         
         protected FieldMappingPanel thisItem;
         
@@ -846,6 +892,10 @@ public class ColumnMapperPanel extends JPanel
 
             fieldLabel   = new JLabel(colInfo.getColName());
             mappingLabel = new JLabel(noMappingStr, SwingConstants.RIGHT);
+            
+            Font font = fieldLabel.getFont();
+            fieldLabel.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
+
             
             //Font font = fieldLabel.getFont();
             //font = new Font(font.getName(), font.getStyle(), font.getSize()-2);
@@ -961,6 +1011,9 @@ public class ColumnMapperPanel extends JPanel
          */
         public void setNew(boolean isNew)
         {
+            Font font = fieldLabel.getFont();
+            fieldLabel.setFont(new Font(font.getName(), (isNew ? Font.PLAIN : Font.BOLD), font.getSize()));
+            
             this.isNew = isNew;
         }
         
