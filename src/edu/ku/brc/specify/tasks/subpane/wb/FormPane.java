@@ -275,7 +275,6 @@ public class FormPane extends JComponent implements ResultSetControllerListener,
     @Override
     public Dimension getPreferredSize()
     {
-        System.out.println("getPreferredSize "+ initialSize);
         return initialSize;
     }
 
@@ -564,28 +563,6 @@ public class FormPane extends JComponent implements ResultSetControllerListener,
                     uiComps.get(0).getComp().requestFocus();
                 }
             });
-            
-            if (initialSize != null)
-            {
-                /*
-                System.out.println("Initial Size: "+initialSize);
-                JViewport viewPort = scrollPane.getViewport();
-                Dimension vpSize = viewPort.getSize();
-                System.out.println("vpSize:       "+vpSize);
-                if (vpSize.height < initialSize.height)
-                {
-                    vpSize.height = initialSize.height;
-                }
-                if (vpSize.width < initialSize.width)
-                {
-                    vpSize.width = initialSize.width;
-                }
-                //setSize(vpSize);
-                //setPreferredSize(vpSize);
-                //viewPort.setViewSize(vpSize);
-                System.out.println("vpSize:       "+vpSize);
-                initialSize = null;*/
-            }
         }
     }
     
