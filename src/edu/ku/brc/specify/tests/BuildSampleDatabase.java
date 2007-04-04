@@ -884,35 +884,77 @@ public class BuildSampleDatabase
         // Workbeanch
         ////////////////////////////////
         
+        // setup a template and its mapping items
         WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, "BasicTemplate", "These are the remarks");
-        Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
-        WorkbenchTemplateMappingItem wbtmi = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "fieldNumber", "Field Number", "string", 25, 0, 0, wbTemplate);
+        WorkbenchTemplateMappingItem wbtmi0 = createWorkbenchMappingItem("CollectionObject", 
+                                                                        1, "fieldNumber", "Field Number", 25, 0, 0, wbTemplate);
         WorkbenchTemplateMappingItem wbtmi1 = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "catalogedDate", "Cataloged Date", "Date", 25, 1, 1, wbTemplate);
+                                                                        1, "catalogedDate", "Cataloged Date", 25, 1, 1, wbTemplate);
         WorkbenchTemplateMappingItem wbtmi2 = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "catalogNumber", "Catalog Number", "string", 25, 2, 2, wbTemplate);
+                                                                        1, "catalogNumber", "Catalog Number", 25, 2, 2, wbTemplate);
+        WorkbenchTemplateMappingItem wbtmi3 = createWorkbenchMappingItem("CollectionObject", 
+                                                                        1, "yesNo1", "Yes/No 1", 8, 3, 3, wbTemplate);
 
         dataObjects.add(wbTemplate);
+        dataObjects.add(wbtmi0);
+        dataObjects.add(wbtmi1);
+        dataObjects.add(wbtmi2);
+        dataObjects.add(wbtmi3);
+
+        // setup a workbench based on that template
+        Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
         dataObjects.add(workBench);
 
-        for (int i = 1; i <= 4; ++i)
+        // create a bunch of rows for the workbench
+        for (int i = 1; i <= 14; ++i)
         {
             WorkbenchRow wbRow = workBench.addRow();
-            WorkbenchDataItem wbdi  = createWorkbenchDataItem(wbRow, "RS-10" + i, 0);
-            WorkbenchDataItem wbdi1 = createWorkbenchDataItem(wbRow, "03/04/2007", 1);
+            WorkbenchDataItem wbdi0 = createWorkbenchDataItem(wbRow, "RS-10" + i, 0);
+            
+            // just to make the dates look a little random
+            int date = (i*547) % 31 + 1;
+            String dateStr = "0" + Integer.toString(date);
+            dateStr = dateStr.substring(dateStr.length()-2);
+            WorkbenchDataItem wbdi1 = createWorkbenchDataItem(wbRow, "03/" + dateStr + "/2007", 1);
             WorkbenchDataItem wbdi2 = createWorkbenchDataItem(wbRow, "CN-10" + i, 2);
             
+            String boolValAsStr = null;
+            switch(i%3)
+            {
+                case 0:
+                {
+                    boolValAsStr = "true";
+                    break;
+                }
+                case 1:
+                {
+                    boolValAsStr = "false";
+                    break;
+                }
+                case 2:
+                {
+                    boolValAsStr = "";
+                    break;
+                }
+            }
+            WorkbenchDataItem wbdi3 = createWorkbenchDataItem(wbRow, boolValAsStr, 3);
+            
             File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
-            wbRow.setCardImage(f.getAbsolutePath());
-            
-            dataObjects.add(wbtmi);
-            dataObjects.add(wbtmi1);
-            dataObjects.add(wbtmi2);
-            
-            dataObjects.add(wbdi);
+            if (f.exists())
+            {
+                wbRow.setCardImage(f.getAbsolutePath());
+            }
+
+            dataObjects.add(wbRow);
+            dataObjects.add(wbdi0);
             dataObjects.add(wbdi1);
             dataObjects.add(wbdi2);
+            
+            // since some of these values will be "", the data item might be null
+            if (wbdi3 != null)
+            {
+                dataObjects.add(wbdi3);
+            }
         }
         
         

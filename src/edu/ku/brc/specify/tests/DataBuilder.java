@@ -2140,9 +2140,12 @@ public class DataBuilder
     {
         
         WorkbenchDataItem wbdi = workbenchRow.setData(cellData, columnNumber.shortValue());
-        wbdi.setRowNumber(workbenchRow.getRowNumber());
         
-        persist(wbdi);
+        if (wbdi!=null)
+        {
+            wbdi.setRowNumber(workbenchRow.getRowNumber());
+            persist(wbdi);
+        }
 
         return wbdi;
     }
@@ -2169,7 +2172,6 @@ public class DataBuilder
                                                                           final Integer tableId,
                                                                           final String fieldName,
                                                                           final String caption,
-                                                                          final String dataType,
                                                                           final int     dataLength,
                                                                           final Integer viewOrder,
                                                                           final Integer dataColumnIndex,
