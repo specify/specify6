@@ -74,6 +74,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.MouseOverJLabel;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
@@ -230,7 +231,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 "p,10px, " +	//row header
                 "p, 3px,"+		//previe separator
                 "f:p:g,5px," + 	//tablePreview
-                "20px,10px,"+
+                "30px,3px,"+
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
@@ -288,7 +289,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 "p,10px, " +	//row header
                 "p, 3px,"+		//previe separator
                 "f:p:g,5px," + 	//tablePreview
-                "20px,10px,"+
+                "30px,3px,"+
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
@@ -687,16 +688,17 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 
             if(checkForErrors(headers, tableData)) 
                 {
-                errorPanel.setLabelForError();
+                errorPanel.showDataImportStatusPanel(true);
                 }
             else{
-                errorPanel.clearLabelFromFailedFind();
+                errorPanel.showDataImportStatusPanel(false);
             }
 			model = new PreviewTableModel(headers, tableData);
 			t.setModel(model);
 			t.setColumnSelectionAllowed(false);
 			t.setRowSelectionAllowed(false);
 			t.setCellSelectionEnabled(false);
+			//t.getTableHeader().is
             //t.getTableHeader().setC
             //t.setMinimumSize(new Dimension(500,100));
             t.setPreferredScrollableViewportSize(new Dimension(500,100));
@@ -724,8 +726,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
             //boolean isColumnLengthValid = ;
             if(!isStringLongerThan(WorkbenchTemplateMappingItem.getImportedColNameMaxLength(), headers[i]))
             {
-                String msg = "Column Name: " + headers[i] + " is too long to be inserted into the database.  \n"
-                + "The Column Name will be truncated to:\n" + headers[i].substring(0, WorkbenchTemplateMappingItem.getImportedColNameMaxLength()-1);
+                String msg = "Column at index=" + i + " is too long to be inserted into the database.  It will be truncated.\n"
+                + "Current Value:\n" + headers[i]+ "\nTruncated Value:\n" + headers[i].substring(0, WorkbenchTemplateMappingItem.getImportedColNameMaxLength()-1);
                 log.warn(msg);
                 listModel.addElement(msg);
                 //listOfImportDataErrors
@@ -1205,36 +1207,69 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
          */
         public DataErrorPanel()
         {
-          statusInfo = new JLabel("       ");
-          dataStatusButton = new JButton(getResourceString("DETAILS"));
-          dataStatusButton.addActionListener(new ActionListener()
+            //MouseOverJLabel l = new MouseOverJLabel("Some text");
+            //l.setForeground(Color.WHITE);
+            //l.setActivatedTextColor(Color.RED);
+            //l.addActionListener(new ActionListener()
+            //{
+            ///   public void actionPerformed(ActionEvent ae)
+            //    {
+            //        System.out.println("click");
+            //    }
+            //});
+            MouseOverJLabel statusInfoLabel = new MouseOverJLabel();
+            statusInfoLabel.setHorizontalTextPosition(JLabel.RIGHT);
+            statusInfoLabel.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
+            statusInfoLabel.setText(getResourceString("DATA_IMPORT_ERROR"));
+            statusInfoLabel.setActivatedTextColor(Color.RED);
+          //dataStatusButton = new JButton(getResourceString("DETAILS"));
+          statusInfoLabel.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
                 showErrors();
             }
         });
-            builder.add(statusInfo,          cc.xy(1,1));
-            builder.add(dataStatusButton, cc.xywh(3,1, 1,1));    
+            builder.add(statusInfoLabel,          cc.xy(1,1));
+            //builder.add(dataStatusButton, cc.xywh(3,1, 1,1));    
         }
-        /**
-         * 
-         */
-        private void setLabelForError()
-        {
-            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
-            statusInfo.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
-            statusInfo.setText(getResourceString("DATA_IMPORT_ERROR"));
-        } 
+//        /**
+//         * 
+//         */
+//        private void setLabelForError()
+//        {
+//            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
+//            statusInfo.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
+//            statusInfo.setText(getResourceString("DATA_IMPORT_ERROR"));
+//        } 
+//        
+//        /**
+//         * 
+//         */
+//        private void clearLabelFromFailedFind()
+//        {
+//            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
+//            statusInfo.setIcon(null);
+//            statusInfo.setText("");
+//        }
         
         /**
-         * 
+         * @param shouldShow - flag noting whether the panel should be visible
+         * @return the find/replace panel to be displayed
          */
-        private void clearLabelFromFailedFind()
+        private JPanel showDataImportStatusPanel(boolean shouldShow)
         {
-            statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
-            statusInfo.setIcon(null);
-            statusInfo.setText("");
+            if (!shouldShow)
+            {
+            	log.debug("hiding showDataImportStatusPanel");
+                this.setVisible(false);
+            } else
+            {
+            	log.debug("showing showDataImportStatusPanel");
+                this.setVisible(true);
+                //findField.requestFocusInWindow();
+            }
+            return this;
         }
     }
     /**
