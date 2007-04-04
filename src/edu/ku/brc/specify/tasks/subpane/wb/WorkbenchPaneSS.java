@@ -282,7 +282,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                model.clearCells(spreadSheet.getSelectedRows(), spreadSheet.getSelectedColumns());
+                model.clearCells(spreadSheet.getSelectedRowModelIndexes(), spreadSheet.getSelectedColumnModelIndexes());
             }
         });
         selectionSensativeButtons.add(clearCellsBtn);
@@ -656,8 +656,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         checkForCellEditing();
         
-        int[] rows = spreadSheet.getSelectedRows();
-        model.deleteRows(spreadSheet.getSelectedRows());
+        int[] rows = spreadSheet.getSelectedRowModelIndexes();
+        model.deleteRows(spreadSheet.getSelectedRowModelIndexes());
+
         resultsetController.setLength(model.getRowCount());
         
         int rowCount = spreadSheet.getRowCount();
@@ -986,7 +987,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         log.debug("Showing map of selected records");
         showMapBtn.setEnabled(false);
-        int[] selection = spreadSheet.getSelectedRows();
+        int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
         {
             // if none are selected, map all of them
@@ -1157,7 +1158,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void doExcelCsvExport()
     {
-        int[] selection = spreadSheet.getSelectedRows();
+        int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
         {
             // if none are selected, select all of them
@@ -1255,7 +1256,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void showRecordsInGoogleEarth()
     {
         log.debug("Showing map of selected records");
-        int[] selection = spreadSheet.getSelectedRows();
+        int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
         {
             // if none are selected, map all of them

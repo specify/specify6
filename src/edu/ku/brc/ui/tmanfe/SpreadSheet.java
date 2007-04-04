@@ -256,6 +256,34 @@ public class SpreadSheet  extends SearchableJXTable
     }
     
     /**
+     * @return an array of indexes INTO THE MODEL of the currently selected rows
+     */
+    public int[] getSelectedRowModelIndexes()
+    {
+        int[] selected = getSelectedRows();
+        for (int i: selected)
+        {
+            i = convertRowIndexToModel(i);
+        }
+        return selected;
+    }
+    
+    /**
+     * @return an array of indexes INTO THE MODEL of the currently selected columns
+     */
+    public int[] getSelectedColumnModelIndexes()
+    {
+        int[] selected = getSelectedColumns();
+        for (int i: selected)
+        {
+            i = convertColumnIndexToModel(i);
+        }
+        return selected;
+    }
+    
+    
+    
+    /**
      * Invoked when a cell edition starts. This method overrides and calls that of its super class.
      * 
      * @param int The row to be edited
