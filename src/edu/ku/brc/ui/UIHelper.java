@@ -1470,4 +1470,51 @@ public final class UIHelper
         }
         return str.toString();
     }
+    
+    /**
+     * Get Property as int, if it is empty then it passes back the default value.
+     * @param properties the properties
+     * @param nameStr the name of the property
+     * @param defVal the default value
+     * @return
+     */
+    public static int getProperty(final Properties properties, final String nameStr, final int defVal)
+    {
+        if (properties != null)
+        {
+            String str = properties.getProperty(nameStr);
+            if (StringUtils.isNotEmpty(str))
+            {
+                return Integer.parseInt(str);
+            }
+        } else
+        {
+            return defVal;
+        }
+        return -1;
+    }
+
+    /**
+     * Get Property as boolean, if it is empty then it passes back the default value.
+     * @param properties the properties
+     * @param nameStr the name of the property
+     * @param defVal the default value
+     * @return
+     */
+    public boolean getProperty(final Properties properties, final String nameStr, final boolean defVal)
+    {
+        if (properties != null)
+        {
+            String str = properties.getProperty(nameStr);
+            if (StringUtils.isNotEmpty(str))
+            {
+                return str.equalsIgnoreCase("true");
+            }
+        } else
+        {
+            return defVal;
+        }
+        return false;
+    }
+
 }

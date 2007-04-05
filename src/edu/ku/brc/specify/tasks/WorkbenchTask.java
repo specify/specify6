@@ -26,6 +26,7 @@ import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -35,12 +36,10 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +63,7 @@ import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.af.tasks.subpane.PieChartPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
@@ -80,7 +80,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
-import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
+import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperDlg;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
@@ -630,26 +630,20 @@ public class WorkbenchTask extends BaseTask
      * @param template an existing template
      * @return the dlg aafter cancel or ok
      */
-    protected JDialog showColumnMapperDlg(final ImportDataFileInfo dataFileInfo, 
-                                          final WorkbenchTemplate  template,
-                                          final String             titleKey)
+    protected ColumnMapperDlg showColumnMapperDlg(final ImportDataFileInfo dataFileInfo, 
+                                                    final WorkbenchTemplate  template,
+                                                    final String             titleKey)
     {
-        JDialog            dlg    = new JDialog((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), true);
-        ColumnMapperPanel  mapper;
+        ColumnMapperDlg  mapper;
         if (template != null)
         {
-            mapper = new ColumnMapperPanel(dlg, template);
+            mapper = new ColumnMapperDlg((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), template);
         } else
         {
-            mapper = new ColumnMapperPanel(dlg, dataFileInfo);
+            mapper = new ColumnMapperDlg((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), dataFileInfo);
         }
-       
-        dlg.setContentPane(mapper);
-        dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dlg.getRootPane().setDefaultButton(mapper.getOkBtn());
-        dlg.pack();
-        UIHelper.centerAndShow(dlg);
-        return dlg;
+        UIHelper.centerAndShow(mapper);
+        return mapper;
     }
     
     /**
@@ -658,16 +652,14 @@ public class WorkbenchTask extends BaseTask
      */
     protected WorkbenchTemplate createTemplateFromScratch()
     {
-        JDialog           dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
-        ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
-        if (!cmp.isCancelled())
+        ColumnMapperDlg dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
+        if (!dlg.isCancelled())
         { 
-            WorkbenchTemplate workbenchTemplate = createTemplate(cmp, null, null);
+            WorkbenchTemplate workbenchTemplate = createTemplate(dlg, null, null);
             if (workbenchTemplate != null)
             {
                 createWorkbench(null, workbenchTemplate, false);
             }
-
         }
         return null;
     }
@@ -676,7 +668,7 @@ public class WorkbenchTask extends BaseTask
      * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
      * @return the new WorkbenchTemplate
      */
-    protected WorkbenchTemplate createTemplate(final ColumnMapperPanel mapper, final String filePath, final String templateName)
+    protected WorkbenchTemplate createTemplate(final ColumnMapperDlg mapper, final String filePath, final String templateName)
     {
         WorkbenchTemplate workbenchTemplate = null;
         try
@@ -785,7 +777,7 @@ public class WorkbenchTask extends BaseTask
                         // Check to see if there is an exact match by name
                         if (wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName()))
                         {
-                            ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(wbItem.getDataFieldClass());
+                            ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(getDataType(wbItem));
                             if (type == ImportColumnInfo.ColumnType.Date)
                             {
                                 ImportColumnInfo.ColumnType colType = fileItem.getColType();
@@ -1161,11 +1153,10 @@ public class WorkbenchTask extends BaseTask
                 selectedTemplate  = null;
                 if (btnPressed == ChooseFromListDlg.APPLY_BTN)
                 {
-                    JDialog           dlg = showColumnMapperDlg(dataFileInfo, null, "WB_IMP_TEMPLATE_EDITOR");
-                    ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
-                    if (!cmp.isCancelled())
+                    ColumnMapperDlg dlg = showColumnMapperDlg(dataFileInfo, null, "WB_IMP_TEMPLATE_EDITOR");
+                    if (!dlg.isCancelled())
                     {   
-                        workbenchTemplate = createTemplate(cmp, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
+                        workbenchTemplate = createTemplate(dlg, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
                     }
                     
                 } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
@@ -1896,16 +1887,16 @@ public class WorkbenchTask extends BaseTask
     {
         loadTemplateFromData(workbenchTemplate);
         
-        JDialog dlg = showColumnMapperDlg(null, workbenchTemplate, 
-                StringUtils.isNotEmpty(workbenchTemplate.getSrcFilePath()) ? "WB_IMP_TEMPLATE_EDITOR" : "WB_TEMPLATE_EDITOR");
-        ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
-        if (!cmp.isCancelled())
+        ColumnMapperDlg dlg = showColumnMapperDlg(null, workbenchTemplate, 
+                                                    StringUtils.isNotEmpty(workbenchTemplate.getSrcFilePath()) ? 
+                                                            "WB_IMP_TEMPLATE_EDITOR" : "WB_TEMPLATE_EDITOR");
+        if (!dlg.isCancelled())
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
 
-                WorkbenchTemplate newWorkbenchTemplate = cmp.createWorkbenchTemplate();
+                WorkbenchTemplate newWorkbenchTemplate = dlg.createWorkbenchTemplate();
                 
                 session.attach(workbenchTemplate);
                 
@@ -2048,11 +2039,10 @@ public class WorkbenchTask extends BaseTask
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
         {
             // Create a new Template 
-            JDialog           dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
-            ColumnMapperPanel cmp = (ColumnMapperPanel)dlg.getContentPane();
-            if (!cmp.isCancelled())
+            ColumnMapperDlg dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
+            if (!dlg.isCancelled())
             {   
-                workbenchTemplate = createTemplate(cmp, null, null);
+                workbenchTemplate = createTemplate(dlg, null, null);
             }
             
         } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
@@ -2317,6 +2307,63 @@ public class WorkbenchTask extends BaseTask
                 log.error("workbenchTemplate was null!");
             }
         }
+    }
+    
+    /**
+     * Returns the class of the DB field target of this mapping.
+     *
+     * @return a {@link Class} object representing the DB target field of this mapping.
+     */
+    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi)
+    {
+        // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
+        if (wbtmi.getSrcTableId() == null)
+        {
+            return String.class;
+        }
+        
+        DBTableIdMgr schema    = getDatabaseSchema();
+        TableInfo    tableInfo = schema.getInfoById(wbtmi.getSrcTableId());
+        if (tableInfo == null)
+        {
+            throw new RuntimeException("Cannot find TableInfo in DBTableIdMgr for ID=" + wbtmi.getSrcTableId());
+        }
+        
+        for (DBTableIdMgr.FieldInfo fi : tableInfo.getFields())
+        {
+            if (fi.getName().equals(wbtmi.getFieldName()))
+            {
+                String type = fi.getType();
+                if (StringUtils.isNotEmpty(type))
+                {
+                    if (type.equals("calendar_date"))
+                    {
+                        return Calendar.class;
+                        
+                    } else if (type.equals("text"))
+                    {
+                        return String.class;
+                        
+                    } else if (type.equals("boolean"))
+                    {
+                        return Boolean.class;
+                        
+                    } else
+                    {
+                        try
+                        {
+                            return Class.forName(type);
+                            
+                        } catch (Exception e)
+                        {
+                            log.error(e);
+                        }
+                    }
+                }
+            }
+        }
+
+        throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
     }
 
     //-------------------------------------------------------

@@ -16,6 +16,7 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -57,7 +58,9 @@ import edu.ku.brc.ui.validation.ValCheckBox;
  */
 public class InputPanel extends JPanel implements GhostActionable
 {
-    public static final DataFlavor INPUTPANEL_FLAVOR      = new DataFlavor(InputPanel.class, "InputPanel");
+    public static final DataFlavor INPUTPANEL_FLAVOR = new DataFlavor(InputPanel.class, "InputPanel");
+    
+    protected static final Cursor  handCursor        = new Cursor(Cursor.HAND_CURSOR);
 
     protected WorkbenchTemplateMappingItem wbtmi;
     protected JLabel     label;
@@ -107,7 +110,7 @@ public class InputPanel extends JPanel implements GhostActionable
             this.label = new JLabel(label+":", SwingConstants.RIGHT);
         }
 
-        
+        this.label.setCursor(handCursor);
         add(this.label);
         add(this.comp);
         

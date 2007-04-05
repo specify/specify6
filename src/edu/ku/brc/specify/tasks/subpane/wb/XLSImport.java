@@ -27,6 +27,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.DateWrapper;
 
 /**
@@ -114,7 +115,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                         {
                             case HSSFCell.CELL_TYPE_NUMERIC:
                             {
-                                Class classObj = wbtmi.getDataFieldClass();
+                                Class classObj = WorkbenchTask.getDataType(wbtmi);
                                 if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
                                 {
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());

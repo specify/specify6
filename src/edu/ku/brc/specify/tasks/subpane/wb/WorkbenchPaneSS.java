@@ -506,6 +506,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // See if we need to make the Image Frame visible
+        // Commenting this out for now because it is so annoying.
+        /*
         if (showImageView || hasOneOrMoreImages)
         {
             SwingUtilities.invokeLater(new Runnable()
@@ -516,7 +518,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
                 }
             });
-        }
+        }*/
     }
     
     /**

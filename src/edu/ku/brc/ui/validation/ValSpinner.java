@@ -68,10 +68,10 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
      */
     public ValSpinner(final int minVal, final int maxVal, final boolean isRequired, final boolean isReadOnly)
     {
-        super(new SpinnerNumberModel(0,      //initial value
-                                     minVal, //min
-                                     maxVal, //max
-                                     1));    //step
+        super(new SpinnerNumberModel(minVal, // initial value
+                                     minVal, // min
+                                     maxVal, // max
+                                     1));    // step
         this.isRequired = isRequired;
         this.isReadOnly = isReadOnly;
         

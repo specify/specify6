@@ -17,8 +17,10 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +35,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -49,7 +50,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -66,6 +66,7 @@ import edu.ku.brc.specify.tasks.subpane.TableFieldPair;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 
 
@@ -79,11 +80,10 @@ import edu.ku.brc.ui.IconManager;
  * Created Date: Feb 16, 2007
  *
  */
-public class ColumnMapperPanel extends JPanel
+public class ColumnMapperDlg extends CustomDialog
 {
-    private static final Logger log = Logger.getLogger(ColumnMapperPanel.class);
+    private static final Logger log = Logger.getLogger(ColumnMapperDlg.class);
     
-    protected final String                   helpContext;
     protected Vector<TableInfo>              tableInfoList = new Vector<TableInfo>();
     protected JList                          fieldList;
     protected JList                          tableList;
@@ -92,12 +92,8 @@ public class ColumnMapperPanel extends JPanel
     protected JButton                        addMapItemBtn;
     protected JButton                        removeMapItemBtn;
     
-    protected JButton                        okBtn;
-    protected JButton                        cancelBtn;
-    protected boolean                        isCancelled = true;
     protected boolean                        hasChanged  = false;
     protected boolean                        doingFill   = false;
-    protected JDialog                        dlg;
     
     protected JPanel                         dataFileColPanel;
     protected Vector<FieldMappingPanel>      mappingItems      = new Vector<FieldMappingPanel>();
@@ -120,9 +116,10 @@ public class ColumnMapperPanel extends JPanel
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public ColumnMapperPanel(final JDialog dlg, final ImportDataFileInfo dataFileInfo)
+    public ColumnMapperDlg(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo)
     {
-        this.dlg             = dlg;
+        super(frame, title, true, OKCANCELAPPLYHELP, null);
+        
         this.dataFileInfo    = dataFileInfo;
         this.isMappedToAFile = dataFileInfo != null;
         
@@ -136,31 +133,26 @@ public class ColumnMapperPanel extends JPanel
      * @param dlg the dialog this will be housed into
      * @param dataFileInfo the information about the data file.
      */
-    public ColumnMapperPanel(final JDialog dlg, final WorkbenchTemplate wbTemplate)
+    public ColumnMapperDlg(final Frame frame, final String title, final WorkbenchTemplate wbTemplate)
     {
-        this.dlg               = dlg;
+        super(frame, title, true, OKCANCELAPPLYHELP, null);
+        
         this.workbenchTemplate = wbTemplate;
         this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         
         helpContext = this.isMappedToAFile ? "OnRampImportTemplateEditor" : "OnRampTemplateEditing";
+        
         createUI();
     }
     
-    /**
-     * Constructor.
-     * @param dlg the dialog this will be housed into
-     * @param dataFileInfo the information about the data file.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
-    public ColumnMapperPanel(final JDialog dlg)
-    {
-        this(dlg, (ImportDataFileInfo)null);
-    }
-    
-    /**
-     * Creates UI for the dialog.
-     */
+    @Override
     public void createUI()
     {
+        super.createUI();
+        
         databaseSchema = WorkbenchTask.getDatabaseSchema();
         
         for (DBTableIdMgr.TableInfo ti : databaseSchema.getList())
@@ -180,8 +172,8 @@ public class ColumnMapperPanel extends JPanel
         }
         Collections.sort(tableInfoList);
         
-        String          rowDef  = "top:p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, p, 2px, f:p:g";
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", rowDef), this);
+        String          rowDef  = "top:p, 2px, top:p, 10px, p, 2px, f:p:g, 5px, p";
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(275px;p):g, 5px, p, 5px, p", rowDef));
         CellConstraints cc      = new CellConstraints();
         
         if (isMappedToAFile)
@@ -309,31 +301,11 @@ public class ColumnMapperPanel extends JPanel
             }
         });
         
-        JButton helpBtn = new JButton(getResourceString("Help")); 
-        okBtn     = new JButton(getResourceString("OK")); 
-        cancelBtn = new JButton(getResourceString("Cancel"));
         okBtn.setEnabled(false);
-
-        builder.add(ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn), cc.xywh(1, 11, 5, 1));
-
-        cancelBtn.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                dlg.setVisible(false);
-                isCancelled = true;
-            }
-        });
         
-        okBtn.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                dlg.setVisible(false);
-                isCancelled = false;
-            }
-        });
-        
+        // Meg Here is your apply Btn
+        // applyBtn.setText("Set this to your I18N Label");
+
         HelpMgr.registerComponent(helpBtn, helpContext);
         
         if (dataFileInfo != null)
@@ -354,6 +326,11 @@ public class ColumnMapperPanel extends JPanel
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         
+        contentPanel = builder.getPanel();
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        pack();
+        
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
@@ -361,14 +338,6 @@ public class ColumnMapperPanel extends JPanel
                 updateEnabledState();
             }
         });
-    }
-    
-    /**
-     * @return
-     */
-    public JButton getOkBtn()
-    {
-        return okBtn;
     }
 
     /**
@@ -380,24 +349,15 @@ public class ColumnMapperPanel extends JPanel
         this.hasChanged = hasChanged;
         okBtn.setEnabled(hasChanged);
     }
-    
-    /**
-     * Returns whether the dialog was cancelled.
-     * @return whether the dialog was cancelled.
-     */
-    public boolean isCancelled()
-    {
-        return isCancelled;
-    }
 
     /**
      * Add a new FieldMappingPanel (which comes from the data file column).
      * @param colInfo the Column Info about the Data File column
-     * @param icon the icon it should use to describe what it has been mapped to
+     * @param mappingIcon the icon it should use to describe what it has been mapped to
      */
-    protected FieldMappingPanel addMappingItem(final ImportColumnInfo colInfo, final ImageIcon icon)
+    protected FieldMappingPanel addMappingItem(final ImportColumnInfo colInfo, final ImageIcon mappingIcon)
     {
-        FieldMappingPanel fmp = new FieldMappingPanel(colInfo, icon);
+        FieldMappingPanel fmp = new FieldMappingPanel(colInfo, mappingIcon);
         fmp.setMappingLabelVisible(isMappedToAFile);
         
         mappingItems.add(fmp);
@@ -867,7 +827,7 @@ public class ColumnMapperPanel extends JPanel
         protected JLabel            fieldLabel;
         protected JLabel            mappingLabel;
         protected JLabel            iconLabel;
-        protected ImageIcon         icon;
+        protected ImageIcon         mappingIcon;
         
         protected TableFieldPair    tblField      = null;
         protected ImportColumnInfo  colInfo       = null;
@@ -879,9 +839,9 @@ public class ColumnMapperPanel extends JPanel
         /**
          * Constructor.
          * @param fieldName the field Name
-         * @param icon the icon to use once it is mapped
+         * @param icon the mappingIcon to use once it is mapped
          */
-        public FieldMappingPanel(final ImportColumnInfo colInfo, final ImageIcon icon)
+        public FieldMappingPanel(final ImportColumnInfo colInfo, final ImageIcon mappingIcon)
         {
             this.colInfo = colInfo;
             setBackground(Color.WHITE);
@@ -903,9 +863,9 @@ public class ColumnMapperPanel extends JPanel
             //mappingLabel.setFont(font);
             
             builder.add(fieldLabel, cc.xy(1,1));
-            builder.add(iconLabel = new JLabel(icon), cc.xy(3,1));
+            builder.add(iconLabel = new JLabel(mappingIcon), cc.xy(3,1));
             builder.add(mappingLabel, cc.xy(5,1));
-            setIcon(icon);
+            setIcon(mappingIcon);
             
             thisItem = this;
             addMouseListener(new MouseAdapter() {
@@ -963,10 +923,10 @@ public class ColumnMapperPanel extends JPanel
             setBackground(hasFocus ? tableList.getSelectionBackground() : bgColor);
         }
 
-        public void setIcon(ImageIcon icon)
+        public void setIcon(ImageIcon mappingIcon)
         {
-            this.icon = icon == null ? blankIcon : icon;
-            iconLabel.setIcon(this.icon);
+            this.mappingIcon = mappingIcon == null ? blankIcon : mappingIcon;
+            iconLabel.setIcon(this.mappingIcon);
         }
 
         /**
@@ -1016,8 +976,6 @@ public class ColumnMapperPanel extends JPanel
             
             this.isNew = isNew;
         }
-        
-        
     }
     
     //------------------------------------------------------------------

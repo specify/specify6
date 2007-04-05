@@ -37,6 +37,7 @@ import java.util.Vector;
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -55,6 +56,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -90,7 +92,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     protected static final short MAX_COLS               = 64;
     protected static final short DEFAULT_TEXTFIELD_COLS = 15;
     protected static final short DEFAULT_TEXTAREA_COLS  = 45;
-    
+    protected static final short DEFAULT_TEXTFIELD_ROWS = 1;
+    protected static final short DEFAULT_TEXTAREA_ROWS  = 5;
+       
     protected WorkbenchPaneSS    workbenchPane;
     protected Workbench          workbench;
     protected boolean            hasChanged        = false;
@@ -263,7 +267,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     }
     
     /**
-     * For a givene Object (usually from a MouseEvent) it determinaes if a selection of a control or label happened.
+     * For a given Object (usually from a MouseEvent) it determinaes if a selection of a control or label happened.
+     * It also requests focus for the COntrol of the label.
      * @param obj the UI Object
      * @return the parent InputPanel
      */
@@ -274,7 +279,16 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             comp = comp.getParent();
         }
-        return comp instanceof InputPanel ? (InputPanel)comp : null;
+        
+        InputPanel inputPanel = comp instanceof InputPanel ? (InputPanel)comp : null;
+        if (inputPanel != null)
+        {
+            if (obj instanceof JLabel)
+            {
+                inputPanel.getComp().requestFocus();
+            }
+        }
+        return inputPanel;
     }
     
     /**
@@ -283,7 +297,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected void selectControl(final Object uiObj)
     {
-        selectedInputPanel = getInputPanel(uiObj);
+        selectedInputPanel = getInputPanel(uiObj); // NOTE: This also requests the focus if it finds one
         controlPropsBtn.setEnabled(true);
         
         if (controlPropsDlg != null)
@@ -335,9 +349,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      * Creates a JTextArea in a ScrollPane.
      * @return the scollpane
      */
-    protected JScrollPane createTextArea(final short len)
+    protected JScrollPane createTextArea(final short len, final short rows)
     {
-        JTextArea textArea = new JTextArea("", 5, len);
+        JTextArea textArea = new JTextArea("", rows, len);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.getDocument().addDocumentListener(this);
@@ -355,12 +369,13 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        return createUIComp(wbtmi.getDataFieldClass(), 
+        return createUIComp(WorkbenchTask.getDataType(wbtmi), 
                             wbtmi.getCaption(), 
                             wbtmi.getFieldName(), 
                             wbtmi.getFieldType(),
                             wbtmi.getDataFieldLength(), 
-                            getColumns(wbtmi));
+                            getColumns(wbtmi),
+                            getRows(wbtmi));
     }
     
     /**
@@ -388,6 +403,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         return true;
     }
     
+    protected static boolean useTextField(final WorkbenchTemplateMappingItem wbtmi)
+    {
+        return useTextField(wbtmi.getFieldName(), wbtmi.getFieldType(), wbtmi.getDataFieldLength());
+    }
+    
     /**
      * Returns the number of columns it should use for the TextComponent.
      * @param wbtmi the mapping item
@@ -398,7 +418,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         // Check to see if the length of the data field is past threshold TEXTFIELD_DATA_LEN_MAX
         // if so, then only create a TextArea if the field name contains the word "remarks"
         // the user can switch other field fro TextField to TextArea if the wish.
-        short columns = useTextField(wbtmi.getFieldName(), wbtmi.getFieldType(), wbtmi.getDataFieldLength()) ? DEFAULT_TEXTFIELD_COLS : DEFAULT_TEXTAREA_COLS;
+        short columns = useTextField(wbtmi) ? DEFAULT_TEXTFIELD_COLS : DEFAULT_TEXTAREA_COLS;
         
         String metaData = wbtmi.getMetaData();
         if (StringUtils.isNotEmpty(metaData))
@@ -406,18 +426,29 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             Properties props = UIHelper.parseProperties(metaData);
             if (props != null)
             {
-                String columnsStr = props.getProperty("columns");
-                if (StringUtils.isNotEmpty(columnsStr))
-                {
-                    short val = Short.parseShort(columnsStr);
-                    if (val > 0 && val < 65)
-                    {
-                        columns = val;
-                    }
-                }
+                columns = (short)UIHelper.getProperty(props, "columns", useTextField(wbtmi) ? DEFAULT_TEXTFIELD_COLS : DEFAULT_TEXTAREA_COLS);
             }
         }
         return columns;
+    }
+    
+    public static short getRows(final WorkbenchTemplateMappingItem wbtmi)
+    {
+        // Check to see if the length of the data field is past threshold TEXTFIELD_DATA_LEN_MAX
+        // if so, then only create a TextArea if the field name contains the word "remarks"
+        // the user can switch other field fro TextField to TextArea if the wish.
+        short rows = useTextField(wbtmi) ? DEFAULT_TEXTFIELD_ROWS : DEFAULT_TEXTAREA_ROWS;
+        
+        String metaData = wbtmi.getMetaData();
+        if (StringUtils.isNotEmpty(metaData))
+        {
+            Properties props = UIHelper.parseProperties(metaData);
+            if (props != null)
+            {
+                rows = (short)UIHelper.getProperty(props, "rows", useTextField(wbtmi) ? DEFAULT_TEXTFIELD_ROWS : DEFAULT_TEXTAREA_ROWS);
+            }
+        }
+        return rows;
     }
     
     /**
@@ -434,7 +465,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                                       final String   fieldName,
                                       final Short    fieldType,
                                       final Short    fieldLength, 
-                                      final short    columns)
+                                      final short    columns,
+                                      final short    rows)
     {
         //System.out.println(wbtmi.getCaption()+" "+wbtmi.getDataType()+" "+wbtmi.getFieldLength());
         Class<?> dbFieldType = dbFieldTypeArg;
@@ -450,6 +482,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         if (dbFieldType.equals(Calendar.class) || dbFieldType.equals(Date.class))
         {
             ValFormattedTextField txt = new ValFormattedTextField("Date"); 
+            txt.setColumns(columns == -1 ? DEFAULT_TEXTFIELD_COLS : columns);
             txt.getDocument().addDocumentListener(this);
             comp = txt;
             
@@ -469,7 +502,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
         else
         {
-            JScrollPane taScrollPane = createTextArea(columns);
+            JScrollPane taScrollPane = createTextArea(columns, rows);
             ((JTextArea)taScrollPane.getViewport().getView()).setInputVerifier(new LengthVerifier(caption, fieldLength));
             comp = taScrollPane;
         }
@@ -492,28 +525,32 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     public void swapTextFieldType(final InputPanel inputPanel, final short fieldLen)
     {
         JTextComponent oldComp;
-        short fieldType;
+        short          fieldType;
+        short          rows;
         if (inputPanel.getComp() instanceof JTextField)
         {
             JTextField tf = (JTextField)inputPanel.getComp();
             tf.getDocument().removeDocumentListener(this);
             fieldType = WorkbenchTemplateMappingItem.TEXTAREA;
-            oldComp = tf;
+            oldComp   = tf;
+            rows      = DEFAULT_TEXTAREA_ROWS; 
         } else
         {
             JTextArea ta = (JTextArea)inputPanel.getComp();
             ta.getDocument().removeDocumentListener(this);
             fieldType = WorkbenchTemplateMappingItem.TEXTFIELD;
-            oldComp = ta;
+            oldComp   = ta;
+            rows      = DEFAULT_TEXTFIELD_ROWS; 
         }
         
         WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
-        inputPanel.setComp(createUIComp(wbtmi.getDataFieldClass(), 
+        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi), 
                                         wbtmi.getCaption(), 
                                         wbtmi.getFieldName(), 
                                         fieldType, 
                                         wbtmi.getDataFieldLength(), 
-                                        fieldLen));
+                                        fieldLen,
+                                        rows));
         
         ignoreChanges = true;
         ((JTextComponent)inputPanel.getComp()).setText(oldComp.getText());

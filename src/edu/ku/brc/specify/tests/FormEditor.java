@@ -103,7 +103,7 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
-import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperPanel;
+import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperDlg;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.ColorWrapper;
@@ -1282,7 +1282,7 @@ public class FormEditor implements DatabaseLoginListener
                     GhostGlassPane glassPane = new GhostGlassPane();
                     dlg.setGlassPane(glassPane);
                     UICacheManager.register(UICacheManager.GLASSPANE, glassPane);
-                    ColumnMapperPanel mapper = new ColumnMapperPanel(dlg, dataFileInfo);
+                    ColumnMapperDlg mapper = new ColumnMapperDlg(dlg, dataFileInfo);
                     dlg.setContentPane(mapper);
                     dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     //frame.setSize(new Dimension(500,500));

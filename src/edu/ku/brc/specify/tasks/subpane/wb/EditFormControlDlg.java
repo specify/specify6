@@ -27,7 +27,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import java.util.Properties;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -51,6 +50,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.validation.ValCheckBox;
+import edu.ku.brc.ui.validation.ValFormattedTextField;
 import edu.ku.brc.ui.validation.ValSpinner;
 
 /**
@@ -71,17 +71,24 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
     protected ValSpinner xCoord      = null;
     protected ValSpinner yCoord;
     protected ValSpinner fieldWidth;
+    protected ValSpinner numRows;
     protected JTextField labelTF;
     protected JComboBox  textFieldType;
     protected boolean    isTextField;
+    protected boolean    isFormattedText;
     protected int        fieldTypeIndex   = -1; 
     protected boolean    fieldTypeChanged = false; // not using changeTracker for Field Type Combobox
+    
+    protected JLabel     rowsLabels;
+    protected JLabel     typeLabel;
+    
     
     protected String     origLabel;
     protected Point      origLocation;
     protected int        origFieldLen;
     protected Short      origFieldType;
-    protected int        origFieldTypeIndex; 
+    protected int        origFieldTypeIndex;
+    protected int        origRows;
     
     protected Hashtable<Object, Boolean> changeTracker = new Hashtable<Object, Boolean>();
     
@@ -96,9 +103,9 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
      * @throws HeadlessException
      */
     public EditFormControlDlg(final Frame      frame, 
-                           final String     title, 
-                           final InputPanel inputPanel,
-                           final FormPane   canvasPanel) throws HeadlessException
+                              final String     title, 
+                              final InputPanel inputPanel,
+                              final FormPane   canvasPanel) throws HeadlessException
     {
         super(frame, title, true, OKCANCELAPPLYHELP, null);
         
@@ -118,11 +125,13 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
         {
             super.createUI();
             
-            isTextField = inputPanel.getComp() instanceof JTextComponent;
+            isTextField     = inputPanel.getComp() instanceof JTextComponent;
+            isFormattedText = inputPanel.getComp() instanceof ValFormattedTextField;
                        
             int y    = 1;
             CellConstraints cc         = new CellConstraints();
-            PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", 8 + (isTextField ? 2 : 0))));
+            PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", 8 + 
+                    (isTextField && !isFormattedText ? 4 : 0))));
             JPanel          panel      = panelBlder.getPanel();
             
             Dimension canvasSize  = formPane.getSize();
@@ -146,9 +155,16 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                 panelBlder.add(fieldWidth = new ValSpinner(0, 100, false, false), cc.xy(3, y));
                 y += 2;
  
-                panelBlder.add(new JLabel("Field Type:", SwingConstants.RIGHT), cc.xy(1, y));
-                panelBlder.add(textFieldType = new JComboBox(new Object[] { getResourceString("WB_TEXTFIELD"), getResourceString("WB_TEXTAREA")}), cc.xy(3, y));
-                y += 2;
+                if (!isFormattedText)
+                {
+                    panelBlder.add(rowsLabels = new JLabel("Number of Rows:", SwingConstants.RIGHT), cc.xy(1, y));
+                    panelBlder.add(numRows = new ValSpinner(1, 25, false, false), cc.xy(3, y));
+                    y += 2;
+     
+                    panelBlder.add(typeLabel = new JLabel("Field Type:", SwingConstants.RIGHT), cc.xy(1, y));
+                    panelBlder.add(textFieldType = new JComboBox(new Object[] { getResourceString("WB_TEXTFIELD"), getResourceString("WB_TEXTAREA")}), cc.xy(3, y));
+                    y += 2;
+                }
             }
             
             fill();
@@ -156,13 +172,20 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
             if (fieldWidth != null)
             {
                 origFieldLen  = ((Integer)fieldWidth.getValue()).shortValue();
-                origFieldType = inputPanel.getWbtmi().getFieldType();
             }
             
             if (textFieldType != null)
             {
                 origFieldTypeIndex = textFieldType.getSelectedIndex();
             }
+            
+            if (numRows != null)
+            {
+                origRows      = ((Integer)numRows.getValue()).shortValue();
+                origFieldType = inputPanel.getWbtmi().getFieldType();
+                numRows.addChangeListener(this);
+            }
+            
              
             xCoord.addChangeListener(this);
             yCoord.addChangeListener(this);
@@ -172,12 +195,18 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                 fieldWidth.addChangeListener(this);
             }
             
-            if (isTextField)
+            if (textFieldType != null)
             {
                 textFieldType.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
                         fieldTypeChanged = textFieldType.getSelectedIndex() != fieldTypeIndex; 
+                        
+                        if (numRows != null)
+                        {
+                            adjustTextRowsUI();
+                            numRows.setValue(textFieldType.getSelectedIndex() == 0 ? FormPane.DEFAULT_TEXTFIELD_ROWS : origRows);
+                        }
                     }
                 });
             }
@@ -241,10 +270,21 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
         inputPanel.getWbtmi().setYCoord((short)((Integer)yCoord.getValue()).intValue());
         inputPanel.getWbtmi().setCaption(labelTF.getText());
         inputPanel.setLabelText(labelTF.getText()+":");
-        inputPanel.getWbtmi().setMetaData("columns="+((Integer)fieldWidth.getValue()).intValue());
+        
+        if (fieldWidth != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("columns=");
+            sb.append(((Integer)fieldWidth.getValue()).intValue());
+            if (numRows != null)
+            {
+                sb.append(";rows=");
+                sb.append(((Integer)numRows.getValue()).intValue());
+            }
+            inputPanel.getWbtmi().setMetaData(sb.toString());
+        }
         
         adjustControl();
-
 
         formPane.getWorkbenchPane().setChanged(true);
         
@@ -292,31 +332,36 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
         
         if (isTextField)
         {
-            int    cols     = inputPanel.getComp()  instanceof JTextField ? ((JTextField)inputPanel.getComp()).getColumns() : ((JTextArea)inputPanel.getComp()).getColumns();
-            String metaData = inputPanel.getWbtmi().getMetaData();
-            if (StringUtils.isNotEmpty(metaData))
+            if (textFieldType != null)
             {
-                Properties props = UIHelper.parseProperties(metaData);
-                if (props != null)
-                {
-                    String columnsStr = props.getProperty("columns");
-                    if (StringUtils.isNotEmpty(columnsStr))
-                    {
-                        int val = Integer.parseInt(columnsStr);
-                        if (val > 0 && val < 65)
-                        {
-                            cols = val;
-                        }
-                    }
-                }
+                fieldTypeIndex     = inputPanel.getComp() instanceof JTextField ? 0 : 1;
+                textFieldType.setSelectedIndex(fieldTypeIndex);
             }
             
-            fieldWidth.setValue(cols);
+            if (fieldWidth != null)
+            {
+                int cols = inputPanel.getComp() instanceof JTextField ? ((JTextField)inputPanel.getComp()).getColumns() : ((JTextArea)inputPanel.getComp()).getColumns();
+                fieldWidth.setValue(cols);
+            }
             
-            fieldTypeIndex     = inputPanel.getComp() instanceof JTextField ? 0 : 1;
-            textFieldType.setSelectedIndex(fieldTypeIndex);
+            if (numRows != null)
+            {
+                adjustTextRowsUI();
+                int rows = inputPanel.getComp() instanceof JTextArea ? ((JTextArea)inputPanel.getComp()).getRows() : 1;
+                numRows.setValue(rows);
+            }
         }
         changeTracker.clear();
+    }
+    
+    protected void adjustTextRowsUI()
+    {
+        if (numRows != null)
+        {
+            boolean isTexArea = textFieldType.getSelectedIndex() == 1;
+            rowsLabels.setEnabled(isTexArea);
+            numRows.setEnabled(isTexArea);
+        }
     }
     
     /**
@@ -330,7 +375,14 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
 
         if (isTextField)
         {
-            fieldWidth.setValue(origFieldLen);
+            if (fieldWidth != null)
+            {
+                fieldWidth.setValue(origFieldLen);
+            }
+            if (numRows != null)
+            {
+                numRows.setValue(origRows);
+            }
             
             if (textFieldType != null && origFieldTypeIndex != textFieldType.getSelectedIndex())
             {
@@ -374,9 +426,10 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                     
                 fieldTypeChanged = false;
                 fieldTypeIndex   = textFieldType.getSelectedIndex();
+                adjustTextRowsUI();
             }
             
-            if (changeTracker.get(fieldWidth) != null)
+            if (changeTracker.get(fieldWidth) != null || changeTracker.get(numRows) != null)
             {
                 if (inputPanel.getComp() instanceof JTextField)
                 {
@@ -384,10 +437,12 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                 } else
                 {
                     ((JTextArea)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
+                    ((JTextArea)inputPanel.getComp()).setRows(((Integer)numRows.getValue()).intValue());
                     inputPanel.validate();
                     inputPanel.repaint();
                 }
             }
+            
             doResize = true;
         }
         

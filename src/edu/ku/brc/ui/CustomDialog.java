@@ -334,7 +334,6 @@ public class CustomDialog extends JDialog
         {
             createUI();
             UIHelper.centerWindow(this);
-            
         }
         
         super.setVisible(visible);

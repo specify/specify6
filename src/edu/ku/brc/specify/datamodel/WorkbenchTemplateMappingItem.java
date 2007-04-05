@@ -23,11 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-
 /**
  * Items are sorted by ViewOrder
  */
@@ -37,8 +32,6 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplateMappingItem>
 {
-    private static final Logger log = Logger.getLogger(WorkbenchTemplateMappingItem.class);
-    
     public final static short UNKNOWN   = 0;
     public final static short TEXTFIELD = 1;
     public final static short TEXTAREA  = 2;
@@ -293,49 +286,6 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.fieldType = fieldType;
     }
     
-    /**
-     * Gets the Class for the Data Field Object represented by the item definition.
-     */
-    @Transient
-    private Class getDataFieldClassObj()
-    {
-        if (StringUtils.isNotEmpty(tableName) && StringUtils.isNotEmpty(fieldName))
-        {
-            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(tableName);
-            if (tblInfo != null)
-            {
-                DBTableIdMgr.FieldInfo fieldInfo = tblInfo.getFieldByName(fieldName);
-                if (fieldInfo != null)
-                {
-                    return dataFieldClass = fieldInfo.getDataClass();
-                }
-                log.error("Could find field info for Field Name["+fieldName+"] for ["+caption+"]");
-            } else
-            {
-                log.error("Could find table info for Table Name["+tableName+"] for ["+caption+"]");
-            }
-
-        } else
-        {
-            log.error("TableName["+tableName+"] or Field Name ["+fieldName+"] is empty for ["+caption+"]");
-        }
-        return null;
-    }
-    
-    /**
-     * @return the Class object for the data that this mapping represents (the TableInfo/FieldInfo's type string).
-     */
-    @Transient
-    public Class getDataFieldClass()
-    {
-        if (dataFieldClass == null)
-        {
-            dataFieldClass = getDataFieldClassObj();
-        }
-        return dataFieldClass;
-    }
-
-
     @Column(name = "MetaData", length=128, unique = false, nullable = true, insertable = true, updatable = true)
     public String getMetaData()
     {
