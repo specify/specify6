@@ -996,7 +996,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             selection = new int[rowCnt];
             for (int i = 0; i < rowCnt; ++i)
             {
-                selection[i]=i;
+                selection[i]=spreadSheet.convertRowIndexToModel(i);
             }
         }
         
@@ -1177,12 +1177,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
         {
-            // if none are selected, select all of them
+            // if none are selected, map all of them
             int rowCnt = spreadSheet.getRowCount();
             selection = new int[rowCnt];
             for (int i = 0; i < rowCnt; ++i)
             {
-                selection[i]=i;
+                selection[i]=spreadSheet.convertRowIndexToModel(i);
             }
         }
         
@@ -1280,7 +1280,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             selection = new int[rowCnt];
             for (int i = 0; i < rowCnt; ++i)
             {
-                selection[i]=i;
+                selection[i]=spreadSheet.convertRowIndexToModel(i);
             }
         }
         
@@ -1375,7 +1375,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             selection = new int[rowCnt];
             for (int i = 0; i < rowCnt; ++i)
             {
-                selection[i]=i;
+                selection[i]=spreadSheet.convertRowIndexToModel(i);
             }
         }
         
