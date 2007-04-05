@@ -261,9 +261,10 @@ public class SpreadSheet  extends SearchableJXTable
     public int[] getSelectedRowModelIndexes()
     {
         int[] selected = getSelectedRows();
-        for (int i: selected)
+        for (int j = 0; j < selected.length; ++j)
         {
-            i = convertRowIndexToModel(i);
+            int modelIndex = convertRowIndexToModel(selected[j]);
+            selected[j] = modelIndex;
         }
         return selected;
     }
@@ -274,9 +275,10 @@ public class SpreadSheet  extends SearchableJXTable
     public int[] getSelectedColumnModelIndexes()
     {
         int[] selected = getSelectedColumns();
-        for (int i: selected)
+        for (int j = 0; j < selected.length; ++j)
         {
-            i = convertColumnIndexToModel(i);
+            int modelIndex = convertColumnIndexToModel(selected[j]);
+            selected[j] = modelIndex;
         }
         return selected;
     }
