@@ -26,7 +26,6 @@ import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -71,7 +70,6 @@ import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -787,7 +785,7 @@ public class WorkbenchTask extends BaseTask
                         // Check to see if there is an exact match by name
                         if (wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName()))
                         {
-                            ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(getDataType(wbItem));
+                            ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(wbItem.getDataFieldClass());
                             if (type == ImportColumnInfo.ColumnType.Date)
                             {
                                 ImportColumnInfo.ColumnType colType = fileItem.getColType();
@@ -2320,64 +2318,6 @@ public class WorkbenchTask extends BaseTask
             }
         }
     }
-    
-    /**
-     * Returns the class of the DB field target of this mapping.
-     * 
-     * @return a {@link Class} object representing the DB target field of this mapping.
-     */
-    public static Class<?> getDataType(final WorkbenchTemplateMappingItem wbtmi)
-    {
-        // if this mapping item doesn't correspond to a DB field, return the java.lang.String class
-        if (wbtmi.getSrcTableId() == null)
-        {
-            return String.class;
-        }
-        
-        DBTableIdMgr schema    = getDatabaseSchema();
-        TableInfo    tableInfo = schema.getInfoById(wbtmi.getSrcTableId());
-        if (tableInfo == null)
-        {
-            throw new RuntimeException("Cannot find TableInfo in DBTableIdMgr for ID=" + wbtmi.getSrcTableId());
-        }
-        
-        for (DBTableIdMgr.FieldInfo fi : tableInfo.getFields())
-        {
-            if (fi.getName().equals(wbtmi.getFieldName()))
-            {
-                String type = fi.getType();
-                if (StringUtils.isNotEmpty(type))
-                {
-                    if (type.equals("calendar_date"))
-                    {
-                        return Calendar.class;
-                        
-                    } else if (type.equals("text"))
-                    {
-                        return String.class;
-                        
-                    } else if (type.equals("boolean"))
-                    {
-                        return Boolean.class;
-                        
-                    } else
-                    {
-                        try
-                        {
-                            return Class.forName(type);
-                            
-                        } catch (Exception e)
-                        {
-                            log.error(e);
-                        }
-                    }
-                }
-            }
-        }
-
-        throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
-    }
-
 
     //-------------------------------------------------------
     // CommandListener Interface

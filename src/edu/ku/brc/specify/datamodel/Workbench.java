@@ -30,6 +30,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
 
@@ -85,6 +86,9 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      // Transient Data
     protected Vector<WorkbenchRow> rows        = new Vector<WorkbenchRow>();
     protected Vector<WorkbenchRow> deletedRows = new Vector<WorkbenchRow>();
+    
+    protected Hashtable<Short, WorkbenchTemplateMappingItem> wbtmiItems    = new Hashtable<Short, WorkbenchTemplateMappingItem>();
+
      
     // Constructors
 
@@ -121,6 +125,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         
         rows.clear();
         deletedRows.clear();
+        wbtmiItems.clear();
     }
     // End Initializer
 
@@ -422,7 +427,36 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
             rows.addAll(workbenchRows);
             Collections.sort(rows);
         }
+
         return rows;
+    }
+    
+    /**
+     * @return the mapping from column number to the mapping item definition.
+     */
+    @Transient
+    public Hashtable<Short, WorkbenchTemplateMappingItem> getTemplateMappings()
+    {
+        if (wbtmiItems.size() == 0 || wbtmiItems.size() != workbenchTemplate.getWorkbenchTemplateMappingItems().size())
+        {
+            wbtmiItems.clear();
+            createWBTMIMappings();
+        }
+        return wbtmiItems;
+    }
+    
+    /**
+     * CReate the mapping from the column number to the definition. 
+     */
+    protected void createWBTMIMappings()
+    {
+        if (wbtmiItems.size() == 0)
+        {
+            for (WorkbenchTemplateMappingItem wbtmi : workbenchTemplate.getWorkbenchTemplateMappingItems())
+            {
+                wbtmiItems.put(wbtmi.getViewOrder().shortValue(), wbtmi);
+            }
+        }
     }
     
     /* (non-Javadoc)

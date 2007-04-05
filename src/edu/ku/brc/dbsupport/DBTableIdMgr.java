@@ -19,6 +19,7 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,9 +45,12 @@ import edu.ku.brc.util.DatamodelHelper;
 
 /**
  * This manages all the tables and maps names to ids and can create queries for
- * recordsets. (This needs to be updated for all the tables. XXX - Meg??????)
+ * recordsets. (This needs to be updated for all the tables. XXX - Meg??????).
+ * <br>
+ * TODO Many of the searches are linear and should be converted to bininary searches.
  * 
- * @code_status Alpha *
+ * @code_status Betra
+ * 
  * @author rods
  * 
  */
@@ -348,6 +352,7 @@ public class DBTableIdMgr
      */
     public TableInfo getByShortClassName(final String shortClassName)
     {
+        // for now just use a brute force linear search
         for (TableInfo tableInfo : hash.values())
         {
             if (tableInfo.getShortClassName().equalsIgnoreCase(shortClassName))
@@ -371,7 +376,25 @@ public class DBTableIdMgr
         }
         return hash.get(tableId);
     }
-
+    
+    /**
+     * Returns the Info Object By table name (the all lowercase name of the table).
+     * @param tableName the name of the table
+     * @return the table info object
+     */
+    public TableInfo getInfoByTableName(final String tableName)
+    {
+        // for now just use a brute force linear search
+        for (TableInfo tblInfo : hash.values())
+        {
+            if (tblInfo.getTableName().equals(tableName))
+            {
+                return tblInfo;
+            }
+        }
+        return null;
+    }
+    
 	/**
 	 * Creates a Query object for a table from a recordset, it uses an "in" clause.
     * @param recordSet the recordset containing the record ids
@@ -756,7 +779,24 @@ public class DBTableIdMgr
             this.businessRule = busniessRule;
         }
 
-        public TableRelationship getRelationshipByName(String name)
+        /**
+         * Assumes all fields have names and returns a FieldInfo object by name
+         * @param name the name of the field
+         * @return the FieldInfo
+         */
+        public FieldInfo getFieldByName(final String name)
+        {
+            for (FieldInfo fldInfo : fields)
+            {
+                if (fldInfo.getName().equals(name))
+                {
+                    return fldInfo;
+                }
+            }
+            return null;
+        }
+
+        public TableRelationship getRelationshipByName(final String name)
         {
             for (TableRelationship tr: relationships)
             {
@@ -904,5 +944,37 @@ public class DBTableIdMgr
         {
             return name.compareTo(obj.name);
         }
+        
+        public Class getDataClass()
+        {
+            if (StringUtils.isNotEmpty(type))
+            {
+                if (type.equals("calendar_date"))
+                {
+                    return Calendar.class;
+                    
+                } else if (type.equals("text"))
+                {
+                    return String.class;
+                    
+                } else if (type.equals("boolean"))
+                {
+                    return Boolean.class;
+                    
+                } else
+                {
+                    try
+                    {
+                        return Class.forName(type);
+                        
+                    } catch (Exception e)
+                    {
+                        log.error(e);
+                    }
+                }
+            }
+            return null;
+        }
+        
     }
 }

@@ -2141,10 +2141,14 @@ public class DataBuilder
         
         WorkbenchDataItem wbdi = workbenchRow.setData(cellData, columnNumber.shortValue());
         
-        if (wbdi!=null)
+        if (wbdi != null)
         {
             wbdi.setRowNumber(workbenchRow.getRowNumber());
             persist(wbdi);
+            
+        } else
+        {
+            //System.err.println("workbenchRow.setData returned a null DataItem cellData["+cellData+"] or columnNumber["+columnNumber+"]");
         }
 
         return wbdi;
@@ -2182,7 +2186,7 @@ public class DataBuilder
 
         wtmi.setCaption(caption);
         wtmi.setFieldName(fieldName);
-        wtmi.setTableName(tableName);
+        wtmi.setTableName(tableName.toLowerCase());
         wtmi.setViewOrder(viewOrder.shortValue());
         wtmi.setDataFieldLength((short)dataLength);
         wtmi.setOrigImportColumnIndex(dataColumnIndex.shortValue());

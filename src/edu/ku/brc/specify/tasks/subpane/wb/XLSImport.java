@@ -27,7 +27,6 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.DateWrapper;
 
 /**
@@ -114,11 +113,13 @@ public class XLSImport extends DataImport implements DataImportIFace
                         switch (type)
                         {
                             case HSSFCell.CELL_TYPE_NUMERIC:
-                                if (WorkbenchTask.getDataType(wbtmi).equals(Calendar.class) || WorkbenchTask.getDataType(wbtmi).equals(Date.class))
+                            {
+                                Class classObj = wbtmi.getDataFieldClass();
+                                if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
                                 {
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
     
-                                } else if (WorkbenchTask.getDataType(wbtmi).equals(Integer.class))
+                                } else if (classObj.equals(Integer.class))
                                 {
                                     double numeric = cell.getNumericCellValue();
                                     value = Integer.toString((int) numeric);
@@ -129,6 +130,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     value = Double.toString(numeric);
                                 }
                                 break;
+                            }
     
                             case HSSFCell.CELL_TYPE_STRING:
                                 value = cell.getStringCellValue();

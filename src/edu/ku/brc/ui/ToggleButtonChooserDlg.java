@@ -132,7 +132,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
         this.uiType = uiType;
 
         //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**

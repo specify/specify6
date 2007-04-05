@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -47,7 +48,7 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
     protected boolean                 isReadOnly   = false;
     protected boolean                 isChanged    = false;
     protected boolean                 isNew        = false;
-    protected boolean                 currentValue = false;
+    protected Boolean                 currentValue = null;
     
     /**
      * Constructs a validated checkbox.
@@ -69,6 +70,15 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
                     setSelected(currentValue);
                 }
             });
+        } else
+        {
+            addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    isChanged = true;
+                }
+            });
+            
         }
     }
     
@@ -179,9 +189,9 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, String defaultValue)
     {
-        currentValue = true;
+        currentValue = null;
         
         if (value != null)
         {
@@ -191,7 +201,10 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
                  
             } else if (value instanceof String)
             {
-                currentValue = ((String)value).toLowerCase().equals("true");
+                if (StringUtils.isNotEmpty(defaultValue))
+                {
+                    currentValue = ((String)value).toLowerCase().equals("true");
+                }
                  
             } else if (value instanceof Integer)
             {
@@ -210,16 +223,19 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
                 log.error("Can't value from class ["+value.getClass().getName()+"]");
             }
             
-         } else if (defaultValue != null)
+         } else if (StringUtils.isNotEmpty(defaultValue))
          {
-             currentValue = defaultValue.toLowerCase().equals("true");
-             
-         } else
-         {
-             currentValue = false;
+             currentValue = defaultValue.toLowerCase().equals("true") ? true : false;
          }
 
-        setSelected(currentValue);
+        if (currentValue != null)
+        {
+            setSelected(currentValue);
+        } else
+        {
+            setSelected(false);
+        }
+        isChanged = false;
     }
 
     /* (non-Javadoc)
@@ -227,7 +243,11 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
      */
     public Object getValue()
     {
-        return this.isSelected();
+        if (isChanged)
+        {
+            return this.isSelected();
+        }
+        return currentValue;
     }
 
 

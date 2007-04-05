@@ -63,7 +63,7 @@ import edu.ku.brc.ui.validation.ValSpinner;
  * Created Date: Mar 22, 2007
  *
  */
-public class EditFormControl extends CustomDialog implements ChangeListener, DocumentListener
+public class EditFormControlDlg extends CustomDialog implements ChangeListener, DocumentListener
 {
     protected InputPanel inputPanel;
     protected FormPane   formPane;
@@ -95,7 +95,7 @@ public class EditFormControl extends CustomDialog implements ChangeListener, Doc
      * @param contentPanel the contentpane
      * @throws HeadlessException
      */
-    public EditFormControl(final Frame      frame, 
+    public EditFormControlDlg(final Frame      frame, 
                            final String     title, 
                            final InputPanel inputPanel,
                            final FormPane   canvasPanel) throws HeadlessException

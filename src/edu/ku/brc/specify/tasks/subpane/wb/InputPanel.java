@@ -167,7 +167,15 @@ public class InputPanel extends JPanel implements GhostActionable
     {
         return textFieldOffset;
     }
-
+    
+    /**
+     * @return returns the control's label with no ":".
+     */
+    public String getControlTitle()
+    {
+        return wbtmi.getCaption();
+    }
+    
     /**
      * @return the comp
      */

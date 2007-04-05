@@ -21,6 +21,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -53,7 +55,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -68,7 +69,8 @@ import edu.ku.brc.ui.validation.ValFormattedTextField;
 import edu.ku.brc.ui.validation.ValTextField;
 
 /**
- * This Panel holds the form elements for Template definition of a Workbench.
+ * This Panel holds the form elements for Template definition of a Workbench. NOTE: This assumes that the IUNputPanel is a container and the label
+ * and UI input control are direct children. This could makes calls to getParent that assume it is only nested one deep.
  * 
  * @author rod
  *
@@ -104,9 +106,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
 
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     
-    protected List<DataFlavor>   dropFlavors  = new ArrayList<DataFlavor>();
+    protected List<DataFlavor>   dropFlavors       = new ArrayList<DataFlavor>();
     
-    protected EditFormControl    controlProperties = null;
+    protected EditFormControlDlg controlPropsDlg   = null;
     protected boolean            wasShowing        = false;
     protected JScrollPane        scrollPane;
     
@@ -143,31 +145,17 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         MouseAdapter clickable = new MouseAdapter()
         {
-            protected InputPanel getInputPanel(final Object obj)
-            {
-                Component comp = ((Component)obj).getParent();
-                while (comp != null && !(comp instanceof InputPanel))
-                {
-                    comp = comp.getParent();
-                }
-                return comp instanceof InputPanel ? (InputPanel)comp : null;
-            }
             
             @Override
             public void mousePressed(MouseEvent e)
             {
-                if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
+                if (e.getClickCount() == 2 && (controlPropsDlg == null || !controlPropsDlg.isVisible()))
                 {
                     showControlProps();
                 }
 
-                selectedInputPanel = getInputPanel(e.getSource());
-                controlPropsBtn.setEnabled(true);
+                selectControl(e.getSource());
                 
-                if (controlProperties != null)
-                {
-                    controlProperties.setControl(selectedInputPanel);
-                }
             }
             
             @Override
@@ -176,12 +164,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 selectedInputPanel = getInputPanel(e.getSource());
                 controlPropsBtn.setEnabled(true);
                 
-                if (controlProperties != null)
+                if (controlPropsDlg != null)
                 {
-                    controlProperties.setControl(selectedInputPanel);
+                    controlPropsDlg.setControl(selectedInputPanel);
                 }
                 
-                if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
+                if (e.getClickCount() == 2 && (controlPropsDlg == null || !controlPropsDlg.isVisible()))
                 {
                     showControlProps();
                 }
@@ -194,8 +182,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                selectedInputPanel = null;
-                controlPropsBtn.setEnabled(false);
+                // Not a bug, but is leaving the Edit Btn enabled such a bad thing?
+                //selectedInputPanel = null;
+                //controlPropsBtn.setEnabled(false);
             }
         });
         
@@ -273,6 +262,36 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         });
     }
     
+    /**
+     * For a givene Object (usually from a MouseEvent) it determinaes if a selection of a control or label happened.
+     * @param obj the UI Object
+     * @return the parent InputPanel
+     */
+    protected InputPanel getInputPanel(final Object obj)
+    {
+        Component comp = ((Component)obj).getParent();
+        while (comp != null && !(comp instanceof InputPanel))
+        {
+            comp = comp.getParent();
+        }
+        return comp instanceof InputPanel ? (InputPanel)comp : null;
+    }
+    
+    /**
+     * Determinaes if a child of the InputPanel was clicked on and selects the InputPanel and enables the Edit Control button.
+     * @param uiObj the UI Object usually from an event
+     */
+    protected void selectControl(final Object uiObj)
+    {
+        selectedInputPanel = getInputPanel(uiObj);
+        controlPropsBtn.setEnabled(true);
+        
+        if (controlPropsDlg != null)
+        {
+            controlPropsDlg.setControl(selectedInputPanel);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#getPreferredSize()
      */
@@ -309,12 +328,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     public void cleanup()
     {
-        if (controlProperties != null)
-        {
-            controlProperties.setVisible(false);
-            controlProperties.dispose();
-            controlProperties = null;
-        }
+        // no op
     }
 
     /**
@@ -341,7 +355,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected JComponent createUIComp(final WorkbenchTemplateMappingItem wbtmi)
     {
-        return createUIComp(WorkbenchTask.getDataType(wbtmi), 
+        return createUIComp(wbtmi.getDataFieldClass(), 
                             wbtmi.getCaption(), 
                             wbtmi.getFieldName(), 
                             wbtmi.getFieldType(),
@@ -459,6 +473,14 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             ((JTextArea)taScrollPane.getViewport().getView()).setInputVerifier(new LengthVerifier(caption, fieldLength));
             comp = taScrollPane;
         }
+        
+        comp.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e)
+            {
+                selectControl(e.getSource());
+            }
+            public void focusLost(FocusEvent e) {}
+        });
         return comp;
     }
     
@@ -486,7 +508,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
         
         WorkbenchTemplateMappingItem wbtmi = inputPanel.getWbtmi();
-        inputPanel.setComp(createUIComp(WorkbenchTask.getDataType(wbtmi), 
+        inputPanel.setComp(createUIComp(wbtmi.getDataFieldClass(), 
                                         wbtmi.getCaption(), 
                                         wbtmi.getFieldName(), 
                                         fieldType, 
@@ -506,19 +528,25 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected void showControlProps()
     {
-        if (controlProperties == null)
+        if (controlPropsDlg == null)
         {
-            controlProperties = new EditFormControl((Frame)UICacheManager.get(UICacheManager.FRAME), "Properties", selectedInputPanel, this); // I18N
+            controlPropsDlg = new EditFormControlDlg((Frame)UICacheManager.get(UICacheManager.FRAME), "", selectedInputPanel, this); // I18N
         }
-        controlProperties.setVisible(true);
-        if (!controlProperties.isCancelled())
+        
+        if (selectedInputPanel != null) // this shouldn't happen
         {
-            workbenchPane.gridColumnsUpdated();
+            controlPropsDlg.setTitle(String.format(getResourceString("WB_EDIT_DLG_TITLE"), new Object[] {selectedInputPanel.getControlTitle()}));
             
-            adjustPanelSize();
+            controlPropsDlg.setVisible(true);
+            if (!controlPropsDlg.isCancelled())
+            {
+                workbenchPane.gridColumnsUpdated();
+                
+                adjustPanelSize();
+            }
+            controlPropsDlg.dispose();
+            controlPropsDlg = null;
         }
-        controlProperties.dispose();
-        controlProperties = null;
     }
     
     /**
@@ -580,11 +608,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
            if (wasShowing)
            {
-               controlProperties.setVisible(true);
+               controlPropsDlg.setVisible(true);
            }
-        } else if (controlProperties != null)
+        } else if (controlPropsDlg != null)
         {
-            controlProperties.setVisible(false);
+            controlPropsDlg.setVisible(false);
             wasShowing = true;
             
         } else
@@ -661,9 +689,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     @Override
     public void setVisible(boolean aFlag)
     {
-        if (!aFlag && controlProperties != null)
+        if (!aFlag && controlPropsDlg != null)
         {
-            controlProperties.setVisible(false);
+            controlPropsDlg.setVisible(false);
         }
         super.setVisible(aFlag);
     }

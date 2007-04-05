@@ -22,7 +22,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
 
 /**
  * @author timbo
@@ -89,7 +88,7 @@ public class XLSExport implements DataExport
      */
     protected int getColType(final WorkbenchTemplateMappingItem mapItem)
     {
-        Class<?> dataType = WorkbenchTask.getDataType(mapItem);
+        Class<?> dataType = mapItem.getDataFieldClass();
         // These are the classes currently returned by getDataType():
         // java.lang.Long
         // java.lang.String

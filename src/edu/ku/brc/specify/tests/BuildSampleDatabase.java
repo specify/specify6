@@ -919,7 +919,7 @@ public class BuildSampleDatabase
             WorkbenchDataItem wbdi2 = createWorkbenchDataItem(wbRow, "CN-10" + i, 2);
             
             String boolValAsStr = null;
-            switch(i%3)
+            switch (i % 3)
             {
                 case 0:
                 {
@@ -937,6 +937,7 @@ public class BuildSampleDatabase
                     break;
                 }
             }
+            boolValAsStr = "";
             WorkbenchDataItem wbdi3 = createWorkbenchDataItem(wbRow, boolValAsStr, 3);
             
             File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));

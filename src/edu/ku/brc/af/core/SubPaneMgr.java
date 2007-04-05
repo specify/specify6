@@ -435,7 +435,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             Taskable task        = subPane.getTask();
             //if (subPane.aboutToShutdown())
             //{
-                this.removePane(subPane);
+                if (!this.removePane(subPane))
+                {
+                    return;
+                }
             //}
             if (wasLastPane)
             {

@@ -94,7 +94,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected WeakReference<ImageIcon> fullSizeImageWR = null;
     
     // Transient Data Members
-    protected Hashtable<Short, WorkbenchDataItem>            items    = new Hashtable<Short, WorkbenchDataItem>();
+    protected Hashtable<Short, WorkbenchDataItem>            items         = new Hashtable<Short, WorkbenchDataItem>();
     protected LoadStatus                                     loadStatus    = LoadStatus.None;
     protected Exception                                      loadException = null;
     
@@ -446,7 +446,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             // delete the item if it is set to empty
             wbdi.setCellData(dataStr);
             
-        } else
+        } else // the cell doesn't exist so create one
         {
             if (StringUtils.isNotEmpty(dataStr))
             {

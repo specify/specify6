@@ -62,7 +62,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -253,7 +252,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
-        saveBtn = new JButton(UICacheManager.getResourceString("Save"));
+        saveBtn = new JButton(getResourceString("Save"));
+        saveBtn.setToolTipText(String.format(getResourceString("WB_SAVE_DATASET_TT"), new Object[] {workbench.getName()}));
         saveBtn.setEnabled(false);
         saveBtn.addActionListener(new ActionListener()
         {
@@ -389,7 +389,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 int firstRowSelected = spreadSheet.getSelectedRow();
                 WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
                 // then load a new image for it
-                boolean loaded = loadNewCardImage(row);
+                boolean loaded = loadNewImage(row);
                 if (loaded)
                 {
                     showCardImageForSelectedRow();
@@ -524,7 +524,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Checks the cell for cell editing and stops it.
      */
-    protected void checkForCellEditing()
+    protected void checkCurrentState()
     {
         if (currentPanelType == PanelType.Spreadsheet)
         {
@@ -610,7 +610,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void addRowAtEnd()
     {
-        checkForCellEditing();
+        checkCurrentState();
         model.appendRow();
         resultsetController.setLength(model.getRowCount());
         int selInx = model.getRowCount()-1;
@@ -625,7 +625,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void addRowAfter()
     {
-        checkForCellEditing();
+        checkCurrentState();
         
         int curSelInx = getCurrentIndexFromFormOrSS();
         model.insertAfterRow(curSelInx);
@@ -643,7 +643,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void insertRowAbove()
     {
-        checkForCellEditing();
+        checkCurrentState();
         int curSelInx = getCurrentIndexFromFormOrSS();
         model.insertRow(curSelInx);
         resultsetController.setLength(model.getRowCount());
@@ -660,7 +660,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void deleteRows()
     {
-        checkForCellEditing();
+        checkCurrentState();
         
         int[] rows = spreadSheet.getSelectedRowModelIndexes();
         model.deleteRows(spreadSheet.getSelectedRowModelIndexes());
@@ -801,7 +801,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             // About to Show Form and hiding Spreadsheet
             
             // cancel any editing in a cell in the spreadsheet
-            checkForCellEditing(); 
+            checkCurrentState(); 
             
             // Tell the form we are switching and that it is about to be shown
             formPane.aboutToShowHide(true);
@@ -902,11 +902,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Loads a new Card Image into a WB Row
+     * Loads a new Image into a WB Row.
      * @param row the row of the new card image
      * @return true if the row was set
      */
-    protected boolean loadNewCardImage(final WorkbenchRow row)
+    protected boolean loadNewImage(final WorkbenchRow row)
     {
         JFileChooser fileChooser = new JFileChooser();
         int          userAction  = fileChooser.showOpenDialog(this);
@@ -919,6 +919,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         return false;
     }
     
+    /**
+     * Shows a dialog that enales the user to convert the lat/lon formats. 
+     */
     protected void showGeoRefConvertDialog()
     {
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
@@ -950,7 +953,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             @Override
             protected void okButtonPressed()
             {
-                checkForCellEditing();
+                checkCurrentState();
                 
                 // don't call super.okButtonPressed() b/c it will close the window
                 isCancelled = false;
@@ -982,7 +985,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         dlg.setSelectedIndex(0);
         dlg.setOkLabel(getResourceString("Apply"));
         dlg.setCancelLabel(getResourceString("Close"));
-        dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dlg.setVisible(true);
     }
     
@@ -1127,6 +1129,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         statusBar.setText("");
     }
     
+    /**
+     * Converts the column contents from on format of Lat/Lon to another
+     * @param columnIndex the index of the column being converted
+     * @param converter the converter to use
+     * @param outputFormat the format string
+     */
     protected void convertColumnContents(int columnIndex, StringConverter converter, String outputFormat)
     {
         int rowCnt = model.getRowCount();
@@ -1511,6 +1519,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     
+    /**
+     * @return whether there has been a change.
+     */
     public boolean isChanged()
     {
         return hasChanged;
@@ -1631,7 +1642,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         //backup current database contents for workbench
         backupObject();
         
-        checkForCellEditing();
+        checkCurrentState();
         
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -1768,9 +1779,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         super.aboutToShutdown();
         
+        // Tell it is about to be hidden.
+        // this way it can end any editing
         if (formPane != null)
         {
-            formPane.cleanup();
+            checkCurrentState();
         }
         
         boolean retStatus = true;
@@ -1794,6 +1807,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
+        if (formPane != null)
+        {
+            formPane.cleanup();
+        }
+        
+
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);

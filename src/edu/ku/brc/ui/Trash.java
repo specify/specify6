@@ -105,46 +105,50 @@ public class Trash extends JComponent implements GhostActionable
         paperIcon     = trashFullIcon;//new ImageIcon(IconManager.getImagePath("trash_paper.gif"));
         imgIcon       = trashIcon;
         
-        popupMenu = new JPopupMenu();
-        
-        openMenuItem = new JMenuItem(getResourceString("Open"));
-        openMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                openTrashCan();
-            }
-          });
-        popupMenu.add(openMenuItem);
-        
-        emptyMenuItem = new JMenuItem(getResourceString("EmptyTrash"));
-        emptyMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                emptyTrash();
-            }
-          });
-        popupMenu.add(emptyMenuItem);
-        
-        MouseListener mouseListener = new MouseAdapter() {
-              private void showIfPopupTrigger(MouseEvent mouseEvent) 
-              {
-                  emptyMenuItem.setEnabled(items.size() > 0);
-                  openMenuItem.setEnabled(items.size() > 0);
-                  
-                  if (mouseEvent.isPopupTrigger() && popupMenu.getComponentCount() > 0) 
+        // XXX Disabled for OnRamp)
+        if (false)
+        {
+            popupMenu = new JPopupMenu();
+            
+            openMenuItem = new JMenuItem(getResourceString("Open"));
+            openMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    openTrashCan();
+                }
+              });
+            popupMenu.add(openMenuItem);
+            
+            emptyMenuItem = new JMenuItem(getResourceString("EmptyTrash"));
+            emptyMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    emptyTrash();
+                }
+              });
+            popupMenu.add(emptyMenuItem);
+            
+            MouseListener mouseListener = new MouseAdapter() {
+                  private void showIfPopupTrigger(MouseEvent mouseEvent) 
                   {
-                      popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                      emptyMenuItem.setEnabled(items.size() > 0);
+                      openMenuItem.setEnabled(items.size() > 0);
+                      
+                      if (mouseEvent.isPopupTrigger() && popupMenu.getComponentCount() > 0) 
+                      {
+                          popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                      }
                   }
-              }
-              @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                showIfPopupTrigger(mouseEvent);
-              }
-              @Override
-            public void mouseReleased(MouseEvent mouseEvent) {
-                showIfPopupTrigger(mouseEvent);
-              }
-            };
-            //iconLabel.addMouseListener (mouseListener);            
-        addMouseListener (mouseListener);        
+                  @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                    showIfPopupTrigger(mouseEvent);
+                  }
+                  @Override
+                public void mouseReleased(MouseEvent mouseEvent) {
+                    showIfPopupTrigger(mouseEvent);
+                  }
+                };
+                //iconLabel.addMouseListener (mouseListener);            
+            addMouseListener (mouseListener);       
+        }
 
     }
     
