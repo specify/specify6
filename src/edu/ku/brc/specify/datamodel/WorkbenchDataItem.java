@@ -133,6 +133,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         this.workbenchDataItemId = workbenchDataItemId;
     }
 
+    private static int cellDataLength = 255;
     /**
      * 
      */
@@ -208,4 +209,12 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     {
         return columnNumber.compareTo(obj.columnNumber);
     }
+
+	/**
+	 * @return the cellDataLength
+	 */
+	public static int getCellDataLength()
+	{
+		return cellDataLength;
+	}
 }

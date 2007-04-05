@@ -65,6 +65,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.MouseOverJLabel;
@@ -72,6 +73,11 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
+ * Class that provides "fancy" dialog for importing data from csv or xsl,
+ * allowing users to specify such information as delimiters, text qualifiers,
+ * character sets, escape modes, etc.  Dialog provides a preview table
+ * displaying how the data will appear when imported into a spreadsheet table.
+ * 
  * @author megkumin
  *
  * @code_status Alpha
@@ -80,22 +86,25 @@ import edu.ku.brc.ui.UIHelper;
  *
  */
 @SuppressWarnings("serial")
-public class DataImportDialog extends JDialog implements ActionListener // implements ChangeListener 
+public class DataImportDialog extends JDialog implements ActionListener
 {
 	private static final Logger log = Logger.getLogger(DataImportDialog.class);
 	private JButton cancelBtn;
 	private JButton okBtn;
 	private JButton helpBtn;
+	
 	public static final int OK_BTN = 1;
 	public static final int CANCEL_BTN = 2;
 	public static final int HELP_BTN = 4;
 	protected int btnPressed = CANCEL_BTN;
+	
 	private JRadioButton tab;
 	private JRadioButton space;
 	private JRadioButton semicolon;
 	private JRadioButton comma;
 	private JRadioButton other;
 	private JTextField otherText;
+	
 	private char stringQualifierChar;
 	private char delimChar;
 	private Charset charset;
@@ -117,12 +126,22 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	private String fileName;
 	private File file;
 	private ConfigureCSV config;
-
-
+	
 	private JTable myDisplayTable;
 	private PreviewTableModel model;
-    DataErrorPanel errorPanel = new DataErrorPanel();
+	private DataErrorPanel errorPanel = new DataErrorPanel();
    
+    /**
+     * Constructor for Import Dialog for a csv
+     * 
+     * @param config - the config class for configing a csv import
+     * @param defaultDelimChar - default delimiter to be used
+     * @param defaultTextQual - default text qualifer to be used
+     * @param defaultCharSet - default character set to be used
+     * @param defaultEscMode - default escape mode to be used
+     * @param doesHaveHeaders - default for whether or not the data file contains headers in the first row.
+     * @param useTxtQual
+     */
     public DataImportDialog(final ConfigureCSV config, char defaultDelimChar, 
                             char defaultTextQual, Charset defaultCharSet,
                             int defaultEscMode, boolean doesHaveHeaders, boolean useTxtQual)
@@ -141,69 +160,61 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         initForCSV();
     }
     
+    /**
+     * Constructor for Import dialog for xls
+     * 
+     * @param config - the config class for configing an xls import
+     * @param doesHaveHeaders
+     */
     public DataImportDialog(final ConfigureXLS config, boolean doesHaveHeaders)
 	{
 	}
 
+    /**
+     * Initialize UI for a csv import
+     * 
+     * void
+     */
     private void initForCSV()
     {
     	setContentPane(createConfigPanelForCSV());
-    	init(getResourceString("IMPORT_CVS"));
-        setModal(true);
-        UIHelper.centerAndShow(this);
-        
+    	init(getResourceString("IMPORT_CVS"));    
     }
-    
-    private boolean checkForErrors(String[]headers, String[][]data)
-    {
-        JList listOfErrors = checkTableDataForSizeConstraints(headers, data);
-        if(listOfErrors.getModel().getSize()>0)
-        {
-           return true;
-        }  
-        return false;
-    }
-    
-    private void showErrors()
-    {
-        JList listOfErrors = checkTableDataForSizeConstraints(model.getColumnNames(), model.data);
-        if (listOfErrors.getModel().getSize() > 0)
-        {
-            JTextArea textArea = new JTextArea();
-            textArea.setRows(25);
-            textArea.setColumns(60);
-            String newline = "\n";
-            for (int i = 0; i < listOfErrors.getModel().getSize(); i++)
-            {
-                textArea.append((String) listOfErrors.getModel().getElementAt(i) + newline
-                        + newline);
-            }
-            textArea.setLineWrap(true);
-            textArea.setWrapStyleWord(true);
-            textArea.setEditable(false);
-            textArea.setCaretPosition(0);
-            JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
-        }
-    }
-    
+      
+
+    /**
+     * Initialize UI for an XLS import
+     * 
+     * void
+     */
     @SuppressWarnings("unused")
     private void initForXSL()
     {
     	setContentPane(createConfigPanelForXSL());
     	init(getResourceString("IMPORT_XSL"));   
-        setModal(true);
-        UIHelper.centerAndShow(this);
     }
     
+    /**
+     * General init ui method
+     * 
+     * @param title - the title of the dialog
+     * void
+     */
     private void init(String title)
     {
         setTitle(title);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         pack();
+        setModal(true);
+        UIHelper.centerAndShow(this);
     }
-
+    
+    /**
+     * Creates the UI panel for a csv import, displays config opionts.
+     * 
+     * @return
+     * JPanel - the panel to be displayed
+     */
     private JPanel createConfigPanelForCSV()
     {
         //JPanel configPanel = new FormDebugPanel();
@@ -220,7 +231,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 "p,10px, " +	//row header
                 "p, 3px,"+		//previe separator
                 "f:p:g,5px," + 	//tablePreview
-                "30px,3px,"+
+                "30px,3px,"+    //data import status error panel
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
@@ -229,8 +240,6 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         containsHeaders = new JCheckBox(getResourceString("COLUMN_HEAD"));
         containsHeaders.setSelected(true);
         containsHeaders.addItemListener(new CheckboxItemListener());
-        
-        
 
         builder.addSeparator(getResourceString("DATA_IMPORT_OPS"),  cc.xyw(2,2,4)); 
         builder.add         (createDelimiterPanel(),                cc.xy (3,4));        
@@ -243,22 +252,20 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,12,4));
         
         myDisplayTable = setTableData(myDisplayTable);
-        builder.add         (addtoScroll(myDisplayTable),              cc.xyw(3,14,3));   
+        builder.add         (addtoScroll(myDisplayTable),           cc.xyw(3,14,3));   
 
-        builder.add         (errorPanel,              cc.xyw(3,16,4));  
+        builder.add         (errorPanel,                            cc.xyw(3,16,4));  
         builder.add         (buttonpanel,                           cc.xyw(2,18,4)); 
         configPanel.setMinimumSize(buttonpanel.getMinimumSize());
         return configPanel;
     }
-    
-    private JScrollPane addtoScroll(JTable t)
-    {
-    	JScrollPane pane = new JScrollPane(t, 
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-       return pane;
-    }
 
+    /**
+     * Creates the UI panel for a xls import
+     * 
+     * @return
+     * JPanel
+     */
     private JPanel createConfigPanelForXSL()
     {
         //JPanel configPanel = new FormDebugPanel();
@@ -272,7 +279,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
                 "p,10px, " +	//row header
                 "p, 3px,"+		//previe separator
                 "f:p:g,5px," + 	//tablePreview
-                "30px,3px,"+
+                "30px,3px,"+    //data import status error panel
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
@@ -289,12 +296,17 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,8,4));
         myDisplayTable = setTableData(myDisplayTable);
         builder.add         (addtoScroll(myDisplayTable),           cc.xyw(3,10,3));
-        builder.add         (errorPanel,              cc.xyw(3,12,4));  
+        builder.add         (errorPanel,                            cc.xyw(3,12,4));  
         builder.add         (buttonpanel,                           cc.xyw(2,14,4)); 
         configPanel.setMinimumSize(buttonpanel.getMinimumSize());
         return configPanel;
     }
     
+    /**
+     * Builds okay, cancel, help button bar.
+     * @return
+     * JPanel
+     */
     private JPanel buildButtons()
     {
         cancelBtn = new JButton(getResourceString("Cancel"));
@@ -336,6 +348,12 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return  ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn);
     }
     
+    /**
+     * Creates panel that displays the combox boxes for the text qualifier,
+     * Character Set, and Escape Mode for CSV import
+     * @return
+     * JPanel - the panel to display
+     */
     private JPanel createOtherControlsPanel()
     {
         JPanel myPanel = new JPanel();
@@ -373,7 +391,13 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return myPanel;       
     }
     
-    /** Listens to the combo box. */
+
+    /* 
+     * Does actionPerformed on all of the Combo box selections
+     * 
+     * (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
         //Object source = e.g
@@ -410,16 +434,20 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         	escapeMode = CsvReader.ESCAPE_MODE_DOUBLED;
         }
         updateTableDisplay();
-        setTableData(myDisplayTable);
     }
     
+    /**
+     * Creates ui panel for allowing user to select delimiters for csv import
+     * @return
+     * JPanel
+     */
     private JPanel createDelimiterPanel()
     {      
         JPanel myPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         FormLayout formLayout = new FormLayout(
                 "p,p,2px, p:g,2px, p,2px,p,2px,",
-                "p,2px,   p,2px, p,2px , p,2px , p,2px , p,2px, p,2px ");
+                "p,1px,   p,1px, p,1px , p,1px , p,1px , p,1px, p,1px ");
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
         //Color curColor = myPanel.getBackground();
         //Color newColor = curColor;//.brighter();
@@ -471,13 +499,17 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return myPanel;
     }
     
-    
+    /**
+     * 
+     * void
+     */
     private void updateTableDisplay()
     {
     	config.setFirstRowHasHeaders(doesFirstRowHaveHeaders);
     	config.setTextQualifier(true, stringQualifierChar);
     	config.setCharset(charset);
     	config.setEscapeMode(escapeMode);
+    	config.setDelimiter(delimChar);
     	setTableData(myDisplayTable);
     }
 
@@ -508,7 +540,61 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 //		log.debug("textqualifier: " + textQualifier);// charset = dlg.getC
     }
 
+    /**
+     * Checks if data that is being imported will encounter issues during import,
+     * due to field size constraints in teh data base.  Creates a list of errors to
+     * be displayed to the user
+     * 
+     * @param headers - the column names
+     * @param data - the table data
+     * @return
+     * boolean whether the data contains errors
+     */
+    private boolean checkForErrors(String[]headers, String[][]data)
+    {
+        JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(headers, data);
+        if(listOfErrors.getModel().getSize()>0)
+        {
+           return true;
+        }  
+        return false;
+    }
+    /**
+     * Takes the list of data import errors and displays then to the user
+     * 
+     * void
+     */
+    private void showErrors()
+    {
+        JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(model.getColumnNames(), model.data);
+        if (listOfErrors.getModel().getSize() > 0)
+        {
+            JTextArea textArea = new JTextArea();
+            textArea.setRows(25);
+            textArea.setColumns(60);
+            String newline = "\n";
+            for (int i = 0; i < listOfErrors.getModel().getSize(); i++)
+            {
+                textArea.append((String) listOfErrors.getModel().getElementAt(i) + newline
+                        + newline);
+            }
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            textArea.setEditable(false);
+            textArea.setCaretPosition(0);
+            JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+        }
+    }
     
+    /**
+     * Reads in the data import file and determines the largest number of columns in the
+     * dataset, including headers.  Is used to determine how large to make the 
+     * table
+     * @return
+     * int - the largest number of columns encounterd
+     */    
     public int getLargestColumnCount()
     {
     	try
@@ -518,11 +604,13 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 			csv.setTextQualifier(config.getTextQualifier());
 			int curRowColumnCount = 0;
 			int highestColumnCount = 0;
+			//seeing how many columns are defined
 			if (config.getFirstRowHasHeaders())
 			{
 				csv.readHeaders();
 				highestColumnCount = Math.max(highestColumnCount, csv.getHeaders().length);
 			}
+			//see what the largest number of columns is per row of data
 			while (csv.readRecord())
 			{
 				curRowColumnCount = csv.getColumnCount();
@@ -538,7 +626,14 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		return 0;
     }
     
-    private boolean isStringLongerThan(int length, String colName)
+    /**
+     * Checks to see if the String length is shorter than the given value
+     * @param length
+     * @param colName
+     * @return
+     * boolean whether the string is shorter than the given value
+     */
+    private boolean isStringShorterThan(int length, String colName)
     {
         if(colName.length()<= length)
         {
@@ -547,6 +642,13 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return false;
     }
     
+    /**
+     * Parses the given import file according to the users selection and creates/updates the Preview table,
+     * showing the user how the import options effect the way the data will be imported into the spreadsheet.
+     * @param t - the table to display the data
+     * @return
+     * JTable - the table to display the data
+     */
     private JTable setTableData(JTable t)
 	{
 		try
@@ -635,14 +737,37 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		}
 		return null;
 	}
+  
+    /**
+     * Adds table to scrollpanel
+     * @param t - the table to be displayed in the preview pane
+     * @return
+     * JScrollPane
+     */
+    private JScrollPane addtoScroll(JTable t)
+    {
+    	JScrollPane pane = new JScrollPane(t, 
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+       return pane;
+    }
     
-    public JList checkTableDataForSizeConstraints(String[]headers, String[][]data)
+    /**
+     * Goes through and checks the import data for potential errors (where the data being import
+     * violates size constraints when being imported into the data base - ie. column header length (64)
+     * or field value length (255)
+     * @param headers - the column headers
+     * @param data - the table data
+     * @return
+     * JList - all list of errors
+     */
+    private JList genListOfErrorWhereTableDataDefiesSizeConstraints(String[]headers, String[][]data)
     {     
         DefaultListModel listModel = new DefaultListModel();
         JList listOfImportDataErrors = new JList();
         for(int i=0; i<headers.length; i++)
          {
-            if(!isStringLongerThan(WorkbenchTemplateMappingItem.getImportedColNameMaxLength(), headers[i]))
+            if(!isStringShorterThan(WorkbenchTemplateMappingItem.getImportedColNameMaxLength(), headers[i]))
             {
                 String msg = "Column at index=" + i + " is too long to be inserted into the database.  It will be truncated.\n"
                 + "Current Value:\n" + headers[i]+ "\nTruncated Value:\n" 
@@ -654,11 +779,12 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         for(int i = 0; i < data.length; i++){
             for(int j=0; j < data[i].length; j++)
             {
+            	//WorkbenchDataItem.class.getDeclaredMethod("getCellData", null).getDeclaredAnnotations();
                 String str = data[i][j];
-                if(!isStringLongerThan(255, str))
+                if(!isStringShorterThan(WorkbenchDataItem.getCellDataLength(), str))
                 {
                     String msg = "The value in cell Row=" + i + ", Column=" + headers[j] + " is too long to be inserted into the database.  It will be truncated.\n"
-                    + "Current Value:\n" + str+ "\nTruncated Value:\n" + str.substring(0, 254);
+                    + "Current Value:\n" + str+ "\nTruncated Value:\n" + str.substring(0, WorkbenchDataItem.getCellDataLength()-1);
                     log.warn(msg);
                     listModel.addElement(msg);
                 }
@@ -668,17 +794,37 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return listOfImportDataErrors;
     }
     
+    /**
+     * If the user does not provide "first row contains headers", this creates
+     * as set of headers of notation "Column 1"....
+     * @param count
+     * @return
+     * String[]
+     */
     public String[] createDummyHeaders( int count)
     {
     	String[] headers = new String[count];
 		for (int i = 0; i < count; i++)
 		{ 
-			headers[i] = "Column " + i;
+			headers[i] = getResourceString("DEFAULT_COLUMN_NAME") + " " + i;
 		}  
 		return headers;
     }
     
-    public String[] padArray(int highestColumnCnt, String[] array, boolean replaceWithColumnName)
+    /**
+     * Takes an array of data (could be a column array def, or a row of data), and
+     * the highest Column count, then inserts blank/dummy data into empty cells.
+     * We need to do this because JTable requires that the column header count,
+     * and the row data column count are the same.
+     * 
+     * @param highestColumnCnt - the largest number of columns, or the value that the 
+     * array needs to be padded to.
+     * @param array - the array needing padding
+     * @param replaceWithColumnName - is a column array, if so replace with dummy columns, instead of blank data
+     * @return
+     * String[] - the new array of data
+     */
+    private String[] padArray(int highestColumnCnt, String[] array, boolean replaceWithColumnName)
 	{
 		if (array.length >= highestColumnCnt)
 		{
@@ -696,7 +842,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		{
 			if (replaceWithColumnName)
 			{
-				newArray[i] = "Column " + i;
+				newArray[i] =  getResourceString("DEFAULT_COLUMN_NAME") + " " + i;
 			} 
 			else
 			{
@@ -706,16 +852,22 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		return newArray;
 	}
     
-    public void printArray(String[] arrayList)
+    /**
+     * Debugging method for printing an array.
+     * @param arrayList
+     * void
+     */
+    private void printArray(String[] arrayList)
 	{
 		for (int i = 0; i < arrayList.length; i++)
 		{
-			//if(log.isDebugEnabled())System.out.print("[" + (i) + "]" + arrayList[i] + " ");
+			if(log.isDebugEnabled())System.out.print("[" + (i) + "]" + arrayList[i] + " ");
 		}
-		//log.debug("");
+		log.debug("");
 	}
     
     /**
+     * Getter for the string qualifier character
      * @return the stringQualifierChar
      */
     public char getStringQualifierChar()
@@ -723,15 +875,10 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return stringQualifierChar;
     }
 
-    /**
-     * @param stringQualifierChar the stringQualifierChar to set
-     */
-    public void setStringQualifierChar(char stringQualifierChar)
-    {
-        this.stringQualifierChar = stringQualifierChar;
-    }
 
     /**
+     * Getter for the character delimiter
+     * 
      * @return the delimChar
      */
     public char getDelimChar()
@@ -739,15 +886,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         return delimChar;
     }
 
-    /**
-     * @param delimChar the delimChar to set
-     */
-    public void setDelimChar(char delimChar)
-    {
-        this.delimChar = delimChar;
-    }
-
 	/**
+	 * Getter for the Characterset
+	 * 
 	 * @return the charset
 	 */
 	public Charset getCharset()
@@ -756,14 +897,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	}
 
 	/**
-	 * @param charset the charset to set
-	 */
-	public void setCharset(Charset charset)
-	{
-		this.charset = charset;
-	}
-
-	/**
+	 * Getter for the escape mode
+	 * 
 	 * @return the escapeMode
 	 */
 	public int getEscapeMode()
@@ -771,15 +906,10 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		return this.escapeMode;
 	}
 
-	/**
-	 * @param escapeMode the escapeMode to set
-	 */
-	public void setEscapeMode(int escapeMode)
-	{
-		this.escapeMode = escapeMode;
-	}
 
 	/**
+	 * Getter for the doesFirstRowHaveHeaders
+	 * 
 	 * @return the doesFirstRowHaveHeaders
 	 */
 	public boolean getDoesFirstRowHaveHeaders()
@@ -788,14 +918,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 	}
 
 	/**
-	 * @param doesFirstRowHaveHeaders the doesFirstRowHaveHeaders to set
-	 */
-	public void setDoesFirstRowHaveHeaders(boolean doesFirstRowHaveHeaders)
-	{
-		this.doesFirstRowHaveHeaders = doesFirstRowHaveHeaders;
-	}
-
-	/**
+	 * Getter for the file name of the import file
 	 * @return the fileName
 	 */
 	public String getFileName()
@@ -803,31 +926,19 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		return this.fileName;
 	}
 
-	/**
-	 * @param fileName the fileName to set
-	 */
-	public void setFileName(String fileName)
-	{
-		this.fileName = fileName;
-	}
-
     /**
+     * Getter for whether the operation has been canceled
+     * 
      * @return the isCancelled
      */
     public boolean isCancelled()
     {
         return isCancelled;
     }
-
-    /**
-     * @param isCancelled the isCancelled to set
-     */
-    public void setCancelled(boolean isCancelled)
-    {
-        this.isCancelled = isCancelled;
-    }
     
     /**
+     * Class the listens to the "Other" delimiter textfield, for user input.
+     * Detects a key released event and reads the value.
      * @author megkumin
      *
      * @code_status Alpha
@@ -865,6 +976,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     }
     
     /**
+     * Class that forces the "Other" delimiter textfield to only allow
+     * one character of input
+     * 
      * @author megkumin
      * 
      * @code_status Alpha
@@ -900,6 +1014,7 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     }
     
     /**
+	 * Listens to check box about whether first row has headers
 	 * @author megkumin
 	 * 
 	 * @code_status Alpha
@@ -947,6 +1062,13 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         }
     }  
     
+    /**
+     * Table model for the import data table preview.  We need to user the AbstractTableModel
+     * to be able to fire of table update changes.
+     * 
+     * @author megkumin
+     *
+     */
     private class PreviewTableModel extends AbstractTableModel
     {
         private String[] columnNames = {};
@@ -960,6 +1082,10 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 			super();
 		}
 
+		/**
+		 * @param headers
+		 * @param data
+		 */
 		public PreviewTableModel(String[] headers, String[][]data)
         {
         	super();
@@ -967,6 +1093,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         	this.data = data;
         }
 		
+	    /* (non-Javadoc)
+	     * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
+	     */
 	    public void setValueAt(Object value, int row, int col) {
 	        data[row][col] = value.toString();
 	        fireTableCellUpdated(row, col);
@@ -980,6 +1109,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 			return columnNames.length;
 		}
 		
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnName(int)
+         */
         public String getColumnName(int col) {
             return columnNames[col];
         }
@@ -1000,6 +1132,9 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 			return data[rowIndex][columnIndex];
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
+		 */
 		public boolean isCellEditable(int row, int column)
         {
             return false;
@@ -1039,6 +1174,12 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
     }
 
     
+    /**
+     * Creates a Panel the displays a message about whether the data being imported 
+     * could have data size constraint violations.  displays a mouseover label for clikcing.
+     * @author megkumin
+     *
+     */
     private class DataErrorPanel extends JPanel
     {
         /**
@@ -1082,6 +1223,8 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
 		}
     }
     /**
+	 * Listens to the delimiter radiobuttons for user input.
+	 * 
 	 * @author megkumin
 	 * 
 	 * @code_status Alpha
@@ -1148,19 +1291,14 @@ public class DataImportDialog extends JDialog implements ActionListener // imple
         }
     }
     /**
+     * Determines whether user wants to use TextQualifier,
+     * allows us to turn off text qualification int eh CSVREader.
+     * 
      * @return the userTextQualifier
      */
-    public boolean isUserTextQualifier()
+    public boolean isUserTextQualifierBeingUsed()
     {
         return userTextQualifier;
-    }
-
-    /**
-     * @param userTextQualifier the userTextQualifier to set
-     */
-    public void setUserTextQualifier(boolean userTextQualifier)
-    {
-        this.userTextQualifier = userTextQualifier;
     }
  
 }
