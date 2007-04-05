@@ -21,7 +21,7 @@ import java.util.Vector;
  */
 public interface ConfigureExternalDataIFace
 {
-    public enum Status {None, Valid, Error}
+    public enum Status {None, Valid, Error, Cancel}
     
     /**
      * Returns whether the configuration was valid.

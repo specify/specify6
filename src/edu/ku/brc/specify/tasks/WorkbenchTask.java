@@ -1177,8 +1177,8 @@ public class WorkbenchTask extends BaseTask
                 {
                     createWorkbench(dataFileInfo, workbenchTemplate, false);
                 }
-            } else
-            {
+            }
+            else if(dataFileInfo.getConfig().getStatus() != ConfigureExternalDataIFace.Status.Cancel){
                 JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
                 statusBar.setErrorMessage(String.format(getResourceString("WB_PARSE_FILE_ERROR"), new Object[] { file.getName() }));
             }

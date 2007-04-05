@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import com.csvreader.CsvReader;
 
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace.Status;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -406,6 +407,10 @@ public class ConfigureCSV extends ConfigureExternalDataBase
             shouldUseTextQualifier = dlg.getShouldUseTextQualifier();
             numOfColsToAppend = dlg.getHighestColumnCount();
             nonInteractiveConfig();
+        }
+        else
+        {
+            status = Status.Cancel;
         }
 
 		log.debug("delim: " + delimiter);

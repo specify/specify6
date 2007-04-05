@@ -26,6 +26,8 @@ public class ImportDataFileInfo
     protected static String CSV_MIME_TYPE = "text/csv";
     
     protected DataImportIFace importer;
+    
+    protected ConfigureExternalDataBase config;
 
     public ImportDataFileInfo()
     {
@@ -45,7 +47,7 @@ public class ImportDataFileInfo
         String mimeType = getMimeType(file);
         if (mimeType == XLS_MIME_TYPE)
         {
-            ConfigureXLS config = new ConfigureXLS(file);
+             config = new ConfigureXLS(file);
             if (config.getStatus() == ConfigureExternalDataIFace.Status.Valid)
             {
                 importer = new XLSImport(config);
@@ -54,7 +56,7 @@ public class ImportDataFileInfo
             
         } else if (mimeType == CSV_MIME_TYPE)
         {
-            ConfigureCSV config = new ConfigureCSV(file);
+             config = new ConfigureCSV(file);
             if (config.getStatus() == ConfigureExternalDataIFace.Status.Valid)
             {
                 importer = new CSVImport(config);
@@ -103,5 +105,21 @@ public class ImportDataFileInfo
             return CSV_MIME_TYPE;
         }
         return "";
+    }
+
+    /**
+     * @return the importer
+     */
+    public DataImportIFace getImporter()
+    {
+        return importer;
+    }
+
+    /**
+     * @return the config
+     */
+    public ConfigureExternalDataBase getConfig()
+    {
+        return config;
     }
 }

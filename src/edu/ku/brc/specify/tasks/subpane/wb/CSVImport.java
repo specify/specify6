@@ -81,15 +81,17 @@ public class CSVImport extends DataImport implements DataImportIFace
                         csv.readHeaders();
                     }else
                     {
-                        //csv.setHeaders(config.setupHeaders());
                         csv.setHeaders(configCSV.setupHeaders());
                     }
+                    
+                    //add additional dummy column headers
                     String[] newHeaders = null;
                     if(configCSV.getNumOfColsToAppend() > csv.getColumnCount())
                     {
                             newHeaders = configCSV.padColumnHeaders(configCSV.getNumOfColsToAppend(), csv.getHeaders());
                             csv.setHeaders(newHeaders);   
                     }
+                    
                     // Create hash of the column number so later we can easily 
                     // look up whether this column should be used.
                     Hashtable<Short, WorkbenchTemplateMappingItem> colHash = new Hashtable<Short, WorkbenchTemplateMappingItem>();
