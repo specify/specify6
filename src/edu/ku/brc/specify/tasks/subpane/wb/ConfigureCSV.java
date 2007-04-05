@@ -48,8 +48,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     private char    textQualifier;
     private Charset charset;
     private int numOfColsToAppend;
-    private boolean isCanceled;
-    private boolean userTextQualifier;// = true;
+    private boolean shouldUseTextQualifier;// = true;
     
     /**
      * Constructor sets defaults (hard coded).
@@ -62,9 +61,8 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         delimiter  = getDefaultDelimiter();
         charset    = getDefaultCharset();
         textQualifier = getDefaultTextQualifier();
-        userTextQualifier = getDefaultUserTextQualifer();
+        shouldUseTextQualifier = getDefaultUserTextQualifer();
         numOfColsToAppend = 0;
-        isCanceled = false;
         readConfig(file);
     }
 
@@ -121,7 +119,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         }
         else if(prop == "{none}")
         {
-            userTextQualifier = false;
+            shouldUseTextQualifier = false;
         }
         else
         {
@@ -167,11 +165,11 @@ public class ConfigureCSV extends ConfigureExternalDataBase
                 InputStream input  = new FileInputStream(externalFile);
                 CsvReader   result = new CsvReader(input, delimiterArg, charsetArg);
                 result.setEscapeMode(escapeModeArg);
-                if(userTextQualifier)
+                if(shouldUseTextQualifier)
                 {
                     result.setTextQualifier(txtQualArg);
                 }
-                result.setUseTextQualifier(userTextQualifier);
+                result.setUseTextQualifier(shouldUseTextQualifier);
                 log.debug("Status being set to Valid");
                 status = Status.Valid;
 
@@ -396,25 +394,25 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 //         nonInteractiveConfig();
 		 
 		DataImportDialog dlg = new DataImportDialog(this, delimiter,
-                textQualifier, charset, escapeMode, firstRowHasHeaders, userTextQualifier);
+                textQualifier, charset, escapeMode, firstRowHasHeaders, shouldUseTextQualifier);
 
-        //dlg.getModel().get
-        //dlg.gett
-////        this.isCanceled = dlg.isCancelled();
-////		if(!isCanceled)
-		nonInteractiveConfig();
-//		delimiter = dlg.getDelimChar();
-//		charset = dlg.getCharset();
-//		escapeMode = dlg.getEscapeMode();
-//		firstRowHasHeaders = dlg.getDoesFirstRowHaveHeaders();
-//		textQualifier = dlg.getStringQualifierChar();
-//		log.debug("delim: " + delimiter);
-//		log.debug("charset: " + charset);
-//		log.debug("escapemode: " + escapeMode);
-//		log.debug("furst row has headers: " + firstRowHasHeaders);
-//		log.debug("textqualifier: " + textQualifier);// charset = dlg.getC
-//		
-		
+		if (!dlg.isCancelled())
+        {
+            delimiter = dlg.getDelimChar();
+            charset = dlg.getCharset();
+            escapeMode = dlg.getEscapeMode();
+            firstRowHasHeaders = dlg.getDoesFirstRowHaveHeaders();
+            textQualifier = dlg.getStringQualifierChar();
+            shouldUseTextQualifier = dlg.getShouldUseTextQualifier();
+            numOfColsToAppend = dlg.getHighestColumnCount();
+            nonInteractiveConfig();
+        }
+
+		log.debug("delim: " + delimiter);
+		log.debug("charset: " + charset);
+		log.debug("escapemode: " + escapeMode);
+		log.debug("furst row has headers: " + firstRowHasHeaders);
+		log.debug("textqualifier: " + textQualifier);	
 	}
 
     /*
@@ -440,9 +438,16 @@ public class ConfigureCSV extends ConfigureExternalDataBase
                 {
                     csv.setHeaders(setupHeaders());
                 }
+                String[] newHeaders = null;
+                if(numOfColsToAppend > csv.getHeaderCount())
+                {
+                    newHeaders = padColumnHeaders(numOfColsToAppend, csv.getHeaders());
+                    csv.setHeaders(newHeaders);
+                }
 
                 if (status == Status.Valid)
                 {
+                    //int headerCount = Math.max(arg0, arg1)
                     colInfo = new Vector<ImportColumnInfo>(csv.getHeaderCount());
     
                     for (int h = 0; h < csv.getHeaderCount(); h++)
@@ -502,6 +507,20 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     }
 
     /**
+     * Takes an array of column  defs,  and
+     * the highest Column count, then inserts dummy column headers into headers.
+     * 
+     * @param highestColumnCnt - the largest number of columns, or the value that the 
+     * array needs to be padded to.
+     * @param array - the array needing padding
+     * @return
+     * String[] - the new header array 
+     */
+    public String[] padColumnHeaders(int highestColumnCnt, String[] array)
+    {
+        return DataImportDialog.padArray(highestColumnCnt, array, true);
+    }
+    /**
      * @return the textQualifier
      */
     public char getTextQualifier()
@@ -514,7 +533,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      */
     public void setTextQualifier(boolean use, char textQualifier)
     {
-        userTextQualifier = true;
+        shouldUseTextQualifier = true;
         if(use)
         {
             this.textQualifier = textQualifier;
@@ -561,35 +580,20 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         this.numOfColsToAppend = numOfColsToAppend;
     }
 
+
     /**
-     * @return the isCanceled
+     * @return the shouldUseTextQualifier
      */
-    public boolean isCanceled()
+    public boolean isShouldUseTextQualifier()
     {
-        return isCanceled;
+        return shouldUseTextQualifier;
     }
 
     /**
-     * @param isCanceled the isCanceled to set
+     * @param shouldUseTextQualifier the shouldUseTextQualifier to set
      */
-    public void setCanceled(boolean isCanceled)
+    public void setShouldUseTextQualifier(boolean userTextQualifier)
     {
-        this.isCanceled = isCanceled;
-    }
-
-    /**
-     * @return the userTextQualifier
-     */
-    public boolean isUserTextQualifier()
-    {
-        return userTextQualifier;
-    }
-
-    /**
-     * @param userTextQualifier the userTextQualifier to set
-     */
-    public void setUserTextQualifier(boolean userTextQualifier)
-    {
-        this.userTextQualifier = userTextQualifier;
+        this.shouldUseTextQualifier = userTextQualifier;
     }
 }

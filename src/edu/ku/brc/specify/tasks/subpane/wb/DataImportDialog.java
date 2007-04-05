@@ -110,7 +110,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 	private Charset charset;
 	private int escapeMode;
 	private boolean doesFirstRowHaveHeaders;
-    private boolean userTextQualifier;
+    private boolean shouldUseTextQualifier;
 
 	private JLabel textQualLabel;
 	private JComboBox textQualCombo;
@@ -131,6 +131,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 	private PreviewTableModel model;
 	private DataErrorPanel errorPanel = new DataErrorPanel();
    
+    private int highestColumnCount;
     /**
      * Constructor for Import Dialog for a csv
      * 
@@ -154,7 +155,8 @@ public class DataImportDialog extends JDialog implements ActionListener
         this.escapeMode = defaultEscMode;
         this.delimChar = defaultDelimChar;
         this.stringQualifierChar = defaultTextQual;
-        this.userTextQualifier = useTxtQual;
+        this.shouldUseTextQualifier = useTxtQual;
+        highestColumnCount = 0;
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
         initForCSV();
@@ -317,6 +319,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
+                log.debug("User cancelled DataImportDialog");
                 isCancelled = true;
                 btnPressed  = CANCEL_BTN;
                 setVisible(false);
@@ -330,6 +333,11 @@ public class DataImportDialog extends JDialog implements ActionListener
                     isCancelled = false;
                     btnPressed  = OK_BTN;
                     setVisible(false);
+                    config.setFirstRowHasHeaders(doesFirstRowHaveHeaders);
+                    config.setTextQualifier(true, stringQualifierChar);
+                    config.setCharset(charset);
+                    config.setEscapeMode(escapeMode);
+                    config.setDelimiter(delimChar);
             }
         });
         
@@ -337,6 +345,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
+                log.debug("User okayed DataImportDialog");
                 isCancelled = false;
                 btnPressed  = HELP_BTN;
                 setVisible(false);
@@ -505,11 +514,7 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private void updateTableDisplay()
     {
-    	config.setFirstRowHasHeaders(doesFirstRowHaveHeaders);
-    	config.setTextQualifier(true, stringQualifierChar);
-    	config.setCharset(charset);
-    	config.setEscapeMode(escapeMode);
-    	config.setDelimiter(delimChar);
+
     	setTableData(myDisplayTable);
     }
 
@@ -584,7 +589,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setCaretPosition(0);
             JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -662,7 +667,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 			String[] headers = {};
 			Vector<String[]> tableDataVector = new Vector<String[]>();
 			
-			int highestColumnCount = getLargestColumnCount();
+			 highestColumnCount = getLargestColumnCount();
 
 			if (config.getFirstRowHasHeaders())
 			{
@@ -824,7 +829,7 @@ public class DataImportDialog extends JDialog implements ActionListener
      * @return
      * String[] - the new array of data
      */
-    private String[] padArray(int highestColumnCnt, String[] array, boolean replaceWithColumnName)
+    public static String[] padArray(int highestColumnCnt, String[] array, boolean replaceWithColumnName)
 	{
 		if (array.length >= highestColumnCnt)
 		{
@@ -838,16 +843,18 @@ public class DataImportDialog extends JDialog implements ActionListener
 			paddingIndex = i;
 		}
 		paddingIndex++;
+        int padDisplayIndex = 1;
 		for (int i = paddingIndex; i < highestColumnCnt; i++)
 		{
 			if (replaceWithColumnName)
 			{
-				newArray[i] =  getResourceString("DEFAULT_COLUMN_NAME") + " " + i;
+				newArray[i] =  getResourceString("DEFAULT_COLUMN_NAME") + " " + padDisplayIndex;
 			} 
 			else
 			{
 				newArray[i] = "";
 			}
+            padDisplayIndex++;
 		}
 		return newArray;
 	}
@@ -1294,11 +1301,20 @@ public class DataImportDialog extends JDialog implements ActionListener
      * Determines whether user wants to use TextQualifier,
      * allows us to turn off text qualification int eh CSVREader.
      * 
-     * @return the userTextQualifier
+     * @return the shouldUseTextQualifier
      */
-    public boolean isUserTextQualifierBeingUsed()
+    public boolean getShouldUseTextQualifier()
     {
-        return userTextQualifier;
+        return shouldUseTextQualifier;
     }
+
+    /**
+     * @return the highestColumnCount
+     */
+    public int getHighestColumnCount()
+    {
+        return highestColumnCount;
+    }
+
  
 }

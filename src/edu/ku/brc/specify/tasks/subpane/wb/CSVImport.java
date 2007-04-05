@@ -65,6 +65,7 @@ public class CSVImport extends DataImport implements DataImportIFace
                 if (configCSV.getStatus() == ConfigureExternalDataIFace.Status.Valid)
                 {
                     CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), configCSV.getDelimiter(), configCSV.getCharset());
+
                     csv.setEscapeMode(configCSV.getEscapeMode());
                     csv.setTextQualifier(configCSV.getTextQualifier());
         
@@ -79,7 +80,14 @@ public class CSVImport extends DataImport implements DataImportIFace
                     {
                         csv.readHeaders();
                     }
-                    
+                    String[] newHeaders = null;
+                    if(configCSV.getNumOfColsToAppend() > csv.getColumnCount())
+                    {
+                            newHeaders = configCSV.padColumnHeaders(configCSV.getNumOfColsToAppend(), csv.getHeaders());
+                            csv.setHeaders(newHeaders);   
+                            
+                            log.debug("sdfsadfasdfasdfasdfasdfasd");
+                    }
                     // Create hash of the column number so later we can easily 
                     // look up whether this column should be used.
                     Hashtable<Short, WorkbenchTemplateMappingItem> colHash = new Hashtable<Short, WorkbenchTemplateMappingItem>();
