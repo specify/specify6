@@ -526,7 +526,20 @@ public class LocalityMapper implements TimingTarget
      */
     public void setEnforceAspectRatios(boolean enforceAspectRatios)
     {
+        // if the user is turning on or off the aspect ratio enforcement, we need to recalculate
+        // the bounding box of the map
+        boolean recalc = false;
+        if (enforceAspectRatios != this.enforceAspectRatios)
+        {
+            recalc = true;
+        }
+        
         this.enforceAspectRatios = enforceAspectRatios;
+        
+        if (recalc)
+        {
+            recalculateBoundingBox();
+        }
     }
 
     /**
