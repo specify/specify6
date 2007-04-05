@@ -44,23 +44,21 @@ import com.jgoodies.forms.layout.FormLayout;
  *
  * @code_status Complete
  *
- * @author rods
+ * @author rods, jstewart
  *
  */
 public class JStatusBar extends JPanel
 {
-    // RGB values discovered using ZoomIn
-    //private static final Color WHITE_LINE_COLOR = new Color(255, 255, 255);
-    //private static final Color GRAY_LINE_COLOR  = new Color(172, 168, 153);
-
     private static final Color ERROR_COLOR  = Color.RED;
     private static final Color NORMAL_COLOR = Color.BLACK;
+    private static final Color WARNING_COLOR = Color.YELLOW;
 
     protected JLabel       statusLabel = null;
     protected JLabel[]     labels      = null;
     protected JProgressBar progressBar = null;
     
     protected Icon         errorIcon   = null;
+    protected Icon         warningIcon = null;
     
     protected Exception lastException = null;
 
@@ -139,6 +137,11 @@ public class JStatusBar extends JPanel
     {
         this.errorIcon = icon;
     }
+    
+    public void setWarningIcon(Icon icon)
+    {
+        this.warningIcon = icon;
+    }
 
     /**
      * Sets text into the statusbar and clear the foreground color (sets it to "normal").
@@ -156,6 +159,7 @@ public class JStatusBar extends JPanel
 
     /**
      * Sets text into the statusbar's section.
+     * 
      * @param sectionInxwhich section text to sets
      * @param text the text of the status bar
      */
@@ -168,8 +172,8 @@ public class JStatusBar extends JPanel
     }
 
     /**
-     * This is just a helper method that combines the work of the {@link #setText(String)}
-     * and {@link #setAsError()} methods.
+     * Sets the given message into the statusbar.  The message is displayed
+     * using the current error color and icon.
      * 
      * @param message the text of the error message
      * @param e the exception
@@ -183,8 +187,8 @@ public class JStatusBar extends JPanel
     }
 
     /**
-     * This is just a helper method that combines the work of the {@link #setText(String)}
-     * and {@link #setAsError()} methods.
+     * Sets the given message into the statusbar.  The message is displayed
+     * using the current error color and icon.
      * 
      * @param message the the text of the error message
      */
@@ -193,6 +197,35 @@ public class JStatusBar extends JPanel
         setText(message);
         statusLabel.setForeground(ERROR_COLOR);
         statusLabel.setIcon(errorIcon);
+        this.lastException = null;
+    }
+
+    /**
+     * Sets the given message into the statusbar.  The message is displayed
+     * using the current warning color and icon.
+     * 
+     * @param message the text of the warning message
+     * @param e the exception
+     */
+    public void setWarningMessage(String message, Exception e)
+    {
+        setText(message);
+        statusLabel.setForeground(WARNING_COLOR);
+        statusLabel.setIcon(warningIcon);
+        this.lastException = e;
+    }
+
+    /**
+     * Sets the given message into the statusbar.  The message is displayed
+     * using the current warning color and icon.
+     * 
+     * @param message the the text of the warning message
+     */
+    public void setWarningMessage(String message)
+    {
+        setText(message);
+        statusLabel.setForeground(WARNING_COLOR);
+        statusLabel.setIcon(warningIcon);
         this.lastException = null;
     }
 
@@ -214,40 +247,6 @@ public class JStatusBar extends JPanel
     public JProgressBar getProgressBar()
     {
         return progressBar;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-     */
-    @Override
-    protected void paintComponent(Graphics g)
-    {
-        super.paintComponent(g);
-
-        /*int y = 0;
-        g.setColor(new Color(156, 154, 140));
-        g.drawLine(0, y, getWidth(), y);
-        y++;
-        g.setColor(new Color(196, 194, 183));
-        g.drawLine(0, y, getWidth(), y);
-        y++;
-        g.setColor(new Color(218, 215, 201));
-        g.drawLine(0, y, getWidth(), y);
-        y++;
-        g.setColor(new Color(233, 231, 217));
-        g.drawLine(0, y, getWidth(), y);
-
-        y = getHeight() - 3;
-        g.setColor(new Color(233, 232, 218));
-        g.drawLine(0, y, getWidth(), y);
-        y++;
-        g.setColor(new Color(233, 231, 216));
-        g.drawLine(0, y, getWidth(), y);
-        y = getHeight() - 1;
-        g.setColor(new Color(221, 221, 220));
-        g.drawLine(0, y, getWidth(), y);
-        */
-
     }
 
     public class MyBevelBorder extends BevelBorder
@@ -275,17 +274,9 @@ public class JStatusBar extends JPanel
             g.drawLine(0, 0, 0, h - 1);
             g.drawLine(1, 0, w - 1, 0);
 
-            // g.setColor(getShadowOuterColor(c));
-            // g.drawLine(1, 1, 1, h-2);
-            // g.drawLine(2, 1, w-2, 1);
-
             g.setColor(getHighlightOuterColor(c));
             g.drawLine(1, h - 1, w - 1, h - 1);
             g.drawLine(w - 1, 1, w - 1, h - 2);
-
-            //g.setColor(getHighlightInnerColor(c));
-            // g.drawLine(2, h-2, w-2, h-2);
-            // g.drawLine(w-2, 2, w-2, h-3);
 
             g.translate(-x, -y);
             g.setColor(oldColor);
@@ -293,48 +284,6 @@ public class JStatusBar extends JPanel
         }
     }
 
-    /*
-    public class AngledLinesWindowsCornerIcon implements Icon
-    {
-
-        // Dimensions
-        private static final int BGM_WIDTH  = 13;
-        private static final int BGM_HEIGHT = 13;
-
-        public int getIconHeight()
-        {
-            return BGM_WIDTH;
-        }
-
-        public int getIconWidth()
-        {
-            return BGM_HEIGHT;
-        }
-
-        public void paintIcon(Component c, Graphics g, int x, int y)
-        {
-
-            g.setColor(WHITE_LINE_COLOR);
-            g.drawLine(0, 12, 12, 0);
-            g.drawLine(5, 12, 12, 5);
-            g.drawLine(10, 12, 12, 10);
-
-            g.setColor(GRAY_LINE_COLOR);
-            g.drawLine(1, 12, 12, 1);
-            g.drawLine(2, 12, 12, 2);
-            g.drawLine(3, 12, 12, 3);
-
-            g.drawLine(6, 12, 12, 6);
-            g.drawLine(7, 12, 12, 7);
-            g.drawLine(8, 12, 12, 8);
-
-            g.drawLine(11, 12, 12, 11);
-            g.drawLine(12, 12, 12, 12);
-
-        }
-    }
-    */
-    
     public class EndsBorder extends BevelBorder
     {
         protected Insets insets;
