@@ -156,7 +156,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected boolean               hasChanged             = false;
     protected boolean               blockChanges           = false;
     protected RecordSet             recordSet              = null;
-    protected boolean               bgmCompatible          = false;
     
     protected JButton               saveBtn                = null;
     protected JButton               deleteRowsBtn          = null;
@@ -343,8 +342,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 doBioGeomancerLookup();
             }
         });
-        selectionSensativeButtons.add(biogeomancerBtn);
-        bgmCompatible = isTemplateBGMCompatible();
+        biogeomancerBtn.setEnabled(isTemplateBGCompatible());
         
         convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.Std16, "WB_CONVERT_GEO_FORMAT", true, new ActionListener()
         {
@@ -546,11 +544,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         for (JButton btn: selectionSensativeButtons)
         {
             btn.setEnabled(enable);
-        }
-        
-        if (biogeomancerBtn.isEnabled())
-        {
-            biogeomancerBtn.setEnabled(bgmCompatible);
         }
     }
     
@@ -1118,15 +1111,24 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void mapImageReceived(final Icon map)
     {
+        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        statusBar.setIndeterminate(false);
+        statusBar.setText("");
+
         if (map != null)
         {
             mapFrame.setVisible(true);
             mapImageLabel.setIcon(map);
             showMapBtn.setEnabled(true);
+            
+            // is the map really skinny?
+            int ht = map.getIconHeight();
+            int wd = map.getIconWidth();
+            if (ht < 20 && wd > 100 || ht > 100 && wd < 20)
+            {
+                statusBar.setWarningMessage("Resulting map is thin.  May not display well.");
+            }
         }
-        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
-        statusBar.setIndeterminate(false);
-        statusBar.setText("");
     }
     
     /**
@@ -1269,7 +1271,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showRecordsInGoogleEarth()
     {
-        log.debug("Showing map of selected records");
+        log.info("Showing map of selected records");
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
         {
@@ -1334,10 +1336,10 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Checks to see if the template can support BGM.
-     * @return return whether this template supports BGM
+     * Checks to see if the template can support BG.
+     * @return return whether this template supports BG
      */
-    protected boolean isTemplateBGMCompatible()
+    protected boolean isTemplateBGCompatible()
     {
         int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         if (workbench.getColumnIndex(localityTableId, "localityName") == -1 ||
@@ -1364,14 +1366,21 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void doBioGeomancerLookup()
     {
-        int selection = spreadSheet.getSelectedRow();
-        if (selection == -1)
+        log.info("Performing BioGeomancer lookup of selected records");
+        int[] selection = spreadSheet.getSelectedRowModelIndexes();
+        if (selection.length==0)
         {
-            // we must have a row selected
-            return;
+            // if none are selected, map all of them
+            int rowCnt = spreadSheet.getRowCount();
+            selection = new int[rowCnt];
+            for (int i = 0; i < rowCnt; ++i)
+            {
+                selection[i]=i;
+            }
         }
         
-        final WorkbenchRow selectedRow = workbench.getWorkbenchRowsAsList().get(selection);
+        // TODO: modify this to iterate through all the selected rows, performing a BG lookup on each
+        final WorkbenchRow selectedRow = workbench.getWorkbenchRowsAsList().get(selection[0]);
         
         // get an instance of the biogeo service
         JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
@@ -1471,6 +1480,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
             selectedRow.setData(loc.getLatitude1().toString(), (short)latIndex);
             selectedRow.setData(loc.getLongitude1().toString(), (short)lonIndex);
+            selectedRow.setBioGeomancerResults(data);
             spreadSheet.repaint();
             setChanged(true);
         }
