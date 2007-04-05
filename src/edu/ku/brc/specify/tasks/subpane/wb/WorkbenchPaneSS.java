@@ -1727,7 +1727,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (hasChanged)
         {
-            int rv = JOptionPane.showConfirmDialog(null,
+            JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+            int rv = JOptionPane.showConfirmDialog(topFrame,
                         getResourceString("SaveChanges"),
                         getResourceString("SaveChangesTitle"),
                         JOptionPane.YES_NO_CANCEL_OPTION);
@@ -1789,7 +1790,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean retStatus = true;
         if (hasChanged)
         {
-            int rv = JOptionPane.showConfirmDialog(null,
+            JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+            int rv = JOptionPane.showConfirmDialog(topFrame,
                                                    getResourceString("SaveChanges"),
                                                    getResourceString("SaveChangesTitle"),
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
