@@ -152,9 +152,21 @@ public final class UIHelper
      */
     public static void centerWindow(java.awt.Window window)
     {
-        Rectangle screenRect = window.getGraphicsConfiguration().getBounds();
-        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
-
+        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        Insets screenInsets = null;
+        Rectangle screenRect = null;
+        
+        if (topFrame != null)
+        {
+            screenRect = topFrame.getBounds();
+            screenInsets = topFrame.getInsets();
+        }
+        else
+        {
+            screenRect = window.getGraphicsConfiguration().getBounds();
+            screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
+        }
+        
         // Make sure we don't place the demo off the screen.
         int centerWidth = screenRect.width < window.getSize().width ? screenRect.x : screenRect.x
             + screenRect.width / 2 - window.getSize().width / 2;
