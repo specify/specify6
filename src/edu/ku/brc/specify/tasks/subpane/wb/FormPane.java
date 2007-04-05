@@ -153,6 +153,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 return comp instanceof InputPanel ? (InputPanel)comp : null;
             }
             
+            @Override
             public void mousePressed(MouseEvent e)
             {
                 if (e.getClickCount() == 2 && (controlProperties == null || !controlProperties.isVisible()))
@@ -169,6 +170,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 }
             }
             
+            @Override
             public void mouseClicked(MouseEvent e)
             {
                 selectedInputPanel = getInputPanel(e.getSource());
@@ -189,6 +191,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         addMouseListener(new MouseAdapter()
         {
+            @Override
             public void mouseClicked(MouseEvent e)
             {
                 selectedInputPanel = null;
@@ -798,7 +801,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
-    public Object getDataForClass(Class classObj)
+    public Object getDataForClass(Class<?> classObj)
     {
         return UIHelper.getDataForClass(this, classObj);
     }
@@ -908,6 +911,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             this.maxLength = maxLength;
         }
         
+        @Override
         public boolean verify(JComponent comp)
         {
             boolean isOK = ((JTextComponent)comp).getText().length() <= maxLength;
