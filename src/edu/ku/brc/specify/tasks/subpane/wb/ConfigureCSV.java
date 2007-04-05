@@ -215,7 +215,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      * 
      * @return ("Column1", "Column2", ...)
      */
-    private String[] setupHeaders()
+    public String[] setupHeaders()
     {
         CsvReader csv = makeReader();
         if (csv != null && status == Status.Valid)

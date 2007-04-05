@@ -79,14 +79,16 @@ public class CSVImport extends DataImport implements DataImportIFace
                     if (config.getFirstRowHasHeaders())
                     {
                         csv.readHeaders();
+                    }else
+                    {
+                        //csv.setHeaders(config.setupHeaders());
+                        csv.setHeaders(configCSV.setupHeaders());
                     }
                     String[] newHeaders = null;
                     if(configCSV.getNumOfColsToAppend() > csv.getColumnCount())
                     {
                             newHeaders = configCSV.padColumnHeaders(configCSV.getNumOfColsToAppend(), csv.getHeaders());
                             csv.setHeaders(newHeaders);   
-                            
-                            log.debug("sdfsadfasdfasdfasdfasdfasd");
                     }
                     // Create hash of the column number so later we can easily 
                     // look up whether this column should be used.

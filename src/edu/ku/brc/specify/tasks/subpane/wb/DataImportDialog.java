@@ -848,7 +848,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 		{
 			if (replaceWithColumnName)
 			{
-				newArray[i] =  getResourceString("DEFAULT_COLUMN_NAME") + " " + padDisplayIndex;
+				newArray[i] =  getResourceString("DEFAULT_COLUMN_NAME") + " " + (i+1);
 			} 
 			else
 			{
