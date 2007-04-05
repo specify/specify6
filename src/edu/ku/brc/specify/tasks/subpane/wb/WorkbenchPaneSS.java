@@ -526,11 +526,17 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void checkForCellEditing()
     {
-        if (spreadSheet.getCellEditor() != null)
+        if (currentPanelType == PanelType.Spreadsheet)
         {
-            int index = spreadSheet.getSelectedRow();
-            spreadSheet.getCellEditor().stopCellEditing();
-            spreadSheet.setRowSelectionInterval(index, index);
+            if (spreadSheet.getCellEditor() != null)
+            {
+                int index = spreadSheet.getSelectedRow();
+                spreadSheet.getCellEditor().stopCellEditing();
+                spreadSheet.setRowSelectionInterval(index, index);
+            }
+        } else
+        {
+            formPane.copyDataFromForm();
         }
     }
     

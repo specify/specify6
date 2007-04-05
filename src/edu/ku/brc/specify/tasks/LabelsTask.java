@@ -27,6 +27,8 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import net.sf.jasperreports.engine.JRDataSource;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -171,7 +173,7 @@ public class LabelsTask extends BaseTask
      */
     public void doLabels(final String              labelName, 
                          final String              labelTitle, 
-                         final RecordSetIFace      recordSet, 
+                         final Object              data, 
                          final Properties          params,
                          final Taskable            originatingTask)
     {
@@ -186,10 +188,9 @@ public class LabelsTask extends BaseTask
         } else
         {
             labelsPane  = (LabelsPane)starterPane;
-            
             SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
         }
-        labelsPane.createReport(labelName, recordSet, params);
+        labelsPane.createReport(labelName, data, params);
         starterPane = null;
     }
 
@@ -349,7 +350,7 @@ public class LabelsTask extends BaseTask
 
             if (fileName != null)
             {
-                doLabels(fileName, "Labels", (RecordSetIFace)data, null, this);
+                doLabels(fileName, "Labels", data, null, this);
             }
         }
     }
@@ -485,6 +486,22 @@ public class LabelsTask extends BaseTask
                     doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask);
                 }
             }
+            
+        } else if (cmdAction.getData() instanceof JRDataSource)
+        {
+            String labelFileName = cmdAction.getPropertyAsString("file");
+            
+            if (StringUtils.isEmpty(labelFileName))
+            {
+                labelFileName = askForLabelName();
+            }
+            
+            if (StringUtils.isNotEmpty(labelFileName))
+            {
+                Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
+                doLabels(labelFileName, cmdAction.getPropertyAsString("title"), (JRDataSource)cmdAction.getData(), params, originatingTask);
+            }
+            
             
         } else
         {

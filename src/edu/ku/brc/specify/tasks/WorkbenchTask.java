@@ -87,6 +87,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -1588,6 +1589,33 @@ public class WorkbenchTask extends BaseTask
         Vector<WorkbenchTemplateMappingItem> items             = new Vector<WorkbenchTemplateMappingItem>();
         items.addAll(mappings);
         session.close();
+        
+        if (false) // Research into JRDataSources 
+        {
+            RecordSet rs = new RecordSet();
+            rs.initialize();
+            rs.setDbTableId(Workbench.getClassTableId());
+            rs.addItem(workbench.getWorkbenchId());
+            
+            session = DataProviderFactory.getInstance().createSession();
+            session.attach(workbench);
+            WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList());
+            session.close();
+            
+            final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, dataSrc);
+            cmd.setProperty("title",  "Labels");
+            cmd.setProperty("file",   "basic_label.jrxml");
+            cmd.setProperty("params", "title=title;subtitle=subtitle");
+            cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    CommandDispatcher.dispatch(cmd);
+                }
+            });
+            return;
+        }
         
         WorkbenchTemplateMappingItem selectMappingItem = selectMappingItem(items);
         

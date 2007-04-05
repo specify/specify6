@@ -35,6 +35,7 @@ import java.util.Vector;
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -76,7 +77,7 @@ import edu.ku.brc.ui.validation.ValTextField;
  * Mar 8, 2007
  *
  */
-public class FormPane extends JComponent implements ResultSetControllerListener, 
+public class FormPane extends JPanel implements ResultSetControllerListener, 
                                                 GhostActionable,
                                                 DocumentListener,
                                                 ChangeListener
@@ -587,6 +588,14 @@ public class FormPane extends JComponent implements ResultSetControllerListener,
         {
             wasShowing = false;
         }
+    }
+    
+    /**
+     * Copies the data from the form into the row.
+     */
+    public void copyDataFromForm()
+    {
+        copyDataFromForm(currentIndex);
     }
     
     /**
