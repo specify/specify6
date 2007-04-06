@@ -75,16 +75,18 @@ public class HelpMgr
     }
 
     /**
-     * Adds a help menu to the main menu
+     * Adds a help menu to the main menu.
      * @param helpMenuName the name of the menu item usuall the Application name.
      */
-    public static JMenu createHelpMenuItem(final String helpMenuName)
+    public static JMenu createHelpMenuItem(final JMenu helpMenu, final String helpMenuName)
     {
-        JMenu     helpMenu         = new JMenu(getResourceString("Help"));
-        JMenuItem mainHelpMenuItem = new JMenuItem(helpMenuName);
-        mainHelpMenuItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
-        helpMenu.add(mainHelpMenuItem);
-        registerComponent(mainHelpMenuItem, true);
+        if (helpMenu != null)
+        {
+            JMenuItem mainHelpMenuItem = new JMenuItem(helpMenuName);
+            mainHelpMenuItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
+            helpMenu.add(mainHelpMenuItem);
+            registerComponent(mainHelpMenuItem, true);
+        }
         return helpMenu;
     }
 

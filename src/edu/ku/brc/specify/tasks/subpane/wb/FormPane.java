@@ -36,6 +36,7 @@ import java.util.Vector;
 
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -741,8 +742,40 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     {
         if (index < 0)
         {
-            throw new RuntimeException("Index is less than zero.");
+            ignoreChanges = true;
+            for (InputPanel panel : uiComps)
+            {
+                panel.getLabel().setEnabled(false);
+                Component comp = panel.getComp();
+                comp.setEnabled(false);
+                if (comp instanceof JTextComponent)
+                {
+                    ((JTextComponent)comp).setText("");
+                } else if (comp instanceof JCheckBox)
+                {
+                    ((JCheckBox)comp).setSelected(false);
+                }
+            } 
+            ignoreChanges = false;
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    workbenchPane.getResultSetController().getNewRecBtn().requestFocus();
+                }
+            });
+           
+            return;
+            
+        } else if (index == 0 && workbench.getWorkbenchRowsAsList().size() == 1)
+        {
+            for (InputPanel panel : uiComps)
+            {
+                panel.getLabel().setEnabled(true);
+                panel.getComp().setEnabled(true);
+            } 
         }
+        
         ignoreChanges = true; // turn off change notification
         
         WorkbenchRow wbRow = workbench.getWorkbenchRowsAsList().get(index);

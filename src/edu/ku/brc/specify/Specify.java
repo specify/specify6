@@ -83,6 +83,7 @@ import edu.ku.brc.specify.ui.CollectorActionListener;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -790,6 +791,23 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
         }
+        
+        JMenu helpMenu = new JMenu(getResourceString("Help"));
+        UICacheManager.register("HELPMENU", helpMenu);
+        
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), false, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                           doAbout();
+                        }
+                    });
+        }
+
+
         return mb;
     }
 
@@ -799,25 +817,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected void doAbout()
     {
 
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p:g,30px,r:p:g", "f:p:g"));
-        CellConstraints cc         = new CellConstraints();
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("l:p:g,30px,r:p:g", "c:p:g"));
+        CellConstraints cc      = new CellConstraints();
 
-        builder.add(new JLabel("Specify 6.0"), cc.xy(1,1));
-        builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(3,1));
+        builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
+        builder.add(new JLabel("<html>Specify 6.0<br><br>Biodiversity Research Center Informatics<br>University of Kansas<br>Lawrence, KS 66045</html>"), cc.xy(3,1));
 
-        final JDialog dialog = new JDialog(topFrame, "About Specify 6.0", true);
-        //dialog.setContentPane(builder.getPanel());
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel("Specify 6.0"), BorderLayout.WEST);
-        panel.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), BorderLayout.EAST);
-        dialog.setContentPane(panel);
-
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        //dialog.validate();
-        //dialog.setSize(dialog.getPreferredSize());
-        dialog.pack();
-        UIHelper.centerAndShow(dialog);
+        CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " Specify 6.0", true, CustomDialog.OK_BTN, builder.getPanel());
+        aboutDlg.setOkLabel(getResourceString("Close"));
+        UIHelper.centerAndShow(aboutDlg);
     }
 
     /**
@@ -949,7 +957,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UICacheManager.register(UICacheManager.FRAME, topFrame);
                 
-                ((JMenuBar)UICacheManager.get(UICacheManager.MENUBAR)).add(HelpMgr.createHelpMenuItem("Specify"));
+                ((JMenuBar)UICacheManager.get(UICacheManager.MENUBAR)).add(HelpMgr.createHelpMenuItem((JMenu)UICacheManager.get("HELPMENU"), "Specify"));
             }
             
             initStartUpPanels(databaseNameArg, userNameArg);

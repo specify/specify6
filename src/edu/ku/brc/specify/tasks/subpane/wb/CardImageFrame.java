@@ -138,7 +138,8 @@ public class CardImageFrame extends JFrame
         clearMI   = UIHelper.createMenuItem(imageMenu, "Clear", "ClearMneu", "", true, null);
         replaceMI = UIHelper.createCheckBoxMenuItem(imageMenu, "Replace", "ReplaceMneu", "", true, null);
         
-        menuBar.add(HelpMgr.createHelpMenuItem(getResourceString("WB_IMAGE_WINDOW")));
+        JMenu helpMenu = new JMenu(getResourceString("Help"));
+        menuBar.add(HelpMgr.createHelpMenuItem(helpMenu, getResourceString("WB_IMAGE_WINDOW")));
 
         enableMenus(false);
         

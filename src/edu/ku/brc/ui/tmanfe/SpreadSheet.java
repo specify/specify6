@@ -19,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.util.EventObject;
 import java.util.Hashtable;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -69,8 +70,9 @@ public class SpreadSheet  extends SearchableJXTable
     protected SpreadSheetModel   model;
     protected JScrollPane        scrollPane;
     protected JPopupMenu         popupMenu;
+    protected Action             deleteAction        = null;
     
-    protected boolean            useRowScrolling = false;
+    protected boolean            useRowScrolling     = false;
 
     // Members needed for the RowHeader    
     protected int                rowLabelWidth       = 0;     // the width of the each row's label
@@ -214,6 +216,14 @@ public class SpreadSheet  extends SearchableJXTable
         
     }
     
+    /**
+     * @param deleteAction the deleteAction to set
+     */
+    public void setDeleteAction(Action deleteAction)
+    {
+        this.deleteAction = deleteAction;
+    }
+
     /**
      * Must be called AFTER the model has been adjusted.
      * @param rowInx the row index that was removed
@@ -389,14 +399,17 @@ public class SpreadSheet  extends SearchableJXTable
             });
         }
         
-        JMenuItem mi = pMenu.add(new JMenuItem("Delete Row(s)")); // I18N
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                model.deleteRows(getSelectedRows());
-                popupMenu.setVisible(false);
-            }
-        });
+        if (deleteAction != null)
+        {
+            JMenuItem mi = pMenu.add(new JMenuItem("Delete Row(s)")); // I18N
+            mi.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    deleteAction.actionPerformed(ae);
+                    popupMenu.setVisible(false);
+                }
+            });
+        }
         return pMenu;
     }
 

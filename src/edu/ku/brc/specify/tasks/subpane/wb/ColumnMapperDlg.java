@@ -68,6 +68,7 @@ import edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 
 
 /**
@@ -918,8 +919,14 @@ public class ColumnMapperDlg extends CustomDialog
             {
                 bgColor = getBackground();
             }
+            
             this.hasFocus = hasFocus;
             
+            if (UIHelper.getOSType() == UIHelper.OSTYPE.Windows)
+            {
+                fieldLabel.setForeground(hasFocus ? Color.WHITE : Color.BLACK);
+                mappingLabel.setForeground(hasFocus ? Color.WHITE : Color.BLACK);
+            }
             setBackground(hasFocus ? tableList.getSelectionBackground() : bgColor);
         }
 

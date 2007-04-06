@@ -267,16 +267,17 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
        
-        ActionListener deleteAction = new ActionListener()
+        Action delAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F3, "DelRow", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 deleteRows();
             }
-        };
-        deleteRowsBtn = createIconBtn("MinusSign", "WB_DELETE_ROW", deleteAction);
+        });
+        deleteRowsBtn = createIconBtn("MinusSign", "WB_DELETE_ROW", delAction);
         selectionSensativeButtons.add(deleteRowsBtn);
-        
+        spreadSheet.setDeleteAction(delAction);
+
         clearCellsBtn = createIconBtn("Eraser", "WB_CLEAR_CELLS", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -459,7 +460,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "p"));
         resultsetController  = new ResultSetController(null, true, true, getResourceString("Record"), model.getRowCount());
         resultsetController.addListener(formPane);
-        resultsetController.getDelRecBtn().addActionListener(deleteAction);
+        resultsetController.getDelRecBtn().addActionListener(delAction);
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
         
         // Now put the two panel into the single row panel
@@ -524,7 +525,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Checks the cell for cell editing and stops it.
      */
-    protected void checkCurrentState()
+    protected void checkCurrentEditState()
     {
         if (currentPanelType == PanelType.Spreadsheet)
         {
@@ -605,12 +606,12 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void addRowAtEnd()
     {
-        checkCurrentState();
+        checkCurrentEditState();
         model.appendRow();
+        
         resultsetController.setLength(model.getRowCount());
-        int selInx = model.getRowCount()-1;
-        resultsetController.setIndex(selInx);
-        spreadSheet.getSelectionModel().setSelectionInterval(selInx, selInx);
+        
+        adjustSelectionAfterAdd(model.getRowCount()-1);
         
         updateBtnUI();
     }
@@ -620,15 +621,15 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void addRowAfter()
     {
-        checkCurrentState();
+        checkCurrentEditState();
         
         int curSelInx = getCurrentIndexFromFormOrSS();
         model.insertAfterRow(curSelInx);
-        resultsetController.setLength(model.getRowCount());
         
-        int newInx = curSelInx  + 1;
-        resultsetController.setIndex(newInx);
-        spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
+        int count = model.getRowCount();
+        resultsetController.setLength(count);
+        
+        adjustSelectionAfterAdd(count == 1 ? 0 : curSelInx+1);
         
         updateBtnUI();
     }
@@ -638,16 +639,37 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void insertRowAbove()
     {
-        checkCurrentState();
+        checkCurrentEditState();
         int curSelInx = getCurrentIndexFromFormOrSS();
         model.insertRow(curSelInx);
+        
         resultsetController.setLength(model.getRowCount());
-        int newInx = curSelInx == -1 ? model.getRowCount()-1 : curSelInx;
-        resultsetController.setIndex(newInx);
-        spreadSheet.getSelectionModel().setSelectionInterval(newInx, newInx);
+        
+        adjustSelectionAfterAdd(curSelInx);
         
         updateBtnUI();
 
+    }
+    
+    /**
+     * Adjusts the selection.
+     * @param rowIndex the index to be selected
+     */
+    protected void adjustSelectionAfterAdd(final int rowIndex)
+    {
+        if (currentPanelType == PanelType.Spreadsheet)
+        {
+            log.error("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
+            spreadSheet.scrollToRow(rowIndex);
+            spreadSheet.setRowSelectionInterval(rowIndex, rowIndex);
+            spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
+            spreadSheet.repaint();
+            log.error("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
+            
+        } else
+        {
+            resultsetController.setIndex(rowIndex);
+        }
     }
     
     /**
@@ -655,20 +677,67 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void deleteRows()
     {
-        checkCurrentState();
+        checkCurrentEditState();
+        int[] rows;
+        if (currentPanelType == PanelType.Spreadsheet)
+        {
+            rows = spreadSheet.getSelectedRowModelIndexes();
+            if (rows.length == 0)
+            {
+                return;
+            }
+        } else
+        {
+            rows = new int[1];
+            rows[0] = getCurrentIndexFromFormOrSS();
+        }
         
-        int[] rows = spreadSheet.getSelectedRowModelIndexes();
-        model.deleteRows(spreadSheet.getSelectedRowModelIndexes());
+        int firstRow = rows[0];
+
+        model.deleteRows(rows);
 
         resultsetController.setLength(model.getRowCount());
         
-        int rowCount = spreadSheet.getRowCount();
-        currentRow   = rowCount > 0 ? (rows[0] > rowCount ? rowCount : rows[0]) : -1;
-        resultsetController.setIndex(currentRow);
-        spreadSheet.getSelectionModel().setSelectionInterval(currentRow, currentRow);
+        int rowCount = workbench.getWorkbenchRowsAsList().size();
+        
+        if (currentPanelType == PanelType.Spreadsheet)
+        {
+            if (rowCount > 0)
+            {
+                if (firstRow >= rowCount)
+                {
+                    spreadSheet.setRowSelectionInterval(rowCount-1, rowCount-1);
+                } else
+                {
+                    spreadSheet.setRowSelectionInterval(firstRow, firstRow);
+                }
+                spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
+            } else
+            {
+                spreadSheet.getSelectionModel().clearSelection();
+            }
+        } else
+        {
+            resultsetController.setLength(rowCount);
+            if (firstRow >= rowCount)
+            {
+                resultsetController.setIndex(rowCount-1);
+            } else
+            {
+                resultsetController.setIndex(firstRow);
+            }
+        }
         
         updateBtnUI();
 
+    }
+    
+    /**
+     * @return the resultset controller
+     */
+    public ResultSetController getResultSetController()
+    {
+        return resultsetController;
     }
     
     /**
@@ -766,6 +835,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void showPanel(final PanelType panelType)
     {
+        checkCurrentEditState();
+        
         currentRow = getCurrentIndexFromFormOrSS();
         
         currentPanelType = panelType;
@@ -796,15 +867,13 @@ public class WorkbenchPaneSS extends BaseSubPane
             // About to Show Form and hiding Spreadsheet
             
             // cancel any editing in a cell in the spreadsheet
-            checkCurrentState(); 
+            checkCurrentEditState(); 
             
             // Tell the form we are switching and that it is about to be shown
             formPane.aboutToShowHide(true);
             
-            if (model.getRowCount() > 0)
-            {
-                resultsetController.setIndex(currentRow);
-            }
+            // -1 will tell the form to disable
+            resultsetController.setIndex(model.getRowCount() > 0 ? currentRow : -1);
             
             // Hide the find/replace panel when you switch to form view
             findPanel.getHideFindPanelAction().hide();
@@ -948,7 +1017,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             @Override
             protected void okButtonPressed()
             {
-                checkCurrentState();
+                checkCurrentEditState();
                 
                 // don't call super.okButtonPressed() b/c it will close the window
                 isCancelled = false;
@@ -1654,7 +1723,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         //backup current database contents for workbench
         backupObject();
         
-        checkCurrentState();
+        checkCurrentEditState();
         
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -1796,7 +1865,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // this way it can end any editing
         if (formPane != null)
         {
-            checkCurrentState();
+            checkCurrentEditState();
         }
         
         boolean retStatus = true;
@@ -1962,7 +2031,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                         // for keyboard
                         c.setVisible(true);
                         c.setSelectionVisible(true);
-                        textField.requestFocus();
+                        //textField.requestFocus();
                     }
                 });
             }

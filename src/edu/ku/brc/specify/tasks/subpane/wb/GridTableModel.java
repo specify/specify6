@@ -249,10 +249,9 @@ public class GridTableModel extends SpreadSheetModel
     public void deleteRows(int[] rows)
     {
         Arrays.sort(rows);
-        int firstRow = rows[0];
         for (int i=rows.length-1;i>-1;i--)
         {
-            System.out.println(i);
+            log.error("Deleting Row Index "+rows[i]+" Row Count["+getRowCount()+"]");
             workbench.deleteRow(rows[i]);
             if (spreadSheet != null)
             {
@@ -261,18 +260,6 @@ public class GridTableModel extends SpreadSheetModel
         }
         fireDataChanged();
         
-        int rowCount = workbench.getWorkbenchRowsAsList().size();
-        if (spreadSheet != null && rowCount > 0)
-        {
-            if (firstRow >= rowCount)
-            {
-                spreadSheet.setRowSelectionInterval(rowCount-1, rowCount-1);
-            } else
-            {
-                spreadSheet.setRowSelectionInterval(firstRow, firstRow);
-            }
-            spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
-        }
     }
 
     /* (non-Javadoc)
@@ -311,6 +298,10 @@ public class GridTableModel extends SpreadSheetModel
         addRowAt(rowIndex, oldRowIndex);
     }
     
+    /**
+     * INserts a row after this index.
+     * @param rowInx the index to be insertsed after
+     */
     public void insertAfterRow(int rowInx)
     {
         if (rowInx == -1)
@@ -352,7 +343,6 @@ public class GridTableModel extends SpreadSheetModel
             newRow = workbench.insertRow((short)rowIndex);
         }
         
-        
         // Do Carry Forward
         if (wbRow != null)
         {
@@ -371,12 +361,5 @@ public class GridTableModel extends SpreadSheetModel
         }
         
         fireDataChanged();
-        
-        if (spreadSheet != null)
-        {
-            spreadSheet.scrollToRow(rowIndex);
-            spreadSheet.setRowSelectionInterval(rowIndex, rowIndex);
-            spreadSheet.setColumnSelectionInterval(0, getColumnCount()-1);
-        }
     }
 }
