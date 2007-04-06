@@ -156,7 +156,8 @@ public final class UIHelper
         Insets screenInsets = null;
         Rectangle screenRect = null;
         
-        if (topFrame != null)
+        // if there is a registered TOPFRAME, and it's not the same as the window being passed in...
+        if (topFrame != null && topFrame != window)
         {
             screenRect = topFrame.getBounds();
             screenInsets = topFrame.getInsets();
