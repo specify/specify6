@@ -135,6 +135,11 @@ public class ProgressDialog extends JDialog
 
     }
     
+    public synchronized int getOverall()
+    {
+        return overallProgress.getValue();
+    }
+    
     public synchronized void setProcess(final int min, final int max)
     {
         processProgress.setMinimum(isProcessPercent ? 0 : min);
@@ -163,6 +168,12 @@ public class ProgressDialog extends JDialog
             processProgress.setString(value > 0 ? (processProgress.getValue() +" / "+ processProgress.getMaximum()) : "");
         }
     }
+    
+    public synchronized int getProcess()
+    {
+        return processProgress.getValue();
+    }
+    
     
     public synchronized void setDesc(final String text)
     {

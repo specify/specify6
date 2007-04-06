@@ -1438,6 +1438,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void doBioGeomancerLookup()
     {
         log.info("Performing BioGeomancer lookup of selected records");
+        
+        // get the indexes into the model for all of the selected rows
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
         {
@@ -1450,70 +1452,120 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        // TODO: modify this to iterate through all the selected rows, performing a BG lookup on each
-        final WorkbenchRow selectedRow = workbench.getWorkbenchRowsAsList().get(selection[0]);
-        
-        // get an instance of the biogeo service
-        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
-        statusBar.setText("");
-        
-        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setIndeterminate(true);
-        final SwingWorker worker = new SwingWorker()
+        List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
+        final List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
+        for (int i: selection)
         {
-            protected String    data      = null;
-            protected Exception exception = null;
-            
+            selectedRows.add(rows.get(i));
+        }
+        
+        final ProgressDialog progressDialog = new ProgressDialog("BioGeomancer Progress", false, true);
+        progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
+        progressDialog.setModal(true);
+        progressDialog.setAlwaysOnTop(true);
+        progressDialog.setProcess(0, selection.length);
+        
+        final SwingWorker bgTask = new SwingWorker()
+        {
             @Override
             public Object construct()
             {
+                // TODO: perform the BG web service call ON all rows, storing results in the rows
+                
+                int progress = 0;
+
+                // table IDs and row indexes needed for the BG lookup
                 int    localityTableId      = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
                 int    localityNameColIndex = workbench.getColumnIndex(localityTableId, "localityName");
-                String localityNameStr      = selectedRow.getData(localityNameColIndex);
-                        
-                // get the geography data
                 int    geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
                 int    countryColIndex  = workbench.getColumnIndex(geographyTableId, "Country");
                 int    stateColIndex    = workbench.getColumnIndex(geographyTableId, "State");
                 int    countyColIndex   = workbench.getColumnIndex(geographyTableId, "County");
-                
-                String country = (countryColIndex!=-1) ? selectedRow.getData(countryColIndex) : "";
-                String state   = (stateColIndex!=-1) ? selectedRow.getData(stateColIndex) : "";
-                String county  = (countyColIndex!=-1) ? selectedRow.getData(countyColIndex) : "";
-                
-                data      = BioGeoMancer.getBioGeoMancerResponse(selectedRow.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
-                exception = BioGeoMancer.getException();
+
+                for (WorkbenchRow row: selectedRows)
+                {
+                    // get the locality data
+                    String localityNameStr      = row.getData(localityNameColIndex);
+                            
+                    // get the geography data
+                    String country = (countryColIndex!=-1) ? row.getData(countryColIndex) : "";
+                    String state   = (stateColIndex!=-1) ? row.getData(stateColIndex) : "";
+                    String county  = (countyColIndex!=-1) ? row.getData(countyColIndex) : "";
+                    
+                    String bgResults = BioGeoMancer.getBioGeoMancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
+                    Exception bgException = BioGeoMancer.getException();
+                    if (bgException == null)
+                    {
+                        // everything must have worked
+                        row.setBioGeomancerResults(bgResults);
+                        setChanged(true);
+                    }
+                    progressDialog.setProcess(++progress);
+                }
                 
                 return null;
             }
-
-            //Runs on the event-dispatching thread.
+        
             @Override
             public void finished()
             {
-                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setIndeterminate(false);
-                if (exception == null)
+                progressDialog.setVisible(false);
+                
+                boolean anyResultsPresented = false;
+                
+                for (WorkbenchRow row: selectedRows)
                 {
-                    processBGMResults(selectedRow, data);
-                    
-                } else
+                    boolean dialogShown;
+                    try
+                    {
+                        dialogShown = processBGMResults(row, row.getBioGeomancerResults());
+                    }
+                    catch (Exception e)
+                    {
+                        // the user cancelled out of the process
+                        return;
+                    }
+                    if (dialogShown)
+                    {
+                        anyResultsPresented = true;
+                    }
+                }
+                
+                // if no results were presented, use the status bar to provide some feedback to the user
+                if (!anyResultsPresented)
                 {
-                    ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage("BioGeomancer service failure", exception);
+                    //JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                    //statusBar.setErrorMessage("No BioGeomancer results were found");
+                    JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+                    JOptionPane.showMessageDialog(topFrame, "No BioGeomancer results were found", "BioGeomancer Error", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         };
-        worker.start();
+        
+        // if the user hits close, stop the worker thread
+        progressDialog.getCloseBtn().addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                log.debug("Stopping the BioGeomancer service worker thread");
+                bgTask.interrupt();
+            }
+        });
+        
+        log.debug("Starting the BioGeomancer service worker thread");
+        bgTask.start();
+        UIHelper.centerAndShow(progressDialog);
     }
     
     /**
      * Processes the BGM results and displays a dialog.
      * @param selectedRow the WorkbenchRow we are working on
      * @param data the results we got back from BGM
+     * @return true if a dialog was presented to the user
      */
-    protected void processBGMResults(final WorkbenchRow selectedRow, final String data)
+    protected boolean processBGMResults(final WorkbenchRow selectedRow, final String data) throws Exception
     {
         // show the BGM frame to allow the user to select from the results
-        try
-        {
             BioGeoMancer bgmService = new BioGeoMancer();
             bgmService.initialize(null, false);
             
@@ -1524,7 +1576,25 @@ public class WorkbenchPaneSS extends BaseSubPane
             JDialog dialog = new JDialog();
             dialog.setTitle("BioGeoManacer");
             dialog.setModal(true);
-            dialog.setContentPane(bgmService.createBGMPanel(XMLHelper.readStrToDOM4J(data), dialog));
+            JPanel bgPanel = null;
+            try
+            {
+                bgPanel = bgmService.createBGMPanel(XMLHelper.readStrToDOM4J(data), dialog);
+            }
+            catch (Exception e)
+            {
+                log.error("Exception while parsing BioGeomancer reply",e);
+                return false;
+            }
+            if (bgmService.getResultsCount() == 0)
+            {
+                // since the user didn't cancel this, return true
+                selectedRow.setBioGeomancerResults(null);
+                setChanged(true);
+                return false;
+            }
+            
+            dialog.setContentPane(bgPanel);
             dialog.pack();
             
             // This must be a Java 6 feature
@@ -1540,7 +1610,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 // no value was chosen
                 // the user probably pressed the "close" button instead of "OK"
-                return;
+                throw new Exception();
             }
             log.debug("Lat:"+loc.getLatitude1().toString() + " Long:" + loc.getLongitude1().toString());
             
@@ -1551,16 +1621,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 
             selectedRow.setData(loc.getLatitude1().toString(), (short)latIndex);
             selectedRow.setData(loc.getLongitude1().toString(), (short)lonIndex);
-            selectedRow.setBioGeomancerResults(data);
             spreadSheet.repaint();
-            setChanged(true);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage("BioGeomancer service failure", e);
-        }
-
+            return true;
     }
     
     /**
@@ -1569,6 +1631,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showBioGeomancerDialog(final BioGeoMancer bgService) throws Exception
     {
+        // can't use CustomPanel here since the BG service produces a panel WITH buttons in it already
         JDialog dialog = new JDialog();
         dialog.setModal(true);
         JPanel p = new JPanel(new BorderLayout());
@@ -2133,6 +2196,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             final JDialog dlg = this;
             final SwingWorker worker = new SwingWorker()
             {
+                @SuppressWarnings("synthetic-access")
+                @Override
                 public Object construct()
                 {
                     try
@@ -2148,6 +2213,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
 
                 //Runs on the event-dispatching thread.
+                @Override
                 public void finished()
                 {
                     dlg.setVisible(false);

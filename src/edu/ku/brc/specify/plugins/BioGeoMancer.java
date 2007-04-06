@@ -117,6 +117,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     protected JLabel             label      = new JLabel();
 
     protected BioGeoMancerMapper bioGeoMancerMapper = new BioGeoMancerMapper();
+    
+    protected int numResults = 0;
 
     /**
      * Constructor.
@@ -186,6 +188,16 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
             }
         });
+    }
+    
+    /**
+     * Returns the number of results retrieved from BioGeomancer.
+     * 
+     * @return the number of BioGeomancer result candidates
+     */
+    public int getResultsCount()
+    {
+        return numResults;
     }
     
     /**
@@ -325,6 +337,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
            List<String[]> rowData = new ArrayList<String[]>();
            List<?> records = root.selectNodes("//record");
+           numResults = (records!=null) ? records.size() : 0;
            if (records != null && records.size() > 0)
            {
                String[] elementNames = {"country", "adm1", "adm2", "featureName", "featureType", "gazetteerSource", "InterpretedCoordinates", "offsetVector", "boundingBox", "InterpretedString"};
@@ -367,7 +380,6 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                    rowData.add(row);
                }
                bioGeoMancerMapper.getMap(this);
-
            }
 
            BGMRecordTableModel bgmTableModel = new BGMRecordTableModel(rowData);
@@ -699,6 +711,9 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                                                  final String adm2,
                                                  final String localityArg)
     {
+        // clear out the exception from any previous calls to this method
+        exception = null;
+        
         String retVal = null;
         
         try
@@ -807,10 +822,6 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                 locality.setLatitude1(newLat);
                 locality.setLongitude1(newLon);
             }
-        } else
-        {
-            locality.setLatitude1(new BigDecimal(0.0));
-            locality.setLongitude1(new BigDecimal(0.0));
         }
         
         return locality;
