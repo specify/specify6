@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -54,8 +56,19 @@ public class ConfigureXLS extends ConfigureExternalDataBase
     @Override
     protected void interactiveConfig()
     {
-        firstRowHasHeaders = determineFirstRowHasHeaders();
-        nonInteractiveConfig();
+        //firstRowHasHeaders = determineFirstRowHasHeaders();
+        DataImportDialog dlg = new DataImportDialog(this,  firstRowHasHeaders);
+        
+        if (!dlg.isCancelled())
+        {
+            firstRowHasHeaders = dlg.getDoesFirstRowHaveHeaders();
+            nonInteractiveConfig();
+        }
+        else
+        {
+            status = Status.Cancel;
+        }
+        //nonInteractiveConfig();
     }
 
     /* (non-Javadoc)
@@ -148,8 +161,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                             } else
                             {
                                 //colInfo.add(new ImportColumnInfo(cellNum, type, null, value));
-                                colInfo.add(new ImportColumnInfo(cellNum, colType, "column"
-                                        + String.valueOf(cellNum + 1), null));
+                                colInfo.add(new ImportColumnInfo(cellNum, colType, getResourceString("DEFAULT_COLUMN_NAME") + " " + cellNum + 1, null));
                                 colTracker.put(cellNum, true);
 
                             }

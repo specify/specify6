@@ -31,7 +31,14 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -57,6 +64,12 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 
 import com.csvreader.CsvReader;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -64,16 +77,21 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace.Status;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.MouseOverJLabel;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
- * Class that provides "fancy" dialog for importing data from csv or xsl,
+ * Class that provides "fancy" dialog for importing data from csv or XLS,
  * allowing users to specify such information as delimiters, text qualifiers,
  * character sets, escape modes, etc.  Dialog provides a preview table
  * displaying how the data will appear when imported into a spreadsheet table.
@@ -125,7 +143,9 @@ public class DataImportDialog extends JDialog implements ActionListener
 
 	private String fileName;
 	private File file;
-	private ConfigureCSV config;
+	private ConfigureExternalDataBase config;
+    private ConfigureCSV configCSV;
+    private ConfigureXLS configXLS;
 	
 	private JTable myDisplayTable;
 	private PreviewTableModel model;
@@ -148,6 +168,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                             int defaultEscMode, boolean doesHaveHeaders, boolean useTxtQual)
     {
     	this.config = config;
+        this.configCSV = config;
     	this.file = config.getFile();
     	this.fileName = file.getAbsolutePath().toString();
         this.doesFirstRowHaveHeaders = doesHaveHeaders;
@@ -170,6 +191,14 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     public DataImportDialog(final ConfigureXLS config, boolean doesHaveHeaders)
 	{
+        this.config = config;
+        this.configXLS = config;
+        this.file = config.getFile();
+        this.fileName = file.getAbsolutePath().toString();
+        this.doesFirstRowHaveHeaders = doesHaveHeaders;
+        myDisplayTable = new JTable();
+        model = new PreviewTableModel();
+        initForXLS();
 	}
 
     /**
@@ -190,10 +219,10 @@ public class DataImportDialog extends JDialog implements ActionListener
      * void
      */
     @SuppressWarnings("unused")
-    private void initForXSL()
+    private void initForXLS()
     {
-    	setContentPane(createConfigPanelForXSL());
-    	init(getResourceString("IMPORT_XSL"));   
+    	setContentPane(createConfigPanelForXLS());
+    	init(getResourceString("IMPORT_XLS"));   
     }
     
     /**
@@ -253,7 +282,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         
         builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,12,4));
         
-        myDisplayTable = setTableData(myDisplayTable);
+        myDisplayTable = setCSVTableData(myDisplayTable);
         builder.add         (addtoScroll(myDisplayTable),           cc.xyw(3,14,3));   
 
         builder.add         (errorPanel,                            cc.xyw(3,16,4));  
@@ -268,7 +297,7 @@ public class DataImportDialog extends JDialog implements ActionListener
      * @return
      * JPanel
      */
-    private JPanel createConfigPanelForXSL()
+    private JPanel createConfigPanelForXLS()
     {
         //JPanel configPanel = new FormDebugPanel();
         JPanel configPanel = new JPanel();
@@ -296,7 +325,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         builder.add         (containsHeaders,                       cc.xyw(3,6,3));   
         
         builder.addSeparator(getResourceString("DATA_PREVIEW"),     cc.xyw(2,8,4));
-        myDisplayTable = setTableData(myDisplayTable);
+        myDisplayTable = setXLSTableData(myDisplayTable);
         builder.add         (addtoScroll(myDisplayTable),           cc.xyw(3,10,3));
         builder.add         (errorPanel,                            cc.xyw(3,12,4));  
         builder.add         (buttonpanel,                           cc.xyw(2,14,4)); 
@@ -334,10 +363,14 @@ public class DataImportDialog extends JDialog implements ActionListener
                     btnPressed  = OK_BTN;
                     setVisible(false);
                     config.setFirstRowHasHeaders(doesFirstRowHaveHeaders);
-                    config.setTextQualifier(true, stringQualifierChar);
-                    config.setCharset(charset);
-                    config.setEscapeMode(escapeMode);
-                    config.setDelimiter(delimChar);
+                    if (config instanceof ConfigureCSV)
+                    {
+                        configCSV = (ConfigureCSV)config;
+                        configCSV.setTextQualifier(true, stringQualifierChar);
+                        configCSV.setCharset(charset);
+                        configCSV.setEscapeMode(escapeMode);
+                        configCSV.setDelimiter(delimChar);
+                    }
             }
         });
         
@@ -514,8 +547,14 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private void updateTableDisplay()
     {
-
-    	setTableData(myDisplayTable);
+        if(config instanceof ConfigureCSV)
+        {
+            setCSVTableData(myDisplayTable);
+        }
+        else 
+        {
+            setXLSTableData(myDisplayTable);
+        }
     }
 
     /**
@@ -558,6 +597,10 @@ public class DataImportDialog extends JDialog implements ActionListener
     private boolean checkForErrors(String[]headers, String[][]data)
     {
         JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(headers, data);
+        if(listOfErrors == null)
+            {
+            return false;
+            }
         if(listOfErrors.getModel().getSize()>0)
         {
            return true;
@@ -600,17 +643,17 @@ public class DataImportDialog extends JDialog implements ActionListener
      * @return
      * int - the largest number of columns encounterd
      */    
-    public int getLargestColumnCount()
+    public int getLargestColumnCountFromCSV()
     {
     	try
 		{
-			CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config.getDelimiter(), config.getCharset());
-			csv.setEscapeMode(config.getEscapeMode());
-			csv.setTextQualifier(config.getTextQualifier());
+			CsvReader csv = new CsvReader(new FileInputStream(configCSV.getFile()), configCSV.getDelimiter(), configCSV.getCharset());
+			csv.setEscapeMode(configCSV.getEscapeMode());
+			csv.setTextQualifier(configCSV.getTextQualifier());
 			int curRowColumnCount = 0;
 			int highestColumnCount = 0;
 			//seeing how many columns are defined
-			if (config.getFirstRowHasHeaders())
+			if (configCSV.getFirstRowHasHeaders())
 			{
 				csv.readHeaders();
 				highestColumnCount = Math.max(highestColumnCount, csv.getHeaders().length);
@@ -640,11 +683,167 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private boolean isStringShorterThan(int length, String colName)
     {
+        if(colName==null)
+        {
+            return true;
+        }
         if(colName.length()<= length)
         {
             return true;
         }
         return false;
+    }
+  
+    /**
+     * Parses the given import xls file according to the users selection and creates/updates the Preview table,
+     * showing the user how the import options effect the way the data will be imported into the spreadsheet.
+     * @param t - the table to display the data
+     * @return
+     * JTable - the table to display the data
+     */
+    private JTable setXLSTableData(JTable t)
+    {
+        int numRows = 0;
+        short numCols = 0;
+        String[] headers = {};
+        Vector<Vector<String>> tableDataVector = new Vector<Vector<String>>();
+        Vector<String> rowData = new Vector<String>();
+        Vector<String> headerVector = new Vector<String>();
+        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+        try
+        {
+            log.debug("setXLSTableData - file - " + configXLS.getFile().toString());
+
+            InputStream input = new FileInputStream(configXLS.getFile());
+            POIFSFileSystem fs = new POIFSFileSystem(input);
+            HSSFWorkbook workBook = new HSSFWorkbook(fs);
+            HSSFSheet sheet = workBook.getSheetAt(0);
+
+            boolean firstRow = true;
+
+            // Iterate over each row in the sheet
+            Iterator rows = sheet.rowIterator();
+            while (rows.hasNext())
+            {
+                numCols = 0;
+                rowData = new Vector<String>();
+                HSSFRow row = (HSSFRow) rows.next();
+                while (numCols < row.getLastCellNum())
+                {
+                    HSSFCell cell = (HSSFCell) row.getCell(numCols);
+                    String value = null;
+                    //if cell is blank, set value to ""
+                    if (cell == null)
+                    {
+                        value = "";
+                    }
+                    else
+                    {
+                        switch (cell.getCellType())
+                        {
+                            case HSSFCell.CELL_TYPE_NUMERIC:
+                                //The best I can do at this point in the app is to guess if a cell is a date.
+                                //Handle dates carefully while using HSSF. Excel stores all dates as numbers, internally. 
+                                //The only way to distinguish a date is by the formatting of the cell. (If you
+                                //have ever formatted a cell containing a date in Excel, you will know what I mean.)
+                                //Therefore, for a cell containing a date, cell.getCellType() will return 
+                                //HSSFCell.CELL_TYPE_NUMERIC. However, you can use a utility function, 
+                                //HSSFDateUtil.isCellDateFormatted(cell), to check if the cell can be a date. 
+                                //This function checks the format against a few internal formats to decide the issue, 
+                                //but by its very nature it is prone to false negatives. 
+                                if (HSSFDateUtil.isCellDateFormatted(cell))
+                                {
+                                    value = scrDateFormat.getSimpleDateFormat().format(
+                                            cell.getDateCellValue());
+                                } else
+                                {
+                                    value = Double.toString(cell.getNumericCellValue());
+                                }
+                                break;
+
+                            case HSSFCell.CELL_TYPE_STRING:
+                                value = cell.getStringCellValue();
+                                break;
+
+                            case HSSFCell.CELL_TYPE_BLANK:
+                                value = "";
+                                break;
+
+                            case HSSFCell.CELL_TYPE_BOOLEAN:
+                                value = Boolean.toString(cell.getBooleanCellValue());
+                                break;
+
+                            default:
+                                value = "";
+                                System.out.println("unsuported cell type");
+                                break;
+                        }
+                    }
+
+                    rowData.add(value.toString());
+                    numCols++;
+                }
+                if (doesFirstRowHaveHeaders && firstRow)
+                {
+                    headerVector = rowData;
+                    headers = new String[rowData.size()];
+                }
+                else if(!doesFirstRowHaveHeaders && firstRow){
+                    //headers = createDummyHeaders(rowData.size());
+                    headerVector = createDummyHeadersAsVector(rowData.size());
+                    headers = new String[rowData.size()];
+                    tableDataVector.add(rowData);
+                }
+                else
+                {
+                    tableDataVector.add(rowData);
+                }
+                firstRow = false;
+                numRows++;
+
+            }
+            for (int i = 0; i < headerVector.size(); i++)
+            {
+                headers[i] = (String) headerVector.elementAt(i);
+
+            }
+            printArray(headers);
+
+            String[][] tableData = new String[tableDataVector.size()][headers.length];
+            for (int i = 0; i < tableDataVector.size(); i++)
+            {
+                Vector<String> v = tableDataVector.get(i);
+                for (int j = 0; j < v.size(); j++)
+                {
+                    tableData[i][j] = v.get(j).toString();
+                }
+
+            }
+            if (checkForErrors(headers, tableData))
+            {
+                errorPanel.showDataImportStatusPanel(true);
+            } else
+            {
+                errorPanel.showDataImportStatusPanel(false);
+            }
+            model = new PreviewTableModel(headers, tableData);
+            t.setModel(model);
+            t.setColumnSelectionAllowed(false);
+            t.setRowSelectionAllowed(false);
+            t.setCellSelectionEnabled(false);
+            t.getTableHeader().setReorderingAllowed(false);
+            t.setPreferredScrollableViewportSize(new Dimension(500, 100));
+            t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            model.fireTableDataChanged();
+            model.fireTableStructureChanged();
+            return t;
+
+        } catch (IOException ex)
+        {
+            log.error("Error attempting to parse input xls file:" + ex);
+        }
+
+        return null;       
     }
     
     /**
@@ -654,22 +853,22 @@ public class DataImportDialog extends JDialog implements ActionListener
      * @return
      * JTable - the table to display the data
      */
-    private JTable setTableData(JTable t)
+    private JTable setCSVTableData(JTable t)
 	{
 		try
 		{
-			log.debug("setTableData - file - " + config.getFile().toString());
-			CsvReader csv = new CsvReader(new FileInputStream(config.getFile()), config
-					.getDelimiter(), config.getCharset());
-			csv.setEscapeMode(config.getEscapeMode());
-			csv.setTextQualifier(config.getTextQualifier());
+			log.debug("setTableData - file - " + configCSV.getFile().toString());
+			CsvReader csv = new CsvReader(new FileInputStream(configCSV.getFile()), configCSV
+					.getDelimiter(), configCSV.getCharset());
+			csv.setEscapeMode(configCSV.getEscapeMode());
+			csv.setTextQualifier(configCSV.getTextQualifier());
 
 			String[] headers = {};
 			Vector<String[]> tableDataVector = new Vector<String[]>();
 			
-			 highestColumnCount = getLargestColumnCount();
+			 highestColumnCount = getLargestColumnCountFromCSV();
 
-			if (config.getFirstRowHasHeaders())
+			if (configCSV.getFirstRowHasHeaders())
 			{
 				csv.readHeaders();
 				headers = csv.getHeaders();
@@ -694,7 +893,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 				tableDataVector.add(newArray);
 			}
 
-			if (!config.getFirstRowHasHeaders() || headers == null)
+			if (!configCSV.getFirstRowHasHeaders() || headers == null)
 			{
 				//create headers with names Column1, Column2...
 				headers = createDummyHeaders(rowColumnCount);
@@ -806,12 +1005,29 @@ public class DataImportDialog extends JDialog implements ActionListener
      * @return
      * String[]
      */
+    public Vector<String> createDummyHeadersAsVector( int count)
+    {
+        Vector<String> headerVector = new Vector<String>();
+        for (int i = 0; i < count; i++)
+        { 
+            headerVector.add(getResourceString("DEFAULT_COLUMN_NAME") + " " + (i + 1));
+        }  
+        return headerVector;
+    }
+    
+    /**
+     * If the user does not provide "first row contains headers", this creates
+     * as set of headers of notation "Column 1"....
+     * @param count
+     * @return
+     * String[]
+     */
     public String[] createDummyHeaders( int count)
     {
     	String[] headers = new String[count];
 		for (int i = 0; i < count; i++)
 		{ 
-			headers[i] = getResourceString("DEFAULT_COLUMN_NAME") + " " + i;
+			headers[i] = getResourceString("DEFAULT_COLUMN_NAME") + " " + (i +1);
 		}  
 		return headers;
     }
@@ -971,7 +1187,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             if(otherText.getText().length() == 1)
             {                
                 delimChar = otherText.getText().toCharArray()[0];
-                config.setDelimiter(delimChar);
+                configCSV.setDelimiter(delimChar);
                 log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
             }            
             else if(otherText.getText().length()>1)
@@ -1209,6 +1425,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 				}
 			});
 			builder.add(statusInfoLabel, cc.xy(1, 1));
+            //this.showDataImportStatusPanel(false);
 		}
         
         /**
@@ -1262,7 +1479,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 if(otherText.getText().length() == 1)
                 {                
                     delimChar = otherText.getText().toCharArray()[0];
-                    config.setDelimiter(delimChar);
+                    configCSV.setDelimiter(delimChar);
                 }  
             } 
             else if(tab.isSelected())
@@ -1293,7 +1510,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 otherText.setEditable(false);
                 otherText.setEnabled(false);
             }
-            config.setDelimiter(delimChar);
+            configCSV.setDelimiter(delimChar);
             updateTableDisplay();
         }
     }
