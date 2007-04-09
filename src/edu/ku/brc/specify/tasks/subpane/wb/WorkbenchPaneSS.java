@@ -1509,9 +1509,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             @Override
             public void finished()
             {
+                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+
                 progressDialog.setVisible(false);
-                
-                boolean anyResultsPresented = false;
                 
                 int numRecordsWithResults = 0;
                 for (WorkbenchRow row: selectedRows)
@@ -1525,33 +1525,37 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                     catch (Exception e)
                     {
-                        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
                         statusBar.setErrorMessage(e.getMessage(), e);
                     }
                 }
+                
+                // if no records had possible results...
+                if (numRecordsWithResults == 0)
+                {
+                    statusBar.setWarningMessage("BioGeomancer returned 0 results");
+                    return;
+                }
 
+                // ask the user if they want to review the results
                 String message = "BioGeomancer returned results for " + numRecordsWithResults + " records.  Would you like to view them now?";
                 int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message, "Continue?", JOptionPane.YES_NO_OPTION);
                 if (userChoice != JOptionPane.OK_OPTION)
                 {
+                    statusBar.setText("BioGeomancer process terminated by user");
                     return;
                 }
                 
+                
                 for (WorkbenchRow row: selectedRows)
                 {
-                    boolean dialogShown;
                     try
                     {
-                        dialogShown = processBGMResults(row, row.getBioGeomancerResults());
+                        processBGMResults(row, row.getBioGeomancerResults());
                     }
                     catch (Exception e)
                     {
                         // the user cancelled out of the process
                         return;
-                    }
-                    if (dialogShown)
-                    {
-                        anyResultsPresented = true;
                     }
                 }
             }
@@ -1560,6 +1564,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // if the user hits close, stop the worker thread
         progressDialog.getCloseBtn().addActionListener(new ActionListener()
         {
+            @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent ae)
             {
                 log.debug("Stopping the BioGeomancer service worker thread");

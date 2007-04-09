@@ -402,19 +402,23 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            table.setShowHorizontalLines(false);
            table.setRowSelectionAllowed(true);
 
-           table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+           table.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+           {
                public void valueChanged(ListSelectionEvent e)
                {
                    if (!e.getValueIsAdjusting() && okBtn != null && table != null)
                    {
                        okBtn.setEnabled(table.getSelectedRowCount() > 0);
                    }
-               }});
-
+               }
+           });
            
            table.addMouseListener(new MouseAdapter() {
-               public void mouseClicked(MouseEvent e) {
-                   if (e.getClickCount() == 2) {
+               @Override
+               public void mouseClicked(MouseEvent e)
+               {
+                   if (e.getClickCount() == 2)
+                   {
                        okBtn.doClick(); //emulate button click
                    }
                }
