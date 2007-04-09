@@ -293,6 +293,20 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         builder.add(createDataLabel(element, name), cc.xywh(column+2,row, colSpan,1));
     }
 
+    /**
+     * This method inspects the response received from a BG call and determines
+     * the number of possible results given.
+     * 
+     * @param bioGeomancerResponseString the response from the BG service
+     * @return the number of possible results found in the given response
+     * @throws Exception
+     */
+    public static int getResultsCount(final String bioGeomancerResponseString) throws Exception
+    {
+        Element responseAsXml = XMLHelper.readStrToDOM4J(bioGeomancerResponseString);
+        List<?> records = responseAsXml.selectNodes("//record");
+        return (records!=null) ? records.size() : 0;
+    }
 
     /**
      * Processes the document that was returned.

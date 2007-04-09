@@ -1513,6 +1513,30 @@ public class WorkbenchPaneSS extends BaseSubPane
                 
                 boolean anyResultsPresented = false;
                 
+                int numRecordsWithResults = 0;
+                for (WorkbenchRow row: selectedRows)
+                {
+                    try
+                    {
+                        if (getBioGeomancerResultCount(row) > 0)
+                        {
+                            ++numRecordsWithResults;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                        statusBar.setErrorMessage(e.getMessage(), e);
+                    }
+                }
+
+                String message = "BioGeomancer returned results for " + numRecordsWithResults + " records.  Would you like to view them now?";
+                int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message, "Continue?", JOptionPane.YES_NO_OPTION);
+                if (userChoice != JOptionPane.OK_OPTION)
+                {
+                    return;
+                }
+                
                 for (WorkbenchRow row: selectedRows)
                 {
                     boolean dialogShown;
@@ -1530,15 +1554,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                         anyResultsPresented = true;
                     }
                 }
-                
-                // if no results were presented, use the status bar to provide some feedback to the user
-                if (!anyResultsPresented)
-                {
-                    //JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
-                    //statusBar.setErrorMessage("No BioGeomancer results were found");
-                    JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-                    JOptionPane.showMessageDialog(topFrame, "No BioGeomancer results were found", "BioGeomancer Error", JOptionPane.INFORMATION_MESSAGE);
-                }
             }
         };
         
@@ -1555,6 +1570,25 @@ public class WorkbenchPaneSS extends BaseSubPane
         log.debug("Starting the BioGeomancer service worker thread");
         bgTask.start();
         UIHelper.centerAndShow(progressDialog);
+    }
+    
+    public int getBioGeomancerResultCount(final WorkbenchRow row) throws Exception
+    {
+        String bgResponse = row.getBioGeomancerResults();
+        
+        if (bgResponse == null)
+        {
+            return 0;
+        }
+        
+        try
+        {
+            return BioGeoMancer.getResultsCount(bgResponse);
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Unable to parse response from BioGeomancer service", e);
+        }
     }
     
     /**
