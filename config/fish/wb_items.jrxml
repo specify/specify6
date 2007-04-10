@@ -26,7 +26,7 @@
 	<parameter name="itemnum" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="colnum" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="title" isForPrompting="true" class="java.lang.String"/>
-	<queryString><![CDATA[select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId $P!{itemnum} and ColumnNumber = $P!{colnum} group by CellData order by rw.RowNumber asc, di.ColumnNumber asc) t1 order by Cnt desc, Name asc]]></queryString>
+	<queryString><![CDATA[select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId $P!{itemnum} and WorkbenchTemplateMappingItemID = $P!{colnum} group by CellData order by rw.RowNumber asc) t1 order by Cnt desc, Name asc]]></queryString>
 
 	<field name="Name" class="java.lang.String"/>
 	<field name="Cnt" class="java.lang.Long"/>
