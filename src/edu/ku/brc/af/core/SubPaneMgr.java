@@ -118,12 +118,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         }
 
         // Add this pane to the tabs
-        String title = buildUniqueName(pane.getName());
-        pane.setName(title);
+        pane.setPaneName(buildUniqueName(pane.getPaneName()));
 
-        //log.error("Add SubPane ["+pane.hashCode()+"] "+pane);
-        panes.put(title, pane); // this must be done before adding it
-        addTab(title, pane.getIcon(), pane.getUIComponent());
+        //log.debug("Putting SubPane ["+pane.getPaneName()+"] ");
+        panes.put(pane.getPaneName(), pane); // this must be done before adding it
+        addTab(pane.getPaneName(), pane.getIcon(), pane.getUIComponent());
         
         notifyListeners(NotificationType.Added, pane);
 
@@ -156,10 +155,20 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     {
         UICacheManager.getStatusBar().setText("");
         
-        panes.remove(pane.getName());
-        pane.setName(newName);
-        this.setTitleAt(indexOfComponent(pane.getUIComponent()), newName);
-        panes.put(newName, pane);
+        if (panes.get(pane.getPaneName()) != null)
+        {
+            panes.remove(pane.getPaneName());
+            
+            pane.setPaneName(newName);
+            this.setTitleAt(indexOfComponent(pane.getUIComponent()), pane.getPaneName());
+            
+            //log.debug("Putting SubPane ["+newName+"] ");
+            panes.put(pane.getPaneName(), pane);
+            
+        } else
+        {
+            log.error("Couldn't find pane named["+pane.getPaneName()+"]");
+        }
         
         return pane;
     }
@@ -179,27 +188,41 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         // The caller is assuming that the pane is there to be replaced, but the SubPaneMgr can't
         // be responsible for that. So if the pane to be replaced is not found then it just adds 
         // SubPane straight away.
-        SubPaneIFace fndPane = panes.get(oldPane.getName());
+        SubPaneIFace fndPane = panes.get(oldPane.getPaneName());
         if (oldPane != fndPane)
         {
-            //log.warn("Couldn't find Pane ["+oldPane.getName()+"]");
+            //log.warn("Couldn't find Pane ["+oldPane.getPaneName()+"]");
             addPane(newPane);
             return newPane;
         }
         
         int index = this.indexOfComponent(oldPane.getUIComponent());
-        panes.remove(oldPane.getName());
-        this.remove(index);
+        if (index < 0)
+        {
+            log.error("Couldn't find index for panel ["+oldPane.getPaneName()+"] ");
+        }
+        
+        if (panes.get(oldPane.getPaneName()) != null)
+        {
+            panes.remove(oldPane.getPaneName());
+            this.remove(index);
 
-        // Add this pane to the tabs
-        String title = buildUniqueName(newPane.getName());
-        newPane.setName(title);
+            // Add this pane to the tabs
+            String title = buildUniqueName(newPane.getPaneName());
+            newPane.setPaneName(title);
+            
+            //log.debug("Putting SubPane ["+newPane.getPaneName()+"] ");
+            panes.put(newPane.getPaneName(), newPane);
+            
+            this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
+            this.setSelectedIndex(index);
+            return newPane;
+            
+        } 
+        // else
+        log.error("Couldn't find pane named["+oldPane.getPaneName()+"]");
         
-        panes.put(newPane.getName(), newPane);
-        
-        this.insertTab(newPane.getName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
-        this.setSelectedIndex(index);
-        return newPane;
+        return null;
     }
 
 
@@ -224,13 +247,19 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             return false;
         }
         
-        notifyListeners(NotificationType.Removed, pane);
-        
-        this.remove(pane.getUIComponent());
-        
-        panes.remove(pane.getName());
-        
-        pane.shutdown();
+        if (panes.get(pane.getPaneName()) != null)
+        {
+            notifyListeners(NotificationType.Removed, pane);
+            
+            this.remove(pane.getUIComponent());
+            
+            panes.remove(pane.getPaneName());
+            
+            pane.shutdown();
+        } else
+        {
+            log.error("Couldn't find pane named["+pane.getPaneName()+"]");
+        }
         
         adjustCloseAllMenu();
         
@@ -355,10 +384,14 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace getSubPaneForComponent(final Component comp)
     {
+        if (comp instanceof SubPaneIFace)
+        {
+            return (SubPaneIFace)comp;
+        }
+        
         for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
         {
             SubPaneIFace sp = e.nextElement();
-            //log.error("Checking sp["+sp.getUIComponent().hashCode()+"]["+comp.hashCode()+"] "+sp.hashCode());
             if (sp.getUIComponent() == comp)
             {
                 return sp;
@@ -374,11 +407,6 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace getCurrentSubPane()
     {
-        Component comp = getComponentAt(this.getSelectedIndex());
-        if (comp instanceof SubPaneIFace)
-        {
-            return (SubPaneIFace)comp;
-        }
         return getSubPaneForComponent(getComponentAt(this.getSelectedIndex()));
     }
 
@@ -436,14 +464,12 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             // If there is only one pane left and there is only one tasks that provides UI
             // then we cannot let it close.
             boolean  wasLastPane = panes.size() == 1  && TaskMgr.getVisibleTaskCount() == 1;
-            Taskable task        = subPane.getTask();
-            //if (subPane.aboutToShutdown())
-            //{
-                if (!this.removePane(subPane))
-                {
-                    return;
-                }
-            //}
+
+            Taskable task = subPane.getTask();
+            if (!this.removePane(subPane))
+            {
+                return;
+            }
             if (wasLastPane)
             {
                 subPane = task.getStarterPane();

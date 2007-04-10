@@ -109,19 +109,17 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     }
 
     /* (non-Javadoc)
-     * @see java.awt.Component#getName()
+     * @see edu.ku.brc.af.core.SubPaneIFace#getPaneName()
      */
-    @Override
-    public String getName()
+    public String getPaneName()
     {
         return name;
     }
 
     /* (non-Javadoc)
-     * @see java.awt.Component#setName(java.lang.String)
+     * @see edu.ku.brc.af.core.SubPaneIFace#setPaneName(java.lang.String)
      */
-    @Override
-    public void setName(String name)
+    public void setPaneName(final String name)
     {
         this.name = name;
     }

@@ -37,13 +37,13 @@ public interface SubPaneIFace
      * Returns the name of the sub pane.
      * @return Returns the name of the sub pane
      */
-    public String getName();
+    public String getPaneName();
 
     /**
      * Sets a name.
      * @param name the new name
      */
-    public void setName(String name);
+    public void setPaneName(String name);
 
     /**
      * Returns the title.
