@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
@@ -46,6 +47,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -891,10 +893,25 @@ public class UICacheManager
         Component mainComp = get(MAINPANE);
         if (mainComp != null && glassPane != null)
         {
-            Dimension     size   = mainComp.getSize();
+            int      y        = 0;
+            JMenuBar menuBar  = null;
+            Dimension size    = mainComp.getSize();
+            if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+            {
+                JFrame frame = (JFrame)get(FRAME);
+                menuBar = frame.getJMenuBar();
+                size.height += menuBar.getSize().height;
+                y += menuBar.getSize().height;
+            }
             BufferedImage buffer = getGlassPaneBufferedImage(size.width, size.height);
             Graphics2D    g2     = buffer.createGraphics();
+            if (menuBar != null)
+            {
+                menuBar.paint(g2);
+            }
+            g2.translate(0, y);
             mainComp.paint(g2);
+            g2.translate(0, -y);
             
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(new Color(255, 255, 255, 128));
