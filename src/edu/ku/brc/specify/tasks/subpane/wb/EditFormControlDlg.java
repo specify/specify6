@@ -421,7 +421,7 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                 ((ValCheckBox)inputPanel.getComp()).setText(labelTF.getText());
             } else
             {
-                ((JLabel)inputPanel.getLabel()).setText(StringUtils.strip(labelTF.getText(), ":")+":");
+                inputPanel.getLabel().setText(StringUtils.strip(labelTF.getText(), ":")+":");
             }
             doResize = true;
         }

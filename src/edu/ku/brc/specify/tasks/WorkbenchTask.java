@@ -80,11 +80,11 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
-import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -1646,27 +1646,27 @@ public class WorkbenchTask extends BaseTask
                     
                 } catch (Exception ex) {}
                 
-                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                 DataProviderSessionIFace swSession = DataProviderFactory.getInstance().createSession();
                  try
                  {
-                     session.attach(delTemplate);
+                     swSession.attach(delTemplate);
                      
                      NavBoxItemIFace nbi = getBoxByTitle(templateNavBox, delTemplate.getName());
                      if (nbi != null)
                      {
                          templateNavBox.remove(nbi);
                          
-                         session.beginTransaction();
+                         swSession.beginTransaction();
                          for (Workbench wb : delTemplate.getWorkbenches())
                          {
                              NavBoxItemIFace wbNBI = getBoxByTitle(workbenchNavBox, wb.getName());
                              workbenchNavBox.remove(wbNBI);
-                             session.delete(wb);                                
+                             swSession.delete(wb);                                
                          }
                          delTemplate.getWorkbenches().clear();
-                         session.delete(delTemplate);
-                         session.commit();
-                         session.flush();
+                         swSession.delete(delTemplate);
+                         swSession.commit();
+                         swSession.flush();
                          log.info("Deleted a Workbench ["+delTemplate.getName()+"]");
                          
                          updateNavBoxUI(null);
@@ -1677,14 +1677,12 @@ public class WorkbenchTask extends BaseTask
                              
                  } catch (Exception ex)
                  {
-                     ex.printStackTrace();
-                     // XXX Error Dialog
+                     log.error(ex);
                      
                  } finally 
                  {
-                     session.close();
+                     swSession.close();
                  }
-
 
                 return null;
             }

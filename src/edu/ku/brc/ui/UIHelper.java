@@ -61,6 +61,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -1180,7 +1181,7 @@ public final class UIHelper
             
             JTextArea   messageTA            = new JTextArea(message);
             messageTA.setEditable(false);
-            builder.add(new JScrollPane(messageTA, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xyw(1, 1, 3));
+            builder.add(new JScrollPane(messageTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xyw(1, 1, 3));
             rowIndex += 2;
             
             JTextArea   stackTraceTA         = null;
@@ -1197,7 +1198,7 @@ public final class UIHelper
                 }
                 stackTraceTA         = new JTextArea(strWriter.getBuffer().toString().replace("\t", "    "));
                 stackTraceTA.setEditable(false);
-                stackTraceScrollPane = new JScrollPane(stackTraceTA, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                stackTraceScrollPane = new JScrollPane(stackTraceTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 stackTraceTA.setRows(15);
                 builder.add(new JLabel("Stack Trace", SwingConstants.CENTER), cc.xyw(1, rowIndex, 3));
                 rowIndex += 2;

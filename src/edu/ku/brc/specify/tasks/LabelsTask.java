@@ -499,7 +499,7 @@ public class LabelsTask extends BaseTask
             if (StringUtils.isNotEmpty(labelFileName))
             {
                 Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                doLabels(labelFileName, cmdAction.getPropertyAsString("title"), (JRDataSource)cmdAction.getData(), params, originatingTask);
+                doLabels(labelFileName, cmdAction.getPropertyAsString("title"), cmdAction.getData(), params, originatingTask);
             }
             
             
