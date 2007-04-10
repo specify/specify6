@@ -16,6 +16,8 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -55,7 +57,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.Specify;
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
 /**
  * @author megkumin
  * 

@@ -82,7 +82,6 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
@@ -1214,7 +1213,7 @@ public class FormViewObj implements Viewable,
             removeFromParent(dataObj);
             mvParent.getTopLevel().addDeletedItem(dataObj);
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
-            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
+            UICacheManager.getStatusBar().setText(delMsg);
             formValidator.setHasChanged(true);
             
             adjustRSControllerAfterRemove();
@@ -1279,10 +1278,10 @@ public class FormViewObj implements Viewable,
             {
                 adjustRSControllerAfterRemove();
                 
-                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(delMsg);
+                UICacheManager.getStatusBar().setText(delMsg);
             } else
             {
-                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText(getResourceString("OBJ_NOT_DELETED"));
+                UICacheManager.getStatusBar().setText(getResourceString("OBJ_NOT_DELETED"));
             }
 
 

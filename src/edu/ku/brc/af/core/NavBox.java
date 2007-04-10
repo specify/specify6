@@ -231,11 +231,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         remove(item.getUIComponent());
         items.remove(item);
         
-        invalidate();
-        validate();
-        doLayout();
-        setSize(getPreferredSize());
-        repaint();
+        refresh(this);
     }
 
     /**
@@ -245,7 +241,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     {
         removeAll();
         items.clear();
-        doLayout();
+        refresh(this);
     }
     
     /**
@@ -399,17 +395,12 @@ public class NavBox extends JPanel implements NavBoxIFace
         return  nbi;
     }
     
-    public static void refresh(final NavBoxItemIFace nbi)
+    public static void refresh(final NavBoxIFace nb)
     {
-        NavBox box = (NavBox)nbi.getUIComponent().getParent();
-        
-        Component comp = nbi.getUIComponent();
-        comp.invalidate();
-        comp.doLayout();
-        comp.setSize(comp.getPreferredSize());
-        comp.repaint();
-        
+        NavBox box = (NavBox)nb;
+       
         box.invalidate();
+        box.validate();
         box.doLayout();
         box.setSize(box.getPreferredSize());
         box.repaint();
@@ -419,6 +410,20 @@ public class NavBox extends JPanel implements NavBoxIFace
         NavBoxMgr.getInstance().repaint();
         
         UICacheManager.forceTopFrameRepaint();
+    }
+    
+    public static void refresh(final NavBoxItemIFace nbi)
+    {
+        if (nbi != null)
+        {
+            Component comp = nbi.getUIComponent();
+            comp.invalidate();
+            comp.doLayout();
+            comp.setSize(comp.getPreferredSize());
+            comp.repaint();
+            
+            refresh((NavBox)nbi.getUIComponent().getParent());
+        }
     }
 
 }

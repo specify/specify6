@@ -506,7 +506,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         statusField = new JStatusBar(sections);
         statusField.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16));
-        UICacheManager.register(UICacheManager.STATUSBAR, statusField);
+        UICacheManager.setStatusBar(statusField);
 
         add(statusField, BorderLayout.SOUTH);
 
@@ -1148,7 +1148,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               {
                   protected void setMessage(final String msg, final boolean isError)
                   {
-                      JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                      JStatusBar statusBar = UICacheManager.getStatusBar();
                       if (statusBar != null)
                       {
                           if (isError)

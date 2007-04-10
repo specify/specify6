@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -115,20 +116,27 @@ public class XLSImport extends DataImport implements DataImportIFace
                         {
                             case HSSFCell.CELL_TYPE_NUMERIC:
                             {
-                                Class classObj = WorkbenchTask.getDataType(wbtmi);
-                                if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
+                                if (HSSFDateUtil.isCellDateFormatted(cell))
                                 {
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-    
-                                } else if (classObj.equals(Integer.class))
-                                {
-                                    double numeric = cell.getNumericCellValue();
-                                    value = Integer.toString((int) numeric);
-    
+                                    
                                 } else
                                 {
-                                    double numeric = cell.getNumericCellValue();
-                                    value = Double.toString(numeric);
+                                    Class classObj = WorkbenchTask.getDataType(wbtmi);
+                                    if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
+                                    {
+                                        value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
+        
+                                    } else if (classObj.equals(Integer.class))
+                                    {
+                                        double numeric = cell.getNumericCellValue();
+                                        value = Integer.toString((int) numeric);
+        
+                                    } else
+                                    {
+                                        double numeric = cell.getNumericCellValue();
+                                        value = Double.toString(numeric);
+                                    }
                                 }
                                 break;
                             }

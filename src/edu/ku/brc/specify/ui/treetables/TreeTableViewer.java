@@ -132,7 +132,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		super(name,task);
 		this.treeDef = treeDef;
 		allButtons = new Vector<AbstractButton>();
-		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+		statusBar = UICacheManager.getStatusBar();
 		popupMenu = new TreeNodePopupMenu(this);
 		
 		getLayout().removeLayoutComponent(progressBarPanel);

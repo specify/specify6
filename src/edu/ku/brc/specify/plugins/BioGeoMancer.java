@@ -223,7 +223,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             
         }
         // else
-        log.error("****** ["+name+"] was not found.");
+        // Although the name may not have been found it could be because no results came back
+        log.debug("****** ["+name+"] was not found.");
         return "";
     }
 

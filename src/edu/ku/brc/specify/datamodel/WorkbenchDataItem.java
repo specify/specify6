@@ -38,7 +38,6 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="taxon", indexes =
     {   
         @Index (name="RowNumberIDX", columnNames={"rowNumber"}),
-        @Index (name="ColumnNumberIDX", columnNames={"ColumnNumber"})
     })
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
@@ -51,9 +50,9 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     protected Long         workbenchDataItemId;
     protected String       cellData;
     protected Short        rowNumber;
-    protected Short        columnNumber;
     protected Short        validationStatus;
     protected WorkbenchRow workbenchRow;
+    protected WorkbenchTemplateMappingItem workbenchTemplateMappingItem;
 
     // Constructors
 
@@ -63,13 +62,17 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         //
     }
 
-    public WorkbenchDataItem(final WorkbenchRow workbenchRow, final String cellData, final Short rowNumber, final Short columnNumber)
+    public WorkbenchDataItem(final WorkbenchRow workbenchRow, 
+                             final WorkbenchTemplateMappingItem wbtmi,
+                             final String cellData, 
+                             final Short rowNumber, 
+                             final Short columnNumber)
     {
        initialize();
        this.cellData     = cellData;
        this.rowNumber    = rowNumber;
-       this.columnNumber = columnNumber;
        this.workbenchRow = workbenchRow;
+       this.workbenchTemplateMappingItem = wbtmi;
        workbenchRow.getWorkbenchDataItems().add(this);
     }
 
@@ -86,9 +89,9 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         workbenchDataItemId = null;
         cellData            = null;
         rowNumber           = null;
-        columnNumber        = null;
         validationStatus    = VAL_NONE;
         workbenchRow        = null;
+        workbenchTemplateMappingItem = null;
     }
 
     // End Initializer
@@ -165,15 +168,10 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @Column(name = "ColumnNumber", unique = false, nullable = true, insertable = true, updatable = true)
+    @Transient
     public Short getColumnNumber()
     {
-        return this.columnNumber;
-    }
-
-    public void setColumnNumber(Short columnNumber)
-    {
-        this.columnNumber = columnNumber;
+        return getWorkbenchTemplateMappingItem().getViewOrder();
     }
 
     @Column(name = "ValidationStatus", unique = false, nullable = true, insertable = true, updatable = true)
@@ -202,12 +200,27 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         this.workbenchRow = workbenchRow;
     }
     
+    /**
+     * 
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "WorkbenchTemplateMappingItemID", nullable = false)
+    public WorkbenchTemplateMappingItem getWorkbenchTemplateMappingItem()
+    {
+        return workbenchTemplateMappingItem;
+    }
+
+    public void setWorkbenchTemplateMappingItem(WorkbenchTemplateMappingItem workbenchTemplateMappingItem)
+    {
+        this.workbenchTemplateMappingItem = workbenchTemplateMappingItem;
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(WorkbenchDataItem obj)
     {
-        return columnNumber.compareTo(obj.columnNumber);
+        return getWorkbenchTemplateMappingItem().getViewOrder().compareTo(obj.getWorkbenchTemplateMappingItem().getViewOrder());
     }
 
 	/**

@@ -58,7 +58,7 @@ public class ExportToFile implements RecordSetExporter
         if (exporter != null)
         {
             String name = FilenameUtils.getName(exporter.getConfig().getFileName());
-            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+            JStatusBar statusBar = UICacheManager.getStatusBar();
             if (statusBar != null)
             {
                 statusBar.setText(String.format(UICacheManager.getResourceString("EXPORTING_TO"), new Object[] {name}));

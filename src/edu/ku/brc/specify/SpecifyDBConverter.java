@@ -1,7 +1,9 @@
 package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
-import static edu.ku.brc.specify.tests.DataBuilder.*;
+import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
+import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
 
 import java.awt.HeadlessException;
 import java.io.File;

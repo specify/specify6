@@ -141,7 +141,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		
 		Dimension horizSpacer = new Dimension(5,0);
 		
-		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+		statusBar = UICacheManager.getStatusBar();
 		
 		errorColor = Color.RED;
 		

@@ -422,7 +422,7 @@ public class InteractionsTask extends BaseTask
                 {
                     public Object construct()
                     {
-                        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                        JStatusBar statusBar = UICacheManager.getStatusBar();
                         statusBar.setIndeterminate(true);
                         statusBar.setText(getResourceString("CreatingLoan"));
                         
@@ -475,7 +475,7 @@ public class InteractionsTask extends BaseTask
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                        JStatusBar statusBar = UICacheManager.getStatusBar();
                         statusBar.setIndeterminate(false);
                         statusBar.setText("");
                     }
@@ -864,7 +864,7 @@ public class InteractionsTask extends BaseTask
         {
             public Object construct()
             {
-                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                JStatusBar statusBar = UICacheManager.getStatusBar();
                 statusBar.setIndeterminate(true);
                 statusBar.setText(getResourceString("ReturningLoanItems"));
                 
@@ -893,7 +893,7 @@ public class InteractionsTask extends BaseTask
             //Runs on the event-dispatching thread.
             public void finished()
             {
-                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                JStatusBar statusBar = UICacheManager.getStatusBar();
                 statusBar.setIndeterminate(false);
                 statusBar.setText("");
             }

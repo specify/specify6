@@ -27,8 +27,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -63,24 +63,24 @@ import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.af.tasks.subpane.PieChartPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
-import edu.ku.brc.specify.tasks.subpane.wb.ColumnMapperDlg;
+import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
@@ -630,17 +630,17 @@ public class WorkbenchTask extends BaseTask
      * @param template an existing template
      * @return the dlg aafter cancel or ok
      */
-    protected ColumnMapperDlg showColumnMapperDlg(final ImportDataFileInfo dataFileInfo, 
+    protected TemplateEditor showColumnMapperDlg(final ImportDataFileInfo dataFileInfo, 
                                                     final WorkbenchTemplate  template,
                                                     final String             titleKey)
     {
-        ColumnMapperDlg  mapper;
+        TemplateEditor  mapper;
         if (template != null)
         {
-            mapper = new ColumnMapperDlg((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), template);
+            mapper = new TemplateEditor((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), template);
         } else
         {
-            mapper = new ColumnMapperDlg((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), dataFileInfo);
+            mapper = new TemplateEditor((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), dataFileInfo);
         }
         UIHelper.centerAndShow(mapper);
         return mapper;
@@ -652,7 +652,7 @@ public class WorkbenchTask extends BaseTask
      */
     protected WorkbenchTemplate createTemplateFromScratch()
     {
-        ColumnMapperDlg dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
+        TemplateEditor dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
         if (!dlg.isCancelled())
         { 
             WorkbenchTemplate workbenchTemplate = createTemplate(dlg, null, null);
@@ -668,12 +668,26 @@ public class WorkbenchTask extends BaseTask
      * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
      * @return the new WorkbenchTemplate
      */
-    protected WorkbenchTemplate createTemplate(final ColumnMapperDlg mapper, final String filePath, final String templateName)
+    protected WorkbenchTemplate createTemplate(final TemplateEditor mapper, final String filePath, final String templateName)
     {
         WorkbenchTemplate workbenchTemplate = null;
         try
         {
-            workbenchTemplate = mapper.createWorkbenchTemplate();
+            workbenchTemplate = new WorkbenchTemplate();
+            workbenchTemplate.initialize();
+            
+            workbenchTemplate.setSpecifyUser(SpecifyUser.getCurrentUser());
+            
+            Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
+            Collection<WorkbenchTemplateMappingItem> newItems     = mapper.getNewItems();
+            //Collection<WorkbenchTemplateMappingItem> updatedItems = mapper.getUpdatedItems();
+            
+            for (WorkbenchTemplateMappingItem wbtmi : newItems)
+            {
+                wbtmi.setWorkbenchTemplate(workbenchTemplate);
+                items.add(wbtmi);
+                log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
+            }
             workbenchTemplate.setSrcFilePath(filePath);
             
             String                   newTemplateName = templateName;
@@ -687,6 +701,10 @@ public class WorkbenchTask extends BaseTask
                     if (!askForInfo)
                     {
                         askForInfo = session.getData(WorkbenchTemplate.class, "name", newTemplateName, DataProviderSessionIFace.CompareType.Equals) != null;
+                        if (askForInfo)
+                        {
+                            UICacheManager.getStatusBar().setErrorMessage(String.format(getResourceString("WB_TEMPLATE_EXISTS"), new Object[] { newTemplateName}));
+                        }
                     }
                     
                     if (askForInfo)
@@ -713,7 +731,6 @@ public class WorkbenchTask extends BaseTask
                 session.save(workbenchTemplate);
                 session.commit();
                 session.flush();
-                //session.close();
                 
                 addTemplateToNavBox(workbenchTemplate);
                 
@@ -754,6 +771,7 @@ public class WorkbenchTask extends BaseTask
         
         Vector<WorkbenchTemplate> matchingTemplates = new Vector<WorkbenchTemplate>();
         
+        // Check for any matches with existing templates
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -783,17 +801,20 @@ public class WorkbenchTask extends BaseTask
                                 ImportColumnInfo.ColumnType colType = fileItem.getColType();
                                 if (colType != ImportColumnInfo.ColumnType.String && colType != ImportColumnInfo.ColumnType.Double)
                                 {
+                                    //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+colType+"]");
                                     match = false;
                                     break;
                                 }
                             } else if (type != fileItem.getColType())
                             {
+                                //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+type+"]["+fileItem.getColType()+"]");
                                 match = false;
                                 break;
                             }
     
                         } else
                         {
+                            //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]");
                             match = false;
                             break;
                         }
@@ -925,7 +946,7 @@ public class WorkbenchTask extends BaseTask
         String fileName = fileDialog.getFile();
         if (StringUtils.isEmpty(fileName))
         {
-            ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage(getResourceString("WB_EXPORT_NOFILENAME"));
+            UICacheManager.getStatusBar().setErrorMessage(getResourceString("WB_EXPORT_NOFILENAME"));
             return false;
         }
         
@@ -1153,7 +1174,7 @@ public class WorkbenchTask extends BaseTask
                 selectedTemplate  = null;
                 if (btnPressed == ChooseFromListDlg.APPLY_BTN)
                 {
-                    ColumnMapperDlg dlg = showColumnMapperDlg(dataFileInfo, null, "WB_IMP_TEMPLATE_EDITOR");
+                    TemplateEditor dlg = showColumnMapperDlg(dataFileInfo, null, "WB_IMP_TEMPLATE_EDITOR");
                     if (!dlg.isCancelled())
                     {   
                         workbenchTemplate = createTemplate(dlg, file.getAbsolutePath(), FilenameUtils.getBaseName(file.getName()));
@@ -1170,7 +1191,7 @@ public class WorkbenchTask extends BaseTask
                 }
             }
             else if(dataFileInfo.getConfig().getStatus() != ConfigureExternalDataIFace.Status.Cancel){
-                JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+                JStatusBar statusBar = UICacheManager.getStatusBar();
                 statusBar.setErrorMessage(String.format(getResourceString("WB_PARSE_FILE_ERROR"), new Object[] { file.getName() }));
             }
         }
@@ -1192,14 +1213,17 @@ public class WorkbenchTask extends BaseTask
         
         if (workbenchTemplate != null)
         {
+            String newWorkbenchName = workbenchTemplate.getName();
+            
             workbench = new Workbench();
             workbench.initialize();
             workbench.setSpecifyUser(SpecifyUser.getCurrentUser());
             workbench.setWorkbenchTemplate(workbenchTemplate);
             workbenchTemplate.getWorkbenches().add(workbench);
+            workbench.setName(newWorkbenchName);
             
-            String                   newWorkbenchName = workbenchTemplate.getName();
-            DataProviderSessionIFace session          = DataProviderFactory.getInstance().createSession();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            
             try
             {
                 boolean alwaysAsk = alwaysAskForName;
@@ -1212,6 +1236,11 @@ public class WorkbenchTask extends BaseTask
                     } else
                     {
                         foundWB = session.getData(Workbench.class, "name", newWorkbenchName, DataProviderSessionIFace.CompareType.Equals);
+                        if (foundWB != null)
+                        {
+                            UICacheManager.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
+                        }
+
                     }
                     
                     if (foundWB != null || alwaysAsk)
@@ -1224,6 +1253,7 @@ public class WorkbenchTask extends BaseTask
                             newWorkbenchName = workbench.getName();
                         } else
                         {
+                            UICacheManager.getStatusBar().setText("");
                             return null;
                         }
                     } else
@@ -1291,6 +1321,10 @@ public class WorkbenchTask extends BaseTask
             createEditorForWorkbench(workbench, session, false);
             
             session.close();
+            
+        } else
+        {
+            UICacheManager.getStatusBar().setText("");
         }
         return workbench;
         
@@ -1317,6 +1351,7 @@ public class WorkbenchTask extends BaseTask
         
         return getResourceString("WB_DATASET");
     }
+
     
     /**
      * Creates the Pane for editing a Workbench.
@@ -1336,35 +1371,63 @@ public class WorkbenchTask extends BaseTask
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
                 tmpSession.attach(workbench);
+               
             }
             
-            WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, workbench, showImageView);
-            addSubPaneToMgr(workbenchPane);
+            workbench.forceLoad();
             
-            RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
-            if (roc != null)
-            {
-                roc.setEnabled(false);
-                
-            } else
-            {
-                log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-            }
+            UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
             
-            roc = getNavBtnById(templateNavBox, workbench.getWorkbenchTemplate().getWorkbenchTemplateId(), "template");
-            if (roc != null)
+            final WorkbenchTask            thisTask    = this;
+            final DataProviderSessionIFace finiSession = session;
+            final SwingWorker worker = new SwingWorker()
             {
-                roc.setEnabled(false);
-                
-            } else
-            {
-                log.error("Couldn't find RolloverCommand for WorkbenchTemplateId ["+workbench.getWorkbenchTemplate().getWorkbenchTemplateId()+"]");
-            }
-            
-            if (session == null && tmpSession != null)
-            {
-                tmpSession.close();
-            }
+                 public Object construct()
+                {
+                     try
+                     {
+                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView);
+                         addSubPaneToMgr(workbenchPane);
+                         
+                         RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
+                         if (roc != null)
+                         {
+                             roc.setEnabled(false);
+                             
+                         } else
+                         {
+                             log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
+                         }
+                         
+                         roc = getNavBtnById(templateNavBox, workbench.getWorkbenchTemplate().getWorkbenchTemplateId(), "template");
+                         if (roc != null)
+                         {
+                             roc.setEnabled(false);
+                             
+                         } else
+                         {
+                             log.error("Couldn't find RolloverCommand for WorkbenchTemplateId ["+workbench.getWorkbenchTemplate().getWorkbenchTemplateId()+"]");
+                         }
+                         
+                         if (session == null && finiSession != null)
+                         {
+                             finiSession.close();
+                         }
+                     } catch (Exception ex)
+                     {
+                         log.error(ex);
+                     }
+
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                public void finished()
+                {
+                    UICacheManager.clearGlassPaneMsg();
+                }
+            };
+            worker.start();
         }
     }
     
@@ -1418,16 +1481,19 @@ public class WorkbenchTask extends BaseTask
             session.attach(workbenchTemplate);
             
             workbench = createNewWorkbenchDataObj(workbenchTemplate, false);
-            workbench.addRow();
-
-            session.beginTransaction();
-            session.save(workbench);
-            session.commit();
-            session.flush();
-            
-            addWorkbenchToNavBox(workbench);
-            
-            createEditorForWorkbench(workbench, session, false);
+            if (workbench != null)
+            {
+                workbench.addRow();
+    
+                session.beginTransaction();
+                session.save(workbench);
+                session.commit();
+                session.flush();
+                
+                addWorkbenchToNavBox(workbench);
+                
+                createEditorForWorkbench(workbench, session, false);
+            }
             
         } catch (Exception ex)
         {
@@ -1448,44 +1514,74 @@ public class WorkbenchTask extends BaseTask
      */
     protected void deleteWorkbench(final RecordSet recordSet)
     {
-        Workbench workbench = loadWorkbench(recordSet);
-        if (workbench != null)
+        
+        final Workbench workbench = loadWorkbench(recordSet);
+        if (workbench == null)
         {
-            NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
-            if (nbi != null)
+            return;
+        }
+        
+        UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), 32);
+        
+        final SwingWorker worker = new SwingWorker()
+        {
+            public Object construct()
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                
                 try
                 {
-                    session.attach(workbench);
+                    Thread.sleep(500);
                     
-                    workbench.getWorkbenchTemplate().getWorkbenches().remove(workbench);
-                    workbench.setWorkbenchTemplate(null);
+                } catch (Exception ex) {}
                 
-                    session.beginTransaction();
-                    session.delete(workbench);
-                    session.commit();
-                    session.flush();
-                    
-                    deleteDnDBtn(workbenchNavBox, nbi);
-                    
-                    updateNavBoxUI(null);
-                    
-                } catch (Exception ex)
+                final NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
+                if (nbi != null)
                 {
-                    ex.printStackTrace();
-                    // XXX Error Dialog
+
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+                        session.attach(workbench);
+                        
+                        workbench.getWorkbenchTemplate().getWorkbenches().remove(workbench);
+                        workbench.setWorkbenchTemplate(null);
                     
-                } finally 
+                        session.beginTransaction();
+                        session.delete(workbench);
+                        session.commit();
+                        session.flush();
+                        
+                        deleteDnDBtn(workbenchNavBox, nbi);
+                        
+                        updateNavBoxUI(null);
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        // XXX Error Dialog
+                        
+                    } finally 
+                    {
+                        session.close();
+                    }
+                    log.info("Deleted a Workbench ["+workbench.getName()+"]");
+                } else
                 {
-                    session.close();
+                    log.error("couldn't find nbi for Workbench ["+workbench.getName()+"]");
                 }
-    
+                    
+                return null;
             }
-    
-            log.info("Deleted a Workbench ["+workbench.getName()+"]");
-        }
+
+            //Runs on the event-dispatching thread.
+            public void finished()
+            {
+                UICacheManager.clearGlassPaneMsg();
+                UICacheManager.getStatusBar().setText(String.format(getResourceString("WB_DELETED_DATASET"), new Object[] {workbench.getName()}));
+
+            }
+        };
+        worker.start();
+
     }
     
     /**
@@ -1495,67 +1591,112 @@ public class WorkbenchTask extends BaseTask
     protected void deleteWorkbenchTemplate(final RecordSet recordSet)
     {
         WorkbenchTemplate workbenchTemplate = loadWorkbenchTemplate(recordSet);
-        if (workbenchTemplate != null)
+        if (workbenchTemplate == null)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
+            return;
+        }
+            
+        boolean okToDel = false;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            session.attach(workbenchTemplate);
+            
+            if (workbenchTemplate.getWorkbenches().size() > 0)
             {
-                session.attach(workbenchTemplate);
-                
-                boolean okToDel = true;
-                if (workbenchTemplate.getWorkbenches().size() > 0)
-                {
-                    String msg = String.format(getResourceString("WBT_DEL_MSG"), new Object[] {workbenchTemplate.getWorkbenches().size()});
-                    okToDel = UICacheManager.displayConfirm(getResourceString("WBT_DEL_TITLE"), 
-                                                            msg, 
-                                                            getResourceString("WBT_DELBTN"), 
-                                                            getResourceString("Cancel"),
-                                                            JOptionPane.QUESTION_MESSAGE);
-                }
-                
-                if (okToDel)
-                {
-                    NavBoxItemIFace nbi = getBoxByTitle(templateNavBox, workbenchTemplate.getName());
-                    if (nbi != null)
-                    {
-                        templateNavBox.remove(nbi);
-                        
-                        session.beginTransaction();
-                        for (Workbench wb : workbenchTemplate.getWorkbenches())
-                        {
-                            NavBoxItemIFace wbNBI = getBoxByTitle(workbenchNavBox, wb.getName());
-                            workbenchNavBox.remove(wbNBI);
-                            session.delete(wb);                                
-                        }
-                        workbenchTemplate.getWorkbenches().clear();
-                        session.delete(workbenchTemplate);
-                        session.commit();
-                        session.flush();
-                        log.info("Deleted a Workbench ["+workbenchTemplate.getName()+"]");
-                        
-                        updateNavBoxUI(null);
-                        
-                        NavBoxMgr.getInstance().validate();
+                String msg = String.format(getResourceString("WBT_DEL_MSG"), new Object[] {workbenchTemplate.getWorkbenches().size()});
+                okToDel = UICacheManager.displayConfirm(getResourceString("WBT_DEL_TITLE"), 
+                                                        msg, 
+                                                        getResourceString("WBT_DELBTN"), 
+                                                        getResourceString("Cancel"),
+                                                        JOptionPane.QUESTION_MESSAGE);
+            } else
+            {
+                okToDel = true;
+            }
+            session.evict(workbenchTemplate);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            // XXX Error Dialog
+            
+        } finally 
+        {
+            
+            session.evict(WorkbenchTemplate.class);
+            session.close();
+        }
+        
+        if (!okToDel)
+        {
+            return;
+        }
 
-                    }
-                } else
+        UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_TEMPLATE"), new Object[] {workbenchTemplate.getName()}), 32);
+
+        final WorkbenchTemplate delTemplate = workbenchTemplate;
+        final SwingWorker worker = new SwingWorker()
+        {
+            public Object construct()
+            {
+                try
                 {
-                    // XXX Error Dialog needed.
-                    log.info("Can't delete workbench template ["+workbenchTemplate.getName()+"]");
-                }
+                    Thread.sleep(500);
                     
-                        
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    // XXX Error Dialog
-                    
-                } finally 
-                {
-                    session.close();
-                }
+                } catch (Exception ex) {}
+                
+                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                 try
+                 {
+                     session.attach(delTemplate);
+                     
+                     NavBoxItemIFace nbi = getBoxByTitle(templateNavBox, delTemplate.getName());
+                     if (nbi != null)
+                     {
+                         templateNavBox.remove(nbi);
+                         
+                         session.beginTransaction();
+                         for (Workbench wb : delTemplate.getWorkbenches())
+                         {
+                             NavBoxItemIFace wbNBI = getBoxByTitle(workbenchNavBox, wb.getName());
+                             workbenchNavBox.remove(wbNBI);
+                             session.delete(wb);                                
+                         }
+                         delTemplate.getWorkbenches().clear();
+                         session.delete(delTemplate);
+                         session.commit();
+                         session.flush();
+                         log.info("Deleted a Workbench ["+delTemplate.getName()+"]");
+                         
+                         updateNavBoxUI(null);
+                         
+                         NavBoxMgr.getInstance().validate();
+
+                     }
+                             
+                 } catch (Exception ex)
+                 {
+                     ex.printStackTrace();
+                     // XXX Error Dialog
+                     
+                 } finally 
+                 {
+                     session.close();
+                 }
+
+
+                return null;
             }
 
+            //Runs on the event-dispatching thread.
+            public void finished()
+            {
+                UICacheManager.clearGlassPaneMsg();
+                UICacheManager.getStatusBar().setText(String.format(getResourceString("WB_DELETED_TEMPLATE"), new Object[] {delTemplate.getName()}));
+            }
+        };
+        worker.start();
     }
     
     
@@ -1618,7 +1759,7 @@ public class WorkbenchTask extends BaseTask
             final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
             cmd.setProperty("title",  selectMappingItem.getCaption());
             cmd.setProperty("file",   "wb_items.jrxml");
-            cmd.setProperty("params", "colnum="+selectMappingItem.getViewOrder()+";"+"title="+selectMappingItem.getCaption());
+            cmd.setProperty("params", "colnum="+selectMappingItem.getWorkbenchTemplateMappingItemId()+";"+"title="+selectMappingItem.getCaption());
             cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
             
             SwingUtilities.invokeLater(new Runnable() {
@@ -1813,7 +1954,7 @@ public class WorkbenchTask extends BaseTask
             {
                 String sql = "select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on " +
                     "di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId = " +
-                    workbench.getWorkbenchId() + " and ColumnNumber = "+selectMappingItem.getViewOrder()+"  group by CellData order by rw.RowNumber asc, di.ColumnNumber asc) t1 order by Cnt desc";
+                    workbench.getWorkbenchId() + " and WorkbenchTemplateMappingItemId = "+selectMappingItem.getWorkbenchTemplateMappingItemId()+"  group by CellData order by rw.RowNumber asc) t1 order by Cnt desc";
                 Connection conn = DBConnection.getInstance().createConnection();
                 Statement  stmt = conn.createStatement();
                 
@@ -1883,107 +2024,53 @@ public class WorkbenchTask extends BaseTask
      * Show the dialog to allow the user to edit a template and then updates the data rows and columns..
      * @param workbenchTemplate the template to be edited
      */
-    protected void editTemplate(final WorkbenchTemplate workbenchTemplate)
+    protected void editTemplate(final WorkbenchTemplate wbTemplate)
     {
-        loadTemplateFromData(workbenchTemplate);
+        loadTemplateFromData(wbTemplate);
         
-        ColumnMapperDlg dlg = showColumnMapperDlg(null, workbenchTemplate, 
-                                                    StringUtils.isNotEmpty(workbenchTemplate.getSrcFilePath()) ? 
+        TemplateEditor dlg = showColumnMapperDlg(null, wbTemplate, 
+                                                   StringUtils.isNotEmpty(wbTemplate.getSrcFilePath()) ? 
                                                             "WB_IMP_TEMPLATE_EDITOR" : "WB_TEMPLATE_EDITOR");
         if (!dlg.isCancelled())
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
+                Collection<WorkbenchTemplateMappingItem> unusedItems  = dlg.getUnusedItems();
+                Collection<WorkbenchTemplateMappingItem> newItems     = dlg.getNewItems();
+                Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
+                
+                WorkbenchTemplate workbenchTemplate = (WorkbenchTemplate)session.merge(wbTemplate);
+                //session.attach(workbenchTemplate);
+                session.beginTransaction();
+                
+                Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
 
-                WorkbenchTemplate newWorkbenchTemplate = dlg.createWorkbenchTemplate();
-                
-                session.attach(workbenchTemplate);
-                
-                Vector<WorkbenchTemplateMappingItem> newItems = new Vector<WorkbenchTemplateMappingItem>(newWorkbenchTemplate.getWorkbenchTemplateMappingItems());
-                Vector<WorkbenchTemplateMappingItem> oldItems = new Vector<WorkbenchTemplateMappingItem>(workbenchTemplate.getWorkbenchTemplateMappingItems());
-                
-                Collections.sort(newItems);
-                Collections.sort(oldItems);
-                
-                // Copying over the New Items
-                // Start by looking at each new item and see if it is in the old list
-                // if it is in the old list then ignore it
-                // if it isn't in the old list than add it into the old template
-                
-                Hashtable<Short, Short> oldToNewIndex = new Hashtable<Short, Short>();
-                short newViewOrder = 0;
+                for (WorkbenchTemplateMappingItem wbtmi : unusedItems)
+                {
+                    log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
+                    wbtmi.setWorkbenchTemplate(null);
+                    items.remove(wbtmi);
+                    session.delete(wbtmi) ;
+                }
                 for (WorkbenchTemplateMappingItem wbtmi : newItems)
                 {
-                    //System.out.print("New ["+wbtmi.getFieldName()+"] ");
-                    // find a match
-                    boolean foundMatch = false;
-                    for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
-                    {
-                        //System.out.println("New ["+wbtmi.getFieldName()+"] ["+oldWbtmi.getFieldName()+"] ["+wbtmi.getTableId()+"] ["+oldWbtmi.getTableId()+"]");
-                        if (oldWbtmi.getSrcTableId().intValue() == wbtmi.getSrcTableId().intValue() &&
-                            oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
-                        {
-                            foundMatch = true;
-                            oldToNewIndex.put(oldWbtmi.getViewOrder(), newViewOrder);
-                            oldWbtmi.setViewOrder(newViewOrder++);
-                            break;
-                        }
-                    }
-                    //System.out.println("   ** Found: "+foundMatch);
-                    if (!foundMatch)
-                    {
-                        workbenchTemplate.getWorkbenchTemplateMappingItems().add(wbtmi);
-                        wbtmi.setViewOrder(newViewOrder++);
-                        wbtmi.setWorkbenchTemplate(workbenchTemplate);
-                    }
+                    wbtmi.setWorkbenchTemplate(workbenchTemplate);
+                    items.add(wbtmi);
+                    log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
+                    session.saveOrUpdate(wbtmi) ;
                 }
-                Hashtable<Short, Short> colDeletedHash = new Hashtable<Short, Short>();
-                
-                // Removing the Items
-                // For each old item (it has to have a non-null ID) see if it is in the new list
-                // if it is not in the new then delete it
-                // if it is then ignore it
-                for (WorkbenchTemplateMappingItem oldWbtmi : oldItems)
+                for (WorkbenchTemplateMappingItem wbtmi : updatedItems)
                 {
-                    if (oldWbtmi.getWorkbenchTemplateMappingItemId() == null)
-                    {
-                        continue; // item is a new one
-                    }
-                    
-                    // Search the list and if the items isn't there than delete it.
-                    boolean foundMatch = false;
-                    for (WorkbenchTemplateMappingItem wbtmi : newItems)
-                    {
-                        if (oldWbtmi.getTableId() == wbtmi.getTableId() &&
-                            oldWbtmi.getFieldName().equals(wbtmi.getFieldName()))
-                        {
-                            foundMatch = true;
-                            break;
-                        }
-                    }
-                    if (!foundMatch)
-                    {
-                        workbenchTemplate.getWorkbenchTemplateMappingItems().remove(oldWbtmi);
-                        oldWbtmi.setWorkbenchTemplate(null);
-                        colDeletedHash.put(oldWbtmi.getViewOrder(), oldWbtmi.getViewOrder());
-                    }
+                    //session.attach(wbtmi);
+                    //session.saveOrUpdate(wbtmi);
+                    log.debug("ext ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
                 }
-
-                /*
-                System.out.println("Mapping Columns:");
-                for (Integer oldInx : oldToNewIndex.keySet())
-                {
-                    System.out.println("["+oldInx+"]["+oldToNewIndex.get(oldInx)+"]");
-                }
-                System.out.println("");
-                */
-                
-                session.beginTransaction();
                 session.saveOrUpdate(workbenchTemplate);
                 session.commit();
                 session.flush();
                 
+                /*
                 for (Workbench workbench : workbenchTemplate.getWorkbenches())
                 {
                     session.attach(workbench);
@@ -1991,21 +2078,14 @@ public class WorkbenchTask extends BaseTask
    
                     for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
                     {
-                        Vector<WorkbenchDataItem> items = new Vector<WorkbenchDataItem>(row.getWorkbenchDataItems());
-                        for (WorkbenchDataItem item : items)
+                        Vector<WorkbenchDataItem> rowItems = new Vector<WorkbenchDataItem>(row.getWorkbenchDataItems());
+                        for (WorkbenchDataItem item : rowItems)
                         {
-                            boolean wasDeleted = false;
-                            if (colDeletedHash.get(item.getColumnNumber()) != null)
+                            System.out.println("["+item.getCellData()+"] ["+item.getWorkbenchTemplateMappingItem().getWorkbenchTemplateMappingItemId()+"]");
+                            if (delHash.get(item.getWorkbenchTemplateMappingItem().getWorkbenchTemplateMappingItemId().longValue()) != null)
                             {
                                 row.delete(item);
                                 session.delete(item);
-                                wasDeleted = true;
-                            }
-                            
-                            if (!wasDeleted)
-                            {
-                                item.setColumnNumber(oldToNewIndex.get(item.getColumnNumber()));
-                                session.saveOrUpdate(item);
                             }
                         }
                         session.saveOrUpdate(row);
@@ -2014,7 +2094,7 @@ public class WorkbenchTask extends BaseTask
                     session.commit();
                     session.flush();
                     session.evict(workbench);
-                }
+                }*/
                 
             } catch (Exception ex)
             {
@@ -2039,7 +2119,7 @@ public class WorkbenchTask extends BaseTask
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
         {
             // Create a new Template 
-            ColumnMapperDlg dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
+            TemplateEditor dlg = showColumnMapperDlg(null, null, "WB_TEMPLATE_EDITOR");
             if (!dlg.isCancelled())
             {   
                 workbenchTemplate = createTemplate(dlg, null, null);
@@ -2059,43 +2139,47 @@ public class WorkbenchTask extends BaseTask
             if (chooser.showOpenDialog(UICacheManager.get(UICacheManager.FRAME)) == JFileChooser.APPROVE_OPTION)
             {
                 Workbench workbench = createNewWorkbenchDataObj(workbenchTemplate, false);
-                
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                try
+                if (workbench != null)
                 {
-                    session.beginTransaction();
-                    
-                    for (File file : chooser.getSelectedFiles())
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
                     {
-                        WorkbenchRow row = workbench.addRow();
-                        row.setCardImage(file);
-                        if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+                        session.beginTransaction();
+                        
+                        for (File file : chooser.getSelectedFiles())
                         {
-                            if (!showLoadStatus(row))
+                            WorkbenchRow row = workbench.addRow();
+                            row.setCardImage(file);
+                            if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
                             {
-                                // Shoud we still save or return?
-                                break; 
+                                if (!showLoadStatus(row))
+                                {
+                                    // Shoud we still save or return?
+                                    break; 
+                                }
                             }
                         }
+                        session.saveOrUpdate(workbench);
+                        session.commit();
+                        session.flush();
+                        
+                        addWorkbenchToNavBox(workbench);
+                        
+                        createEditorForWorkbench(workbench, session, true);
+    
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        
+                    } finally
+                    {
+                        session.close();    
                     }
-                    session.saveOrUpdate(workbench);
-                    session.commit();
-                    session.flush();
-                    
-                    addWorkbenchToNavBox(workbench);
-                    
-                    createEditorForWorkbench(workbench, session, true);
-
-                    
-                } catch (Exception ex)
+                } else
                 {
-                    log.error(ex);
-                    
-                } finally
-                {
-                    session.close();    
+                    UICacheManager.getStatusBar().setText("");
                 }
-                
             } 
         }
     }
@@ -2122,7 +2206,7 @@ public class WorkbenchTask extends BaseTask
                 break;
         }
         
-        JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+        JStatusBar statusBar = UICacheManager.getStatusBar();
         statusBar.setErrorMessage(getResourceString(key), row.getLoadException());
         
         return UICacheManager.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key, "Continue", "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
@@ -2232,6 +2316,9 @@ public class WorkbenchTask extends BaseTask
                         session.close();    
                     }
 
+                } else
+                {
+                    UICacheManager.getStatusBar().setText("");
                 }
             } break;
             
@@ -2458,11 +2545,16 @@ public class WorkbenchTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
-    public void doCommand(CommandAction cmdAction)
+    public void doCommand(final CommandAction cmdAction)
     {
         if (cmdAction.isType(WORKBENCH))
         {
-            processWorkbenchCommands(cmdAction);
+            //SwingUtilities.invokeLater(new Runnable() {
+            //    public void run()
+            //    {
+                    processWorkbenchCommands(cmdAction);
+            //    }
+            //});
             
         } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {

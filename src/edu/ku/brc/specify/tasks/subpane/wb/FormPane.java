@@ -60,7 +60,6 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -154,10 +153,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             @Override
             public void mousePressed(MouseEvent e)
             {
-                if (e.getClickCount() == 2 && (controlPropsDlg == null || !controlPropsDlg.isVisible()))
-                {
-                    showControlProps();
-                }
+                //if (e.getClickCount() == 2 && (controlPropsDlg == null || !controlPropsDlg.isVisible()))
+                //{
+                //    showControlProps();
+                //}
 
                 selectControl(e.getSource());
                 
@@ -1016,12 +1015,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             if (!isOK)
             {
                 String msg = String.format(getResourceString("WB_NEWDATA_TOO_LONG"), new Object[] { caption, maxLength } );
-                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setErrorMessage(msg);
+                UICacheManager.getStatusBar().setErrorMessage(msg);
                 Toolkit.getDefaultToolkit().beep();
                 
             } else
             {
-                ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+                UICacheManager.getStatusBar().setText("");
             }
             return isOK;
         }

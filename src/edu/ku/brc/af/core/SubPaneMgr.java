@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
-import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -110,7 +109,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
         }
         
-        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        UICacheManager.getStatusBar().setText("");
         
         if (instance.panes.contains(pane))
         {
@@ -122,7 +121,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         String title = buildUniqueName(pane.getName());
         pane.setName(title);
 
-        //log.error("Add SubPane ["+pane.hashCode()+"]");
+        //log.error("Add SubPane ["+pane.hashCode()+"] "+pane);
         panes.put(title, pane); // this must be done before adding it
         addTab(title, pane.getIcon(), pane.getUIComponent());
         
@@ -155,7 +154,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace renamePane(final SubPaneIFace pane, final String newName)
     {
-        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        UICacheManager.getStatusBar().setText("");
         
         panes.remove(pane.getName());
         pane.setName(newName);
@@ -173,7 +172,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
     {
-        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        UICacheManager.getStatusBar().setText("");
         
         //System.err.println("SubPaneMgr::replacePane ************************************************");
 
@@ -212,7 +211,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean removePane(final SubPaneIFace pane)
     {
-        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        UICacheManager.getStatusBar().setText("");
         
         if (currentPane == pane)
         {
@@ -316,7 +315,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
       */
     public SubPaneIFace showPane(final String name)
     {
-        ((JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+        UICacheManager.getStatusBar().setText("");
         
         // Look the the desired pane
         SubPaneIFace pane = panes.get(name);
@@ -359,7 +358,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
         {
             SubPaneIFace sp = e.nextElement();
-            //log.error("Checking sp["+sp.getUIComponent().hashCode()+"]["+comp.hashCode()+"]");
+            //log.error("Checking sp["+sp.getUIComponent().hashCode()+"]["+comp.hashCode()+"] "+sp.hashCode());
             if (sp.getUIComponent() == comp)
             {
                 return sp;
@@ -375,6 +374,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace getCurrentSubPane()
     {
+        Component comp = getComponentAt(this.getSelectedIndex());
+        if (comp instanceof SubPaneIFace)
+        {
+            return (SubPaneIFace)comp;
+        }
         return getSubPaneForComponent(getComponentAt(this.getSelectedIndex()));
     }
 

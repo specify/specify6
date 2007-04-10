@@ -14,15 +14,23 @@
  */
 package edu.ku.brc.ui;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,6 +44,7 @@ import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -80,7 +89,6 @@ public class UICacheManager
     public static final String FRAME        = "frame";
     public static final String MENUBAR      = "menubar";
     public static final String TOOLBAR      = "toolbar";
-    public static final String STATUSBAR    = "statusbar";
     public static final String TOPFRAME     = "topframe";
     public static final String GLASSPANE    = "glasspane";
     public static final String MAINPANE     = "mainpane";
@@ -117,6 +125,7 @@ public class UICacheManager
 
     protected FileCache      longTermCache      = null;
     protected FileCache      shortTermCache     = null;
+    protected JStatusBar     statusBar          = null;
 
     protected String         defaultWorkingPath = null;
     protected String         appName            = null;
@@ -228,6 +237,22 @@ public class UICacheManager
     public static void setRelease(boolean isRelease)
     {
         instance.isRelease = isRelease;
+    }
+
+    /**
+     * @return the statusBar
+     */
+    public static JStatusBar getStatusBar()
+    {
+        return instance.statusBar;
+    }
+
+    /**
+     * @param statusBar the statusBar to set
+     */
+    public static void setStatusBar(JStatusBar statusBar)
+    {
+        instance.statusBar = statusBar;
     }
 
     /**
@@ -579,10 +604,9 @@ public class UICacheManager
      */
     public static void displayStatusBarText(final String text)
     {
-        JStatusBar statusBar = ((JStatusBar)instance.components.get(STATUSBAR));
-        if (statusBar != null)
+        if (instance.statusBar != null)
         {
-            statusBar.setText(text == null ? "" : text);
+            instance.statusBar.setText(text == null ? "" : text);
         }
     }
 
@@ -821,6 +845,92 @@ public class UICacheManager
     public static void setUseCurrentLocation(boolean useCurrentLocation)
     {
         instance.useCurrentLocation = useCurrentLocation;
+    }
+    
+    //---------------------------------------------------------------------------------
+    //-- Glass Pane Buffered Image
+    //---------------------------------------------------------------------------------
+    protected static WeakReference<BufferedImage> glassPaneBufferedImageWR;
+    
+    /**
+     * Reads in the disciplines file (is loaded when the class is loaded).
+     * @return Reads in the disciplines file (is loaded when the class is loaded).
+     */
+    public static BufferedImage getGlassPaneBufferedImage(final int width, final int height)
+    {
+        BufferedImage bufImg = null;
+        
+        if (glassPaneBufferedImageWR != null)
+        {
+            bufImg = glassPaneBufferedImageWR.get();
+        }
+        
+        if (bufImg == null)
+        {
+            glassPaneBufferedImageWR = new WeakReference<BufferedImage>(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
+        }
+        
+        return glassPaneBufferedImageWR.get();
+    }
+
+    
+    /**
+     * Writes a string message into the BufferedImage on GlassPane and sets the main component's visibility to false and
+     * shows the GlassPane.
+     * @param msg the message
+     * @param pointSize the Font point size for the message to be writen in
+     */
+    public static void writeGlassPaneMsg(final String msg, final int pointSize)
+    {
+        GhostGlassPane glassPane = getGlassPane();
+        if (glassPane != null)
+        {
+            glassPane.finishDnD();
+        }
+        
+        Component mainComp = get(MAINPANE);
+        if (mainComp != null && glassPane != null)
+        {
+            Dimension     size   = mainComp.getSize();
+            BufferedImage buffer = getGlassPaneBufferedImage(size.width, size.height);
+            Graphics2D    g2     = buffer.createGraphics();
+            mainComp.paint(g2);
+            
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(new Color(255, 255, 255, 128));
+            g2.fillRect(0, 0, size.width, size.height);
+            
+            
+            g2.setFont(new Font((new JLabel()).getFont().getName(), Font.BOLD, pointSize));
+            FontMetrics fm = g2.getFontMetrics();
+            g2.setColor(Color.BLACK);
+            
+            g2.drawString(msg, (size.width-fm.stringWidth(msg))/2, (size.height-fm.getHeight())/2);
+            g2.dispose();
+            
+            glassPane.setImage(buffer);
+            glassPane.setPoint(new Point(0,0), GhostGlassPane.ImagePaintMode.ABSOLUTE);
+            glassPane.setOffset(new Point(0,0));
+            
+            glassPane.setVisible(true);
+            mainComp.setVisible(false);
+            glassPane.repaint();
+
+        }
+    }
+    
+    /**
+     * Clears the GlassPane, meaning it sets the mainComp visinle again and sets the GlassPane to be hidden.
+     */
+    public static void clearGlassPaneMsg()
+    {
+        Component mainComp = UICacheManager.get(UICacheManager.MAINPANE);
+        if (mainComp != null && getGlassPane() != null)
+        {
+            getGlassPane().setVisible(false);
+            mainComp.setVisible(true);
+            mainComp.repaint();
+        }  
     }
     
     //---------------------------------------------------------

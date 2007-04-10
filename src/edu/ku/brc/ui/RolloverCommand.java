@@ -264,10 +264,14 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         return label;
     }
     
-    public void setLabelText(String label)
+    public void setLabelText(final String label)
     {
+        if (label != null && !label.equals(this.label))
+        {
+            sizeBufImg = null;
+        }   
         this.label = label;
-        validate();
+        invalidate();
     }
 
     /**
@@ -280,18 +284,17 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
     /**
      * Calculates the preferred size for initial painting and layout
-     *
      */
     protected void calcPreferredSize()
     {
         if (sizeBufImg == null)
         {
-            Insets ins = getBorder().getBorderInsets(this);
+            Insets ins = getBorder() != null ? getBorder().getBorderInsets(this) : new Insets(0,0,0,0);
             sizeBufImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = sizeBufImg.createGraphics();
             g.setFont(getFont());
-            FontMetrics fm = g.getFontMetrics();
-            Insets insets = getInsets();
+            FontMetrics fm     = g.getFontMetrics();
+            Insets      insets = getInsets();
 
             if (verticalLayout)
             {
@@ -307,6 +310,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                                        (Math.max(fm.getHeight(), (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0)));
 
             }
+            g.dispose();
         }
     }
 

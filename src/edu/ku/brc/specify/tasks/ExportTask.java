@@ -195,7 +195,7 @@ public class ExportTask extends BaseTask
         catch (Exception e)
         {
             log.error("Exception while exporting a RecordSet", e);
-            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+            JStatusBar statusBar = UICacheManager.getStatusBar();
             statusBar.setErrorMessage(e.getMessage(), e);
         }
     }
@@ -209,7 +209,7 @@ public class ExportTask extends BaseTask
         catch (Exception e)
         {
             log.error("Exception while exporting a data list", e);
-            JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+            JStatusBar statusBar = UICacheManager.getStatusBar();
             statusBar.setErrorMessage(e.getLocalizedMessage(), e);
         }
     }

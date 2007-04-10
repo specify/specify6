@@ -38,6 +38,9 @@ public class GhostGlassPane extends JPanel
 
     private final int   ANIMATION_DELAY = 500;
     private final float STD_ALPHA       = 0.7f;
+    
+    protected FadeOutAnimation fadeOutAnimation = null;
+    protected Timer            fadeOutTimer     = null;
 
     protected BufferedImage dragged     = null;
     protected Point         location    = new Point(0, 0);
@@ -265,7 +268,10 @@ public class GhostGlassPane extends JPanel
     public void startAnimation(Rectangle visibleRectArg)
     {
         this.visibleRect = visibleRectArg;
-        new Timer(1000 / 30, new FadeOutAnimation()).start();
+        
+        fadeOutAnimation = new FadeOutAnimation();
+        fadeOutTimer     = new Timer(1000 / 30, fadeOutAnimation);
+        fadeOutTimer.start();
     }
     
     /**
@@ -274,11 +280,13 @@ public class GhostGlassPane extends JPanel
     public void finishedWithDragAndDrop()
     {
         setVisible(false);
-        zoom = 1.0f;
-        alpha = 0.6f;
+        zoom        = 1.0f;
+        alpha       = 0.6f;
         visibleRect = null;
-        dragged = null;
+        dragged     = null;
         DragAndDropLock.setLocked(false);  
+        fadeOutAnimation = null;
+        fadeOutTimer     = null;
     }
     
     /**
@@ -308,6 +316,16 @@ public class GhostGlassPane extends JPanel
         }
 
         return false;
+    }
+    
+    public synchronized void finishDnD()
+    {
+        if (fadeOutAnimation != null)
+        {
+            fadeOutTimer.stop();
+            fadeOutAnimation.setStopNow(true);
+            finishedWithDragAndDrop();
+        }
     }
     
     /**
@@ -356,7 +374,8 @@ public class GhostGlassPane extends JPanel
     //------------------------------------------------------------
     private class FadeOutAnimation implements ActionListener
     {
-        private long start;
+        private long    start;
+        private boolean stopNow = false;
 
         FadeOutAnimation()
         {
@@ -364,10 +383,19 @@ public class GhostGlassPane extends JPanel
             oldLocation = location;
         }
 
+        /**
+         * @param stopNow the stopNow to set
+         */
+        public synchronized void setStopNow(boolean stopNow)
+        {
+            this.stopNow = stopNow;
+        }
+
         public void actionPerformed(ActionEvent e)
         {
+
             long elapsed = System.currentTimeMillis() - start;
-            if (elapsed > ANIMATION_DELAY)
+            if (stopNow || elapsed > ANIMATION_DELAY)
             {
                 ((Timer) e.getSource()).stop();
                 finishedWithDragAndDrop();
@@ -377,6 +405,7 @@ public class GhostGlassPane extends JPanel
                 alpha = 0.6f - (0.6f * elapsed / ANIMATION_DELAY);
                 zoom = 1.0f + 3.0f * (elapsed / (float) ANIMATION_DELAY);
             }
+
             repaint(getRepaintRect());
         }
     }

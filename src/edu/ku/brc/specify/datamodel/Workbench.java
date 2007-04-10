@@ -446,6 +446,16 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     }
     
     /**
+     * Returns the mapping item for column number.
+     * @param column the colum
+     * @return the mapping
+     */
+    public WorkbenchTemplateMappingItem getMappingFromColumn(final short column)
+    {
+        return getTemplateMappings().get(column); 
+    }
+    
+    /**
      * CReate the mapping from the column number to the definition. 
      */
     protected void createWBTMIMappings()

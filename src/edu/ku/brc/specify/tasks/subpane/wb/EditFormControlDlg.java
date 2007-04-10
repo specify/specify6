@@ -205,7 +205,7 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                         if (numRows != null)
                         {
                             adjustTextRowsUI();
-                            numRows.setValue(textFieldType.getSelectedIndex() == 0 ? FormPane.DEFAULT_TEXTFIELD_ROWS : origRows);
+                            numRows.setValue(textFieldType.getSelectedIndex() == 0 ? FormPane.DEFAULT_TEXTFIELD_ROWS : (origRows == 1 ? FormPane.DEFAULT_TEXTAREA_ROWS : origRows));
                         }
                     }
                 });
@@ -375,6 +375,19 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
 
         if (isTextField)
         {
+            if (textFieldType != null)
+            {
+                if ((origFieldTypeIndex == 0 && inputPanel.getComp() instanceof JTextArea) ||
+                    (origFieldTypeIndex == 1 && inputPanel.getComp() instanceof JTextField))
+                {
+                    //textFieldType.setSelectedIndex(origFieldTypeIndex);
+                    fieldTypeChanged = true;
+                } else
+                {
+                    fieldTypeChanged = false;
+                }
+            }
+            
             if (fieldWidth != null)
             {
                 fieldWidth.setValue(origFieldLen);
@@ -382,11 +395,6 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
             if (numRows != null)
             {
                 numRows.setValue(origRows);
-            }
-            
-            if (textFieldType != null && origFieldTypeIndex != textFieldType.getSelectedIndex())
-            {
-                fieldTypeChanged = true;
             }
         }
 
@@ -413,7 +421,7 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                 ((ValCheckBox)inputPanel.getComp()).setText(labelTF.getText());
             } else
             {
-                labelTF.setText(StringUtils.strip(inputPanel.getLabelText(), ":"));
+                ((JLabel)inputPanel.getLabel()).setText(StringUtils.strip(labelTF.getText(), ":")+":");
             }
             doResize = true;
         }
@@ -429,7 +437,7 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                 adjustTextRowsUI();
             }
             
-            if (changeTracker.get(fieldWidth) != null || changeTracker.get(numRows) != null)
+            if (changeTracker.get(fieldWidth) != null || (numRows != null && changeTracker.get(numRows) != null))
             {
                 if (inputPanel.getComp() instanceof JTextField)
                 {
@@ -437,7 +445,10 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
                 } else
                 {
                     ((JTextArea)inputPanel.getComp()).setColumns(((Integer)fieldWidth.getValue()).intValue());
-                    ((JTextArea)inputPanel.getComp()).setRows(((Integer)numRows.getValue()).intValue());
+                    if (numRows != null) // shouldn't be null - defensive
+                    {
+                        ((JTextArea)inputPanel.getComp()).setRows(((Integer)numRows.getValue()).intValue());
+                    }
                     inputPanel.validate();
                     inputPanel.repaint();
                 }

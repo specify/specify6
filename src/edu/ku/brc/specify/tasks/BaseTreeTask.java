@@ -261,7 +261,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	}
     	else
     	{
-    		JStatusBar statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+    		JStatusBar statusBar = UICacheManager.getStatusBar();
     		//TODO localize
     		statusBar.setText("Tree definition editor already open");
     	}

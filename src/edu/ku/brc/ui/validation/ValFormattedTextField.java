@@ -44,8 +44,8 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;

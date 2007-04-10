@@ -13,6 +13,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -52,6 +55,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Boolean           isExportableToContent;
     protected Boolean           isIncludedInTitle;
     protected Boolean           isRequired;
+    protected Set<WorkbenchDataItem> workbenchDataItems;
 
     // UI Layout extras
     protected String            metaData;
@@ -100,6 +104,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         isExportableToContent = true;
         isIncludedInTitle     = false;
         isRequired            = false;
+        
+        workbenchDataItems = new HashSet<WorkbenchDataItem>();
         
         // Transient
         dataFieldClass = null;
@@ -377,6 +383,18 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         this.workbenchTemplate = workbenchTemplate;
     }
+    
+    /*
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchtemplatemappingitem")
+    public Set<WorkbenchDataItem> getWorkbenchDataItems() 
+    {
+        return this.workbenchDataItems;
+    }
+    
+    public void setWorkbenchDataItems(Set<WorkbenchDataItem> workbenchDataItems) 
+    {
+        this.workbenchDataItems = workbenchDataItems;
+    }*/
     
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)

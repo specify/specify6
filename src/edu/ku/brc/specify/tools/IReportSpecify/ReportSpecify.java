@@ -10,7 +10,6 @@
 package edu.ku.brc.specify.tools.IReportSpecify;
 
 import it.businesslogic.ireport.Report;
-
 import edu.ku.brc.af.core.AppResourceIFace;
 
 /**

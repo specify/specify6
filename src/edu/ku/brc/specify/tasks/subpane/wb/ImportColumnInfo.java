@@ -75,6 +75,14 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         return colInx.compareTo(obj.colInx);
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return colName;
+    }
     
     /**
      * Converts data type string into an enum.

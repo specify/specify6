@@ -24,7 +24,6 @@ import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -137,7 +136,7 @@ public class WorkbenchBackupMgr
             // Clear the status bar message about successful 'export'? - but what if error during
             // backup?,
             // and remove old backups if necessary.
-            ((JStatusBar) UICacheManager.get(UICacheManager.STATUSBAR)).setText("");
+            UICacheManager.getStatusBar().setText("");
             cleanupBackups(workbench);
         }
         catch (Exception ex)

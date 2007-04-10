@@ -58,7 +58,7 @@ import edu.ku.brc.ui.UIHelper;
  * Created Date: Mar 16, 2007
  *
  */
-public class CardImageFrame extends JFrame
+public class ImageFrame extends JFrame
 {
     //protected JPanel       panel                      = new JPanel(new BorderLayout());
     protected JLabel       cardImageLabel             = new JLabel("", SwingConstants.CENTER);
@@ -89,7 +89,7 @@ public class CardImageFrame extends JFrame
     /**
      * Constructor. 
      */
-    public CardImageFrame(final int mapSize)
+    public ImageFrame(final int mapSize)
     {
         Dimension minSize = new Dimension(mapSize, mapSize);
         cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -136,7 +136,7 @@ public class CardImageFrame extends JFrame
         
         imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
         clearMI   = UIHelper.createMenuItem(imageMenu, "Clear", "ClearMneu", "", true, null);
-        replaceMI = UIHelper.createCheckBoxMenuItem(imageMenu, "Replace", "ReplaceMneu", "", true, null);
+        replaceMI = UIHelper.createMenuItem(imageMenu, "Replace", "ReplaceMneu", "", true, null);
         
         JMenu helpMenu = new JMenu(getResourceString("Help"));
         menuBar.add(HelpMgr.createHelpMenuItem(helpMenu, getResourceString("WB_IMAGE_WINDOW")));

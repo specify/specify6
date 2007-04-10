@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.tasks;
 
+import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -301,7 +302,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             {
                 ga.createMouseInputAdapter(); // this makes it draggable
                 ga.getMouseInputAdapter().registerWithGlassPane();
-                
+                ((RolloverCommand)nb).setCursor(new Cursor(Cursor.HAND_CURSOR));
             } else
             {
                 UICacheManager.getGlassPane().add(ga);
